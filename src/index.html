@@ -4,84 +4,100 @@ body_class: bg-white
 meta_description: "OAcheck is an open-source tool that analyzes papers covered by your Open Access policy to help you make them open."
 ---
 
-<header>
-  <p class="label">OAcheck</p>
-  <h1>Turn OA policies into practice in minutes, not months</h1>
+<header class="row">
+  <div class="col col--1of2">
+    <p class="label">OAcheck</p>
+    <h1 style="font-size: 3em;">Turn OA policies into practice in minutes, not months.</h1>
 
-  <p class="type-3">OAcheck analyzes papers covered by your Open Access policy to help you make them open.</p>
+    <p class="type-2">OAcheck analyzes papers covered by your Open Access policy to help you make them open.</p>
+  </div>
 </header>
 
 <article>
-  <h2 class="sr-only">What’s this?</h2>
+  <header class="row" id="whats-this">
+    <div class="col col--1of2">
+      <h2 class="sr-only">What’s this?</h2>
+      <p class="type-3">Our open source tools, built in partnership with the Bill & Melinda Gates Foundation, will help you:</p>
+    </div>
+  </header>
 
-  <p class="type-3">Our open source tools, built in partnership with the Bill & Melinda Gates Foundation, will help you:</p>
+  <div class="row">
+    <div class="col col--1of2">
+      <ul class="row unstyled-list" aria-labelledby="whats-this">
+        <li class="col col--1of3">
+          <h3 class="label type-1">Discover</h3>
+          <p>papers covered by your policy</p>
+        </li>
 
-  <ul class="row unstyled-list">
-    <li class="col col--1of3">
-      <h3 class="label type-1">Discover</h3>
-      <p>papers covered by your policy</p>
-    </li>
+        <li class="col col--1of3">
+          <h3 class="label">Check</h3>
+          <p>if papers comply</p>
+        </li>
 
-    <li class="col col--1of3">
-      <h3 class="label">Check</h3>
-      <p>if papers comply</p>
-    </li>
-
-    <li class="col col--1of3">
-      <h3 class="label">Simplify</h3>
-      <p>making papers more open for you and authors</p>
-    </li>
-  </ul>
+        <li class="col col--1of3">
+          <h3 class="label">Simplify</h3>
+          <p>making papers more open for you and authors</p>
+        </li>
+      </ul>
+    </div>
+  </div>
 </article>
 
-<aside>
-  <h2>Stay up to date</h2>
+<aside style="position: sticky; bottom: 25vh;" class="align-right">
+  <div class="row" style="flex-direction: row-reverse;">
+    <div class="col col--1of4">
+      <h2 class="type-4 font-sans">Stay up to date</h2>
 
-  <p>We’re working to make OAcheck available to funders, libraries, and authors. We’d love to keep you updated.</p>
+      <p><small>We’re working to make OAcheck available to funders, libraries, and authors. <br/>We’d love to keep you updated.</small></p>
 
-  <form>
-    <label for="email">Email</label>
-    <input type="email" id="email"/>
+      <form>
+        <label for="email">Your email</label>
+        <input type="email" id="email"/>
 
-    <button type="submit">Get updates</button>
-  </form>
+        <button type="submit">Get updates</button>
+      </form>
+    </div>
+  </div>
 </aside>
 
-<article>
-  <h2>How OAcheck works</h2>
+<section>
+  <h2 class="label">How OAcheck works</h2>
 
-  <h3 id="for-you">For you</h3>
+  <article class="row">
+    <h3 id="for-you" class="col col--1of4 type-1 font-sans align-right">For you</h3>
+    <ol aria-labelledby="for-you" class="col col--3of4 row unstyled-list">
+      <li class="col col--1of3">Tell us what institution you’re from</li>
+      <li class="col col--1of3">We’ll provide you a custom analysis</li>
+      <li class="col col--1of3">You use it to make more papers open</li>
+    </ol>
+  </article>
 
-  <ul aria-labelledby="for-you" class="row unstyled-list">
-    <li class="col col--1of3">Tell us what institution you’re from</li>
-    <li class="col col--1of3">We’ll provide you a custom analysis</li>
-    <li class="col col--1of3">You use it to make more papers open</li>
-  </ul>
+  <article class="row">
+    <h3 id="the-system" class="col col--1of4 type-1 font-sans align-right">The system</h3>
+    <ul aria-labelledby="the-system" class="col col--3of4 row unstyled-list">
+      <li class="col col--1of3">We discover your papers and data about them by searching open data, full text, landing pages, and your internal sources.</li>
+      <li class="col col--1of3">We analyse those papers against all the terms of your current policy and provide yes/no answers.</li>
+      <li class="col col--1of3">We’ll help you find and communicate how to make them more open.</li>
+    </ul>
+  </article>
+</section>
 
-  <h3 id="the-system">The system</h3>
+<article class="row">
+  <h2 class="col col--1of4 type-1 font-sans align-right">Q&A</h2>
+  <div class="col col--1of2">
+    <h3>When will OAcheck be generally available?</h3>
+    <p>We don’t know. OAcheck is already powering work at the Gates Foundation, and we’re working to make it generally available. If you’d like to help accelerate that, get in touch.</p>
 
-  <ul aria-labelledby="the-system" class="row unstyled-list">
-    <li class="col col--1of3">We discover your papers and data about them by searching open data, full text, landing pages, and your internal sources.</li>
-    <li class="col col--1of3">We analyse those papers against all the terms of your current policy and provide yes/no answers.</li>
-    <li class="col col--1of3">We’ll help you find and communicate how to make them more open.</li>
-  </ul>
-</article>
+    <h3>What will OACheck cost?</h3>
+    <p>We don’t have details yet. As with all OA.Works tools, we plan to provide a free tier that will enable anyone to advance open access. We’ll also provide a paid for tier with flexible pricing for institutions who want more than we can provide freely.</p>
 
-<article>
-  <h2>Q&A</h2>
+    <h3>What data does OACheck use?</h3>
+    <p>OACheck will use all the sources listed on our infrastructure page, manual extraction where required, and your internal sources (e.g finance systems, previously generated lists etc).</p>
 
-  <h3>When will OAcheck be generally available?</h3>
-  <p>We don’t know. OAcheck is already powering work at the Gates Foundation, and we’re working to make it generally available. If you’d like to help accelerate that, get in touch.</p>
+    <h3>We OACheck help even if we don’t have a policy, but still want to help our authors make their work open?</h3>
+    <p>We’re not sure, but we have plans for something that could. Get in touch.</p>
 
-  <h3>What will OACheck cost?</h3>
-  <p>We don’t have details yet. As with all OA.Works tools, we plan to provide a free tier that will enable anyone to advance open access. We’ll also provide a paid for tier with flexible pricing for institutions who want more than we can provide freely.</p>
-
-  <h3>What data does OACheck use?</h3>
-  <p>OACheck will use all the sources listed on our infrastructure page, manual extraction where required, and your internal sources (e.g finance systems, previously generated lists etc).</p>
-
-  <h3>We OACheck help even if we don’t have a policy, but still want to help our authors make their work open?</h3>
-  <p>We’re not sure, but we have plans for something that could. Get in touch.</p>
-
-  <h3>What type of policies will it cover?</h3>
-  <p>Funder, university, and government Open Access policies globally.</p>
+    <h3>What type of policies will it cover?</h3>
+    <p>Funder, university, and government Open Access policies globally.</p>
+  </div>
 </article>
