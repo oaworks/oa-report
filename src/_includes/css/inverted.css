@@ -1,0 +1,14 @@
+/* Page and header are on a black bg */
+
+.inverted {
+  background-color: var(--black);
+  color: var(--white);
+}
+
+.inverted a {
+  color: var(--white);
+}
+
+.inverted .logotype path {
+  fill: var(--white);
+}

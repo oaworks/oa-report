@@ -1,0 +1,44 @@
+.cards,
+.list {
+  padding-bottom: 0;
+}
+
+.cards__header,
+.list__header {
+  padding-top: var(--space-lg);
+}
+
+.cards__header-wrapper,
+.list__header-wrapper {
+  padding-top: var(--space-lg);
+  margin-bottom: var(--space-md);
+  position: sticky;
+  top: 0;
+}
+
+.cards__content,
+.list__content {
+  padding-top: var(--space-md);
+}
+
+.cards a,
+.list a {
+  display: inline-block;
+  text-decoration: none;
+  transition: color .25s;
+}
+
+.cards a:after,
+.list a:after {
+  display: block;
+  width: 100%;
+  height: 1px;
+  transition: width 0.25s;
+  content: '';
+  border-bottom: 1px solid;
+}
+
+.cards a:hover:after,
+.list a:hover:after {
+  width: 0%;
+}

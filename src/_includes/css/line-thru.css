@@ -1,0 +1,20 @@
+.line-thru {
+  margin-bottom: var(--space-xs);
+  position: relative;
+  z-index: 1;
+  color: currentColor;
+}
+
+.line-thru:before {
+  border-top: 1px solid;
+  content: "";
+  margin: 0 auto;
+  position: absolute;
+  top: 50%; left: 0; right: 0; bottom: 0;
+  width: 100%;
+  z-index: -1;
+}
+
+.line-thru__inner {
+  padding-right: var(--space-xs);
+}

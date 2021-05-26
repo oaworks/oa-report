@@ -1,0 +1,25 @@
+{
+  "name": "oa-check",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "npx eleventy --serve"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oaworks/oa-check.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/oaworks/oa-check/issues"
+  },
+  "homepage": "https://github.com/oaworks/oa-check#readme",
+  "dependencies": {
+    "markdown-it": "^12.0.6",
+    "markdown-it-attrs": "^4.0.0",
+    "sal.js": "^0.8.5"
+  }
+}

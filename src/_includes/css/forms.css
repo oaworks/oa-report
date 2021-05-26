@@ -1,0 +1,34 @@
+::placeholder {
+  font-style: italic;
+  font-size: .85rem;
+  color: var(--mid-grey);
+}
+
+label, input, button {
+  display: block;
+  margin-bottom: var(--space-sm);
+}
+
+label {
+  text-transform: uppercase;
+  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 0.045em;
+}
+
+input {
+  padding: var(--space-xs);
+  background-color: transparent;
+  border: 1px solid;
+}
+
+button {
+  padding: var(--space-xs) var(--space-sm);
+  cursor: pointer;
+  border: 1px solid var(--black);
+  background-color: var(--black);
+  color: var(--white);
+  font-family: var(--sans-serif);
+  text-transform: uppercase;
+  letter-spacing: 0.045em;
+}

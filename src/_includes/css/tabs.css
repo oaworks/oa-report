@@ -1,0 +1,29 @@
+.tab {
+  display: block;
+  margin: 0 var(--space-md) var(--space-sm) 0;
+  font-weight: 700;
+  font-size: var(--typescale-6);
+}
+
+.tab a {
+  color: var(--white);
+}
+
+.tab a:after {
+  display:  block;
+  padding-top: var(--space-xs);
+  content: '';
+  height: 1px;
+  width: 0%;
+  transition: all .15s ease-out;
+  border-bottom: 2px solid var(--white);
+}
+
+.tab--active a:after {
+  width: 100%;
+}
+
+.tab:not(.tab--active) a:hover:after {
+  width: 100%;
+  transition: all .15s ease-in;
+}

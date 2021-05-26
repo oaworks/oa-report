@@ -1,0 +1,133 @@
+.header {
+  margin: 0 var(--gutter-negative) var(--gutter) var(--gutter-negative);
+  padding: var(--gutter);
+  z-index: 50;
+  width: 100vw;
+  font-size: var(--typescale-6);
+}
+
+.header__logo {
+  display: block;
+  width: 25%;
+}
+
+.header__menu-wrapper {
+  width: 25%;
+}
+
+.header__logo .logotype {
+  display: block;
+  top: var(--gutter);
+  left: var(--gutter);
+  height: 50px;
+  width: auto;
+}
+
+.header .logotype path {
+  stroke: var(--black);
+  stroke-width: 1px;
+}
+
+.header .logotype path:last-child {
+  animation: flash 4s ease infinite;
+}
+
+.header__featured-items {
+  display: none;
+  margin: auto var(--gutter);
+  width: 50%;
+  padding: 0;
+  line-height: 40px;
+}
+
+.header__featured-items li {
+  display: inline-block;
+}
+
+.header__featured-items a {
+  margin-right: var(--space-sm);
+  padding: var(--space-xs);
+  display: block;
+  background-color: var(--black);
+  color: var(--white);
+}
+
+.header__featured-items li:last-child a {
+  margin-right: 0;
+}
+
+@media only screen and (min-width: 768px) {
+  .header__featured-items {
+    display: flex;
+  }
+}
+
+.header__nav {
+  padding: var(--gutter);
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 10;
+  overflow-y:scroll;
+  height: 100vh;
+  width: 100%;
+  background-color: var(--violet);
+  color: var(--black);
+  transition: transform .5s ease;
+}
+
+@media only screen and (min-width: 768px) {
+  .header__nav {
+    width: 75%;
+  }
+}
+
+@media only screen and (min-width: 1024px) {
+  .header__nav {
+    width: 50%;
+  }
+}
+
+.header__nav ul {
+  margin-top: 0;
+}
+
+.header__nav ul ul {
+  margin-bottom: var(--space-md);
+}
+
+.header__list {
+  margin-bottom: 0;
+  width: 50%;
+}
+
+.header__nav-section {
+  display: block;
+  margin-bottom: var(--space-xs);
+  color: var(--black);
+  text-transform: uppercase;
+  font-weight: 800;
+}
+
+.header__nav-subsection {
+  font-size: var(--typescale-5);
+  color: var(--black);
+  line-height: 2;
+  transition: all .15s ease-in-out;
+}
+
+.header__nav-subsection:hover {
+  font-weight: 700;
+}
+
+.header__nav-subsection:hover:before {
+  display: inline-block;
+}
+
+.header__nav--open {
+  transform: translateX(0%);
+}
+
+.header input::placeholder {
+  color: var(--white-50);
+}

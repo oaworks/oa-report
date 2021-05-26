@@ -1,0 +1,38 @@
+.timeline {
+  margin-left: calc(var(--gutter-negative) * 1.6);
+  padding: 0;
+}
+
+.timeline > li:before {
+  margin: 0;
+  height: var(--space-unit) !important;
+  width: var(--space-unit) !important;
+  background-color: transparent !important;
+}
+
+.timeline > li {
+  display: flex;
+  flex-wrap: wrap;
+  font-weight: 700;
+}
+
+.timeline > li:before {
+  background-color: var(--white) !important;
+  border: 1px solid;
+}
+
+.timeline > li > ul {
+  display: flex;
+  flex-basis: 100%;
+  flex-direction: column;
+  font-weight: 400;
+}
+
+.timeline > li > ul > li {
+  margin-left: calc(var(--space-md) + var(--space-sm));
+  list-style: disc;
+}
+
+.timeline > li > ul > li:before {
+  display: none;
+}

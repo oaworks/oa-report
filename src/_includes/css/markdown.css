@@ -1,0 +1,97 @@
+.markdown {
+  border-top: 1px solid;
+}
+
+.markdown h2:not(:first-child),
+.markdown h3:not(:first-child),
+.markdown h4:not(:first-child),
+.markdown h5:not(:first-child),
+.markdown h6:not(:first-child),
+.markdown .label:not(:first-child) {
+  padding-top: var(--space-md);
+}
+
+.markdown .label + h1,
+.markdown .label + h2,
+.markdown .label + h3,
+.markdown .label + h4,
+.markdown .label + h5 {
+  padding-top: 0;
+}
+
+.markdown ul, ol {
+  padding: 0 0 0 var(--space-xs);
+  margin-bottom: var(--space-md);
+  list-style: none;
+}
+
+.markdown ul li:before {
+  display: inline-block;
+  margin-right: var(--space-xs);
+  margin-bottom: .15em;
+  content: '';
+  box-sizing: border-box;
+  width: .35em;
+  height: .35em;
+  border-radius: 50%;
+}
+
+.markdown ul li:nth-of-type(6n+1):before {
+  background-color: var(--azure);
+}
+
+.markdown ul li:nth-of-type(6n+2):before {
+  background-color: var(--carnation);
+}
+
+.markdown ul li:nth-of-type(6n+3):before {
+  background-color: var(--mango);
+}
+
+.markdown ul li:nth-of-type(6n+4):before {
+  background-color: var(--cyan);
+}
+
+.markdown ul li:nth-of-type(6n+5):before {
+  background-color: var(--violet);
+}
+
+.markdown ul li:nth-of-type(6n+6):before {
+  background-color: var(--chartreuse);
+}
+
+.markdown a {
+  display: inline-block;
+  text-decoration: none;
+  transition: color .25s;
+}
+
+.markdown a:after {
+  display: block;
+  width: 100%;
+  height: 1px;
+  transition: width 0.25s;
+  content: '';
+  border-bottom: 1px solid;
+}
+
+.markdown a:hover:after {
+  width: 0%;
+}
+
+.markdown__header-wrapper {
+  padding-top: var(--space-lg);
+  margin-bottom: var(--space-md);
+  position: sticky;
+  top: 0;
+}
+
+.markdown__content {
+  padding-top: var(--space-lg);
+}
+
+@media only screen and (min-width: 1024px) {
+  .markdown__content {
+    border-left: 1px solid;
+  }
+}

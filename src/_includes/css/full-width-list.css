@@ -1,0 +1,11 @@
+.full-width-list > li {
+  padding: var(--space-md) 0;
+}
+
+.full-width-list > li:not(:last-child) {
+  border-bottom: 1px solid;
+}
+
+.full-width-list ul {
+  margin-bottom: 0;
+}

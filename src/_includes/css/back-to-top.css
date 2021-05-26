@@ -1,0 +1,16 @@
+/* Back-to-top button */
+
+.top {
+  display: none;
+  flex-direction: column;
+  position: fixed;
+  z-index: 5;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  width: var(--space-md);
+  height: var(--space-md);
+  bottom: var(--gutter);
+  right: var(--gutter);
+  background-color: var(--violet);
+}

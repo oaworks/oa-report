@@ -1,0 +1,12 @@
+.homepage__cover {
+  margin: 0 var(--gutter-negative);
+  padding: 0 var(--gutter);
+  overflow-x: hidden;
+  min-height: calc(var(--vh, 1vh) * 100);
+  background: url('../img/bg1.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+.homepage__cover .header {
+  margin-bottom: 0;
+}

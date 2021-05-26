@@ -1,0 +1,23 @@
+.portrait {
+  margin-bottom: var(--space-md);
+  height: auto;
+  width: 100%;
+  align-self: flex-start;
+}
+
+@media only screen and (min-width: 1024px) {
+  .portrait {
+    align-self: center;
+  }
+}
+
+.portrait--circular {
+  margin-bottom: var(--space-md);
+  border-radius: 50%;
+  height: 150px;
+  width: 150px;
+}
+
+.portrait--circular img {
+  border-radius: 50%;
+}

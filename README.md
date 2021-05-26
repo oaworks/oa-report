@@ -1,1 +1,3 @@
-# oa-check
+# OAcheck
+
+One-pager promoting OAcheck.

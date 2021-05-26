@@ -1,0 +1,38 @@
+.overlay {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 45vh;
+}
+
+.overlay__inner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 45vh;
+}
+
+.overlay__text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 45vh;
+  text-align: center;
+}
+
+.overlay__text p {
+  margin: 0;
+  padding: var(--space-xs);
+  background-color: var(--black);
+}
+
+.overlay__inner:hover,
+.overlay__inner:focus,
+.overlay__inner:active {
+
+}

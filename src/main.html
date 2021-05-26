@@ -1,0 +1,45 @@
+---
+permalink: main.css
+layout: null
+eleventyExcludeFromCollections: true
+---
+
+{%- comment -%}FIXME: first include doesn’t work unless it’s repeated twice here. Why??{%- endcomment -%}
+
+{%- capture css -%}
+  {% include "css/fonts.css" %}
+  {% include "css/fonts.css" %}
+  {% include "css/variables.css" %}
+  {% include "css/utilities.css" %}
+  {% include "css/grid.css" %}
+  {% include "css/typography.css" %}
+  {% include "css/general.css" %}
+  {% include "css/inverted.css" %}
+
+  {% include "css/sections.css" %}
+  {% include "css/header.css" %}
+  {% include "css/footer.css" %}
+
+  {% include "css/animations.css" %}
+  {% include "css/back-to-top.css" %}
+  {% include "css/buttons.css" %}
+  {% include "css/cards.css" %}
+  {% include "css/data-file.css" %}
+  {% include "css/forms.css" %}
+  {% include "css/full-width-list.css" %}
+  {% include "css/hero.css" %}
+  {% include "css/labels.css" %}
+  {% include "css/line-thru.css" %}
+  {% include "css/logo.css" %}
+  {% include "css/menu-trigger.css" %}
+  {% include "css/overlay.css" %}
+  {% include "css/portrait.css" %}
+  {% include "css/subnav.css" %}
+  {% include "css/tabs.css" %}
+  {% include "css/timeline.css" %}
+
+  {% include "css/homepage.css" %}
+  {% include "css/markdown.css" %}
+{%- endcapture -%}
+
+{{ css | cssmin | safe }}

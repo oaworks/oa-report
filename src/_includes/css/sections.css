@@ -1,0 +1,9 @@
+.section {
+  margin-left: var(--gutter-negative);
+  margin-right: var(--gutter-negative);
+  padding: var(--gutter);
+}
+
+.section__header {
+  margin-bottom: var(--space-xl);
+}

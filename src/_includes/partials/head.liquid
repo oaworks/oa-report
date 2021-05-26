@@ -1,0 +1,72 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>
+  {%- if page.fileSlug == '' -%}
+    {{ site.name }}: {{ site.tagline_short }}
+  {%- else -%}
+    {{ title }} – {{ site.name }}
+  {%- endif -%}
+</title>
+<meta name="description" content="{% if meta_description %}{{ meta_description }}{% else %}We partner with libraries to build free & open source tools.{% endif %}">
+{% if noindex %}<meta name="robots" content="noindex">{% endif %}
+
+<!--
+MMMWKd:'.....,lkXWMMMMMMMMMMMO,..oNMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+MWOl,...........;dXWMMMMMMMMKc...'kWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+Xo.......'''......,kWMMMMMMXc.....,kWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+c.....,d0XXKkl.....'kWMMMMXl.......,OWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+.....;0MMMMMMWx.....:KMMMNo.........;0WMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+.....oWMMMMMMMK;....,0MMNd.....c;....:0MMMMMMMWNNNNWWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+.....cXMMMMMMWk,....;KMNd.....c0x'....:KMMMMWXK00000KNWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+;.....c0NWMWXx,.....dNWx'.....','......cXMMWX000000000NWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+0:......;cc:,......oXWk'................lXMNK000000000XWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+MXd;.............cONWk,.....cdxxddo,.....lXWX00000000KNMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+MMWXOoc;,''',:lx0WMMXd:::::dNMMMMMWOc:;::c0WWNXKKKKKXWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMMMWNXK0KXNWMMMMMWNNNNWWWMMMWWWWWNNWWWWWMMWNXKKKXWMMMMMMMMMMWWWWWWWWWWWMMMMMMMMMMWWWWWWMMMMMMWWWWWWWMMMMMMWNXXXXNWMMM
+MMMMMMMWOc::::c0MMMM0l::cOWMMM0l::::ckWMMWXOoc;,''',:lxKWMMMMMNd::::::::::lokKWMMMMKl::::xNMMMXx:::::o0WMMNOo:,'''';:lkX
+MMMMMMMMK:.....cXMMXc....:KMMNo.....;0MWKd,.............cOWMMMX:.............'l0WMM0,....cXMNk;.....l0WMW0:...........'O
+MMMMMMMMWk'....'kWWx'.....dWMO,.....xWWO;......;cc:'......oNMMXc.....',,,......;0MM0,....cX0c.....:ONMMMK:.....,cll:,.'k
+MMMMMMMMMNo.....cXK:......,0Nl.....lXM0;.....c0NWWWXx,.....dNWX:....,ONNX0c.....oWM0,....;c'....;xNMMMMM0,.....oKNWWN0OX
+MMMMMMMMMMK:....'do........cx,....;0MWd.....lXMMMMMMWk'....:xKX:....'xXXKO:.....xWM0,..........,OWMMMMMMXl......';ldOKWM
+MMMMMMMMMMWk'.........;;..........xWMWo.....dWMMMMMMM0;....;d0X:......'''.....'dXMM0,...........;OWMMMMMMXo,.........'c0
+MMMMMMMMMMMNo........,O0;........cXMMWx.....:KMMMMMMNd.....cOXX:.....'......:xKWMMM0,......'.....'dNMMMMWNNXOxoc;......,
+MMMMMMMMMMMMK:.......dWWx'......,0MMMMXc.....;d0XXKkc.....'kWWX:....,xo.....;OWMMMM0,....,kXx,.....c0WMMKlcdOKXX0o......
+MMMMMMMMMMMMWk'.....cXMMNl......dWMMMMMXl.......''.......;kWMMX:....;0Wk,.....oXMMM0,....cXMW0:.....,kNM0,....,,,......;
+MMMMMMMMMMMMMNo....,OMMMM0;....cXMMMMMMMWOl,...........:xXMMMMX:....,0MWKc.....;kNMO,....cXMMMKl......oXKl'..........,oK
+MMMMMMMMMMMMMM0c,,,dNMMMMWx;,,:OWMMMMMMMMMW0d;'.....,lkXMMMMMMXo,,,,lKMMMKl,,,,,l0MKc,,,,oNMMMMXo,,,,,;kNNOo;......;dKWM
+-->
+
+{% comment %}Preload our fonts Wremena + Inter{% endcomment %}
+<link rel="preload" href="/fonts/WremenaRegular.woff" as="font" crossorigin>
+<link rel="preload" href="/fonts/WremenaBold.woff" as="font" crossorigin>
+<link rel="preload" href="/fonts/Inter.woff2" as="font" crossorigin>
+
+<link rel="stylesheet" href="/sal.css">
+<link rel="stylesheet" href="/main.css">
+
+<link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png">
+<link rel="manifest" href="/favicons/site.webmanifest">
+<link rel="mask-icon" href="/favicons/safari-pinned-tab.svg" color="#25201E">
+<link rel="shortcut icon" href="/favicons/favicon.ico">
+<meta name="msapplication-TileColor" content="#25201E">
+<meta name="msapplication-config" content="/favicons/browserconfig.xml">
+<meta name="theme-color" content="#25201E">
+
+<meta property="og:url" content="{{ site.base_url }}/{{ page.fileSlug }}">
+<meta property="og:type" content="website">
+<meta property="og:title" content="{% if page.fileSlug == '' %}Powerfully simple open access tools{% else %}{{ title }}{% endif %}">
+<meta property="og:image" content="{{ site.base_url }}/img/og_img.gif">
+<meta property="og:image:alt" content="White OA.Works logo on a black background; the period in the logo is a large, yellow dot">
+<meta property="og:description" content="{% if meta_description %}{{ meta_description }}{% else %}We partner with libraries to build free & open source tools.{% endif %}">
+<meta property="og:site_name" content="{{ site.name }}">
+<meta property="og:locale" content="en_US">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="{{ site.twitter }}">
+<meta name="twitter:url" content="{{ site.base_url }}/{{ page.fileSlug }}">
+<meta name="twitter:title" content="{% if page.fileSlug == '' %}{{ site.name }}: {{ site.tagline_short }}{% else %}{{ title }}{% endif %}">
+<meta name="twitter:description" content="{% if meta_description %}{{ meta_description }}{% else %}We partner with libraries to build free & open source tools.{% endif %}">
+<meta name="twitter:image" content="{{ site.base_url }}/img/twitter_img.gif">
+<meta name="twitter:image:alt" content="White OA.Works logo on a black background; the period in the logo is a large, yellow dot">
