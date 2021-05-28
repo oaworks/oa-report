@@ -1,0 +1,71 @@
+:root {
+  --gutter:           2.5vw;
+  --gutter-negative:  -2.5vw;
+}
+
+section, article {
+  padding: var(--gutter);
+}
+
+hr {
+  width: 100vw;
+  margin: 0 var(--gutter-negative);
+}
+
+ol, ul {
+  list-style: none;
+  padding: 0;
+}
+
+p, ol, ul {
+  margin: 0 0 var(--space-xl) 0;
+}
+
+.oacheck__header {
+  padding: 0 var(--gutter);
+}
+
+.oacheck__video-text, video {
+  position: fixed;
+  width: 100vw;
+  max-width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  object-fit: cover;
+  background-color: var(--black-50);
+  font-weight: 300;
+}
+
+.oacheck__header h1 {
+  font-size: 3rem;
+  font-weight: 900;
+}
+
+.oacheck__content {
+  position: relative;
+  margin-top: -100vh;
+}
+
+.oacheck__content:before {
+  content: "";
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  left: 0;
+  top: -100vh;
+}
+
+.oacheck__form {
+  position: sticky;
+}
+
+.oacheck__form > div {
+  flex-direction: row-reverse;
+}
+
+.oacheck__how {
+  margin-left: var(--gutter-negative);
+  margin-right: var(--gutter-negative);
+  background: var(--azure);
+}
