@@ -3,145 +3,147 @@ layout: "layouts/base.liquid"
 meta_description: "OAreport is an open-source tool that analyzes papers covered by your Open Access policy to help you make them open."
 ---
 
-<div class="row">
-  <div class="col col--1of2" style="background: blue; min-height: 100vh;">
+<div class="row cover">
+  <div class="col col--1of2 cover__background" style="background: blue; min-height: 100vh;">
     <section class="section flex-space-between flex-col" style="height: 100%;">
       <h1 style="font-family: 'Sen', sans-serif; letter-spacing: -.025em;">
         <span style="margin-right: .075em; letter-spacing: -.095em;">OA</span>report
       </h1>
     </section>
   </div>
-  <div class="col col--1of2 flex-center flex-col bg-white" style="background: pink;">
+  <div class="col col--1of2 flex-center flex-col bg-white cover__tagline">
     <section class="section">
       <p class="label">OAreport</p>
       <h2 class="type-1 font-serif">Put OA policies into practice in minutes, not months.</h2>
-      <p class="type-1"><a href="#start">↓</a></p>
+      <p class="type-1"><a href="#content">↓</a></p>
     </section>
   </div>
 </div>
 
-<div style="min-height: 100vh;" id="start">
-  <section class="section">
-    <div class="row">
-      <div class="col col--5of6">
-        <h2 class="sr-only">What is this?</h2>
-        <p class="type-1" style="font-weight: 200; letter-spacing: -.025em;">Writing an Open Access policy is hard, implementing it is harder.</p>
-        <p class="type-1" style="font-weight: 200; letter-spacing: -.025em;">OAreport translates policy to impact by helping libraries and funders:</p>
-      </div>
-    </div>
-
-    <ul class="unstyled-list row">
-      <li class="col col--1of3">
-        <h3 class="label border-top" style="padding-top: 1em;"><span class="type-3">Discover</span></h3>
-        <p class="type-5">papers covered by your policy</p>
-      </li>
-      <li class="col col--1of3">
-        <h3 class="label border-top" style="padding-top: 1em;"><span class="type-3">Analyze</span></h3>
-        <p class="type-5">if and how papers comply</p>
-      </li>
-      <li class="col col--1of3">
-        <h3 class="label border-top" style="padding-top: 1em;"><span class="type-3">Unlock</span></h3>
-        <p class="type-5">individual papers and systemic changes</p>
-      </li>
-    </ul>
-
-    <div class="row">
-      <div class="col col--1of2">
-        <h2 class="label"><span class="type-4">Our funder</span></h2>
-        <p class="type-3" style="font-weight: 300; letter-spacing: -.015em;">Built in partnership with the <a href="#" target="_blank" rel="noopener" style="border-bottom: 1px solid;">Bill & Melinda Gates Foundation</a>.</p>
-      </div>
-      <div class="col col--1of2">
-
-      </div>
-    </div>
-  </section>
-</div>
-
-<div class="row row--centered bg-white" style="background: aquamarine;">
-  <div class="col col--1of3 flex-center flex-col align-center">
-    <aside class="section">
-      <h2 class="label"><span class="type-3">Stay up to date</span></h2>
-      <p>We’re working to make OAreport available to funders, and libraries. Sign up here for updates.</p>
-      <form>
-        <label for="email">Your email</label>
-        <div class="flex">
-          <input type="email" id="email" placeholder="you@email.com"/>
-          <button>Sign up</button>
-        </div>
-      </form>
-    </aside>
-  </div>
-</div>
-
-<div style="min-height: 50vh;">
-  <section class="section">
-    <h2 class="label border-top" style="padding-top: 1em;"><span class="type-4">How OA<span style="text-transform: lowercase;"">report</span> works for you</span></h2>
-    <ol class="unstyled-list row">
-      <li class="col col--1of3">
-        <div class="type-1" style="font-weight: 900; font-size: 4rem;">1</div>
-        <p class="type-3" style="font-weight: 300;">Tell us what institution you’re from.</p>
-      </li>
-      <li class="col col--1of3">
-        <div class="type-1" style="font-weight: 900; font-size: 4rem;">2</div>
-        <p class="type-3" style="font-weight: 300;">We’ll provide a custom report.</p>
-      </li>
-      <li class="col col--1of3">
-        <div class="type-1" style="font-weight: 900; font-size: 4rem;">3</div>
-        <p class="type-3" style="font-weight: 300;">You use it to make papers more open.</p>
-      </li>
-    </ol>
-
-    <h2 class="label border-top" style="padding-top: 1em;"><span class="type-4">How the system works</span></h2>
-    <ol class="unstyled-list row">
-      <li class="col col--1of3">
-        <p class="type-5" style="font-weight: 300;">We discover your papers and data using open scholarly metadata, targeted text and data mining, and an institution’s internal data sources.</p>
-      </li>
-      <li class="col col--1of3">
-        <p class="type-5" style="font-weight: 300;">We transparently analyse those papers against all the terms of your current policy, or custom criteria, to provide detailed statistics and key insights.</p>
-      </li>
-      <li class="col col--1of3">
-        <p class="type-5" style="font-weight: 300;">We help you unlock individual papers as they’re published by making outreach a one-click process, and help build evidence for systemic changes.</p>
-      </li>
-    </ol>
-  </section>
-</div>
-
-<div class="row row--centered bg-white" style="background: violet;">
-  <div class="col">
+<div id="content">
+  <div style="min-height: 100vh;">
     <section class="section">
-      <h2 class="label border-top" style="padding-top: 1em; border-width: 3px;"><span class="type-1">Q&A</span></h2>
-      <dl class="type-3" style="font-weight: 300; line-height: 1.25;">
-        <dt class="border-top" style="margin-bottom: 1em; padding-top: 1em; font-weight: 700;">When will OAcheck be generally available?</dt>
-        <dd>We don’t know. OAcheck is already powering work at the Gates Foundation, and we’re working to make it generally available. If you’d like to help accelerate that, get in touch.</dd>
+      <div class="row">
+        <div class="col col--5of6">
+          <h2 class="sr-only">What is this?</h2>
+          <p class="type-1" style="font-weight: 200; letter-spacing: -.025em;">Writing an Open Access policy is hard, implementing it is harder.</p>
+          <p class="type-1" style="font-weight: 200; letter-spacing: -.025em;">OAreport translates policy to impact by helping libraries and funders:</p>
+        </div>
+      </div>
 
-        <dt class="border-top" style="margin-bottom: 1em; padding-top: 1em; font-weight: 700;">What will OAreport cost?</dt>
-        <dd>We don’t have details yet. As with all OA.Works tools, we plan to provide a free tier that will enable anyone to advance open access. We’ll also provide a paid for tier with flexible pricing for institutions who want more than we can provide freely.</dd>
+      <ul class="unstyled-list row">
+        <li class="col col--1of3">
+          <h3 class="label border-top" style="padding-top: 1em;"><span class="type-3">Discover</span></h3>
+          <p class="type-5">papers covered by your policy</p>
+        </li>
+        <li class="col col--1of3">
+          <h3 class="label border-top" style="padding-top: 1em;"><span class="type-3">Analyze</span></h3>
+          <p class="type-5">if and how papers comply</p>
+        </li>
+        <li class="col col--1of3">
+          <h3 class="label border-top" style="padding-top: 1em;"><span class="type-3">Unlock</span></h3>
+          <p class="type-5">individual papers and systemic changes</p>
+        </li>
+      </ul>
 
-        <dt class="border-top" style="margin-bottom: 1em; padding-top: 1em; font-weight: 700;">What data does OAreport use?</dt>
-        <dd>OAreport will use all the sources listed on our infrastructure page, manual extraction where required, and your internal sources (e.g finance systems, previously generated lists etc).</dd>
+      <div class="row">
+        <div class="col col--1of2">
+          <h2 class="label"><span class="type-4">Our funder</span></h2>
+          <p class="type-3" style="font-weight: 300; letter-spacing: -.015em;">Built in partnership with the <a href="#" target="_blank" rel="noopener" style="border-bottom: 1px solid;">Bill & Melinda Gates Foundation</a>.</p>
+        </div>
+        <div class="col col--1of2">
 
-        <dt class="border-top" style="margin-bottom: 1em; padding-top: 1em; font-weight: 700;">Will OAreport help even if we don’t have a policy, but still want to help our authors make their work open?</dt>
-        <dd>We’re not sure, but we have plans for something that could. Get in touch.</dd>
-
-        <dt class="border-top" style="margin-bottom: 1em; padding-top: 1em; font-weight: 700;">What type of policies will it cover?</dt>
-        <dd>Funder, university, and government Open Access policies globally.</dd>
-      </dl>
+        </div>
+      </div>
     </section>
   </div>
-</div>
 
-<footer class="section bg-black">
-  <div class="row">
-    <div class="col col--1of2">
-      <h2 class="label"><span class="type-6">Developed by</span></h2>
-
-    </div>
-    <div class="col col--1of2">
-      <h3 class="label"><span class="type-6">About us</span></h3>
-      <p class="type-5" style="font-weight: 300;">OA.Works is a non-profit building tools so that open access is easy and equitable.</p>
-      <div class="flex-space-between flex-center">
-        <a href="https://oa.works" target="_blank" rel="noopener" class="button">See our website</a> <a href="mailto:hello@oa.works">Contact us</a>
-      </div>
+  <div class="row row--centered bg-white" style="background: aquamarine;">
+    <div class="col col--1of3 flex-center flex-col align-center">
+      <aside class="section">
+        <h2 class="label"><span class="type-3">Stay up to date</span></h2>
+        <p>We’re working to make OAreport available to funders, and libraries. Sign up here for updates.</p>
+        <form>
+          <label for="email">Your email</label>
+          <div class="flex">
+            <input type="email" id="email" placeholder="you@email.com"/>
+            <button>Sign up</button>
+          </div>
+        </form>
+      </aside>
     </div>
   </div>
-</footer>
+
+  <div style="min-height: 50vh;">
+    <section class="section">
+      <h2 class="label border-top" style="padding-top: 1em;"><span class="type-4">How OA<span style="text-transform: lowercase;"">report</span> works for you</span></h2>
+      <ol class="unstyled-list row">
+        <li class="col col--1of3">
+          <div class="type-1" style="font-weight: 900; font-size: 4rem;">1</div>
+          <p class="type-3" style="font-weight: 300;">Tell us what institution you’re from.</p>
+        </li>
+        <li class="col col--1of3">
+          <div class="type-1" style="font-weight: 900; font-size: 4rem;">2</div>
+          <p class="type-3" style="font-weight: 300;">We’ll provide a custom report.</p>
+        </li>
+        <li class="col col--1of3">
+          <div class="type-1" style="font-weight: 900; font-size: 4rem;">3</div>
+          <p class="type-3" style="font-weight: 300;">You use it to make papers more open.</p>
+        </li>
+      </ol>
+
+      <h2 class="label border-top" style="padding-top: 1em;"><span class="type-4">How the system works</span></h2>
+      <ol class="unstyled-list row">
+        <li class="col col--1of3">
+          <p class="type-5" style="font-weight: 300;">We discover your papers and data using open scholarly metadata, targeted text and data mining, and an institution’s internal data sources.</p>
+        </li>
+        <li class="col col--1of3">
+          <p class="type-5" style="font-weight: 300;">We transparently analyse those papers against all the terms of your current policy, or custom criteria, to provide detailed statistics and key insights.</p>
+        </li>
+        <li class="col col--1of3">
+          <p class="type-5" style="font-weight: 300;">We help you unlock individual papers as they’re published by making outreach a one-click process, and help build evidence for systemic changes.</p>
+        </li>
+      </ol>
+    </section>
+  </div>
+
+  <div class="row row--centered bg-white" style="background: violet;">
+    <div class="col">
+      <section class="section">
+        <h2 class="label border-top" style="padding-top: 1em; border-width: 3px;"><span class="type-1">Q&A</span></h2>
+        <dl class="type-3" style="font-weight: 300; line-height: 1.25;">
+          <dt class="border-top" style="margin-bottom: 1em; padding-top: 1em; font-weight: 700;">When will OAcheck be generally available?</dt>
+          <dd>We don’t know. OAcheck is already powering work at the Gates Foundation, and we’re working to make it generally available. If you’d like to help accelerate that, get in touch.</dd>
+
+          <dt class="border-top" style="margin-bottom: 1em; padding-top: 1em; font-weight: 700;">What will OAreport cost?</dt>
+          <dd>We don’t have details yet. As with all OA.Works tools, we plan to provide a free tier that will enable anyone to advance open access. We’ll also provide a paid for tier with flexible pricing for institutions who want more than we can provide freely.</dd>
+
+          <dt class="border-top" style="margin-bottom: 1em; padding-top: 1em; font-weight: 700;">What data does OAreport use?</dt>
+          <dd>OAreport will use all the sources listed on our infrastructure page, manual extraction where required, and your internal sources (e.g finance systems, previously generated lists etc).</dd>
+
+          <dt class="border-top" style="margin-bottom: 1em; padding-top: 1em; font-weight: 700;">Will OAreport help even if we don’t have a policy, but still want to help our authors make their work open?</dt>
+          <dd>We’re not sure, but we have plans for something that could. Get in touch.</dd>
+
+          <dt class="border-top" style="margin-bottom: 1em; padding-top: 1em; font-weight: 700;">What type of policies will it cover?</dt>
+          <dd>Funder, university, and government Open Access policies globally.</dd>
+        </dl>
+      </section>
+    </div>
+  </div>
+
+  <footer class="section bg-black">
+    <div class="row">
+      <div class="col col--1of2">
+        <h2 class="label"><span class="type-6">Developed by</span></h2>
+
+      </div>
+      <div class="col col--1of2">
+        <h3 class="label"><span class="type-6">About us</span></h3>
+        <p class="type-5" style="font-weight: 300;">OA.Works is a non-profit building tools so that open access is easy and equitable.</p>
+        <div class="flex-space-between flex-center">
+          <a href="https://oa.works" target="_blank" rel="noopener" class="button">See our website</a> <a href="mailto:hello@oa.works">Contact us</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>

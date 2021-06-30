@@ -39,6 +39,23 @@ html {
   }
 }
 
+.cover__tagline {
+  background: pink;
+  min-height: 100vh;
+}
+
 @media only screen and (max-width: 767px) {
-  
+  .cover__background {
+    position: absolute;
+    width: 100%;
+  }
+
+  .cover__tagline {
+    z-index: 1;
+    background: transparent;
+  }
+
+  #content {
+    position: relative;
+  }
 }
