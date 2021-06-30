@@ -3,6 +3,10 @@
   --gutter-negative:  -2.5vw;
 }
 
+html {
+  color: var(--black);
+}
+
 section, article {
   padding: var(--gutter);
 }
@@ -33,7 +37,6 @@ p, ol, ul {
   top: 0;
   left: 0;
   object-fit: cover;
-  background-color: var(--black-50);
   font-weight: 300;
 }
 
@@ -67,5 +70,8 @@ p, ol, ul {
 .oacheck__how {
   margin-left: var(--gutter-negative);
   margin-right: var(--gutter-negative);
+}
+
+.oacheck__qa {
   background: var(--azure);
 }
