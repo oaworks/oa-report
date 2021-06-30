@@ -39,7 +39,7 @@
 }
 
 .menu-trigger--open .menu-trigger__icon {
-  background: var(--black);
+  background: var(--violet);
 }
 
 .menu-trigger--open .menu-trigger__icon:first-child {

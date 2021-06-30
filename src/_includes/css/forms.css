@@ -20,6 +20,8 @@ input {
   padding: var(--space-xs);
   background-color: transparent;
   border: 1px solid;
+  font-size: var(--typescale-5);
+  font-family: var(--sans-serif);
 }
 
 button {

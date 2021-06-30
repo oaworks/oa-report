@@ -1,5 +1,5 @@
 .card-wrapper {
-  padding-bottom: var(--gutter);
+  padding-bottom: calc(2 * var(--gutter));
 }
 
 @media only screen and (max-width: 1023px) {

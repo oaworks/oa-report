@@ -4,6 +4,22 @@
   padding: var(--gutter);
 }
 
+@media only screen and (min-width: 768px) {
+  .section {
+    padding: calc(3 * var(--gutter)) calc(4 * var(--gutter));
+  }
+}
+
 .section__header {
   margin-bottom: var(--space-xl);
+}
+
+.section--horizontal {
+  padding: 0;
+}
+
+@media only screen and (min-width: 768px) {
+  .section--horizontal  {
+    padding: 0 calc(var(--gutter));
+  }
 }

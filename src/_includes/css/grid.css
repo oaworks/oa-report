@@ -1,6 +1,7 @@
 /* Grid: to be used for general layout only */
 
 body {
+  padding: 0 var(--gutter);
   margin: 0 auto;
   max-width: 100%;
 }
