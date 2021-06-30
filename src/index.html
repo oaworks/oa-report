@@ -11,7 +11,7 @@ meta_description: "OAreport is an open-source tool that analyzes papers covered 
       </h1>
     </section>
   </div>
-  <div class="col col--1of2 flex-center flex-col bg-white cover__tagline">
+  <div class="col col--1of2 flex-center flex-col bg-white gradient cover__tagline">
     <section class="section">
       <p class="label">OAreport</p>
       <h2 class="type-1 font-serif">Put OA policies into practice in minutes, not months.</h2>
@@ -20,7 +20,7 @@ meta_description: "OAreport is an open-source tool that analyzes papers covered 
   </div>
 </div>
 
-<div id="content">
+<div class="bg-black" id="content">
   <div style="min-height: 100vh;">
     <section class="section">
       <div class="row">
@@ -46,33 +46,33 @@ meta_description: "OAreport is an open-source tool that analyzes papers covered 
         </li>
       </ul>
 
+      <h2 class="label">Our funder</h2>
       <div class="row">
         <div class="col col--1of2">
-          <h2 class="label"><span class="type-4">Our funder</span></h2>
-          <p class="type-3" style="font-weight: 300; letter-spacing: -.015em;">Built in partnership with the <a href="#" target="_blank" rel="noopener" style="border-bottom: 1px solid;">Bill & Melinda Gates Foundation</a>.</p>
+          <p class="type-4" style="font-weight: 300;">Built in partnership with the <a href="https://www.gatesfoundation.org/" target="_blank" rel="noopener" style="border-bottom: 1px solid;">Bill & Melinda Gates Foundation</a>.</p>
         </div>
         <div class="col col--1of2">
-
+          <div style="padding: 0 5rem 5rem 5rem;">
+            <a href="https://www.gatesfoundation.org/" target="_blank" rel="noopener" style="display: block;">{% include 'svg/bmgf.svg' %}</a>
+          </div>
         </div>
       </div>
     </section>
   </div>
 
-  <div class="row row--centered bg-white" style="background: aquamarine;">
+  <aside class="row row--centered bg-white section gradient">
     <div class="col col--1of3 flex-center flex-col align-center">
-      <aside class="section">
-        <h2 class="label"><span class="type-3">Stay up to date</span></h2>
-        <p>We’re working to make OAreport available to funders, and libraries. Sign up here for updates.</p>
-        <form>
-          <label for="email">Your email</label>
-          <div class="flex">
-            <input type="email" id="email" placeholder="you@email.com"/>
-            <button>Sign up</button>
-          </div>
-        </form>
-      </aside>
+      <h2 class="label"><span class="type-3">Stay up to date</span></h2>
+      <p class="type-5">We’re working to make OAreport available to funders, and libraries. Sign up here for updates.</p>
+      <form>
+        <label for="email">Your email</label>
+        <div class="flex" style="width: 100%;">
+          <input type="email" id="email" style="width: 66.6666%;"/>
+          <button style="width: 33.3333%">Sign up</button>
+        </div>
+      </form>
     </div>
-  </div>
+  </aside>
 
   <div style="min-height: 50vh;">
     <section class="section">
@@ -107,7 +107,7 @@ meta_description: "OAreport is an open-source tool that analyzes papers covered 
     </section>
   </div>
 
-  <div class="row row--centered bg-white" style="background: violet;">
+  <div class="row row--centered bg-white gradient">
     <div class="col">
       <section class="section">
         <h2 class="label border-top" style="padding-top: 1em; border-width: 3px;"><span class="type-1">Q&A</span></h2>
@@ -135,7 +135,9 @@ meta_description: "OAreport is an open-source tool that analyzes papers covered 
     <div class="row">
       <div class="col col--1of2">
         <h2 class="label"><span class="type-6">Developed by</span></h2>
-
+        <div style="padding: 0 5rem 5rem 0;">
+          {% include 'svg/logotype.svg' %}
+        </div>
       </div>
       <div class="col col--1of2">
         <h3 class="label"><span class="type-6">About us</span></h3>
