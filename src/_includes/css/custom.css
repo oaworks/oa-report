@@ -39,6 +39,12 @@ html {
   }
 }
 
+.app-name {
+  z-index: 2;
+  font-family: 'Sen', sans-serif;
+  letter-spacing: -.025em;
+}
+
 .cover__tagline {
   background: pink;
   min-height: 100vh;
