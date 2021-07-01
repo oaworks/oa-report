@@ -20,8 +20,25 @@
   font-family: var(--sans-serif);
 }
 
-.weight-800 {
-  font-weight: 800;
+.fw-200 {
+  font-weight: 200;
+  letter-spacing: -.025em;
+}
+
+.fw-300 {
+  font-weight: 300;
+}
+
+.fw-700 {
+  font-weight: 700;
+}
+
+.fw-900 {
+  font-weight: 900;
+}
+
+.block-link {
+  display: block;
 }
 
 .type-1 {
@@ -70,8 +87,16 @@
   }
 }
 
+.border-bottom {
+  border-bottom: 1px solid;
+}
+
 .border-top {
   border-top: 1px solid;
+}
+
+.border-top-thick {
+  border-top: 3px solid;
 }
 
 .bg-white {
@@ -105,8 +130,20 @@
   color: var(--white);
 }
 
+.padding-top {
+  padding-top: 1em;
+}
+
 .no-margin {
   margin: 0;
+}
+
+.margin-bottom {
+  margin-bottom: 1em;
+}
+
+.margin-bottom-xl {
+  margin-bottom: var(--space-xl);
 }
 
 .blend-difference {
