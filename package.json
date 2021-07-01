@@ -2,7 +2,7 @@
   "name": "oa-check",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": ".eleventy.js",
   "scripts": {
     "start": "npx eleventy --serve"
   },
@@ -20,6 +20,13 @@
   "dependencies": {
     "markdown-it": "^12.0.6",
     "markdown-it-attrs": "^4.0.0",
+    "normalize.css": "^8.0.1",
     "sal.js": "^0.8.5"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^0.12.1",
+    "@11ty/eleventy-cache-assets": "^2.1.0",
+    "eleventy-plugin-lazyimages": "^2.1.0",
+    "npm-run-all": "^4.1.5"
   }
 }
