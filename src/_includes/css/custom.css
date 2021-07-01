@@ -3,6 +3,7 @@
   --gutter-negative: -6vw;
   --primary-colour: pink;
   --primary-colour-rgb: 255, 192, 203;
+  --sal-duration: 400ms;
 }
 
 html {
