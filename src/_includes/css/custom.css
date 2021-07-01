@@ -41,8 +41,45 @@ html {
   }
 }
 
+.fw-200 {
+  font-weight: 200;
+  letter-spacing: -.025em;
+}
+
+.fw-300 {
+  font-weight: 300;
+}
+
+.fw-700 {
+  font-weight: 700;
+}
+
+.fw-900 {
+  font-weight: 900;
+}
+
+.block-link {
+  display: block;
+}
+
+.padding-top {
+  padding-top: 1em;
+}
+
+.margin-bottom {
+  margin-bottom: 1em;
+}
+
+.margin-bottom-xl {
+  margin-bottom: var(--space-xl);
+}
+
 .border-bottom {
   border-bottom: 1px solid;
+}
+
+.border-top-thick {
+  border-top: 3px solid;
 }
 
 .colour-block {
@@ -60,6 +97,11 @@ html {
   -webkit-background-clip:text;
   color: rgba(255, 255, 255, 1);
   transition: all .25s ease-in-out;
+}
+
+.app-name__oa {
+  margin-right: .075em;
+  letter-spacing: -.095em;
 }
 
 .app-name:hover {
