@@ -79,3 +79,7 @@ hr {
 dd {
   margin: 0 0 var(--space-md) 0;
 }
+
+summary {
+  cursor: pointer;
+}
