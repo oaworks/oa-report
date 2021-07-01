@@ -1,6 +1,7 @@
 {
   "name": "OAreport",
-  "base_url": "https://festive-yonath-c74a55.netlify.app",
+  "tagline": "Put OA policies into practice in minutes, not months.",
+  "base_url": "https://oareport.netlify.app",
   "twitter": "OA_Works",
   "facebook": "oadotworks",
   "github": "oaworks",
