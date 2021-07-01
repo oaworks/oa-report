@@ -11,6 +11,8 @@
 :root {
   --gutter: 6vw;
   --gutter-negative: -6vw;
+  --primary-colour: pink;
+  --primary-colour-rgb: 255, 192, 203;
 }
 
 html {
@@ -39,12 +41,12 @@ html {
   }
 }
 
-.gradient {
-  background-color: pink;
-}
-
 .border-bottom {
   border-bottom: 1px solid;
+}
+
+.colour-block {
+  background-color: var(--primary-colour);
 }
 
 .app-name {
@@ -52,7 +54,7 @@ html {
   font-family: 'Sen', sans-serif;
   letter-spacing: -.025em;
 
-  background: linear-gradient(to right, var(--violet),var(--azure),  var(--cyan));
+  background: linear-gradient(to right, var(--primary-colour), var(--white));
   background-size: 200% 200%;
   background-clip: text;
   -webkit-background-clip:text;
@@ -84,15 +86,25 @@ html {
   margin-top: var(--space-sm);
   margin-bottom: var(--space-sm);
   border-radius: 5px;
-  border: 3px solid;
+  border: 1px solid;
 }
 
 #video {
+  margin-left: var(--gutter-negative);
   position: fixed;
   transform: scaleX(-1);
 }
 
-@media only screen and (max-width: 767px) {
+@media only screen and (max-width: 1023px) {
+  .cover .app-name {
+    color: var(--black);
+    text-align: center;
+  }
+
+  .cover__tagline .label {
+    display: none;
+  }
+
   .cover__background {
     position: absolute;
     width: 100%;
@@ -100,9 +112,19 @@ html {
 
   .cover__tagline {
     z-index: 1;
+    background-color: rgba(var(--primary-colour-rgb), 0.75);
   }
 
   .content {
     position: relative;
+  }
+}
+
+@media only screen and (min-width: 768px) and (max-width: 1023px) {
+  .col--1of2,
+  .col--2of4,
+  .col--3of6 {
+    flex-basis: 100%;
+    max-width: 100%;
   }
 }
