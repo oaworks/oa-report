@@ -10,8 +10,8 @@ meta_description: "OAreport is an open-source tool that analyzes papers covered 
 <div class="row cover">
   <div class="col col--1of2 cover__background">
     <section class="section flex-space-between flex-col">
-      <h1 class="app-name">
-        <span class="app-name__oa">OA</span>report
+      <h1>
+        {% include 'partials/app-name.liquid' %}
       </h1>
     </section>
   </div>
@@ -30,28 +30,34 @@ meta_description: "OAreport is an open-source tool that analyzes papers covered 
       <div class="col col--5of6">
         <h2 class="sr-only">What is this?</h2>
         <p class="type-1 fw-200">Writing an Open Access policy is hard, implementing it is harder.</p>
-        <p class="type-1 fw-200"><span class="app-name"><span class="app-name__oa">OA</span>report</span> translates policy to impact by helping libraries and funders:</p>
+        <p class="type-1 fw-200">{% include 'partials/app-name.liquid' %} translates policy to impact by helping libraries and funders:</p>
       </div>
     </div>
 
     <ul class="unstyled-list row row--centered">
       <li class="col col--1of3 flex-space-between flex-col" data-sal="slide-up" data-sal-delay="50">
         <h3 class="label border-top padding-top"><span class="type-3">Discover</span></h3>
-        <p class="type-3 no-margin fw-200">papers covered by your policy</p>
-        <div class="illus">{% include 'svg/system-1.svg' %}</div>
-        <p class="type-5 fw-300">We discover your papers and data using open scholarly metadata, targeted text and data mining, and an institution’s internal data sources.</p>
+        <p class="type-3 no-margin fw-300">papers covered by your policy</p>
+        <div>
+          <div class="illus">{% include 'svg/system-1.svg' %}</div>
+          <p class="type-5 fw-300">We discover your papers and data using open scholarly metadata, targeted text and data mining, and an institution’s internal data sources.</p>
+        </div>
       </li>
       <li class="col col--1of3 flex-space-between flex-col" data-sal="slide-up" data-sal-delay="100">
         <h3 class="label border-top padding-top"><span class="type-3">Analyze</span></h3>
-        <p class="type-3 no-margin fw-200">if and how papers comply</p>
-        <div class="illus">{% include 'svg/system-2.svg' %}</div>
-        <p class="type-5 fw-300">We transparently analyse those papers against all the terms of your current policy, or custom criteria, to provide detailed statistics and key insights.</p>
+        <p class="type-3 no-margin fw-300">if and how papers comply</p>
+        <div>
+          <div class="illus">{% include 'svg/system-2.svg' %}</div>
+          <p class="type-5 fw-300">We transparently analyse those papers against all the terms of your current policy, or custom criteria, to provide detailed statistics and key insights.</p>
+        </div>
       </li>
       <li class="col col--1of3 flex-space-between flex-col" data-sal="slide-up" data-sal-delay="150">
         <h3 class="label border-top padding-top"><span class="type-3">Unlock</span></h3>
-        <p class="type-3 no-margin fw-200">individual papers and systemic changes</p>
-        <div class="illus">{% include 'svg/system-3.svg' %}</div>
-        <p class="type-5 fw-300">We help you unlock individual papers as they’re published by making outreach a one-click process, and help build evidence for systemic changes.</p>
+        <p class="type-3 no-margin fw-300">individual papers and systemic changes</p>
+        <div>
+          <div class="illus">{% include 'svg/system-3.svg' %}</div>
+          <p class="type-5 fw-300">We help you unlock individual papers as they’re published by making outreach a one-click process, and help build evidence for systemic changes.</p>
+        </div>
       </li>
     </ul>
 
@@ -71,7 +77,7 @@ meta_description: "OAreport is an open-source tool that analyzes papers covered 
   <aside class="row row--centered bg-white section colour-block">
     <div class="col col--1of2 flex-center flex-col align-center" data-sal="slide-left" data-sal-delay="100">
       <h2 class="label"><span class="type-3">Stay up to date</span></h2>
-      <p class="type-5">We’re working to make OAreport available to funders, and libraries. Sign up here for updates.</p>
+      <p class="type-5">We’re working to make {% include 'partials/app-name.liquid' %} available to funders, and libraries. Sign up here for updates.</p>
       <form>
         <label for="email">Your email</label>
         <div class="flex">
@@ -83,7 +89,7 @@ meta_description: "OAreport is an open-source tool that analyzes papers covered 
   </aside>
 
   <section class="section">
-    <h2 class="label border-top-thick padding-top"><span class="type-4">How OA<span style="text-transform: lowercase;"">report</span> works for you</span></h2>
+    <h2 class="label border-top-thick padding-top"><span class="type-4">How {% include 'partials/app-name.liquid' %} works for you</span></h2>
     <ol class="unstyled-list row row--centered">
       <li class="col col--1of3" data-sal="slide-up" data-sal-delay="50">
         <div class="type-1 fw-900">1</div>

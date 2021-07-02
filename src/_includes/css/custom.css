@@ -3,6 +3,7 @@
   --gutter-negative: -6vw;
   --primary-colour: pink;
   --primary-colour-rgb: 255, 192, 203;
+  --secondary-colour: hotpink;
   --sal-duration: 400ms;
 }
 
@@ -41,11 +42,11 @@ html {
   font-family: var(--serif-bold);
   letter-spacing: -.025em;
 
-  background: linear-gradient(to right, var(--primary-colour), var(--white));
+  background: linear-gradient(to right, var(--secondary-colour), var(--primary-colour));
   background-size: 200% 200%;
   background-clip: text;
   -webkit-background-clip:text;
-  color: rgba(255, 255, 255, 1);
+  color: currentColor;
   transition: all .25s ease-in-out;
 }
 
