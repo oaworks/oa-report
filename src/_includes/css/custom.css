@@ -38,7 +38,6 @@ html {
 }
 
 .app-name {
-  z-index: 2;
   font-family: var(--serif-bold);
   letter-spacing: -.025em;
 
@@ -89,7 +88,8 @@ html {
 }
 
 @media only screen and (max-width: 1023px) {
-  .cover .app-name {
+  .cover h1 {
+    z-index: 2;
     color: var(--black);
     text-align: center;
     font-size: calc(1.75 * var(--typescale-1));
