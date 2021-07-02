@@ -137,8 +137,16 @@
   padding-top: 1em;
 }
 
+.padding-top-xl {
+  padding-top: var(--space-xl);
+}
+
 .no-margin {
   margin: 0;
+}
+
+.margin-right {
+  margin-right: 1em;
 }
 
 .margin-bottom {
