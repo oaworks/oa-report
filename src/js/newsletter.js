@@ -20,7 +20,7 @@ jQuery(document).ready(function() {
   var showMessage = function(e) {
     // display thank you text on success
     var newsletterThanks = "<p class='type-1 fw-900'>Thanks for signing up! We will be in touch.</p>";
-    document.getElementById("newsletter").innerHTML = newsletterThanks;
+    document.getElementById("newsletter-inner").innerHTML = newsletterThanks;
   };
 
   var submit = function(e) {
