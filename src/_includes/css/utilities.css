@@ -153,6 +153,10 @@
   margin-bottom: 1em;
 }
 
+.margin-bottom-sm {
+  margin-bottom: var(--space-sm);
+}
+
 .margin-bottom-xl {
   margin-bottom: var(--space-xl);
 }
