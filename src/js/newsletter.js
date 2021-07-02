@@ -17,6 +17,12 @@ jQuery(document).ready(function() {
 
   var goto = false;
   var valid = undefined;
+  var showMessage = function(e) {
+    // display thank you text on success
+    var newsletterThanks = "<p class='type-1 fw-900'>Thanks for signing up! We will be in touch.</p>";
+    document.getElementById("newsletter").innerHTML = newsletterThanks;
+  };
+
   var submit = function(e) {
     if (valid === false) {
       valid = undefined; // reset validity check and let the form continue to display warning
@@ -54,13 +60,14 @@ jQuery(document).ready(function() {
           data: data,
           success: function(res) {
             console.log(res);
+            showMessage();
             if (window.location.search.indexOf('nothanks') === -1) window.location = goto;
           }
         });
       }
     }
   }
-  $('body').on('click','#submit',submit);
+  $('#newsletter').on('click','#submit', submit);
 });
 
 // Above script supports many forms, the script below points it to the right sheet
@@ -69,7 +76,7 @@ url = 'https://api.openaccessbutton.org/ill/collect/' + sid;
 fields = [];
 
   // Allow the enter key to be used to submit while in the text box
-  var input = document.getElementById("signup");
+  var input = document.getElementById("email");
   // Execute a function when the user releases a key on the keyboard
   input.addEventListener("keyup", function(event) {
     // Number 13 is the "Enter" key on the keyboard

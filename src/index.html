@@ -74,15 +74,15 @@ meta_description: "OAreport is an open-source tool that analyzes papers covered 
     </div>
   </section>
 
-  <aside class="row row--centered bg-white section colour-block">
+  <aside class="row row--centered bg-white section colour-block" id="newsletter-form">
     <div class="col col--1of2 flex-center flex-col align-center" data-sal="slide-left" data-sal-delay="100">
       <h2 class="label"><span class="type-3">Stay up to date</span></h2>
       <p class="type-5">We’re working to make {% include 'partials/app-name.liquid' %} available to funders, and libraries. Sign up here for updates.</p>
       <form id="newsletter">
         <label for="email">Your email</label>
         <div class="flex">
-          <input type="email" class="_oaworks_form" name="signup" placeholder="you@institution.edu" id="email"/>
-          <button id="submit" type="submit" href="https://oa.works/newsletter/thanks/">Sign up</button>
+          <input type="email" class="_oaworks_form" name="signup" id="email" placeholder="you@institution.edu" required/>
+          <button id="submit" type="submit" href="{{ site.base_url }}#newsletter-form">Sign up</button>
         </div>
       </form>
     </div>
