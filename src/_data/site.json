@@ -1,6 +1,7 @@
 {
   "name": "OAreport",
   "tagline": "Put OA policies into practice in minutes, not months.",
+  "description": "Writing an Open Access policy is hard, implementing it is harder.",
   "base_url": "https://oa.report",
   "twitter": "OA_Works",
   "facebook": "oadotworks",
