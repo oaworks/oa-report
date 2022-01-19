@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/oaworks/oa-check#readme",
   "dependencies": {
-    "markdown-it": "^12.0.6",
+    "markdown-it": "^12.3.2",
     "markdown-it-attrs": "^4.0.0",
     "normalize.css": "^8.0.1",
     "sal.js": "^0.8.5"
