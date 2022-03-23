@@ -1,8 +1,6 @@
 const markdownIt = require('markdown-it');
 const markdownItAttrs = require('markdown-it-attrs');
 
-const sal = require('sal.js');
-
 const markdownItOptions = {
   html: true,
   breaks: true,
@@ -20,13 +18,6 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy('./src/fonts/');
   eleventyConfig.addPassthroughCopy('./src/js/');
   eleventyConfig.addPassthroughCopy('./src/favicons/');
-
-  eleventyConfig.addPassthroughCopy({
-    "node_modules/sal.js/dist/sal.css": "sal.css",
-    "node_modules/sal.js/dist/sal.css.map": "sal.css.map",
-    "node_modules/sal.js/dist/sal.js": "js/sal.js",
-    "node_modules/sal.js/dist/sal.js.map": "js/sal.js.map"
-  });
 
   eleventyConfig.setLiquidOptions({
     dynamicPartials: true
