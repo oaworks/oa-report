@@ -4,16 +4,20 @@
   "description": "",
   "main": ".eleventy.js",
   "scripts": {
-    "watch:eleventy": "npx @11ty/eleventy --serve",
-    "watch:sass": "sass --style=compressed src/scss/main.scss dist/main.css --watch",
-    "start": "npm run watch:eleventy & npm run watch:sass"
+    "serve:eleventy": "npx @11ty/eleventy --serve",
+    "watch:tailwind": "npx tailwindcss -i styles/input.css -c styles/tailwind.config.js -o dist/tailwind.css --watch",
+    "start": "npm run serve:eleventy & npm run watch:tailwind"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@11ty/eleventy": "^1.0.0",
-    "sass": "^1.49.9"
+    "autoprefixer": "^10.4.4",
+    "concurrently": "^7.0.0",
+    "postcss-cli": "^9.1.0",
+    "sass": "^1.49.9",
+    "tailwindcss": "^3.0.23"
   },
   "dependencies": {
     "markdown-it-attrs": "^4.1.3",
