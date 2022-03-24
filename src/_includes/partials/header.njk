@@ -6,15 +6,11 @@
   </h2>
   <nav>
     <ul class="flex space-x-12">
+      {% for item in nav_header %}
       <li>
-        <a href="">About</a>
+        <a href="{{ item.url }}" class="hover:text-carnation-500 transition duration-300">{{ item.label }}</a>
       </li>
-      <li>
-        <a href="">Pricing</a>
-      </li>
-      <li>
-        <a href="">Login</a>
-      </li>
+      {% endfor %}
     </ul>
   </nav>
 </header>

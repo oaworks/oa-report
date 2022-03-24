@@ -4,15 +4,11 @@
   </a>
   <nav class="flex">
     <ul class="flex space-x-12 self-center">
+      {% for item in nav_footer %}
       <li>
-        <a href="#">Privacy</a>
+        <a href="{{ item.url }}" class="hover:text-carnation-500 transition duration-300">{{ item.label }}</a>
       </li>
-      <li>
-        <a href="#">Accessibility</a>
-      </li>
-      <li>
-        <a href="#">Terms & Conditions</a>
-      </li>
+      {% endfor %}
     </ul>
   </nav>
 </footer>
