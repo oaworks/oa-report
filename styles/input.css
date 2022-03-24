@@ -1,3 +1,24 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.app-name {
+  font-family: 'WremenaBold', serif;
+  letter-spacing: -.025em;
+
+  background: linear-gradient(to right, hotpink, pink);
+  background-size: 200% 200%;
+  background-clip: text;
+  -webkit-background-clip:text;
+  color: currentColor;
+  transition: all .25s ease-in-out;
+}
+
+.app-name__oa {
+  margin-right: .055em;
+  letter-spacing: -.025em;
+}
+
+.app-name:hover {
+  color: rgba(0, 0, 0, 0);
+}
