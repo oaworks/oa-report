@@ -15,6 +15,7 @@ module.exports = {
     colors: {
       transparent: 'transparent',
       current: 'currentColor',
+      'white': '#fff',
       'azure': {
         100: '#cce4ff',
         200: '#99c9ff',
