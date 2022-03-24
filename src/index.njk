@@ -1,27 +1,35 @@
 {% extends 'layouts/base.njk' %}
 
 {% block content %}
-<h1>Discover, analyze, & unlock your organization’s scholarly articles</h1>
-<figure></figure>
+<div class="col-span-7 mt-12">
+  <h1 class="text-6xl">Discover, analyze, & unlock your organization’s scholarly articles</h1>
+  <figure class="block bg-azure-500 h-72 flex mt-6"><p class="self-center m-auto">PLACEHOLDER IMAGE</p></figure>
+</div>
 
-<section>
-  <p>Freely access the {% include 'partials/app-name.njk' %} page for more than 999,999 institutions, organizations, and consortia.</p>
+<section class="col-span-5 mt-36">
+  <p class="mb-12">Freely access the {% include 'partials/app-name.njk' %} page for more than 999,999 institutions, organizations, and consortia.</p>
 
-  <h2>Start with yours now:</h2>
+  <h2 class="mb-6 font-serif text-5xl">Start with yours now:</h2>
   <form>
-    <label for="org_search">Organization, institution or consortium</label>
-    <input type="text" id="org_search"></input>
-    <button>Search</button>
+    <label for="org_search" class="sr-only">Organization, institution or consortium</label>
+    <div class="flex">
+      <input type="text" class="p-2 border-neutral-800 border rounded-l-md" id="org_search" placeholder="Organization, institution or consortium" autofocus></input>
+      <button class="p-2 border-neutral-800 border-t border-r border-b rounded-r-md hover:bg-neutral-900 hover:text-white transition ease-in-out delay-50 duration-300">Search</button>
+    </div>
   </form>
 </section>
 
-<section>
+<section class="col-span-5 mt-24 mb-12">
   <header>
-    <p>About this tool</p>
-    <h2>Put open access policies into practice in minutes, not months.</h2>
+    <p class="uppercase font-semibold text-sm">About this tool</p>
+    <h2 class="mb-6 font-serif text-5xl">Put open access policies into practice in minutes, not months.</h2>
   </header>
   <p>{% include 'partials/app-name.njk' %} translates policy to impact by helping libraries and funders discover papers covered by their policies, analyze if and how papers comply, and unlock individual papers and systemic changes.</p>
-  <p>-> <a href="https://oa.works" target="_blank" rel="noopener">More about OA.Works</a></p>
+  <p class="mt-6">-> <a href="https://oa.works" target="_blank" rel="noopener" class="underline">More about OA.Works</a></p>
   <figure></figure>
 </section>
+
+<figure class="col-span-7 mt-48 mb-12">
+  <figure class="block bg-carnation-500 h-72 flex mt-6"><p class="self-center m-auto">PLACEHOLDER IMAGE</p></figure>
+</figure>
 {% endblock %}
