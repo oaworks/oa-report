@@ -1,11 +1,12 @@
 <!doctype html>
 <html class="no-js" lang="en">
   {% include 'partials/head.njk' %}
-  <body class="antialiased bg-[#F4F0F0] text-neutral-900 text-xl">
+  <body class="antialiased bg-[#F4F0F0] text-neutral-900 text-xl font-light">
     {% include 'partials/header.njk' %}
-    <main class="container mx-auto px-6 grid grid-cols-12 gap-12">
-      {{ content | safe }}
-      {% block content %}{% endblock %}
+    <main class="container mx-auto px-6">
+      <div class="grid grid-cols-12 gap-12">
+        {% block content %}{% endblock %}
+      </div>
     </main>
     {% include 'partials/footer.njk' %}
   </body>
