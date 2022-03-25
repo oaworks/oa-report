@@ -7,7 +7,7 @@
     "serve:eleventy": "npx @11ty/eleventy --serve",
     "watch:tailwind": "npx tailwindcss -i styles/input.css -c styles/tailwind.config.js -o dist/tailwind.css --watch",
     "start": "npm run serve:eleventy & npm run watch:tailwind",
-    "build": "npx @11ty/eleventy & npx tailwindcss -i styles/input.css -c styles/tailwind.config.js -o dist/tailwind.css"
+    "build": "npx @11ty/eleventy & npx tailwindcss -i styles/input.css -c styles/tailwind.config.js -o dist/tailwind.css --minify"
   },
   "keywords": [],
   "author": "",
