@@ -1,17 +1,18 @@
+// Markdown
 const markdownIt = require('markdown-it');
 const markdownItAttrs = require('markdown-it-attrs');
-const feather = require('feather-icons')
-
 const markdownItOptions = {
   html: true,
   breaks: true,
   linkify: true
 }
-
 const markdownLib = markdownIt(markdownItOptions).use(markdownItAttrs)
 
+// Feather icon set
+const feather = require('feather-icons')
 const iconShortcode = (icon) => feather.icons[icon].toSvg({ class: 'block m-auto'});
 
+// Configs
 module.exports = function(eleventyConfig) {
   eleventyConfig.setLibrary('md', markdownLib);
 
@@ -26,9 +27,7 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy('./src/img/');
   eleventyConfig.addPassthroughCopy('./src/media/');
   eleventyConfig.addPassthroughCopy('./src/fonts/');
-  eleventyConfig.addPassthroughCopy('./src/js/');
   eleventyConfig.addPassthroughCopy('./src/favicons/');
-  eleventyConfig.addPassthroughCopy({ './_tmp/style.css': './style.css' })
  
   eleventyConfig.setLiquidOptions({
     dynamicPartials: true
