@@ -1,0 +1,46 @@
+---
+layout: layouts/base.njk
+permalink: "/bmgf/"
+templateEngineOverride: md, njk
+eleventyComputed:
+  title: "{{ bmgf_articles.hits.total }}"
+  papers: "{{ bmgf_papers }}"
+  oa: "{{ bmgf_oa }}"
+  self_archive_nb: "{{ bmgf_can_archive.hits.total }}"
+  self_archive_latest: "{{ bmgf_can_archive.hits.hits[0]._source.title }}"
+  archiving_champs: {{ bmgf.archiving_champs }}
+---
+
+<header class="col-span-12 mt-6 xl:mt-12">
+  <div class="flex justify-between">
+    <h1 class="text-3xl md:text-6xl font-serif">Put OA policy into practice at<br/> <strong class="font-bold">Bill & Melinda Gates Foundation</strong></h1>
+    <figure class="block bg-azure-500 h-36 w-48 p-6 flex"><p class="self-center m-auto font-bold">LOGO</p></figure>
+  </div>
+</header>
+
+<section class="grid grid-cols-12 gap-6 md:gap-12">
+  <article class="col-span-6 mb-12">
+    <h2 class="text-3xl md:text-6xl mb-3 font-light">{{ papers }}</h2>
+    <p class="uppercase font-semibold text-sm">articles published</p>
+  </article>
+
+  <article class="col-span-6 mb-12">
+    <h2 class="text-3xl md:text-6xl mb-3 font-light">{{ ((oa/papers)*100).toFixed(2) }}% <span class="text-neutral-400">({{ oa }})</span></h2>
+    <p class="uppercase font-semibold text-sm">open access articles</p>
+  </article>
+</section>
+
+<section class="col-span-12 mb-12">
+  <h2 class="mb-6 font-serif text-2xl md:text-5xl">Strategies</h2>
+  <article class="mb-6">
+    <h2 class="text-3xl md:text-6xl mb-3 font-light">{{ self_archive_nb }}</h2>
+    <p class="uppercase font-semibold text-sm mb-3">articles that could be self-archived</p>
+    <p class="text-sm">Latest: {{ self_archive_latest }}</p>
+  </article>
+
+  <article class="mb-6">
+    <h2 class="text-3xl md:text-6xl mb-3 font-light">{{ archiving_champs[0][0] | length }}</h2>
+    <p class="uppercase font-semibold text-sm mb-3">self-archiving champions</p>
+    <p class="text-sm">{{ archiving_champs[0] }}</p>
+  </article>
+</section>
