@@ -5,9 +5,11 @@
   "main": ".eleventy.js",
   "scripts": {
     "serve:eleventy": "npx @11ty/eleventy --serve",
+    "build:eleventy": "npx @11ty/eleventy",
     "watch:tailwind": "npx tailwindcss -i styles/input.css -c styles/tailwind.config.js -o dist/tailwind.css --watch",
+    "build:tailwind": "npx tailwindcss -i styles/input.css -c styles/tailwind.config.js -o dist/tailwind.css --minify",
     "start": "npm run serve:eleventy & npm run watch:tailwind",
-    "build": "npx @11ty/eleventy & npx tailwindcss -i styles/input.css -c styles/tailwind.config.js -o dist/tailwind.css --minify"
+    "build": "npm run build:eleventy & npm run build:tailwind"
   },
   "keywords": [],
   "author": "",
