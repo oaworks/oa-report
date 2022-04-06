@@ -35,4 +35,36 @@
   <meta name="twitter:description" content="{% if meta_description %}{{ meta_description }}{% else %}We partner with libraries to build free & open source tools.{% endif %}">
   <meta name="twitter:image" content="{{ site.base_url }}/assets/img/twitter_img.gif">
   <meta name="twitter:image:alt" content="White OA.Works logo on a black background; the period in the logo is a large, yellow dot">
+
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script>
+    const articles = axios.get("https://bg.beta.oa.works/report/articles/count?q=author_affiliations:%22Bill%20and%20Melinda%20Gates%20Foundation%22%20OR%20funder_names:%22Bill%20and%20Melinda%20Gates%20Foundation%22"),
+      oaArticles = axios.get("https://bg.beta.oa.works/report/articles/count?q=author_affiliations:%22Bill%20and%20Melinda%20Gates%20Foundation%22%20OR%20funder_names:%22Bill%20and%20Melinda%20Gates%20Foundation%22%20AND%20is_oa:true"),
+      canArchive = axios.get("https://bg.beta.oa.works/report/articles?sort=published:desc&q=author_affiliations:%22Bill%20and%20Melinda%20Gates%20Foundation%22%20OR%20funder_names:%22Bill%20and%20Melinda%20Gates%20Foundation%22%20AND%20is_oa:%20false%20AND%20can_archive:true"),
+      uid = axios.get("https://bg.beta.oa.works/uid");
+
+    axios.all([articles, oaArticles, canArchive, uid])
+    .then(axios.spread((...responses) => {
+        let articlesContents = document.querySelector("#articles"),
+            oaArticlesContents = document.querySelector("#articles_oa"),
+            oaPercentageContents = document.querySelector("#percent_oa"),
+            canArchiveContents = document.querySelector("#can_archive"),
+            uidContents = document.querySelector("#uid");
+
+        const articles = responses[0].data,
+              oaArticles = responses[1].data,
+              oaPercentage = ((oaArticles/articles)*100).toFixed(2),
+              canArchive = responses[2].data.hits.total,
+              uid = responses[3].data;
+
+        console.log("Blab: " + uid);
+
+        articlesContents.innerHTML = articles;
+        oaArticlesContents.innerHTML = oaArticles;
+        oaPercentageContents.innerHTML = oaPercentage;
+        canArchiveContents.innerHTML = canArchive;
+        uidContents.innerHTML = uid;
+
+      })).catch(error => console.error(error));
+  </script>
 </head>
