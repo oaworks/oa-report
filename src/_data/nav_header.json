@@ -2,13 +2,5 @@
   {
     "label": "About",
     "url": "/#about"
-  },
-  {
-    "label": "Pricing",
-    "url": "/pricing"
-  },
-  {
-    "label": "Login",
-    "url": "/login"
   }
 ]
