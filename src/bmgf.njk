@@ -2,40 +2,38 @@
 layout: layouts/base.njk
 permalink: "/bmgf/"
 templateEngineOverride: md, njk
-eleventyComputed:
-  title: "{{ bmgf_articles.hits.total }}"
-  papers: "{{ bmgf_papers }}"
-  oa: "{{ bmgf_oa }}"
-  self_archive_nb: "{{ bmgf_can_archive.hits.total }}"
-  self_archive_latest: "{{ bmgf_can_archive.hits.hits[0]._source.title }}"
-  archiving_champs: {{ bmgf.archiving_champs }}
 ---
 
 <header class="col-span-12 mt-6 xl:mt-12">
   <div class="flex justify-between">
-    <h1 class="text-3xl md:text-6xl font-serif">Put OA policy into practice at<br/> <strong class="font-bold">Bill & Melinda Gates Foundation</strong></h1>
+    <h1 class="mb-6 text-3xl md:text-6xl font-serif">Put OA policy into practice at<br/> <strong class="font-bold">Bill & Melinda Gates Foundation</strong></h1>
     <figure class="block bg-azure-500 h-36 w-96 p-6 flex"><p class="self-center m-auto font-bold">LOGO</p></figure>
   </div>
+  <p class="flex">
+    <span id="uid">TEST UID</span>
+  </p>
 </header>
 
 <section class="col-span-12 grid grid-cols-12 gap-6 md:gap-12">
   <article class="col-span-6 mb-12">
     <h2 class="mb-3 uppercase font-semibold text-sm">articles published</h2>
-    <p class="text-4xl md:text-8xl font-light">{{ papers }}</p>
+    <p class="text-4xl md:text-8xl font-light">
+      <span id="articles"></span>
+    </p>
   </article>
 
   <article class="col-span-6 mb-12">
     <h2 class="mb-3 uppercase font-semibold text-sm">open access articles</h2>
-    <p class="text-4xl md:text-8xl font-light">{{ ((oa/papers)*100).toFixed(2) }}%<sup class="align-top top-0"><span class="text-lg text-neutral-500 font-normal">({{ oa }})</span></sup></p>
+    <p class="text-4xl md:text-8xl font-light"><span id="percent_oa"></span>%<sup class="align-top top-0"><span class="text-lg text-neutral-500 font-normal">(<span id="articles_oa"></span>)</span></sup></p>
   </article>
 </section>
 
 <section class="col-span-12 grid grid-cols-12 gap-6 md:gap-12 mb-12">
   <h2 class="col-span-12 mb-6 font-serif text-2xl md:text-5xl sr-only">Strategies</h2>
   <article class="col-span-3">
-    <h2 class="uppercase font-semibold text-carnation-500 text-2xl mb-3">{{ self_archive_nb }}</h2>
-      <p class="text-xl md:text-3xl mb-3">articles that could be self-archived</h2>
-    <p class="text-sm text-neutral-600">Latest: {{ self_archive_latest }}</p>
+    <h2 class="uppercase font-semibold text-carnation-500 text-2xl mb-3"><span id="can_archive"></span></h2>
+    <p class="text-xl md:text-3xl mb-3">articles that could be self-archived</p>
+    {# <p class="text-sm text-neutral-600">Latest: {{ self_archive_latest }}</p> #}
   </article>
 
   <article class="col-span-3">
