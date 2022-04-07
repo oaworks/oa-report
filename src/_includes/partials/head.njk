@@ -50,6 +50,8 @@
             oaPercentageContents = document.querySelector("#percent_oa"),
             canArchiveContents = document.querySelector("#can_archive"),
             canArchiveOaPercentageContents = document.querySelector("#can_archive_percent_oa"),
+            canArchiveLatestContents = document.querySelector("#can_archive_latest"),
+            canArchiveLatestJournalContents = document.querySelector("#can_archive_latest_journal"),
             uidContents = document.querySelector("#uid");
 
         const articles = responses[0].data,
@@ -57,6 +59,8 @@
               oaPercentage = ((oaArticles/articles)*100).toFixed(2),
               canArchive = responses[2].data.hits.total,
               canArchiveOaPercentage = ((((oaArticles+canArchive))/articles)*100).toFixed(2),
+              canArchiveLatest = responses[2].data.hits.hits[0]._source.title,
+              canArchiveLatestJournal = responses[2].data.hits.hits[0]._source.journal,
               uid = responses[3].data;
 
         console.log("Blab: " + uid);
@@ -66,6 +70,8 @@
         oaPercentageContents.innerHTML = oaPercentage;
         canArchiveContents.innerHTML = canArchive;
         canArchiveOaPercentageContents.innerHTML = canArchiveOaPercentage;
+        canArchiveLatestContents.innerHTML = canArchiveLatest;
+        canArchiveLatestJournalContents.innerHTML = canArchiveLatestJournal;
         uidContents.innerHTML = uid;
 
       })).catch(error => console.error(error));
