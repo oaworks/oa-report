@@ -11,6 +11,7 @@ const markdownLib = markdownIt(markdownItOptions).use(markdownItAttrs)
 // Feather icon set
 const feather = require('feather-icons')
 const iconShortcode = (icon) => feather.icons[icon].toSvg({ class: 'inline-block'});
+const iconShortcodeSmall = (icon) => feather.icons[icon].toSvg({ class: 'inline-block h-4'});
 
 // Configs
 module.exports = function(eleventyConfig) {
@@ -18,6 +19,7 @@ module.exports = function(eleventyConfig) {
 
   // Add NJK template tag to access feathericons
   eleventyConfig.addShortcode('icon', iconShortcode);
+  eleventyConfig.addShortcode('icon_small', iconShortcodeSmall);
 
   // Watch tailwindCSS
   eleventyConfig.addWatchTarget('./styles/tailwind.config.js');

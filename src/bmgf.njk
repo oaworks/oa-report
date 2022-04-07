@@ -28,7 +28,7 @@ templateEngineOverride: md, njk
 <section class="col-span-12 grid grid-cols-12 gap-6 md:gap-12 mb-12">
   <h2 class="col-span-12 mb-6 font-serif text-2xl md:text-5xl sr-only">Strategies</h2>
   <article class="col-span-6 lg:col-span-4">
-    <h2 class="uppercase font-semibold text-azure-500 text-2xl mb-3"><span class="block mb-3">{% icon "archive" %}</span> <span id="can_archive">00</span></h2>
+    <h2 class="uppercase font-semibold text-azure-500 text-2xl mb-3">{% icon_small "archive" %} <span id="can_archive">00</span></h2>
     <p class="text-xl md:text-3xl mb-3">articles that could be self-archived</p>
     <p class="uppercase font-semibold text-chartreuse-700 text-base mb-6">&uarr; OA to <span id="can_archive_percent_oa"></span>%</p>
     <p class="mb-3 text-sm text-neutral-600">
@@ -43,7 +43,7 @@ templateEngineOverride: md, njk
   </article>
 
   <article class="col-span-6 lg:col-span-4">
-    <p class="uppercase font-semibold text-azure-500 text-2xl mb-3"><span class="block mb-3">{% icon "star" %}</span> {{ archiving_champs[0][0] | length }}</p>
+    <p class="uppercase font-semibold text-azure-500 text-2xl mb-3">{% icon_small "star" %} {{ archiving_champs[0][0] | length }}</p>
     <h2 class="text-xl md:text-3xl mb-3">self-archiving champions</h2>
     <p class="text-sm text-neutral-600">{{ archiving_champs[0] }}</p>
   </article>
