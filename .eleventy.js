@@ -10,7 +10,7 @@ const markdownLib = markdownIt(markdownItOptions).use(markdownItAttrs)
 
 // Feather icon set
 const feather = require('feather-icons')
-const iconShortcode = (icon) => feather.icons[icon].toSvg({ class: 'block m-auto'});
+const iconShortcode = (icon) => feather.icons[icon].toSvg({ class: 'inline-block'});
 
 // Configs
 module.exports = function(eleventyConfig) {
