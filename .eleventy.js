@@ -26,11 +26,10 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addWatchTarget('./styles/tailwind.css');
 
   // Set directories to pass through to the dist folder
-  eleventyConfig.addPassthroughCopy('./src/img/');
-  eleventyConfig.addPassthroughCopy('./src/media/');
   eleventyConfig.addPassthroughCopy('./src/fonts/');
-  eleventyConfig.addPassthroughCopy('./src/favicons/');
- 
+  eleventyConfig.addPassthroughCopy('./src/js/');
+  // TODO: eleventyConfig.addPassthroughCopy('./src/favicons/');
+  
   eleventyConfig.setLiquidOptions({
     dynamicPartials: true
   });
