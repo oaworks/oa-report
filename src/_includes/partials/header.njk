@@ -11,6 +11,11 @@
         <a href="{{ item.url }}" class="hover:text-carnation-500 transition duration-300">{{ item.label }}</a>
       </li>
       {% endfor %}
+      {% if page.url != "/" %}
+      <li>
+        <div id="search"></div>
+      </li>
+      {% endif %}
     </ul>
   </nav>
 </header>
