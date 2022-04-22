@@ -12,3 +12,10 @@
     </ul>
   </nav>
 </footer>
+
+{# for testing #}
+<ol class="p-6">
+  {% for org in orgs %}
+    <li><a href="/org/{{ org.name | slug }}"/>{{ org.name }}</a></li>
+  {% endfor %}
+</ol>
