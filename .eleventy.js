@@ -9,9 +9,13 @@ const markdownItOptions = {
 const markdownLib = markdownIt(markdownItOptions).use(markdownItAttrs)
 
 // Feather icon set
-const feather = require('feather-icons')
+const feather = require('feather-icons');
 const iconShortcode = (icon) => feather.icons[icon].toSvg({ class: 'inline-block'});
 const iconShortcodeSmall = (icon) => feather.icons[icon].toSvg({ class: 'inline-block h-4'});
+
+// TailwindCSS
+const htmlmin = require('html-minifier');
+const now = String(Date.now());
 
 // Configs
 module.exports = function(eleventyConfig) {
@@ -23,11 +27,26 @@ module.exports = function(eleventyConfig) {
 
   // Watch tailwindCSS
   eleventyConfig.addWatchTarget('./styles/tailwind.config.js');
-  eleventyConfig.addWatchTarget('./styles/tailwind.css');
-  eleventyConfig.addPassthroughCopy({ './_tmp/tailwind.css': './tailwind.css' })
+  eleventyConfig.addWatchTarget('./styles/input.css');
   eleventyConfig.addShortcode('version', function () {
-    return now
-  })
+    return now;
+  });
+  eleventyConfig.addTransform('htmlmin', function (content, outputPath) {
+    if (
+      process.env.ELEVENTY_PRODUCTION &&
+      outputPath &&
+      outputPath.endsWith('.html')
+    ) {
+      let minified = htmlmin.minify(content, {
+        useShortDoctype: true,
+        removeComments: true,
+        collapseWhitespace: true,
+      });
+      return minified;
+    }
+
+    return content;
+  });
 
   // Set directories to pass through to the dist folder
   eleventyConfig.addPassthroughCopy('./src/fonts/');
