@@ -24,12 +24,16 @@ module.exports = function(eleventyConfig) {
   // Watch tailwindCSS
   eleventyConfig.addWatchTarget('./styles/tailwind.config.js');
   eleventyConfig.addWatchTarget('./styles/tailwind.css');
+  eleventyConfig.addPassthroughCopy({ './_tmp/tailwind.css': './tailwind.css' })
+  eleventyConfig.addShortcode('version', function () {
+    return now
+  })
 
   // Set directories to pass through to the dist folder
   eleventyConfig.addPassthroughCopy('./src/fonts/');
   eleventyConfig.addPassthroughCopy('./src/js/');
   // TODO: eleventyConfig.addPassthroughCopy('./src/favicons/');
-  
+
   eleventyConfig.setLiquidOptions({
     dynamicPartials: true
   });

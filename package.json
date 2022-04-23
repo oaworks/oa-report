@@ -4,23 +4,20 @@
   "description": "",
   "main": ".eleventy.js",
   "scripts": {
-    "serve:eleventy": "npx @11ty/eleventy --serve",
-    "build:eleventy": "npx @11ty/eleventy",
-    "watch:tailwind": "npx tailwindcss -i styles/input.css -c styles/tailwind.config.js -o dist/tailwind.css --watch",
-    "build:tailwind": "npx tailwindcss -i styles/input.css -c styles/tailwind.config.js -o dist/tailwind.css --minify",
-    "start": "npm run serve:eleventy & npm run watch:tailwind",
-    "build": "npm run build:eleventy & npm run build:tailwind"
+    "start": "eleventy --serve & npx tailwindcss -i styles/input.css -c styles/tailwind.config.js -o dist/tailwind.css --watch",
+    "build": "ELEVENTY_PRODUCTION=true eleventy && NODE_ENV=production npx tailwindcss -i styles/input.css -c styles/tailwind.config.js -o dist/tailwind.css --minify"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@11ty/eleventy": "^1.0.0",
+    "@11ty/eleventy": "^1.0.1",
     "autoprefixer": "^10.4.4",
     "concurrently": "^7.0.0",
+    "html-minifier": "^4.0.0",
     "postcss-cli": "^9.1.0",
     "sass": "^1.49.9",
-    "tailwindcss": "^3.0.23"
+    "tailwindcss": "^3.0.24"
   },
   "dependencies": {
     "feather-icons": "^4.28.0",
