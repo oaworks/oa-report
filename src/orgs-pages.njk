@@ -2,10 +2,10 @@
 layout: layouts/base.njk
 templateEngineOverride: md, njk
 pagination:
-    data: orgs
+    data: orgs.hits.hits
     size: 1
     alias: org
-permalink: "orgs/{{ org.name | slug }}/"
+permalink: "orgs/{{ org._source.objectID | slug }}/"
 ---
 
 <header class="col-span-12 mt-6 xl:mt-12">
