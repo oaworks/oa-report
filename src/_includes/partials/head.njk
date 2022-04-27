@@ -1,7 +1,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>OAreport</title>
+  <title>{% if org_name %}{{ org_name }} — {% endif %}OAreport</title>
   <link rel="preload" href="/assets/fonts/WremenaRegular.woff" as="font" crossorigin>
   <link rel="preload" href="/assets/fonts/WremenaBold.woff" as="font" crossorigin>
   {# <link rel="preload" href="/assets/fonts/Inter.woff2" as="font" crossorigin> #}
@@ -36,33 +36,4 @@
   <meta name="twitter:description" content="{% if meta_description %}{{ meta_description }}{% else %}We partner with libraries to build free & open source tools.{% endif %}">
   <meta name="twitter:image" content="{{ site.base_url }}/assets/img/twitter_img.gif">
   <meta name="twitter:image:alt" content="White OA.Works logo on a black background; the period in the logo is a large, yellow dot">
-
-  <script>
-  // Set org name
-  const org = ("{{ org.name | urlencode }}");
-  </script>
-
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@algolia/algoliasearch-netlify-frontend@1/dist/algoliasearchNetlify.css"/>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@algolia/algoliasearch-netlify-frontend@1/dist/algoliasearchNetlify.js"></script>
-  <script type="text/javascript">
-  algoliasearchNetlify({
-    appId: 'X1NBO6QG7X',
-    apiKey: 'd24cd9a2cd68e2b714931a26b64f337b',
-    siteId: 'df11cc41-9d85-4801-95c0-63a9fd3342e3',
-    branch: 'dev',
-    selector: 'div#search',
-    theme: {
-      mark: '#fff',
-      background: 'transparent',
-      selected: 'rgb(36, 32, 30)',
-      text: 'rgb(36, 32, 30)',
-      colorSourceIcon: 'rgb(36, 32, 30)'
-    },
-  });
-  </script>
-
-
-
-  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-  <script src="/js/oareport.js"></script>
 </head>
