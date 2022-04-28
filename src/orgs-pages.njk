@@ -5,14 +5,11 @@ pagination:
     data: orgs.hits.hits
     size: 1
     alias: org
-eleventyComputed:
-  org_id: {{ org._source.objectID }}
-  org_name: {{ org._source.name }}
 permalink: "orgs/{{ org._source.objectID | slug }}/"
 ---
 <script>
 // Set org name
-const org = ("{{ org_name | urlencode }}");
+const org = ("{{ org._source.name | urlencode }}");
 </script>
 
 <header class="col-span-12 mt-6 xl:mt-12">
