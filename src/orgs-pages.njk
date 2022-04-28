@@ -7,11 +7,6 @@ pagination:
     alias: org
 permalink: "orgs/{{ org._source.objectID | slug }}/"
 ---
-<script>
-// Set org name
-const org = ("{{ org._source.name | urlencode }}");
-</script>
-
 <header class="col-span-12 mt-6 xl:mt-12">
   <div class="flex justify-between">
     <h1 class="mb-6 text-3xl md:text-6xl font-serif">Put OA policy into practice at<br/> <strong class="font-bold">{{ org._source.name }}</strong></h1>
@@ -49,7 +44,7 @@ const org = ("{{ org._source.name | urlencode }}");
     </p>
   </article>
 
-  <article class="col-span-6 lg:col-span-4">
+  {# <article class="col-span-6 lg:col-span-4">
     <p class="uppercase font-semibold text-azure-500 text-2xl mb-3"><a href="#">{% icon_small "star" %} <span id="archiving_champs">00</span></a></p>
     <h2 class="text-xl md:text-3xl mb-3"><a href="email/">self-archiving champions</a></h2>
     <p class="mb-3 text-sm text-neutral-600">
@@ -59,5 +54,5 @@ const org = ("{{ org._source.name | urlencode }}");
     <p class="text-sm">
       &rarr; <a href="mailto:" class="underline underline-offset-1">Email your top champion</a>
     </p>
-  </article>
+  </article> #}
 </section>
