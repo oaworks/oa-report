@@ -1,0 +1,11 @@
+{% extends 'layouts/base.njk' %}
+
+{% block content %}
+<section class="col-span-12 mt-6 xl:mt-12">
+  <ol class="list-decimal columns-2 gap-x-6">
+    {% for org in orgs.hits.hits %}
+    <li><a href="/orgs/{{ org._source.objectID | slug }}/">{{ org._source.name }}</a></li>
+    {% endfor %}
+  </ol>
+</section>
+{% endblock %}
