@@ -1,7 +1,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% if org_name %}{{ org_name }} — {% endif %}OAreport</title>
+  <title>{% if org._source.name %}{{ org._source.name }} — {% endif %}OAreport</title>
   <link rel="preload" href="/assets/fonts/WremenaRegular.woff" as="font" crossorigin>
   <link rel="preload" href="/assets/fonts/WremenaBold.woff" as="font" crossorigin>
   {# <link rel="preload" href="/assets/fonts/Inter.woff2" as="font" crossorigin> #}
@@ -36,4 +36,5 @@
   <meta name="twitter:description" content="{% if meta_description %}{{ meta_description }}{% else %}We partner with libraries to build free & open source tools.{% endif %}">
   <meta name="twitter:image" content="{{ site.base_url }}/assets/img/twitter_img.gif">
   <meta name="twitter:image:alt" content="White OA.Works logo on a black background; the period in the logo is a large, yellow dot">
+  {% block extra_head %}{% endblock %}
 </head>

@@ -6,9 +6,9 @@ pagination:
     size: 1
     alias: org
 eleventyComputed:
-  org_id: "{{ org._source.objectID }}"
-  org_name: "{{ org._source.name }}"
-permalink: "orgs/{{ org_id | slug }}/"
+  org_id: {{ org._source.objectID }}
+  org_name: {{ org._source.name }}
+permalink: "orgs/{{ org._source.objectID | slug }}/"
 ---
 <script>
 // Set org name
@@ -17,7 +17,7 @@ const org = ("{{ org_name | urlencode }}");
 
 <header class="col-span-12 mt-6 xl:mt-12">
   <div class="flex justify-between">
-    <h1 class="mb-6 text-3xl md:text-6xl font-serif">AAPut OA policy into practice at<br/> <strong class="font-bold">{{ org_name }}</strong></h1>
+    <h1 class="mb-6 text-3xl md:text-6xl font-serif">Put OA policy into practice at<br/> <strong class="font-bold">{{ org._source.name }}</strong></h1>
     <figure class="block bg-azure-500 h-36 w-96 p-6 flex"><p class="self-center m-auto font-bold">LOGO</p></figure>
   </div>
 </header>
