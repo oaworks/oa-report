@@ -2,14 +2,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% if org._source.name %}{{ org._source.name }} — {% endif %}OAreport</title>
-  <link rel="preload" href="/assets/fonts/WremenaRegular.woff" as="font" crossorigin>
-  <link rel="preload" href="/assets/fonts/WremenaBold.woff" as="font" crossorigin>
+  {# <link rel="preload" href="/assets/fonts/WremenaRegular.woff" as="font" crossorigin>
+  <link rel="preload" href="/assets/fonts/WremenaBold.woff" as="font" crossorigin> #}
   {# <link rel="preload" href="/assets/fonts/Inter.woff2" as="font" crossorigin> #}
   <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 
   <link rel="stylesheet" href="/tailwind.css"/>
 
-  <meta name="description" content="">
+  {# <meta name="description" content="">
   <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png">
@@ -35,6 +35,17 @@
   <meta name="twitter:title" content="{% if page.fileSlug == '' %}{{ site.name }}: {{ site.tagline_short }}{% else %}{{ title }}{% endif %}">
   <meta name="twitter:description" content="{% if meta_description %}{{ meta_description }}{% else %}We partner with libraries to build free & open source tools.{% endif %}">
   <meta name="twitter:image" content="{{ site.base_url }}/assets/img/twitter_img.gif">
-  <meta name="twitter:image:alt" content="White OA.Works logo on a black background; the period in the logo is a large, yellow dot">
+  <meta name="twitter:image:alt" content="White OA.Works logo on a black background; the period in the logo is a large, yellow dot"> #}
+
+  {# For org report pages only #}
+  {% if org._source.name %}
+  <script>
+  const org = ("{{ org._source.name | urlencode }}");
+  </script>
+
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="/js/oareport.js"></script>
+  {% endif %}
+
   {% block extra_head %}{% endblock %}
 </head>
