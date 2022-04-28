@@ -29,13 +29,13 @@ oareport = function(org) {
     canArchiveLatest = responses[2].data.hits.hits[0]._source.title,
     canArchiveLatestJournal = responses[2].data.hits.hits[0]._source.journal;
 
-    articlesContents.innerHTML = articles;
-    oaArticlesContents.innerHTML = oaArticles;
-    oaPercentageContents.innerHTML = oaPercentage;
-    canArchiveContents.innerHTML = canArchive;
-    canArchiveOaPercentageContents.innerHTML = canArchiveOaPercentage;
-    canArchiveLatestContents.innerHTML = canArchiveLatest;
-    canArchiveLatestJournalContents.innerHTML = canArchiveLatestJournal;
+    articlesContents.textContent = articles;
+    oaArticlesContents.textContent = oaArticles;
+    oaPercentageContents.textContent = oaPercentage;
+    canArchiveContents.textContent = canArchive;
+    canArchiveOaPercentageContents.textContent = canArchiveOaPercentage;
+    canArchiveLatestContents.textContent = canArchiveLatest;
+    canArchiveLatestJournalContents.textContent = canArchiveLatestJournal;
 
   })).catch(error => console.error(error));
 };
