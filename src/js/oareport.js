@@ -1,5 +1,5 @@
 const base = 'https://beta.oa.works/report/';
-let isPaper, isOA, complianceRate, canDepositAAM, hasPolicy, policyURL;
+let isPaper, isOA, complianceRate, canArchiveAAM, hasPolicy, policyURL;
 
 // Detect browser’s locale to display human-readable numbers
 getUsersLocale = function() {
@@ -18,7 +18,7 @@ oareport = function(org) {
 
     isPaper        = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.is_paper);
     isOA           = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.is_oa);
-    canDepositAAM  = axios.get(countQueryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
+    canArchiveAAM  = axios.get(countQueryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
     // hasPolicy      = axios.get(response.data.hits.hits[0]._source.policy.supported_policy);
     //
     // if (hasPolicy === true) {
@@ -26,11 +26,11 @@ oareport = function(org) {
     //   complianceRate = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.compliance);
     // }
 
-    Promise.all([isPaper, isOA, canDepositAAM])
+    Promise.all([isPaper, isOA, canArchiveAAM])
       .then(function (results) {
         let isPaper = results[0].data,
             isOA    = results[1].data,
-            canDepositAAM = results[2].data;
+            canArchiveAAM = results[2].data;
 
         let articlesContents = document.querySelector("#articles"),
             oaArticlesContents = document.querySelector("#articles_oa"),
@@ -43,8 +43,8 @@ oareport = function(org) {
         articlesContents.textContent = isPaper.toLocaleString(getUsersLocale());
         oaArticlesContents.textContent = isOA.toLocaleString(getUsersLocale());
         oaPercentageContents.textContent = ((isOA/isPaper)*100).toFixed(2);
-        canArchiveContents.textContent = canDepositAAM.toLocaleString(getUsersLocale());
-        canArchiveOaPercentageContents.textContent = ((((isOA+canDepositAAM))/isPaper)*100).toFixed(2);
+        canArchiveContents.textContent = canArchiveAAM.toLocaleString(getUsersLocale());
+        canArchiveOaPercentageContents.textContent = ((((isOA+canArchiveAAM))/isPaper)*100).toFixed(2);
       }
     ).catch(error => console.error("ERROR: " + error));
   })
