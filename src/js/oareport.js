@@ -1,5 +1,5 @@
 const base = 'https://beta.oa.works/report/';
-let isPaper, isOA, complianceRate, canArchiveAAM, hasPolicy, policyURL;
+let isPaper, isOA, complianceRate, canArchiveAAM, canArchiveAAMList, hasPolicy, policyURL;
 
 // Detect browser’s locale to display human-readable numbers
 getUsersLocale = function() {
@@ -14,11 +14,15 @@ oareport = function(org) {
   console.log("report: " + base + "orgs?q=name:%22" + org + "%22");
 
   axios.get(report).then(response => {
-    let countQueryBase = base + "articles/count?";
+    let queryBase      = base + "articles?",
+        countQueryBase = base + "articles/count?";
 
     isPaper        = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.is_paper);
     isOA           = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.is_oa);
     canArchiveAAM  = axios.get(countQueryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
+
+    canArchiveAAMList = axios.get(queryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
+    console.log("query for emails:" + queryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
     // hasPolicy      = axios.get(response.data.hits.hits[0]._source.policy.supported_policy);
     //
     // if (hasPolicy === true) {
@@ -26,16 +30,18 @@ oareport = function(org) {
     //   complianceRate = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.compliance);
     // }
 
-    Promise.all([isPaper, isOA, canArchiveAAM])
+    Promise.all([isPaper, isOA, canArchiveAAM, canArchiveAAMList])
       .then(function (results) {
         let isPaper = results[0].data,
             isOA    = results[1].data,
-            canArchiveAAM = results[2].data;
+            canArchiveAAM = results[2].data,
+            canArchiveAAMList = results[3].data.hits.hits;
 
         let articlesContents = document.querySelector("#articles"),
             oaArticlesContents = document.querySelector("#articles_oa"),
             oaPercentageContents = document.querySelector("#percent_oa"),
             canArchiveContents = document.querySelector("#can_archive"),
+            canArchiveList = document.querySelector("#can_archive_list"),
             canArchiveOaPercentageContents = document.querySelector("#can_archive_percent_oa"),
             canArchiveLatestContents = document.querySelector("#can_archive_latest"),
             canArchiveLatestJournalContents = document.querySelector("#can_archive_latest_journal");
@@ -45,6 +51,28 @@ oareport = function(org) {
         oaPercentageContents.textContent = ((isOA/isPaper)*100).toFixed(2);
         canArchiveContents.textContent = canArchiveAAM.toLocaleString(getUsersLocale());
         canArchiveOaPercentageContents.textContent = ((((isOA+canArchiveAAM))/isPaper)*100).toFixed(2);
+
+        let canArchiveListItems = "";
+        canArchiveLength = canArchiveAAMList.length;
+
+        var readableDateOptions = {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        };
+
+        for (i = 0; i <= (canArchiveLength-1); i++) {
+          let title = canArchiveAAMList[i]._source.title,
+              doi   = canArchiveAAMList[i]._source.DOI,
+              pubDate = canArchiveAAMList[i]._source.published,
+              journal = canArchiveAAMList[i]._source.journal;
+
+          pubDate = new Date(pubDate).toLocaleString(getUsersLocale(), readableDateOptions);
+
+          canArchiveListItems += "<li><strong>" + title + "</strong> in <i>" + journal + "</i> (" + pubDate + ")<br/><a href='https://doi.org/" + doi + "'>&rarr; https://doi.org/" + doi + "</a><br/><br/></li>";
+        }
+
+        canArchiveList.innerHTML = canArchiveListItems;
       }
     ).catch(error => console.error("ERROR: " + error));
   })
