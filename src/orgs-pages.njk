@@ -17,15 +17,15 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
 </header>
 
 <section class="col-span-12 grid grid-cols-12 gap-6 md:gap-12">
-  <article class="col-span-6 mb-12">
-    <h2 class="mb-3 uppercase font-semibold text-sm"><span class="block mb-3">{% icon "file-text" %}</span> articles published</h2>
+  <article class="col-span-4 mb-12">
+    <h2 class="mb-3 uppercase font-semibold text-base"><span class="block mb-3">{% icon "file-text" %}</span> articles published</h2>
     <p class="text-4xl md:text-8xl font-light">
       <span id="articles">000</span>
     </p>
   </article>
 
-  <article class="col-span-6 mb-12">
-    <h2 class="mb-3 uppercase font-semibold text-sm"><span class="block mb-3">{% icon "unlock" %}</span> open access articles</h2>
+  <article class="col-span-4 mb-12">
+    <h2 class="mb-3 uppercase font-semibold text-base"><span class="block mb-3">{% icon "unlock" %}</span> open access articles</h2>
     <p class="text-4xl md:text-8xl font-light"><span id="percent_oa">00.00</span>%<sup class="align-top top-0"><span class="text-lg text-neutral-500 font-normal">(<span id="articles_oa">00</span>)</span></sup></p>
   </article>
 </section>
@@ -33,17 +33,18 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
 <section class="col-span-12 grid grid-cols-12 gap-6 md:gap-12 mb-12">
   <h2 class="col-span-12 mb-6 font-serif text-2xl md:text-5xl sr-only">Strategies</h2>
   <article class="col-span-6 lg:col-span-4">
-    <h2 class="uppercase font-semibold text-azure-500 text-2xl mb-3"><a href="email/" class="block">{% icon_small "archive" %} <span id="can_archive">00</span></a></h2>
-    <p class="text-xl md:text-3xl mb-3"><a href="email/">articles that could be self-archived</a></p>
-    <p class="uppercase font-semibold text-chartreuse-700 text-base mb-6">&uarr; OA to <span id="can_archive_percent_oa"></span>%</p>
-    <p class="mb-3 text-sm text-neutral-600">
+    <span class="block mb-3">{% icon "archive" %}</span>
+    <h2 class="font-semibold text-xl md:text-3xl mb-2"><span class="block"><span id="can_archive">00</span> articles</span></h2>
+    <p class="text-xl md:text-3xl mb-3">that could be self-archived</p>
+    <p class="uppercase font-semibold text-chartreuse-700 text-lg mb-6">&uarr; OA up to <span id="can_archive_percent_oa"></span>%</p>
+    {# <p class="mb-3 text-sm text-neutral-600">
       <strong>Latest:</strong>
       <a href="" target="_blank" rel="noopener">“<span id="can_archive_latest"></span>”</a>
       in <span id="can_archive_latest_journal"></span>
     </p>
     <p class="text-sm">
       &rarr; <a href="mailto:" class="underline underline-offset-1">Email the corresponding author</a>
-    </p>
+    </p> #}
   </article>
 
   {# <article class="col-span-6 lg:col-span-4">
