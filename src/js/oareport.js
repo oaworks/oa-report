@@ -6,6 +6,7 @@ getUsersLocale = function() {
   return navigator.languages && navigator.languages.length ? navigator.languages[0] : navigator.language;
 };
 
+// Get organisational data to produce reports
 oareport = function(org) {
   let report = base + "orgs?q=name:%22" + org + "%22";
 
@@ -17,19 +18,19 @@ oareport = function(org) {
 
     isPaper        = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.is_paper);
     isOA           = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.is_oa);
-    complianceRate = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.compliance);
     canDepositAAM  = axios.get(countQueryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
     // hasPolicy      = axios.get(response.data.hits.hits[0]._source.policy.supported_policy);
     //
     // if (hasPolicy === true) {
     //   policyURL = response.data.hits.hits[0]._source.policy.url;
+    //   complianceRate = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.compliance);
     // }
 
-    Promise.all([isPaper, isOA, complianceRate, canDepositAAM])
+    Promise.all([isPaper, isOA, canDepositAAM])
       .then(function (results) {
         let isPaper = results[0].data,
             isOA    = results[1].data,
-            canDepositAAM = results[3].data;
+            canDepositAAM = results[2].data;
 
         let articlesContents = document.querySelector("#articles"),
             oaArticlesContents = document.querySelector("#articles_oa"),
