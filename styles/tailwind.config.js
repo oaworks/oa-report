@@ -5,6 +5,7 @@ module.exports = {
     './src/_includes/**/*.{njk,svg}',
     './src/**/*.njk',
     './src/*.njk',
+    './src/js/*.js',
     './.eleventy.js',
   ],
   safelist: [],
