@@ -17,17 +17,19 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
 </header>
 
 <section class="col-span-12 grid grid-cols-12 gap-6 md:gap-12">
-  <article class="col-span-4 mb-12">
+  <article class="col-span-6 lg:col-span-4 mb-6 md:mb-12">
     <h2 class="mb-3 uppercase font-semibold text-base"><span class="block mb-3">{% icon "file-text" %}</span> articles published</h2>
     <p class="text-4xl md:text-8xl font-light">
       <span id="articles">000</span>
     </p>
   </article>
 
-  <article class="col-span-4 mb-12">
+  <article class="col-span-6 lg:col-span-4 mb-6 md:mb-12">
     <h2 class="mb-3 uppercase font-semibold text-base"><span class="block mb-3">{% icon "unlock" %}</span> open access articles</h2>
     <p class="text-4xl md:text-8xl font-light"><span id="percent_oa">00.00</span>%<sup class="align-top top-0"><span class="text-lg text-neutral-500 font-normal">(<span id="articles_oa">00</span>)</span></sup></p>
   </article>
+
+  <div id="compliance"></div>
 </section>
 
 <section class="col-span-12 grid grid-cols-12 gap-6 md:gap-12 mb-12">
@@ -48,9 +50,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
   </article>
   <article class="col-span-12 lg:col-span-8">
     <h4 class="text-lg md:text-2xl mb-5">10 last articles to archive:</h4>
-    <ol class="list-decimal text-base" id="can_archive_list">
-
-    </ol>
+    <ol class="pl-8 list-decimal text-base" id="can_archive_list"></ol>
   </article>
 
   {# <article class="col-span-6 lg:col-span-4">
