@@ -27,10 +27,13 @@ oareport = function(org) {
 
     hasPolicy = response.data.hits.hits[0]._source.policy.supported_policy;
 
+    // If the org has a formal OA policy:
+    // First get the policy’s URL & compliance number
+    // Then insert an extra column showing compliance rates
     if (hasPolicy === true) {
       policyURL = response.data.hits.hits[0]._source.policy.url;
-      complianceRate = response.data.hits.hits[0]._source.analysis.compliance;
-      console.log("query for complianceRate: " + countQueryBase + complianceRate);
+      isCompliant = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.compliance);
+      console.log("query for complianceRate: " + countQueryBase + response.data.hits.hits[0]._source.analysis.compliance);
 
       let complianceContents = document.querySelector("#compliance");
 
@@ -43,16 +46,19 @@ oareport = function(org) {
       ';
     }
 
-    Promise.all([isPaper, isOA, canArchiveAAM, canArchiveAAMList])
+    Promise.all([isPaper, isOA, canArchiveAAM, canArchiveAAMList, isCompliant])
       .then(function (results) {
         let isPaper = results[0].data,
             isOA    = results[1].data,
             canArchiveAAM = results[2].data,
-            canArchiveAAMList = results[3].data.hits.hits;
+            canArchiveAAMList = results[3].data.hits.hits,
+            isCompliant = results[4].data;
 
         let articlesContents = document.querySelector("#articles"),
             oaArticlesContents = document.querySelector("#articles_oa"),
             oaPercentageContents = document.querySelector("#percent_oa"),
+            compliantArticlesContents = document.querySelector("#articles_compliant"),
+            compliantPercentageContents = document.querySelector("#percent_compliant"),
             canArchiveContents = document.querySelector("#can_archive"),
             canArchiveList = document.querySelector("#can_archive_list"),
             canArchiveOaPercentageContents = document.querySelector("#can_archive_percent_oa"),
@@ -62,6 +68,8 @@ oareport = function(org) {
         articlesContents.textContent = isPaper.toLocaleString(getUsersLocale());
         oaArticlesContents.textContent = isOA.toLocaleString(getUsersLocale());
         oaPercentageContents.textContent = ((isOA/isPaper)*100).toFixed(2);
+        compliantArticlesContents.textContent = isCompliant.toLocaleString(getUsersLocale());
+        compliantPercentageContents.textContent = ((isCompliant/isPaper)*100).toFixed(2);
         canArchiveContents.textContent = canArchiveAAM.toLocaleString(getUsersLocale());
         canArchiveOaPercentageContents.textContent = ((((isOA+canArchiveAAM))/isPaper)*100).toFixed(2);
 
