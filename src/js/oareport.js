@@ -1,5 +1,6 @@
 const base = 'https://beta.oa.works/report/';
 let isPaper, isOA, complianceRate, canArchiveAAM, canArchiveAAMList, hasPolicy, policyURL;
+let isCompliant = false;
 
 // Detect browser’s locale to display human-readable numbers
 getUsersLocale = function() {
