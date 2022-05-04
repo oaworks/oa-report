@@ -69,8 +69,13 @@ oareport = function(org) {
         articlesContents.textContent = isPaper.toLocaleString(getUsersLocale());
         oaArticlesContents.textContent = isOA.toLocaleString(getUsersLocale());
         oaPercentageContents.textContent = ((isOA/isPaper)*100).toFixed(2);
-        compliantArticlesContents.textContent = isCompliant.toLocaleString(getUsersLocale());
-        compliantPercentageContents.textContent = ((isCompliant/isPaper)*100).toFixed(2);
+
+        // Only replace content if there are data for compliant articles 
+        if (isCompliant) {
+          compliantArticlesContents.textContent = isCompliant.toLocaleString(getUsersLocale());
+          compliantPercentageContents.textContent = ((isCompliant/isPaper)*100).toFixed(2);
+        }
+
         canArchiveContents.textContent = canArchiveAAM.toLocaleString(getUsersLocale());
         canArchiveOaPercentageContents.textContent = ((((isOA+canArchiveAAM))/isPaper)*100).toFixed(2);
 
