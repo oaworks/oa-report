@@ -22,13 +22,26 @@ oareport = function(org) {
     canArchiveAAM  = axios.get(countQueryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
 
     canArchiveAAMList = axios.get(queryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
-    console.log("query for emails:" + queryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
-    // hasPolicy      = axios.get(response.data.hits.hits[0]._source.policy.supported_policy);
-    //
-    // if (hasPolicy === true) {
-    //   policyURL = response.data.hits.hits[0]._source.policy.url;
-    //   complianceRate = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.compliance);
-    // }
+    console.log("query for canArchiveAAM: " + queryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
+    console.log("query for isPaper: " + queryBase + response.data.hits.hits[0]._source.analysis.is_paper);
+
+    hasPolicy = response.data.hits.hits[0]._source.policy.supported_policy;
+
+    if (hasPolicy === true) {
+      policyURL = response.data.hits.hits[0]._source.policy.url;
+      complianceRate = response.data.hits.hits[0]._source.analysis.compliance;
+      console.log("query for complianceRate: " + countQueryBase + complianceRate);
+
+      let complianceContents = document.querySelector("#compliance");
+
+      /*jshint multistr: true */
+      complianceContents.outerHTML = '\
+        <article class="col-span-12 lg:col-span-4 mb-6 md:mb-12">\
+          <h2 class="mb-3 uppercase font-semibold text-base"><span class="block mb-3">{% icon "unlock" %}</span> policy-compliant articles</h2>\
+          <p class="text-4xl md:text-8xl font-light"><span id="percent_compliant">00.00</span>%<sup class="align-top top-0"><span class="text-lg text-neutral-500 font-normal">(<span id="articles_compliant">00</span>)</span></sup></p>\
+        </article>\
+      ';
+    }
 
     Promise.all([isPaper, isOA, canArchiveAAM, canArchiveAAMList])
       .then(function (results) {
@@ -69,7 +82,7 @@ oareport = function(org) {
 
           pubDate = new Date(pubDate).toLocaleString(getUsersLocale(), readableDateOptions);
 
-          canArchiveListItems += "<li><strong>" + title + "</strong> in <i>" + journal + "</i> (" + pubDate + ")<br/><a href='https://doi.org/" + doi + "'>&rarr; https://doi.org/" + doi + "</a><br/><br/></li>";
+          canArchiveListItems += "<li><span class='text-neutral-600'>" + pubDate + "</span><br/><strong>" + title + "</strong> in <i>" + journal + "</i><br/><a href='https://doi.org/" + doi + "' class='break-words'>&rarr; https://doi.org/" + doi + "</a><br/><br/></li>";
         }
 
         canArchiveList.innerHTML = canArchiveListItems;
