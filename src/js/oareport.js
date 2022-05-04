@@ -40,7 +40,7 @@ oareport = function(org) {
       /*jshint multistr: true */
       complianceContents.outerHTML = '\
         <article class="col-span-12 lg:col-span-4 mb-6 md:mb-12">\
-          <h2 class="mb-3 uppercase font-semibold text-base"><span class="block mb-3">{% icon "unlock" %}</span> policy-compliant articles</h2>\
+          <h2 class="mb-3 uppercase font-semibold text-base"><span class="block mb-3"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check-circle inline-block"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></span> policy-compliant articles</h2>\
           <p class="text-4xl md:text-8xl font-light"><span id="percent_compliant">00.00</span>%<sup class="align-top top-0"><span class="text-lg text-neutral-500 font-normal">(<span id="articles_compliant">00</span>)</span></sup></p>\
         </article>\
       ';
