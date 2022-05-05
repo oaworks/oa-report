@@ -1,5 +1,5 @@
 const base = 'https://beta.oa.works/report/';
-let isPaper, isOA, complianceRate, canArchiveAAM, canArchiveAAMList, hasPolicy, policyURL;
+let isPaper, isOA, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, hasPolicy, policyURL;
 let isCompliant = false;
 
 // Detect browser’s locale to display human-readable numbers
@@ -18,15 +18,20 @@ oareport = function(org) {
     let queryBase      = base + "articles?",
         countQueryBase = base + "articles/count?";
 
+    // Get all queries
+    // ...for article counts
     isPaper        = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.is_paper);
     isOA           = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.is_oa);
     canArchiveAAM  = axios.get(countQueryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
-
+    // ...for records
     canArchiveAAMList = axios.get(queryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
     console.log("query for canArchiveAAM: " + queryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
     console.log("query for isPaper: " + queryBase + response.data.hits.hits[0]._source.analysis.is_paper);
 
+    // Get values from org index
+    canArchiveAAMMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
     hasPolicy = response.data.hits.hits[0]._source.policy.supported_policy;
+    console.log("canArchiveAAMMailto: " + canArchiveAAMMailto);
 
     // If the org has a formal OA policy:
     // First get the policy’s URL & compliance number
@@ -96,7 +101,11 @@ oareport = function(org) {
 
           pubDate = new Date(pubDate).toLocaleString(getUsersLocale(), readableDateOptions);
 
-          canArchiveListItems += "<li><span class='text-neutral-600'>" + pubDate + "</span><br/><strong>" + title + "</strong> in <i>" + journal + "</i><br/><a href='https://doi.org/" + doi + "' class='break-words'>&rarr; https://doi.org/" + doi + "</a><br/><br/></li>";
+          canArchiveListItems += "<li class='mb-6'><article>\
+            <header class='text-neutral-600'>" + pubDate + "</header>\
+            <h5 class='mb-1'><a href='https://doi.org/" + doi + "' target='_blank' rel='noopener'><strong>" + title + "</strong> in <i>" + journal + "</i></a></h5>\
+            <p>&rarr; <a href='" + canArchiveAAMMailto + "' target='_blank' rel='noopener'>Open email draft</a></p>\
+          </article></li>";
         }
 
         canArchiveList.innerHTML = canArchiveListItems;
