@@ -28,8 +28,8 @@ oareport = function(org) {
     console.log("query for canArchiveAAM: " + queryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
     console.log("query for isPaper: " + queryBase + response.data.hits.hits[0]._source.analysis.is_paper);
     // ..for CSV downloads
-    downloadAllArticles = csvExportBase + response.data.hits.hits[0]._source.analysis.is_paper;
-    downloadAllArchivableAAM = csvExportBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query;
+    downloadAllArticles = csvExportBase + "&" + response.data.hits.hits[0]._source.analysis.is_paper;
+    downloadAllArchivableAAM = csvExportBase + "&" + response.data.hits.hits[0]._source.strategy.email_author_aam.query;
 
     // Get values from org index
     canArchiveAAMMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
@@ -86,6 +86,7 @@ oareport = function(org) {
           compliantPercentageContents.textContent = Math.round(((isCompliant/isPaper)*100));
         }
         csvDownloadInsightsContents.innerHTML = "<a href='"+ downloadAllArticles + "' class='p-3 border text-xs text-neutral-600 uppercase font-semibold hover:bg-neutral-600 hover:text-white active:bg-neutral-700 focus:outline-none focus:ring focus:ring-white'><span class='hidden md:inline'>Download in </span>CSV</a>";
+        console.log("downloadAllArticles: " + downloadAllArticles);
 
         // "Strategies" section: display totals and lists of archivable articles
         canArchiveContents.textContent = canArchiveAAM.toLocaleString(getUsersLocale());
