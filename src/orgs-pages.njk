@@ -17,7 +17,13 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
 <section class="col-span-12 grid grid-cols-12 gap-6 md:gap-12 sticky top-0 pt-3 mb-3 md:mb-6 bg-[#F4F0F0] border-b">
   <header class="col-span-12 flex justify-between">
     <h2 class="font-serif text-lg md:text-3xl text-neutral-600">Your OAreport (1 Jan — 31 Dec 2021)</h2>
-    <span id="csv_download_insights"></span>
+    <form>
+      <label for="csv_download_insights_email" class="sr-only">Email:</label>
+      <div class="flex">
+        <input class="p-3 border border-r-0 text-xs text-neutral-900 uppercase" type="email" id="csv_download_insights_email" placeholder="you@example.com" required>
+        <span id="csv_download_insights"></span>
+      </div>
+    </form>
   </header>
   <article class="col-span-6 lg:col-span-4 mb-6 md:mb-12">
     <h3 class="mb-3 uppercase font-semibold text-base"><span class="block mb-3">{% icon "file-text" %}</span> articles published</h3>
@@ -40,8 +46,14 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
     <span class="block mb-3">{% icon "archive" %}</span>
     <h3 class="font-semibold text-xl md:text-3xl mb-2"><span class="block"><span id="can_archive">00</span> articles</span></h3>
     <p class="text-xl md:text-3xl mb-3">that could be self-archived</p>
-    <p class="uppercase font-semibold text-chartreuse-700 text-lg mb-8">&uarr; OA up to <span id="can_archive_percent_oa"></span>%</p>
-    <p><span class="inline-block mb-6" id="csv_download_archivable_aam"></span></p>
+    <p class="uppercase font-semibold text-chartreuse-700 text-lg mb-8">&uarr; OA up to <span id="can_archive_percent_oa"></span>%</
+    <form class="mb-6">
+      <label for="csv_download_archivable_aam_email" class="sr-only">Email:</label>
+      <div class="flex">
+        <input class="p-3 border border-r-0 text-xs text-neutral-900 uppercase" type="email" id="csv_download_archivable_aam_email" placeholder="you@example.com" required>
+        <span id="csv_download_archivable_aam"></span>
+      </div>
+    </form>
     {# <p class="mb-3 text-sm text-neutral-600">
       <strong>Latest:</strong>
       <a href="" target="_blank" rel="noopener">“<span id="can_archive_latest"></span>”</a>
