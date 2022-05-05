@@ -36,11 +36,11 @@ oareport = function(org) {
     // TODO: help text indicates that we can download max. 500 records; rest will be sent by email
     // Download all Insights (all articles tracked)
     csvDownloadInsightsContents = document.querySelector("#csv_download_insights");
-    csvDownloadInsightsContents.innerHTML = "<a href='"+ downloadAllArticles + "' class='block p-3 border text-xs text-neutral-600 uppercase font-semibold hover:bg-neutral-600 hover:text-white active:bg-neutral-700 focus:outline-none focus:ring focus:ring-white js-csv_email-button'><span class='hidden md:inline'>Download </span>CSV</a>";
+    csvDownloadInsightsContents.innerHTML = "<a href='"+ downloadAllArticles + "' class='block p-1 md:p-3 border text-xs text-neutral-600 uppercase font-semibold hover:bg-neutral-600 hover:text-white active:bg-neutral-700 focus:outline-none focus:ring focus:ring-white js-csv_email-button'><span class='hidden md:inline'>Download </span>CSV</a>";
 
     // Download all Actions (archivable AAMs)
     csvDownloadArchivableAAMContents = document.querySelector("#csv_download_archivable_aam");
-    csvDownloadArchivableAAMContents.innerHTML = "<a href='"+ downloadAllArchivableAAM + "' class='block p-3 border text-xs text-neutral-600 uppercase font-semibold hover:bg-neutral-600 hover:text-white active:bg-neutral-700 focus:outline-none focus:ring focus:ring-white js-csv_email-button'><span class='hidden md:inline'>Download </span>CSV</a>";
+    csvDownloadArchivableAAMContents.innerHTML = "<a href='"+ downloadAllArchivableAAM + "' class='block p-1 md:p-3 border text-xs text-neutral-600 uppercase font-semibold hover:bg-neutral-600 hover:text-white active:bg-neutral-700 focus:outline-none focus:ring focus:ring-white js-csv_email-button'><span class='hidden md:inline'>Download </span>CSV</a>";
 
     // TODO: Get email for CSV downloads if user input one
     // const emailBtn = document.querySelector(".js-csv_email-button");
@@ -68,9 +68,9 @@ oareport = function(org) {
 
       /*jshint multistr: true */
       complianceContents.outerHTML = '\
-        <article class="col-span-12 lg:col-span-4 mb-6 md:mb-12">\
+        <article class="col-span-12 lg:col-span-4 mb-3">\
           <h2 class="mb-3 uppercase font-semibold text-base"><span class="block mb-3"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check-circle inline-block"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></span> policy-compliant articles</h2>\
-          <p class="text-4xl md:text-8xl font-light"><span id="percent_compliant">00.00</span>%<sup class="align-top top-0"><span class="text-lg text-neutral-500 font-normal">(<span id="articles_compliant">00</span>)</span></sup></p>\
+          <p class="text-4xl md:text-8xl font-light js-sticky_stat" id="js-compliant_container"><span id="percent_compliant">00%</span><sup class="align-top top-0"><span class="text-lg text-neutral-500 font-normal">(<span id="articles_compliant">00</span>)</span></sup></p>\
         </article>\
       ';
     }
@@ -97,11 +97,11 @@ oareport = function(org) {
         // "Insights" section: display totals and % of articles, OA articles, and compliant articles
         articlesContents.textContent = isPaper.toLocaleString(getUsersLocale());
         oaArticlesContents.textContent = isOA.toLocaleString(getUsersLocale());
-        oaPercentageContents.textContent = Math.round(((isOA/isPaper)*100));
+        oaPercentageContents.textContent = Math.round(((isOA/isPaper)*100)) + "%";
         // Only replace content if there are data for compliant articles
         if (isCompliant) {
           compliantArticlesContents.textContent = isCompliant.toLocaleString(getUsersLocale());
-          compliantPercentageContents.textContent = Math.round(((isCompliant/isPaper)*100));
+          compliantPercentageContents.textContent = Math.round(((isCompliant/isPaper)*100)) + "%";
         }
 
         // "Strategies" section: display totals and lists of archivable articles
