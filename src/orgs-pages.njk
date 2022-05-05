@@ -17,7 +17,10 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
 
 <header class="col-span-12 mt-6 xl:mt-12 mb-6">
   <div class="flex justify-between">
-    <h1 class="text-3xl md:text-6xl font-serif">Put OA policy into practice at<br/> <strong class="font-bold">{{ org._source.name }}</strong></h1>
+    <h1 class="text-3xl md:text-6xl font-serif">
+      {% if org._source.policy.supported_policy === true %}Put OA policy into practice at {% else %}Advance OA at {% endif %}
+      <br/>
+      <strong class="font-bold">{{ org._source.name }}</strong></h1>
     <figure class="block border border-neutral-700 h-36 w-96 p-6 flex"><p class="self-center m-auto">[LOGO WILL BE HERE]</p></figure>
   </div>
 </header>
@@ -42,7 +45,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
 
   <article class="col-span-6 lg:col-span-4 mb-3">
     <h3 class="mb-3 uppercase font-semibold text-base"><span class="block mb-3">{% icon "unlock" %}</span> open access articles</h3>
-    <p class="text-4xl md:text-8xl font-light" id="js-articles_oa_container"><span id="percent_oa">000</span><sup class="align-top top-0"><span class="text-lg text-neutral-500 font-normal">(<span id="articles_oa">000</span>)</span></sup></p>
+    <p class="text-4xl md:text-8xl font-light" id="js-articles_oa_container"><span id="percent_oa">000</span><sup class="align-top top-0"> <span class="text-lg text-neutral-500 font-normal">(<span id="articles_oa">000</span>)</span></sup></p>
   </article>
 
   <div id="compliance"></div>
