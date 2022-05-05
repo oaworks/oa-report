@@ -1,7 +1,7 @@
 const base           = 'https://beta.oa.works/report/',
       queryBase      = base + "articles?",
       countQueryBase = base + "articles/count?",
-      csvExportBase  = base + "articles.csv?size=all&email=sophy@oa.works";
+      csvExportBase  = base + "articles.csv?size=all&";
 let isPaper, isOA, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, downloadAllArchivableAAM, hasPolicy, policyURL;
 let isCompliant = false;
 
@@ -27,9 +27,29 @@ oareport = function(org) {
     canArchiveAAMList = axios.get(queryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
     console.log("query for canArchiveAAM: " + queryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
     console.log("query for isPaper: " + queryBase + response.data.hits.hits[0]._source.analysis.is_paper);
-    // ..for CSV downloads
-    downloadAllArticles = csvExportBase + "&" + response.data.hits.hits[0]._source.analysis.is_paper;
-    downloadAllArchivableAAM = csvExportBase + "&" + response.data.hits.hits[0]._source.strategy.email_author_aam.query;
+
+    // Add CSV download buttons
+    downloadAllArticles = csvExportBase + response.data.hits.hits[0]._source.analysis.is_paper;
+    downloadAllArchivableAAM = csvExportBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query;
+    console.log("downloadAllArticles here: " + downloadAllArticles);
+
+    // TODO: help text indicates that we can download max. 500 records; rest will be sent by email
+    // Download all Insights (all articles tracked)
+    csvDownloadInsightsContents = document.querySelector("#csv_download_insights");
+    csvDownloadInsightsContents.innerHTML = "<a href='"+ downloadAllArticles + "' class='block p-3 border text-xs text-neutral-600 uppercase font-semibold hover:bg-neutral-600 hover:text-white active:bg-neutral-700 focus:outline-none focus:ring focus:ring-white js-csv_email-button'><span class='hidden md:inline'>Download </span>CSV</a>";
+
+    // Download all Actions (archivable AAMs)
+    csvDownloadArchivableAAMContents = document.querySelector("#csv_download_archivable_aam");
+    csvDownloadArchivableAAMContents.innerHTML = "<a href='"+ downloadAllArchivableAAM + "' class='block p-3 border text-xs text-neutral-600 uppercase font-semibold hover:bg-neutral-600 hover:text-white active:bg-neutral-700 focus:outline-none focus:ring focus:ring-white js-csv_email-button'><span class='hidden md:inline'>Download </span>CSV</a>";
+
+    // TODO: Get email for CSV downloads if user input one
+    // const emailBtn = document.querySelector(".js-csv_email-button");
+    // emailBtn.addEventListener('click', function (event) {
+    //   let insightsEmail = document.querySelector("#csv_download_insights_email").value,
+    //       archivableAAMEmail = document.querySelector("#csv_download_archivable_aam_email").value;
+    //   downloadAllArticles = csvExportBase + "email=" + insightsEmail + "&" + response.data.hits.hits[0]._source.analysis.is_paper;
+    //   downloadAllArchivableAAM = csvExportBase + archivableAAMEmail + "&" + response.data.hits.hits[0]._source.strategy.email_author_aam.query;
+    // }, false);
 
     // Get values from org index
     canArchiveAAMMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
@@ -70,11 +90,9 @@ oareport = function(org) {
             compliantPercentageContents = document.querySelector("#percent_compliant"),
             canArchiveContents = document.querySelector("#can_archive"),
             canArchiveList = document.querySelector("#can_archive_list"),
-            canArchiveOaPercentageContents = document.querySelector("#can_archive_percent_oa"),
+            canArchiveOaPercentageContents = document.querySelector("#can_archive_percent_oa");
             // canArchiveLatestContents = document.querySelector("#can_archive_latest"),
-            // canArchiveLatestJournalContents = document.querySelector("#can_archive_latest_journal"),
-            csvDownloadInsightsContents = document.querySelector("#csv_download_insights"),
-            csvDownloadArchivableAAMContents = document.querySelector("#csv_download_archivable_aam");
+            // canArchiveLatestJournalContents = document.querySelector("#can_archive_latest_journal");
 
         // "Insights" section: display totals and % of articles, OA articles, and compliant articles
         articlesContents.textContent = isPaper.toLocaleString(getUsersLocale());
@@ -85,15 +103,11 @@ oareport = function(org) {
           compliantArticlesContents.textContent = isCompliant.toLocaleString(getUsersLocale());
           compliantPercentageContents.textContent = Math.round(((isCompliant/isPaper)*100));
         }
-        // TODO: help text indicates that we can download max. 500 records; rest will be sent by email
-        csvDownloadInsightsContents.innerHTML = "<a href='"+ downloadAllArticles + "' class='block p-3 border text-xs text-neutral-600 uppercase font-semibold hover:bg-neutral-600 hover:text-white active:bg-neutral-700 focus:outline-none focus:ring focus:ring-white'><span class='hidden md:inline'>Download </span>CSV</a>";
-        console.log("downloadAllArticles: " + downloadAllArticles);
 
         // "Strategies" section: display totals and lists of archivable articles
         canArchiveContents.textContent = canArchiveAAM.toLocaleString(getUsersLocale());
         canArchiveOaPercentageContents.textContent = Math.round(((((isOA+canArchiveAAM))/isPaper)*100));
-        // TODO: help text indicates that we can download max. 500 records; rest will be sent by email
-        csvDownloadArchivableAAMContents.innerHTML = "<a href='"+ downloadAllArchivableAAM + "' class='block p-3 border text-xs text-neutral-600 uppercase font-semibold hover:bg-neutral-600 hover:text-white active:bg-neutral-700 focus:outline-none focus:ring focus:ring-white'><span class='hidden md:inline'>Download </span>CSV</a>";
+
         // Set up and get list of emails for archivable AAMs
         let canArchiveListItems = "";
         canArchiveLength = canArchiveAAMList.length;
