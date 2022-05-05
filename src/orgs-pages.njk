@@ -15,7 +15,10 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
 </header>
 
 <section class="col-span-12 grid grid-cols-12 gap-6 md:gap-12 sticky top-0 pt-3 mb-3 md:mb-6 bg-[#F4F0F0] border-b">
-  <h2 class="col-span-12 font-serif text-base md:text-5xl text-neutral-600">Your OAreport (1 Jan — 31 Dec 2021)</h2>
+  <header class="col-span-12">
+    <h2 class="inline-block font-serif text-base md:text-5xl text-neutral-600">Your OAreport (1 Jan — 31 Dec 2021)</h2>
+    <span id="csv_download_insights"></span>
+  </header>
   <article class="col-span-6 lg:col-span-4 mb-6 md:mb-12">
     <h3 class="mb-3 uppercase font-semibold text-base"><span class="block mb-3">{% icon "file-text" %}</span> articles published</h3>
     <p class="text-4xl md:text-8xl font-light">
