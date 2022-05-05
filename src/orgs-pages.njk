@@ -35,7 +35,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
 </section>
 
 <section class="col-span-12 grid grid-cols-12 gap-6 md:gap-12 mb-6">
-  <h2 class="col-span-12 font-serif text-base md:text-5xl text-neutral-600">Strategies</h2>
+  <h2 class="col-span-12 font-serif text-lg md:text-3xl text-neutral-600">Strategies</h2>
   <article class="col-span-12 lg:col-span-4">
     <span class="block mb-3">{% icon "archive" %}</span>
     <h3 class="font-semibold text-xl md:text-3xl mb-2"><span class="block"><span id="can_archive">00</span> articles</span></h3>
@@ -67,3 +67,19 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
     </p>
   </article> #}
 </section>
+
+{# {% block extra_footer %}
+<script>
+// Detect when position: sticky triggered on stats bar
+// And switch classes to show smaller numbers
+const el = document.querySelectorAll(".js-is_sticky")
+const observer = new IntersectionObserver(
+  ([e]) => e.target.classList.toggle("is-sticky", e.intersectionRatio < 1),
+  { threshold: [1] }
+);
+
+el.forEach(stickyElem => {
+  observer.observe(stickyElem);
+})
+</script>
+{% endblock %} #}
