@@ -85,12 +85,14 @@ oareport = function(org) {
           compliantArticlesContents.textContent = isCompliant.toLocaleString(getUsersLocale());
           compliantPercentageContents.textContent = Math.round(((isCompliant/isPaper)*100));
         }
+        // TODO: help text indicates that we can download max. 500 records; rest will be sent by email
         csvDownloadInsightsContents.innerHTML = "<a href='"+ downloadAllArticles + "' class='p-3 border text-xs text-neutral-600 uppercase font-semibold hover:bg-neutral-600 hover:text-white active:bg-neutral-700 focus:outline-none focus:ring focus:ring-white'><span class='hidden md:inline'>Download in </span>CSV</a>";
         console.log("downloadAllArticles: " + downloadAllArticles);
 
         // "Strategies" section: display totals and lists of archivable articles
         canArchiveContents.textContent = canArchiveAAM.toLocaleString(getUsersLocale());
         canArchiveOaPercentageContents.textContent = Math.round(((((isOA+canArchiveAAM))/isPaper)*100));
+        // TODO: help text indicates that we can download max. 500 records; rest will be sent by email
         csvDownloadArchivableAAMContents.innerHTML = "<a href='"+ downloadAllArchivableAAM + "' class='p-3 border text-xs text-neutral-600 uppercase font-semibold hover:bg-neutral-600 hover:text-white active:bg-neutral-700 focus:outline-none focus:ring focus:ring-white'><span class='hidden md:inline'>Download in </span>CSV</a>";
         // Set up and get list of emails for archivable AAMs
         let canArchiveListItems = "";
