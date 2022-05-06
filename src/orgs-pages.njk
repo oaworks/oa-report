@@ -46,10 +46,13 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
 
   <article class="col-span-6 lg:col-span-4 mb-3">
     <h3 class="mb-3 uppercase font-semibold text-base"><span class="block mb-3">{% icon "unlock" %}</span> open access articles</h3>
-    <p class="text-4xl md:text-8xl font-light" id="js-articles_oa_container"><span id="percent_oa">000</span><sup class="align-top top-0"> <span class="text-lg text-neutral-500 font-normal">(<span id="articles_oa">000</span>)</span></sup></p>
+    <p class="text-4xl md:text-8xl font-light" id="js-articles_oa_container"><span id="percent_oa">00</span><sup class="align-top top-0"> <span class="text-lg text-neutral-500 font-normal">(<span id="articles_oa">000</span>)</span></sup></p>
   </article>
 
-  <div id="compliance"></div>
+  <article class="col-span-6 lg:col-span-4 mb-3" id="compliance">
+    <h3 class="mb-3 uppercase font-semibold text-base"><span class="block mb-3">{% icon "check-circle" %}</span> policy-compliant articles</h3>
+    <p class="text-4xl md:text-8xl font-light" id="js-compliant_container"><span id="percent_compliant">00</span><sup class="align-top top-0"> <span class="text-lg text-neutral-500 font-normal">(<span id="articles_compliant">000</span>)</span></sup></p>
+  </article>
 </section>
 
 <section class="col-span-12 grid grid-cols-12 gap-6 md:gap-12 mb-6">
@@ -96,14 +99,17 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
 <script>
 // Get the sticky Insights bar
 // TODO: really need to optimise this, very glitchy but it kind of works
-// const insights = document.querySelector(".js-sticky_bar")
-// const observer = new IntersectionObserver(
-//   ([e]) => {
-//     e.target.querySelector("h2").classList.toggle("md:text-2xl", e.intersectionRatio < 1);
-//     e.target.querySelector("#js-articles_container").classList.toggle("md:text-3xl", e.intersectionRatio < 1);
-//     e.target.querySelector("#js-articles_oa_container").classList.toggle("md:text-3xl", e.intersectionRatio < 1);
-//     e.target.querySelector("#js-compliant_container").classList.toggle("md:text-3xl", e.intersectionRatio < 1);
-//   }, {threshold: [1]}
-// );
-// observer.observe(insights)
+const insights = document.querySelector(".js-sticky_bar")
+const observer = new IntersectionObserver(
+  ([e]) => {
+    e.target.classList.toggle("md:gap-6", e.intersectionRatio < 1);
+    e.target.querySelector("h2").classList.toggle("md:text-2xl", e.intersectionRatio < 1);
+    e.target.querySelector("#js-articles_container").classList.toggle("md:text-2xl", e.intersectionRatio < 1);
+    e.target.querySelector("#js-articles_oa_container").classList.toggle("md:text-2xl", e.intersectionRatio < 1);
+    if (isCompliant) {
+      e.target.querySelector("#js-compliant_container").classList.toggle("md:text-2xl", e.intersectionRatio < 1);
+    }
+  }, {threshold: [1]}
+);
+observer.observe(insights)
 </script>

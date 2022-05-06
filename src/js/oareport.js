@@ -29,7 +29,7 @@ oareport = function(org) {
     console.log("query for isPaper: " + queryBase + response.data.hits.hits[0]._source.analysis.is_paper);
 
     // Add CSV download buttons
-    downloadAllArticles = csvExportBase + response.data.hits.hits[0]._source.analysis.is_paper;
+    downloadAllArticles = csvExportBase + "email=sophy@oa.works&" + response.data.hits.hits[0]._source.analysis.is_paper;
     downloadAllArchivableAAM = csvExportBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query;
     console.log("downloadAllArticles here: " + downloadAllArticles);
 
@@ -59,20 +59,22 @@ oareport = function(org) {
     // If the org has a formal OA policy:
     // First get the policy’s URL & compliance number
     // Then insert an extra column showing compliance rates
+    let complianceContents = document.querySelector("#compliance");
+
     if (hasPolicy === true) {
       policyURL = response.data.hits.hits[0]._source.policy.url;
       isCompliant = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.compliance);
       console.log("query for complianceRate: " + countQueryBase + response.data.hits.hits[0]._source.analysis.compliance);
 
-      let complianceContents = document.querySelector("#compliance");
-
       /*jshint multistr: true */
-      complianceContents.outerHTML = '\
-        <article class="col-span-12 lg:col-span-4 mb-3">\
-          <h2 class="mb-3 uppercase font-semibold text-base"><span class="block mb-3"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check-circle inline-block"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></span> policy-compliant articles</h2>\
-          <p class="text-4xl md:text-8xl font-light js-sticky_stat" id="js-compliant_container"><span id="percent_compliant">00%</span><sup class="align-top top-0"> <span class="text-lg text-neutral-500 font-normal">(<span id="articles_compliant">00</span>)</span></sup></p>\
-        </article>\
-      ';
+      // complianceContents.outerHTML = '\
+      //   <article class="col-span-12 lg:col-span-4 mb-3">\
+      //     <h2 class="mb-3 uppercase font-semibold text-base"><span class="block mb-3"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check-circle inline-block"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></span> policy-compliant articles</h2>\
+      //     <p class="text-4xl md:text-8xl font-light js-sticky_stat" id="js-compliant_container"><span id="percent_compliant">00%</span><sup class="align-top top-0"> <span class="text-lg text-neutral-500 font-normal">(<span id="articles_compliant">00</span>)</span></sup></p>\
+      //   </article>\
+      // ';
+    } else {
+      complianceContents.outerHTML = "";
     }
 
     Promise.all([isPaper, isOA, canArchiveAAM, canArchiveAAMList, isCompliant])
