@@ -8,14 +8,6 @@ pagination:
 permalink: "orgs/{{ org._source.objectID | slug }}/"
 ---
 
-<style>
-.js-sticky_bar {
-  top: -1px;
-  padding-top: calc(0.75rem; + 1px);
-  transition: .75s;
-}
-</style>
-
 <header class="col-span-12 mt-6 xl:mt-12 mb-6">
   <div class="flex justify-between">
     <h1 class="text-3xl md:text-6xl font-serif">
@@ -26,9 +18,9 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
   </div>
 </header>
 
-<section class="col-span-12 grid grid-cols-12 gap-6 md:gap-12 lg:sticky top-0 py-4 mb-3 md:mb-6 bg-[#F4F0F0] border-b js-sticky_bar">
+<section class="col-span-12 grid grid-cols-12 gap-6 lg:sticky top-0 py-4 mb-3 md:mb-6 bg-[#F4F0F0] border-b">
   <header class="col-span-12 flex justify-between">
-    <h2 class="font-serif text-lg md:text-3xl text-neutral-600">Your OAreport (1 Jan — 31 Dec 2021)</h2>
+    <h2 class="font-serif text-lg md:text-3xl text-neutral-600 js-header_text_toggle">Your OAreport (1 Jan — 31 Dec 2021)</h2>
     <form>
       <label for="csv_download_insights_email" class="sr-only">Email:</label>
       <div class="flex">
@@ -38,20 +30,20 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
     </form>
   </header>
   <article class="col-span-6 lg:col-span-4 mb-3">
-    <h3 class="mb-3 uppercase font-semibold text-base"><span class="block mb-3">{% icon "file-text" %}</span> articles published</h3>
-    <p class="text-4xl md:text-8xl font-light" id="js-articles_container">
+    <h3 class="mb-3 uppercase font-semibold text-base duration-500 js-label_text_toggle"><span class="block mb-3">{% icon "file-text" %}</span> articles published</h3>
+    <p class="text-4xl md:text-8xl font-light duration-500 js-data_text_toggle" id="js-articles_container">
       <span id="articles">000</span>
     </p>
   </article>
 
   <article class="col-span-6 lg:col-span-4 mb-3">
-    <h3 class="mb-3 uppercase font-semibold text-base"><span class="block mb-3">{% icon "unlock" %}</span> open access articles</h3>
-    <p class="text-4xl md:text-8xl font-light" id="js-articles_oa_container"><span id="percent_oa">00</span><sup class="align-top top-0"> <span class="text-lg text-neutral-500 font-normal">(<span id="articles_oa">000</span>)</span></sup></p>
+    <h3 class="mb-3 uppercase font-semibold text-base duration-500 js-label_text_toggle"><span class="block mb-3">{% icon "unlock" %}</span> open access articles</h3>
+    <p class="text-4xl md:text-8xl font-light duration-500 js-data_text_toggle" id="js-articles_oa_container"><span id="percent_oa">00</span><sup class="align-top top-0"> <span class="text-lg text-neutral-500 font-normal">(<span id="articles_oa">000</span>)</span></sup></p>
   </article>
 
   <article class="col-span-6 lg:col-span-4 mb-3" id="compliance">
-    <h3 class="mb-3 uppercase font-semibold text-base"><span class="block mb-3">{% icon "check-circle" %}</span> policy-compliant articles</h3>
-    <p class="text-4xl md:text-8xl font-light" id="js-compliant_container"><span id="percent_compliant">00</span><sup class="align-top top-0"> <span class="text-lg text-neutral-500 font-normal">(<span id="articles_compliant">000</span>)</span></sup></p>
+    <h3 class="mb-3 uppercase font-semibold text-base duration-500 js-label_text_toggle"><span class="block mb-3">{% icon "check-circle" %}</span> policy-compliant articles</h3>
+    <p class="text-4xl md:text-8xl font-light duration-500 js-data_text_toggle" id="js-compliant_container"><span id="percent_compliant">00</span><sup class="align-top top-0"> <span class="text-lg text-neutral-500 font-normal">(<span id="articles_compliant">000</span>)</span></sup></p>
   </article>
 </section>
 
@@ -97,19 +89,35 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
 </section>
 
 <script>
-// Get the sticky Insights bar
-// TODO: really need to optimise this, very glitchy but it kind of works
-const insights = document.querySelector(".js-sticky_bar")
-const observer = new IntersectionObserver(
-  ([e]) => {
-    e.target.classList.toggle("md:gap-6", e.intersectionRatio < 1);
-    e.target.querySelector("h2").classList.toggle("md:text-2xl", e.intersectionRatio < 1);
-    e.target.querySelector("#js-articles_container").classList.toggle("md:text-2xl", e.intersectionRatio < 1);
-    e.target.querySelector("#js-articles_oa_container").classList.toggle("md:text-2xl", e.intersectionRatio < 1);
-    if (isCompliant) {
-      e.target.querySelector("#js-compliant_container").classList.toggle("md:text-2xl", e.intersectionRatio < 1);
+// Get the sticky Insights bar & reduce size of text on scroll
+// TODO: Optimise this....
+window.onscroll = function() {scrollFunction()};
+
+const dataTextToggle   = document.querySelectorAll(".js-data_text_toggle"),
+      labelTextToggle  = document.querySelectorAll(".js-label_text_toggle"),
+      headerTextToggle = document.querySelector(".js-header_text_toggle");
+
+function scrollFunction() {
+  if (document.body.scrollTop > 50 || document.documentElement.scrollTop > 50) {
+    headerTextToggle.classList.remove("md:text-3xl");
+    headerTextToggle.classList.add("md:text-xl");
+
+    for (let i = 0; i < dataTextToggle.length; i++) {
+      dataTextToggle[i].classList.remove("md:text-8xl");
+      dataTextToggle[i].classList.add("md:text-4xl");
+      labelTextToggle[i].classList.remove("text-base");
+      labelTextToggle[i].classList.add("text-xs");
     }
-  }, {threshold: [1]}
-);
-observer.observe(insights)
+  } else {
+    headerTextToggle.classList.remove("md:text-xl");
+    headerTextToggle.classList.add("md:text-3xl");
+
+    for (let i = 0; i < dataTextToggle.length; i++) {
+      dataTextToggle[i].classList.remove("md:text-4xl");
+      dataTextToggle[i].classList.add("md:text-8xl");
+      labelTextToggle[i].classList.remove("text-xs");
+      labelTextToggle[i].classList.add("text-base");
+    }
+  }
+}
 </script>
