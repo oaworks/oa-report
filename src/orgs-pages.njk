@@ -25,7 +25,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
       <label for="csv_download_insights_email" class="sr-only">Email:</label>
       <div class="flex">
         <input class="p-1 md:p-3 border border-r-0 text-xs text-neutral-900 font-semibold" type="email" id="csv_download_insights_email" placeholder="you@example.com">
-        <span id="csv_download_insights"></span>
+        <a href="#" class="block p-1 md:p-3 border text-xs text-neutral-600 uppercase font-semibold hover:bg-neutral-600 hover:text-white active:bg-neutral-700 focus:outline-none focus:ring focus:ring-white js-csv_email-button" id="csv_download_insights"><span class='hidden md:inline'>Download </span>CSV</a>
       </div>
     </form>
   </header>
@@ -58,7 +58,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
       <label for="csv_download_archivable_aam_email" class="sr-only">Email:</label>
       <div class="flex">
         <input class="p-1 md:p-3 border border-r-0 text-xs text-neutral-900 font-semibold" type="email" id="csv_download_archivable_aam_email" placeholder="you@example.com">
-        <span id="csv_download_archivable_aam"></span>
+        <a href="#" class="block p-1 md:p-3 border text-xs text-neutral-600 uppercase font-semibold hover:bg-neutral-600 hover:text-white active:bg-neutral-700 focus:outline-none focus:ring focus:ring-white js-csv_email-button" id="csv_download_archivable_aam"><span class='hidden md:inline'>Download </span>CSV</a>
       </div>
     </form>
     {# <p class="mb-3 text-sm text-neutral-600">

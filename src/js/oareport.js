@@ -29,18 +29,18 @@ oareport = function(org) {
     console.log("query for isPaper: " + queryBase + response.data.hits.hits[0]._source.analysis.is_paper);
 
     // Add CSV download buttons
-    downloadAllArticles = csvExportBase + "email=sophy@oa.works&" + response.data.hits.hits[0]._source.analysis.is_paper;
+    downloadAllArticles = csvExportBase + response.data.hits.hits[0]._source.analysis.is_paper;
     downloadAllArchivableAAM = csvExportBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query;
     console.log("downloadAllArticles here: " + downloadAllArticles);
 
     // TODO: help text indicates that we can download max. 500 records; rest will be sent by email
     // Download all Insights (all articles tracked)
     csvDownloadInsightsContents = document.querySelector("#csv_download_insights");
-    csvDownloadInsightsContents.innerHTML = "<a href='"+ downloadAllArticles + "' class='block p-1 md:p-3 border text-xs text-neutral-600 uppercase font-semibold hover:bg-neutral-600 hover:text-white active:bg-neutral-700 focus:outline-none focus:ring focus:ring-white js-csv_email-button'><span class='hidden md:inline'>Download </span>CSV</a>";
+    csvDownloadInsightsContents.setAttribute('href', downloadAllArticles);
 
     // Download all Actions (archivable AAMs)
     csvDownloadArchivableAAMContents = document.querySelector("#csv_download_archivable_aam");
-    csvDownloadArchivableAAMContents.innerHTML = "<a href='"+ downloadAllArchivableAAM + "' class='block p-1 md:p-3 border text-xs text-neutral-600 uppercase font-semibold hover:bg-neutral-600 hover:text-white active:bg-neutral-700 focus:outline-none focus:ring focus:ring-white js-csv_email-button'><span class='hidden md:inline'>Download </span>CSV</a>";
+    csvDownloadArchivableAAMContents.setAttribute('href', downloadAllArchivableAAM);
 
     // TODO: Get email for CSV downloads if user input one
     // const emailBtn = document.querySelector(".js-csv_email-button");
