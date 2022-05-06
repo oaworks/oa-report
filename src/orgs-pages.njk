@@ -7,6 +7,7 @@ pagination:
     alias: org
 permalink: "orgs/{{ org._source.objectID | slug }}/"
 ---
+
 <style>
 .js-sticky_bar {
   top: -1px;
@@ -57,7 +58,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
     <span class="block mb-3">{% icon "archive" %}</span>
     <h3 class="font-semibold text-xl md:text-3xl mb-2"><span class="block"><span id="can_archive">00</span> articles</span></h3>
     <p class="text-xl md:text-3xl mb-3">that could be self-archived</p>
-    <p class="uppercase font-semibold text-chartreuse-700 text-lg mb-8">&uarr; OA up to <span id="can_archive_percent_oa"></span>%</
+    <p class="uppercase font-semibold text-chartreuse-700 text-lg mb-8">&uarr; OA up to <span id="can_archive_percent_oa"></span>%</p>
     <form class="mb-6">
       <label for="csv_download_archivable_aam_email" class="sr-only">Email:</label>
       <div class="flex">
@@ -92,19 +93,17 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
   </article> #}
 </section>
 
-{% block extra_footer %}
 <script>
 // Get the sticky Insights bar
 // TODO: really need to optimise this, very glitchy but it kind of works
-const insights = document.querySelector(".js-sticky_bar")
-const observer = new IntersectionObserver(
-  ([e]) => {
-    e.target.querySelector("h2").classList.toggle("md:text-2xl", e.intersectionRatio < 1);
-    e.target.querySelector("#js-articles_container").classList.toggle("md:text-3xl", e.intersectionRatio < 1);
-    e.target.querySelector("#js-articles_oa_container").classList.toggle("md:text-3xl", e.intersectionRatio < 1);
-    e.target.querySelector("#js-compliant_container").classList.toggle("md:text-3xl", e.intersectionRatio < 1);
-  }, {threshold: [1]}
-);
-observer.observe(insights)
+// const insights = document.querySelector(".js-sticky_bar")
+// const observer = new IntersectionObserver(
+//   ([e]) => {
+//     e.target.querySelector("h2").classList.toggle("md:text-2xl", e.intersectionRatio < 1);
+//     e.target.querySelector("#js-articles_container").classList.toggle("md:text-3xl", e.intersectionRatio < 1);
+//     e.target.querySelector("#js-articles_oa_container").classList.toggle("md:text-3xl", e.intersectionRatio < 1);
+//     e.target.querySelector("#js-compliant_container").classList.toggle("md:text-3xl", e.intersectionRatio < 1);
+//   }, {threshold: [1]}
+// );
+// observer.observe(insights)
 </script>
-{% endblock %}
