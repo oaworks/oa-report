@@ -54,12 +54,13 @@ oareport = function(org) {
     };
 
     let csvEmailButton = document.querySelector(".js-csv_email-button");
-    
+
     csvEmailButton.addEventListener('input', getEmailInput, false);
     csvEmailButton.addEventListener('click', getEmailInput, false);
 
     // Get values from org index
     canArchiveAAMMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
+    canArchiveAAMMailto = canArchiveAAMMailto.replaceAll('\'', '’');
     hasPolicy = response.data.hits.hits[0]._source.policy.supported_policy;
     console.log("canArchiveAAMMailto: " + canArchiveAAMMailto);
 
