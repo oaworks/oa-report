@@ -43,13 +43,20 @@ oareport = function(org) {
     csvDownloadArchivableAAMContents.setAttribute('href', downloadAllArchivableAAM);
 
     // TODO: Get email for CSV downloads if user input one
-    // const emailBtn = document.querySelector(".js-csv_email-button");
-    // emailBtn.addEventListener('click', function (event) {
-    //   let insightsEmail = document.querySelector("#csv_download_insights_email").value,
-    //       archivableAAMEmail = document.querySelector("#csv_download_archivable_aam_email").value;
-    //   downloadAllArticles = csvExportBase + "email=" + insightsEmail + "&" + response.data.hits.hits[0]._source.analysis.is_paper;
-    //   downloadAllArchivableAAM = csvExportBase + archivableAAMEmail + "&" + response.data.hits.hits[0]._source.strategy.email_author_aam.query;
-    // }, false);
+    var getEmailInput = function (event) {
+      let inputEmail = document.querySelector(".js-csv_email-button").previousElementSibling.value;
+
+      downloadAllArticles = csvExportBase + "email=" + inputEmail + "&" + response.data.hits.hits[0]._source.analysis.is_paper;
+      downloadAllArchivableAAM = csvExportBase + "email=" + inputEmail + "&" + response.data.hits.hits[0]._source.strategy.email_author_aam.query;
+
+      csvDownloadInsightsContents.setAttribute('href', downloadAllArticles);
+      csvDownloadArchivableAAMContents.setAttribute('href', downloadAllArchivableAAM);
+    };
+
+    let csvEmailButton = document.querySelector(".js-csv_email-button");
+    
+    csvEmailButton.addEventListener('input', getEmailInput, false);
+    csvEmailButton.addEventListener('click', getEmailInput, false);
 
     // Get values from org index
     canArchiveAAMMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
