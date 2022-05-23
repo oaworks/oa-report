@@ -17,6 +17,37 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
   </div>
 </header>
 
+<aside class="col-span-12">
+  <div class="grid grid-cols-12 gap-6">
+    <form class="flex col-span-12 md:col-span-6" action="#">
+      <fieldset>
+        <h3 class="mb-2 text-base">From</h3>
+        <div class="flex">
+          <input type="number" step="1" min="1900" max="2022" class="mr-3 p-1 md:p-2 border text-xs text-neutral-900 font-semibold">
+          <input type="number" step="1" min="1" max="12" class="mr-3 p-1 md:p-2 border text-xs text-neutral-900 font-semibold">
+          <input type="number" step="1" min="1" max="31" class="mr-8 p-1 md:p-2 border text-xs text-neutral-900 font-semibold">
+        </div>
+      </fieldset>
+      <fieldset>
+        <h3 class="mb-2 text-base">To</h3>
+        <div class="flex">
+          <input type="number" step="1" min="1900" max="2022" class="mr-3 p-1 md:p-2 border text-xs text-neutral-900 font-semibold">
+          <input type="number" step="1" min="1" max="12" class="mr-3 p-1 md:p-2 border text-xs text-neutral-900 font-semibold">
+          <input type="number" step="1" min="1" max="31" class="p-1 md:p-2 border text-xs text-neutral-900 font-semibold">
+        </div>
+      </fieldset>
+    </form>
+
+    <form class="col-span-12 md:col-span-6 text-right" action="#">
+      <label for="csv_download_insights_email" class="block mb-2 text-base">Input your email to download data</label>
+      <div class="flex justify-end">
+        <input class="p-1 md:p-2 border border-r-0 text-xs text-neutral-900 font-semibold" type="email" id="csv_download_insights_email" placeholder="you@example.com" required>
+        <button class="block p-1 md:p-2 border text-xs text-neutral-600 uppercase font-semibold hover:bg-neutral-600 hover:text-white active:bg-neutral-700 focus:outline-none focus:ring focus:ring-white js-csv_email-button" id="csv_download_insights"><span class='hidden md:inline'>Download </span>CSV</button>
+      </div>
+    </form>
+  </div>
+</aside>
+
 <section class="col-span-12 grid grid-cols-12 gap-6 lg:sticky top-0 py-4 mb-3 md:mb-6 bg-[#F4F0F0] border-b">
   <header class="col-span-12 flex justify-between">
     <h2 class="font-serif text-lg md:text-3xl text-neutral-600 lg:duration-500 js-header_text_toggle">Insights from 1 Jan — 31 Dec 2021</h2>
@@ -37,37 +68,6 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
     <h3 class="mb-3 uppercase font-semibold text-base lg:duration-500 js-label_text_toggle"><span class="block mb-3 js-icon_toggle">{% icon "check-circle" %}</span> policy-compliant articles</h3>
     <p class="text-4xl md:text-7xl font-light lg:duration-500 js-data_text_toggle" id="js-compliant_container"><span id="percent_compliant">00</span><sup class="align-top top-0"> <span class="text-lg text-neutral-500 font-normal">(<span id="articles_compliant">000</span>)</span></sup></p>
   </article>
-
-  <footer class="col-span-12">
-    <div class="grid grid-cols-12 gap-6">
-      <form class="flex col-span-12 md:col-span-6" action="#">
-        <fieldset>
-          <h3 class="mb-2 text-base">From</h3>
-          <div class="flex">
-            <input type="number" step="1" min="1900" max="2022" class="mr-3 p-1 md:p-2 border text-xs text-neutral-900 font-semibold">
-            <input type="number" step="1" min="1" max="12" class="mr-3 p-1 md:p-2 border text-xs text-neutral-900 font-semibold">
-            <input type="number" step="1" min="1" max="31" class="mr-8 p-1 md:p-2 border text-xs text-neutral-900 font-semibold">
-          </div>
-        </fieldset>
-        <fieldset>
-          <h3 class="mb-2 text-base">To</h3>
-          <div class="flex">
-            <input type="number" step="1" min="1900" max="2022" class="mr-3 p-1 md:p-2 border text-xs text-neutral-900 font-semibold">
-            <input type="number" step="1" min="1" max="12" class="mr-3 p-1 md:p-2 border text-xs text-neutral-900 font-semibold">
-            <input type="number" step="1" min="1" max="31" class="p-1 md:p-2 border text-xs text-neutral-900 font-semibold">
-          </div>
-        </fieldset>
-      </form>
-
-      <form class="col-span-12 md:col-span-6 text-right" action="#">
-        <label for="csv_download_insights_email" class="block mb-2 text-base">Input your email to download data</label>
-        <div class="flex justify-end">
-          <input class="p-1 md:p-2 border border-r-0 text-xs text-neutral-900 font-semibold" type="email" id="csv_download_insights_email" placeholder="you@example.com" required>
-          <button class="block p-1 md:p-2 border text-xs text-neutral-600 uppercase font-semibold hover:bg-neutral-600 hover:text-white active:bg-neutral-700 focus:outline-none focus:ring focus:ring-white js-csv_email-button" id="csv_download_insights"><span class='hidden md:inline'>Download </span>CSV</button>
-        </div>
-      </form>
-    </div>
-  </footer>
 </section>
 
 <section class="col-span-12 grid grid-cols-12 gap-6 md:gap-12 mb-6">
