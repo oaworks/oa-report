@@ -127,7 +127,7 @@ oareport = function(org) {
         };
         for (i = 0; i <= (canArchiveLength-1); i++) {
           let title = canArchiveAAMList[i]._source.title,
-              authors = canArchiveAAMList[i]._source.author_names,
+              authors = canArchiveAAMList[i]._source.author_names.join(", "),
               doi   = canArchiveAAMList[i]._source.DOI,
               pubDate = canArchiveAAMList[i]._source.published,
               journal = canArchiveAAMList[i]._source.journal;
