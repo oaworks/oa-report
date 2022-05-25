@@ -38,44 +38,45 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
       </fieldset>
     </form>
 
-    <form class="col-span-12 md:col-span-6 text-right" action="#">
-      <label for="csv_download_insights_email" class="block mb-2 text-base">Input your email to download data</label>
+    <form id="csv_download_insights" class="col-span-12 md:col-span-6 text-right" method="get" action="https://beta.oa.works/report/articles.csv?size=all&email=sophy@oa.works&q=%28published%3A%3E2021-01-01%20AND%20published%3A%3C2021-12-31%29%20AND%20%28author_affiliations%3A%2522Bill%20%20Melinda%20Gates%20Foundation%20%28All%29%2522%20OR%20author_affiliations%3A%2522bank%20of%20canada%2522%20OR%20author_affiliations%3A%2522Bill%20and%20Melinda%20Gates%20Foundation%2522%20OR%20author_affiliations%3A%2522Bill%20%20Melinda%20Gates%20Foundation%2522%20OR%20author_affiliations%3A%2522melinda%20gates%20foundation%2522%20OR%20funder_names%3A%2522Bill%20%20Melinda%20Gates%20Foundation%20%28All%29%2522%20OR%20funder_names%3A%2522bank%20of%20canada%2522%20OR%20funder_names%3A%2522Bill%20and%20Melinda%20Gates%20Foundation%2522%20OR%20funder_names%3A%2522Bill%20%20Melinda%20Gates%20Foundation%2522%20OR%20funder_names%3A%2522melinda%20gates%20foundation%2522%29">
+      <label for="csv_download_insights_email" class="block mb-2 text-base">Download your insights<sup class="tooltip" title="">{% icon_small "help-circle" %}</sup></label>
       <div class="flex justify-end">
         <input class="p-1 md:p-2 border border-r-0 text-xs text-neutral-900 font-semibold" type="email" id="csv_download_insights_email" placeholder="you@example.com" required>
-        <button class="block p-1 md:p-2 border text-xs text-neutral-600 uppercase font-semibold hover:bg-neutral-600 hover:text-white active:bg-neutral-700 focus:outline-none focus:ring focus:ring-white js-csv_email-button" id="csv_download_insights"><span class='hidden md:inline'>Download </span>CSV</button>
+        <button class="block p-1 md:p-2 border text-xs text-neutral-600 uppercase font-semibold hover:bg-neutral-600 hover:text-white active:bg-neutral-700 focus:outline-none focus:ring focus:ring-white js-csv_email-button"><span class='hidden md:inline'>Download </span>CSV</button>
       </div>
     </form>
   </div>
 </aside>
 
-<section class="col-span-12 grid grid-cols-12 gap-6 lg:sticky top-0 py-4 mb-3 md:mb-6 bg-[#F4F0F0] border-b">
+<section class="col-span-12 grid grid-cols-12 gap-6 lg:sticky lg:z-10 top-0 py-4 mb-3 md:mb-6 bg-[#F4F0F0] border-b">
   <header class="col-span-12 flex justify-between">
-    <h2 class="font-serif text-lg md:text-3xl text-neutral-600 lg:duration-500 js-header_text_toggle">Insights from 1 Jan — 31 Dec 2021</h2>
+    <h2 class="font-serif text-lg md:text-3xl text-neutral-600 lg:duration-500 js-header_text_toggle">
+      Insights from 1 Jan — 31 Dec 2021<sup class="tooltip" title="The Insights section provides a quick overview of your organization’s open access statistics. Our data sources are listed on our <a href='https://oa.works/'>infrastructure page</a>.">{% icon_small "help-circle" %}</sup>
+    </h2>
   </header>
   <article class="col-span-6 lg:col-span-4 mb-3">
-    <h3 class="mb-3 uppercase font-semibold text-base lg:duration-500 js-label_text_toggle"><span class="block mb-3 js-icon_toggle">{% icon "file-text" %}</span> articles published</h3>
+    <h3 class="mb-3 uppercase font-semibold text-base lg:duration-500 js-label_text_toggle"><span class="block mb-3 js-icon_toggle">{% icon "file-text" %}</span> articles published<sup class="tooltip" title="">{% icon_small "help-circle" %}</sup></h3>
     <p class="text-4xl md:text-7xl font-light lg:duration-500 js-data_text_toggle" id="js-articles_container">
       <span id="articles">000</span>
     </p>
   </article>
 
   <article class="col-span-6 lg:col-span-4 mb-3">
-    <h3 class="mb-3 uppercase font-semibold text-base lg:duration-500 js-label_text_toggle"><span class="block mb-3 js-icon_toggle">{% icon "unlock" %}</span> open access articles</h3>
+    <h3 class="mb-3 uppercase font-semibold text-base lg:duration-500 js-label_text_toggle"><span class="block mb-3 js-icon_toggle">{% icon "unlock" %}</span> open access articles<sup class="tooltip" title="">{% icon_small "help-circle" %}</sup></h3>
     <p class="text-4xl md:text-7xl font-light lg:duration-500 js-data_text_toggle" id="js-articles_oa_container"><span id="percent_oa">00</span><sup class="align-top top-0"> <span class="text-lg text-neutral-500 font-normal">(<span id="articles_oa">000</span>)</span></sup></p>
   </article>
 
   <article class="col-span-6 lg:col-span-4 mb-3" id="compliance">
-    <h3 class="mb-3 uppercase font-semibold text-base lg:duration-500 js-label_text_toggle"><span class="block mb-3 js-icon_toggle">{% icon "check-circle" %}</span> policy-compliant articles</h3>
+    <h3 class="mb-3 uppercase font-semibold text-base lg:duration-500 js-label_text_toggle"><span class="block mb-3 js-icon_toggle">{% icon "check-circle" %}</span> policy-compliant articles<sup class="tooltip" title="">{% icon_small "help-circle" %}</sup></h3>
     <p class="text-4xl md:text-7xl font-light lg:duration-500 js-data_text_toggle" id="js-compliant_container"><span id="percent_compliant">00</span><sup class="align-top top-0"> <span class="text-lg text-neutral-500 font-normal">(<span id="articles_compliant">000</span>)</span></sup></p>
   </article>
 </section>
 
 <section class="col-span-12 grid grid-cols-12 gap-6 md:gap-12 mb-6">
-  <h2 class="col-span-12 font-serif text-lg md:text-3xl text-neutral-600">Strategies</h2>
+  <h2 class="col-span-12 font-serif text-lg md:text-3xl text-neutral-600">Strategies<sup class="tooltip" title="">{% icon_small "help-circle" %}</sup></h2>
   <article class="col-span-12 lg:col-span-4">
     <span class="block mb-3">{% icon "archive" %}</span>
-    <h3 class="font-semibold text-xl md:text-3xl mb-2"><span class="block"><span id="can_archive">00</span> articles</span></h3>
-    <p class="text-xl md:text-3xl mb-3">that could be self-archived</p>
+    <h3 class="font-semibold text-xl md:text-3xl mb-2"><span class="block"><span id="can_archive">00</span> articles<sup class="tooltip" title="">{% icon_small "help-circle" %}</sup></span></h3>
     <p class="uppercase font-semibold text-chartreuse-700 text-lg mb-8">&uarr; OA up to <span id="can_archive_percent_oa"></span>%</p>
     <form class="mb-6">
       <label for="csv_download_archivable_aam_email" class="sr-only">Email:</label>
@@ -94,8 +95,22 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
     </p> #}
   </article>
   <article class="col-span-12 lg:col-span-8">
-    <h4 class="text-lg md:text-2xl mb-6">These <strong>articles’ AAMs</strong> are archivable<br/> &mdash; 10 most recent</h4>
-    <ol class="pl-8 list-decimal text-base" id="can_archive_list"></ol>
+    <h4 class="text-lg md:text-2xl mb-6"><strong>10</strong> most recent archivable AAMs:</h4>
+    <div class="-mx-4 mt-8 overflow-hidden shadow sm:-mx-6 md:mx-0 md:rounded-lg">
+      <table class="divide-y divide-neutral-300 table-fixed w-full">
+        <thead class="bg-neutral-800 text-white">
+          <tr>
+            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-4/12">Article</th>
+            <th scope="col" class="hidden px-3 py-3.5 text-left text-sm font-semibold w-3/12 sm:table-cell">Author(s)</th>
+            <th scope="col" class="hidden px-3 py-3.5 text-left text-sm font-semibold w-3/12 lg:table-cell">Published</th>
+            <th scope="col" class="text-sm font-semibold py-3.5 pl-3 pr-4 w-2/12">Open draft<sup class="tooltip" title="">{% icon_small "help-circle" %}</sup></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-neutral-200 bg-white" id="can_archive_list">
+
+        </tbody>
+      </table>
+    </div>
   </article>
 
   {# <article class="col-span-6 lg:col-span-4">

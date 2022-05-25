@@ -33,16 +33,15 @@ oareport = function(org) {
     downloadAllArchivableAAM = csvExportBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query;
     console.log("downloadAllArticles here: " + downloadAllArticles);
 
-    // TODO: help text indicates that we can download max. 500 records; rest will be sent by email
     // Download all Insights (all articles tracked)
     csvDownloadInsightsContents = document.querySelector("#csv_download_insights");
-    csvDownloadInsightsContents.setAttribute('href', downloadAllArticles);
+    csvDownloadInsightsContents.setAttribute('action', downloadAllArticles);
 
     // Download all Actions (archivable AAMs)
     csvDownloadArchivableAAMContents = document.querySelector("#csv_download_archivable_aam");
     csvDownloadArchivableAAMContents.setAttribute('href', downloadAllArchivableAAM);
 
-    // TODO: Get email for CSV downloads if user input one
+    // TODO: Get email for CSV downloads
     var getEmailInput = function (event) {
       let inputEmail = document.querySelector(".js-csv_email-button").previousElementSibling.value;
 
@@ -128,15 +127,29 @@ oareport = function(org) {
         };
         for (i = 0; i <= (canArchiveLength-1); i++) {
           let title = canArchiveAAMList[i]._source.title,
+              authors = canArchiveAAMList[i]._source.author_names,
               doi   = canArchiveAAMList[i]._source.DOI,
               pubDate = canArchiveAAMList[i]._source.published,
               journal = canArchiveAAMList[i]._source.journal;
           pubDate = new Date(pubDate).toLocaleString(getUsersLocale(), readableDateOptions);
-          canArchiveListItems += "<li class='mb-6'><article>\
-            <header class='text-neutral-600'>" + pubDate + "</header>\
-            <h5 class='mb-1'><a href='https://doi.org/" + doi + "' target='_blank' rel='noopener'><strong>" + title + "</strong> in <i>" + journal + "</i></a></h5>\
-            <p>&rarr; <a href='" + canArchiveAAMMailto + "' target='_blank' rel='noopener'>Open email draft</a></p>\
-          </article></li>";
+          // canArchiveListItems += "<li class='mb-6'><article>\
+          //   <header class='text-neutral-600'>" + pubDate + "</header>\
+          //   <h5 class='mb-1'><a href='https://doi.org/" + doi + "' target='_blank' rel='noopener'><strong>" + title + "</strong> in <i>" + journal + "</i></a></h5>\
+          //   <p>&rarr; <a href='" + canArchiveAAMMailto + "' target='_blank' rel='noopener'>Open email draft</a></p>\
+          // </article></li>";
+          canArchiveListItems += '<tr>\
+            <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
+              <div class="font-medium text-neutral-900"><a href="https://doi.org/' + doi + '" target="_blank">' + title + '</a></div>\
+              <div class="text-neutral-500">' + journal + '</div>\
+            </td>\
+            <td class="hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell">' + authors + '</td>\
+            <td class="hidden whitespace-nowrap px-3 py-4 text-sm text-neutral-500 align-top lg:table-cell">' + pubDate + '</td>\
+            <td class="whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium">\
+              <a href="#" class="hover:text-carnation-500">\
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail inline-block h-4 duration-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>\
+              </a>\
+            </td>\
+          </tr>';
         }
         canArchiveList.innerHTML = canArchiveListItems;
 
