@@ -132,15 +132,18 @@ oareport = function(org) {
           //   <h5 class='mb-1'><a href='https://doi.org/" + doi + "' target='_blank' rel='noopener'><strong>" + title + "</strong> in <i>" + journal + "</i></a></h5>\
           //   <p>&rarr; <a href='" + canArchiveAAMMailto + "' target='_blank' rel='noopener'>Open email draft</a></p>\
           // </article></li>";
+          /*jshint multistr: true */
           canArchiveListItems += '<tr>\
             <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
-              <div class="font-medium text-neutral-900"><a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + title + '</a></div>\
+              <div class="font-medium text-neutral-900 hover:text-carnation-500">\
+                <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + title + '</a>\
+              </div>\
               <div class="text-neutral-500">' + journal + '</div>\
             </td>\
             <td class="hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell">' + authors + '</td>\
             <td class="hidden whitespace-nowrap px-3 py-4 text-sm text-neutral-500 align-top lg:table-cell">' + pubDate + '</td>\
             <td class="whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium">\
-              <a href="mailto:' + canArchiveAAMMailto + '" class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200">\
+              <a href="mailto:' + canArchiveAAMMailto + ' target="_blank" rel="noopener" class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200">\
                 <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail inline-block h-4 duration-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>\
               </a>\
             </td>\
