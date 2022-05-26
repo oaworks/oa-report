@@ -70,7 +70,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
   </div>
 </aside>
 
-<section class="col-span-12 grid grid-cols-12 gap-6 lg:sticky lg:z-10 top-0 pt-4 bg-[#F4F0F0]">
+<section class="col-span-12 grid grid-cols-12 gap-6 lg:sticky lg:z-10 top-0 mb-4 pt-4 bg-[#F4F0F0]">
   <div class="col-span-12">
     <h2 class="text-lg leading-6 font-medium text-neutral-900">Insights from 1 Jan — 31 Dec 2021<sup class="tooltip" title="The Insights section provides a quick overview of your organization’s open access statistics. Our data sources are listed on our <a href='https://oa.works/'>infrastructure page</a>.">{% icon_small "help-circle" %}</sup></h2>
     <dl class="mt-5 grid grid-cols-1 rounded-lg bg-white overflow-hidden drop-shadow-lg divide-y divide-white md:grid-cols-3 md:divide-y-0 md:divide-x">
@@ -127,29 +127,31 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
   </article> #}
 </section>
 
-<section class="col-span-12 grid grid-cols-12 gap-6 md:gap-12 mb-6">
-  <h2 class="col-span-12 font-medium text-lg text-neutral-900">Strategies<sup class="tooltip" title="">{% icon_small "help-circle" %}</sup></h2>
-  <div class="col-span-12 lg:col-span-4">
-    <p class="mb-3 text-base font-normal text-neutral-700 lg:duration-500 js-label_text_toggle"><span class="block mb-2 text-carnation-500 js-icon_toggle">{% icon_small "archive" %}</span> Self-archive articles<sup class="tooltip" title="">{% icon_small "help-circle" %}</sup></p>
-    <h3 class="font-semibold text-xl md:text-4xl mb-6 md:mb-12"><span class="block">Ask authors to share an Author-Accepted Manuscript</h3>
-    <p class="uppercase font-semibold text-neutral-700 text-lg"><span id="can_archive">00</span> closed-access articles<sup class="tooltip" title="">{% icon_small "help-circle" %}</sup></span></p>
-    <p class="uppercase text-neutral-700 text-lg mb-8">&uarr; <span class="sr-only">Increase</span> OA% up to <span id="can_archive_percent_oa"></span>%</p>
-  </div>
-  <div class="col-span-12 lg:col-span-8">
-    <div class="-mx-4 mt-8 overflow-hidden sm:-mx-6 md:mx-0 md:rounded-lg">
-      <table class="divide-y divide-neutral-300 table-fixed w-full">
-        <thead class="bg-neutral-800 text-white">
-          <tr>
-            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-5/12">Article</th>
-            <th scope="col" class="hidden px-3 py-3.5 text-left text-sm font-semibold w-4/12 sm:table-cell">Author(s)</th>
-            <th scope="col" class="hidden px-3 py-3.5 text-left text-sm font-semibold w-2/12 lg:table-cell">Published</th>
-            <th scope="col" class="text-sm font-semibold py-3.5 pl-3 pr-4 w-2/12">Open draft<sup class="tooltip" title="">{% icon_small "help-circle" %}</sup></th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-neutral-200 bg-white" id="can_archive_list">
+<section class="col-span-12">
+  <h2 class="text-lg leading-6 font-medium text-neutral-900">Strategies<sup class="tooltip" title="">{% icon_small "help-circle" %}</sup></h2>
+  <div class="mt-5 grid grid-cols-12 gap-6 md:gap-12">
+    <div class="col-span-12 lg:col-span-4">
+      <p class="mb-3 text-base font-normal text-neutral-700 lg:duration-500 js-label_text_toggle"><span class="block mb-2 text-carnation-500 js-icon_toggle">{% icon_small "archive" %}</span> Self-archive articles<sup class="tooltip" title="">{% icon_small "help-circle" %}</sup></p>
+      <h3 class="font-semibold text-xl md:text-4xl mb-6 md:mb-12"><span class="block">Ask authors to share an Author-Accepted Manuscript</h3>
+      <p class="uppercase font-semibold text-neutral-700 text-lg"><span id="can_archive">00</span> closed-access articles<sup class="tooltip" title="">{% icon_small "help-circle" %}</sup></span></p>
+      <p class="uppercase text-neutral-700 text-lg mb-8">&uarr; <span class="sr-only">Increase</span> OA% up to <span id="can_archive_percent_oa"></span>%</p>
+    </div>
+    <div class="col-span-12 lg:col-span-8">
+      <div class="-mx-4 mt-8 overflow-hidden sm:-mx-6 md:mx-0 md:rounded-lg">
+        <table class="divide-y divide-neutral-300 table-fixed w-full">
+          <thead class="bg-neutral-800 text-white">
+            <tr>
+              <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-5/12">Article</th>
+              <th scope="col" class="hidden px-3 py-3.5 text-left text-sm font-semibold w-4/12 sm:table-cell">Author(s)</th>
+              <th scope="col" class="hidden px-3 py-3.5 text-left text-sm font-semibold w-2/12 lg:table-cell">Published</th>
+              <th scope="col" class="text-sm font-semibold py-3.5 pl-3 pr-4 w-2/12">Open draft<sup class="tooltip" title="">{% icon_small "help-circle" %}</sup></th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-neutral-200 bg-white" id="can_archive_list">
 
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </section>
