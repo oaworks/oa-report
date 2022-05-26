@@ -9,10 +9,10 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
 
 <header class="col-span-12 mt-6 xl:mt-12 mb-6">
   <div class="flex justify-between">
-    <h1 class="text-3xl md:text-6xl font-serif">
+    <h1 class="text-3xl md:text-6xl font-light">
       {% if org._source.policy.supported_policy === true %}Put OA policy into practice at {% else %}Advance OA at {% endif %}
       <br/>
-      <strong class="font-bold">{{ org._source.name }}</strong></h1>
+      <strong class="font-black">{{ org._source.name }}</strong></h1>
     <figure class="block border border-neutral-700 h-36 w-96 p-6 flex"><p class="self-center m-auto">[LOGO WILL BE HERE]</p></figure>
   </div>
 </header>
