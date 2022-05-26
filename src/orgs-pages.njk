@@ -54,7 +54,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
       </div>
     </form> #}
     <div class="col-span-12 md:col-start-11">
-      <label for="email" class="mb-2 block text-base text-neutral-800">Download all data in CSV<sup data-tippy-content="Enter your email address to receive a link to a CSV for download. We do not save email addresses or use them for any purpose other than sending you the CSV file containing OAreport data when you request it.">{% icon_small "help-circle" %}</sup></label>
+      <label for="email" class="mb-2 block text-base text-neutral-800">Download all data in CSV<sup data-tippy-content="Enter your email address to receive a link to a CSV for download. <strong>We do not save email addresses or use them for any purpose</strong> other than sending you the CSV file containing OAreport data when you request it.">{% icon_small "help-circle" %}</sup></label>
       <div class="my-1 flex rounded-sm shadow-sm">
         <div class="relative flex items-stretch flex-grow focus-within:z-10">
           <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
@@ -134,12 +134,12 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
     <header class="col-span-12 lg:col-span-4">
       <p class="mb-3 text-base font-normal text-neutral-700 lg:duration-500 js-label_text_toggle"><span class="block mb-2 text-carnation-500 js-icon_toggle">{% icon_small "archive" %}</span> Self-archive articles</p>
       <h3 class="font-semibold text-xl md:text-4xl mb-6 md:mb-12">Ask authors to share an Author-Accepted Manuscript</h3>
-      <p class="text-base">Send emails for individual papers to request they be made open access.</p>
+      <p class="text-base">Send emails to authors to request that they make the <a href="https://docs.google.com/document/d/1c3OUNmGtWcW0_zqb3Z9vJehQpzckJLni1aG0SBBPNUQ/edit#heading=h.ao0mll9sf128" target="_blank" rel="noopener" class="underline">AAMs</a> of their articles available in Open Access.</p>
     </header>
     <div class="col-span-12 lg:col-span-8">
       <div class="flex justify-between">
         <div>
-          <p class="mb-1 text-neutral-900 text-lg leading-6"><span class="uppercase font-semibold"><span id="can_archive">00</span> closed-access articles</span></span><sup data-tippy-content="This number represents the number of articles that have the ability to be made open access for free but are currently behind a paywall. In these cases, the publishers allow for self-archiving an <a href='https://docs.google.com/document/d/1c3OUNmGtWcW0_zqb3Z9vJehQpzckJLni1aG0SBBPNUQ/edit#heading=h.ao0mll9sf128' target='_blank' rel='noopener'>author accepted manuscript (AAM) or postprint version</a> of the article in a repository. The AAM is the final version of the manuscript after formal peer-review but before being type-set by the publisher. It contains all revisions made during the peer-review process. ">{% icon_small "help-circle" %}</sup></p>
+          <p class="mb-1 text-neutral-900 text-lg leading-6"><span class="uppercase font-semibold"><span id="can_archive">00</span> closed-access articles</span></span><sup data-tippy-content="This number represents the number of articles that have the ability to be made open access for free but are currently behind a paywall. In these cases, the publishers allow for self-archiving an <a href='https://docs.google.com/document/d/1c3OUNmGtWcW0_zqb3Z9vJehQpzckJLni1aG0SBBPNUQ/edit#heading=h.ao0mll9sf128' target='_blank' rel='noopener' class='underline'>author accepted manuscript (AAM) or postprint version</a> of the article in a repository. The AAM is the final version of the manuscript after formal peer-review but before being type-set by the publisher. It contains all revisions made during the peer-review process. ">{% icon_small "help-circle" %}</sup></p>
           <p class="text-neutral-700 text-base">Showing the 10 most recently published articles</p>
         </div>
         <div class="text-right">
