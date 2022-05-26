@@ -19,14 +19,14 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
 
 <aside class="col-span-12">
   <div class="grid grid-cols-12 gap-6">
-    <form class="flex col-span-12 md:col-span-8" action="#">
-      <div>
+    <form class="grid grid-cols-12 gap-6 col-span-12 md:col-span-6" action="#">
+      <div class="col-span-6">
         <label for="report-start-date" class="mb-2 block text-base text-neutral-800">From</label>
-        <input type="date" name="report-start-date" id="report-start-date" class="focus:ring-azure-500 focus:border-azure-500 block w-full rounded-none rounded-l-sm sm:text-sm border-neutral-300 br" required>
+        <input type="date" name="report-start-date" id="report-start-date" class="focus:ring-azure-500 focus:border-azure-500 block w-full rounded-none rounded-l-sm sm:text-sm border-neutral-300" required>
       </div>
-      <div>
+      <div class="col-span-6">
         <label for="report-end-date" class="mb-2 block text-base text-neutral-800">To</label>
-        <input type="date" name="report-start-date" id="report-end-date" class="-ml-px focus:ring-azure-500 focus:border-azure-500 block w-full rounded-none rounded-l-sm sm:text-sm border-neutral-300" required>
+        <input type="date" name="report-start-date" id="report-end-date" class="focus:ring-azure-500 focus:border-azure-500 block w-full rounded-none rounded-l-sm sm:text-sm border-neutral-300" required>
       </div>
       {# <fieldset>
         <h3 class="mb-2 text-base">From</h3>
@@ -53,7 +53,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
         <button class="block p-1 md:p-2 border text-xs text-neutral-600 uppercase font-semibold hover:bg-neutral-600 hover:text-white active:bg-neutral-700 focus:outline-none focus:ring focus:ring-white js-csv_email-button"><span class='hidden md:inline'>Download </span>CSV</button>
       </div>
     </form> #}
-    <div class="col-span-12 md:col-span-4">
+    <div class="col-span-12 md:col-start-11">
       <label for="email" class="mb-2 block text-base text-neutral-800">Download all data in CSV<sup class="tooltip" title="">{% icon_small "help-circle" %}</sup></label>
       <div class="mt-1 flex rounded-sm shadow-sm">
         <div class="relative flex items-stretch flex-grow focus-within:z-10">
@@ -146,7 +146,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
         </div>
       </div>
 
-      <div class="-mx-4 mt-8 overflow-hidden sm:-mx-6 md:mx-0 md:rounded-lg">
+      <div class="-mx-4 my-8 overflow-hidden sm:-mx-6 md:mx-0 md:rounded-lg">
         <table class="divide-y divide-neutral-300 table-fixed w-full">
           <thead class="bg-neutral-800 text-white">
             <tr>
