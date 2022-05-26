@@ -130,13 +130,22 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
 <section class="col-span-12">
   <h2 class="text-lg leading-6 font-medium text-neutral-900">Strategies<sup class="tooltip" title="">{% icon_small "help-circle" %}</sup></h2>
   <div class="mt-5 grid grid-cols-12 gap-6 md:gap-12">
-    <div class="col-span-12 lg:col-span-4">
+    <header class="col-span-12 lg:col-span-4">
       <p class="mb-3 text-base font-normal text-neutral-700 lg:duration-500 js-label_text_toggle"><span class="block mb-2 text-carnation-500 js-icon_toggle">{% icon_small "archive" %}</span> Self-archive articles<sup class="tooltip" title="">{% icon_small "help-circle" %}</sup></p>
       <h3 class="font-semibold text-xl md:text-4xl mb-6 md:mb-12"><span class="block">Ask authors to share an Author-Accepted Manuscript</h3>
-      <p class="uppercase font-semibold text-neutral-700 text-lg"><span id="can_archive">00</span> closed-access articles<sup class="tooltip" title="">{% icon_small "help-circle" %}</sup></span></p>
-      <p class="uppercase text-neutral-700 text-lg mb-8">&uarr; <span class="sr-only">Increase</span> OA% up to <span id="can_archive_percent_oa"></span>%</p>
-    </div>
+    </header>
     <div class="col-span-12 lg:col-span-8">
+      <div class="flex justify-between">
+        <div>
+          <p class="mb-1 uppercase font-semibold text-neutral-900 text-lg leading-6"><span id="can_archive">00</span> closed-access articles<sup class="tooltip" title="">{% icon_small "help-circle" %}</sup></span></p>
+          <p class="text-neutral-700 text-base">Showing the 10 latest articles</p>
+        </div>
+        <div class="text-right">
+          <p class="mb-1 uppercase font-semibold text-neutral-900 text-lg leading-6">&uarr; <span class="sr-only">Increase</span> OA% up to <span id="can_archive_percent_oa"></span>%</p>
+            <p class="text-neutral-700 text-base">&hellip;if all articles are self-archived</p>
+        </div>
+      </div>
+
       <div class="-mx-4 mt-8 overflow-hidden sm:-mx-6 md:mx-0 md:rounded-lg">
         <table class="divide-y divide-neutral-300 table-fixed w-full">
           <thead class="bg-neutral-800 text-white">
