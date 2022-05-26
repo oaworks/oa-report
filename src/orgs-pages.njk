@@ -20,7 +20,15 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
 <aside class="col-span-12">
   <div class="grid grid-cols-12 gap-6">
     <form class="flex col-span-12 md:col-span-8" action="#">
-      <fieldset>
+      <div>
+        <label for="report-start-date" class="mb-2 block text-base text-neutral-800">From</label>
+        <input type="date" name="report-start-date" id="report-start-date" class="focus:ring-azure-500 focus:border-azure-500 block w-full rounded-none rounded-l-sm sm:text-sm border-neutral-300 br" required>
+      </div>
+      <div>
+        <label for="report-end-date" class="mb-2 block text-base text-neutral-800">To</label>
+        <input type="date" name="report-start-date" id="report-end-date" class="-ml-px focus:ring-azure-500 focus:border-azure-500 block w-full rounded-none rounded-l-sm sm:text-sm border-neutral-300" required>
+      </div>
+      {# <fieldset>
         <h3 class="mb-2 text-base">From</h3>
         <div class="flex">
           <input type="number" step="1" min="1900" max="2022" placeholder="YYYY" class="mr-3 p-1 md:p-2 border text-sm text-neutral-900 font-semibold">
@@ -35,7 +43,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
           <input type="number" step="1" min="1" max="12" placeholder="MM" class="mr-3 p-1 md:p-2 border text-sm text-neutral-900 font-semibold">
           <input type="number" step="1" min="1" max="31" placeholder="DD" class="p-1 md:p-2 border text-sm text-neutral-900 font-semibold">
         </div>
-      </fieldset>
+      </fieldset> #}
     </form>
 
     {# <form id="csv_download_insights" class="col-span-12 md:col-span-6 text-right" method="get" action="https://beta.oa.works/report/articles.csv?size=all&email=sophy@oa.works&q=%28published%3A%3E2021-01-01%20AND%20published%3A%3C2021-12-31%29%20AND%20%28author_affiliations%3A%2522Bill%20%20Melinda%20Gates%20Foundation%20%28All%29%2522%20OR%20author_affiliations%3A%2522bank%20of%20canada%2522%20OR%20author_affiliations%3A%2522Bill%20and%20Melinda%20Gates%20Foundation%2522%20OR%20author_affiliations%3A%2522Bill%20%20Melinda%20Gates%20Foundation%2522%20OR%20author_affiliations%3A%2522melinda%20gates%20foundation%2522%20OR%20funder_names%3A%2522Bill%20%20Melinda%20Gates%20Foundation%20%28All%29%2522%20OR%20funder_names%3A%2522bank%20of%20canada%2522%20OR%20funder_names%3A%2522Bill%20and%20Melinda%20Gates%20Foundation%2522%20OR%20funder_names%3A%2522Bill%20%20Melinda%20Gates%20Foundation%2522%20OR%20funder_names%3A%2522melinda%20gates%20foundation%2522%29">
@@ -45,8 +53,8 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
         <button class="block p-1 md:p-2 border text-xs text-neutral-600 uppercase font-semibold hover:bg-neutral-600 hover:text-white active:bg-neutral-700 focus:outline-none focus:ring focus:ring-white js-csv_email-button"><span class='hidden md:inline'>Download </span>CSV</button>
       </div>
     </form> #}
-    <form id="csv_download_insights" class="col-span-12 md:col-span-4" method="get" action="">
-      <label for="email" class="mb-2 block text-base text-neutral-800">Download <i>Insights</i> in CSV<sup class="tooltip" title="">{% icon_small "help-circle" %}</sup></label>
+    <form id="csv_download_insights" class="col-span-12 md:col-span-4" method="get" action="https://beta.oa.works/report/articles.csv?size=all&email=sophy@oa.works&q=%28author_affiliations%3A%2522Bill%20%20Melinda%20Gates%20Foundation%20%28All%29%2522%20OR%20author_affiliations%3A%2522bank%20of%20canada%2522%20OR%20author_affiliations%3A%2522Bill%20and%20Melinda%20Gates%20Foundation%2522%20OR%20author_affiliations%3A%2522Bill%20%20Melinda%20Gates%20Foundation%2522%20OR%20author_affiliations%3A%2522melinda%20gates%20foundation%2522%20OR%20funder_names%3A%2522Bill%20%20Melinda%20Gates%20Foundation%20%28All%29%2522%20OR%20funder_names%3A%2522bank%20of%20canada%2522%20OR%20funder_names%3A%2522Bill%20and%20Melinda%20Gates%20Foundation%2522%20OR%20funder_names%3A%2522Bill%20%20Melinda%20Gates%20Foundation%2522%20OR%20funder_names%3A%2522melinda%20gates%20foundation%2522%29">
+      <label for="email" class="mb-2 block text-base text-neutral-800">Download all data in CSV<sup class="tooltip" title="">{% icon_small "help-circle" %}</sup></label>
       <div class="mt-1 flex rounded-sm shadow-sm">
         <div class="relative flex items-stretch flex-grow focus-within:z-10">
           <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
@@ -54,8 +62,8 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
           </div>
           <input type="email" name="email" id="email" class="focus:ring-azure-500 focus:border-azure-500 block w-full rounded-none rounded-l-sm pl-10 sm:text-sm border-neutral-300" placeholder="you@example.com" required>
         </div>
-        <button type="button" class="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 border border-neutral-300 text-sm font-medium rounded-r-sm text-neutral-800 bg-white hover:bg-azure-500 hover:text-white focus:outline-none focus:ring-1 focus:ring-azure-500 focus:border-azure-500 duration-500">
-          <span>Download</span>
+        <button type="submit" class="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 border border-neutral-300 text-sm font-medium rounded-r-sm text-neutral-800 bg-white hover:bg-azure-500 hover:text-white focus:outline-none focus:ring-1 focus:ring-azure-500 focus:border-azure-500 duration-500">
+          Download
         </button>
       </div>
     </form>
@@ -120,11 +128,12 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
 </section>
 
 <section class="col-span-12 grid grid-cols-12 gap-6 md:gap-12 mb-6">
-  <h2 class="col-span-12 font-serif text-lg md:text-3xl text-neutral-600">Strategies<sup class="tooltip" title="">{% icon_small "help-circle" %}</sup></h2>
+  <h2 class="col-span-12 font-medium text-lg text-neutral-900">Strategies<sup class="tooltip" title="">{% icon_small "help-circle" %}</sup></h2>
   <div class="col-span-12 lg:col-span-4">
-    <span class="block mb-3">{% icon "archive" %}</span>
-    <h3 class="font-semibold text-xl md:text-4xl mb-2"><span class="block"><span id="can_archive">00</span> archivable articles (AAMs)<sup class="tooltip" title="">{% icon_small "help-circle" %}</sup></span></h3>
-    <p class="uppercase font-semibold text-neutral-700 text-lg mb-8">&uarr; OA up to <span id="can_archive_percent_oa"></span>%</p>
+    <p class="mb-3 text-base font-normal text-neutral-700 lg:duration-500 js-label_text_toggle"><span class="block mb-2 text-carnation-500 js-icon_toggle">{% icon_small "archive" %}</span> Self-archive articles<sup class="tooltip" title="">{% icon_small "help-circle" %}</sup></p>
+    <h3 class="font-semibold text-xl md:text-4xl mb-8"><span class="block">Ask authors to share an Author Accepted Manuscript</h3>
+    <p class="uppercase font-semibold text-neutral-700 text-lg"><span id="can_archive">00</span> authors to contact<sup class="tooltip" title="">{% icon_small "help-circle" %}</sup></span></p>
+    <p class="uppercase text-neutral-700 text-lg mb-8">&uarr; <span class="sr-only">Increase</span> OA% up to <span id="can_archive_percent_oa"></span>%</p>
     <form class="mb-6">
       <label for="csv_download_archivable_aam_email" class="sr-only">Email:</label>
       <div class="flex">
