@@ -39,7 +39,10 @@ oareport = function(org) {
       if (validEmailInput) {
         var inputEmailValue = inputEmailField.value;
         downloadAllArticles = csvExportBase + "email=" + inputEmailValue + "&" + response.data.hits.hits[0]._source.analysis.is_paper;
+        csvEmailButton.setAttribute('download', true);
+        csvEmailButton.setAttribute('target', '_blank');
         csvEmailButton.setAttribute('href', downloadAllArticles);
+        document.querySelector("#csv_email_msg").textContent = "Your CSV export has started. Please check your email to get an update once it’s ready."
       }
     };
 
@@ -55,11 +58,9 @@ oareport = function(org) {
     // First get the policy’s URL & compliance number
     // Then insert an extra column showing compliance rates
     let complianceContents = document.querySelector("#compliance");
-
     if (hasPolicy === true) {
       policyURL = response.data.hits.hits[0]._source.policy.url;
       isCompliant = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.compliance);
-      console.log("query for complianceRate: " + countQueryBase + response.data.hits.hits[0]._source.analysis.compliance);
     } else {
       // Indicate that there are are no policies and hide compliance number
       document.querySelector("#articles_compliant").outerHTML = "";
