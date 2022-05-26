@@ -2,7 +2,7 @@ const base           = 'https://beta.oa.works/report/',
       queryBase      = base + "articles?",
       countQueryBase = base + "articles/count?",
       csvExportBase  = base + "articles.csv?size=all&";
-let isPaper, isOA, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, downloadAllArchivableAAM, hasPolicy, policyURL;
+let isPaper, isOA, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL;
 let isCompliant = false;
 
 // Detect browser’s locale to display human-readable numbers
@@ -28,32 +28,22 @@ oareport = function(org) {
     console.log("query for canArchiveAAM: " + queryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
     console.log("query for isPaper: " + queryBase + response.data.hits.hits[0]._source.analysis.is_paper);
 
-    // Add CSV download buttons
-    downloadAllArticles = csvExportBase + response.data.hits.hits[0]._source.analysis.is_paper;
-    // downloadAllArchivableAAM = csvExportBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query;
+    // Get email for CSV downloads
+    let csvEmailButton = document.querySelector(".js-csv_email_button");
 
-    // Download all Insights (all articles tracked)
-    csvDownloadInsightsContents = document.querySelector("#csv_download_insights");
-    csvDownloadInsightsContents.setAttribute('action', downloadAllArticles);
-
-    // Download all Actions (archivable AAMs)
-    // csvDownloadArchivableAAMContents = document.querySelector("#csv_download_archivable_aam");
-    // csvDownloadArchivableAAMContents.setAttribute('href', downloadAllArchivableAAM);
-
-    // TODO: Get email for CSV downloads
     var getEmailInput = function (event) {
-      let inputEmail = document.querySelector(".js-csv_email-button").previousElementSibling.value;
+      var inputEmailField = document.querySelector(".js-csv_email_input"),
+          validEmailInput = inputEmailField.checkValidity();
 
-      downloadAllArticles = csvExportBase + "email=" + inputEmail + "&" + response.data.hits.hits[0]._source.analysis.is_paper;
-      // downloadAllArchivableAAM = csvExportBase + "email=" + inputEmail + "&" + response.data.hits.hits[0]._source.strategy.email_author_aam.query;
-
-      csvDownloadInsightsContents.setAttribute('href', downloadAllArticles);
-      // csvDownloadArchivableAAMContents.setAttribute('href', downloadAllArchivableAAM);
+      // If email input is valid, get value to build download URL
+      if (validEmailInput) {
+        var inputEmailValue = inputEmailField.value;
+        downloadAllArticles = csvExportBase + "email=" + inputEmailValue + "&" + response.data.hits.hits[0]._source.analysis.is_paper;
+        csvEmailButton.setAttribute('href', downloadAllArticles);
+      }
     };
 
-    // let csvEmailButton = document.querySelector(".js-csv_email-button");
-    // csvEmailButton.addEventListener('input', getEmailInput, false);
-    // csvEmailButton.addEventListener('click', getEmailInput, false);
+    csvEmailButton.addEventListener('click', getEmailInput, false);
 
     // Get values from org index
     canArchiveAAMMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
@@ -92,8 +82,6 @@ oareport = function(org) {
             canArchiveContents = document.querySelector("#can_archive"),
             canArchiveList = document.querySelector("#can_archive_list"),
             canArchiveOaPercentageContents = document.querySelector("#can_archive_percent_oa");
-            // canArchiveLatestContents = document.querySelector("#can_archive_latest"),
-            // canArchiveLatestJournalContents = document.querySelector("#can_archive_latest_journal");
 
         // "Insights" section: display totals and % of articles, OA articles, and compliant articles
         articlesContents.textContent = isPaper.toLocaleString(getUsersLocale());
