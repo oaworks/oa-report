@@ -37,3 +37,7 @@
 .tippy-arrow {
   color: #fff;
 }
+
+[data-tippy-content] {
+  cursor: pointer;
+}
