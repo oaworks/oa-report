@@ -23,11 +23,11 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
       <h2 class="sr-only">Filter by date</h2>
       <div class="col-span-6">
         <label for="report-start-date" class="mb-2 block text-base text-neutral-800">From</label>
-        <input type="date" name="report-start-date" id="report-start-date" class="focus:ring-carnation-500 focus:border-carnation-500 block w-full rounded-none rounded-l-sm sm:text-sm border-neutral-300" required>
+        <input type="date" name="report-start-date" id="report-start-date" class="focus:ring-carnation-500 focus:border-carnation-500 block w-full sm:text-sm shadow-md rounded-md border-0" required>
       </div>
       <div class="col-span-6">
         <label for="report-end-date" class="mb-2 block text-base text-neutral-800">To</label>
-        <input type="date" name="report-start-date" id="report-end-date" class="focus:ring-carnation-500 focus:border-carnation-500 block w-full rounded-none rounded-l-sm sm:text-sm border-neutral-300" required>
+        <input type="date" name="report-start-date" id="report-end-date" class="focus:ring-carnation-500 focus:border-carnation-500 block w-full sm:text-sm shadow-md rounded-md border-0" required>
       </div>
     </section>
     {# <button class="block px-4 py-2 border border-neutral-300 text-sm font-medium rounded-r-sm text-neutral-800 bg-white hover:bg-carnation-500 hover:text-white hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-500 focus:border-carnation-500 focus:border-carnation-500 duration-500 js-date_range_button">
@@ -48,10 +48,10 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
           <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
             {% icon_small "mail" %}
           </div>
-          <input type="email" name="email" id="email" class="focus:ring-carnation-500 focus:border-carnation-500 block w-full rounded-none rounded-l-sm pl-10 sm:text-sm border-neutral-300 js-csv_email_input" placeholder="you@example.com" required>
+          <input type="email" name="email" id="email" class="focus:ring-carnation-500 focus:border-carnation-500 block w-full rounded-none rounded-l-md pl-10 sm:text-sm shadow-md border-0 js-csv_email_input" placeholder="you@example.com" required>
         </div>
-        <a href="#" class="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 border border-neutral-300 text-sm font-medium rounded-r-sm text-neutral-800 bg-white hover:bg-carnation-500 hover:text-white hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-500 focus:border-carnation-500 focus:border-carnation-500 duration-500 js-csv_email_button">
-          Download
+        <a href="#" class="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-r-md text-neutral-900 bg-neutral-50 hover:bg-carnation-500 hover:text-white hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-500 focus:border-carnation-500 focus:border-carnation-500 duration-500 shadow-md border-0 js-csv_email_button">
+          Send CSV
         </a>
       </div>
       <p class="leading-5 text-xs text-neutral-600" id="csv_email_msg"></p>
@@ -68,7 +68,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
   </section> #}
 </aside>
 
-<section class="col-span-12 grid grid-cols-12 gap-6 lg:sticky lg:z-10 top-0 mb-4 pt-4 bg-[#F4F0F0]">
+<section class="col-span-12 grid grid-cols-12 gap-6 lg:sticky lg:z-10 top-0 mb-2 pt-2 bg-[#F4F0F0]">
   <div class="col-span-12">
     <h2 class="text-lg leading-6 font-medium text-neutral-900">Insights from 1 Jan — 31 Dec 2021<sup data-tippy-content="The <em>Insights</em> section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/' target='_blank' class='underline'>infrastructure page</a>.">{% icon_small "help-circle" %}</sup></h2>
     <dl class="mt-5 grid grid-cols-1 rounded-lg bg-white overflow-hidden drop-shadow-lg divide-y divide-neutral-100 md:grid-cols-3 md:divide-y-0 md:divide-x">
