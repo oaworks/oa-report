@@ -18,8 +18,9 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
 </header>
 
 <aside class="col-span-12">
-  <div class="grid grid-cols-12 gap-6">
-    <div class="grid grid-cols-12 gap-6 col-span-12 md:col-span-6">
+  <div class="mb-3 grid grid-cols-12 gap-6">
+    <section class="grid grid-cols-12 gap-6 col-span-12 md:col-span-6">
+      <h2 class="sr-only">Filter by date</h2>
       <div class="col-span-6">
         <label for="report-start-date" class="mb-2 block text-base text-neutral-800">From</label>
         <input type="date" name="report-start-date" id="report-start-date" class="focus:ring-carnation-500 focus:border-carnation-500 block w-full rounded-none rounded-l-sm sm:text-sm border-neutral-300" required>
@@ -28,23 +29,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
         <label for="report-end-date" class="mb-2 block text-base text-neutral-800">To</label>
         <input type="date" name="report-start-date" id="report-end-date" class="focus:ring-carnation-500 focus:border-carnation-500 block w-full rounded-none rounded-l-sm sm:text-sm border-neutral-300" required>
       </div>
-      {# <fieldset>
-        <h3 class="mb-2 text-base">From</h3>
-        <div class="flex">
-          <input type="number" step="1" min="1900" max="2022" placeholder="YYYY" class="mr-3 p-1 md:p-2 border text-sm text-neutral-900 font-semibold">
-          <input type="number" step="1" min="1" max="12" placeholder="MM" class="mr-3 p-1 md:p-2 border text-sm text-neutral-900 font-semibold">
-          <input type="number" step="1" min="1" max="31" placeholder="DD" class="mr-8 p-1 md:p-2 border text-sm text-neutral-900 font-semibold">
-        </div>
-      </fieldset>
-      <fieldset>
-        <h3 class="mb-2 text-base">To</h3>
-        <div class="flex">
-          <input type="number" step="1" min="1900" max="2022" placeholder="YYYY" class="mr-3 p-1 md:p-2 border text-sm text-neutral-900 font-semibold">
-          <input type="number" step="1" min="1" max="12" placeholder="MM" class="mr-3 p-1 md:p-2 border text-sm text-neutral-900 font-semibold">
-          <input type="number" step="1" min="1" max="31" placeholder="DD" class="p-1 md:p-2 border text-sm text-neutral-900 font-semibold">
-        </div>
-      </fieldset> #}
-    </div>
+    </section>
     {# <button class="block px-4 py-2 border border-neutral-300 text-sm font-medium rounded-r-sm text-neutral-800 bg-white hover:bg-carnation-500 hover:text-white hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-500 focus:border-carnation-500 focus:border-carnation-500 duration-500 js-date_range_button">
       Filter
     </button> #}
@@ -72,6 +57,15 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
       <p class="leading-5 text-xs text-neutral-600" id="csv_email_msg"></p>
     </div>
   </div>
+
+  {# TODO: see if this is something that would be useful #}
+  {# <section>
+    <h2 class="sr-only">Quick date filters</h2>
+    <a href="#" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-white text-neutral-900">Last 3 months</a>
+    <a href="#" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-white text-neutral-900">Last 6 months</a>
+    <a href="#" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-white text-neutral-900">Last 12 months</a>
+    <a href="#" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-white text-neutral-900">Last 5 years</a>
+  </section> #}
 </aside>
 
 <section class="col-span-12 grid grid-cols-12 gap-6 lg:sticky lg:z-10 top-0 mb-4 pt-4 bg-[#F4F0F0]">
@@ -108,27 +102,6 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
       </div>
     </dl>
   </div>
-  {# <header class="col-span-12 flex justify-between">
-    <h2 class="font-serif text-lg md:text-3xl text-neutral-600 lg:duration-500 js-header_text_toggle">
-      Insights from 1 Jan — 31 Dec 2021<sup title="The Insights section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/'>infrastructure page</a>.">{% icon_small "help-circle" %}</sup>
-    </h2>
-  </header>
-  <article class="col-span-6 lg:col-span-4 mb-3">
-    <h3 class="mb-3 uppercase font-semibold text-base lg:duration-500 js-label_text_toggle"><span class="block mb-3 js-icon_toggle">{% icon "file-text" %}</span> articles published<sup data-tippy-content="">{% icon_small "help-circle" %}</sup></h3>
-    <p class="text-4xl md:text-7xl font-light lg:duration-500 js-data_text_toggle" id="js-articles_container">
-      <span id="articles">000</span>
-    </p>
-  </article>
-
-  <article class="col-span-6 lg:col-span-4 mb-3">
-    <h3 class="mb-3 uppercase font-semibold text-base lg:duration-500 js-label_text_toggle"><span class="block mb-3 js-icon_toggle">{% icon "unlock" %}</span> Open Access articles<sup data-tippy-content="">{% icon_small "help-circle" %}</sup></h3>
-    <p class="text-4xl md:text-7xl font-light lg:duration-500 js-data_text_toggle" id="js-articles_oa_container"><span id="percent_oa">00</span><sup class="align-top top-0"> <span class="text-lg text-neutral-500 font-normal">(<span id="articles_oa">000</span>)</span></sup></p>
-  </article>
-
-  <article class="col-span-6 lg:col-span-4 mb-3" id="compliance">
-    <h3 class="mb-3 uppercase font-semibold text-base lg:duration-500 js-label_text_toggle"><span class="block mb-3 js-icon_toggle">{% icon "check-circle" %}</span> policy-compliant articles<sup data-tippy-content="">{% icon_small "help-circle" %}</sup></h3>
-    <p class="text-4xl md:text-7xl font-light lg:duration-500 js-data_text_toggle" id="js-compliant_container"><span id="percent_compliant">00</span><sup class="align-top top-0"> <span class="text-lg text-neutral-500 font-normal">(<span id="articles_compliant">000</span>)</span></sup></p>
-  </article> #}
 </section>
 
 <section class="col-span-12">
@@ -168,40 +141,3 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
     </div>
   </div>
 </section>
-
-{# <script>
-// Get the sticky Insights bar & reduce size of text on scroll
-// TODO: Optimise this....
-window.onscroll = function() {scrollFunction()};
-
-const headerTextToggle = document.querySelector(".js-header_text_toggle"),
-      labelTextToggle  = document.querySelectorAll(".js-label_text_toggle"),
-      dataTextToggle   = document.querySelectorAll(".js-data_text_toggle"),
-      iconToggle       = document.querySelectorAll(".js-icon_toggle svg");
-
-function scrollFunction() {
-  if (document.body.scrollTop > 50 || document.documentElement.scrollTop > 50) {
-    headerTextToggle.classList.remove("lg:text-3xl");
-    headerTextToggle.classList.add("lg:text-xl");
-
-    for (let i = 0; i < dataTextToggle.length; i++) {
-      labelTextToggle[i].classList.remove("lg:text-base");
-      labelTextToggle[i].classList.add("lg:text-xs");
-      dataTextToggle[i].classList.remove("lg:text-7xl");
-      dataTextToggle[i].classList.add("lg:text-4xl");
-      iconToggle[i].classList.add("lg:h-4");
-    }
-  } else {
-    headerTextToggle.classList.remove("lg:text-xl");
-    headerTextToggle.classList.add("lg:text-3xl");
-
-    for (let i = 0; i < dataTextToggle.length; i++) {
-      labelTextToggle[i].classList.remove("lg:text-xs");
-      labelTextToggle[i].classList.add("lg:text-base");
-      dataTextToggle[i].classList.remove("lg:text-4xl");
-      dataTextToggle[i].classList.add("lg:text-7xl");
-      iconToggle[i].classList.remove("lg:h-4");
-    }
-  }
-}
-</script> #}
