@@ -10,6 +10,12 @@ getUsersLocale = function() {
   return navigator.languages && navigator.languages.length ? navigator.languages[0] : navigator.language;
 };
 
+subtractMonths = function(numOfMonths, date) {
+  const dateCopy = new Date(date.getTime());
+  dateCopy.setMonth(dateCopy.getMonth() - numOfMonths);
+  return dateCopy;
+}
+
 // Set readable date options
 var readableDateOptions = {
   day: 'numeric',
@@ -26,15 +32,21 @@ oareport = function(org) {
 
   axios.get(report).then(response => {
     // Get today’s date to display most recent insights data
-    let currentDate         = new Date(),
-        currentDateISO      = currentDate.toISOString().substring(0, 10);
-        currentDateReadable = currentDate.toLocaleString(getUsersLocale(), readableDateOptions);
+    let currentDate          = new Date(),
+        currentDateISO       = currentDate.toISOString().substring(0, 10),
+        currentDateReadable  = currentDate.toLocaleString(getUsersLocale(), readableDateOptions),
+        lastYearDate         = subtractMonths(12, currentDate),
+        lastYearDateISO      = lastYearDate.toISOString().substring(0, 10),
+        lastYearDateReadable = lastYearDate.toLocaleString(getUsersLocale(), readableDateOptions);
 
-    let currentDateContents = document.querySelector("#current-date");
-    currentDateContents.textContent = currentDateReadable;
+    let endDateContents      = document.querySelector("#end-date"),
+        startDateContents    = document.querySelector("#start-date");
+
+    endDateContents.textContent = currentDateReadable;
+    startDateContents.textContent = lastYearDateReadable;
 
     // Get all queries for a set date range and size
-    startDate      = "2020-01-01";
+    startDate      = lastYearDateISO
     endDate        = currentDateISO;
     dateRange      = "%20AND%20published:>" + startDate + "%20AND%20published:<" + endDate;
     recordSize     = "&size=100";
