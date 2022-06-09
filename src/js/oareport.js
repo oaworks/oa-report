@@ -10,11 +10,12 @@ getUsersLocale = function() {
   return navigator.languages && navigator.languages.length ? navigator.languages[0] : navigator.language;
 };
 
+// Subtract any number of months from a date
 subtractMonths = function(numOfMonths, date) {
   const dateCopy = new Date(date.getTime());
   dateCopy.setMonth(dateCopy.getMonth() - numOfMonths);
   return dateCopy;
-}
+};
 
 // Set readable date options
 var readableDateOptions = {
@@ -31,7 +32,7 @@ oareport = function(org) {
   console.log("report: " + base + "orgs?q=name:%22" + org + "%22");
 
   axios.get(report).then(response => {
-    // Get today’s date to display most recent insights data
+    // Get today’s date and 12 months ago date to display most recent insights data
     let currentDate          = new Date(),
         currentDateISO       = currentDate.toISOString().substring(0, 10),
         currentDateReadable  = currentDate.toLocaleString(getUsersLocale(), readableDateOptions),
@@ -40,16 +41,53 @@ oareport = function(org) {
         lastYearDateReadable = lastYearDate.toLocaleString(getUsersLocale(), readableDateOptions);
 
     let endDateContents      = document.querySelector("#end-date"),
-        startDateContents    = document.querySelector("#start-date");
+        startDateContents    = document.querySelector("#start-date"),
+        startDate            = "",
+        endDate              = "";
 
+    // Set last 12 months as default displayed Insights
     endDateContents.textContent = currentDateReadable;
     startDateContents.textContent = lastYearDateReadable;
 
     // Get all queries for a set date range and size
-    let startDate      = lastYearDateISO,
-        endDate        = currentDateISO,
-        dateRange      = "%20AND%20published:>" + startDate + "%20AND%20published:<" + endDate,
+    startDate         = lastYearDateISO;
+    endDate           = currentDateISO;
+
+    let dateRange      = "%20AND%20published:>" + startDate + "%20AND%20published:<" + endDate,
         recordSize     = "&size=100";
+
+    // Filter by dates
+    let threeMonthsAgo  = subtractMonths(3, currentDate),
+        sixMonthsAgo    = subtractMonths(6, currentDate),
+        fiveYearsAgo    = subtractMonths(60, currentDate);
+
+    var replaceStartDate = function (date) {
+      startDateContents.textContent = date.toLocaleString(getUsersLocale(), readableDateOptions);
+      startDate = date.toISOString().substring(0, 10);
+      dateRange = "%20AND%20published:>" + startDate + "%20AND%20published:<" + endDate;
+      console.log(dateRange);
+    };
+
+    const threeMonthsBtn = document.querySelector("#three-months"),
+          sixMonthsBtn = document.querySelector("#six-months"),
+          twelveMonthsBtn = document.querySelector("#twelve-months"),
+          fiveYearsBtn = document.querySelector("#five-years");
+
+    threeMonthsBtn.addEventListener('click', event => {
+      replaceStartDate(threeMonthsAgo)
+    });
+
+    sixMonthsBtn.addEventListener('click', event => {
+      replaceStartDate(sixMonthsAgo)
+    });
+
+    twelveMonthsBtn.addEventListener('click', event => {
+      replaceStartDate(lastYearDate)
+    });
+
+    fiveYearsBtn.addEventListener('click', event => {
+      replaceStartDate(fiveYearsAgo)
+    });
 
     // ...for article counts
     isPaper        = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.is_paper + dateRange);
@@ -106,7 +144,7 @@ oareport = function(org) {
     let complianceContents = document.querySelector("#compliance");
     if (hasPolicy === true) {
       policyURL = response.data.hits.hits[0]._source.policy.url;
-      isCompliant = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.compliance);
+      isCompliant = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.compliance + dateRange);
     } else {
       // Indicate that there are are no policies and hide compliance number
       document.querySelector("#articles_compliant").outerHTML = "";
