@@ -24,8 +24,9 @@ oareport = function(org) {
     isOA           = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.is_oa);
     canArchiveAAM  = axios.get(countQueryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
     // ...for records
-    canArchiveAAMList = axios.get(queryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
-    console.log("query for canArchiveAAM: " + queryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
+    canArchiveAAMList = axios.get(queryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query + "&size=100");
+    console.log("query for canArchiveAAMList: " + queryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query + "&size=100");
+    console.log("query for canArchiveAAM: " + countQueryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query)
     console.log("query for isPaper: " + queryBase + response.data.hits.hits[0]._source.analysis.is_paper);
 
     // Get date range input for filtering
@@ -61,7 +62,6 @@ oareport = function(org) {
     canArchiveAAMMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
     canArchiveAAMMailto = canArchiveAAMMailto.replaceAll('\'', '’');
     hasPolicy = response.data.hits.hits[0]._source.policy.supported_policy;
-    console.log("canArchiveAAMMailto: " + canArchiveAAMMailto);
 
     // If the org has a formal OA policy:
     // First get the policy’s URL & compliance number
@@ -109,20 +109,22 @@ oareport = function(org) {
         canArchiveOaPercentageContents.textContent = Math.round(((((isOA+canArchiveAAM))/isPaper)*100));
 
         // Set up and get list of emails for archivable AAMs
-        let canArchiveListItems = "";
+        var canArchiveListItems = "";
         canArchiveLength = canArchiveAAMList.length;
         var readableDateOptions = {
           day: 'numeric',
           month: 'long',
           year: 'numeric'
         };
+
         for (i = 0; i <= (canArchiveLength-1); i++) {
-          let title = canArchiveAAMList[i]._source.title,
-              author = canArchiveAAMList[i]._source.author_names[0],
+          var title = canArchiveAAMList[i]._source.title,
+              // author = canArchiveAAMList[i]._source.author_names[0],
               doi   = canArchiveAAMList[i]._source.DOI,
               pubDate = canArchiveAAMList[i]._source.published,
               journal = canArchiveAAMList[i]._source.journal;
           pubDate = new Date(pubDate).toLocaleString(getUsersLocale(), readableDateOptions);
+
           /*jshint multistr: true */
           canArchiveListItems += '<tr>\
             <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
@@ -132,7 +134,7 @@ oareport = function(org) {
               </div>\
               <div class="text-neutral-500">' + journal + '</div>\
             </td>\
-            <td class="hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell">' + author + '</td>\
+            <td class="hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell">' + "No authors" + '</td>\
             <td class="whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium">\
               <a href="mailto:' + canArchiveAAMMailto + '" target="_blank" rel="noopener" class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200">\
                 <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail inline-block h-4 duration-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>\
@@ -140,8 +142,8 @@ oareport = function(org) {
             </td>\
           </tr>';
         }
-        canArchiveList.innerHTML = canArchiveListItems;
 
+        canArchiveList.innerHTML = canArchiveListItems;
       }
     ).catch(error => console.error("ERROR: " + error));
   })
