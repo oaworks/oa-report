@@ -1,8 +1,8 @@
 const base           = 'https://beta.oa.works/report/',
-      queryBase      = base + "articles?",
-      countQueryBase = base + "articles/count?",
-      csvExportBase  = base + "articles.csv?size=all&";
-let isPaper, isOA, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL;
+      queryBase      = base + "works?",
+      countQueryBase = base + "works/count?",
+      csvExportBase  = base + "works.csv?size=all&";
+let isPaper, isOA, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL, dateRangeButton, csvEmailButton;
 let isCompliant = false;
 
 // Detect browser’s locale to display human-readable numbers
@@ -28,8 +28,18 @@ oareport = function(org) {
     console.log("query for canArchiveAAM: " + queryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
     console.log("query for isPaper: " + queryBase + response.data.hits.hits[0]._source.analysis.is_paper);
 
+    // Get date range input for filtering
+    // var dateRangeButton = document.querySelector(".js-date_range_button");
+    //
+    // var getDateRangeInput = function (event) {
+    //   var startDateInputFieldValue = document.querySelector("#report-start-date").value,
+    //       endDateInputFieldValue = document.querySelector("#report-end-date").value;
+    // };
+    //
+    // dateRangeButton.addEventListener('click', getDateRangeInput, false);
+
     // Get email for CSV downloads
-    let csvEmailButton = document.querySelector(".js-csv_email_button");
+    var csvEmailButton = document.querySelector(".js-csv_email_button");
 
     var getEmailInput = function (event) {
       var inputEmailField = document.querySelector(".js-csv_email_input"),
@@ -45,7 +55,6 @@ oareport = function(org) {
         document.querySelector("#csv_email_msg").textContent = "Your CSV export has started. Please check your email to get an update once it’s ready."
       }
     };
-
     csvEmailButton.addEventListener('click', getEmailInput, false);
 
     // Get values from org index
