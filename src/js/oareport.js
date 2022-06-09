@@ -2,7 +2,7 @@ const base           = 'https://beta.oa.works/report/',
       queryBase      = base + "works?",
       countQueryBase = base + "works/count?",
       csvExportBase  = base + "works.csv?size=all&";
-let dateRange, startDate, endDate, recordSize, isPaper, isOA, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL, dateRangeButton, csvEmailButton;
+let isPaper, isOA, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL, dateRangeButton, csvEmailButton;
 let isCompliant = false;
 
 // Detect browser’s locale to display human-readable numbers
@@ -46,10 +46,10 @@ oareport = function(org) {
     startDateContents.textContent = lastYearDateReadable;
 
     // Get all queries for a set date range and size
-    startDate      = lastYearDateISO
-    endDate        = currentDateISO;
-    dateRange      = "%20AND%20published:>" + startDate + "%20AND%20published:<" + endDate;
-    recordSize     = "&size=100";
+    let startDate      = lastYearDateISO,
+        endDate        = currentDateISO,
+        dateRange      = "%20AND%20published:>" + startDate + "%20AND%20published:<" + endDate,
+        recordSize     = "&size=100";
 
     // ...for article counts
     isPaper        = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.is_paper + dateRange);
