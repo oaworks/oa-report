@@ -71,7 +71,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
 
 <section class="col-span-12 grid grid-cols-12 gap-6 top-0 mb-2 pt-2 bg-[#F4F0F0]">
   <div class="col-span-12">
-    <h2 class="text-lg leading-6 font-medium text-neutral-900">Insights from 1 Jan — 31 Dec 2021<sup data-tippy-content="The <em>Insights</em> section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/' target='_blank' class='underline'>infrastructure page</a>.">{% icon_small "help-circle" %}</sup></h2>
+    <h2 class="text-lg leading-6 font-medium text-neutral-900">Insights from 1 Jan — <span id="current-date"></span><sup data-tippy-content="The <em>Insights</em> section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/' target='_blank' class='underline'>infrastructure page</a>.">{% icon_small "help-circle" %}</sup></h2>
     <dl class="mt-5 grid grid-cols-1 rounded-lg bg-white overflow-hidden drop-shadow-lg divide-y divide-neutral-100 md:grid-cols-3 md:divide-y-0 md:divide-x">
       <div class="px-4 py-5 sm:p-6">
         <dt class="mb-3 text-base font-normal text-neutral-700 lg:duration-500 js-label_text_toggle"><span class="block mb-2 text-carnation-500 js-icon_toggle">{% icon_small "file-text" %}</span> Articles published<sup data-tippy-content="The total number of articles published by grantees <strong>or</strong> authors at your organization.">{% icon_small "help-circle" %}</sup></dt>

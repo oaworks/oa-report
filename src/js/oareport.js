@@ -2,12 +2,19 @@ const base           = 'https://beta.oa.works/report/',
       queryBase      = base + "works?",
       countQueryBase = base + "works/count?",
       csvExportBase  = base + "works.csv?size=all&";
-let isPaper, isOA, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL, dateRangeButton, csvEmailButton;
+let dateRange, startDate, endDate, recordSize, isPaper, isOA, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL, dateRangeButton, csvEmailButton;
 let isCompliant = false;
 
 // Detect browser’s locale to display human-readable numbers
 getUsersLocale = function() {
   return navigator.languages && navigator.languages.length ? navigator.languages[0] : navigator.language;
+};
+
+// Set readable date options
+var readableDateOptions = {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric'
 };
 
 // Get organisational data to produce reports
@@ -18,16 +25,34 @@ oareport = function(org) {
   console.log("report: " + base + "orgs?q=name:%22" + org + "%22");
 
   axios.get(report).then(response => {
-    // Get all queries
+    // Get today’s date to display most recent insights data
+    let currentDate         = new Date(),
+        currentDateISO      = currentDate.toISOString().substring(0, 10);
+        currentDateReadable = currentDate.toLocaleString(getUsersLocale(), readableDateOptions);
+
+    let currentDateContents = document.querySelector("#current-date");
+    currentDateContents.textContent = currentDateReadable;
+
+    // Get all queries for a set date range and size
+    startDate      = "2020-01-01";
+    endDate        = currentDateISO;
+    dateRange      = "%20AND%20published:>" + startDate + "%20AND%20published:<" + endDate;
+    recordSize     = "&size=100";
+
     // ...for article counts
-    isPaper        = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.is_paper);
-    isOA           = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.is_oa);
-    canArchiveAAM  = axios.get(countQueryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
+    isPaper        = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.is_paper + dateRange);
+    isOA           = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.is_oa + dateRange);
+    canArchiveAAM  = axios.get(countQueryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query + dateRange);
+
     // ...for records
-    canArchiveAAMList = axios.get(queryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query + "&size=100");
-    console.log("query for canArchiveAAMList: " + queryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query + "&size=100");
-    console.log("query for canArchiveAAM: " + countQueryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query)
-    console.log("query for isPaper: " + queryBase + response.data.hits.hits[0]._source.analysis.is_paper);
+    canArchiveAAMList = axios.get(queryBase + encodeURI(response.data.hits.hits[0]._source.strategy.email_author_aam.query) + recordSize + dateRange);
+
+    console.log("query for isPaper: " + countQueryBase + encodeURI(response.data.hits.hits[0]._source.analysis.is_paper) + dateRange);
+
+    console.log("query for canArchiveAAM: " + countQueryBase + encodeURI(response.data.hits.hits[0]._source.strategy.email_author_aam.query) + dateRange)
+
+    console.log("query for canArchiveAAMList: " + queryBase + encodeURI(response.data.hits.hits[0]._source.strategy.email_author_aam.query) + recordSize + dateRange);
+
 
     // Get date range input for filtering
     // var dateRangeButton = document.querySelector(".js-date_range_button");
@@ -111,11 +136,6 @@ oareport = function(org) {
         // Set up and get list of emails for archivable AAMs
         var canArchiveListItems = "";
         canArchiveLength = canArchiveAAMList.length;
-        var readableDateOptions = {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric'
-        };
 
         for (i = 0; i <= (canArchiveLength-1); i++) {
           var title = canArchiveAAMList[i]._source.title,
