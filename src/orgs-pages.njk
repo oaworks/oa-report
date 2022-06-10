@@ -34,7 +34,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
     </aside>
 
     <dl class="col-span-12 mb-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 shadow rounded-lg overflow-hidden">
+      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg rounded-lg overflow-hidden">
         <dt>
           <div class="absolute bg-carnation-500 text-white rounded-md p-6">
             {% icon "file-text" %}
@@ -56,7 +56,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
         </dd>
       </div>
 
-      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 shadow rounded-lg overflow-hidden">
+      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg rounded-lg overflow-hidden">
         <dt>
           <div class="absolute bg-carnation-500 text-white rounded-md p-6">
             {% icon "unlock" %}
@@ -81,14 +81,14 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
         </dd>
       </div>
 
-      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 shadow rounded-lg overflow-hidden" id="compliance">
+      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg rounded-lg overflow-hidden" id="compliance">
         <dt>
           <div class="absolute bg-carnation-500 text-white rounded-md p-6">
             {% icon "check-circle" %}
           </div>
           <p class="ml-24 mb-2 text-base font-medium text-gray-500 truncate">
             Policy-compliant articles
-            <sup data-tippy-content="The percentage of articles that are compliant with your organization’s Open Access policy. This number is specific to your policy and your requirements.">{% icon_small "help-circle" %}</sup>
+            <sup data-tippy-content="The percentage of articles that are compliant with your organization’s Open Access policy. This number is specific to your policy and your requirements. <em>N/A</em> means we couldn’t track a policy for your organization.">{% icon_small "help-circle" %}</sup>
           </p>
         </dt>
         <dd class="ml-24 flex items-baseline">

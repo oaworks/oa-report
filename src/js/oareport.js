@@ -114,7 +114,7 @@ oareport = function(org) {
     } else {
       // Indicate that there are are no policies and hide compliance number
       document.querySelector("#articles_compliant").outerHTML = "";
-        document.querySelector("#percent_compliant").textContent = "No OA policy";
+        document.querySelector("#percent_compliant").textContent = "N/A";
     }
 
     // Display Insights and Strategy data
