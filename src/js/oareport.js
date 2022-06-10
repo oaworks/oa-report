@@ -157,16 +157,19 @@ oareport = function(org) {
           for (i = 0; i <= (canArchiveLength-1); i++) {
             var title = canArchiveAAMList[i]._source.title,
                 // author = canArchiveAAMList[i]._source.author_names[0],
+                author_email = canArchiveAAMList[i]._source.supplements[0].email,
                 doi   = canArchiveAAMList[i]._source.DOI,
                 pubDate = canArchiveAAMList[i]._source.published,
                 journal = canArchiveAAMList[i]._source.journal;
             pubDate = new Date(pubDate).toLocaleString(getUsersLocale(), readableDateOptions);
 
+            console.log("email: " + email);
             // Get email draft/body for this article and replace with its metadata
             canArchiveAAMMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
             canArchiveAAMMailto = canArchiveAAMMailto.replaceAll('\'', '’');
             canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{title}", title);
             canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{doi}", doi);
+            canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{author_email}", author_email);
 
             /*jshint multistr: true */
             canArchiveListItems += '<tr>\
