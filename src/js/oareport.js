@@ -99,7 +99,7 @@ oareport = function(org) {
     };
     csvEmailButton.addEventListener('click', getEmailInput, false);
 
-    // Get values from org index
+    // Get self-archiving email draft and whether or not there’s a policy from org index
     canArchiveAAMMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
     canArchiveAAMMailto = canArchiveAAMMailto.replaceAll('\'', '’');
     hasPolicy = response.data.hits.hits[0]._source.policy.supported_policy;
@@ -163,6 +163,10 @@ oareport = function(org) {
                 pubDate = canArchiveAAMList[i]._source.published,
                 journal = canArchiveAAMList[i]._source.journal;
             pubDate = new Date(pubDate).toLocaleString(getUsersLocale(), readableDateOptions);
+
+            // Replace article data in email draft
+            canArchiveAAMMailto = canArchiveAAMMailto.replace("{title}", title);
+            canArchiveAAMMailto = canArchiveAAMMailto.replace("{doi}", doi);
 
             /*jshint multistr: true */
             canArchiveListItems += '<tr>\
