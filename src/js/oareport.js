@@ -90,7 +90,7 @@ oareport = function(org) {
       // If email input is valid, get value to build download URL
       if (validEmailInput) {
         var inputEmailValue = inputEmailField.value;
-        downloadAllArticles = csvExportBase + "email=" + inputEmailValue + "&" + response.data.hits.hits[0]._source.analysis.is_paper;
+        downloadAllArticles = csvExportBase + "email=" + inputEmailValue + "&" + response.data.hits.hits[0]._source.analysis.is_paper + dateRange;
         csvEmailButton.setAttribute('download', true);
         csvEmailButton.setAttribute('target', '_blank');
         csvEmailButton.setAttribute('href', downloadAllArticles);
@@ -99,9 +99,7 @@ oareport = function(org) {
     };
     csvEmailButton.addEventListener('click', getEmailInput, false);
 
-    // Get self-archiving email draft and whether or not there’s a policy from org index
-    canArchiveAAMMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
-    canArchiveAAMMailto = canArchiveAAMMailto.replaceAll('\'', '’');
+    // Check whether or not there’s a policy from org index
     hasPolicy = response.data.hits.hits[0]._source.policy.supported_policy;
 
     // If the org has a formal OA policy:
@@ -164,9 +162,11 @@ oareport = function(org) {
                 journal = canArchiveAAMList[i]._source.journal;
             pubDate = new Date(pubDate).toLocaleString(getUsersLocale(), readableDateOptions);
 
-            // Replace article data in email draft
-            canArchiveAAMMailto = canArchiveAAMMailto.replace("{title}", title);
-            canArchiveAAMMailto = canArchiveAAMMailto.replace("{doi}", doi);
+            // Get email draft/body for this article and replace with its metadata
+            canArchiveAAMMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
+            canArchiveAAMMailto = canArchiveAAMMailto.replaceAll('\'', '’');
+            canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{title}", title);
+            canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{doi}", doi);
 
             /*jshint multistr: true */
             canArchiveListItems += '<tr>\
