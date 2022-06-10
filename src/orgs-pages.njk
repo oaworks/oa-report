@@ -33,7 +33,82 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
       <button class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-white bg-neutral-700 hover:bg-neutral-900" id="five-years">Last 5 years</button>
     </aside>
 
-    <dl class="col-span-12 mb-6 grid grid-cols-1 rounded-lg bg-white overflow-hidden drop-shadow-lg divide-y divide-neutral-100 md:grid-cols-3 md:divide-y-0 md:divide-x">
+    <dl class="col-span-12 mb-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 shadow rounded-lg overflow-hidden">
+        <dt>
+          <div class="absolute bg-carnation-500 text-white rounded-md p-6">
+            {% icon "file-text" %}
+          </div>
+          <p class="ml-24 mb-2 text-base font-medium text-gray-500 truncate">
+            Articles published
+            <sup data-tippy-content="The total number of articles published by grantees <strong>or</strong> authors at your organization.">{% icon_small "help-circle" %}</sup>
+          </p>
+        </dt>
+        <dd class="ml-24 flex items-baseline">
+          <p class="text-4xl font-semibold text-gray-900">
+            <span id="articles">000</span>
+          </p>
+          {# <div class="absolute bottom-0 inset-x-0 bg-gray-50 px-4 py-4 sm:px-6">
+            <div class="text-sm">
+              <a href="#" class="font-medium text-carnation-700 hover:text-indigo-500"> View all<span class="sr-only"> Total Subscribers stats</span></a>
+            </div>
+          </div> #}
+        </dd>
+      </div>
+
+      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 shadow rounded-lg overflow-hidden">
+        <dt>
+          <div class="absolute bg-carnation-500 text-white rounded-md p-6">
+            {% icon "unlock" %}
+          </div>
+          <p class="ml-24 mb-2 text-base font-medium text-gray-500 truncate">
+            Open Access Articles
+            <sup data-tippy-content="The total number of your articles that are currently Open Access, either because the version of record is Open Access (“gold” or “diamond” Open Access) or because the article has been made available through self-archiving (“green” Open Access).">{% icon_small "help-circle" %}</sup>
+          </p>
+        </dt>
+        <dd class="ml-24 flex items-baseline">
+          <p class="text-4xl font-semibold text-gray-900">
+            <span id="percent_oa">00%</span>
+          </p>
+          <p class="ml-2 text-sm font-medium text-neutral-500">
+            <span id="articles_oa">000</span>
+          </p>
+          {# <div class="absolute bottom-0 inset-x-0 bg-gray-50 px-4 py-4 sm:px-6">
+            <div class="text-sm">
+              <a href="#" class="font-medium text-carnation-700 hover:text-indigo-500"> View all<span class="sr-only"> Total Subscribers stats</span></a>
+            </div>
+          </div> #}
+        </dd>
+      </div>
+
+      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 shadow rounded-lg overflow-hidden" id="compliance">
+        <dt>
+          <div class="absolute bg-carnation-500 text-white rounded-md p-6">
+            {% icon "check-circle" %}
+          </div>
+          <p class="ml-24 mb-2 text-base font-medium text-gray-500 truncate">
+            Policy-compliant articles
+            <sup data-tippy-content="The percentage of articles that are compliant with your organization’s Open Access policy. This number is specific to your policy and your requirements.">{% icon_small "help-circle" %}</sup>
+          </p>
+        </dt>
+        <dd class="ml-24 flex items-baseline">
+          <p class="text-4xl font-semibold text-gray-900">
+            <span id="percent_compliant">00%</span>
+          </p>
+          <p class="ml-2 text-sm font-medium text-neutral-500">
+            <span id="articles_compliant">000</span>
+          </p>
+          {# <div class="absolute bottom-0 inset-x-0 bg-gray-50 px-4 py-4 sm:px-6">
+            <div class="text-sm">
+              <a href="#" class="font-medium text-carnation-700 hover:text-indigo-500"> View all<span class="sr-only"> Total Subscribers stats</span></a>
+            </div>
+          </div> #}
+        </dd>
+      </div>
+    </dl>
+
+    {# Old data display layout — in a single block, separated by a line #}
+    {# <dl class="col-span-12 mb-6 grid grid-cols-1 rounded-lg bg-white overflow-hidden drop-shadow-lg divide-y divide-neutral-100 md:grid-cols-3 md:divide-y-0 md:divide-x">
       <div class="px-4 py-5 sm:p-6">
         <dt class="mb-3 text-base font-normal text-neutral-700 lg:duration-500 js-label_text_toggle"><span class="block mb-2 text-carnation-500 js-icon_toggle">{% icon_small "file-text" %}</span> Articles published<sup data-tippy-content="The total number of articles published by grantees <strong>or</strong> authors at your organization.">{% icon_small "help-circle" %}</sup></dt>
         <dd class="mt-1 flex justify-between items-baseline md:block lg:flex">
@@ -62,7 +137,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
           </div>
         </dd>
       </div>
-    </dl>
+    </dl> #}
 
     <div class="col-span-12 mb-6 grid grid-cols-12 gap-6">
       {# Filter by date #}
