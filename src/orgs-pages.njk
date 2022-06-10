@@ -41,7 +41,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
           </div>
           <p class="ml-24 mb-2 text-base font-medium text-gray-500 truncate">
             Articles published
-            <sup data-tippy-content="The total number of articles published by grantees <strong>or</strong> authors at your organization.">{% icon_small "help-circle" %}</sup>
+            <sup data-tippy-content="The total number of articles published by grantees or authors at your organization.">{% icon_small "help-circle" %}</sup>
           </p>
         </dt>
         <dd class="ml-24 flex items-baseline">
@@ -63,7 +63,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
           </div>
           <p class="ml-24 mb-2 text-base font-medium text-gray-500 truncate">
             Open Access Articles
-            <sup data-tippy-content="The total number of your articles that are currently Open Access, either because the version of record is Open Access (“gold” or “diamond” Open Access) or because the article has been made available through self-archiving (“green” Open Access).">{% icon_small "help-circle" %}</sup>
+            <sup data-tippy-content="The total number of articles that are currently Open Access, either because the version of record is Open Access (“gold”, “diamond”, or “hybrid” Open Access) or because the article was preprinted or been made available through self-archiving (“green” Open Access).">{% icon_small "help-circle" %}</sup>
           </p>
         </dt>
         <dd class="ml-24 flex items-baseline">
@@ -87,8 +87,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
             {% icon "check-circle" %}
           </div>
           <p class="ml-24 mb-2 text-base font-medium text-gray-500 truncate">
-            Policy-compliant articles
-            <sup data-tippy-content="The percentage of articles that are compliant with your organization’s Open Access policy. This number is specific to your policy and your requirements. <em>N/A</em> means we couldn’t track a policy for your organization.">{% icon_small "help-circle" %}</sup>
+            Policy-compliant articles <span id="org-oa-policy"></span>
           </p>
         </dt>
         <dd class="ml-24 flex items-baseline">
@@ -155,7 +154,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
 
       {# Download in CSV #}
       <div class="col-span-12 md:col-start-11">
-        <label for="email" class="mb-2 block text-base text-neutral-800">Download all data in CSV<sup data-tippy-content="Enter your email address to receive a link to a CSV for download. <strong>We do not save email addresses or use them for any purpose</strong> other than sending you the CSV file containing OAreport data when you request it.">{% icon_small "help-circle" %}</sup></label>
+        <label for="email" class="mb-2 block text-base text-neutral-800">Download data as CSV<sup data-tippy-content="Enter your email address to receive a link to a CSV for download. <strong>We do not save email addresses or use them for any purpose</strong> other than sending you the CSV file containing OAreport data when you request it.">{% icon_small "help-circle" %}</sup></label>
         <div class="my-1 flex rounded-sm shadow-sm">
           <div class="relative flex items-stretch flex-grow focus-within:z-10">
             <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
@@ -179,14 +178,14 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
     <header class="md:mb-12 col-span-12 lg:col-span-4">
       <div class=" lg:sticky lg:top-3">
         <p class="mb-3 text-base font-normal text-neutral-700 lg:duration-500 js-label_text_toggle"><span class="block mb-2 text-carnation-500 js-icon_toggle">{% icon_small "archive" %}</span> Self-archive articles</p>
-        <h3 class="font-semibold text-xl md:text-4xl mb-3 md:mb-6">Ask authors to share an Author-Accepted Manuscript</h3>
-        <p class="text-xs md:text-base">Send emails to authors to request that they make the <a href="https://docs.google.com/document/d/1c3OUNmGtWcW0_zqb3Z9vJehQpzckJLni1aG0SBBPNUQ/edit#heading=h.ao0mll9sf128" target="_blank" rel="noopener" class="underline">AAMs</a> of their articles available in an Open Access repository.</p>
+        <h3 class="font-semibold text-xl md:text-4xl mb-3 md:mb-6">Ask authors to share their Author Accepted Manuscript</h3>
+        <p class="text-xs md:text-base">Send emails to authors to request that they make the AAMs of their articles available in an Open Access repository.</p>
       </div>
     </header>
     <div class="pt-3 md:pt-6 col-span-12 lg:col-span-8 border-t sm:border-0">
       <div class="grid grid-cols-12 gap-6 flex justify-between">
         <div class="col-span-12 md:col-span-6">
-          <p class="mb-1 text-neutral-900 text-lg font-semibold leading-6"><span id="can_archive">00</span> closed-access articles</span><sup data-tippy-content="This number represents the number of articles that have the ability to be made open access for free but are currently behind a paywall. In these cases, the publishers allow for self-archiving an <a href='https://docs.google.com/document/d/1c3OUNmGtWcW0_zqb3Z9vJehQpzckJLni1aG0SBBPNUQ/edit#heading=h.ao0mll9sf128' target='_blank' rel='noopener' class='underline'>author accepted manuscript (AAM) or postprint version</a> of the article in a repository. The AAM is the final version of the manuscript after formal peer-review but before being type-set by the publisher. It contains all revisions made during the peer-review process. ">{% icon_small "help-circle" %}</sup></p>
+          <p class="mb-1 text-neutral-900 text-lg font-semibold leading-6"><span id="can_archive">00</span> actions prepared</span><sup data-tippy-content="This number represents the number of articles that have the ability to be made open access for free but are currently behind a paywall. In these cases, the publishers allow for self-archiving an author accepted manuscript version of the article in a repository.">{% icon_small "help-circle" %}</sup></p>
           <p class="text-neutral-700 text-base">Showing the 100 most recent articles</p>
         </div>
         <div class="col-span-12 md:col-span-6 md:text-right">

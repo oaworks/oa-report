@@ -102,17 +102,27 @@ oareport = function(org) {
     // Check whether or not there’s a policy from org index
     hasPolicy = response.data.hits.hits[0]._source.policy.supported_policy;
 
-    // If the org has a formal OA policy:
-    // First get the policy’s URL & compliance number
-    // Then insert an extra column showing compliance rates
+    // If the org has a formal OA policy, get the policy’s URL & compliance number
+    // Then display a tooltip
     let complianceContents = document.querySelector("#compliance");
     if (hasPolicy === true) {
       policyURL = response.data.hits.hits[0]._source.policy.url;
+      policyURL = encodeURI(policyURL);
       isCompliant = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.compliance + dateRange);
+      /*jshint multistr: true */
+      document.querySelector("#org-oa-policy").innerHTML = '<sup data-tippy-content="The percentage of articles that are compliant with \
+        <a href=\'' + policyURL + '\' target=\'_blank\' rel=\'noopener\' class=\'underline\'>your organization’s Open Access policy</a>. \
+      This number is specific to your policy and your requirements.\
+      <br><br>This figure can differ from your total OA%, depending on exactly how your organization defines Open Access. ">\
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-help-circle inline-block h-4 duration-500"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>\
+      </sup>';
     } else {
       // Indicate that there are are no policies and hide compliance number
       document.querySelector("#articles_compliant").outerHTML = "";
-        document.querySelector("#percent_compliant").textContent = "N/A";
+      document.querySelector("#percent_compliant").textContent = "N/A";
+      document.querySelector("#org-oa-policy").innerHTML = '<sup data-tippy-content="We couldn’t track a policy for your organization.">\
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-help-circle inline-block h-4 duration-500"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>\
+      </sup>';
     }
 
     // Display Insights and Strategy data
@@ -163,7 +173,6 @@ oareport = function(org) {
                 journal = canArchiveAAMList[i]._source.journal;
             pubDate = new Date(pubDate).toLocaleString(getUsersLocale(), readableDateOptions);
 
-            console.log("email: " + email);
             // Get email draft/body for this article and replace with its metadata
             canArchiveAAMMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
             canArchiveAAMMailto = canArchiveAAMMailto.replaceAll('\'', '’');
@@ -180,7 +189,10 @@ oareport = function(org) {
                 </div>\
                 <div class="text-neutral-500">' + journal + '</div>\
               </td>\
-              <td class="hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell">' + "No authors" + '</td>\
+              <td class="hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell">\
+                <div class="mb-1 text-neutral-900">[Recipient’s name should be here]</div>\
+                <div class="text-neutral-500">' + author_email + '</div>\
+              </td>\
               <td class="whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium">\
                 <a href="mailto:' + canArchiveAAMMailto + '" target="_blank" rel="noopener" class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200">\
                   <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail inline-block h-4 duration-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>\
@@ -188,7 +200,6 @@ oareport = function(org) {
               </td>\
             </tr>';
           }
-
           canArchiveList.innerHTML = canArchiveListItems;
         }
       ).catch(error => console.error("ERROR: " + error));
