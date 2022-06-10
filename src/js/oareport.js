@@ -167,7 +167,7 @@ oareport = function(org) {
           for (i = 0; i <= (canArchiveLength-1); i++) {
             var title = canArchiveAAMList[i]._source.title,
                 // author = canArchiveAAMList[i]._source.author_names[0],
-                author_email = canArchiveAAMList[i]._source.supplements[0].email,
+                authorEmail = canArchiveAAMList[i]._source.supplements[0].email,
                 doi   = canArchiveAAMList[i]._source.DOI,
                 pubDate = canArchiveAAMList[i]._source.published,
                 journal = canArchiveAAMList[i]._source.journal;
@@ -178,7 +178,7 @@ oareport = function(org) {
             canArchiveAAMMailto = canArchiveAAMMailto.replaceAll('\'', '’');
             canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{title}", title);
             canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{doi}", doi);
-            canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{author_email}", author_email);
+            canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{author_email}", authorEmail);
 
             /*jshint multistr: true */
             canArchiveListItems += '<tr>\
@@ -191,7 +191,7 @@ oareport = function(org) {
               </td>\
               <td class="hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell">\
                 <div class="mb-1 text-neutral-900">[Recipient’s name should be here]</div>\
-                <div class="text-neutral-500">' + author_email + '</div>\
+                <div class="text-neutral-500">' + authorEmail + '</div>\
               </td>\
               <td class="whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium">\
                 <a href="mailto:' + canArchiveAAMMailto + '" target="_blank" rel="noopener" class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200">\
