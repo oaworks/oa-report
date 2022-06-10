@@ -1,7 +1,7 @@
 const axios = require("axios");
 
 module.exports = async () => {
-  const { data } = await axios.get("https://beta.oa.works/report/orgs?q=*&excludes=aliases,fundref,sheets,acronyms,paid,analysis,strategy&size=250");
+  const { data } = await axios.get("https://beta.oa.works/report/orgs?q=*&excludes=aliases,fundref,sheets,acronyms,paid,analysis,strategy&size=6000");
 
   return data;
 };
