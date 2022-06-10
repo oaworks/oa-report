@@ -1,14 +1,10 @@
 [
   {
     "label": "Privacy",
-    "url": "/privacy"
+    "url": "https://oa.works/policies/privacy/"
   },
   {
-    "label": "Accessibility",
-    "url": "/accessibility"
-  },
-  {
-    "label": "Terms & Conditions",
-    "url": "/terms"
+    "label": "Terms of Service",
+    "url": "https://oa.works/policies/terms/"
   }
 ]
