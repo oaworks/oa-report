@@ -140,10 +140,7 @@ oareport = function(org) {
               oaArticlesContents = document.querySelector("#articles_oa"),
               oaPercentageContents = document.querySelector("#percent_oa"),
               compliantArticlesContents = document.querySelector("#articles_compliant"),
-              compliantPercentageContents = document.querySelector("#percent_compliant"),
-              canArchiveContents = document.querySelector("#can_archive"),
-              canArchiveList = document.querySelector("#can_archive_list"),
-              canArchiveOaPercentageContents = document.querySelector("#can_archive_percent_oa");
+              compliantPercentageContents = document.querySelector("#percent_compliant");
 
           // "Insights" section: display totals and % of articles, OA articles, and compliant articles
           articlesContents.textContent = isPaper.toLocaleString(getUsersLocale());
@@ -156,51 +153,65 @@ oareport = function(org) {
             compliantPercentageContents.textContent = Math.round(((isCompliant/isPaper)*100)) + "%";
           }
 
-          // "Strategies" section: display totals and lists of archivable articles
-          canArchiveContents.textContent = canArchiveAAM.toLocaleString(getUsersLocale());
-          canArchiveOaPercentageContents.textContent = Math.round(((((isOA+canArchiveAAM))/isPaper)*100));
+          // "Strategies" section: display totals and lists of archivable AAMs if there are any
+          if (canArchiveAAMList.length > 0) {
+            console.log(canArchiveAAMList);
+            var totalActionsContents = document.querySelector("#total_actions"),
+                latestActionsContents = document.querySelector("#latest_actions"),
+                canArchiveList = document.querySelector("#can_archive_list"),
+                canArchiveOaPercentageContents = document.querySelector("#can_archive_percent_oa");
+            console.log(canArchiveAAMList);
+            totalActionsContents.textContent = canArchiveAAM.toLocaleString(getUsersLocale());
+            // If there are fewer than 100 actions, simply do not display any number of latest articles
+            if (canArchiveAAM < 100) {
+              latestActionsContents.textContent = "";
+            }
+            canArchiveOaPercentageContents.textContent = Math.round(((((isOA+canArchiveAAM))/isPaper)*100));
 
-          // Set up and get list of emails for archivable AAMs
-          var canArchiveListItems = "";
-          canArchiveLength = canArchiveAAMList.length;
+            // Set up and get list of emails for archivable AAMs
+            var canArchiveListItems = "";
+            canArchiveLength = canArchiveAAMList.length;
 
-          for (i = 0; i <= (canArchiveLength-1); i++) {
-            var title = canArchiveAAMList[i]._source.title,
-                // author = canArchiveAAMList[i]._source.author_names[0],
-                authorEmail = canArchiveAAMList[i]._source.supplements[0].email,
-                doi   = canArchiveAAMList[i]._source.DOI,
-                pubDate = canArchiveAAMList[i]._source.published,
-                journal = canArchiveAAMList[i]._source.journal;
-            pubDate = new Date(pubDate).toLocaleString(getUsersLocale(), readableDateOptions);
+            for (i = 0; i <= (canArchiveLength-1); i++) {
+              var title = canArchiveAAMList[i]._source.title,
+                  // author = canArchiveAAMList[i]._source.author_names[0],
+                  authorEmail = canArchiveAAMList[i]._source.supplements[0].email,
+                  doi   = canArchiveAAMList[i]._source.DOI,
+                  pubDate = canArchiveAAMList[i]._source.published,
+                  journal = canArchiveAAMList[i]._source.journal;
+              pubDate = new Date(pubDate).toLocaleString(getUsersLocale(), readableDateOptions);
 
-            // Get email draft/body for this article and replace with its metadata
-            canArchiveAAMMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
-            canArchiveAAMMailto = canArchiveAAMMailto.replaceAll('\'', '’');
-            canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{title}", title);
-            canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{doi}", doi);
-            canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{author_email}", authorEmail);
+              // Get email draft/body for this article and replace with its metadata
+              canArchiveAAMMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
+              canArchiveAAMMailto = canArchiveAAMMailto.replaceAll('\'', '’');
+              canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{title}", title);
+              canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{doi}", doi);
+              canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{author_email}", authorEmail);
 
-            /*jshint multistr: true */
-            canArchiveListItems += '<tr>\
-              <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
-                <div class="mb-1 text-neutral-500">' + pubDate + '</div>\
-                <div class="mb-1 font-medium text-neutral-900 hover:text-carnation-500">\
-                  <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + title + '</a>\
-                </div>\
-                <div class="text-neutral-500">' + journal + '</div>\
-              </td>\
-              <td class="hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell">\
-                <div class="mb-1 text-neutral-900">[Recipient’s name should be here]</div>\
-                <div class="text-neutral-500">' + authorEmail + '</div>\
-              </td>\
-              <td class="whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium">\
-                <a href="mailto:' + canArchiveAAMMailto + '" target="_blank" rel="noopener" class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200">\
-                  <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail inline-block h-4 duration-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>\
-                </a>\
-              </td>\
-            </tr>';
+              /*jshint multistr: true */
+              canArchiveListItems += '<tr>\
+                <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
+                  <div class="mb-1 text-neutral-500">' + pubDate + '</div>\
+                  <div class="mb-1 font-medium text-neutral-900 hover:text-carnation-500">\
+                    <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + title + '</a>\
+                  </div>\
+                  <div class="text-neutral-500">' + journal + '</div>\
+                </td>\
+                <td class="hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell">\
+                  <div class="mb-1 text-neutral-900">[Recipient’s name should be here]</div>\
+                  <div class="text-neutral-500">' + authorEmail + '</div>\
+                </td>\
+                <td class="whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium">\
+                  <a href="mailto:' + canArchiveAAMMailto + '" target="_blank" rel="noopener" class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200">\
+                    <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail inline-block h-4 duration-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>\
+                  </a>\
+                </td>\
+              </tr>';
+            }
+            canArchiveList.innerHTML = canArchiveListItems;
+          } else {
+            document.querySelector("#strategies").outerHTML = "";
           }
-          canArchiveList.innerHTML = canArchiveListItems;
         }
       ).catch(error => console.error("ERROR: " + error));
     };
