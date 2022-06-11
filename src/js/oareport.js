@@ -99,12 +99,12 @@ oareport = function(org) {
     };
     csvEmailButton.addEventListener('click', getEmailInput, false);
 
-    // Check whether or not there’s a policy from org index
-    hasPolicy = response.data.hits.hits[0]._source.policy.supported_policy;
-
     // If the org has a formal OA policy, get the policy’s URL & compliance number
     // Then display a tooltip
     let complianceContents = document.querySelector("#compliance");
+
+    hasPolicy = response.data.hits.hits[0]._source.policy.supported_policy;
+
     if (hasPolicy === true) {
       policyURL = response.data.hits.hits[0]._source.policy.url;
       policyURL = encodeURI(policyURL);
@@ -118,8 +118,6 @@ oareport = function(org) {
       </sup>';
     } else {
       // Indicate that there are are no policies and hide compliance number
-      document.querySelector("#articles_compliant").outerHTML = "";
-      document.querySelector("#percent_compliant").textContent = "N/A";
       document.querySelector("#org-oa-policy").innerHTML = '<sup data-tippy-content="We couldn’t track a policy for your organization.">\
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-help-circle inline-block h-4 duration-500"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>\
       </sup>';
@@ -144,13 +142,22 @@ oareport = function(org) {
 
           // "Insights" section: display totals and % of articles, OA articles, and compliant articles
           articlesContents.textContent = isPaper.toLocaleString(getUsersLocale());
-          oaArticlesContents.textContent = isOA.toLocaleString(getUsersLocale()) + " in total";
-          oaPercentageContents.textContent = Math.round(((isOA/isPaper)*100)) + "%";
 
-          // Only replace content if there are data for compliant articles
+          // Only replace content if there are data for articles
+          if (isOA) {
+            oaArticlesContents.textContent = isOA.toLocaleString(getUsersLocale()) + " in total";
+            oaPercentageContents.textContent = Math.round(((isOA/isPaper)*100)) + "%";
+          } else {
+            oaArticlesContents.outerHTML = "";
+            oaPercentageContents.textContent = "N/A";
+          }
+
           if (isCompliant) {
             compliantArticlesContents.textContent = isCompliant.toLocaleString(getUsersLocale()) + " in total";
             compliantPercentageContents.textContent = Math.round(((isCompliant/isPaper)*100)) + "%";
+          } else {
+            compliantArticlesContents.outerHTML = "";
+            compliantPercentageContents.textContent = "N/A";
           }
 
           // "Strategies" section: display totals and lists of archivable AAMs if there are any
@@ -174,13 +181,14 @@ oareport = function(org) {
 
             for (i = 0; i <= (canArchiveLength-1); i++) {
               var title = canArchiveAAMList[i]._source.title,
+                  // TODO: get author’s / recipient’s name
                   // author = canArchiveAAMList[i]._source.author_names[0],
-                  //authorEmail = canArchiveAAMList[i]._source.supplements[0].email,
                   doi   = canArchiveAAMList[i]._source.DOI,
                   pubDate = canArchiveAAMList[i]._source.published,
                   journal = canArchiveAAMList[i]._source.journal;
               pubDate = new Date(pubDate).toLocaleString(getUsersLocale(), readableDateOptions);
 
+              // Display email address if found, otherwise display message
               if (canArchiveAAMList[i]._source.supplements) {
                 authorEmail = canArchiveAAMList[i]._source.supplements[0].email;
               } else {
