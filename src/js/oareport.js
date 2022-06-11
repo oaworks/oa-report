@@ -175,11 +175,17 @@ oareport = function(org) {
             for (i = 0; i <= (canArchiveLength-1); i++) {
               var title = canArchiveAAMList[i]._source.title,
                   // author = canArchiveAAMList[i]._source.author_names[0],
-                  authorEmail = canArchiveAAMList[i]._source.supplements[0].email,
+                  //authorEmail = canArchiveAAMList[i]._source.supplements[0].email,
                   doi   = canArchiveAAMList[i]._source.DOI,
                   pubDate = canArchiveAAMList[i]._source.published,
                   journal = canArchiveAAMList[i]._source.journal;
               pubDate = new Date(pubDate).toLocaleString(getUsersLocale(), readableDateOptions);
+
+              if (canArchiveAAMList[i]._source.supplements) {
+                authorEmail = canArchiveAAMList[i]._source.supplements[0].email;
+              } else {
+                authorEmail = "No email found.";
+              }
 
               // Get email draft/body for this article and replace with its metadata
               canArchiveAAMMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
