@@ -172,7 +172,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
   </div>
 </section>
 
-<section class="col-span-12">
+<section class="col-span-12" id="strategies">
   <h2 class="mb-5 text-lg leading-6 font-medium text-neutral-900">Strategies<sup data-tippy-content="The <em>Strategy</em> section provides actionable steps for making more of your articles Open Access.">{% icon_small "help-circle" %}</sup></h2>
   <div class="grid grid-cols-12 gap-6 md:gap-12">
     <header class="md:mb-12 col-span-12 lg:col-span-4">
@@ -185,8 +185,8 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
     <div class="pt-3 md:pt-6 col-span-12 lg:col-span-8 border-t sm:border-0">
       <div class="grid grid-cols-12 gap-6 flex justify-between">
         <div class="col-span-12 md:col-span-6">
-          <p class="mb-1 text-neutral-900 text-lg font-semibold leading-6"><span id="can_archive">00</span> actions prepared</span><sup data-tippy-content="This number represents the number of articles that have the ability to be made open access for free but are currently behind a paywall. In these cases, the publishers allow for self-archiving an author accepted manuscript version of the article in a repository.">{% icon_small "help-circle" %}</sup></p>
-          <p class="text-neutral-700 text-base">Showing the 100 most recent articles</p>
+          <p class="mb-1 text-neutral-900 text-lg font-semibold leading-6"><span id="total_actions">00</span> actions prepared</span><sup data-tippy-content="This number represents the number of articles that have the ability to be made open access for free but are currently behind a paywall. In these cases, the publishers allow for self-archiving an author accepted manuscript version of the article in a repository.">{% icon_small "help-circle" %}</sup></p>
+          <p class="text-neutral-700 text-base">Showing the <span id="latest_actions">100</span> most recent articles</p>
         </div>
         <div class="col-span-12 md:col-span-6 md:text-right">
           <p class="mb-1 font-semibold text-neutral-900 text-lg leading-6">If all articles are self-archived:</p>
