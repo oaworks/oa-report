@@ -4,7 +4,7 @@
   <body class="flex flex-col h-screen justify-between antialiased bg-[#F4F0F0] text-neutral-900 text-sm md:text-xl">
     {% include 'partials/header.njk' %}
     <main class="container mx-auto px-3 lg:px-6">
-      <div class="grid grid-cols-12 gap-6 md:gap-12">
+      <div class="grid grid-cols-12 gap-6 md:gap-12 py-6 xl:py-12">
         {% block content %}{% endblock %}
         {{ content | safe }}
       </div>
