@@ -18,7 +18,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
   </div>
 </header>
 
-<section class="col-span-12 grid grid-cols-12 gap-6 top-0 mb-2 pt-2 bg-[#F4F0F0]">
+<section class="col-span-12 grid grid-cols-12 gap-3 lg:gap-6 top-0 mb-2 pt-2 bg-[#F4F0F0]">
   <div class="col-span-12 grid grid-cols-12 gap-3">
     <header class="col-span-12 md:col-span-6">
       <h2 class="mb-3 text-lg leading-6 font-medium text-neutral-900">Insights from <span id="start-date"></span> — <span id="end-date"></span><sup data-tippy-content="The <em>Insights</em> section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/' target='_blank' class='underline'>infrastructure page</a>.">{% icon_small "help-circle" %}</sup></h2>
@@ -33,8 +33,8 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
       <button class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-white bg-neutral-700 hover:bg-neutral-900" id="five-years">Last 5 years</button>
     </aside>
 
-    <dl class="col-span-12 mb-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg rounded-lg overflow-hidden">
+    <dl class="col-span-12 mb-6 grid grid-cols-1 gap-3 lg:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden">
         <dt>
           <div class="absolute bg-carnation-500 text-white rounded-md p-6">
             {% icon "file-text" %}
@@ -56,7 +56,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
         </dd>
       </div>
 
-      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg rounded-lg overflow-hidden">
+      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden">
         <dt>
           <div class="absolute bg-carnation-500 text-white rounded-md p-6">
             {% icon "unlock" %}
@@ -81,7 +81,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
         </dd>
       </div>
 
-      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg rounded-lg overflow-hidden" id="compliance">
+      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden" id="compliance">
         <dt>
           <div class="absolute bg-carnation-500 text-white rounded-md p-6">
             {% icon "check-circle" %}
@@ -138,9 +138,9 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
       </div>
     </dl> #}
 
-    <div class="col-span-12 mb-6 grid grid-cols-12 gap-6">
+    <div class="col-span-12 mb-6 grid grid-cols-12 gap-3 lg:gap-6">
       {# Filter by date #}
-      <section class="grid grid-cols-12 gap-6 col-span-12 md:col-span-6">
+      <section class="grid grid-cols-12 gap-3 lg:gap-6 col-span-12 md:col-span-6">
         <h2 class="sr-only">Filter by date</h2>
         <div class="col-span-6">
           <label for="report-start-date" class="mb-2 block text-base text-neutral-800">From</label>
@@ -174,7 +174,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
 
 <section class="col-span-12" id="strategies">
   <h2 class="mb-5 text-lg leading-6 font-medium text-neutral-900">Strategies<sup data-tippy-content="The <em>Strategy</em> section provides actionable steps for making more of your articles Open Access.">{% icon_small "help-circle" %}</sup></h2>
-  <div class="grid grid-cols-12 gap-6 md:gap-12">
+  <div class="grid grid-cols-12 gap-3 lg:gap-6 md:gap-12">
     <header class="md:mb-12 col-span-12 lg:col-span-4">
       <div class=" lg:sticky lg:top-3">
         <p class="mb-3 text-base font-normal text-neutral-700 lg:duration-500 js-label_text_toggle"><span class="block mb-2 text-carnation-500 js-icon_toggle">{% icon_small "archive" %}</span> Self-archive articles</p>
@@ -183,7 +183,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
       </div>
     </header>
     <div class="pt-3 md:pt-6 col-span-12 lg:col-span-8 border-t sm:border-0">
-      <div class="grid grid-cols-12 gap-6 flex justify-between">
+      <div class="grid grid-cols-12 gap-3 lg:gap-6 flex justify-between">
         <div class="col-span-12 md:col-span-6">
           <p class="mb-1 text-neutral-900 text-lg font-semibold leading-6"><span id="total_actions">00</span> actions prepared</span><sup data-tippy-content="This number represents the number of articles that have the ability to be made open access for free but are currently behind a paywall. In these cases, the publishers allow for self-archiving an author accepted manuscript version of the article in a repository.">{% icon_small "help-circle" %}</sup></p>
           <p class="text-neutral-700 text-base">Showing the <span id="latest_actions">100</span> most recent articles</p>
@@ -194,7 +194,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
         </div>
       </div>
 
-      <div class="my-8 overflow-hidden sm:-mx-6 md:mx-0 md:rounded-lg">
+      <div class="my-8 overflow-hidden sm:-mx-6 md:mx-0 md:rounded-lg drop-shadow-lg">
         <table class="divide-y divide-neutral-300 table-fixed w-full">
           <thead class="bg-neutral-800 text-white">
             <tr>
