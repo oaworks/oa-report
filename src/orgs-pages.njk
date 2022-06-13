@@ -23,11 +23,14 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
 <section class="col-span-12 grid grid-cols-12 gap-3 lg:gap-6 top-0 mb-2 pt-2 bg-[#F4F0F0]">
   <div class="col-span-12 grid grid-cols-12 gap-3">
     <header class="col-span-12 md:col-span-6">
-      <h2 class="mb-3 text-lg leading-6 font-medium text-neutral-900">
-        Insights from <span id="start-date"></span> — <span id="end-date"></span>
-        {{ component("tooltip", {
-          msg: "The <em>Insights</em> section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/' target='_blank' class='underline'>infrastructure page</a>."
-        }) }}
+      <h2 class="mb-3 text-lg leading-6">
+        <span class="block font-medium text-neutral-900">
+          Insights from the <span id="insights_range">last 12 months</span>
+          {{ component("tooltip", {
+            msg: tooltips.insights.msg
+          }) }}
+        </span>
+        <span class="text-neutral-600">From <span id="start_date"></span> — <span id="end_date"></span></span>
       </h2>
     </header>
 
@@ -110,7 +113,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
             {% icon "check-circle" %}
           </div>
           <p class="ml-24 mb-2 text-base font-medium text-gray-500 truncate">
-            Policy-compliant articles <span id="org-oa-policy"></span>
+            Policy-compliant articles <span id="org_oa_policy"></span>
           </p>
         </dt>
         <dd class="ml-24 flex items-baseline">
@@ -246,9 +249,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
               </th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-neutral-200 bg-white" id="can_archive_list">
-
-          </tbody>
+          <tbody class="divide-y divide-neutral-200 bg-white" id="can_archive_list"></tbody>
         </table>
       </div>
     </div>

@@ -40,8 +40,9 @@ oareport = function(org) {
   console.log("report: " + base + "orgs?q=name:%22" + org + "%22");
 
   axios.get(report).then(response => {
-    let endDateContents      = document.querySelector("#end-date"),
-        startDateContents    = document.querySelector("#start-date"),
+    let endDateContents      = document.querySelector("#end_date"),
+        startDateContents    = document.querySelector("#start_date"),
+        insightsDateRange    = document.querySelector("#insights_range"),
         startDate            = "",
         endDate              = "";
 
@@ -110,7 +111,7 @@ oareport = function(org) {
       policyURL = encodeURI(policyURL);
       isCompliant = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.compliance + dateRange);
       /*jshint multistr: true */
-      document.querySelector("#org-oa-policy").innerHTML = '<sup data-tippy-content="The percentage of articles that are compliant with \
+      document.querySelector("#org_oa_policy").innerHTML = '<sup data-tippy-content="The percentage of articles that are compliant with \
         <a href=\'' + policyURL + '\' target=\'_blank\' rel=\'noopener\' class=\'underline\'>your organization’s Open Access policy</a>. \
       This number is specific to your policy and your requirements.\
       <br><br>This figure can differ from your total OA%, depending on exactly how your organization defines Open Access. ">\
@@ -118,7 +119,7 @@ oareport = function(org) {
       </sup>';
     } else {
       // Indicate that there are are no policies and hide compliance number
-      document.querySelector("#org-oa-policy").innerHTML = '<sup data-tippy-content="We couldn’t track a policy for your organization.">\
+      document.querySelector("#org_oa_policy").innerHTML = '<sup data-tippy-content="We couldn’t track a policy for your organization.">\
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-help-circle inline-block h-4 duration-500"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>\
       </sup>';
     }
@@ -251,21 +252,25 @@ oareport = function(org) {
     // Change data based on preset date filters
     threeMonthsBtn.addEventListener('click', event => {
       replaceStartDate(threeMonthsAgo);
+      insightsDateRange.textContent = "last 3 months";
       displayData();
     });
 
     sixMonthsBtn.addEventListener('click', event => {
       replaceStartDate(sixMonthsAgo);
+      insightsDateRange.textContent = "last 6 months";
       displayData();
     });
 
     twelveMonthsBtn.addEventListener('click', event => {
       replaceStartDate(lastYearDate);
+      insightsDateRange.textContent = "last 12 months";
       displayData();
     });
 
     fiveYearsBtn.addEventListener('click', event => {
       replaceStartDate(fiveYearsAgo);
+      insightsDateRange.textContent = "last 5 years";
       displayData();
     });
 
