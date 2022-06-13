@@ -268,12 +268,6 @@ oareport = function(org) {
       displayData();
     });
 
-    fiveYearsBtn.addEventListener('click', event => {
-      replaceStartDate(fiveYearsAgo);
-      insightsDateRange.textContent = "last 5 years";
-      displayData();
-    });
-
   })
   .catch(error => console.error("ERROR: " + error));
 };
