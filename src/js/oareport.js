@@ -37,7 +37,7 @@ const currentDate          = new Date(),
       currentDateQuery     = changeDays(+1, currentDate), // add 1 day for ElasticSearch (greater than but not equal)
       currentDateISO       = currentDateQuery.toISOString().substring(0, 10), // used in ES query
 
-      lastYearDate         = changeMonths(12, currentDate),
+      lastYearDate         = changeMonths(-12, currentDate),
       lastYearDateReadable = lastYearDate.toLocaleString(getUsersLocale(), readableDateOptions); // for display in UI
       lastYearDateQuery    = changeDays(-1, lastYearDate),  // subtract 1 day for ElasticSearch (less than but not equal)
       lastYearDateISO      = lastYearDateQuery.toISOString().substring(0, 10), // used in ES query
@@ -65,13 +65,13 @@ oareport = function(org) {
       startDate         = lastYearDateISO;
       endDate           = currentDateISO;
 
-      var dateRange      = "%20AND%20(published_date:>" + startDate + "%20AND%published_date:<" + endDate + ")",
+      var dateRange      = "%20AND%20published_date:>" + startDate + "%20AND%20published_date:<" + endDate,
           recordSize     = "&size=100"; // Set record size for number of actions shown in Strategies
 
       replaceStartDate = function(date) {
         startDateContents.textContent = date.toLocaleString(getUsersLocale(), readableDateOptions);
         var startDate = date.toISOString().substring(0, 10);
-        dateRange = "%20AND%20(published_date:>" + startDate + "%20AND%published_date:<" + endDate + ")";
+        dateRange = "%20AND%20published_date:>" + startDate + "%20AND%20published_date:<" + endDate;
         // threeMonthsBtn.classList.remove('bg-neutral-700');
         // threeMonthsBtn.classList.add('bg-carnation-500');
         console.log(dateRange);
