@@ -17,6 +17,20 @@ subtractMonths = function(numOfMonths, date) {
   return dateCopy;
 };
 
+// Subtract days from a date
+subtractDays = function(numOfDays, date) {
+  const dateCopy = new Date(date.getTime());
+  dateCopy.setDate(dateCopy.getDate() - numOfDays);
+  return dateCopy;
+};
+
+// Add days to a date
+addDays = function(numOfDays, date) {
+  const dateCopy = new Date(date.getTime());
+  dateCopy.setDate(dateCopy.getDate() + numOfDays);
+  return dateCopy;
+};
+
 // Set readable date options
 var readableDateOptions = {
   day: 'numeric',
@@ -26,19 +40,22 @@ var readableDateOptions = {
 
 // Set today’s date and 12 months ago date to display most recent Insights data as default
 const currentDate          = new Date(),
-      currentDateISO       = currentDate.toISOString().substring(0, 10),
-      currentDateReadable  = currentDate.toLocaleString(getUsersLocale(), readableDateOptions),
+      currentDateReadable  = currentDate.toLocaleString(getUsersLocale(), readableDateOptions), // for display in UI
+      currentDateQuery     = addDays(1, currentDate), // subtract 1 day for ElasticSearch (greater than but not equal)
+      currentDateISO       = currentDateQuery.toISOString().substring(0, 10), // used in ES query
+
       lastYearDate         = subtractMonths(12, currentDate),
-      lastYearDateISO      = lastYearDate.toISOString().substring(0, 10),
-      lastYearDateReadable = lastYearDate.toLocaleString(getUsersLocale(), readableDateOptions);
+      lastYearDateReadable = lastYearDate.toLocaleString(getUsersLocale(), readableDateOptions); // for display in UI
+      lastYearDateQuery    = subtractDays(1, lastYearDate),  // add 1 day for ElasticSearch (less than but not equal)
+      lastYearDateISO      = lastYearDateQuery.toISOString().substring(0, 10), // used in ES query
 
 // Get organisational data to produce reports
 oareport = function(org) {
   let report = base + "orgs?q=name:%22" + org + "%22";
 
-  console.log("org: " + org);
   console.log("report: " + base + "orgs?q=name:%22" + org + "%22");
 
+  // Default date filtering is for the last 12 months
   axios.get(report).then(response => {
     let endDateContents      = document.querySelector("#end_date"),
         startDateContents    = document.querySelector("#start_date"),
@@ -46,7 +63,6 @@ oareport = function(org) {
         startDate            = "",
         endDate              = "";
 
-    // Set last 12 months as default displayed Insights
     endDateContents.textContent = currentDateReadable;
     startDateContents.textContent = lastYearDateReadable;
 
@@ -74,20 +90,16 @@ oareport = function(org) {
 
     // ...for records
     canArchiveAAMList = axios.get(queryBase + encodeURI(response.data.hits.hits[0]._source.strategy.email_author_aam.query) + recordSize + dateRange);
-
-    console.log("query for isPaper: " + countQueryBase + encodeURI(response.data.hits.hits[0]._source.analysis.is_paper) + dateRange);
-
-    console.log("query for canArchiveAAM: " + countQueryBase + encodeURI(response.data.hits.hits[0]._source.strategy.email_author_aam.query) + dateRange)
-
+    console.log("count query for isPaper: " + countQueryBase + encodeURI(response.data.hits.hits[0]._source.analysis.is_paper) + dateRange);
+    console.log("count query for canArchiveAAM: " + countQueryBase + encodeURI(response.data.hits.hits[0]._source.strategy.email_author_aam.query) + dateRange)
     console.log("query for canArchiveAAMList: " + queryBase + encodeURI(response.data.hits.hits[0]._source.strategy.email_author_aam.query) + recordSize + dateRange);
 
-    // Get email for CSV downloads
+    /** Get email to send CSV data **/
     var csvEmailButton = document.querySelector(".js-csv_email_button");
 
     var getEmailInput = function (event) {
       var inputEmailField = document.querySelector(".js-csv_email_input"),
           validEmailInput = inputEmailField.checkValidity();
-
       // If email input is valid, get value to build download URL
       if (validEmailInput) {
         var inputEmailValue = inputEmailField.value;
@@ -100,12 +112,11 @@ oareport = function(org) {
     };
     csvEmailButton.addEventListener('click', getEmailInput, false);
 
-    // If the org has a formal OA policy, get the policy’s URL & compliance number
-    // Then display a tooltip
+    /** Check for an OA policy **/
     let complianceContents = document.querySelector("#compliance");
-
+    // ...get its URL
     hasPolicy = response.data.hits.hits[0]._source.policy.supported_policy;
-
+    // ...then get the number of compliant articles and display a tooltip
     if (hasPolicy === true) {
       policyURL = response.data.hits.hits[0]._source.policy.url;
       policyURL = encodeURI(policyURL);
@@ -118,13 +129,13 @@ oareport = function(org) {
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-help-circle inline-block h-4 duration-500"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>\
       </sup>';
     } else {
-      // Indicate that there are are no policies and hide compliance number
+      // ...otherwise, indicshowate that there are no policies and hide compliance number
       document.querySelector("#org_oa_policy").innerHTML = '<sup data-tippy-content="We couldn’t track a policy for your organization.">\
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-help-circle inline-block h-4 duration-500"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>\
       </sup>';
     }
 
-    // Display Insights and Strategy data
+    /**  Display Insights and Strategy data **/
     // TODO: break this up into two functions
     displayData = function() {
       Promise.all([isPaper, isOA, canArchiveAAM, canArchiveAAMList, isCompliant])
