@@ -166,11 +166,11 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
         <h2 class="sr-only">Filter by date</h2>
         <div class="col-span-6">
           <label for="report-start-date" class="mb-2 block text-base text-neutral-800">From</label>
-          <input type="date" name="report-start-date" id="report-start-date" class="focus:ring-carnation-500 focus:border-carnation-500 block w-full sm:text-sm shadow-md rounded-md border-0" required>
+          <input type="date" min="2021-01-01" name="report-start-date" id="report-start-date" class="focus:ring-carnation-500 focus:border-carnation-500 block w-full sm:text-sm shadow-md rounded-md border-0" required>
         </div>
         <div class="col-span-6">
           <label for="report-end-date" class="mb-2 block text-base text-neutral-800">To</label>
-          <input type="date" name="report-start-date" id="report-end-date" class="focus:ring-carnation-500 focus:border-carnation-500 block w-full sm:text-sm shadow-md rounded-md border-0" required>
+          <input type="date" min="2021-01-01" name="report-start-date" id="report-end-date" class="focus:ring-carnation-500 focus:border-carnation-500 block w-full sm:text-sm shadow-md rounded-md border-0" required>
         </div>
       </section>
 
