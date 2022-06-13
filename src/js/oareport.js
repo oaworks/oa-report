@@ -10,22 +10,15 @@ getUsersLocale = function() {
   return navigator.languages && navigator.languages.length ? navigator.languages[0] : navigator.language;
 };
 
-// Subtract any number of months from a date
-subtractMonths = function(numOfMonths, date) {
+//  Do math with months on a date
+changeMonths = function(numOfMonths, date) {
   const dateCopy = new Date(date.getTime());
-  dateCopy.setMonth(dateCopy.getMonth() - numOfMonths);
+  dateCopy.setMonth(dateCopy.getMonth() + numOfMonths);
   return dateCopy;
 };
 
-// Subtract days from a date
-subtractDays = function(numOfDays, date) {
-  const dateCopy = new Date(date.getTime());
-  dateCopy.setDate(dateCopy.getDate() - numOfDays);
-  return dateCopy;
-};
-
-// Add days to a date
-addDays = function(numOfDays, date) {
+// Do math with days on a date
+changeDays = function(numOfDays, date) {
   const dateCopy = new Date(date.getTime());
   dateCopy.setDate(dateCopy.getDate() + numOfDays);
   return dateCopy;
@@ -41,12 +34,12 @@ var readableDateOptions = {
 // Set today’s date and 12 months ago date to display most recent Insights data as default
 const currentDate          = new Date(),
       currentDateReadable  = currentDate.toLocaleString(getUsersLocale(), readableDateOptions), // for display in UI
-      currentDateQuery     = addDays(1, currentDate), // subtract 1 day for ElasticSearch (greater than but not equal)
+      currentDateQuery     = changeDays(+1, currentDate), // add 1 day for ElasticSearch (greater than but not equal)
       currentDateISO       = currentDateQuery.toISOString().substring(0, 10), // used in ES query
 
-      lastYearDate         = subtractMonths(12, currentDate),
+      lastYearDate         = changeMonths(12, currentDate),
       lastYearDateReadable = lastYearDate.toLocaleString(getUsersLocale(), readableDateOptions); // for display in UI
-      lastYearDateQuery    = subtractDays(1, lastYearDate),  // add 1 day for ElasticSearch (less than but not equal)
+      lastYearDateQuery    = changeDays(-1, lastYearDate),  // subtract 1 day for ElasticSearch (less than but not equal)
       lastYearDateISO      = lastYearDateQuery.toISOString().substring(0, 10), // used in ES query
 
 // Get organisational data to produce reports
@@ -57,82 +50,85 @@ oareport = function(org) {
 
   // Default date filtering is for the last 12 months
   axios.get(report).then(response => {
-    let endDateContents      = document.querySelector("#end_date"),
-        startDateContents    = document.querySelector("#start_date"),
-        insightsDateRange    = document.querySelector("#insights_range"),
-        startDate            = "",
-        endDate              = "";
+    getData = function() {
 
-    endDateContents.textContent = currentDateReadable;
-    startDateContents.textContent = lastYearDateReadable;
+      /* Get all dates for filtering data by dates */
+      let endDateContents      = document.querySelector("#end_date"),
+          startDateContents    = document.querySelector("#start_date"),
+          startDate            = "",
+          endDate              = "";
 
-    // Get all queries for a set date range and size
-    startDate         = lastYearDateISO;
-    endDate           = currentDateISO;
+      // Display default date range, last 12 months
+      endDateContents.textContent = currentDateReadable;
+      startDateContents.textContent = lastYearDateReadable;
 
-    var dateRange      = "%20AND%20published:>" + startDate + "%20AND%20published:<" + endDate,
-        recordSize     = "&size=100";
+      startDate         = lastYearDateISO;
+      endDate           = currentDateISO;
 
-    replaceStartDate = function(date) {
-      startDateContents.textContent = date.toLocaleString(getUsersLocale(), readableDateOptions);
-      var startDate = date.toISOString().substring(0, 10);
-      dateRange = "%20AND%20published:>" + startDate + "%20AND%20published:<" + endDate;
-      // threeMonthsBtn.classList.remove('bg-neutral-700');
-      // threeMonthsBtn.classList.add('bg-carnation-500');
-      console.log(dateRange);
-      return startDate;
-    };
+      var dateRange      = "%20AND%20(published_date:>" + startDate + "%20AND%published_date:<" + endDate + ")",
+          recordSize     = "&size=100"; // Set record size for number of actions shown in Strategies
 
-    // ...for article counts
-    isPaper        = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.is_paper + dateRange);
-    isOA           = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.is_oa + dateRange);
-    canArchiveAAM  = axios.get(countQueryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query + dateRange);
+      replaceStartDate = function(date) {
+        startDateContents.textContent = date.toLocaleString(getUsersLocale(), readableDateOptions);
+        var startDate = date.toISOString().substring(0, 10);
+        dateRange = "%20AND%20(published_date:>" + startDate + "%20AND%published_date:<" + endDate + ")";
+        // threeMonthsBtn.classList.remove('bg-neutral-700');
+        // threeMonthsBtn.classList.add('bg-carnation-500');
+        console.log(dateRange);
+        return startDate;
+      };
 
-    // ...for records
-    canArchiveAAMList = axios.get(queryBase + encodeURI(response.data.hits.hits[0]._source.strategy.email_author_aam.query) + recordSize + dateRange);
-    console.log("count query for isPaper: " + countQueryBase + encodeURI(response.data.hits.hits[0]._source.analysis.is_paper) + dateRange);
-    console.log("count query for canArchiveAAM: " + countQueryBase + encodeURI(response.data.hits.hits[0]._source.strategy.email_author_aam.query) + dateRange)
-    console.log("query for canArchiveAAMList: " + queryBase + encodeURI(response.data.hits.hits[0]._source.strategy.email_author_aam.query) + recordSize + dateRange);
+      // Get queries for article counts
+      isPaper        = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.is_paper + dateRange);
+      isOA           = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.is_oa + dateRange);
+      canArchiveAAM  = axios.get(countQueryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query + dateRange);
+      // Get queries for records
+      canArchiveAAMList = axios.get(queryBase + encodeURI(response.data.hits.hits[0]._source.strategy.email_author_aam.query) + recordSize + dateRange);
 
-    /** Get email to send CSV data **/
-    var csvEmailButton = document.querySelector(".js-csv_email_button");
+      console.log("count query for isPaper: " + countQueryBase + encodeURI(response.data.hits.hits[0]._source.analysis.is_paper) + dateRange);
+      console.log("count query for canArchiveAAM: " + countQueryBase + encodeURI(response.data.hits.hits[0]._source.strategy.email_author_aam.query) + dateRange)
+      console.log("query for canArchiveAAMList: " + queryBase + encodeURI(response.data.hits.hits[0]._source.strategy.email_author_aam.query) + recordSize + dateRange);
 
-    var getEmailInput = function (event) {
-      var inputEmailField = document.querySelector(".js-csv_email_input"),
-          validEmailInput = inputEmailField.checkValidity();
-      // If email input is valid, get value to build download URL
-      if (validEmailInput) {
-        var inputEmailValue = inputEmailField.value;
-        downloadAllArticles = csvExportBase + "email=" + inputEmailValue + "&" + response.data.hits.hits[0]._source.analysis.is_paper + dateRange;
-        csvEmailButton.setAttribute('download', true);
-        csvEmailButton.setAttribute('target', '_blank');
-        csvEmailButton.setAttribute('href', downloadAllArticles);
-        document.querySelector("#csv_email_msg").textContent = "Your CSV export has started. Please check your email to get an update once it’s ready."
+      /** Get email to send CSV data **/
+      var csvEmailButton = document.querySelector(".js-csv_email_button");
+
+      var getEmailInput = function (event) {
+        var inputEmailField = document.querySelector(".js-csv_email_input"),
+            validEmailInput = inputEmailField.checkValidity();
+        // If email input is valid, get value to build download URL
+        if (validEmailInput) {
+          var inputEmailValue = inputEmailField.value;
+          downloadAllArticles = csvExportBase + "email=" + inputEmailValue + "&" + response.data.hits.hits[0]._source.analysis.is_paper + dateRange;
+          csvEmailButton.setAttribute('download', true);
+          csvEmailButton.setAttribute('target', '_blank');
+          csvEmailButton.setAttribute('href', downloadAllArticles);
+          document.querySelector("#csv_email_msg").textContent = "Your CSV export has started. Please check your email to get an update once it’s ready."
+        }
+      };
+      csvEmailButton.addEventListener('click', getEmailInput, false);
+
+      /** Check for an OA policy **/
+      let complianceContents = document.querySelector("#compliance");
+      // ...get its URL
+      hasPolicy = response.data.hits.hits[0]._source.policy.supported_policy;
+      // ...then get the number of compliant articles and display a tooltip
+      if (hasPolicy === true) {
+        policyURL = response.data.hits.hits[0]._source.policy.url;
+        policyURL = encodeURI(policyURL);
+        isCompliant = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.compliance + dateRange);
+        /*jshint multistr: true */
+        document.querySelector("#org_oa_policy").innerHTML = '<sup data-tippy-content="The percentage of articles that are compliant with \
+          <a href=\'' + policyURL + '\' target=\'_blank\' rel=\'noopener\' class=\'underline\'>your organization’s Open Access policy</a>. \
+        This number is specific to your policy and your requirements.\
+        <br><br>This figure can differ from your total OA%, depending on exactly how your organization defines Open Access. ">\
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-help-circle inline-block h-4 duration-500"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>\
+        </sup>';
+      } else {
+        // ...otherwise, indicshowate that there are no policies and hide compliance number
+        document.querySelector("#org_oa_policy").innerHTML = '<sup data-tippy-content="We couldn’t track a policy for your organization.">\
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-help-circle inline-block h-4 duration-500"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>\
+        </sup>';
       }
-    };
-    csvEmailButton.addEventListener('click', getEmailInput, false);
-
-    /** Check for an OA policy **/
-    let complianceContents = document.querySelector("#compliance");
-    // ...get its URL
-    hasPolicy = response.data.hits.hits[0]._source.policy.supported_policy;
-    // ...then get the number of compliant articles and display a tooltip
-    if (hasPolicy === true) {
-      policyURL = response.data.hits.hits[0]._source.policy.url;
-      policyURL = encodeURI(policyURL);
-      isCompliant = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.compliance + dateRange);
-      /*jshint multistr: true */
-      document.querySelector("#org_oa_policy").innerHTML = '<sup data-tippy-content="The percentage of articles that are compliant with \
-        <a href=\'' + policyURL + '\' target=\'_blank\' rel=\'noopener\' class=\'underline\'>your organization’s Open Access policy</a>. \
-      This number is specific to your policy and your requirements.\
-      <br><br>This figure can differ from your total OA%, depending on exactly how your organization defines Open Access. ">\
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-help-circle inline-block h-4 duration-500"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>\
-      </sup>';
-    } else {
-      // ...otherwise, indicshowate that there are no policies and hide compliance number
-      document.querySelector("#org_oa_policy").innerHTML = '<sup data-tippy-content="We couldn’t track a policy for your organization.">\
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-help-circle inline-block h-4 duration-500"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>\
-      </sup>';
     }
 
     /**  Display Insights and Strategy data **/
@@ -242,6 +238,7 @@ oareport = function(org) {
       ).catch(error => console.error("ERROR: " + error));
     };
 
+    getData();
     displayData();
 
     // Change displayed Insights and Strategy data based on user input
@@ -251,31 +248,35 @@ oareport = function(org) {
     //     endDateInputFieldValue = document.querySelector("#report-end-date").value;
 
     // Preset "quick date filter" buttons
-    const threeMonthsAgo  = subtractMonths(3, currentDate),
-          sixMonthsAgo    = subtractMonths(6, currentDate),
-          fiveYearsAgo    = subtractMonths(60, currentDate);
+    const threeMonthsAgo    = changeMonths(3, currentDate),
+          sixMonthsAgo      = changeMonths(6, currentDate),
+          fiveYearsAgo      = changeMonths(60, currentDate);
 
-    var threeMonthsBtn  = document.querySelector("#three-months"),
-          sixMonthsBtn    = document.querySelector("#six-months"),
-          twelveMonthsBtn = document.querySelector("#twelve-months"),
-          fiveYearsBtn    = document.querySelector("#five-years");
+    var threeMonthsBtn      = document.querySelector("#three-months"),
+          sixMonthsBtn      = document.querySelector("#six-months"),
+          twelveMonthsBtn   = document.querySelector("#twelve-months"),
+          fiveYearsBtn      = document.querySelector("#five-years"),
+          insightsDateRange = document.querySelector("#insights_range");
 
     // Change data based on preset date filters
     threeMonthsBtn.addEventListener('click', event => {
       replaceStartDate(threeMonthsAgo);
       insightsDateRange.textContent = "last 3 months";
+      getData();
       displayData();
     });
 
     sixMonthsBtn.addEventListener('click', event => {
       replaceStartDate(sixMonthsAgo);
       insightsDateRange.textContent = "last 6 months";
+      getData();
       displayData();
     });
 
     twelveMonthsBtn.addEventListener('click', event => {
       replaceStartDate(lastYearDate);
       insightsDateRange.textContent = "last 12 months";
+      getData();
       displayData();
     });
 
