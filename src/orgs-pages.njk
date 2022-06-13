@@ -7,6 +7,8 @@ pagination:
 permalink: "orgs/{{ org._source.objectID | slug }}/"
 ---
 
+{%- from "system/component.njk" import component -%}
+
 <header class="col-span-12">
   <div class="flex justify-between">
     <h1 class="text-3xl md:text-6xl font-light">
@@ -21,16 +23,33 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
 <section class="col-span-12 grid grid-cols-12 gap-3 lg:gap-6 top-0 mb-2 pt-2 bg-[#F4F0F0]">
   <div class="col-span-12 grid grid-cols-12 gap-3">
     <header class="col-span-12 md:col-span-6">
-      <h2 class="mb-3 text-lg leading-6 font-medium text-neutral-900">Insights from <span id="start-date"></span> — <span id="end-date"></span><sup data-tippy-content="The <em>Insights</em> section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/' target='_blank' class='underline'>infrastructure page</a>.">{% icon_small "help-circle" %}</sup></h2>
+      <h2 class="mb-3 text-lg leading-6 font-medium text-neutral-900">
+        Insights from <span id="start-date"></span> — <span id="end-date"></span>
+        {{ component("tooltip", {
+          msg: "The <em>Insights</em> section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/' target='_blank' class='underline'>infrastructure page</a>."
+        }) }}
+      </h2>
     </header>
 
     {# Preset date filters #}
     <aside class="mb-3 col-span-12 md:col-span-6 md:text-right">
       <h2 class="sr-only">Quick date filters</h2>
-      <button class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-white bg-neutral-700 hover:bg-neutral-900" id="three-months">Last 3 months</button>
-      <button class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-white bg-neutral-700 hover:bg-neutral-900" id="six-months">Last 6 months</button>
-      <button class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-white bg-neutral-700 hover:bg-neutral-900" id="twelve-months">Last 12 months</button>
-      <button class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-white bg-neutral-700 hover:bg-neutral-900" id="five-years">Last 5 years</button>
+      {{ component("pill", {
+        id: "three-months",
+        txt: "Last 3 months"
+      }) }}
+      {{ component("pill", {
+        id: "six-months",
+        txt: "Last 6 months"
+      }) }}
+      {{ component("pill", {
+        id: "twelve-months",
+        txt: "Last 12 months"
+      }) }}
+      {{ component("pill", {
+        id: "five-years",
+        txt: "Last 5 years"
+      }) }}
     </aside>
 
     <dl class="col-span-12 mb-6 grid grid-cols-1 gap-3 lg:gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -41,7 +60,9 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
           </div>
           <p class="ml-24 mb-2 text-base font-medium text-gray-500 truncate">
             Articles published
-            <sup data-tippy-content="The total number of articles published by grantees or authors at your organization.">{% icon_small "help-circle" %}</sup>
+            {{ component("tooltip", {
+              msg: "The total number of articles published by grantees or authors at your organization."
+            }) }}
           </p>
         </dt>
         <dd class="ml-24 flex items-baseline">
@@ -63,7 +84,9 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
           </div>
           <p class="ml-24 mb-2 text-base font-medium text-gray-500 truncate">
             Open Access Articles
-            <sup data-tippy-content="The total number of articles that are currently Open Access, either because the version of record is Open Access (“gold”, “diamond”, or “hybrid” Open Access) or because the article was preprinted or been made available through self-archiving (“green” Open Access).">{% icon_small "help-circle" %}</sup>
+            {{ component("tooltip", {
+              msg: "The total number of articles that are currently Open Access, either because the version of record is Open Access (“gold”, “diamond”, or “hybrid” Open Access) or because the article was preprinted or been made available through self-archiving (“green” Open Access)."
+            }) }}
           </p>
         </dt>
         <dd class="ml-24 flex items-baseline">
@@ -154,7 +177,12 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
 
       {# Download in CSV #}
       <div class="col-span-12 md:col-start-11">
-        <label for="email" class="mb-2 block text-base text-neutral-800">Download data as CSV<sup data-tippy-content="Enter your email address to receive a link to a CSV for download. <strong>We do not save email addresses or use them for any purpose</strong> other than sending you the CSV file containing OAreport data when you request it.">{% icon_small "help-circle" %}</sup></label>
+        <label for="email" class="mb-2 block text-base text-neutral-800">
+          Download data as CSV
+          {{ component("tooltip", {
+            msg: "Enter your email address to receive a link to a CSV for download. <strong>We do not save email addresses or use them for any purpose</strong> other than sending you the CSV file containing OAreport data when you request it."
+          }) }}
+        </label>
         <div class="my-1 flex rounded-sm shadow-sm">
           <div class="relative flex items-stretch flex-grow focus-within:z-10">
             <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
@@ -173,7 +201,12 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
 </section>
 
 <section class="col-span-12" id="strategies">
-  <h2 class="mb-5 text-lg leading-6 font-medium text-neutral-900">Strategies<sup data-tippy-content="The <em>Strategy</em> section provides actionable steps for making more of your articles Open Access.">{% icon_small "help-circle" %}</sup></h2>
+  <h2 class="mb-5 text-lg leading-6 font-medium text-neutral-900">
+    Strategies
+    {{ component("tooltip", {
+      msg: "The <em>Strategy</em> section provides actionable steps for making more of your articles Open Access."
+    }) }}
+  </h2>
   <div class="grid grid-cols-12 gap-3 lg:gap-6 md:gap-12">
     <header class="md:mb-12 col-span-12 lg:col-span-4">
       <div class=" lg:sticky lg:top-3">
@@ -185,7 +218,12 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
     <div class="pt-3 md:pt-6 col-span-12 lg:col-span-8 border-t sm:border-0">
       <div class="grid grid-cols-12 gap-3 lg:gap-6 flex justify-between">
         <div class="col-span-12 md:col-span-6">
-          <p class="mb-1 text-neutral-900 text-lg font-semibold leading-6"><span id="total_actions">00</span> actions prepared</span><sup data-tippy-content="This number represents the number of articles that have the ability to be made open access for free but are currently behind a paywall. In these cases, the publishers allow for self-archiving an author accepted manuscript version of the article in a repository.">{% icon_small "help-circle" %}</sup></p>
+          <p class="mb-1 text-neutral-900 text-lg font-semibold leading-6">
+            <span id="total_actions">00</span> actions prepared</span>
+            {{ component("tooltip", {
+              msg: "This number represents the number of articles that have the ability to be made open access for free but are currently behind a paywall. In these cases, the publishers allow for self-archiving an author accepted manuscript version of the article in a repository."
+            }) }}
+          </p>
           <p class="text-neutral-700 text-base">Showing the <span id="latest_actions">100</span> most recent articles</p>
         </div>
         <div class="col-span-12 md:col-span-6 md:text-right">
@@ -200,7 +238,12 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
             <tr>
               <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-6/12">Article</th>
               <th scope="col" class="hidden px-3 py-3.5 text-left text-sm font-semibold w-4/12 sm:table-cell">Corresponding author</th>
-              <th scope="col" class="text-sm font-semibold py-3.5 pl-3 pr-4 w-2/12">Open draft<sup data-tippy-content="This will open a preset message in your email client. If you make any changes to the email, it will not be saved here.">{% icon_small "help-circle" %}</sup></th>
+              <th scope="col" class="text-sm font-semibold py-3.5 pl-3 pr-4 w-2/12">
+                Open draft
+                {{ component("tooltip", {
+                  msg: "This will open a preset message in your email client. If you make any changes to the email, it will not be saved here."
+                }) }}
+              </th>
             </tr>
           </thead>
           <tbody class="divide-y divide-neutral-200 bg-white" id="can_archive_list">
