@@ -75,12 +75,12 @@ oareport = function(org) {
       return startDate;
     };
 
-    // Get queries for article counts and list of records for actions
-    getQueries = function() {
-      isPaperQuery   = (countQueryBase + encodeURI(response.data.hits.hits[0]._source.analysis.is_paper + dateRange));
-      isOAQuery      = (countQueryBase + encodeURI(response.data.hits.hits[0]._source.analysis.is_oa + dateRange));
-      canArchiveAAMQuery  = (countQueryBase + encodeURI(response.data.hits.hits[0]._source.strategy.email_author_aam.query + dateRange));
-      canArchiveAAMListQuery = (queryBase + encodeURI(response.data.hits.hits[0]._source.strategy.email_author_aam.query + dateRange + recordSize));
+    // Get queries for article counts and strategy action list
+    getCountQueries = function() {
+      isPaperQuery   = (countQueryBase + response.data.hits.hits[0]._source.analysis.is_paper + dateRange);
+      isOAQuery      = (countQueryBase + response.data.hits.hits[0]._source.analysis.is_oa + dateRange);
+      canArchiveAAMQuery  = (countQueryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query + dateRange);
+      canArchiveAAMListQuery = (queryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query + dateRange);
 
       isPaper        = axios.get(isPaperQuery);
       isOA           = axios.get(isOAQuery);
@@ -102,11 +102,11 @@ oareport = function(org) {
         "record query for canArchiveAAMList: " + canArchiveAAMListQuery);
     }
 
-    getData = function() {
+    getInsights = function() {
       /** Get email to send CSV data **/
       var csvEmailButton = document.querySelector(".js-csv_email_button");
 
-      var getEmailInput = function (event) {
+      getEmailInput = function (event) {
         var inputEmailField = document.querySelector(".js-csv_email_input"),
             validEmailInput = inputEmailField.checkValidity();
         // If email input is valid, get value to build download URL
@@ -131,17 +131,8 @@ oareport = function(org) {
         policyURL = encodeURI(policyURL);
         isCompliant = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.compliance + dateRange);
         /*jshint multistr: true */
-        document.querySelector("#org_oa_policy").innerHTML = '<sup data-tippy-content="The percentage of articles that are compliant with \
-          <a href=\'' + policyURL + '\' target=\'_blank\' rel=\'noopener\' class=\'underline\'>your organization’s Open Access policy</a>. \
-        This number is specific to your policy and your requirements.\
-        <br><br>This figure can differ from your total OA%, depending on exactly how your organization defines Open Access. ">\
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-help-circle inline-block h-4 duration-500"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>\
-        </sup>';
-      } else {
-        // ...otherwise, indicshowate that there are no policies and hide compliance number
-        document.querySelector("#org_oa_policy").innerHTML = '<sup data-tippy-content="We couldn’t track a policy for your organization.">\
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-help-circle inline-block h-4 duration-500"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>\
-        </sup>';
+        var policyURLContent = "The percentage of articles that are compliant with <a href='" + policyURL + "' target='_blank' rel='noopener' class='underline'>your organization’s Open Access policy</a>. This number is specific to your policy and your requirements."
+        document.querySelector("#org_oa_policy").setAttribute("data-tippy-content", policyURLContent);
       }
     };
 
@@ -252,8 +243,8 @@ oareport = function(org) {
       ).catch(function (error) { console.log("ERROR: " + error); })
     };
 
-    getQueries();
-    getData();
+    getCountQueries();
+    getInsights();
     displayData();
 
     // Change displayed Insights and Strategy data based on user input
@@ -277,24 +268,24 @@ oareport = function(org) {
     threeMonthsBtn.addEventListener("click", function() {
       replaceStartDate(threeMonthsAgo);
       insightsDateRange.textContent = "last 3 months";
-      getQueries();
-      getData();
+      getCountQueries();
+      getInsights();
       displayData();
     });
 
     sixMonthsBtn.addEventListener("click", function() {
       replaceStartDate(sixMonthsAgo);
       insightsDateRange.textContent = "last 6 months";
-      getQueries();
-      getData();
+      getCountQueries();
+      getInsights();
       displayData();
     });
 
     twelveMonthsBtn.addEventListener("click", function() {
       replaceStartDate(lastYearDate);
       insightsDateRange.textContent = "last 12 months";
-      getQueries();
-      getData();
+      getCountQueries();
+      getInsights();
       displayData();
     });
 
