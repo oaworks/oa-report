@@ -109,7 +109,11 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
             {% icon "check-circle" %}
           </div>
           <p class="ml-24 mb-2 text-base font-medium text-gray-500 truncate">
-            Policy-compliant articles <span id="org_oa_policy"></span>
+            Policy-compliant articles
+            {{ component("tooltip", {
+              msg: "We couldn’t track a policy for your organization.",
+              id: "org_oa_policy"
+            }) }}
           </p>
         </dt>
         <dd class="ml-24 flex items-baseline">
@@ -164,7 +168,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
       {# Filter by date #}
       <section>
         <h2 class="sr-only">Filter by date</h2>
-        <form>
+        <form onsubmit="filterByDates()">
           <div class="flex items-end mb-3">
             <fieldset class="mr-6">
               <label for="report-start-date" class="mb-2 block text-base text-neutral-800">From</label>
