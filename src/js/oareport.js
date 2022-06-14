@@ -1,4 +1,4 @@
-const base           = 'https://beta.oa.works/report/',
+const base           = "https://beta.oa.works/report/",
       queryBase      = base + "works?",
       countQueryBase = base + "works/count?",
       csvExportBase  = base + "works.csv?size=all&";
@@ -26,9 +26,9 @@ changeDays = function(numOfDays, date) {
 
 // Set readable date options
 var readableDateOptions = {
-  day: 'numeric',
-  month: 'long',
-  year: 'numeric'
+  day: "numeric",
+  month: "long",
+  year: "numeric"
 };
 
 // Set today’s date and 12 months ago date to display most recent Insights data as default
@@ -46,49 +46,63 @@ const currentDate          = new Date(),
 oareport = function(org) {
   let report = base + "orgs?q=name:%22" + org + "%22";
 
-  console.log("report: " + base + "orgs?q=name:%22" + org + "%22");
-
   // Default date filtering is for the last 12 months
-  axios.get(report).then(response => {
+  axios.get(report).then(function (response) {
+    /* Get all dates for filtering data by dates */
+    let endDateContents      = document.querySelector("#end_date"),
+        startDateContents    = document.querySelector("#start_date"),
+        startDate            = "",
+        endDate              = "";
+
+    // Display default date range, last 12 months
+    endDateContents.textContent = currentDateReadable;
+    startDateContents.textContent = lastYearDateReadable;
+
+    startDate         = lastYearDateISO;
+    endDate           = currentDateISO;
+
+    var dateRange      = "%20AND%20(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")",
+        recordSize     = "&size=100"; // Set record size for number of actions shown in Strategies
+
+    // Change start date for quick/preset 3/6/12 months filters
+    replaceStartDate = function(date) {
+      startDateContents.textContent = date.toLocaleString(getUsersLocale(), readableDateOptions);
+      var startDate = date.toISOString().substring(0, 10);
+      dateRange      = "%20AND%20(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")";
+      // threeMonthsBtn.classList.remove('bg-neutral-700');
+      // threeMonthsBtn.classList.add('bg-carnation-500');
+      console.log("new dateRange: " + dateRange);
+      return startDate;
+    };
+
+    // Get queries for article counts and list of records for actions
+    getQueries = function() {
+      isPaperQuery   = (countQueryBase + encodeURI(response.data.hits.hits[0]._source.analysis.is_paper + dateRange));
+      isOAQuery      = (countQueryBase + encodeURI(response.data.hits.hits[0]._source.analysis.is_oa + dateRange));
+      canArchiveAAMQuery  = (countQueryBase + encodeURI(response.data.hits.hits[0]._source.strategy.email_author_aam.query + dateRange));
+      canArchiveAAMListQuery = (queryBase + encodeURI(response.data.hits.hits[0]._source.strategy.email_author_aam.query + dateRange + recordSize));
+
+      isPaper        = axios.get(isPaperQuery);
+      isOA           = axios.get(isOAQuery);
+      canArchiveAAM  = axios.get(canArchiveAAMQuery);
+      canArchiveAAMList = axios.get(canArchiveAAMListQuery);
+
+      console.log("report: " + base + "orgs?q=name:%22" + org + "%22");
+
+      console.log(
+        "count query for isPaper: " + isPaperQuery);
+
+      console.log(
+        "count query for isOA: " + isOAQuery);
+
+      console.log(
+        "count query for canArchiveAAM: " + canArchiveAAMQuery);
+
+      console.log(
+        "record query for canArchiveAAMList: " + canArchiveAAMListQuery);
+    }
+
     getData = function() {
-
-      /* Get all dates for filtering data by dates */
-      let endDateContents      = document.querySelector("#end_date"),
-          startDateContents    = document.querySelector("#start_date"),
-          startDate            = "",
-          endDate              = "";
-
-      // Display default date range, last 12 months
-      endDateContents.textContent = currentDateReadable;
-      startDateContents.textContent = lastYearDateReadable;
-
-      startDate         = lastYearDateISO;
-      endDate           = currentDateISO;
-
-      var dateRange      = "%20AND%20published_date:>" + startDate + "%20AND%20published_date:<" + endDate,
-          recordSize     = "&size=100"; // Set record size for number of actions shown in Strategies
-
-      replaceStartDate = function(date) {
-        startDateContents.textContent = date.toLocaleString(getUsersLocale(), readableDateOptions);
-        var startDate = date.toISOString().substring(0, 10);
-        dateRange = "%20AND%20published_date:>" + startDate + "%20AND%20published_date:<" + endDate;
-        // threeMonthsBtn.classList.remove('bg-neutral-700');
-        // threeMonthsBtn.classList.add('bg-carnation-500');
-        console.log(dateRange);
-        return startDate;
-      };
-
-      // Get queries for article counts
-      isPaper        = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.is_paper + dateRange);
-      isOA           = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.is_oa + dateRange);
-      canArchiveAAM  = axios.get(countQueryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query + dateRange);
-      // Get queries for records
-      canArchiveAAMList = axios.get(queryBase + encodeURI(response.data.hits.hits[0]._source.strategy.email_author_aam.query) + recordSize + dateRange);
-
-      console.log("count query for isPaper: " + countQueryBase + encodeURI(response.data.hits.hits[0]._source.analysis.is_paper) + dateRange);
-      console.log("count query for canArchiveAAM: " + countQueryBase + encodeURI(response.data.hits.hits[0]._source.strategy.email_author_aam.query) + dateRange)
-      console.log("query for canArchiveAAMList: " + queryBase + encodeURI(response.data.hits.hits[0]._source.strategy.email_author_aam.query) + recordSize + dateRange);
-
       /** Get email to send CSV data **/
       var csvEmailButton = document.querySelector(".js-csv_email_button");
 
@@ -105,7 +119,7 @@ oareport = function(org) {
           document.querySelector("#csv_email_msg").textContent = "Your CSV export has started. Please check your email to get an update once it’s ready."
         }
       };
-      csvEmailButton.addEventListener('click', getEmailInput, false);
+      csvEmailButton.addEventListener("click", getEmailInput, false);
 
       /** Check for an OA policy **/
       let complianceContents = document.querySelector("#compliance");
@@ -129,7 +143,7 @@ oareport = function(org) {
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-help-circle inline-block h-4 duration-500"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>\
         </sup>';
       }
-    }
+    };
 
     /**  Display Insights and Strategy data **/
     // TODO: break this up into two functions
@@ -205,7 +219,7 @@ oareport = function(org) {
 
               // Get email draft/body for this article and replace with its metadata
               canArchiveAAMMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
-              canArchiveAAMMailto = canArchiveAAMMailto.replaceAll('\'', '’');
+              canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("\'", "’");
               canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{title}", title);
               canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{doi}", doi);
               canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{author_email}", authorEmail);
@@ -235,9 +249,10 @@ oareport = function(org) {
             document.querySelector("#strategies").outerHTML = "";
           }
         }
-      ).catch(error => console.error("ERROR: " + error));
+      ).catch(function (error) { console.log("ERROR: " + error); })
     };
 
+    getQueries();
     getData();
     displayData();
 
@@ -259,29 +274,32 @@ oareport = function(org) {
           insightsDateRange = document.querySelector("#insights_range");
 
     // Change data based on preset date filters
-    threeMonthsBtn.addEventListener('click', event => {
+    threeMonthsBtn.addEventListener("click", function() {
       replaceStartDate(threeMonthsAgo);
       insightsDateRange.textContent = "last 3 months";
+      getQueries();
       getData();
       displayData();
     });
 
-    sixMonthsBtn.addEventListener('click', event => {
+    sixMonthsBtn.addEventListener("click", function() {
       replaceStartDate(sixMonthsAgo);
       insightsDateRange.textContent = "last 6 months";
+      getQueries();
       getData();
       displayData();
     });
 
-    twelveMonthsBtn.addEventListener('click', event => {
+    twelveMonthsBtn.addEventListener("click", function() {
       replaceStartDate(lastYearDate);
       insightsDateRange.textContent = "last 12 months";
+      getQueries();
       getData();
       displayData();
     });
 
   })
-  .catch(error => console.error("ERROR: " + error));
+  .catch(function (error) { console.log("ERROR: " + error); })
 };
 
 oareport(org);
