@@ -162,16 +162,23 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
 
     <div class="col-span-12 mb-6 grid grid-cols-12 gap-3 lg:gap-6">
       {# Filter by date #}
-      <section class="grid grid-cols-12 gap-3 lg:gap-6 col-span-12 md:col-span-6">
+      <section>
         <h2 class="sr-only">Filter by date</h2>
-        <div class="col-span-6">
-          <label for="report-start-date" class="mb-2 block text-base text-neutral-800">From</label>
-          <input type="date" min="2021-01-01" name="report-start-date" id="report-start-date" class="focus:ring-carnation-500 focus:border-carnation-500 block w-full sm:text-sm shadow-md rounded-md border-0" required>
-        </div>
-        <div class="col-span-6">
-          <label for="report-end-date" class="mb-2 block text-base text-neutral-800">To</label>
-          <input type="date" min="2021-01-01" name="report-start-date" id="report-end-date" class="focus:ring-carnation-500 focus:border-carnation-500 block w-full sm:text-sm shadow-md rounded-md border-0" required>
-        </div>
+        <form>
+          <div class="flex items-end mb-3">
+            <fieldset class="mr-6">
+              <label for="report-start-date" class="mb-2 block text-base text-neutral-800">From</label>
+              <input type="date" min="2021-01-01" name="report-start-date" id="report-start-date" class="focus:ring-carnation-500 focus:border-carnation-500 block w-full sm:text-sm shadow-md rounded-md border-0" required>
+            </fieldset>
+            <fieldset class="mr-6">
+              <label for="report-end-date" class="mb-2 block text-base text-neutral-800">To</label>
+              <input type="date" min="2021-01-01" name="report-start-date" id="report-end-date" class="focus:ring-carnation-500 focus:border-carnation-500 block w-full sm:text-sm shadow-md rounded-md border-0" required>
+            </fieldset>
+            <button type="submit" class="block px-4 py-2 text-sm font-medium rounded-md text-neutral-900 bg-neutral-50 hover:bg-carnation-500 hover:text-white hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-500 focus:border-carnation-500 focus:border-carnation-500 duration-500 shadow-md border-0 h-fit whitespace-nowrap">
+              Filter by dates
+            </button>
+          </div>
+        </form>
       </section>
 
       {# Download in CSV #}
