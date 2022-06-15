@@ -48,6 +48,7 @@ oareport = function(org) {
 
   // Default date filtering is for the last 12 months
   axios.get(report).then(function (response) {
+
     /* Get all dates for filtering data by dates */
     let endDateContents      = document.querySelector("#end_date"),
         startDateContents    = document.querySelector("#start_date"),
@@ -75,8 +76,9 @@ oareport = function(org) {
       return startDate;
     };
 
-    // Get queries for article counts and strategy action list
+    /** Get queries for article counts and strategy action list **/
     getCountQueries = function() {
+      isPaperURL    = response.data.hits.hits[0]._source.analysis.is_paper + dateRange;
       isPaperQuery   = (countQueryBase + response.data.hits.hits[0]._source.analysis.is_paper + dateRange);
       isOAQuery      = (countQueryBase + response.data.hits.hits[0]._source.analysis.is_oa + dateRange);
       canArchiveAAMQuery  = (countQueryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query + dateRange);
@@ -100,28 +102,11 @@ oareport = function(org) {
 
       console.log(
         "record query for canArchiveAAMList: " + canArchiveAAMListQuery);
-    }
+    };
 
-    getInsights = function() {
-      /** Get email to send CSV data **/
-      var csvEmailButton = document.querySelector(".js-csv_email_button");
-
-      getEmailInput = function (event) {
-        var inputEmailField = document.querySelector(".js-csv_email_input"),
-            validEmailInput = inputEmailField.checkValidity();
-        // If email input is valid, get value to build download URL
-        if (validEmailInput) {
-          var inputEmailValue = inputEmailField.value;
-          downloadAllArticles = csvExportBase + "email=" + inputEmailValue + "&" + response.data.hits.hits[0]._source.analysis.is_paper + dateRange;
-          csvEmailButton.setAttribute('download', true);
-          csvEmailButton.setAttribute('target', '_blank');
-          csvEmailButton.setAttribute('href', downloadAllArticles);
-          document.querySelector("#csv_email_msg").textContent = "Your CSV export has started. Please check your email to get an update once it’s ready."
-        }
-      };
-      csvEmailButton.addEventListener("click", getEmailInput, false);
-
-      /** Check for an OA policy **/
+    /** Check for an OA policy **/
+    getPolicy = function() {
+      var policyURLContent;
       let complianceContents = document.querySelector("#compliance");
       // ...get its URL
       hasPolicy = response.data.hits.hits[0]._source.policy.supported_policy;
@@ -131,9 +116,10 @@ oareport = function(org) {
         policyURL = encodeURI(policyURL);
         isCompliant = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.compliance + dateRange);
         /*jshint multistr: true */
-        var policyURLContent = "The percentage of articles that are compliant with <a href='" + policyURL + "' target='_blank' rel='noopener' class='underline'>your organization’s Open Access policy</a>. This number is specific to your policy and your requirements."
+        policyURLContent = "The percentage of articles that are compliant with <a href='" + policyURL + "' target='_blank' rel='noopener' class='underline'>your organization’s Open Access policy</a>. This number is specific to your policy and your requirements.";
+        document.querySelector("#org_oa_policy").removeAttribute("data-tippy-content");
         document.querySelector("#org_oa_policy").setAttribute("data-tippy-content", policyURLContent);
-      }
+      } 
     };
 
     /**  Display Insights and Strategy data **/
@@ -153,10 +139,9 @@ oareport = function(org) {
               compliantArticlesContents = document.querySelector("#articles_compliant"),
               compliantPercentageContents = document.querySelector("#percent_compliant");
 
-          // "Insights" section: display totals and % of articles, OA articles, and compliant articles
+          // "Insights" section: display totals and % of articles, OA articles, and compliant articles if any
           articlesContents.textContent = isPaper.toLocaleString(getUsersLocale());
 
-          // Only replace content if there are data for articles
           if (isOA) {
             oaArticlesContents.textContent = isOA.toLocaleString(getUsersLocale()) + " in total";
             oaPercentageContents.textContent = Math.round(((isOA/isPaper)*100)) + "%";
@@ -244,11 +229,11 @@ oareport = function(org) {
     };
 
     getCountQueries();
-    getInsights();
+    getPolicy();
     displayData();
 
-    // Change displayed Insights and Strategy data based on user input
-
+    /** Change displayed Insights data based on user input **/
+    // TODO: change Strategy data based on this input as well
     // Get user-input dates from date fields
     // var startDateInputFieldValue = document.querySelector("#report-start-date").value,
     //     endDateInputFieldValue = document.querySelector("#report-end-date").value;
@@ -264,7 +249,6 @@ oareport = function(org) {
           fiveYearsBtn      = document.querySelector("#five-years"),
           insightsDateRange = document.querySelector("#insights_range");
 
-    // Change data based on preset date filters
     threeMonthsBtn.addEventListener("click", function() {
       replaceStartDate(threeMonthsAgo);
       insightsDateRange.textContent = "last 3 months";
@@ -291,6 +275,24 @@ oareport = function(org) {
 
   })
   .catch(function (error) { console.log("ERROR: " + error); })
+};
+
+/** Get email to send and download CSV data **/
+downloadCSV = function() {
+  let form = document.querySelector("#download_csv");
+
+  // Get field data from the form
+  let data = new FormData(form);
+  let userEmail = data.get("email");
+
+  // Change form action to CSV download URL with user-input email
+  downloadCSV = csvExportBase + "email=" + userEmail + "&" + isPaperURL;
+  form.action = downloadCSV;
+
+  // Display message
+  document.querySelector("#csv_email_msg").textContent = "Your CSV export has started. Please check your email to get the full data once it’s ready.";
+
+  return downloadCSV;
 };
 
 oareport(org);

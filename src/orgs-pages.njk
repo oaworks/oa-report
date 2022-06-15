@@ -186,7 +186,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
       </section>
 
       {# Download in CSV #}
-      <div class="col-span-12 md:col-start-11">
+      <form onsubmit="downloadCSV()" method="get" class="col-span-12 lg:ol-start-11" id="download_csv">
         <label for="email" class="mb-2 block text-base text-neutral-800">
           Download data as CSV
           {{ component("tooltip", {
@@ -200,12 +200,12 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
             </div>
             <input type="email" name="email" id="email" class="focus:ring-carnation-500 focus:border-carnation-500 block w-full rounded-none rounded-l-md pl-10 sm:text-sm shadow-md border-0 js-csv_email_input" placeholder="you@example.com" required>
           </div>
-          <a href="#" class="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-r-md text-neutral-900 bg-neutral-50 hover:bg-carnation-500 hover:text-white hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-500 focus:border-carnation-500 focus:border-carnation-500 duration-500 shadow-md border-0 js-csv_email_button">
+          <button type="input" class="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-r-md text-neutral-900 bg-neutral-50 hover:bg-carnation-500 hover:text-white hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-500 focus:border-carnation-500 focus:border-carnation-500 duration-500 shadow-md border-0 js-csv_email_button">
             Send CSV
-          </a>
+          </button>
         </div>
         <p class="leading-5 text-xs text-neutral-600" id="csv_email_msg"></p>
-      </div>
+      </form>
     </div>
   </div>
 </section>
