@@ -194,16 +194,15 @@ oareport = function(org) {
 
             for (i = 0; i <= (canArchiveLength-1); i++) {
               var title = canArchiveAAMList[i]._source.title,
-                  // TODO: get author’s / recipient’s name
-                  // author = canArchiveAAMList[i]._source.author_names[0],
+                  author = canArchiveAAMList[i]._source.author_email_name,
                   doi   = canArchiveAAMList[i]._source.DOI,
                   pubDate = canArchiveAAMList[i]._source.published,
                   journal = canArchiveAAMList[i]._source.journal;
               pubDate = new Date(pubDate).toLocaleString(getUsersLocale(), readableDateOptions);
 
               // Display email address if found, otherwise display message
-              if (canArchiveAAMList[i]._source.supplements) {
-                authorEmail = canArchiveAAMList[i]._source.supplements[0].email;
+              if (canArchiveAAMList[i]._source.email) {
+                authorEmail = canArchiveAAMList[i]._source.email;
               } else {
                 authorEmail = "No email found.";
               }
@@ -213,6 +212,7 @@ oareport = function(org) {
               canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("\'", "’");
               canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{title}", title);
               canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{doi}", doi);
+              canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{author_name}", author);
               canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{author_email}", authorEmail);
 
               /*jshint multistr: true */
@@ -225,7 +225,7 @@ oareport = function(org) {
                   <div class="text-neutral-500">' + journal + '</div>\
                 </td>\
                 <td class="hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell">\
-                  <div class="mb-1 text-neutral-900">[Recipient’s name should be here]</div>\
+                  <div class="mb-1 text-neutral-900">' + author + '</div>\
                   <div class="text-neutral-500">' + authorEmail + '</div>\
                 </td>\
                 <td class="whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium">\
