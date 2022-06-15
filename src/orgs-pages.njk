@@ -27,7 +27,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
         <span class="block font-medium text-neutral-900">
           Insights from the <span id="insights_range">last 12 months</span>
           {{ component("tooltip", {
-            msg: tooltips.insights.msg
+            msg: "The <em>Insights</em> section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/' target='_blank' class='underline'>infrastructure page</a>."
           }) }}
         </span>
         <span class="text-neutral-600">From <span id="start_date"></span> — <span id="end_date"></span></span>
