@@ -186,7 +186,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
       </section>
 
       {# Download in CSV #}
-      <form onsubmit="downloadCSV()" method="get" class="col-span-12 lg:ol-start-11" id="download_csv">
+      <form onsubmit="downloadCSV()" method="get" class="col-span-12 lg:col-start-11" id="download_csv">
         <label for="email" class="mb-2 block text-base text-neutral-800">
           Download data as CSV
           {{ component("tooltip", {
