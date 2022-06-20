@@ -271,9 +271,9 @@ downloadCSV = function() {
 /** Change displayed Insights data based on user input **/
 // TODO: change Strategy data based on this input as well
 // Preset "quick date filter" buttons
-const threeMonthsAgo    = changeMonths(3, currentDate),
-      sixMonthsAgo      = changeMonths(6, currentDate),
-      fiveYearsAgo      = changeMonths(60, currentDate);
+const threeMonthsAgo    = changeMonths(-3, currentDate),
+      sixMonthsAgo      = changeMonths(-6, currentDate),
+      fiveYearsAgo      = changeMonths(-60, currentDate);
 
 var threeMonthsBtn      = document.querySelector("#three-months"),
     sixMonthsBtn        = document.querySelector("#six-months"),
