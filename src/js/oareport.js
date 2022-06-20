@@ -238,48 +238,6 @@ oareport = function(org) {
     getCountQueries();
     getPolicy();
     displayData();
-
-    /** Change displayed Insights data based on user input **/
-    // TODO: change Strategy data based on this input as well
-    // Get user-input dates from date fields
-    // var startDateInputFieldValue = document.querySelector("#report-start-date").value,
-    //     endDateInputFieldValue = document.querySelector("#report-end-date").value;
-
-    // Preset "quick date filter" buttons
-    const threeMonthsAgo    = changeMonths(3, currentDate),
-          sixMonthsAgo      = changeMonths(6, currentDate),
-          fiveYearsAgo      = changeMonths(60, currentDate);
-
-    var threeMonthsBtn      = document.querySelector("#three-months"),
-          sixMonthsBtn      = document.querySelector("#six-months"),
-          twelveMonthsBtn   = document.querySelector("#twelve-months"),
-          fiveYearsBtn      = document.querySelector("#five-years"),
-          insightsDateRange = document.querySelector("#insights_range");
-
-    threeMonthsBtn.addEventListener("click", function() {
-      replaceStartDate(threeMonthsAgo);
-      insightsDateRange.textContent = "last 3 months";
-      getCountQueries();
-      getInsights();
-      displayData();
-    });
-
-    sixMonthsBtn.addEventListener("click", function() {
-      replaceStartDate(sixMonthsAgo);
-      insightsDateRange.textContent = "last 6 months";
-      getCountQueries();
-      getInsights();
-      displayData();
-    });
-
-    twelveMonthsBtn.addEventListener("click", function() {
-      replaceStartDate(lastYearDate);
-      insightsDateRange.textContent = "last 12 months";
-      getCountQueries();
-      getInsights();
-      displayData();
-    });
-
   })
   .catch(function (error) { console.log("ERROR: " + error); })
 };
@@ -303,6 +261,42 @@ downloadCSV = function() {
 
   return downloadCSV;
 };
+
+/** Change displayed Insights data based on user input **/
+// TODO: change Strategy data based on this input as well
+// Preset "quick date filter" buttons
+const threeMonthsAgo    = changeMonths(3, currentDate),
+      sixMonthsAgo      = changeMonths(6, currentDate),
+      fiveYearsAgo      = changeMonths(60, currentDate);
+
+var threeMonthsBtn      = document.querySelector("#three-months"),
+    sixMonthsBtn        = document.querySelector("#six-months"),
+    twelveMonthsBtn     = document.querySelector("#twelve-months"),
+    insightsDateRange   = document.querySelector("#insights_range");
+
+threeMonthsBtn.addEventListener("click", function() {
+  replaceStartDate(threeMonthsAgo);
+  insightsDateRange.textContent = "from the last 3 months";
+  getCountQueries();
+  getPolicy();
+  displayData();
+});
+
+sixMonthsBtn.addEventListener("click", function() {
+  replaceStartDate(sixMonthsAgo);
+  insightsDateRange.textContent = "from the last 6 months";
+  getCountQueries();
+  getPolicy();
+  displayData();
+});
+
+twelveMonthsBtn.addEventListener("click", function() {
+  replaceStartDate(lastYearDate);
+  insightsDateRange.textContent = "from the last 12 months";
+  getCountQueries();
+  getPolicy();
+  displayData();
+});
 
 // changeDateRange = function() {
 //   let form = document.querySelector("#change_date_range");
