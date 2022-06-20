@@ -38,6 +38,6 @@
   color: #24201e;
 }
 
-[data-tippy-content] {
+[data-tippy-content], sup > svg {
   cursor: pointer;
 }
