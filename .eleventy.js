@@ -17,6 +17,9 @@ const iconShortcodeSmall = (icon) => feather.icons[icon].toSvg({ class: 'inline-
 const htmlmin = require('html-minifier');
 const now = String(Date.now());
 
+// CSS minifier
+const cssmin = require('cssmin');
+
 // Configs
 module.exports = function(eleventyConfig) {
   eleventyConfig.setLibrary('md', markdownLib);
@@ -51,6 +54,7 @@ module.exports = function(eleventyConfig) {
   // Set directories to pass through to the dist folder
   eleventyConfig.addPassthroughCopy('./src/fonts/');
   eleventyConfig.addPassthroughCopy('./src/js/');
+  eleventyConfig.addPassthroughCopy('./src/css/');
   // TODO: eleventyConfig.addPassthroughCopy('./src/favicons/');
 
   eleventyConfig.setLiquidOptions({
