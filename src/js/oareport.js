@@ -284,6 +284,8 @@ oareport = function(org) {
   .catch(function (error) { console.log("ERROR: " + error); })
 };
 
+oareport(org);
+
 /** Get email to send and download CSV data **/
 downloadCSV = function() {
   let form = document.querySelector("#download_csv");
@@ -302,4 +304,10 @@ downloadCSV = function() {
   return downloadCSV;
 };
 
-oareport(org);
+// changeDateRange = function() {
+//   let form = document.querySelector("#change_date_range");
+//
+//   let data = new FormData(form);
+//   let newStartDate = data.get("#report_start_date"),
+//       newEndDate = data.get("report_end_date");
+// };
