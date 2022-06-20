@@ -110,10 +110,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
           </div>
           <p class="ml-24 mb-2 text-base font-medium text-gray-500 truncate">
             Policy-compliant articles
-            {{ component("tooltip", {
-              msg: "We couldn’t track a policy for your organization.",
-              id: "org_oa_policy"
-            }) }}
+            <sup id="org_oa_policy">{% icon_small "help-circle" %}</sup>
           </p>
         </dt>
         <dd class="ml-24 flex items-baseline">

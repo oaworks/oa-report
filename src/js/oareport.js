@@ -104,22 +104,29 @@ oareport = function(org) {
         "record query for canArchiveAAMList: " + canArchiveAAMListQuery);
     };
 
-    /** Check for an OA policy **/
+    /** Check for an OA policy and display a link to the policy page in a tooltip **/
     getPolicy = function() {
-      var policyURLContent;
+      const instance = tippy(document.querySelector('#org_oa_policy'), {
+        allowHTML: true,
+        interactive: true,
+        placement: 'bottom',
+        appendTo: document.body,
+      });
+
       let complianceContents = document.querySelector("#compliance");
       // ...get its URL
       hasPolicy = response.data.hits.hits[0]._source.policy.supported_policy;
       // ...then get the number of compliant articles and display a tooltip
-      if (hasPolicy === true) {
+      if (hasPolicy) {
         policyURL = response.data.hits.hits[0]._source.policy.url;
         policyURL = encodeURI(policyURL);
         isCompliant = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.compliance + dateRange);
         /*jshint multistr: true */
-        policyURLContent = "The percentage of articles that are compliant with <a href='" + policyURL + "' target='_blank' rel='noopener' class='underline'>your organization’s Open Access policy</a>. This number is specific to your policy and your requirements.";
-        document.querySelector("#org_oa_policy").removeAttribute("data-tippy-content");
-        document.querySelector("#org_oa_policy").setAttribute("data-tippy-content", policyURLContent);
-      } 
+        var policyURLContent = "The percentage of articles that are compliant with <a href='" + policyURL + "' target='_blank' rel='noopener' class='underline'>your organization’s Open Access policy</a>. This number is specific to your policy and your requirements.";
+      } else {
+        var policyURLContent = "We couldn’t track a policy for your organization.";
+      }
+      instance.setContent(policyURLContent);
     };
 
     /**  Display Insights and Strategy data **/
