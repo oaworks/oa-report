@@ -18,7 +18,7 @@ const htmlmin = require('html-minifier');
 const now = String(Date.now());
 
 // CSS minifier
-const cssmin = require('cssmin');
+// const cssmin = require('cssmin');
 
 // Configs
 module.exports = function(eleventyConfig) {
