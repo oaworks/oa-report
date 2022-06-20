@@ -278,6 +278,7 @@ const threeMonthsAgo    = changeMonths(3, currentDate),
 var threeMonthsBtn      = document.querySelector("#three-months"),
     sixMonthsBtn        = document.querySelector("#six-months"),
     twelveMonthsBtn     = document.querySelector("#twelve-months"),
+    startYearBtn        = document.querySelector("#start-year"),
     insightsDateRange   = document.querySelector("#insights_range");
 
 threeMonthsBtn.addEventListener("click", function() {
@@ -299,6 +300,14 @@ sixMonthsBtn.addEventListener("click", function() {
 twelveMonthsBtn.addEventListener("click", function() {
   replaceStartDate(lastYearDate);
   insightsDateRange.textContent = "from the last 12 months";
+  getCountQueries();
+  getPolicy();
+  displayData();
+});
+
+startYearBtn.addEventListener("click", function() {
+  replaceStartDate(startYearDate);
+  insightsDateRange.textContent = "since the start of 2022";
   getCountQueries();
   getPolicy();
   displayData();

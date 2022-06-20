@@ -49,6 +49,10 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
         id: "twelve-months",
         txt: "Last 12 months"
       }) }}
+      {{ component("pill", {
+        id: "start-year",
+        txt: "Since start of year"
+      }) }}
     </aside>
 
     <dl class="col-span-12 mb-6 grid grid-cols-1 gap-3 lg:gap-6 sm:grid-cols-2 lg:grid-cols-3">
