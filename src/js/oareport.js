@@ -32,15 +32,20 @@ var readableDateOptions = {
 };
 
 // Set today’s date and 12 months ago date to display most recent Insights data as default
-const currentDate          = new Date(),
-      currentDateReadable  = currentDate.toLocaleString(getUsersLocale(), readableDateOptions), // for display in UI
-      currentDateQuery     = changeDays(+1, currentDate), // add 1 day for ElasticSearch (greater than but not equal)
-      currentDateISO       = currentDateQuery.toISOString().substring(0, 10), // used in ES query
+const currentDate           = new Date(),
+      currentDateReadable   = currentDate.toLocaleString(getUsersLocale(), readableDateOptions), // for display in UI
+      currentDateQuery      = changeDays(+1, currentDate), // add 1 day for ElasticSearch (greater than but not equal)
+      currentDateISO        = currentDateQuery.toISOString().substring(0, 10), // used in ES query
 
-      lastYearDate         = changeMonths(-12, currentDate),
-      lastYearDateReadable = lastYearDate.toLocaleString(getUsersLocale(), readableDateOptions); // for display in UI
-      lastYearDateQuery    = changeDays(-1, lastYearDate),  // subtract 1 day for ElasticSearch (less than but not equal)
-      lastYearDateISO      = lastYearDateQuery.toISOString().substring(0, 10), // used in ES query
+      lastYearDate          = changeMonths(-12, currentDate),
+      lastYearDateReadable  = lastYearDate.toLocaleString(getUsersLocale(), readableDateOptions); // for display in UI
+      lastYearDateQuery     = changeDays(-1, lastYearDate),  // subtract 1 day for ElasticSearch (less than but not equal)
+      lastYearDateISO       = lastYearDateQuery.toISOString().substring(0, 10), // used in ES query
+
+      startYearDate         = new Date(new Date().getFullYear(), 0, 1),
+      startYearDateReadable = startYearDate.toLocaleString(getUsersLocale(), readableDateOptions),
+      startYearDateQuery    = changeDays(-1, startYearDate),
+      startYearDateISO      = startYearDateQuery.toISOString().substring(0, 10);
 
 // Get organisational data to produce reports
 oareport = function(org) {
@@ -55,11 +60,12 @@ oareport = function(org) {
         startDate            = "",
         endDate              = "";
 
-    // Display default date range, last 12 months
+    // Display default date range: start from 2022
+    // TODO: start in the last twelve months once granular date filtering is up
     endDateContents.textContent = currentDateReadable;
-    startDateContents.textContent = lastYearDateReadable;
+    startDateContents.textContent = startYearDateReadable;
 
-    startDate         = lastYearDateISO;
+    startDate         = startYearDateISO;
     endDate           = currentDateISO;
 
     var dateRange      = "%20AND%20(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")",
