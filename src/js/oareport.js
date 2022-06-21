@@ -74,16 +74,19 @@ oareport = function(org) {
     // Change start date for quick/preset 3/6/12 months filters
     replaceStartDate = function(date) {
       startDateContents.textContent = date.toLocaleString(getUsersLocale(), readableDateOptions);
-      var startDate = date.toISOString().substring(0, 10);
-      dateRange      = "%20AND%20(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")";
+      var startDate = changeDays(-1, date);
+      startDate     = startDate.toISOString().substring(0, 10);
+      dateRange     = "%20AND%20(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")";
       // threeMonthsBtn.classList.remove('bg-neutral-700');
       // threeMonthsBtn.classList.add('bg-carnation-500');
-      console.log("new dateRange: " + dateRange);
+      console.log("new dateRange: " + startDate + " to " + endDate);
       return startDate;
     };
 
     /** Get queries for article counts and strategy action list **/
     getCountQueries = function() {
+      console.log("current dateRange: " + startDate + " to " + endDate);
+
       isPaperURL    = response.data.hits.hits[0]._source.analysis.is_paper + dateRange;
       isPaperQuery   = (countQueryBase + response.data.hits.hits[0]._source.analysis.is_paper + dateRange);
       isOAQuery      = (countQueryBase + response.data.hits.hits[0]._source.analysis.is_oa + dateRange);
@@ -97,17 +100,17 @@ oareport = function(org) {
 
       console.log("report: " + base + "orgs?q=name:%22" + org + "%22");
 
-      console.log(
-        "count query for isPaper: " + isPaperQuery);
-
-      console.log(
-        "count query for isOA: " + isOAQuery);
-
-      console.log(
-        "count query for canArchiveAAM: " + canArchiveAAMQuery);
-
-      console.log(
-        "record query for canArchiveAAMList: " + canArchiveAAMListQuery);
+      // console.log(
+      //   "count query for isPaper: " + isPaperQuery);
+      //
+      // console.log(
+      //   "count query for isOA: " + isOAQuery);
+      //
+      // console.log(
+      //   "count query for canArchiveAAM: " + canArchiveAAMQuery);
+      //
+      // console.log(
+      //   "record query for canArchiveAAMList: " + canArchiveAAMListQuery);
     };
 
     /** Check for an OA policy and display a link to the policy page in a tooltip **/
