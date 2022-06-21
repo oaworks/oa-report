@@ -85,7 +85,7 @@ oareport = function(org) {
 
     /** Get queries for article counts and strategy action list **/
     getCountQueries = function() {
-      console.log("current dateRange: " + startDate + " to " + endDate);
+      console.log("default dateRange: " + startDate + " to " + endDate);
 
       isPaperURL    = response.data.hits.hits[0]._source.analysis.is_paper + dateRange;
       isPaperQuery   = (countQueryBase + response.data.hits.hits[0]._source.analysis.is_paper + dateRange);
@@ -99,18 +99,6 @@ oareport = function(org) {
       canArchiveAAMList = axios.get(canArchiveAAMListQuery);
 
       console.log("report: " + base + "orgs?q=name:%22" + org + "%22");
-
-      // console.log(
-      //   "count query for isPaper: " + isPaperQuery);
-      //
-      // console.log(
-      //   "count query for isOA: " + isOAQuery);
-      //
-      // console.log(
-      //   "count query for canArchiveAAM: " + canArchiveAAMQuery);
-      //
-      // console.log(
-      //   "record query for canArchiveAAMList: " + canArchiveAAMListQuery);
     };
 
     /** Check for an OA policy and display a link to the policy page in a tooltip **/
@@ -176,12 +164,11 @@ oareport = function(org) {
 
           // "Strategies" section: display totals and lists of archivable AAMs if there are any
           if (canArchiveAAMList.length > 0) {
-            console.log(canArchiveAAMList);
             var totalActionsContents = document.querySelector("#total_actions"),
                 latestActionsContents = document.querySelector("#latest_actions"),
                 canArchiveList = document.querySelector("#can_archive_list"),
                 canArchiveOaPercentageContents = document.querySelector("#can_archive_percent_oa");
-            console.log(canArchiveAAMList);
+
             totalActionsContents.textContent = canArchiveAAM.toLocaleString(getUsersLocale());
             // If there are fewer than 100 actions, simply do not display any number of latest articles
             if (canArchiveAAM < 100) {
