@@ -187,7 +187,8 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
       </section> #}
 
       {# Download in CSV #}
-      <form onsubmit="downloadCSV()" method="get" class="col-span-12 lg:col-start-11" id="download_csv">
+      {# TODO: Make sure the CSV output of this is takes the user’s email, validates it, and actually exports the right data! #}
+      {# <form onsubmit="downloadCSV()" method="get" class="col-span-12 lg:col-start-11" id="download_csv">
         <label for="email" class="mb-2 block text-base text-neutral-800">
           Download data as CSV
           {{ component("tooltip", {
@@ -206,7 +207,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
           </button>
         </div>
         <p class="leading-5 text-xs text-neutral-600" id="csv_email_msg"></p>
-      </form>
+      </form> #}
     </div>
   </div>
 </section>
