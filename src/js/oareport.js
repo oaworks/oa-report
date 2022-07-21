@@ -79,7 +79,6 @@ oareport = function(org) {
       dateRange     = "(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")%20AND%20";
       // threeMonthsBtn.classList.remove('bg-neutral-700');
       // threeMonthsBtn.classList.add('bg-carnation-500');
-      console.log("new dateRange: " + startDate + " to " + endDate);
       return startDate;
     };
 
@@ -87,7 +86,7 @@ oareport = function(org) {
     getCountQueries = function() {
       console.log("default dateRange: " + startDate + " to " + endDate);
 
-      isPaperURL    = (response.data.hits.hits[0]._source.analysis.is_paper); // used for full-email download in downloadCSV()
+      isPaperURL    = (dateRange + response.data.hits.hits[0]._source.analysis.is_paper); // used for full-email download in downloadCSV()
       isPaperQuery   = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_paper);
       isOAQuery      = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_oa);
       canArchiveAAMQuery  = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
@@ -99,6 +98,9 @@ oareport = function(org) {
       canArchiveAAMList = axios.get(canArchiveAAMListQuery);
 
       console.log("report: " + base + "orgs?q=name:%22" + org + "%22");
+      console.log("isPaperQuery: " + isPaperQuery);
+      console.log("isOAQuery: " + isOAQuery);
+      console.log("canArchiveAAMQuery: " + canArchiveAAMQuery);
     };
 
     /** Check for an OA policy and display a link to the policy page in a tooltip **/
@@ -112,10 +114,13 @@ oareport = function(org) {
       let complianceContents = document.querySelector("#compliance");
       // ...get its URL
       hasPolicy = response.data.hits.hits[0]._source.policy.supported_policy;
+      console.log("hasPolicy: " + hasPolicy);
       // ...then get the number of compliant articles and display a tooltip
       if (hasPolicy) {
         policyURL = encodeURI(response.data.hits.hits[0]._source.policy.url);
-        isCompliant = axios.get(countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.compliance);
+        isCompliantQuery = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.compliance);
+        isCompliant = axios.get(isCompliantQuery);
+        console.log("isCompliantQuery: " + isCompliantQuery);
         /*jshint multistr: true */
         var policyURLContent = "The percentage of articles that are compliant with <a href='" + policyURL + "' target='_blank' rel='noopener' class='underline'>your organization’s Open Access policy</a>. This number is specific to your policy and your requirements.";
       } else {
