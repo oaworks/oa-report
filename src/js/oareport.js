@@ -1,4 +1,4 @@
-const base           = "https://api.oa.works/report/",
+const base           = "https://beta.oa.works/report/",
       queryBase      = base + "works?",
       countQueryBase = base + "works/count?",
       csvExportBase  = base + "works.csv?size=all&";
@@ -68,7 +68,7 @@ oareport = function(org) {
     startDate         = startYearDateISO;
     endDate           = currentDateISO;
 
-    var dateRange      = "%20AND%20(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")",
+    var dateRange      = "(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")%20AND%20",
         recordSize     = "&size=100"; // Set record size for number of actions shown in Strategies
 
     // Change start date for quick/preset 3/6/12 months filters
@@ -76,7 +76,7 @@ oareport = function(org) {
       startDateContents.textContent = date.toLocaleString(getUsersLocale(), readableDateOptions);
       var startDate = changeDays(-1, date);
       startDate     = startDate.toISOString().substring(0, 10);
-      dateRange     = "%20AND%20(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")";
+      dateRange     = "(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")%20AND%20";
       // threeMonthsBtn.classList.remove('bg-neutral-700');
       // threeMonthsBtn.classList.add('bg-carnation-500');
       console.log("new dateRange: " + startDate + " to " + endDate);
@@ -87,11 +87,11 @@ oareport = function(org) {
     getCountQueries = function() {
       console.log("default dateRange: " + startDate + " to " + endDate);
 
-      isPaperURL    = response.data.hits.hits[0]._source.analysis.is_paper + dateRange;
-      isPaperQuery   = (countQueryBase + response.data.hits.hits[0]._source.analysis.is_paper + dateRange);
-      isOAQuery      = (countQueryBase + response.data.hits.hits[0]._source.analysis.is_oa + dateRange);
-      canArchiveAAMQuery  = (countQueryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query + dateRange);
-      canArchiveAAMListQuery = (queryBase + response.data.hits.hits[0]._source.strategy.email_author_aam.query + dateRange);
+      isPaperURL    = (response.data.hits.hits[0]._source.analysis.is_paper); // used for full-email download in downloadCSV()
+      isPaperQuery   = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_paper);
+      isOAQuery      = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_oa);
+      canArchiveAAMQuery  = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
+      canArchiveAAMListQuery = (queryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
 
       isPaper        = axios.get(isPaperQuery);
       isOA           = axios.get(isOAQuery);
@@ -114,9 +114,8 @@ oareport = function(org) {
       hasPolicy = response.data.hits.hits[0]._source.policy.supported_policy;
       // ...then get the number of compliant articles and display a tooltip
       if (hasPolicy) {
-        policyURL = response.data.hits.hits[0]._source.policy.url;
-        policyURL = encodeURI(policyURL);
-        isCompliant = axios.get(countQueryBase + response.data.hits.hits[0]._source.analysis.compliance + dateRange);
+        policyURL = encodeURI(response.data.hits.hits[0]._source.policy.url);
+        isCompliant = axios.get(countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.compliance);
         /*jshint multistr: true */
         var policyURLContent = "The percentage of articles that are compliant with <a href='" + policyURL + "' target='_blank' rel='noopener' class='underline'>your organization’s Open Access policy</a>. This number is specific to your policy and your requirements.";
       } else {
@@ -248,7 +247,7 @@ downloadCSV = function() {
   let userEmail = data.get("email");
 
   // Change form action to CSV download URL with user-input email
-  downloadCSV = csvExportBase + "email=" + userEmail + "&" + isPaperURL;
+  downloadCSV = csvExportBase + "email=" + userEmail + "&q=" + isPaperURL;
   form.action = downloadCSV;
 
   // Display message
