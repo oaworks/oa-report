@@ -159,7 +159,7 @@ oareport = function(org) {
           }
 
           if (isCompliant) {
-            compliantArticlesContents.textContent = isCompliant.toLocaleString(getUsersLocale()) + " in total";
+            compliantArticlesContents.textContent = isCompliant.toLocaleString(getUsersLocale()) + " of " + isEligible + " eligible articles";
             compliantPercentageContents.textContent = Math.round(((isCompliant/isEligible)*100)) + "%";
           } else {
             compliantArticlesContents.outerHTML = "";
