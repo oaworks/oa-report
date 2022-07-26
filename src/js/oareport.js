@@ -109,6 +109,7 @@ oareport = function(org) {
         allowHTML: true,
         interactive: true,
         placement: 'bottom',
+        appendTo: document.body,
       });
 
       let complianceContents = document.querySelector("#compliance");
