@@ -51,6 +51,14 @@ module.exports = function(eleventyConfig) {
     return content;
   });
 
+  // Enable CORS
+  eleventyConfig.setBrowserSyncConfig({
+  middleware: function (req, res, next) {
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      next();
+    }
+  });
+
   // Set directories to pass through to the dist folder
   eleventyConfig.addPassthroughCopy('./src/fonts/');
   eleventyConfig.addPassthroughCopy('./src/js/');
