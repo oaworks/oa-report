@@ -86,7 +86,7 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
             {% icon "unlock" %}
           </div>
           <p class="ml-24 mb-2 text-base font-medium text-gray-500 truncate">
-            Open Access Articles
+            Open Access articles
             {{ component("tooltip", {
               msg: "The total number of articles that are currently Open Access, either because the version of record is Open Access (“gold”, “diamond”, or “hybrid” Open Access) or because the article was preprinted or been made available through self-archiving (“green” Open Access)."
             }) }}
@@ -188,9 +188,10 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
 
       {# Download in CSV #}
       {# TODO: Make sure the CSV output of this is takes the user’s email, validates it, and actually exports the right data! #}
-      {# <form onsubmit="downloadCSV()" method="get" class="col-span-12 lg:col-start-11" id="download_csv">
+      <form method="get" class="col-span-12 lg:col-start-11" id="download_csv" action="https://api.oa.works/report/works.csv">
+        <input type="hidden" id="size" name="size" value="all">
         <label for="email" class="mb-2 block text-base text-neutral-800">
-          Download data as CSV
+          Get data in CSV
           {{ component("tooltip", {
             msg: "Enter your email address to receive a link to a CSV for download. <strong>We do not save email addresses or use them for any purpose</strong> other than sending you the CSV file containing OAreport data when you request it."
           }) }}
@@ -206,8 +207,9 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
             Send CSV
           </button>
         </div>
+        <input type="hidden" id="download-form-q" name="q" value="">
         <p class="leading-5 text-xs text-neutral-600" id="csv_email_msg"></p>
-      </form> #}
+      </form>
     </div>
   </div>
 </section>

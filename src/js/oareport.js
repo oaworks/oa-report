@@ -100,7 +100,7 @@ oareport = function(org) {
       canArchiveAAMList = axios.get(canArchiveAAMListQuery);
 
       console.log("report: " + base + "orgs?q=name:%22" + org + "%22");
-      console.log("isEligibleQuery: " + isEligibleQuery);
+      console.log("CSV link: " + csvExportBase + "email=sophy@oa.works"  + "&q=" + isPaperURL);
     };
 
     /** Check for an OA policy and display a link to the policy page in a tooltip **/
@@ -166,6 +166,12 @@ oareport = function(org) {
             compliantArticlesContents.outerHTML = "";
             compliantPercentageContents.textContent = "N/A";
           }
+
+          // "Download CSV" form: set query and date range in hidden input
+          let queryHiddenInput = document.querySelector("#download-form-q"),
+              // query = "(published_date:>2021-12-31%20AND%20published_date:<2022-07-27)%20AND%20((funder.DOI:%2210.13039/100000864%22%20AND%20funder.award:%22asap%22) OR supplements.orgs:%22Aligning%20Science%20Across%20Parkinson%E2%80%99s%22 OR funder.DOI:%2210.13039/100018231%22 OR authorships.institutions.display_name:%22Aligning%20Science%20Across%20Parkinson%E2%80%99s%22 OR authorships.institutions.display_name:%22Aligning%20Science%20Across%20Parkinson%22 OR authorships.institutions.display_name:%22Aligning%20Science%20Across%20Parkinson%27s%22 OR authorships.institutions.display_name:%22Aligning%20Science%20Across%20Parkinson%E2%80%99s%22 OR funder.name:%22Aligning%20Science%20Across%20Parkinson%E2%80%99s%22 OR funder.name:%22Aligning%20Science%20Across%20Parkinson%22 OR funder.name:%22Aligning%20Science%20Across%20Parkinson%27s%22 OR funder.name:%22Aligning%20Science%20Across%20Parkinson%E2%80%99s%22)";
+              query = isPaperURL.replaceAll(" ", "%20");
+          queryHiddenInput.setAttribute("value", query);
 
           // "Strategies" section: display totals and lists of archivable AAMs if there are any
           if (canArchiveAAMList.length > 0) {
@@ -245,20 +251,25 @@ oareport = function(org) {
 
 oareport(org);
 
-/** Get email to send and download CSV data **/
+/** Download all article data in CSV **/
 downloadCSV = function() {
   let form = document.querySelector("#download_csv");
 
   // Get field data from the form
   let data = new FormData(form);
-  let userEmail = data.get("email");
 
-  // Change form action to CSV download URL with user-input email
-  downloadCSV = csvExportBase + "email=" + userEmail + "&q=" + isPaperURL;
-  form.action = downloadCSV;
+  // Create new hidden input field for report’s query
+  var queryInput = '<input type="hidden" id="download-form-q" name="q" value="(published_date:>2021-12-31%20AND%20published_date:<2022-07-27)%20AND%20((funder.DOI:%2210.13039/100000864%22%20AND%20funder.award:%22asap%22) OR supplements.orgs:%22Aligning%20Science%20Across%20Parkinson%E2%80%99s%22 OR funder.DOI:%2210.13039/100018231%22 OR authorships.institutions.display_name:%22Aligning%20Science%20Across%20Parkinson%E2%80%99s%22 OR authorships.institutions.display_name:%22Aligning%20Science%20Across%20Parkinson%22 OR authorships.institutions.display_name:%22Aligning%20Science%20Across%20Parkinson%27s%22 OR authorships.institutions.display_name:%22Aligning%20Science%20Across%20Parkinson%E2%80%99s%22 OR funder.name:%22Aligning%20Science%20Across%20Parkinson%E2%80%99s%22 OR funder.name:%22Aligning%20Science%20Across%20Parkinson%22 OR funder.name:%22Aligning%20Science%20Across%20Parkinson%27s%22 OR funder.name:%22Aligning%20Science%20Across%20Parkinson%E2%80%99s%22)">';
+  queryInput = queryInput.replaceAll(" ", "%20");
+
+  console.log("q input: " + queryInput);
+
+  var emailField = document.querySelect("#email");
+
+  emailField.append(queryInput);
 
   // Display message
-  document.querySelector("#csv_email_msg").textContent = "Your CSV export has started. Please check your email to get the full data once it’s ready.";
+  // document.querySelector("#csv_email_msg").textContent = "Your CSV export has started. Please check your email to get the full data once it’s ready.";
 
   return downloadCSV;
 };
