@@ -100,7 +100,6 @@ oareport = function(org) {
       canArchiveAAMList = axios.get(canArchiveAAMListQuery);
 
       console.log("report: " + base + "orgs?q=name:%22" + org + "%22");
-      console.log("CSV link: " + csvExportBase + "email=sophy@oa.works"  + "&q=" + isPaperURL);
     };
 
     /** Check for an OA policy and display a link to the policy page in a tooltip **/
@@ -166,12 +165,6 @@ oareport = function(org) {
             compliantArticlesContents.outerHTML = "";
             compliantPercentageContents.textContent = "N/A";
           }
-
-          // "Download CSV" form: set query and date range in hidden input
-          let queryHiddenInput = document.querySelector("#download-form-q"),
-              // query = "(published_date:>2021-12-31%20AND%20published_date:<2022-07-27)%20AND%20((funder.DOI:%2210.13039/100000864%22%20AND%20funder.award:%22asap%22) OR supplements.orgs:%22Aligning%20Science%20Across%20Parkinson%E2%80%99s%22 OR funder.DOI:%2210.13039/100018231%22 OR authorships.institutions.display_name:%22Aligning%20Science%20Across%20Parkinson%E2%80%99s%22 OR authorships.institutions.display_name:%22Aligning%20Science%20Across%20Parkinson%22 OR authorships.institutions.display_name:%22Aligning%20Science%20Across%20Parkinson%27s%22 OR authorships.institutions.display_name:%22Aligning%20Science%20Across%20Parkinson%E2%80%99s%22 OR funder.name:%22Aligning%20Science%20Across%20Parkinson%E2%80%99s%22 OR funder.name:%22Aligning%20Science%20Across%20Parkinson%22 OR funder.name:%22Aligning%20Science%20Across%20Parkinson%27s%22 OR funder.name:%22Aligning%20Science%20Across%20Parkinson%E2%80%99s%22)";
-              query = isPaperURL.replaceAll(" ", "%20");
-          queryHiddenInput.setAttribute("value", query);
 
           // "Strategies" section: display totals and lists of archivable AAMs if there are any
           if (canArchiveAAMList.length > 0) {
@@ -242,9 +235,19 @@ oareport = function(org) {
       ).catch(function (error) { console.log("ERROR: " + error); })
     };
 
+
+
+    /* "Download CSV" form: set query and date range in hidden input */
+    getExportLink = function() {
+      let queryHiddenInput = document.querySelector("#download-form-q"),
+          query = isPaperURL.replaceAll(" ", "%20");
+      queryHiddenInput.setAttribute("value", query);
+    }
+
     getCountQueries();
     getPolicy();
     displayData();
+    getExportLink();
   })
   .catch(function (error) { console.log("ERROR: " + error); })
 };
@@ -293,6 +296,7 @@ threeMonthsBtn.addEventListener("click", function() {
   getCountQueries();
   getPolicy();
   displayData();
+  getExportLink();
 });
 
 sixMonthsBtn.addEventListener("click", function() {
@@ -301,6 +305,7 @@ sixMonthsBtn.addEventListener("click", function() {
   getCountQueries();
   getPolicy();
   displayData();
+  getExportLink();
 });
 
 twelveMonthsBtn.addEventListener("click", function() {
@@ -309,6 +314,7 @@ twelveMonthsBtn.addEventListener("click", function() {
   getCountQueries();
   getPolicy();
   displayData();
+  getExportLink();
 });
 
 startYearBtn.addEventListener("click", function() {
@@ -317,6 +323,7 @@ startYearBtn.addEventListener("click", function() {
   getCountQueries();
   getPolicy();
   displayData();
+  getExportLink();
 });
 
 // changeDateRange = function() {
