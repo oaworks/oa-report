@@ -245,6 +245,8 @@ oareport = function(org) {
       queryHiddenInput.setAttribute("value", query);
       form.onsubmit = function(event) {
 
+      let form = document.querySelector("#download_csv");
+
         // Post data using the Fetch API
         fetch(form.action, {
           method: form.method,
@@ -252,8 +254,6 @@ oareport = function(org) {
         });
 
         // Display message
-        let form = document.querySelector("#download_csv");
-
         document.querySelector("#csv_email_msg").textContent = "Your CSV export has started at the URL" + ". Please check your email to get the full data once it’s ready.";
       };
     };
