@@ -192,7 +192,7 @@ oareport = function(org) {
               var title = canArchiveAAMList[i]._source.title,
                   author = canArchiveAAMList[i]._source.author_email_name,
                   doi   = canArchiveAAMList[i]._source.DOI,
-                  pubDate = canArchiveAAMList[i]._source.published,
+                  pubDate = canArchiveAAMList[i]._source.published_date,
                   journal = canArchiveAAMList[i]._source.journal;
               pubDate = new Date(pubDate).toLocaleString(getUsersLocale(), readableDateOptions);
 
