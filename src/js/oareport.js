@@ -172,15 +172,17 @@ oareport = function(org) {
           if (canArchiveAAMList.length > 0) {
             var totalActionsContents = document.querySelector("#total_actions"),
                 latestActionsContents = document.querySelector("#latest_actions"),
-                canArchiveList = document.querySelector("#can_archive_list"),
-                canArchiveOaPercentageContents = document.querySelector("#can_archive_percent_oa");
+                canArchiveList = document.querySelector("#can_archive_list");
+                // TODO: think more about the potential percentage
+                // canArchiveOaPercentageContents = document.querySelector("#can_archive_percent_oa");
 
             totalActionsContents.textContent = canArchiveAAM.toLocaleString(getUsersLocale());
             // If there are fewer than 100 actions, simply do not display any number of latest articles
             if (canArchiveAAM < 100) {
               latestActionsContents.textContent = "";
             }
-            canArchiveOaPercentageContents.textContent = Math.round(((((isOA+canArchiveAAM))/isPaper)*100));
+            // TODO: think more about the potential percentage
+            // canArchiveOaPercentageContents.textContent = Math.round(((((isOA+canArchiveAAM))/isPaper)*100));
 
             // Set up and get list of emails for archivable AAMs
             var canArchiveListItems = "";
@@ -241,13 +243,12 @@ oareport = function(org) {
     /* "Download CSV" form: set query and date range in hidden input */
     getExportLink = function() {
       let queryHiddenInput = document.querySelector("#download-form-q"),
-          query = isPaperURL.replaceAll(" ", "%20");
+          query = isPaperURL.replaceAll(" ", "%20"),
+          form = document.querySelector("#download_csv");
+
       queryHiddenInput.setAttribute("value", query);
+
       form.onsubmit = function(event) {
-
-      let form = document.querySelector("#download_csv");
-
-        // Post data using the Fetch API
         fetch(form.action, {
           method: form.method,
           body: new FormData(form),
