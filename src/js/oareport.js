@@ -243,7 +243,6 @@ oareport = function(org) {
       let queryHiddenInput = document.querySelector("#download-form-q"),
           query = isPaperURL.replaceAll(" ", "%20");
       queryHiddenInput.setAttribute("value", query);
-      console.log("isPaperFullURL: " + isPaperFullURL.replaceAll(" ", "%20"))
 
       // Display message
       let form = document.querySelector("#download_csv");
@@ -251,33 +250,13 @@ oareport = function(org) {
       form.onsubmit = function(event) {
 
         // Post data using the Fetch API
-        fetch(form.action, {
+        fetch(form.action, {git
           method: form.method,
           body: new FormData(form),
         });
 
-        // event.preventDefault();
-
         document.querySelector("#csv_email_msg").textContent = "Your CSV export has started at the URL" + ". Please check your email to get the full data once it’s ready.";
-
-        // return false;
       };
-
-      // var form = document.getElementById("download_csv");
-      // var data = new FormData(form);
-      // var query = isPaperURL.replaceAll(" ", "%20");
-      // // form.get('email')
-      // var action = form.action + "&size=all&" + "sophy@oa.works" + "&" + query;
-      // console.log("FORM DATA: " + action);
-      //
-      // fetch(action, {
-      //   method: form.method,
-      //   body: data
-      // })
-      // .then((res) => { return res.text(); })
-      // .then((txt) => { console.log(txt); })
-      // .catch((err) => { console.log(err); });
-      // return false;
     };
 
     getCountQueries();
