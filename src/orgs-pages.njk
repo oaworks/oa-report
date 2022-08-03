@@ -56,21 +56,22 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
     </aside>
 
     <dl class="col-span-12 mb-6 grid grid-cols-1 gap-3 lg:gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden">
+      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden" id="compliance">
         <dt>
           <div class="absolute bg-carnation-500 text-white rounded-md p-6">
-            {% icon "file-text" %}
+            {% icon "check-circle" %}
           </div>
           <p class="ml-24 mb-2 text-base font-medium text-gray-500 truncate">
-            Articles published
-            {{ component("tooltip", {
-              msg: "The total number of articles published by grantees or authors at your organization."
-            }) }}
+            Policy-compliant articles
+            <sup id="org_oa_policy">{% icon_small "help-circle" %}</sup>
           </p>
         </dt>
         <dd class="ml-24 flex items-baseline">
           <p class="text-4xl font-semibold text-gray-900">
-            <span id="articles">000</span>
+            <span id="percent_compliant">00%</span>
+          </p>
+          <p class="ml-2 text-sm font-medium text-neutral-600">
+            <span id="articles_compliant">000</span>
           </p>
           {# <div class="absolute bottom-0 inset-x-0 bg-gray-50 px-4 py-4 sm:px-6">
             <div class="text-sm">
@@ -107,22 +108,21 @@ permalink: "orgs/{{ org._source.objectID | slug }}/"
         </dd>
       </div>
 
-      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden" id="compliance">
+      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden">
         <dt>
           <div class="absolute bg-carnation-500 text-white rounded-md p-6">
-            {% icon "check-circle" %}
+            {% icon "file-text" %}
           </div>
           <p class="ml-24 mb-2 text-base font-medium text-gray-500 truncate">
-            Policy-compliant articles
-            <sup id="org_oa_policy">{% icon_small "help-circle" %}</sup>
+            Articles published
+            {{ component("tooltip", {
+              msg: "The total number of articles published by grantees or authors at your organization."
+            }) }}
           </p>
         </dt>
         <dd class="ml-24 flex items-baseline">
           <p class="text-4xl font-semibold text-gray-900">
-            <span id="percent_compliant">00%</span>
-          </p>
-          <p class="ml-2 text-sm font-medium text-neutral-600">
-            <span id="articles_compliant">000</span>
+            <span id="articles">000</span>
           </p>
           {# <div class="absolute bottom-0 inset-x-0 bg-gray-50 px-4 py-4 sm:px-6">
             <div class="text-sm">
