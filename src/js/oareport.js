@@ -243,17 +243,16 @@ oareport = function(org) {
       let queryHiddenInput = document.querySelector("#download-form-q"),
           query = isPaperURL.replaceAll(" ", "%20");
       queryHiddenInput.setAttribute("value", query);
-
-      // Display message
-      let form = document.querySelector("#download_csv");
-
       form.onsubmit = function(event) {
 
         // Post data using the Fetch API
-        fetch(form.action, {git
+        fetch(form.action, {
           method: form.method,
           body: new FormData(form),
         });
+
+        // Display message
+        let form = document.querySelector("#download_csv");
 
         document.querySelector("#csv_email_msg").textContent = "Your CSV export has started at the URL" + ". Please check your email to get the full data once it’s ready.";
       };
