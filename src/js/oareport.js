@@ -269,29 +269,6 @@ oareport = function(org) {
 
 oareport(org);
 
-/** Download all article data in CSV **/
-downloadCSV = function() {
-  let form = document.querySelector("#download_csv");
-
-  // Get field data from the form
-  let data = new FormData(form);
-
-  // Create new hidden input field for report’s query
-  var queryInput = '<input type="hidden" id="download-form-q" name="q" value="(published_date:>2021-12-31%20AND%20published_date:<2022-07-27)%20AND%20((funder.DOI:%2210.13039/100000864%22%20AND%20funder.award:%22asap%22) OR supplements.orgs:%22Aligning%20Science%20Across%20Parkinson%E2%80%99s%22 OR funder.DOI:%2210.13039/100018231%22 OR authorships.institutions.display_name:%22Aligning%20Science%20Across%20Parkinson%E2%80%99s%22 OR authorships.institutions.display_name:%22Aligning%20Science%20Across%20Parkinson%22 OR authorships.institutions.display_name:%22Aligning%20Science%20Across%20Parkinson%27s%22 OR authorships.institutions.display_name:%22Aligning%20Science%20Across%20Parkinson%E2%80%99s%22 OR funder.name:%22Aligning%20Science%20Across%20Parkinson%E2%80%99s%22 OR funder.name:%22Aligning%20Science%20Across%20Parkinson%22 OR funder.name:%22Aligning%20Science%20Across%20Parkinson%27s%22 OR funder.name:%22Aligning%20Science%20Across%20Parkinson%E2%80%99s%22)">';
-  queryInput = queryInput.replaceAll(" ", "%20");
-
-  console.log("q input: " + queryInput);
-
-  var emailField = document.querySelect("#email");
-
-  emailField.append(queryInput);
-
-  // Display message
-  // document.querySelector("#csv_email_msg").textContent = "Your CSV export has started. Please check your email to get the full data once it’s ready.";
-
-  return downloadCSV;
-};
-
 /** Change displayed Insights data based on user input **/
 // TODO: change Strategy data based on this input as well
 // Preset "quick date filter" buttons
