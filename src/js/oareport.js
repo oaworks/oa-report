@@ -87,6 +87,7 @@ oareport = function(org) {
       console.log("default dateRange: " + startDate + " to " + endDate);
 
       isPaperURL    = (dateRange + response.data.hits.hits[0]._source.analysis.is_paper); // used for full-email download in downloadCSV()
+      isPaperFullURL = (csvExportBase + isPaperURL);
       isPaperQuery   = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_paper);
       isEligibleQuery = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_covered_by_policy);
       isOAQuery      = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_oa);
@@ -114,7 +115,7 @@ oareport = function(org) {
       let complianceContents = document.querySelector("#compliance");
       // ...get its URL
       hasPolicy = response.data.hits.hits[0]._source.policy.supported_policy;
-      console.log("hasPolicy: " + hasPolicy);
+
       // ...then get the number of compliant articles and display a tooltip
       if (hasPolicy) {
         policyURL = response.data.hits.hits[0]._source.policy.url;
@@ -132,14 +133,15 @@ oareport = function(org) {
     /**  Display Insights and Strategy data **/
     // TODO: break this up into two functions
     displayData = function() {
-      Promise.all([isPaper, isOA, canArchiveAAM, canArchiveAAMList, isCompliant, isEligible])
+      Promise.all([isPaper, isOA, canArchiveAAM, canArchiveAAMList, isCompliant, isEligible, isPaperFullURL])
         .then(function (results) {
           let isPaper = results[0].data,
               isOA    = results[1].data,
               canArchiveAAM = results[2].data,
               canArchiveAAMList = results[3].data.hits.hits,
               isCompliant = results[4].data,
-              isEligible = results[5].data;
+              isEligible = results[5].data,
+              isPaperFullURL = results[6].data;
 
           let articlesContents = document.querySelector("#articles"),
               oaArticlesContents = document.querySelector("#articles_oa"),
@@ -236,13 +238,47 @@ oareport = function(org) {
     };
 
 
-
     /* "Download CSV" form: set query and date range in hidden input */
     getExportLink = function() {
       let queryHiddenInput = document.querySelector("#download-form-q"),
           query = isPaperURL.replaceAll(" ", "%20");
       queryHiddenInput.setAttribute("value", query);
-    }
+      console.log("isPaperFullURL: " + isPaperFullURL.replaceAll(" ", "%20"))
+
+      // Display message
+      let form = document.querySelector("#download_csv");
+
+      form.onsubmit = function(event) {
+
+        // Post data using the Fetch API
+        fetch(form.action, {
+          method: form.method,
+          body: new FormData(form),
+        });
+
+        // event.preventDefault();
+
+        document.querySelector("#csv_email_msg").textContent = "Your CSV export has started at the URL" + ". Please check your email to get the full data once it’s ready.";
+
+        // return false;
+      };
+
+      // var form = document.getElementById("download_csv");
+      // var data = new FormData(form);
+      // var query = isPaperURL.replaceAll(" ", "%20");
+      // // form.get('email')
+      // var action = form.action + "&size=all&" + "sophy@oa.works" + "&" + query;
+      // console.log("FORM DATA: " + action);
+      //
+      // fetch(action, {
+      //   method: form.method,
+      //   body: data
+      // })
+      // .then((res) => { return res.text(); })
+      // .then((txt) => { console.log(txt); })
+      // .catch((err) => { console.log(err); });
+      // return false;
+    };
 
     getCountQueries();
     getPolicy();
