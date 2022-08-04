@@ -244,9 +244,12 @@ oareport = function(org) {
     getExportLink = function() {
       let queryHiddenInput = document.querySelector("#download-form-q"),
           query = isPaperURL.replaceAll(" ", "%20"),
+          includeHiddenInput = document.querySelector("#download-form-include"),
+          include =  "DOI,title,subtitle,publisher,journal,issn,published,published_year,PMCID,volume,issue,authorships.author.display_name,authorships.author.orcid,authorships.institutions.display_name,authorships.institutions.ror,funder.name,funder.award,is_oa,oa_status,journal_oa_type,publisher_license,has_repository_copy,repository_license,repository_version,repository_url,has_oa_locations_embargoed,can_archive,version,concepts.display_name,concepts.level,concepts.score,subject,pmc_has_data_availability_statement,cited_by_count",
           form = document.querySelector("#download_csv");
 
       queryHiddenInput.setAttribute("value", query);
+      includeHiddenInput.setAttribute("value", include);
 
       form.onsubmit = function(event) {
         fetch(form.action, {
