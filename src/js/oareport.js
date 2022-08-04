@@ -260,7 +260,7 @@ oareport = function(org) {
         });
 
         // Display message
-        document.querySelector("#csv_email_msg").textContent = "Your CSV export has started at the URL" + ". Please check your email to get the full data once it’s ready.";
+        document.querySelector("#csv_email_msg").textContent = "OAreport has started building your CSV export. Please check your email to get the full data once it’s ready.";
       };
     };
 
