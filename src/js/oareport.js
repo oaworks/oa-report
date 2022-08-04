@@ -37,11 +37,6 @@ const currentDate           = new Date(),
       currentDateQuery      = changeDays(+1, currentDate), // add 1 day for ElasticSearch (greater than but not equal)
       currentDateISO        = currentDateQuery.toISOString().substring(0, 10), // used in ES query
 
-      lastYearDate          = changeMonths(-12, currentDate),
-      lastYearDateReadable  = lastYearDate.toLocaleString(getUsersLocale(), readableDateOptions); // for display in UI
-      lastYearDateQuery     = changeDays(-1, lastYearDate),  // subtract 1 day for ElasticSearch (less than but not equal)
-      lastYearDateISO       = lastYearDateQuery.toISOString().substring(0, 10), // used in ES query
-
       startYearDate         = new Date(new Date().getFullYear(), 0, 1),
       startYearDateReadable = startYearDate.toLocaleString(getUsersLocale(), readableDateOptions),
       startYearDateQuery    = changeDays(-1, startYearDate),
@@ -71,14 +66,12 @@ oareport = function(org) {
     var dateRange      = "(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")%20AND%20",
         recordSize     = "&size=100"; // Set record size for number of actions shown in Strategies
 
-    // Change start date for quick/preset 3/6/12 months filters
+    // Change start date
     replaceStartDate = function(date) {
       startDateContents.textContent = date.toLocaleString(getUsersLocale(), readableDateOptions);
       var startDate = changeDays(-1, date);
       startDate     = startDate.toISOString().substring(0, 10);
       dateRange     = "(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")%20AND%20";
-      // threeMonthsBtn.classList.remove('bg-neutral-700');
-      // threeMonthsBtn.classList.add('bg-carnation-500');
       return startDate;
     };
 
@@ -289,12 +282,15 @@ oareport(org);
 
 /** Change displayed Insights data based on user input **/
 // Preset "quick date filter" buttons
-var startYearBtn        = document.querySelector("#start-year"),
+const lastYear = changeYears(-1, currentDate);
+
+var lastYearBtn         = document.querySelector("#last-year");
+    startYearBtn        = document.querySelector("#start-year"),
     insightsDateRange   = document.querySelector("#insights_range");
 
 startYearBtn.addEventListener("click", function() {
   replaceStartDate(startYearDate);
-  insightsDateRange.textContent = "since the start of 2022";
+  insightsDateRange.textContent = "since the start of " + startYearDate.getFullYear();
   getCountQueries();
   getPolicy();
   displayInsights();
