@@ -73,11 +73,6 @@ permalink: "{{ org._source.objectID | slug }}/"
           <p class="ml-2 text-sm font-medium text-neutral-600">
             <span id="articles_compliant">000</span>
           </p>
-          {# <div class="absolute bottom-0 inset-x-0 bg-gray-50 px-4 py-4 sm:px-6">
-            <div class="text-sm">
-              <a href="#" class="font-medium text-carnation-700 hover:text-indigo-500"> View all<span class="sr-only"> Total Subscribers stats</span></a>
-            </div>
-          </div> #}
         </dd>
       </div>
 
@@ -100,11 +95,6 @@ permalink: "{{ org._source.objectID | slug }}/"
           <p class="ml-2 text-sm font-medium text-neutral-600">
             <span id="articles_oa">000</span>
           </p>
-          {# <div class="absolute bottom-0 inset-x-0 bg-gray-50 px-4 py-4 sm:px-6">
-            <div class="text-sm">
-              <a href="#" class="font-medium text-carnation-700 hover:text-indigo-500"> View all<span class="sr-only"> Total Subscribers stats</span></a>
-            </div>
-          </div> #}
         </dd>
       </div>
 
@@ -124,46 +114,9 @@ permalink: "{{ org._source.objectID | slug }}/"
           <p class="text-4xl font-semibold text-gray-900">
             <span id="articles">000</span>
           </p>
-          {# <div class="absolute bottom-0 inset-x-0 bg-gray-50 px-4 py-4 sm:px-6">
-            <div class="text-sm">
-              <a href="#" class="font-medium text-carnation-700 hover:text-indigo-500"> View all<span class="sr-only"> Total Subscribers stats</span></a>
-            </div>
-          </div> #}
         </dd>
       </div>
     </dl>
-
-    {# Old data display layout — in a single block, separated by a line #}
-    {# <dl class="col-span-12 mb-6 grid grid-cols-1 rounded-lg bg-white overflow-hidden drop-shadow-lg divide-y divide-neutral-100 md:grid-cols-3 md:divide-y-0 md:divide-x">
-      <div class="px-4 py-5 sm:p-6">
-        <dt class="mb-3 text-base font-normal text-neutral-700 lg:duration-500 js-label_text_toggle"><span class="block mb-2 text-carnation-500 js-icon_toggle">{% icon_small "file-text" %}</span> Articles published<sup data-tippy-content="The total number of articles published by grantees <strong>or</strong> authors at your organization.">{% icon_small "help-circle" %}</sup></dt>
-        <dd class="mt-1 flex justify-between items-baseline md:block lg:flex">
-          <div class="flex items-baseline text-4xl font-semibold lg:duration-500 js-data_text_toggle" id="js-articles_container">
-            <span id="articles">000</span>
-          </div>
-        </dd>
-      </div>
-
-      <div class="px-4 py-5 sm:p-6">
-        <dt class="mb-3 text-base font-normal text-neutral-700 lg:duration-500 js-label_text_toggle"><span class="block mb-2 text-carnation-500 js-icon_toggle">{% icon_small "unlock" %}</span> Open Access articles<sup data-tippy-content="The total number of your articles that are currently Open Access, either because the version of record is Open Access (“gold” or “diamond” Open Access) or because the article has been made available through self-archiving (“green” Open Access).">{% icon_small "help-circle" %}</sup></dt>
-        <dd class="mt-1 flex justify-between items-baseline md:block lg:flex">
-          <div class="flex items-baseline text-4xl font-semibold lg:duration-500 js-data_text_toggle" id="js-articles_oa_container">
-            <span id="percent_oa">00%</span>
-            <span class="ml-2 text-sm font-medium text-neutral-600"><span id="articles_oa">000</span></span>
-          </div>
-        </dd>
-      </div>
-
-      <div class="px-4 py-5 sm:p-6" id="compliance">
-        <dt class="mb-3 text-base font-normal text-neutral-700 lg:duration-500 js-label_text_toggle"><span class="block mb-2 text-carnation-500 js-icon_toggle">{% icon_small "check-circle" %}</span> Policy-compliant articles<sup data-tippy-content="The percentage of articles that are compliant with your organization’s Open Access policy. This number is specific to your policy and your requirements.">{% icon_small "help-circle" %}</sup></dt>
-        <dd class="mt-1 flex justify-between items-baseline md:block lg:flex">
-          <div class="flex items-baseline text-4xl font-semibold lg:duration-500 js-data_text_toggle" id="js-compliant_container">
-            <span id="percent_compliant">00%</span>
-            <span class="ml-2 text-sm font-medium text-neutral-600"><span id="articles_compliant">000</span></span>
-          </div>
-        </dd>
-      </div>
-    </dl> #}
 
     <div class="col-span-12 mb-6 grid grid-cols-12 gap-3 lg:gap-6">
       {# TODO: Filter by date #}

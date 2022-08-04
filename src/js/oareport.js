@@ -248,6 +248,7 @@ oareport = function(org) {
           include =  "DOI,title,subtitle,publisher,journal,issn,published,published_year,PMCID,volume,issue,authorships.author.display_name,authorships.author.orcid,authorships.institutions.display_name,authorships.institutions.ror,funder.name,funder.award,is_oa,oa_status,journal_oa_type,publisher_license,has_repository_copy,repository_license,repository_version,repository_url,has_oa_locations_embargoed,can_archive,version,concepts.display_name,concepts.level,concepts.score,subject,pmc_has_data_availability_statement,cited_by_count",
           form = document.querySelector("#download_csv");
 
+      // Set form attributes
       form.setAttribute("action", csvExportBase);
       queryHiddenInput.setAttribute("value", query);
       includeHiddenInput.setAttribute("value", include);
@@ -274,7 +275,6 @@ oareport = function(org) {
 oareport(org);
 
 /** Change displayed Insights data based on user input **/
-// TODO: change Strategy data based on this input as well
 // Preset "quick date filter" buttons
 const threeMonthsAgo    = changeMonths(-3, currentDate),
       sixMonthsAgo      = changeMonths(-6, currentDate),
@@ -321,11 +321,3 @@ startYearBtn.addEventListener("click", function() {
   displayData();
   getExportLink();
 });
-
-// changeDateRange = function() {
-//   let form = document.querySelector("#change_date_range");
-//
-//   let data = new FormData(form);
-//   let newStartDate = data.get("#report_start_date"),
-//       newEndDate = data.get("report_end_date");
-// };
