@@ -92,6 +92,8 @@ oareport = function(org) {
       isOAQuery      = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_oa);
       canArchiveAAMQuery  = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
       canArchiveAAMListQuery = (queryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
+      canArchiveVORQuery  = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_vor.query);
+      canArchiveVORListQuery = (queryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_vor.query);
       // hasCustomExportIncludes = (response.data.hits.hits[0]._source.export_includes);
 
       isPaper        = axios.get(isPaperQuery);
@@ -99,6 +101,8 @@ oareport = function(org) {
       isOA           = axios.get(isOAQuery);
       canArchiveAAM  = axios.get(canArchiveAAMQuery);
       canArchiveAAMList = axios.get(canArchiveAAMListQuery);
+      canArchiveVOR  = axios.get(canArchiveVORQuery);
+      canArchiveVORList = axios.get(canArchiveVORListQuery);
 
       console.log("org index: " + base + "orgs?q=name:%22" + org + "%22");
       console.log("paper index: " + isPaperQuery);
@@ -239,7 +243,6 @@ oareport = function(org) {
         }
       ).catch(function (error) { console.log("ERROR: " + error); })
     };
-
 
     /* "Download CSV" form: set query and date range in hidden input */
     getExportLink = function() {
