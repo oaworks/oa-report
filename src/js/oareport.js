@@ -289,45 +289,8 @@ oareport(org);
 
 /** Change displayed Insights data based on user input **/
 // Preset "quick date filter" buttons
-const threeMonthsAgo    = changeMonths(-3, currentDate),
-      sixMonthsAgo      = changeMonths(-6, currentDate),
-      fiveYearsAgo      = changeMonths(-60, currentDate);
-
-var threeMonthsBtn      = document.querySelector("#three-months"),
-    sixMonthsBtn        = document.querySelector("#six-months"),
-    twelveMonthsBtn     = document.querySelector("#twelve-months"),
-    startYearBtn        = document.querySelector("#start-year"),
+var startYearBtn        = document.querySelector("#start-year"),
     insightsDateRange   = document.querySelector("#insights_range");
-
-threeMonthsBtn.addEventListener("click", function() {
-  replaceStartDate(threeMonthsAgo);
-  insightsDateRange.textContent = "from the last 3 months";
-  getCountQueries();
-  getPolicy();
-  displayInsights();
-  displayStrategies();
-  getExportLink();
-});
-
-sixMonthsBtn.addEventListener("click", function() {
-  replaceStartDate(sixMonthsAgo);
-  insightsDateRange.textContent = "from the last 6 months";
-  getCountQueries();
-  getPolicy();
-  displayInsights();
-  displayStrategies();
-  getExportLink();
-});
-
-twelveMonthsBtn.addEventListener("click", function() {
-  replaceStartDate(lastYearDate);
-  insightsDateRange.textContent = "from the last 12 months";
-  getCountQueries();
-  getPolicy();
-  displayInsights();
-  displayStrategies();
-  getExportLink();
-});
 
 startYearBtn.addEventListener("click", function() {
   replaceStartDate(startYearDate);
