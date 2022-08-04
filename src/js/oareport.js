@@ -135,17 +135,14 @@ oareport = function(org) {
       instance.setContent(policyURLContent);
     };
 
-    /**  Display Insights and Strategy data **/
-    // TODO: break this up into two functions
-    displayData = function() {
-      Promise.all([isPaper, isOA, canArchiveAAM, canArchiveAAMList, isCompliant, isEligible])
+    /**  Display Insights **/
+    displayInsights = function() {
+      Promise.all([isPaper, isOA, isCompliant, isEligible])
         .then(function (results) {
           let isPaper = results[0].data,
               isOA    = results[1].data,
-              canArchiveAAM = results[2].data,
-              canArchiveAAMList = results[3].data.hits.hits,
-              isCompliant = results[4].data,
-              isEligible = results[5].data;
+              isCompliant = results[2].data,
+              isEligible = results[3].data;
               // hasCustomExportIncludes = results[6].data;
 
           let articlesContents = document.querySelector("#articles"),
@@ -172,6 +169,17 @@ oareport = function(org) {
             compliantArticlesContents.outerHTML = "";
             compliantPercentageContents.textContent = "N/A";
           }
+
+        }
+      ).catch(function (error) { console.log("Insights error: " + error); })
+    };
+
+    /** Display Strategies **/
+    displayStrategies = function() {
+      Promise.all([canArchiveAAM, canArchiveAAMList])
+        .then(function (results) {
+          let canArchiveAAM = results[0].data,
+              canArchiveAAMList = results[1].data.hits.hits;
 
           // "Strategies" section: display totals and lists of archivable AAMs if there are any
           if (canArchiveAAMList.length > 0) {
@@ -241,7 +249,7 @@ oareport = function(org) {
             document.querySelector("#strategies").outerHTML = "";
           }
         }
-      ).catch(function (error) { console.log("ERROR: " + error); })
+      ).catch(function (error) { console.log("Strategies error: " + error); })
     };
 
     /* "Download CSV" form: set query and date range in hidden input */
@@ -270,7 +278,8 @@ oareport = function(org) {
 
     getCountQueries();
     getPolicy();
-    displayData();
+    displayInsights();
+    displayStrategies();
     getExportLink();
   })
   .catch(function (error) { console.log("ERROR: " + error); })
@@ -295,7 +304,8 @@ threeMonthsBtn.addEventListener("click", function() {
   insightsDateRange.textContent = "from the last 3 months";
   getCountQueries();
   getPolicy();
-  displayData();
+  displayInsights();
+  displayStrategies();
   getExportLink();
 });
 
@@ -304,7 +314,8 @@ sixMonthsBtn.addEventListener("click", function() {
   insightsDateRange.textContent = "from the last 6 months";
   getCountQueries();
   getPolicy();
-  displayData();
+  displayInsights();
+  displayStrategies();
   getExportLink();
 });
 
@@ -313,7 +324,8 @@ twelveMonthsBtn.addEventListener("click", function() {
   insightsDateRange.textContent = "from the last 12 months";
   getCountQueries();
   getPolicy();
-  displayData();
+  displayInsights();
+  displayStrategies();
   getExportLink();
 });
 
@@ -322,6 +334,7 @@ startYearBtn.addEventListener("click", function() {
   insightsDateRange.textContent = "since the start of 2022";
   getCountQueries();
   getPolicy();
-  displayData();
+  displayInsights();
+  displayStrategies();
   getExportLink();
 });
