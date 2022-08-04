@@ -1,4 +1,4 @@
-const base           = "https://beta.oa.works/report/",
+const base           = "https://api.oa.works/report/",
       queryBase      = base + "works?",
       countQueryBase = base + "works/count?",
       csvExportBase  = base + "works.csv?";
@@ -92,7 +92,7 @@ oareport = function(org) {
       isOAQuery      = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_oa);
       canArchiveAAMQuery  = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
       canArchiveAAMListQuery = (queryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
-      hasCustomExportIncludes = (dateRange + response.data.hits.hits[0]._source.export_includes);
+      // hasCustomExportIncludes = (response.data.hits.hits[0]._source.export_includes);
 
       isPaper        = axios.get(isPaperQuery);
       isEligible     = axios.get(isEligibleQuery);
@@ -102,6 +102,7 @@ oareport = function(org) {
 
       console.log("org index: " + base + "orgs?q=name:%22" + org + "%22");
       console.log("paper index: " + isPaperQuery);
+      // console.log("hasCustomExportIncludes: " + hasCustomExportIncludes);
     };
 
     /** Check for an OA policy and display a link to the policy page in a tooltip **/
@@ -133,15 +134,15 @@ oareport = function(org) {
     /**  Display Insights and Strategy data **/
     // TODO: break this up into two functions
     displayData = function() {
-      Promise.all([isPaper, isOA, canArchiveAAM, canArchiveAAMList, isCompliant, isEligible, hasCustomExportIncludes])
+      Promise.all([isPaper, isOA, canArchiveAAM, canArchiveAAMList, isCompliant, isEligible])
         .then(function (results) {
           let isPaper = results[0].data,
               isOA    = results[1].data,
               canArchiveAAM = results[2].data,
               canArchiveAAMList = results[3].data.hits.hits,
               isCompliant = results[4].data,
-              isEligible = results[5].data,
-              hasCustomExportIncludes = results[6].data;
+              isEligible = results[5].data;
+              // hasCustomExportIncludes = results[6].data;
 
           let articlesContents = document.querySelector("#articles"),
               oaArticlesContents = document.querySelector("#articles_oa"),
