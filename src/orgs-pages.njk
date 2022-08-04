@@ -188,7 +188,7 @@ permalink: "{{ org._source.objectID | slug }}/"
 
       {# Download in CSV #}
       {# TODO: Make sure the CSV output of this is takes the user’s email, validates it, and actually exports the right data! #}
-      <form method="get" class="col-span-12 lg:col-start-11" id="download_csv" action="https://api.oa.works/report/works.csv">
+      <form method="get" class="col-span-12 lg:col-start-11" id="download_csv" action="">
         <input type="hidden" id="size" name="size" value="all">
         <label for="email" class="mb-2 block text-base text-neutral-800">
           Get data in CSV
