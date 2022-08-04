@@ -1,4 +1,4 @@
-const base           = "https://api.oa.works/report/",
+const base           = "https://beta.oa.works/report/",
       queryBase      = base + "works?",
       countQueryBase = base + "works/count?",
       csvExportBase  = base + "works.csv?";
@@ -87,12 +87,12 @@ oareport = function(org) {
       console.log("default dateRange: " + startDate + " to " + endDate);
 
       isPaperURL    = (dateRange + response.data.hits.hits[0]._source.analysis.is_paper); // used for full-email download in downloadCSV()
-      isPaperFullURL = (csvExportBase + isPaperURL);
       isPaperQuery   = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_paper);
       isEligibleQuery = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_covered_by_policy);
       isOAQuery      = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_oa);
       canArchiveAAMQuery  = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
       canArchiveAAMListQuery = (queryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
+      hasCustomExportIncludes = (dateRange + response.data.hits.hits[0]._source.export_includes);
 
       isPaper        = axios.get(isPaperQuery);
       isEligible     = axios.get(isEligibleQuery);
@@ -100,7 +100,8 @@ oareport = function(org) {
       canArchiveAAM  = axios.get(canArchiveAAMQuery);
       canArchiveAAMList = axios.get(canArchiveAAMListQuery);
 
-      console.log("report: " + base + "orgs?q=name:%22" + org + "%22");
+      console.log("org index: " + base + "orgs?q=name:%22" + org + "%22");
+      console.log("paper index: " + isPaperQuery);
     };
 
     /** Check for an OA policy and display a link to the policy page in a tooltip **/
@@ -121,7 +122,6 @@ oareport = function(org) {
         policyURL = response.data.hits.hits[0]._source.policy.url;
         isCompliantQuery = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.compliance);
         isCompliant = axios.get(isCompliantQuery);
-        console.log("isCompliantQuery: " + isCompliantQuery);
         /*jshint multistr: true */
         var policyURLContent = "The percentage of articles that are compliant with <a href='" + policyURL + "' target='_blank' rel='noopener' class='underline'>your organization’s Open Access policy</a>. This number is specific to your policy and your requirements.";
       } else {
@@ -133,7 +133,7 @@ oareport = function(org) {
     /**  Display Insights and Strategy data **/
     // TODO: break this up into two functions
     displayData = function() {
-      Promise.all([isPaper, isOA, canArchiveAAM, canArchiveAAMList, isCompliant, isEligible, isPaperFullURL])
+      Promise.all([isPaper, isOA, canArchiveAAM, canArchiveAAMList, isCompliant, isEligible, hasCustomExportIncludes])
         .then(function (results) {
           let isPaper = results[0].data,
               isOA    = results[1].data,
@@ -141,7 +141,7 @@ oareport = function(org) {
               canArchiveAAMList = results[3].data.hits.hits,
               isCompliant = results[4].data,
               isEligible = results[5].data,
-              isPaperFullURL = results[6].data;
+              hasCustomExportIncludes = results[6].data;
 
           let articlesContents = document.querySelector("#articles"),
               oaArticlesContents = document.querySelector("#articles_oa"),
