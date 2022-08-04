@@ -9,51 +9,53 @@ permalink: "{{ org._source.objectID | slug }}/"
 
 {%- from "system/component.njk" import component -%}
 
-<header class="col-span-12">
-  <div class="flex justify-between">
-    <h1 class="text-3xl md:text-6xl font-light">
-      {% if org._source.policy.supported_policy === true %}Put OA policy into practice at {% else %}Advance OA at {% endif %}
-      <br/>
-      <strong class="font-black">{{ org._source.name }}</strong></h1>
-    {# TODO: get logos #}
-    {# <figure class="block border border-neutral-700 h-36 w-96 p-6 flex"><p class="self-center m-auto">[LOGO WILL BE HERE]</p></figure> #}
-  </div>
+<header class="mb-3 col-span-12 md:col-span-6">
+  <h1 class="text-xl md:text-3xl font-light">
+    {% if org._source.policy.supported_policy === true %}Put OA policy into practice at {% else %}Advance OA at {% endif %}
+    <br>
+    <strong class="font-semibold">{{ org._source.name }}</strong>
+    <br>
+  </h1>
+  {# TODO: get logos #}
+  {# <figure class="block border border-neutral-700 h-36 w-96 p-6 flex"><p class="self-center m-auto">[LOGO WILL BE HERE]</p></figure> #}
 </header>
+<nav class="col-span-12 md:col-span-6 md:text-right">
+  <p class="mb-3">
+    Your OAreport <span id="insights_range">since the start of 2022</span>
+    <br> <span class="text-neutral-600"><span id="start_date"></span> — <span id="end_date"></span></span>
+  </p>
+  {# Preset date filters #}
+  <h2 class="sr-only">Quick date filters</h2>
+  {{ component("pill", {
+    id: "three-months",
+    txt: "Last 3 months"
+  }) }}
+  {{ component("pill", {
+    id: "six-months",
+    txt: "Last 6 months"
+  }) }}
+  {{ component("pill", {
+    id: "twelve-months",
+    txt: "Last 12 months"
+  }) }}
+  {{ component("pill", {
+    id: "start-year",
+    txt: "Since start of year"
+  }) }}
+</nav>
 
 <section class="col-span-12 grid grid-cols-12 gap-3 lg:gap-6 top-0 mb-2 pt-2 bg-[#F4F0F0]">
   <div class="col-span-12 grid grid-cols-12 gap-3">
     <header class="col-span-12 md:col-span-6">
       <h2 class="mb-3 text-lg leading-6">
         <span class="block font-medium text-neutral-900">
-          Insights <span id="insights_range">since the start of 2022</span>
+          Insights
           {{ component("tooltip", {
             msg: "The <em>Insights</em> section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/' target='_blank' class='underline'>infrastructure page</a>."
           }) }}
         </span>
-        <span class="text-neutral-600">From <span id="start_date"></span> — <span id="end_date"></span></span>
       </h2>
     </header>
-
-    {# Preset date filters #}
-    <aside class="mb-3 col-span-12 md:col-span-6 md:text-right">
-      <h2 class="sr-only">Quick date filters</h2>
-      {{ component("pill", {
-        id: "three-months",
-        txt: "Last 3 months"
-      }) }}
-      {{ component("pill", {
-        id: "six-months",
-        txt: "Last 6 months"
-      }) }}
-      {{ component("pill", {
-        id: "twelve-months",
-        txt: "Last 12 months"
-      }) }}
-      {{ component("pill", {
-        id: "start-year",
-        txt: "Since start of year"
-      }) }}
-    </aside>
 
     <dl class="col-span-12 mb-6 grid grid-cols-1 gap-3 lg:gap-6 sm:grid-cols-2 lg:grid-cols-3">
       <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden" id="compliance">
@@ -144,7 +146,7 @@ permalink: "{{ org._source.objectID | slug }}/"
       <form method="get" class="col-span-12 lg:col-start-11" id="download_csv" action="">
         <input type="hidden" id="size" name="size" value="all">
         <label for="email" class="mb-2 block text-base text-neutral-800">
-          Get data in CSV
+          Get data by email in CSV
           {{ component("tooltip", {
             msg: "Enter your email address to receive a link to a CSV for download. <strong>We do not save email addresses or use them for any purpose</strong> other than sending you the CSV file containing OAreport data when you request it."
           }) }}
