@@ -18,6 +18,8 @@ permalink: "{{ org._source.objectID | slug }}/"
   </h1>
   {# TODO: get logos #}
   {# <figure class="block border border-neutral-700 h-36 w-96 p-6 flex"><p class="self-center m-auto">[LOGO WILL BE HERE]</p></figure> #}
+
+  {% include 'partials/email-download-form.njk' %}
 </header>
 
 <nav class="col-span-12 md:col-span-6 md:text-right">

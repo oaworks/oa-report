@@ -87,7 +87,7 @@ oareport = function(org) {
       canArchiveAAMListQuery = (queryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
       canArchiveVORQuery  = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_vor.query);
       canArchiveVORListQuery = (queryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_vor.query);
-      // hasCustomExportIncludes = (response.data.hits.hits[0]._source.export_includes);
+      hasCustomExportIncludes = (response.data.hits.hits[0]._source.export_includes);
 
       isPaper        = axios.get(isPaperQuery);
       isEligible     = axios.get(isEligibleQuery);
@@ -98,8 +98,7 @@ oareport = function(org) {
       canArchiveVORList = axios.get(canArchiveVORListQuery);
 
       console.log("org index: " + base + "orgs?q=name:%22" + org + "%22");
-      console.log("paper index: " + isPaperQuery);
-      // console.log("hasCustomExportIncludes: " + hasCustomExportIncludes);
+      console.log("hasCustomExportIncludes: " + hasCustomExportIncludes);
     };
 
     /** Check for an OA policy and display a link to the policy page in a tooltip **/
@@ -136,7 +135,6 @@ oareport = function(org) {
               isOA    = results[1].data,
               isCompliant = results[2].data,
               isEligible = results[3].data;
-              // hasCustomExportIncludes = results[6].data;
 
           let articlesContents = document.querySelector("#articles"),
               oaArticlesContents = document.querySelector("#articles_oa"),
@@ -308,11 +306,25 @@ oareport = function(org) {
 
     /* "Download CSV" form: set query and date range in hidden input */
     getExportLink = function() {
+      Promise.all([hasCustomExportIncludes])
+        .then(function (results) {
+          let hasCustomExportIncludes = results[0].data;
+          }
+        ).catch(function (error) { console.log("Export error: " + error); });
+
       let queryHiddenInput = document.querySelector("#download-form-q"),
           query = isPaperURL.replaceAll(" ", "%20"),
           includeHiddenInput = document.querySelector("#download-form-include"),
-          include =  "DOI,title,subtitle,publisher,journal,issn,published,published_year,PMCID,volume,issue,authorships.author.display_name,authorships.author.orcid,authorships.institutions.display_name,authorships.institutions.ror,funder.name,funder.award,is_oa,oa_status,journal_oa_type,publisher_license,has_repository_copy,repository_license,repository_version,repository_url,has_oa_locations_embargoed,can_archive,version,concepts.display_name,concepts.level,concepts.score,subject,pmc_has_data_availability_statement,cited_by_count",
           form = document.querySelector("#download_csv");
+
+      // Check for custom include parameters
+      var include;
+
+      if (hasCustomExportIncludes !== undefined) {
+        include = hasCustomExportIncludes;
+      } else {
+        include =  "DOI,title,subtitle,publisher,journal,issn,published,published_year,PMCID,volume,issue,authorships.author.display_name,authorships.author.orcid,authorships.institutions.display_name,authorships.institutions.ror,funder.name,funder.award,is_oa,oa_status,journal_oa_type,publisher_license,has_repository_copy,repository_license,repository_version,repository_url,has_oa_locations_embargoed,can_archive,version,concepts.display_name,concepts.level,concepts.score,subject,pmc_has_data_availability_statement,cited_by_count";
+      }
 
       // Set form attributes
       form.setAttribute("action", csvExportBase);
