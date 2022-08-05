@@ -16,11 +16,29 @@
 <script src="https://unpkg.com/@popperjs/core@2"></script>
 <script src="https://unpkg.com/tippy.js@6"></script>
 <script>
-  tippy('[data-tippy-content]', {
+  tippy(document.querySelectorAll('.tooltip'), {
     allowHTML: true,
     interactive: true,
     placement: 'bottom',
     appendTo: document.body,
+  });
+
+  tippy(document.querySelectorAll('.dropdown'), {
+    arrow: false,
+    allowHTML: true,
+    interactive: true,
+    placement: 'bottom-start',
+    appendTo: document.body,
+    theme: 'dropdown',
+  });
+
+  tippy(document.querySelectorAll('.popover'), {
+    allowHTML: true,
+    interactive: true,
+    placement: 'top',
+    appendTo: document.body,
+    trigger: 'click',
+    theme: 'popover',
   });
 </script>
 <script src="/js/oareport.js"></script>
