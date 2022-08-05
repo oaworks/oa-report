@@ -168,30 +168,33 @@ oareport = function(org) {
     };
 
     /** Display Strategies **/
+    // TODO: create one function per strategy
     displayStrategies = function() {
-      Promise.all([canArchiveAAM, canArchiveAAMList])
+      Promise.all([canArchiveAAM, canArchiveAAMList, canArchiveVOR, canArchiveVORList])
         .then(function (results) {
           let canArchiveAAM = results[0].data,
-              canArchiveAAMList = results[1].data.hits.hits;
+              canArchiveAAMList = results[1].data.hits.hits,
+              canArchiveVOR = results[2].data,
+              canArchiveVORList = results[3].data.hits.hits;
 
-          // "Strategies" section: display totals and lists of archivable AAMs if there are any
+          // Generate list of archivable AAMs if there are any
           if (canArchiveAAMList.length > 0) {
-            var totalActionsContents = document.querySelector("#total_actions"),
-                latestActionsContents = document.querySelector("#latest_actions"),
-                canArchiveList = document.querySelector("#can_archive_list");
+            var totalAAMActionsContents = document.querySelector("#total_aam_actions"),
+                latestAAMActionsContents = document.querySelector("#latest_aam_actions"),
+                canArchiveAAMTable = document.querySelector("#can_archive_aam_list");
                 // TODO: think more about the potential percentage
                 // canArchiveOaPercentageContents = document.querySelector("#can_archive_percent_oa");
 
-            totalActionsContents.textContent = canArchiveAAM.toLocaleString(getUsersLocale());
+            totalAAMActionsContents.textContent = canArchiveAAM.toLocaleString(getUsersLocale());
             // If there are fewer than 100 actions, simply do not display any number of latest articles
             if (canArchiveAAM < 100) {
-              latestActionsContents.textContent = "";
+              latestAAMActionsContents.textContent = "";
             }
             // TODO: think more about the potential percentage
             // canArchiveOaPercentageContents.textContent = Math.round(((((isOA+canArchiveAAM))/isPaper)*100));
 
             // Set up and get list of emails for archivable AAMs
-            var canArchiveListItems = "";
+            var canArchiveAAMTableRows = "";
             canArchiveLength = canArchiveAAMList.length;
 
             for (i = 0; i <= (canArchiveLength-1); i++) {
@@ -218,7 +221,7 @@ oareport = function(org) {
               canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{author_email}", authorEmail);
 
               /*jshint multistr: true */
-              canArchiveListItems += '<tr>\
+              canArchiveAAMTableRows += '<tr>\
                 <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
                   <div class="mb-1 text-neutral-500">' + pubDate + '</div>\
                   <div class="mb-1 font-medium text-neutral-900 hover:text-carnation-500">\
@@ -237,9 +240,67 @@ oareport = function(org) {
                 </td>\
               </tr>';
             }
-            canArchiveList.innerHTML = canArchiveListItems;
-          } else {
-            document.querySelector("#strategies").outerHTML = "";
+            canArchiveAAMTable.innerHTML = canArchiveAAMTableRows;
+          }
+
+          // Generate list of archivable VORs if there are any
+          if (canArchiveVORList.length > 0) {
+            var totalVORActionsContents = document.querySelector("#total_vor_actions"),
+                latestVORActionsContents = document.querySelector("#latest_vor_actions"),
+                canArchiveVORTable = document.querySelector("#can_archive_vor_list");
+                // TODO: think more about the potential percentage
+                // canArchiveOaPercentageContents = document.querySelector("#can_archive_percent_oa");
+
+            totalVORActionsContents.textContent = canArchiveVOR.toLocaleString(getUsersLocale());
+            if (canArchiveVOR < 100) {
+              latestVORActionsContents.textContent = "";
+            }
+
+            var canArchiveVORTableRows = "";
+            canArchiveLength = canArchiveVORList.length;
+
+            for (i = 0; i <= (canArchiveLength-1); i++) {
+              var title = canArchiveVORList[i]._source.title,
+                  author = canArchiveVORList[i]._source.author_email_name,
+                  doi   = canArchiveVORList[i]._source.DOI,
+                  pubDate = canArchiveVORList[i]._source.published_date,
+                  journal = canArchiveVORList[i]._source.journal;
+              pubDate = new Date(pubDate).toLocaleString(getUsersLocale(), readableDateOptions);
+
+              if (canArchiveVORList[i]._source.email) {
+                authorEmail = canArchiveVORList[i]._source.email;
+              } else {
+                authorEmail = "No email found.";
+              }
+
+              canArchiveVORMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
+              canArchiveVORMailto = canArchiveVORMailto.replaceAll("\'", "’");
+              canArchiveVORMailto = canArchiveVORMailto.replaceAll("{title}", title);
+              canArchiveVORMailto = canArchiveVORMailto.replaceAll("{doi}", doi);
+              canArchiveVORMailto = canArchiveVORMailto.replaceAll("{author_name}", author);
+              canArchiveVORMailto = canArchiveVORMailto.replaceAll("{author_email}", authorEmail);
+
+              /*jshint multistr: true */
+              canArchiveVORTableRows += '<tr>\
+                <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
+                  <div class="mb-1 text-neutral-500">' + pubDate + '</div>\
+                  <div class="mb-1 font-medium text-neutral-900 hover:text-carnation-500">\
+                    <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + title + '</a>\
+                  </div>\
+                  <div class="text-neutral-500">' + journal + '</div>\
+                </td>\
+                <td class="hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell">\
+                  <div class="mb-1 text-neutral-900">' + author + '</div>\
+                  <div class="text-neutral-500">' + authorEmail + '</div>\
+                </td>\
+                <td class="whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium">\
+                  <a href="mailto:' + canArchiveVORMailto + '" target="_blank" rel="noopener" class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200">\
+                    <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail inline-block h-4 duration-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>\
+                  </a>\
+                </td>\
+              </tr>';
+            }
+            canArchiveVORTable.innerHTML = canArchiveVORTableRows;
           }
         }
       ).catch(function (error) { console.log("Strategies error: " + error); })

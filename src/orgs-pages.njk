@@ -226,6 +226,22 @@ permalink: "{{ org._source.objectID | slug }}/"
         </div>
       </header>
       <div class="col-span-12 lg:col-span-8 border-t sm:border-0">
+        <div class="grid grid-cols-12 gap-3 lg:gap-6 flex justify-between">
+          <div class="mb-3 col-span-12 md:col-span-6">
+            <p class="mb-1 text-neutral-900 text-lg font-semibold leading-6">
+              <span id="total_vor_actions">00</span> actions prepared</span>
+              {{ component("tooltip", {
+                msg: "This number represents the number of articles that have the ability to be made open access for free but are currently behind a paywall. In these cases, the publishers allow for self-archiving an author accepted manuscript version of the article in a repository."
+              }) }}
+            </p>
+            <p class="text-neutral-700 text-base">Showing the <span id="latest_vor_actions">100</span> most recent articles</p>
+          </div>
+          {# TODO: think more about the potential percentage #}
+          {# <div class="col-span-12 md:col-span-6 md:text-right">
+            <p class="mb-1 font-semibold text-neutral-900 text-lg leading-6">If all articles are self-archived:</p>
+              <p class="text-neutral-700 text-base">&uarr; <span class="sr-only">Increase</span> OA% up to <span id="can_archive_percent_oa"></span>%</p>
+          </div> #}
+        </div>
         <div class="mb-8 overflow-hidden sm:-mx-6 md:mx-0 md:rounded-lg drop-shadow-lg">
           <table class="divide-y divide-neutral-300 table-fixed w-full">
             <thead class="bg-neutral-800 text-white">
@@ -259,12 +275,12 @@ permalink: "{{ org._source.objectID | slug }}/"
         <div class="grid grid-cols-12 gap-3 lg:gap-6 flex justify-between">
           <div class="mb-3 col-span-12 md:col-span-6">
             <p class="mb-1 text-neutral-900 text-lg font-semibold leading-6">
-              <span id="total_actions">00</span> actions prepared</span>
+              <span id="total_aam_actions">00</span> actions prepared</span>
               {{ component("tooltip", {
                 msg: "This number represents the number of articles that have the ability to be made open access for free but are currently behind a paywall. In these cases, the publishers allow for self-archiving an author accepted manuscript version of the article in a repository."
               }) }}
             </p>
-            <p class="text-neutral-700 text-base">Showing the <span id="latest_actions">100</span> most recent articles</p>
+            <p class="text-neutral-700 text-base">Showing the <span id="latest_aam_actions">100</span> most recent articles</p>
           </div>
           {# TODO: think more about the potential percentage #}
           {# <div class="col-span-12 md:col-span-6 md:text-right">
@@ -286,7 +302,7 @@ permalink: "{{ org._source.objectID | slug }}/"
                 </th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-neutral-200 bg-white" id="can_archive_list"></tbody>
+            <tbody class="divide-y divide-neutral-200 bg-white" id="can_archive_aam_list"></tbody>
           </table>
         </div>
       </div>
