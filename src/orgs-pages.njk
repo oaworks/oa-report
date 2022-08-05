@@ -56,6 +56,14 @@ permalink: "{{ org._source.objectID | slug }}/"
     id: "start-year",
     txt: "Since start of year"
   }) }}
+  {{ component("pill", {
+    id: "last-year",
+    txt: "Last year"
+  }) }}
+  {{ component("pill", {
+    id: "all-time",
+    txt: "All time"
+  }) }}
 </nav>
 
 <section class="col-span-12 grid grid-cols-12 gap-3 lg:gap-6 top-0 mb-2 pt-2 bg-[#F4F0F0]">
@@ -77,13 +85,13 @@ permalink: "{{ org._source.objectID | slug }}/"
           <div class="absolute bg-carnation-500 text-white rounded-md p-6">
             {% icon "check-circle" %}
           </div>
-          <p class="ml-24 mb-2 text-base font-medium text-gray-500 truncate">
+          <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
             Policy-compliant articles
             <sup id="org_oa_policy">{% icon_small "help-circle" %}</sup>
           </p>
         </dt>
         <dd class="ml-24 flex items-baseline">
-          <p class="text-4xl font-semibold text-gray-900">
+          <p class="text-4xl font-semibold text-neutral-900">
             <span id="percent_compliant">00%</span>
           </p>
           <p class="ml-2 text-sm font-medium text-neutral-600">
@@ -97,7 +105,7 @@ permalink: "{{ org._source.objectID | slug }}/"
           <div class="absolute bg-carnation-500 text-white rounded-md p-6">
             {% icon "unlock" %}
           </div>
-          <p class="ml-24 mb-2 text-base font-medium text-gray-500 truncate">
+          <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
             Open Access articles
             {{ component("tooltip", {
               msg: "The total number of articles that are currently Open Access, either because the version of record is Open Access (“gold”, “diamond”, or “hybrid” Open Access) or because the article was preprinted or been made available through self-archiving (“green” Open Access)."
@@ -105,7 +113,7 @@ permalink: "{{ org._source.objectID | slug }}/"
           </p>
         </dt>
         <dd class="ml-24 flex items-baseline">
-          <p class="text-4xl font-semibold text-gray-900">
+          <p class="text-4xl font-semibold text-neutral-900">
             <span id="percent_oa">00%</span>
           </p>
           <p class="ml-2 text-sm font-medium text-neutral-600">
@@ -119,7 +127,7 @@ permalink: "{{ org._source.objectID | slug }}/"
           <div class="absolute bg-carnation-500 text-white rounded-md p-6">
             {% icon "file-text" %}
           </div>
-          <p class="ml-24 mb-2 text-base font-medium text-gray-500 truncate">
+          <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
             Articles published
             {{ component("tooltip", {
               msg: "The total number of articles published by grantees or authors at your organization."
@@ -127,7 +135,7 @@ permalink: "{{ org._source.objectID | slug }}/"
           </p>
         </dt>
         <dd class="ml-24 flex items-baseline">
-          <p class="text-4xl font-semibold text-gray-900">
+          <p class="text-4xl font-semibold text-neutral-900">
             <span id="articles">000</span>
           </p>
         </dd>
@@ -166,49 +174,152 @@ permalink: "{{ org._source.objectID | slug }}/"
       msg: "The <em>Strategy</em> section provides actionable steps for making more of your articles Open Access."
     }) }}
   </h2>
-  <div class="grid grid-cols-12 gap-3 lg:gap-6 md:gap-12">
-    <header class="md:mb-12 col-span-12 lg:col-span-4">
-      <div class=" lg:sticky lg:top-3">
-        <p class="mb-3 text-base font-normal text-neutral-700 lg:duration-500 js-label_text_toggle"><span class="block mb-2 text-carnation-500 js-icon_toggle">{% icon_small "archive" %}</span> Self-archive articles</p>
-        <h3 class="font-semibold text-xl md:text-4xl mb-3 md:mb-6">Ask authors to share their Author Accepted Manuscript</h3>
-        <p class="text-xs md:text-base">Send emails to authors to request that they make the AAMs of their articles available in an Open Access repository.</p>
-      </div>
-    </header>
-    <div class="pt-3 md:pt-6 col-span-12 lg:col-span-8 border-t sm:border-0">
-      <div class="grid grid-cols-12 gap-3 lg:gap-6 flex justify-between">
-        <div class="col-span-12 md:col-span-6">
-          <p class="mb-1 text-neutral-900 text-lg font-semibold leading-6">
-            <span id="total_actions">00</span> actions prepared</span>
-            {{ component("tooltip", {
-              msg: "This number represents the number of articles that have the ability to be made open access for free but are currently behind a paywall. In these cases, the publishers allow for self-archiving an author accepted manuscript version of the article in a repository."
-            }) }}
-          </p>
-          <p class="text-neutral-700 text-base">Showing the <span id="latest_actions">100</span> most recent articles</p>
-        </div>
-        {# TODO: think more about the potential percentage #}
-        {# <div class="col-span-12 md:col-span-6 md:text-right">
-          <p class="mb-1 font-semibold text-neutral-900 text-lg leading-6">If all articles are self-archived:</p>
-            <p class="text-neutral-700 text-base">&uarr; <span class="sr-only">Increase</span> OA% up to <span id="can_archive_percent_oa"></span>%</p>
-        </div> #}
-      </div>
 
-      <div class="my-8 overflow-hidden sm:-mx-6 md:mx-0 md:rounded-lg drop-shadow-lg">
-        <table class="divide-y divide-neutral-300 table-fixed w-full">
-          <thead class="bg-neutral-800 text-white">
-            <tr>
-              <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-6/12">Article</th>
-              <th scope="col" class="hidden px-3 py-3.5 text-left text-sm font-semibold w-4/12 sm:table-cell">Corresponding author</th>
-              <th scope="col" class="text-sm font-semibold py-3.5 pl-3 pr-4 w-2/12">
-                Open draft
-                {{ component("tooltip", {
-                  msg: "This will open a preset message in your email client. If you make any changes to the email, it will not be saved here."
-                }) }}
-              </th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-neutral-200 bg-white" id="can_archive_list"></tbody>
-        </table>
+  <nav class="block mb-10">
+    {# TODO: Display tab nav as dropdown/select on smaller viewports
+      Use an "onChange" listener to redirect the user to the selected tab URL. #}
+    <div class="sm:hidden">
+      <label for="tabs" class="sr-only">Select a tab</label>
+      <select id="tabs" name="tabs" class="block w-full pl-3 pr-10 py-2 text-base border-neutral-300 focus:outline-none focus:ring-carnation-500 focus:border-carnation-500 sm:text-sm rounded-md">
+        <option>Deposit Publisher PDFs</option>
+        <option selected>Deposit AAMs</option>
+        <option>Find champions</option>
+      </select>
+    </div>
+
+    <div class="hidden sm:block">
+      <div class="border-b border-neutral-200">
+        <ul class="-mb-px flex space-x-8 js-tabs" aria-label="Tabs">
+          <li class="js-tab-item">
+            <a href="#item1" class="border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-200 whitespace-nowrap flex py-4 px-1 border-b-2 font-medium text-sm border-carnation-500 text-carnation-600">
+              Deposit Publisher PDFs
+              {# TODO: display number of actions for each strat #}
+              {# <span class="bg-neutral-100 text-neutral-900 hidden ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block">52</span> #}
+            </a>
+          </li>
+          <li class="js-tab-item">
+            <a href="#item2" class="border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-200 whitespace-nowrap flex py-4 px-1 border-b-2 font-medium text-sm">
+              Deposit AAMs
+              {# <span class="bg-neutral-100 text-neutral-900 hidden ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block">6</span> #}
+            </a>
+          </li>
+          <li class="js-tab-item">
+            <a href="#item3" class="border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-200 whitespace-nowrap flex py-4 px-1 border-b-2 font-medium text-sm">
+              Find champions
+              {# <span class="bg-carnation-100 text-carnation-600 hidden ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block">4</span> #}
+            </a>
+          </li>
+        </ul>
       </div>
     </div>
+  </nav>
+
+  <div class="js-tab-content">
+    {# TODO: don’t hardcode these tabs #}
+    {# Deposit publisher PDF (VORs) #}
+    <section class="grid grid-cols-12 gap-3 lg:gap-6 md:gap-12 js-tab-content" id="item1">
+      <header class="md:mb-12 col-span-12 lg:col-span-4">
+        <div class=" lg:sticky lg:top-3">
+          <p class="mb-3 text-base font-normal text-neutral-700 lg:duration-500 js-label_text_toggle"><span class="text-carnation-500 js-icon_toggle">{% icon_small "archive" %}</span> Self-archive articles</p>
+          <h3 class="font-semibold text-xl md:text-4xl mb-3 md:mb-6">Ask authors to share Publisher PDFs (Version of Record)</h3>
+          <p class="text-xs md:text-base mb-3 md:mb-6">Send emails to authors to request that they make the VORs of their articles available in an Open Access repository.</p>
+        </div>
+      </header>
+      <div class="col-span-12 lg:col-span-8 border-t sm:border-0">
+        <div class="mb-8 overflow-hidden sm:-mx-6 md:mx-0 md:rounded-lg drop-shadow-lg">
+          <table class="divide-y divide-neutral-300 table-fixed w-full">
+            <thead class="bg-neutral-800 text-white">
+              <tr>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-6/12">Article</th>
+                <th scope="col" class="hidden px-3 py-3.5 text-left text-sm font-semibold w-4/12 sm:table-cell">Corresponding author</th>
+                <th scope="col" class="text-sm font-semibold py-3.5 pl-3 pr-4 w-2/12">
+                  Open draft
+                  {{ component("tooltip", {
+                    msg: "This will open a preset message in your email client. If you make any changes to the email, it will not be saved here."
+                  }) }}
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-neutral-200 bg-white" id="can_archive_vor_list"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    {# Deposit AAMs #}
+    <section class="grid grid-cols-12 gap-3 lg:gap-6 md:gap-12 js-tab-content hidden" id="item2">
+      <header class="md:mb-12 col-span-12 lg:col-span-4">
+        <div class=" lg:sticky lg:top-3">
+          <p class="mb-3 text-base font-normal text-neutral-700 lg:duration-500 js-label_text_toggle"><span class="text-carnation-500 js-icon_toggle">{% icon_small "archive" %}</span> Self-archive articles</p>
+          <h3 class="font-semibold text-xl md:text-4xl mb-3 md:mb-6">Ask authors to share their Author Accepted Manuscript</h3>
+          <p class="text-xs md:text-base mb-3 md:mb-6">Send emails to authors to request that they make the AAMs of their articles available in an Open Access repository.</p>
+        </div>
+      </header>
+      <div class="col-span-12 lg:col-span-8 border-t sm:border-0">
+        <div class="grid grid-cols-12 gap-3 lg:gap-6 flex justify-between">
+          <div class="mb-3 col-span-12 md:col-span-6">
+            <p class="mb-1 text-neutral-900 text-lg font-semibold leading-6">
+              <span id="total_actions">00</span> actions prepared</span>
+              {{ component("tooltip", {
+                msg: "This number represents the number of articles that have the ability to be made open access for free but are currently behind a paywall. In these cases, the publishers allow for self-archiving an author accepted manuscript version of the article in a repository."
+              }) }}
+            </p>
+            <p class="text-neutral-700 text-base">Showing the <span id="latest_actions">100</span> most recent articles</p>
+          </div>
+          {# TODO: think more about the potential percentage #}
+          {# <div class="col-span-12 md:col-span-6 md:text-right">
+            <p class="mb-1 font-semibold text-neutral-900 text-lg leading-6">If all articles are self-archived:</p>
+              <p class="text-neutral-700 text-base">&uarr; <span class="sr-only">Increase</span> OA% up to <span id="can_archive_percent_oa"></span>%</p>
+          </div> #}
+        </div>
+        <div class="mb-8 overflow-hidden sm:-mx-6 md:mx-0 md:rounded-lg drop-shadow-lg">
+          <table class="divide-y divide-neutral-300 table-fixed w-full">
+            <thead class="bg-neutral-800 text-white">
+              <tr>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-6/12">Article</th>
+                <th scope="col" class="hidden px-3 py-3.5 text-left text-sm font-semibold w-4/12 sm:table-cell">Corresponding author</th>
+                <th scope="col" class="text-sm font-semibold py-3.5 pl-3 pr-4 w-2/12">
+                  Open draft
+                  {{ component("tooltip", {
+                    msg: "This will open a preset message in your email client. If you make any changes to the email, it will not be saved here."
+                  }) }}
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-neutral-200 bg-white" id="can_archive_list"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    {# Find champions #}
+    <section class="grid grid-cols-12 gap-3 lg:gap-6 md:gap-12 js-tab-content hidden" id="item3">
+      <header class="md:mb-12 col-span-12 lg:col-span-4">
+        <div class=" lg:sticky lg:top-3">
+          <p class="mb-3 text-base font-normal text-neutral-700 lg:duration-500 js-label_text_toggle"><span class="text-carnation-500 js-icon_toggle">{% icon_small "archive" %}</span> Promote OA</p>
+          <h3 class="font-semibold text-xl md:text-4xl mb-3 md:mb-6">Find your Open Access champions</h3>
+          <p class="text-xs md:text-base mb-3 md:mb-6">Lorem ipsum dolor sit amet</p>
+        </div>
+      </header>
+      <div class="col-span-12 lg:col-span-8 border-t sm:border-0">
+        <div class="mb-8 overflow-hidden sm:-mx-6 md:mx-0 md:rounded-lg drop-shadow-lg">
+          {# <table class="divide-y divide-neutral-300 table-fixed w-full">
+            <thead class="bg-neutral-800 text-white">
+              <tr>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-6/12">Article</th>
+                <th scope="col" class="hidden px-3 py-3.5 text-left text-sm font-semibold w-4/12 sm:table-cell">Corresponding author</th>
+                <th scope="col" class="text-sm font-semibold py-3.5 pl-3 pr-4 w-2/12">
+                  Open draft
+                  {{ component("tooltip", {
+                    msg: "This will open a preset message in your email client. If you make any changes to the email, it will not be saved here."
+                  }) }}
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-neutral-200 bg-white" id="can_archive_list"></tbody>
+          </table> #}
+        </div>
+      </div>
+    </section>
   </div>
 </section>
