@@ -10,7 +10,7 @@ permalink: "{{ org._source.objectID | slug }}/"
 {%- from "system/component.njk" import component -%}
 
 <header class="mb-3 col-span-12 md:col-span-6">
-  <h1 class="mb-12 text-xl md:text-3xl font-light">
+  <h1 class="mb-3 text-xl md:text-3xl font-light">
     {% if org._source.policy.supported_policy === true %}Put OA policy into practice at {% else %}Advance OA at {% endif %}
     <br>
     <strong class="font-semibold">{{ org._source.name }}</strong>
@@ -141,10 +141,9 @@ permalink: "{{ org._source.objectID | slug }}/"
         </dd>
       </div>
     </dl>
-
-    <div class="col-span-12 mb-6 grid grid-cols-12 gap-3 lg:gap-6">
-      {# TODO: Filter by date #}
-      {# <section>
+    {# TODO: Filter by date #}
+    {# <div class="col-span-12 mb-6 grid grid-cols-12 gap-3 lg:gap-6">
+      <section>
         <h2 class="sr-only">Filter by date</h2>
         <form onsubmit="changeDateRange()" method="get" id="change_date_range">
           <div class="flex items-end mb-3">
@@ -161,9 +160,8 @@ permalink: "{{ org._source.objectID | slug }}/"
             </button>
           </div>
         </form>
-      </section> #}
-
-    </div>
+      </section>
+    </div> #}
   </div>
 </section>
 
@@ -191,20 +189,20 @@ permalink: "{{ org._source.objectID | slug }}/"
       <div class="border-b border-neutral-200">
         <ul class="-mb-px flex space-x-8 js-tabs" aria-label="Tabs">
           <li class="js-tab-item">
-            <a href="#item1" class="border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-200 whitespace-nowrap flex py-4 px-1 border-b-2 font-medium text-sm border-carnation-500 text-carnation-600">
+            <a href="#item1" class="border-transparent text-neutral-500 whitespace-nowrap flex pt-4 pb-6 px-1 border-t-4 font-medium text-sm border-carnation-500 text-carnation-600">
               Deposit Publisher PDFs
               {# TODO: display number of actions for each strat #}
               {# <span class="bg-neutral-100 text-neutral-900 hidden ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block">52</span> #}
             </a>
           </li>
           <li class="js-tab-item">
-            <a href="#item2" class="border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-200 whitespace-nowrap flex py-4 px-1 border-b-2 font-medium text-sm">
+            <a href="#item2" class="border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-200 whitespace-nowrap flex pt-4 pb-6 px-1 border-t-4 font-medium text-sm">
               Deposit AAMs
               {# <span class="bg-neutral-100 text-neutral-900 hidden ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block">6</span> #}
             </a>
           </li>
           <li class="js-tab-item">
-            <a href="#item3" class="border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-200 whitespace-nowrap flex py-4 px-1 border-b-2 font-medium text-sm">
+            <a href="#item3" class="border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-200 whitespace-nowrap flex pt-4 pb-6 px-1 border-t-4 font-medium text-sm">
               Find champions
               {# <span class="bg-carnation-100 text-carnation-600 hidden ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block">4</span> #}
             </a>

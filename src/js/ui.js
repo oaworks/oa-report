@@ -13,6 +13,7 @@ tabItems.forEach(function(toggler) {
     for (let i = 0; i < tabContent.children.length; i++) {
 
       tabItems[i].classList.remove("border-carnation-500", "text-carnation-600");
+      tabItems[i].classList.add("hover:text-neutral-700", "hover:border-neutral-200");
 
       tabContent.children[i].classList.remove("hidden");
 
@@ -23,5 +24,6 @@ tabItems.forEach(function(toggler) {
 
     }
     e.target.classList.add("border-carnation-500", "text-carnation-600");
+    e.target.classList.remove("hover:text-neutral-700", "hover:border-neutral-200");
   });
 });
