@@ -2,7 +2,7 @@ const base           = "https://api.oa.works/report/",
       queryBase      = base + "works?",
       countQueryBase = base + "works/count?",
       csvExportBase  = base + "works.csv?";
-let isPaper, isEligible, isOA, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL, dateRangeButton, csvEmailButton;
+let isPaper, isEligible, isOA, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL, dateRangeButton, csvEmailButton, totalArticles;
 let isCompliant = false;
 
 // Detect browser’s locale to display human-readable numbers
@@ -77,7 +77,6 @@ oareport = function(org) {
 
     /** Get queries for article counts and strategy action list **/
     getCountQueries = function() {
-      console.log("default dateRange: " + startDate + " to " + endDate);
 
       isPaperURL    = (dateRange + response.data.hits.hits[0]._source.analysis.is_paper); // used for full-email download in downloadCSV()
       isPaperQuery   = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_paper);
@@ -98,7 +97,6 @@ oareport = function(org) {
       canArchiveVORList = axios.get(canArchiveVORListQuery);
 
       console.log("org index: " + base + "orgs?q=name:%22" + org + "%22");
-      console.log("hasCustomExportIncludes: " + hasCustomExportIncludes);
     };
 
     /** Check for an OA policy and display a link to the policy page in a tooltip **/
@@ -142,9 +140,10 @@ oareport = function(org) {
               compliantArticlesContents = document.querySelector("#articles_compliant"),
               compliantPercentageContents = document.querySelector("#percent_compliant");
 
-          // "Insights" section: display totals and % of articles, OA articles, and compliant articles if any
+          // Display totals and % of articles
           articlesContents.textContent = isPaper.toLocaleString(getUsersLocale());
 
+          // Display totals and % of OA articles
           if (isOA) {
             oaArticlesContents.textContent = isOA.toLocaleString(getUsersLocale()) + " in total";
             oaPercentageContents.textContent = Math.round(((isOA/isPaper)*100)) + "%";
@@ -153,9 +152,19 @@ oareport = function(org) {
             oaPercentageContents.textContent = "N/A";
           }
 
+          // Set total of articles depending on whether or not articles need to be covered by policy
+          if (isEligible) {
+            totalArticles = isEligible;
+            totalArticlesString = " eligible articles";
+          } else {
+            totalArticles = isPaper;
+            totalArticlesString =  " articles";
+          }
+
+          // Display totals and % of policy-compliant articles
           if (isCompliant) {
-            compliantArticlesContents.textContent = isCompliant.toLocaleString(getUsersLocale()) + " of " + isEligible + " eligible articles";
-            compliantPercentageContents.textContent = Math.round(((isCompliant/isEligible)*100)) + "%";
+            compliantArticlesContents.textContent = isCompliant.toLocaleString(getUsersLocale()) + " of " + totalArticles + totalArticlesString;
+            compliantPercentageContents.textContent = Math.round(((isCompliant/totalArticles)*100)) + "%";
           } else {
             compliantArticlesContents.outerHTML = "";
             compliantPercentageContents.textContent = "N/A";
@@ -355,8 +364,6 @@ oareport(org);
 
 /** Change displayed Insights data based on user input **/
 // Preset "quick date filter" buttons
-const lastYear = changeYears(-1, currentDate);
-
 var lastYearBtn         = document.querySelector("#last-year");
     startYearBtn        = document.querySelector("#start-year"),
     insightsDateRange   = document.querySelector("#insights_range");
