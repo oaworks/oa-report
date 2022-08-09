@@ -18,14 +18,10 @@ permalink: "{{ org._source.objectID | slug }}/"
   </h1>
   {# TODO: get logos #}
   {# <figure class="block border border-neutral-700 h-36 w-96 p-6 flex"><p class="self-center m-auto">[LOGO WILL BE HERE]</p></figure> #}
-  {% include 'partials/email-download-form.njk' %}
-</header>
 
-<nav class="col-span-12 md:col-span-6 md:text-right">
-  <p class="mb-3">
+  <h2 class="mb-1">
     <span id="insights_range">Since the start of 2022</span>
-    <br> <span class="text-neutral-600"><span id="start_date"></span> — <span id="end_date"></span></span>
-  </p>
+  </h2>
   {# Preset date filters #}
   <h2 class="sr-only">Quick date filters</h2>
   {{ component("pill", {
@@ -40,11 +36,13 @@ permalink: "{{ org._source.objectID | slug }}/"
     id: "all-time",
     txt: "All time"
   }) }}
+</header>
 
-  <br>
-
-  <button class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-white bg-neutral-700 hover:bg-neutral-900 popover" data-tippy-content="TEST POPOVER">Download data</button>
-</nav>
+<section class="col-span-12 md:col-span-6 md:text-right">
+  {% include 'partials/email-download-form.njk' %}
+  {# <br>
+  <button class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-white bg-neutral-700 hover:bg-neutral-900 popover" data-tippy-content="TEST POPOVER">Download data</button> #}
+</section>
 
 <section class="col-span-12 grid grid-cols-12 gap-3 lg:gap-6 top-0 mb-2 pt-2 bg-[#F4F0F0]">
   <div class="col-span-12 grid grid-cols-12 gap-3">

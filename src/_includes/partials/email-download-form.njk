@@ -1,11 +1,12 @@
 {# Download in CSV #}
-<form method="get" class="w-1/2" id="download_csv" action="">
+<form method="get" class="w-1/2 float-right" id="download_csv" action="">
   <input type="hidden" id="size" name="size" value="all">
   <label for="email" class="mb-2 block text-base text-neutral-800">
-    Get data by email in CSV
+    Get data in CSV by email
     {{ component("tooltip", {
       msg: "Enter your email address to receive a link to a CSV for download. <strong>We do not save email addresses or use them for any purpose</strong> other than sending you the CSV file containing OAreport data when you request it."
     }) }}
+    <br>(For <span id="start_date"></span> — <span id="end_date"></span>)
   </label>
   <div class="my-1 flex rounded-sm shadow-sm">
     <div class="relative flex items-stretch flex-grow focus-within:z-10">
