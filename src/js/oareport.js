@@ -30,6 +30,12 @@ makeDateReadable = function(date) {
   return date;
 };
 
+// Make numbers readable
+makeNumberReadable = function(number) {
+  number = number.toLocaleString(getUsersLocale());
+  return number;
+}
+
 // Format dates into ISO format — used in ElasticSearch query
 formatDateToISO = function(date) {
   date = date.toISOString().substring(0, 10);
@@ -159,11 +165,11 @@ oareport = function(org) {
               compliantPercentageContents = document.querySelector("#percent_compliant");
 
           // Display totals and % of articles
-          articlesContents.textContent = isPaper.toLocaleString(getUsersLocale());
+          articlesContents.textContent = makeNumberReadable(isPaper);
 
           // Display totals and % of OA articles
           if (isOA) {
-            oaArticlesContents.textContent = isOA.toLocaleString(getUsersLocale()) + " in total";
+            oaArticlesContents.textContent = makeNumberReadable(isOA) + " in total";
             oaPercentageContents.textContent = Math.round(((isOA/isPaper)*100)) + "%";
           } else {
             oaArticlesContents.outerHTML = "";
@@ -181,7 +187,7 @@ oareport = function(org) {
 
           // Display totals and % of policy-compliant articles
           if (isCompliant) {
-            compliantArticlesContents.textContent = isCompliant.toLocaleString(getUsersLocale()) + " of " + totalArticles + totalArticlesString;
+            compliantArticlesContents.textContent = makeNumberReadable(isCompliant) + " of " + makeNumberReadable(totalArticles) + totalArticlesString;
             compliantPercentageContents.textContent = Math.round(((isCompliant/totalArticles)*100)) + "%";
           } else {
             compliantArticlesContents.outerHTML = "";
@@ -212,8 +218,8 @@ oareport = function(org) {
                 // TODO: think more about the potential percentage
                 // canArchiveOaPercentageContents = document.querySelector("#can_archive_percent_oa");
 
-            totalAAMActionsContents.textContent = canArchiveAAM.toLocaleString(getUsersLocale());
-            countAAMActionsContents.textContent = canArchiveAAM.toLocaleString(getUsersLocale());
+            totalAAMActionsContents.textContent = makeNumberReadable(canArchiveAAM);
+            countAAMActionsContents.textContent = makeNumberReadable(canArchiveAAM);
             // If there are fewer than 100 actions, simply do not display any number of latest articles
             if (canArchiveAAM < 100) {
               latestAAMActionsContents.textContent = "Showing the most recent articless";
@@ -286,8 +292,8 @@ oareport = function(org) {
                 // TODO: think more about the potential percentage
                 // canArchiveOaPercentageContents = document.querySelector("#can_archive_percent_oa");
 
-            totalVORActionsContents.textContent = canArchiveVOR.toLocaleString(getUsersLocale());
-            countVORActionsContents.textContent = canArchiveVOR.toLocaleString(getUsersLocale());
+            totalVORActionsContents.textContent = makeNumberReadable(canArchiveVOR);
+            countVORActionsContents.textContent = makeNumberReadable(canArchiveVOR);
             if (canArchiveVOR < 100) {
               latestVORActionsContents.textContent = "Showing the most recent articles";
             }
