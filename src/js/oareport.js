@@ -203,17 +203,17 @@ oareport = function(org) {
               canArchiveVORList = results[3].data.hits.hits;
 
           // Generate list of archivable AAMs if there are any
+          var totalAAMActionsContents = document.querySelector("#total_aam_actions"),
+              latestAAMActionsContents = document.querySelector("#latest_aam_actions"),
+              canArchiveAAMTable = document.querySelector("#can_archive_aam_list");
           if (canArchiveAAMList.length > 0) {
-            var totalAAMActionsContents = document.querySelector("#total_aam_actions"),
-                latestAAMActionsContents = document.querySelector("#latest_aam_actions"),
-                canArchiveAAMTable = document.querySelector("#can_archive_aam_list");
                 // TODO: think more about the potential percentage
                 // canArchiveOaPercentageContents = document.querySelector("#can_archive_percent_oa");
 
             totalAAMActionsContents.textContent = canArchiveAAM.toLocaleString(getUsersLocale());
             // If there are fewer than 100 actions, simply do not display any number of latest articles
             if (canArchiveAAM < 100) {
-              latestAAMActionsContents.textContent = "";
+              latestAAMActionsContents.textContent = "Showing the most recent articless";
             }
             // TODO: think more about the potential percentage
             // canArchiveOaPercentageContents.textContent = Math.round(((((isOA+canArchiveAAM))/isPaper)*100));
@@ -266,19 +266,24 @@ oareport = function(org) {
               </tr>';
             }
             canArchiveAAMTable.innerHTML = canArchiveAAMTableRows;
+          } else {
+            totalAAMActionsContents.textContent = "No ";
+            latestAAMActionsContents.textContent = "";
+            canArchiveAAMTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>NO DATA</td></tr>";
           }
+
+          var totalVORActionsContents = document.querySelector("#total_vor_actions"),
+              latestVORActionsContents = document.querySelector("#latest_vor_actions"),
+              canArchiveVORTable = document.querySelector("#can_archive_vor_list");
 
           // Generate list of archivable VORs if there are any
           if (canArchiveVORList.length > 0) {
-            var totalVORActionsContents = document.querySelector("#total_vor_actions"),
-                latestVORActionsContents = document.querySelector("#latest_vor_actions"),
-                canArchiveVORTable = document.querySelector("#can_archive_vor_list");
                 // TODO: think more about the potential percentage
                 // canArchiveOaPercentageContents = document.querySelector("#can_archive_percent_oa");
 
             totalVORActionsContents.textContent = canArchiveVOR.toLocaleString(getUsersLocale());
             if (canArchiveVOR < 100) {
-              latestVORActionsContents.textContent = "";
+              latestVORActionsContents.textContent = "Showing the most recent articles";
             }
 
             var canArchiveVORTableRows = "";
@@ -326,6 +331,10 @@ oareport = function(org) {
               </tr>';
             }
             canArchiveVORTable.innerHTML = canArchiveVORTableRows;
+          } else {
+            totalVORActionsContents.textContent = "No ";
+            latestVORActionsContents.textContent = "";
+            canArchiveVORTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>NO DATA</td></tr>"
           }
         }
       ).catch(function (error) { console.log("Strategies error: " + error); })
