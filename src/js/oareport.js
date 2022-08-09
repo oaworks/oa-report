@@ -52,9 +52,9 @@ const currentDate           = new Date(),
       lastYearStartDateQuery    = changeDays(-1, lastYearStartDate),
       lastYearStartDateISO      = formatDateToISO(lastYearStartDate),
 
-      lastYearEndDate         = new Date(new Date().getFullYear()-1, 0, 1),
+      lastYearEndDate         = new Date(new Date().getFullYear()-1, 11, 31),
       lastYearEndDateReadable = makeDateReadable(lastYearEndDate),
-      lastYearEndDateQuery    = changeDays(-1, lastYearEndDate),
+      lastYearEndDateQuery    = changeDays(+1, lastYearEndDate),
       lastYearEndDateISO      = formatDateToISO(lastYearEndDate);
 
 // Get organisational data to produce reports
@@ -81,13 +81,16 @@ oareport = function(org) {
     var dateRange      = "(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")%20AND%20",
         recordSize     = "&size=100"; // Set record size for number of actions shown in Strategies
 
-    // Change start date
-    replaceStartDate = function(date) {
-      startDateContents.textContent = date.toLocaleString(getUsersLocale(), readableDateOptions);
-      var startDate = changeDays(-1, date);
-      startDate     = startDate.toISOString().substring(0, 10);
+    // Change start and end dates
+    replaceDateRange = function(newStart, newEnd) {
+      startDateContents.textContent = newStart.toLocaleString(getUsersLocale(), readableDateOptions);
+      endDateContents.textContent = newEnd.toLocaleString(getUsersLocale(), readableDateOptions);
+      startDate     = changeDays(-1, newStart);
+      startDate     = formatDateToISO(startDate);
+      endDate       = changeDays(+1, newEnd);
+      endDate       = formatDateToISO(endDate);
       dateRange     = "(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")%20AND%20";
-      return startDate;
+      return startDate, endDate, dateRange;
     };
 
     /** Get queries for article counts and strategy action list **/
@@ -111,7 +114,7 @@ oareport = function(org) {
       canArchiveVOR  = axios.get(canArchiveVORQuery);
       canArchiveVORList = axios.get(canArchiveVORListQuery);
 
-      console.log("org index: " + base + "orgs?q=name:%22" + org + "%22");
+      console.log("isPaperURL: " + isPaperURL);
     };
 
     /** Check for an OA policy and display a link to the policy page in a tooltip **/
@@ -186,7 +189,7 @@ oareport = function(org) {
           }
 
         }
-      ).catch(function (error) { console.log("Insights error: " + error); })
+      ).catch(function (error) { console.log("displayInsights error: " + error); })
     };
 
     /** Display Strategies **/
@@ -371,21 +374,44 @@ oareport = function(org) {
     displayInsights();
     displayStrategies();
     getExportLink();
+
+    console.log("org index: " + base + "orgs?q=name:%22" + org + "%22");
   })
-  .catch(function (error) { console.log("ERROR: " + error); })
+  .catch(function (error) { console.log("ERROR: " + error); });
 };
 
 oareport(org);
 
 /** Change displayed Insights data based on user input **/
 // Preset "quick date filter" buttons
-var lastYearBtn         = document.querySelector("#last-year");
-    startYearBtn        = document.querySelector("#start-year"),
+var startYearBtn        = document.querySelector("#start-year"),
+    lastYearBtn         = document.querySelector("#last-year"),
+    allTimeBtn          = document.querySelector("#all-time"),
     insightsDateRange   = document.querySelector("#insights_range");
 
 startYearBtn.addEventListener("click", function() {
-  replaceStartDate(startYearDate);
-  insightsDateRange.textContent = "since the start of " + startYearDate.getFullYear();
+  replaceDateRange(startYearDate, currentDate);
+  insightsDateRange.textContent = "Since the start of " + startYearDate.getFullYear();
+  getCountQueries();
+  getPolicy();
+  displayInsights();
+  displayStrategies();
+  getExportLink();
+});
+
+lastYearBtn.addEventListener("click", function() {
+  replaceDateRange(lastYearStartDate, lastYearEndDate);
+  insightsDateRange.textContent = "In " + lastYearStartDate.getFullYear();
+  getCountQueries();
+  getPolicy();
+  displayInsights();
+  displayStrategies();
+  getExportLink();
+});
+
+allTimeBtn.addEventListener("click", function() {
+  replaceDateRange(new Date(2000, 0, 1), currentDate);
+  insightsDateRange.textContent = "All-time";
   getCountQueries();
   getPolicy();
   displayInsights();
