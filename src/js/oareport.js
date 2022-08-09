@@ -83,8 +83,8 @@ oareport = function(org) {
 
     // Change start and end dates
     replaceDateRange = function(newStart, newEnd) {
-      startDateContents.textContent = newStart.toLocaleString(getUsersLocale(), readableDateOptions);
-      endDateContents.textContent = newEnd.toLocaleString(getUsersLocale(), readableDateOptions);
+      startDateContents.textContent = makeDateReadable(newStart);
+      endDateContents.textContent = makeDateReadable(newEnd);
       startDate     = changeDays(-1, newStart);
       startDate     = formatDateToISO(startDate);
       endDate       = changeDays(+1, newEnd);
@@ -228,7 +228,7 @@ oareport = function(org) {
                   doi   = canArchiveAAMList[i]._source.DOI,
                   pubDate = canArchiveAAMList[i]._source.published_date,
                   journal = canArchiveAAMList[i]._source.journal;
-              pubDate = new Date(pubDate).toLocaleString(getUsersLocale(), readableDateOptions);
+              pubDate = makeDateReadable(new Date(pubDate));
 
               // Display email address if found, otherwise display message
               if (canArchiveAAMList[i]._source.email) {
@@ -290,7 +290,7 @@ oareport = function(org) {
                   doi   = canArchiveVORList[i]._source.DOI,
                   pubDate = canArchiveVORList[i]._source.published_date,
                   journal = canArchiveVORList[i]._source.journal;
-              pubDate = new Date(pubDate).toLocaleString(getUsersLocale(), readableDateOptions);
+              pubDate = makeDateReadable(new Date(pubDate));
 
               if (canArchiveVORList[i]._source.email) {
                 authorEmail = canArchiveVORList[i]._source.email;
