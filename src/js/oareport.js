@@ -37,16 +37,22 @@ makeDateReadable = function(date) {
   return date;
 };
 
+// Format dates into ISO format — used in ElasticSearch query
+formatDateToISO = function(date) {
+  date = date.toISOString().substring(0, 10);
+  return date;
+}
+
 // Set today’s date and 12 months ago date to display most recent Insights data as default
 const currentDate           = new Date(),
       currentDateReadable   = makeDateReadable(currentDate),
       currentDateQuery      = changeDays(+1, currentDate), // add 1 day for ElasticSearch (greater than but not equal)
-      currentDateISO        = currentDateQuery.toISOString().substring(0, 10), // used in ES query
+      currentDateISO        = formatDateToISO(currentDateQuery), // used in ES query
 
       startYearDate         = new Date(new Date().getFullYear(), 0, 1),
       startYearDateReadable = makeDateReadable(startYearDate),
       startYearDateQuery    = changeDays(-1, startYearDate),
-      startYearDateISO      = startYearDateQuery.toISOString().substring(0, 10);
+      startYearDateISO      = formatDateToISO(startYearDateQuery);
 
 // Get organisational data to produce reports
 oareport = function(org) {
