@@ -157,7 +157,7 @@ permalink: "{{ org._source.objectID | slug }}/"
       <label for="tabs" class="sr-only">Select a tab</label>
       <select id="tabs" name="tabs" class="block w-full pl-3 pr-10 py-2 text-base border-neutral-300 focus:outline-none focus:ring-carnation-500 focus:border-carnation-500 sm:text-sm rounded-md">
         <option>Deposit Publisher PDFs</option>
-        <option selected>Deposit AAMs</option>
+        <option selected>Deposit Accepted Manuscripts</option>
         <option>Find champions</option>
       </select>
     </div>
@@ -167,14 +167,14 @@ permalink: "{{ org._source.objectID | slug }}/"
         <ul class="-mb-px flex space-x-8 js-tabs" aria-label="Tabs">
           <li class="js-tab-item">
             <a href="#item1" class="border-transparent text-neutral-500 whitespace-nowrap flex pt-4 pb-6 px-1 border-t-4 font-medium text-sm border-carnation-500 text-carnation-600">
-              Deposit Publisher PDFs
+              Deposit publisher PDFs
               {# TODO: display number of actions for each strat #}
               {# <span class="bg-neutral-100 text-neutral-900 hidden ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block">52</span> #}
             </a>
           </li>
           <li class="js-tab-item">
             <a href="#item2" class="border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-200 whitespace-nowrap flex pt-4 pb-6 px-1 border-t-4 font-medium text-sm">
-              Deposit AAMs
+              Deposit accepted manuscripts
               {# <span class="bg-neutral-100 text-neutral-900 hidden ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block">6</span> #}
             </a>
           </li>
@@ -196,8 +196,8 @@ permalink: "{{ org._source.objectID | slug }}/"
       <header class="md:mb-12 col-span-12 lg:col-span-4">
         <div class=" lg:sticky lg:top-3">
           <p class="mb-3 text-base font-normal text-neutral-700 lg:duration-500 js-label_text_toggle"><span class="text-carnation-500 js-icon_toggle">{% icon_small "archive" %}</span> Self-archive articles</p>
-          <h3 class="font-semibold text-xl md:text-4xl mb-3 md:mb-6">Ask authors to share Publisher PDFs (Version of Record)</h3>
-          <p class="text-xs md:text-base mb-3 md:mb-6">Send emails to authors to request that they make the VORs of their articles available in an Open Access repository.</p>
+          <h3 class="font-semibold text-xl md:text-4xl mb-3 md:mb-6">Ask authors to deposit their publisher PDFs</h3>
+          <p class="text-xs md:text-base mb-3 md:mb-6">Send emails to authors to request they make their work free to read. In these cases, they can do that by making a <strong>publisher PDF (version of record, VOR)</strong> available in a repository.</p>
         </div>
       </header>
       <div class="col-span-12 lg:col-span-8 border-t sm:border-0">
@@ -206,7 +206,7 @@ permalink: "{{ org._source.objectID | slug }}/"
             <p class="mb-1 text-neutral-900 text-lg font-semibold leading-6">
               <span id="total_vor_actions">00</span> actions prepared</span>
               {{ component("tooltip", {
-                msg: "This number represents the number of articles that have the ability to be made open access for free but are currently behind a paywall. In these cases, the publishers allow for self-archiving an author accepted manuscript version of the article in a repository."
+                msg: "<p class='mb-2'>The number of articles that are currently behind a paywall and where the publisher allows the author to make the publisher PDF available in a repository.</p><p>We tried to remove common errors and articles that are already in a repository (either embargoed or available). This list was produced using Unpaywall, Crossref, and ShareYourPaper Permissions data.</p>"
               }) }}
             </p>
             <p class="text-neutral-700 text-base">Showing the <span id="latest_vor_actions">100</span> most recent articles</p>
@@ -242,8 +242,8 @@ permalink: "{{ org._source.objectID | slug }}/"
       <header class="md:mb-12 col-span-12 lg:col-span-4">
         <div class=" lg:sticky lg:top-3">
           <p class="mb-3 text-base font-normal text-neutral-700 lg:duration-500 js-label_text_toggle"><span class="text-carnation-500 js-icon_toggle">{% icon_small "archive" %}</span> Self-archive articles</p>
-          <h3 class="font-semibold text-xl md:text-4xl mb-3 md:mb-6">Ask authors to share their Author Accepted Manuscript</h3>
-          <p class="text-xs md:text-base mb-3 md:mb-6">Send emails to authors to request that they make the AAMs of their articles available in an Open Access repository.</p>
+          <h3 class="font-semibold text-xl md:text-4xl mb-3 md:mb-6">Ask authors to deposit accepted manuscripts</h3>
+          <p class="text-xs md:text-base mb-3 md:mb-6">Send emails to authors to request they make their work free to read. In these cases, they can do that by making an <strong>author accepted manuscript (AAM)</strong> available in a repository.</p>
         </div>
       </header>
       <div class="col-span-12 lg:col-span-8 border-t sm:border-0">
@@ -252,7 +252,7 @@ permalink: "{{ org._source.objectID | slug }}/"
             <p class="mb-1 text-neutral-900 text-lg font-semibold leading-6">
               <span id="total_aam_actions">00</span> actions prepared</span>
               {{ component("tooltip", {
-                msg: "This number represents the number of articles that have the ability to be made open access for free but are currently behind a paywall. In these cases, the publishers allow for self-archiving an author accepted manuscript version of the article in a repository."
+                msg: "<p class='mb-2'>The number of articles that are currently behind a paywall and where the publisher allows the author to make the author accepted manuscript in a repository.</p><p>We tried to remove common errors and articles that are already in a repository (either embargoed or available). This list was produced using Unpaywall, Crossref, and ShareYourPaper Permissions data.</p>"
               }) }}
             </p>
             <p class="text-neutral-700 text-base">Showing the <span id="latest_aam_actions">100</span> most recent articles</p>
