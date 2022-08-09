@@ -411,6 +411,9 @@ var startYearBtn        = document.querySelector("#start-year"),
     allTimeBtn          = document.querySelector("#all-time"),
     insightsDateRange   = document.querySelector("#insights_range");
 
+startYearBtn.textContent = startYearDate.getFullYear();
+lastYearBtn.textContent = lastYearStartDate.getFullYear();
+
 startYearBtn.addEventListener("click", function() {
   replaceDateRange(startYearDate, currentDate);
   insightsDateRange.textContent = "Since the start of " + startYearDate.getFullYear();
