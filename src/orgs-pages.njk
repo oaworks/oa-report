@@ -10,7 +10,7 @@ permalink: "{{ org._source.objectID | slug }}/"
 {%- from "system/component.njk" import component -%}
 
 <header class="mb-3 col-span-12 md:col-span-6">
-  <h1 class="mb-3 text-xl md:text-3xl font-light">
+  <h1 class="mb-6 text-xl md:text-3xl font-light">
     {% if org._source.policy.supported_policy === true %}Put OA policy into practice at {% else %}Advance OA at {% endif %}
     <br>
     <strong class="font-semibold">{{ org._source.name }}</strong>
@@ -18,7 +18,6 @@ permalink: "{{ org._source.objectID | slug }}/"
   </h1>
   {# TODO: get logos #}
   {# <figure class="block border border-neutral-700 h-36 w-96 p-6 flex"><p class="self-center m-auto">[LOGO WILL BE HERE]</p></figure> #}
-
   {% include 'partials/email-download-form.njk' %}
 </header>
 
@@ -41,6 +40,10 @@ permalink: "{{ org._source.objectID | slug }}/"
     id: "all-time",
     txt: "All time"
   }) }}
+
+  <br>
+
+  <button class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-white bg-neutral-700 hover:bg-neutral-900 popover" data-tippy-content="TEST POPOVER">Download data</button>
 </nav>
 
 <section class="col-span-12 grid grid-cols-12 gap-3 lg:gap-6 top-0 mb-2 pt-2 bg-[#F4F0F0]">
