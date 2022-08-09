@@ -45,7 +45,17 @@ const currentDate           = new Date(),
       startYearDate         = new Date(new Date().getFullYear(), 0, 1),
       startYearDateReadable = makeDateReadable(startYearDate),
       startYearDateQuery    = changeDays(-1, startYearDate),
-      startYearDateISO      = formatDateToISO(startYearDateQuery);
+      startYearDateISO      = formatDateToISO(startYearDateQuery),
+
+      lastYearStartDate         = new Date(new Date().getFullYear()-1, 0, 1),
+      lastYearStartDateReadable = makeDateReadable(lastYearStartDate),
+      lastYearStartDateQuery    = changeDays(-1, lastYearStartDate),
+      lastYearStartDateISO      = formatDateToISO(lastYearStartDate),
+
+      lastYearEndDate         = new Date(new Date().getFullYear()-1, 0, 1),
+      lastYearEndDateReadable = makeDateReadable(lastYearEndDate),
+      lastYearEndDateQuery    = changeDays(-1, lastYearEndDate),
+      lastYearEndDateISO      = formatDateToISO(lastYearEndDate);
 
 // Get organisational data to produce reports
 oareport = function(org) {
