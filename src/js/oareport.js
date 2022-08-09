@@ -10,13 +10,6 @@ getUsersLocale = function() {
   return navigator.languages && navigator.languages.length ? navigator.languages[0] : navigator.language;
 };
 
-//  Do math with months on a date
-changeMonths = function(numOfMonths, date) {
-  const dateCopy = new Date(date.getTime());
-  dateCopy.setMonth(dateCopy.getMonth() + numOfMonths);
-  return dateCopy;
-};
-
 // Do math with days on a date
 changeDays = function(numOfDays, date) {
   const dateCopy = new Date(date.getTime());
@@ -47,7 +40,7 @@ formatDateToISO = function(date) {
 const currentDate           = new Date(),
       currentDateReadable   = makeDateReadable(currentDate),
       currentDateQuery      = changeDays(+1, currentDate), // add 1 day for ElasticSearch (greater than but not equal)
-      currentDateISO        = formatDateToISO(currentDateQuery), // used in ES query
+      currentDateISO        = formatDateToISO(currentDateQuery),
 
       startYearDate         = new Date(new Date().getFullYear(), 0, 1),
       startYearDateReadable = makeDateReadable(startYearDate),
