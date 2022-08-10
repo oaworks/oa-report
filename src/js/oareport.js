@@ -267,7 +267,7 @@ oareport = function(org) {
             countAAMActionsContents.outerHTML = "";
             totalAAMActionsContents.textContent = "No ";
             latestAAMActionsContents.textContent = "";
-            canArchiveAAMTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>NO DATA</td></tr>";
+            canArchiveAAMTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find accepted manuscripts that could be deposited. <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
           }
 
           var totalVORActionsContents = document.querySelector("#total_vor_actions"),
@@ -320,7 +320,7 @@ oareport = function(org) {
                   <div class="text-neutral-500">' + journal + '</div>\
                 </td>\
                 <td class="hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell">\
-                  <div class="mb-1 text-neutral-900">' + author + '</div>\
+                  <div class="mb-1 text-neutral-900">' + (author ? author : "No author found") + '</div>\
                   <div class="text-neutral-500">' + authorEmail + '</div>\
                 </td>\
                 <td class="whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium">\
@@ -335,7 +335,7 @@ oareport = function(org) {
             countVORActionsContents.outerHTML = "";
             totalVORActionsContents.textContent = "No ";
             latestVORActionsContents.textContent = "";
-            canArchiveVORTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>NO DATA</td></tr>"
+            canArchiveVORTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find publisher PDFs that could be deposited. <br>Try selecting another date range or come back later once new articles are ready.</td></tr>"
           }
         }
       ).catch(function (error) { console.log("Strategies error: " + error); })
