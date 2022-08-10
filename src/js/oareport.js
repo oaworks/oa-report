@@ -239,7 +239,7 @@ oareport = function(org) {
               canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("\'", "’");
               canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{title}", title);
               canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{doi}", doi);
-              canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{author_name}", author);
+              canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{author_name}", (author ? author : "researcher"));
               canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{author_email}", authorEmail);
 
               /*jshint multistr: true */
@@ -307,7 +307,7 @@ oareport = function(org) {
               canArchiveVORMailto = canArchiveVORMailto.replaceAll("\'", "’");
               canArchiveVORMailto = canArchiveVORMailto.replaceAll("{title}", title);
               canArchiveVORMailto = canArchiveVORMailto.replaceAll("{doi}", doi);
-              canArchiveVORMailto = canArchiveVORMailto.replaceAll("{author_name}", author);
+              canArchiveVORMailto = canArchiveVORMailto.replaceAll("{author_name}", (author ? author : "researcher"));
               canArchiveVORMailto = canArchiveVORMailto.replaceAll("{author_email}", authorEmail);
 
               /*jshint multistr: true */
