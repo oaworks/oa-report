@@ -252,7 +252,7 @@ oareport = function(org) {
                   <div class="text-neutral-500">' + journal + '</div>\
                 </td>\
                 <td class="hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell">\
-                  <div class="mb-1 text-neutral-900">' + author + '</div>\
+                  <div class="mb-1 text-neutral-900">' + (author ? author : "No author’s name found") + '</div>\
                   <div class="text-neutral-500">' + authorEmail + '</div>\
                 </td>\
                 <td class="whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium">\
@@ -317,10 +317,10 @@ oareport = function(org) {
                   <div class="mb-1 font-medium text-neutral-900 hover:text-carnation-500">\
                     <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + title + '</a>\
                   </div>\
-                  <div class="text-neutral-500">' + journal + '</div>\
+                  <div class="text-neutral-500">' + journal + '</div>\g
                 </td>\
                 <td class="hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell">\
-                  <div class="mb-1 text-neutral-900">' + (author ? author : "No author found") + '</div>\
+                  <div class="mb-1 text-neutral-900">' + (author ? author : "No author’s name found") + '</div>\
                   <div class="text-neutral-500">' + authorEmail + '</div>\
                 </td>\
                 <td class="whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium">\
