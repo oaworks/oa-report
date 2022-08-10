@@ -317,7 +317,7 @@ oareport = function(org) {
                   <div class="mb-1 font-medium text-neutral-900 hover:text-carnation-500">\
                     <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + title + '</a>\
                   </div>\
-                  <div class="text-neutral-500">' + journal + '</div>\g
+                  <div class="text-neutral-500">' + journal + '</div>\
                 </td>\
                 <td class="hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell">\
                   <div class="mb-1 text-neutral-900">' + (author ? author : "No author’s name found") + '</div>\
