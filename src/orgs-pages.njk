@@ -14,16 +14,12 @@ permalink: "{{ org._source.objectID | slug }}/"
     {% if org._source.policy.supported_policy === true %}Put OA policy into practice at {% else %}Advance OA at {% endif %}
     <br>
     <strong class="font-semibold">{{ org._source.name }}</strong>
-    <br>
   </h1>
-  {# TODO: get logos #}
-  {# <figure class="block border border-neutral-700 h-36 w-96 p-6 flex"><p class="self-center m-auto">[LOGO WILL BE HERE]</p></figure> #}
 
-  <h2 class="mb-1">
-    <span id="insights_range">Since the start of 2022</span>
+  <h2 class="mb-1" id="insights_range">
+    Since the start of 2022
   </h2>
-  {# Preset date filters #}
-  <h2 class="sr-only">Quick date filters</h2>
+  <p class="sr-only">Quick date filters</p>
   {{ component("pill", {
     id: "start-year",
     txt: ""
@@ -159,7 +155,6 @@ permalink: "{{ org._source.objectID | slug }}/"
       <select id="tabs" name="tabs" class="block w-full pl-3 pr-10 py-2 text-base border-neutral-300 focus:outline-none focus:ring-carnation-500 focus:border-carnation-500 sm:text-sm rounded-md">
         <option>Deposit Publisher PDFs</option>
         <option selected>Deposit Accepted Manuscripts</option>
-        {# <option>Find champions</option> #}
       </select>
     </div>
 
@@ -178,11 +173,6 @@ permalink: "{{ org._source.objectID | slug }}/"
               <span id="count_aam" class="bg-neutral-800 text-white hidden ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block">0</span>
             </a>
           </li>
-          {# <li class="js-tab-item">
-            <a href="#item3" class="border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-200 whitespace-nowrap flex pt-4 pb-6 px-1 border-t-4 font-medium text-sm">
-              Find champions
-            </a>
-          </li> #}
         </ul>
       </div>
     </div>
@@ -276,35 +266,5 @@ permalink: "{{ org._source.objectID | slug }}/"
         </div>
       </div>
     </section>
-
-    {# Find champions #}
-    {# <section class="grid grid-cols-12 gap-3 lg:gap-6 md:gap-12 js-tab-content hidden" id="item3">
-      <header class="md:mb-12 col-span-12 lg:col-span-4">
-        <div class=" lg:sticky lg:top-3">
-          <p class="mb-3 text-base font-normal text-neutral-700 lg:duration-500 js-label_text_toggle"><span class="text-carnation-500 js-icon_toggle">{% icon_small "archive" %}</span> Promote OA</p>
-          <h3 class="font-semibold text-xl md:text-4xl mb-3 md:mb-6">Find your Open Access champions</h3>
-          <p class="text-xs md:text-base mb-3 md:mb-6">Lorem ipsum dolor sit amet</p>
-        </div>
-      </header>
-      <div class="col-span-12 lg:col-span-8 border-t sm:border-0">
-        <div class="mb-8 overflow-hidden sm:-mx-6 md:mx-0 md:rounded-lg drop-shadow-lg">
-          <table class="divide-y divide-neutral-300 table-fixed w-full">
-            <thead class="bg-neutral-800 text-white">
-              <tr>
-                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-6/12">Article</th>
-                <th scope="col" class="hidden px-3 py-3.5 text-left text-sm font-semibold w-4/12 sm:table-cell">Corresponding author</th>
-                <th scope="col" class="text-sm font-semibold py-3.5 pl-3 pr-4 w-2/12">
-                  Open draft
-                  {{ component("tooltip", {
-                    msg: "This will open a preset message in your email client. If you make any changes to the email, it will not be saved here."
-                  }) }}
-                </th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-neutral-200 bg-white" id="can_archive_list"></tbody>
-          </table>
-        </div>
-      </div>
-    </section> #}
   </div>
 </section>
