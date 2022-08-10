@@ -57,25 +57,23 @@ const currentDate           = new Date(),
 oareport = function(org) {
   let report = base + "orgs?q=name:%22" + org + "%22";
 
-  // Default date filtering is for the last 12 months
+  /* Default date filtering */
   axios.get(report).then(function (response) {
 
-    /* Get all dates for filtering data by dates */
+    // Get all dates for filtering data by dates
     let endDateContents      = document.querySelector("#end_date"),
         startDateContents    = document.querySelector("#start_date"),
         startDate            = "",
         endDate              = "";
 
-    // Display default date range: start from 2022
-    // TODO: start in the last twelve months once granular date filtering is up
-    endDateContents.textContent = currentDateReadable;
-    startDateContents.textContent = startYearDateReadable;
+    // Display default date range: since start of the current year
+    endDateContents.textContent    = currentDateReadable;
+    startDateContents.textContent  = startYearDateReadable;
+    startDate                      = startYearDateISO;
+    endDate                        = currentDateISO;
 
-    startDate         = startYearDateISO;
-    endDate           = currentDateISO;
-
-    var dateRange      = "(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")%20AND%20",
-        recordSize     = "&size=100"; // Set record size for number of actions shown in Strategies
+    var dateRange                  = "(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")%20AND%20",
+        recordSize                 = "&size=100"; // Set record size for number of actions shown in Strategies
 
     // Change start and end dates
     replaceDateRange = function(newStart, newEnd) {
