@@ -11,8 +11,8 @@ tabItems.forEach(function(toggler) {
 
     for (let i = 0; i < tabContent.children.length; i++) {
 
-      tabItems[i].classList.remove("border-carnation-500", "text-carnation-600");
-      tabItems[i].classList.add("hover:text-neutral-700", "hover:border-neutral-200");
+      tabItems[i].classList.remove("border-neutral-900", "text-neutral-900", "font-bold");
+      tabItems[i].classList.add("hover:text-neutral-700", "hover:border-neutral-300", "font-normal");
 
       tabContent.children[i].classList.remove("hidden");
 
@@ -22,8 +22,8 @@ tabItems.forEach(function(toggler) {
       tabContent.children[i].classList.add("hidden");
 
     }
-    e.target.classList.add("border-carnation-500", "text-carnation-600");
-    e.target.classList.remove("hover:text-neutral-700", "hover:border-neutral-200");
+    e.target.classList.add("border-neutral-900", "text-neutral-900", "font-bold");
+    e.target.classList.remove("hover:text-neutral-700", "hover:border-neutral-300", "font-normal");
   });
 });
 
@@ -35,10 +35,10 @@ quickDateItems.forEach(function(toggler) {
     e.preventDefault();
 
     for (let i = 0; i < quickDateItems.length; i++) {
-      quickDateItems[i].classList.remove("bg-carnation-500");
-      quickDateItems[i].classList.add("bg-neutral-700");
+      quickDateItems[i].classList.remove("bg-neutral-900");
+      quickDateItems[i].classList.add("bg-neutral-200", "text-neutral-900");
     }
-    e.target.classList.add("bg-carnation-500");
-    e.target.classList.remove("bg-neutral-700");
+    e.target.classList.add("bg-neutral-900");
+    e.target.classList.remove("bg-neutral-200", "text-neutral-900");
   });
 });

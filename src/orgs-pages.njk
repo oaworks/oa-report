@@ -25,28 +25,28 @@ permalink: "{{ org._source.objectID | slug }}/"
       {{ component("pill", {
         id: "start-year",
         txt: "",
-        class: "bg-carnation-500"
+        class: "bg-neutral-900"
       }) }}
     </li>
     <li class="mr-1 inline-block">
       {{ component("pill", {
         id: "last-year",
         txt: "",
-        class: "bg-neutral-700"
+        class: "bg-neutral-200 text-neutral-900"
       }) }}
     </li>
     <li class="mr-1 inline-block">
       {{ component("pill", {
         id: "two-years-ago",
         txt: "",
-        class: "bg-neutral-700"
+        class: "bg-neutral-200 text-neutral-900"
       }) }}
     </li>
     <li class="inline-block">
       {{ component("pill", {
         id: "all-time",
         txt: "All time",
-        class: "bg-neutral-700"
+        class: "bg-neutral-200 text-neutral-900"
       }) }}
     </li>
   </ul>
@@ -178,15 +178,15 @@ permalink: "{{ org._source.objectID | slug }}/"
 
     <div class="hidden sm:block">
       <div class="border-b border-neutral-200">
-        <ul class="-mb-px flex space-x-8 js-tabs" aria-label="Tabs">
+        <ul class="-mb-px flex divide-x divide-neutral-300 js-tabs" aria-label="Tabs">
           <li class="js-tab-item">
-            <a href="#item1" class="border-transparent text-neutral-500 whitespace-nowrap flex pt-4 pb-6 px-1 border-t-4 font-medium text-sm border-carnation-500 text-carnation-600">
+            <a href="#item1" class="border-transparent whitespace-nowrap flex p-4 border-t-4 bg-white text-sm transition duration-300 ease-in-out font-bold border-neutral-900 text-neutral-900">
               Deposit publisher PDFs
               <span id="count_vor" class="bg-neutral-800 text-white hidden ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block">0</span>
             </a>
           </li>
           <li class="js-tab-item">
-            <a href="#item2" class="border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-200 whitespace-nowrap flex pt-4 pb-6 px-1 border-t-4 font-medium text-sm">
+            <a href="#item2" class="border-transparent whitespace-nowrap flex p-4 border-t-4 bg-white text-sm transition duration-300 ease-in-out font-normal hover:text-neutral-700 hover:border-neutral-300">
               Deposit accepted manuscripts
               <span id="count_aam" class="bg-neutral-800 text-white hidden ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block">0</span>
             </a>
