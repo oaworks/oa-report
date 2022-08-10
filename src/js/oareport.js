@@ -1,4 +1,4 @@
-const base           = "https://api.oa.works/report/",
+const base           = "https://beta.oa.works/report/",
       queryBase      = base + "works?",
       countQueryBase = base + "works/count?",
       csvExportBase  = base + "works.csv?";
