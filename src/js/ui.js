@@ -6,9 +6,8 @@ tabItems.forEach(function(toggler) {
   toggler.addEventListener("click", function(e) {
     e.preventDefault();
 
-    let tabID = this.getAttribute("href");
-
-    let tabContent = document.querySelector(".js-tab-content");
+    let tabID = this.getAttribute("href"),
+        tabContent = document.querySelector(".js-tab-content");
 
     for (let i = 0; i < tabContent.children.length; i++) {
 
@@ -25,5 +24,21 @@ tabItems.forEach(function(toggler) {
     }
     e.target.classList.add("border-carnation-500", "text-carnation-600");
     e.target.classList.remove("hover:text-neutral-700", "hover:border-neutral-200");
+  });
+});
+
+/* Quick selects pills */
+let quickDateItems = document.querySelectorAll(".js-pill");
+
+quickDateItems.forEach(function(toggler) {
+  toggler.addEventListener("click", function(e) {
+    e.preventDefault();
+
+    for (let i = 0; i < quickDateItems.length; i++) {
+      quickDateItems[i].classList.remove("bg-carnation-500");
+      quickDateItems[i].classList.add("bg-neutral-700");
+    }
+    e.target.classList.add("bg-carnation-500");
+    e.target.classList.remove("bg-neutral-700");
   });
 });

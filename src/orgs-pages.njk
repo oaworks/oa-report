@@ -16,26 +16,40 @@ permalink: "{{ org._source.objectID | slug }}/"
     <strong class="font-semibold">{{ org._source.name }}</strong>
   </h1>
 
-  <h2 class="mb-1" id="insights_range">
+  <h2 class="mb-1 sr-only" id="insights_range">
     Since the start of 2022
   </h2>
   <p class="sr-only">Quick date filters</p>
-  {{ component("pill", {
-    id: "start-year",
-    txt: ""
-  }) }}
-  {{ component("pill", {
-    id: "last-year",
-    txt: ""
-  }) }}
-  {{ component("pill", {
-    id: "two-years-ago",
-    txt: ""
-  }) }}
-  {{ component("pill", {
-    id: "all-time",
-    txt: "All time"
-  }) }}
+  <ul>
+    <li class="inline">
+      {{ component("pill", {
+        id: "start-year",
+        txt: "",
+        class: "bg-carnation-500"
+      }) }}
+    </li class="inline">
+    <li class="inline">
+      {{ component("pill", {
+        id: "last-year",
+        txt: "",
+        class: "bg-neutral-700"
+      }) }}
+    </li class="inline">
+    <li class="inline">
+      {{ component("pill", {
+        id: "two-years-ago",
+        txt: "",
+        class: "bg-neutral-700"
+      }) }}
+    </li>
+    <li class="inline">
+      {{ component("pill", {
+        id: "all-time",
+        txt: "All time",
+        class: "bg-neutral-700"
+      }) }}
+    </li>
+  </ul>
 </header>
 
 <section class="col-span-12 md:col-span-6 md:text-right">
