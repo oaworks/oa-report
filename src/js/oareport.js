@@ -51,17 +51,7 @@ const currentDate           = new Date(),
       startYearDate         = new Date(new Date().getFullYear(), 0, 1),
       startYearDateReadable = makeDateReadable(startYearDate),
       startYearDateQuery    = changeDays(-1, startYearDate),
-      startYearDateISO      = formatDateToISO(startYearDateQuery),
-
-      lastYearStartDate         = new Date(new Date().getFullYear()-1, 0, 1),
-      lastYearStartDateReadable = makeDateReadable(lastYearStartDate),
-      lastYearStartDateQuery    = changeDays(-1, lastYearStartDate),
-      lastYearStartDateISO      = formatDateToISO(lastYearStartDate),
-
-      lastYearEndDate         = new Date(new Date().getFullYear()-1, 11, 31),
-      lastYearEndDateReadable = makeDateReadable(lastYearEndDate),
-      lastYearEndDateQuery    = changeDays(+1, lastYearEndDate),
-      lastYearEndDateISO      = formatDateToISO(lastYearEndDate);
+      startYearDateISO      = formatDateToISO(startYearDateQuery);
 
 // Get organisational data to produce reports
 oareport = function(org) {
@@ -385,9 +375,11 @@ oareport = function(org) {
           method: form.method,
           body: new FormData(form),
         });
-
         // Display message
         document.querySelector("#csv_email_msg").textContent = "OAreport has started building your CSV export. Please check your email to get the full data once it’s ready.";
+
+        // Do not navigate away from the page on submit
+        return false;
       };
     };
 
@@ -406,13 +398,35 @@ oareport(org);
 
 /** Change displayed Insights data based on user input **/
 // Preset "quick date filter" buttons
-var startYearBtn        = document.querySelector("#start-year"),
-    lastYearBtn         = document.querySelector("#last-year"),
-    allTimeBtn          = document.querySelector("#all-time"),
-    insightsDateRange   = document.querySelector("#insights_range");
+var startYearBtn              = document.querySelector("#start-year"),
+    lastYearBtn               = document.querySelector("#last-year"),
+    twoYearsBtn               = document.querySelector("#two-years-ago"),
+    allTimeBtn                = document.querySelector("#all-time"),
+    insightsDateRange         = document.querySelector("#insights_range"),
 
-startYearBtn.textContent = startYearDate.getFullYear();
-lastYearBtn.textContent = lastYearStartDate.getFullYear();
+    lastYearStartDate         = new Date(new Date().getFullYear()-1, 0, 1),
+    lastYearStartDateReadable = makeDateReadable(lastYearStartDate),
+    lastYearStartDateQuery    = changeDays(-1, lastYearStartDate),
+    lastYearStartDateISO      = formatDateToISO(lastYearStartDate),
+
+    lastYearEndDate           = new Date(new Date().getFullYear()-1, 11, 31),
+    lastYearEndDateReadable   = makeDateReadable(lastYearEndDate),
+    lastYearEndDateQuery      = changeDays(+1, lastYearEndDate),
+    lastYearEndDateISO        = formatDateToISO(lastYearEndDate),
+
+    twoYearsStartDate         = new Date(new Date().getFullYear()-2, 0, 1),
+    twoYearsStartDateReadable = makeDateReadable(twoYearsStartDate),
+    twoYearsStartDateQuery    = changeDays(-1, twoYearsStartDate),
+    twoYearsStartDateISO      = formatDateToISO(twoYearsStartDate),
+
+    twoYearsEndDate           = new Date(new Date().getFullYear()-2, 11, 31),
+    twoYearsEndDateReadable   = makeDateReadable(twoYearsEndDate),
+    twoYearsEndDateQuery      = changeDays(+1, twoYearsEndDate),
+    twoYearsEndDateISO        = formatDateToISO(twoYearsEndDate);
+
+startYearBtn.textContent      = startYearDate.getFullYear();
+lastYearBtn.textContent       = lastYearStartDate.getFullYear();
+twoYearsBtn.textContent       = twoYearsStartDate.getFullYear();
 
 startYearBtn.addEventListener("click", function() {
   replaceDateRange(startYearDate, currentDate);
@@ -427,6 +441,16 @@ startYearBtn.addEventListener("click", function() {
 lastYearBtn.addEventListener("click", function() {
   replaceDateRange(lastYearStartDate, lastYearEndDate);
   insightsDateRange.textContent = "In " + lastYearStartDate.getFullYear();
+  getCountQueries();
+  getPolicy();
+  displayInsights();
+  displayStrategies();
+  getExportLink();
+});
+
+twoYearsBtn.addEventListener("click", function() {
+  replaceDateRange(twoYearsStartDate, twoYearsEndDate);
+  insightsDateRange.textContent = "In " + twoYearsStartDate.getFullYear();
   getCountQueries();
   getPolicy();
   displayInsights();
