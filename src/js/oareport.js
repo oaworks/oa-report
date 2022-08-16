@@ -53,6 +53,31 @@ const currentDate           = new Date(),
       startYearDateQuery    = changeDays(-1, startYearDate),
       startYearDateISO      = formatDateToISO(startYearDateQuery);
 
+// Get report page elements where data will be inserted
+// Date range
+var endDateContents      = document.querySelector("#end_date"),
+    startDateContents    = document.querySelector("#start_date");
+
+// Individual insights (metrics)
+var articlesContents = document.querySelector("#articles"),
+    oaArticlesContents = document.querySelector("#articles_oa"),
+    oaPercentageContents = document.querySelector("#percent_oa"),
+    compliantArticlesContents = document.querySelector("#articles_compliant"),
+    compliantPercentageContents = document.querySelector("#percent_compliant"),
+    complianceContents = document.querySelector("#compliance");
+
+// Deposit VOR strategy
+var totalVORActionsContents = document.querySelector("#total_vor_actions"),
+    latestVORActionsContents = document.querySelector("#latest_vor_actions"),
+    canArchiveVORTable = document.querySelector("#can_archive_vor_list"),
+    countVORActionsContents = document.querySelector("#count_vor");
+
+// Deposit AAM strategy
+var totalAAMActionsContents = document.querySelector("#total_aam_actions"),
+    latestAAMActionsContents = document.querySelector("#latest_aam_actions"),
+    canArchiveAAMTable = document.querySelector("#can_archive_aam_list"),
+    countAAMActionsContents = document.querySelector("#count_aam");
+
 // Get organisational data to produce reports
 oareport = function(org) {
   let report = base + "orgs?q=name:%22" + org + "%22";
@@ -61,9 +86,7 @@ oareport = function(org) {
   axios.get(report).then(function (response) {
 
     // Get all dates for filtering data by dates
-    let endDateContents      = document.querySelector("#end_date"),
-        startDateContents    = document.querySelector("#start_date"),
-        startDate            = "",
+    let startDate            = "",
         endDate              = "";
 
     // Display default date range: since start of the current year
@@ -120,7 +143,6 @@ oareport = function(org) {
         appendTo: document.body,
       });
 
-      let complianceContents = document.querySelector("#compliance");
       // ...get its URL
       hasPolicy = response.data.hits.hits[0]._source.policy.supported_policy;
 
@@ -145,12 +167,6 @@ oareport = function(org) {
               isOA    = results[1].data,
               isCompliant = results[2].data,
               isEligible = results[3].data;
-
-          let articlesContents = document.querySelector("#articles"),
-              oaArticlesContents = document.querySelector("#articles_oa"),
-              oaPercentageContents = document.querySelector("#percent_oa"),
-              compliantArticlesContents = document.querySelector("#articles_compliant"),
-              compliantPercentageContents = document.querySelector("#percent_compliant");
 
           // Display totals and % of articles
           articlesContents.textContent = makeNumberReadable(isPaper);
@@ -187,20 +203,14 @@ oareport = function(org) {
     };
 
     /** Display Strategies: deposit VOR **/
-    // TODO: create one function per strategy
     displayStrategyVOR = function() {
       Promise.all([canArchiveVOR, canArchiveVORList])
         .then(function (results) {
           let canArchiveVOR = results[0].data,
               canArchiveVORList = results[1].data.hits.hits;
 
-          var totalVORActionsContents = document.querySelector("#total_vor_actions"),
-              latestVORActionsContents = document.querySelector("#latest_vor_actions"),
-              canArchiveVORTable = document.querySelector("#can_archive_vor_list"),
-              countVORActionsContents = document.querySelector("#count_vor");
-
           // Generate list of archivable VORs if there are any
-          if (canArchiveVORList.length > 0) {
+          if (canArchiveVORList.length > 0 || canArchiveVORList !== null) {
                 // TODO: think more about the potential percentage
                 // canArchiveOaPercentageContents = document.querySelector("#can_archive_percent_oa");
 
@@ -272,13 +282,8 @@ oareport = function(org) {
           let canArchiveAAM = results[0].data,
               canArchiveAAMList = results[1].data.hits.hits;
 
-          var totalAAMActionsContents = document.querySelector("#total_aam_actions"),
-              latestAAMActionsContents = document.querySelector("#latest_aam_actions"),
-              canArchiveAAMTable = document.querySelector("#can_archive_aam_list"),
-              countAAMActionsContents = document.querySelector("#count_aam");
-
           // Generate list of archivable AAMs if there are any
-          if (canArchiveAAMList.length > 0) {
+          if (canArchiveAAMList.length > 0 || canArchiveAAMList !== null) {
                 // TODO: think more about the potential percentage
                 // canArchiveOaPercentageContents = document.querySelector("#can_archive_percent_oa");
 
