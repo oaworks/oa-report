@@ -1,5 +1,5 @@
 const base           = "https://api.oa.works/report/",
-      queryBase      = base + "works?",
+      queryBase      = base + "works?size=100&",
       countQueryBase = base + "works/count?",
       csvExportBase  = "https://bg.api.oa.works/report/works.csv?";
 let isPaper, isEligible, isOA, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL, dateRangeButton, csvEmailButton, totalArticles;
@@ -129,7 +129,7 @@ oareport = function(org) {
       canArchiveVOR  = axios.get(canArchiveVORQuery);
       canArchiveVORList = axios.get(canArchiveVORListQuery);
 
-      console.log("isPaperURL: " + isPaperURL);
+      console.log("canArchiveAAMListQuery: " + canArchiveAAMListQuery);
     };
 
     /** Check for an OA policy and display a link to the policy page in a tooltip **/
@@ -215,9 +215,9 @@ oareport = function(org) {
             countVORActionsContents.textContent = makeNumberReadable(canArchiveVOR);
 
             var canArchiveVORTableRows = "";
-            canArchiveLength = canArchiveVORList.length;
+            canArchiveVORLength = parseInt(canArchiveVOR);
 
-            for (i = 0; i <= (canArchiveLength-1); i++) {
+            for (i = 0; i <= (canArchiveVORLength-1); i++) {
               var title = canArchiveVORList[i]._source.title,
                   author = canArchiveVORList[i]._source.author_email_name,
                   doi   = canArchiveVORList[i]._source.DOI,
@@ -283,9 +283,9 @@ oareport = function(org) {
 
             // Set up and get list of emails for archivable AAMs
             var canArchiveAAMTableRows = "";
-            canArchiveLength = canArchiveAAMList.length;
+            canArchiveAAMLength = parseFloat(canArchiveAAM);
 
-            for (i = 0; i <= (canArchiveLength-1); i++) {
+            for (i = 0; i < (canArchiveAAMLength-1); i++) {
               var title = canArchiveAAMList[i]._source.title,
                   author = canArchiveAAMList[i]._source.author_email_name,
                   doi   = canArchiveAAMList[i]._source.DOI,
