@@ -186,89 +186,13 @@ oareport = function(org) {
       ).catch(function (error) { console.log("displayInsights error: " + error); })
     };
 
-    /** Display Strategies **/
+    /** Display Strategies: deposit VOR **/
     // TODO: create one function per strategy
-    displayStrategies = function() {
-      Promise.all([canArchiveAAM, canArchiveAAMList, canArchiveVOR, canArchiveVORList])
+    displayStrategyVOR = function() {
+      Promise.all([canArchiveVOR, canArchiveVORList])
         .then(function (results) {
-          let canArchiveAAM = results[0].data,
-              canArchiveAAMList = results[1].data.hits.hits,
-              canArchiveVOR = results[2].data,
-              canArchiveVORList = results[3].data.hits.hits;
-
-          // Generate list of archivable AAMs if there are any
-          var totalAAMActionsContents = document.querySelector("#total_aam_actions"),
-              latestAAMActionsContents = document.querySelector("#latest_aam_actions"),
-              canArchiveAAMTable = document.querySelector("#can_archive_aam_list"),
-              countAAMActionsContents = document.querySelector("#count_aam");
-
-          if (canArchiveAAMList.length > 0) {
-                // TODO: think more about the potential percentage
-                // canArchiveOaPercentageContents = document.querySelector("#can_archive_percent_oa");
-
-            totalAAMActionsContents.textContent = makeNumberReadable(canArchiveAAM);
-            countAAMActionsContents.textContent = makeNumberReadable(canArchiveAAM);
-            // If there are fewer than 100 actions, simply do not display any number of latest articles
-            if (canArchiveAAM < 100) {
-              latestAAMActionsContents.textContent = "Showing the most recent articless";
-            }
-            // TODO: think more about the potential percentage
-            // canArchiveOaPercentageContents.textContent = Math.round(((((isOA+canArchiveAAM))/isPaper)*100));
-
-            // Set up and get list of emails for archivable AAMs
-            var canArchiveAAMTableRows = "";
-            canArchiveLength = canArchiveAAMList.length;
-
-            for (i = 0; i <= (canArchiveLength-1); i++) {
-              var title = canArchiveAAMList[i]._source.title,
-                  author = canArchiveAAMList[i]._source.author_email_name,
-                  doi   = canArchiveAAMList[i]._source.DOI,
-                  pubDate = canArchiveAAMList[i]._source.published_date,
-                  journal = canArchiveAAMList[i]._source.journal;
-              pubDate = makeDateReadable(new Date(pubDate));
-
-              // Display email address if found, otherwise display message
-              if (canArchiveAAMList[i]._source.email) {
-                authorEmail = canArchiveAAMList[i]._source.email;
-              } else {
-                authorEmail = "No email found.";
-              }
-
-              // Get email draft/body for this article and replace with its metadata
-              canArchiveAAMMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
-              canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("\'", "’");
-              canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{title}", title);
-              canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{doi}", doi);
-              canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{author_name}", (author ? author : "researcher"));
-              canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{author_email}", authorEmail);
-
-              /*jshint multistr: true */
-              canArchiveAAMTableRows += '<tr>\
-                <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
-                  <div class="mb-1 text-neutral-500">' + pubDate + '</div>\
-                  <div class="mb-1 font-medium text-neutral-900 hover:text-carnation-500">\
-                    <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + title + '</a>\
-                  </div>\
-                  <div class="text-neutral-500">' + journal + '</div>\
-                </td>\
-                <td class="hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell">\
-                  <div class="mb-1 text-neutral-900">' + (author ? author : "No author’s name found") + '</div>\
-                  <div class="text-neutral-500">' + authorEmail + '</div>\
-                </td>\
-                <td class="whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium">\
-                  <a href="mailto:' + canArchiveAAMMailto + '" target="_blank" rel="noopener" class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200">\
-                    <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail inline-block h-4 duration-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>\
-                  </a>\
-                </td>\
-              </tr>';
-            }
-            canArchiveAAMTable.innerHTML = canArchiveAAMTableRows;
-          } else {
-            countAAMActionsContents.outerHTML = "";
-            totalAAMActionsContents.textContent = "No ";
-            latestAAMActionsContents.textContent = "";
-            canArchiveAAMTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find accepted manuscripts that could be deposited. <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
-          }
+          let canArchiveVOR = results[0].data,
+              canArchiveVORList = results[1].data.hits.hits;
 
           var totalVORActionsContents = document.querySelector("#total_vor_actions"),
               latestVORActionsContents = document.querySelector("#latest_vor_actions"),
@@ -338,7 +262,91 @@ oareport = function(org) {
             canArchiveVORTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find publisher PDFs that could be deposited. <br>Try selecting another date range or come back later once new articles are ready.</td></tr>"
           }
         }
-      ).catch(function (error) { console.log("Strategies error: " + error); })
+      ).catch(function (error) { console.log("displayStrategyVOR error: " + error); })
+    };
+
+    /** Display Strategies: deposit AAM **/
+    displayStrategyAAM = function() {
+      Promise.all([canArchiveAAM, canArchiveAAMList])
+        .then(function (results) {
+          let canArchiveAAM = results[0].data,
+              canArchiveAAMList = results[1].data.hits.hits;
+
+          var totalAAMActionsContents = document.querySelector("#total_aam_actions"),
+              latestAAMActionsContents = document.querySelector("#latest_aam_actions"),
+              canArchiveAAMTable = document.querySelector("#can_archive_aam_list"),
+              countAAMActionsContents = document.querySelector("#count_aam");
+
+          // Generate list of archivable AAMs if there are any
+          if (canArchiveAAMList.length > 0) {
+                // TODO: think more about the potential percentage
+                // canArchiveOaPercentageContents = document.querySelector("#can_archive_percent_oa");
+
+            totalAAMActionsContents.textContent = makeNumberReadable(canArchiveAAM);
+            countAAMActionsContents.textContent = makeNumberReadable(canArchiveAAM);
+            // If there are fewer than 100 actions, simply do not display any number of latest articles
+            if (canArchiveAAM < 100) {
+              latestAAMActionsContents.textContent = "Showing the most recent articless";
+            }
+            // TODO: think more about the potential percentage
+            // canArchiveOaPercentageContents.textContent = Math.round(((((isOA+canArchiveAAM))/isPaper)*100));
+
+            // Set up and get list of emails for archivable AAMs
+            var canArchiveAAMTableRows = "";
+            canArchiveLength = canArchiveAAMList.length;
+
+            for (i = 0; i <= (canArchiveLength-1); i++) {
+              var title = canArchiveAAMList[i]._source.title,
+                  author = canArchiveAAMList[i]._source.author_email_name,
+                  doi   = canArchiveAAMList[i]._source.DOI,
+                  pubDate = canArchiveAAMList[i]._source.published_date,
+                  journal = canArchiveAAMList[i]._source.journal;
+              pubDate = makeDateReadable(new Date(pubDate));
+
+              // Display email address if found, otherwise display message
+              if (canArchiveAAMList[i]._source.email) {
+                authorEmail = canArchiveAAMList[i]._source.email;
+              } else {
+                authorEmail = "No email found.";
+              }
+
+              // Get email draft/body for this article and replace with its metadata
+              canArchiveAAMMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
+              canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("\'", "’");
+              canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{title}", title);
+              canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{doi}", doi);
+              canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{author_name}", (author ? author : "researcher"));
+              canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{author_email}", authorEmail);
+
+              /*jshint multistr: true */
+              canArchiveAAMTableRows += '<tr>\
+                <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
+                  <div class="mb-1 text-neutral-500">' + pubDate + '</div>\
+                  <div class="mb-1 font-medium text-neutral-900 hover:text-carnation-500">\
+                    <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + title + '</a>\
+                  </div>\
+                  <div class="text-neutral-500">' + journal + '</div>\
+                </td>\
+                <td class="hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell">\
+                  <div class="mb-1 text-neutral-900">' + (author ? author : "No author’s name found") + '</div>\
+                  <div class="text-neutral-500">' + authorEmail + '</div>\
+                </td>\
+                <td class="whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium">\
+                  <a href="mailto:' + canArchiveAAMMailto + '" target="_blank" rel="noopener" class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200">\
+                    <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail inline-block h-4 duration-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>\
+                  </a>\
+                </td>\
+              </tr>';
+            }
+            canArchiveAAMTable.innerHTML = canArchiveAAMTableRows;
+          } else {
+            countAAMActionsContents.outerHTML = "";
+            totalAAMActionsContents.textContent = "No ";
+            latestAAMActionsContents.textContent = "";
+            canArchiveAAMTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find accepted manuscripts that could be deposited. <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
+          }
+        }
+      ).catch(function (error) { console.log("displayStrategyAAM error: " + error); })
     };
 
     /* "Download CSV" form: set query and date range in hidden input */
@@ -384,7 +392,8 @@ oareport = function(org) {
     getCountQueries();
     getPolicy();
     displayInsights();
-    displayStrategies();
+    displayStrategyVOR();
+    displayStrategyAAM();
     getExportLink();
 
     console.log("org index: " + base + "orgs?q=name:%22" + org + "%22");
@@ -432,7 +441,8 @@ startYearBtn.addEventListener("click", function() {
   getCountQueries();
   getPolicy();
   displayInsights();
-  displayStrategies();
+  displayStrategyVOR();
+  displayStrategyAAM();
   getExportLink();
 });
 
@@ -442,7 +452,8 @@ lastYearBtn.addEventListener("click", function() {
   getCountQueries();
   getPolicy();
   displayInsights();
-  displayStrategies();
+  displayStrategyVOR();
+  displayStrategyAAM();
   getExportLink();
 });
 
@@ -452,7 +463,8 @@ twoYearsBtn.addEventListener("click", function() {
   getCountQueries();
   getPolicy();
   displayInsights();
-  displayStrategies();
+  displayStrategyVOR();
+  displayStrategyAAM();
   getExportLink();
 });
 
@@ -462,6 +474,7 @@ allTimeBtn.addEventListener("click", function() {
   getCountQueries();
   getPolicy();
   displayInsights();
-  displayStrategies();
+  displayStrategyVOR();
+  displayStrategyAAM();
   getExportLink();
 });
