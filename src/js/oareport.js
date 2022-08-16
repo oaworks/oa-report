@@ -68,13 +68,11 @@ var articlesContents = document.querySelector("#articles"),
 
 // Deposit VOR strategy
 var totalVORActionsContents = document.querySelector("#total_vor_actions"),
-    latestVORActionsContents = document.querySelector("#latest_vor_actions"),
     canArchiveVORTable = document.querySelector("#can_archive_vor_list"),
     countVORActionsContents = document.querySelector("#count_vor");
 
 // Deposit AAM strategy
 var totalAAMActionsContents = document.querySelector("#total_aam_actions"),
-    latestAAMActionsContents = document.querySelector("#latest_aam_actions"),
     canArchiveAAMTable = document.querySelector("#can_archive_aam_list"),
     countAAMActionsContents = document.querySelector("#count_aam");
 
@@ -211,14 +209,10 @@ oareport = function(org) {
 
           // Generate list of archivable VORs if there are any
           if (canArchiveVORList.length > 0 || canArchiveVORList !== null) {
-                // TODO: think more about the potential percentage
-                // canArchiveOaPercentageContents = document.querySelector("#can_archive_percent_oa");
-
+            // TODO: think more about the potential percentage
+            // canArchiveOaPercentageContents = document.querySelector("#can_archive_percent_oa");
             totalVORActionsContents.textContent = makeNumberReadable(canArchiveVOR);
             countVORActionsContents.textContent = makeNumberReadable(canArchiveVOR);
-            if (canArchiveVOR < 100) {
-              latestVORActionsContents.textContent = "Showing the most recent articles";
-            }
 
             var canArchiveVORTableRows = "";
             canArchiveLength = canArchiveVORList.length;
@@ -284,17 +278,8 @@ oareport = function(org) {
 
           // Generate list of archivable AAMs if there are any
           if (canArchiveAAMList.length > 0 || canArchiveAAMList !== null) {
-                // TODO: think more about the potential percentage
-                // canArchiveOaPercentageContents = document.querySelector("#can_archive_percent_oa");
-
             totalAAMActionsContents.textContent = makeNumberReadable(canArchiveAAM);
             countAAMActionsContents.textContent = makeNumberReadable(canArchiveAAM);
-            // If there are fewer than 100 actions, simply do not display any number of latest articles
-            if (canArchiveAAM < 100) {
-              latestAAMActionsContents.textContent = "Showing the most recent articless";
-            }
-            // TODO: think more about the potential percentage
-            // canArchiveOaPercentageContents.textContent = Math.round(((((isOA+canArchiveAAM))/isPaper)*100));
 
             // Set up and get list of emails for archivable AAMs
             var canArchiveAAMTableRows = "";
