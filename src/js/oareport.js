@@ -1,7 +1,7 @@
-const base           = "https://bg.beta.oa.works/report/",
+const base           = "https://api.oa.works/report/",
       queryBase      = base + "works?",
       countQueryBase = base + "works/count?",
-      csvExportBase  = base + "works.csv?";
+      csvExportBase  = "https://bg.beta.oa.works/report/works.csv?";
 let isPaper, isEligible, isOA, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL, dateRangeButton, csvEmailButton, totalArticles;
 let isCompliant = false;
 
