@@ -205,17 +205,17 @@ oareport = function(org) {
       Promise.all([canArchiveVOR, canArchiveVORList])
         .then(function (results) {
           let canArchiveVOR = results[0].data,
-              canArchiveVORList = results[1].data.hits.hits;
+              canArchiveVORList = results[1].data.hits.hits,
+              canArchiveVORLength = parseFloat(canArchiveVOR);
 
           // Generate list of archivable VORs if there are any
-          if (canArchiveVORList.length > 0 || canArchiveVORList !== null) {
+          if (canArchiveVOR > 0 || canArchiveVOR !== null) {
             // TODO: think more about the potential percentage
             // canArchiveOaPercentageContents = document.querySelector("#can_archive_percent_oa");
-            totalVORActionsContents.textContent = makeNumberReadable(canArchiveVOR);
-            countVORActionsContents.textContent = makeNumberReadable(canArchiveVOR);
+            totalVORActionsContents.textContent = makeNumberReadable(canArchiveVORLength);
+            countVORActionsContents.textContent = makeNumberReadable(canArchiveVORLength);
 
             var canArchiveVORTableRows = "";
-            canArchiveVORLength = parseInt(canArchiveVOR);
 
             for (i = 0; i <= (canArchiveVORLength-1); i++) {
               var title = canArchiveVORList[i]._source.title,
@@ -274,16 +274,16 @@ oareport = function(org) {
       Promise.all([canArchiveAAM, canArchiveAAMList])
         .then(function (results) {
           let canArchiveAAM = results[0].data,
-              canArchiveAAMList = results[1].data.hits.hits;
+              canArchiveAAMList = results[1].data.hits.hits,
+              canArchiveAAMLength = parseFloat(canArchiveAAM);
 
           // Generate list of archivable AAMs if there are any
-          if (canArchiveAAMList.length > 0 || canArchiveAAMList !== null) {
-            totalAAMActionsContents.textContent = makeNumberReadable(canArchiveAAM);
-            countAAMActionsContents.textContent = makeNumberReadable(canArchiveAAM);
+          if (canArchiveAAM > 0 || canArchiveAAM !== null) {
+            totalAAMActionsContents.textContent = makeNumberReadable(canArchiveAAMLength);
+            countAAMActionsContents.textContent = makeNumberReadable(canArchiveAAMLength);
 
             // Set up and get list of emails for archivable AAMs
             var canArchiveAAMTableRows = "";
-            canArchiveAAMLength = parseFloat(canArchiveAAM);
 
             for (i = 0; i < (canArchiveAAMLength-1); i++) {
               var title = canArchiveAAMList[i]._source.title,
