@@ -58,6 +58,10 @@ const currentDate           = new Date(),
 var endDateContents      = document.querySelector("#end_date"),
     startDateContents    = document.querySelector("#start_date");
 
+// Send CSV data by email form
+var queryHiddenInput = document.querySelector("#download-form-q"),
+    includeHiddenInput = document.querySelector("#download-form-include");
+
 // Individual insights (metrics)
 var articlesContents = document.querySelector("#articles"),
     oaArticlesContents = document.querySelector("#articles_oa"),
@@ -347,9 +351,7 @@ oareport = function(org) {
           }
         ).catch(function (error) { console.log("Export error: " + error); });
 
-      let queryHiddenInput = document.querySelector("#download-form-q"),
-          query = isPaperURL.replaceAll(" ", "%20"),
-          includeHiddenInput = document.querySelector("#download-form-include"),
+      let query = isPaperURL.replaceAll(" ", "%20"),
           form = document.querySelector("#download_csv");
 
       // Check for custom include parameters
