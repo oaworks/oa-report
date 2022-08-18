@@ -115,7 +115,7 @@ oareport = function(org) {
     /** Get queries for article counts and strategy action list **/
     getCountQueries = function() {
 
-      isPaperURL    = (dateRange + response.data.hits.hits[0]._source.analysis.is_paper); // used for full-email download in downloadCSV()
+      isPaperURL    = (dateRange + response.data.hits.hits[0]._source.analysis.is_paper); // used for full-email download in getExportLink()
       isPaperQuery   = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_paper);
       isEligibleQuery = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_covered_by_policy);
       isOAQuery      = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_oa);
@@ -204,7 +204,7 @@ oareport = function(org) {
       ).catch(function (error) { console.log("displayInsights error: " + error); })
     };
 
-    /** Display Strategies: deposit VOR **/
+    /** Display Strategies: deposit VOR (publisher PDF) **/
     displayStrategyVOR = function() {
       Promise.all([canArchiveVOR, canArchiveVORList])
         .then(function (results) {
@@ -212,21 +212,25 @@ oareport = function(org) {
               canArchiveVORList = results[1].data.hits.hits,
               canArchiveVORLength = parseFloat(canArchiveVOR);
 
+          // Show total number of actions in tab & above table
+          totalVORActionsContents.textContent = makeNumberReadable(canArchiveVORLength);
+          countVORActionsContents.textContent = makeNumberReadable(canArchiveVORLength);
+
           // Generate list of archivable VORs if there are any
-          if (canArchiveVOR > 0 || canArchiveVOR !== null) {
+          if (canArchiveVOR === 0 ) {
+            totalVORActionsContents.textContent = "No ";
+            canArchiveVORTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find publisher PDFs that could be deposited. <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
+          } else if (canArchiveVOR > 0 || canArchiveVOR !== null) {
             // TODO: think more about the potential percentage
             // canArchiveOaPercentageContents = document.querySelector("#can_archive_percent_oa");
-            totalVORActionsContents.textContent = makeNumberReadable(canArchiveVORLength);
-            countVORActionsContents.textContent = makeNumberReadable(canArchiveVORLength);
-
             var canArchiveVORTableRows = "";
 
             for (i = 0; i <= (canArchiveVORLength-1); i++) {
               var title = canArchiveVORList[i]._source.title,
-                  author = canArchiveVORList[i]._source.author_email_name,
-                  doi   = canArchiveVORList[i]._source.DOI,
-                  pubDate = canArchiveVORList[i]._source.published_date,
-                  journal = canArchiveVORList[i]._source.journal;
+              author = canArchiveVORList[i]._source.author_email_name,
+              doi   = canArchiveVORList[i]._source.DOI,
+              pubDate = canArchiveVORList[i]._source.published_date,
+              journal = canArchiveVORList[i]._source.journal;
               pubDate = makeDateReadable(new Date(pubDate));
 
               if (canArchiveVORList[i]._source.email) {
@@ -244,36 +248,31 @@ oareport = function(org) {
 
               /*jshint multistr: true */
               canArchiveVORTableRows += '<tr>\
-                <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
-                  <div class="mb-1 text-neutral-500">' + pubDate + '</div>\
-                  <div class="mb-1 font-medium text-neutral-900 hover:text-carnation-500">\
-                    <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + title + '</a>\
-                  </div>\
-                  <div class="text-neutral-500">' + journal + '</div>\
-                </td>\
-                <td class="hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell">\
-                  <div class="mb-1 text-neutral-900">' + (author ? author : "No author’s name found") + '</div>\
-                  <div class="text-neutral-500">' + authorEmail + '</div>\
-                </td>\
-                <td class="whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium">\
-                  <a href="mailto:' + canArchiveVORMailto + '" target="_blank" rel="noopener" class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200">\
-                    <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail inline-block h-4 duration-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>\
-                  </a>\
-                </td>\
+              <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
+              <div class="mb-1 text-neutral-500">' + pubDate + '</div>\
+              <div class="mb-1 font-medium text-neutral-900 hover:text-carnation-500">\
+              <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + title + '</a>\
+              </div>\
+              <div class="text-neutral-500">' + journal + '</div>\
+              </td>\
+              <td class="hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell">\
+              <div class="mb-1 text-neutral-900">' + (author ? author : "No author’s name found") + '</div>\
+              <div class="text-neutral-500">' + authorEmail + '</div>\
+              </td>\
+              <td class="whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium">\
+              <a href="mailto:' + canArchiveVORMailto + '" target="_blank" rel="noopener" class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200">\
+              <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail inline-block h-4 duration-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>\
+              </a>\
+              </td>\
               </tr>';
             }
             canArchiveVORTable.innerHTML = canArchiveVORTableRows;
-          } else {
-            countVORActionsContents.outerHTML = "";
-            totalVORActionsContents.textContent = "No ";
-            latestVORActionsContents.textContent = "";
-            canArchiveVORTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find publisher PDFs that could be deposited. <br>Try selecting another date range or come back later once new articles are ready.</td></tr>"
           }
         }
-      ).catch(function (error) { console.log("displayStrategyVOR error: " + error); })
+      ).catch(function (error) { console.log("displayStrategyVOR error: " + error); });
     };
 
-    /** Display Strategies: deposit AAM **/
+    /** Display Strategies: deposit AAM (accepted manuscripts) **/
     displayStrategyAAM = function() {
       Promise.all([canArchiveAAM, canArchiveAAMList])
         .then(function (results) {
@@ -281,11 +280,16 @@ oareport = function(org) {
               canArchiveAAMList = results[1].data.hits.hits,
               canArchiveAAMLength = parseFloat(canArchiveAAM);
 
-          // Generate list of archivable AAMs if there are any
-          if (canArchiveAAM > 0 || canArchiveAAM !== null) {
-            totalAAMActionsContents.textContent = makeNumberReadable(canArchiveAAMLength);
-            countAAMActionsContents.textContent = makeNumberReadable(canArchiveAAMLength);
+          // Show total number of actions in tab & above table
+          totalAAMActionsContents.textContent = makeNumberReadable(canArchiveAAMLength);
+          countAAMActionsContents.textContent = makeNumberReadable(canArchiveAAMLength);
 
+          // Generate list of archivable AAMs if there are any
+          if (canArchiveAAM === 0) {
+            totalAAMActionsContents.textContent = "No ";
+            canArchiveAAMTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find accepted manuscripts that could be deposited. <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
+          }
+          else if (canArchiveAAM > 0 || canArchiveAAM !== null) {
             // Set up and get list of emails for archivable AAMs
             var canArchiveAAMTableRows = "";
 
@@ -333,11 +337,6 @@ oareport = function(org) {
               </tr>';
             }
             canArchiveAAMTable.innerHTML = canArchiveAAMTableRows;
-          } else {
-            countAAMActionsContents.outerHTML = "";
-            totalAAMActionsContents.textContent = "No ";
-            latestAAMActionsContents.textContent = "";
-            canArchiveAAMTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find accepted manuscripts that could be deposited. <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
           }
         }
       ).catch(function (error) { console.log("displayStrategyAAM error: " + error); })
