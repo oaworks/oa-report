@@ -133,6 +133,7 @@ oareport = function(org) {
       canArchiveVOR  = axios.get(canArchiveVORQuery);
       canArchiveVORList = axios.get(canArchiveVORListQuery);
 
+      console.log("canArchiveVORListQuery: " + canArchiveVORListQuery);
       console.log("canArchiveAAMListQuery: " + canArchiveAAMListQuery);
     };
 
@@ -178,7 +179,7 @@ oareport = function(org) {
             oaArticlesContents.textContent = makeNumberReadable(isOA) + " in total";
             oaPercentageContents.textContent = Math.round(((isOA/isPaper)*100)) + "%";
           } else {
-            oaArticlesContents.outerHTML = "";
+            oaArticlesContents.textContent = "";
             oaPercentageContents.textContent = "N/A";
           }
 
@@ -196,7 +197,7 @@ oareport = function(org) {
             compliantArticlesContents.textContent = makeNumberReadable(isCompliant) + " of " + makeNumberReadable(totalArticles) + totalArticlesString;
             compliantPercentageContents.textContent = Math.round(((isCompliant/totalArticles)*100)) + "%";
           } else {
-            compliantArticlesContents.outerHTML = "";
+            compliantArticlesContents.textContent = "";
             compliantPercentageContents.textContent = "N/A";
           }
 
@@ -227,43 +228,40 @@ oareport = function(org) {
 
             for (i = 0; i <= (canArchiveVORLength-1); i++) {
               var title = canArchiveVORList[i]._source.title,
-              author = canArchiveVORList[i]._source.author_email_name,
-              doi   = canArchiveVORList[i]._source.DOI,
-              pubDate = canArchiveVORList[i]._source.published_date,
-              journal = canArchiveVORList[i]._source.journal;
-              pubDate = makeDateReadable(new Date(pubDate));
-
-              if (canArchiveVORList[i]._source.email) {
-                authorEmail = canArchiveVORList[i]._source.email;
-              } else {
-                authorEmail = "No email found.";
-              }
+                  author = canArchiveVORList[i]._source.author_email_name,
+                  doi   = canArchiveVORList[i]._source.DOI,
+                  pubDate = canArchiveVORList[i]._source.published_date,
+                  journal = canArchiveVORList[i]._source.journal,
+                  authorEmail = canArchiveVORList[i]._source.email;
+                  pubDate = makeDateReadable(new Date(pubDate));
 
               canArchiveVORMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
               canArchiveVORMailto = canArchiveVORMailto.replaceAll("\'", "’");
-              canArchiveVORMailto = canArchiveVORMailto.replaceAll("{title}", title);
-              canArchiveVORMailto = canArchiveVORMailto.replaceAll("{doi}", doi);
+              canArchiveVORMailto = canArchiveVORMailto.replaceAll("{title}", (title ? title : "[No title found]"));
+              canArchiveVORMailto = canArchiveVORMailto.replaceAll("{doi}", (doi ? doi : "[No DOI found]"));
               canArchiveVORMailto = canArchiveVORMailto.replaceAll("{author_name}", (author ? author : "researcher"));
-              canArchiveVORMailto = canArchiveVORMailto.replaceAll("{author_email}", authorEmail);
+              canArchiveVORMailto = canArchiveVORMailto.replaceAll("{author_email}", (authorEmail ? authorEmail : ""));
+
+              console.log("canArchiveVORMailto: " + canArchiveVORMailto);
 
               /*jshint multistr: true */
               canArchiveVORTableRows += '<tr>\
-              <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
-              <div class="mb-1 text-neutral-500">' + pubDate + '</div>\
-              <div class="mb-1 font-medium text-neutral-900 hover:text-carnation-500">\
-              <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + title + '</a>\
-              </div>\
-              <div class="text-neutral-500">' + journal + '</div>\
-              </td>\
-              <td class="hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell">\
-              <div class="mb-1 text-neutral-900">' + (author ? author : "No author’s name found") + '</div>\
-              <div class="text-neutral-500">' + authorEmail + '</div>\
-              </td>\
-              <td class="whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium">\
-              <a href="mailto:' + canArchiveVORMailto + '" target="_blank" rel="noopener" class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200">\
-              <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail inline-block h-4 duration-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>\
-              </a>\
-              </td>\
+                <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
+                  <div class="mb-1 text-neutral-500">' + (pubDate ? pubDate : "[No date found]") + '</div>\
+                  <div class="mb-1 font-medium text-neutral-900 hover:text-carnation-500">\
+                    <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + (title ? title : "[No article title found]") + '</a>\
+                  </div>\
+                  <div class="text-neutral-500">' + (journal ? journal : "[No journal name found]") + '</div>\
+                </td>\
+                <td class="hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell">\
+                  <div class="mb-1 text-neutral-900">' + (author ? author : "[No author’s name found]") + '</div>\
+                  <div class="text-neutral-500">' + (authorEmail ? authorEmail : "[No email found]") + '</div>\
+                </td>\
+                <td class="whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium">\
+                  <a href="mailto:' + canArchiveVORMailto + '" target="_blank" rel="noopener" class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200">\
+                    <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail inline-block h-4 duration-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>\
+                  </a>\
+                </td>\
               </tr>';
             }
             canArchiveVORTable.innerHTML = canArchiveVORTableRows;
@@ -298,36 +296,30 @@ oareport = function(org) {
                   author = canArchiveAAMList[i]._source.author_email_name,
                   doi   = canArchiveAAMList[i]._source.DOI,
                   pubDate = canArchiveAAMList[i]._source.published_date,
-                  journal = canArchiveAAMList[i]._source.journal;
+                  journal = canArchiveAAMList[i]._source.journal,
+                  authorEmail = canArchiveAAMList[i]._source.email;
               pubDate = makeDateReadable(new Date(pubDate));
-
-              // Display email address if found, otherwise display message
-              if (canArchiveAAMList[i]._source.email) {
-                authorEmail = canArchiveAAMList[i]._source.email;
-              } else {
-                authorEmail = "No email found.";
-              }
 
               // Get email draft/body for this article and replace with its metadata
               canArchiveAAMMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
               canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("\'", "’");
-              canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{title}", title);
-              canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{doi}", doi);
+              canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{title}", (title ? title : "[No article title found]"));
+              canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{doi}", (doi ? doi : "[No DOI found]"));
               canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{author_name}", (author ? author : "researcher"));
-              canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{author_email}", authorEmail);
+              canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{author_email}", (authorEmail ? authorEmail : ""));
 
               /*jshint multistr: true */
               canArchiveAAMTableRows += '<tr>\
                 <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
-                  <div class="mb-1 text-neutral-500">' + pubDate + '</div>\
+                  <div class="mb-1 text-neutral-500">' + (pubDate ? pubDate : "[No date found]") + '</div>\
                   <div class="mb-1 font-medium text-neutral-900 hover:text-carnation-500">\
-                    <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + title + '</a>\
+                    <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + (title ? title : "[No article title found]") + '</a>\
                   </div>\
-                  <div class="text-neutral-500">' + journal + '</div>\
+                  <div class="text-neutral-500">' + (journal ? journal : "[No journal name found]") + '</div>\
                 </td>\
                 <td class="hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell">\
-                  <div class="mb-1 text-neutral-900">' + (author ? author : "No author’s name found") + '</div>\
-                  <div class="text-neutral-500">' + authorEmail + '</div>\
+                  <div class="mb-1 text-neutral-900">' + (author ? author : "[No author’s name found]") + '</div>\
+                  <div class="text-neutral-500">' + (authorEmail ? authorEmail : "[No email found]") + '</div>\
                 </td>\
                 <td class="whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium">\
                   <a href="mailto:' + canArchiveAAMMailto + '" target="_blank" rel="noopener" class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200">\
