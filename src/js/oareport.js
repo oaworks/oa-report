@@ -459,7 +459,7 @@ twoYearsBtn.addEventListener("click", function() {
 });
 
 allTimeBtn.addEventListener("click", function() {
-  replaceDateRange(new Date(2000, 0, 1), currentDate);
+  replaceDateRange(new Date(1980, 0, 1), currentDate);
   insightsDateRange.textContent = "All-time";
   getCountQueries();
   getPolicy();
