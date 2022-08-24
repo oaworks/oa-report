@@ -1,12 +1,12 @@
 /* Tabbed navigation for strategies (MD + larger viewports) */
 let tabs = document.querySelector(".js-tabs"),
-    tabItems = tabs.querySelectorAll(".js-tab-item a");
+    tabItems = tabs.querySelectorAll(".js-tab-item button");
 
 tabItems.forEach(function(toggler) {
   toggler.addEventListener("click", function(e) {
     e.preventDefault();
 
-    let tabID = this.getAttribute("href"),
+    let tabID = this.getAttribute("aria-controls"),
         tabContent = document.querySelector(".js-tab-content-all");
 
     for (let i = 0; i < tabContent.children.length; i++) {
@@ -21,7 +21,7 @@ tabItems.forEach(function(toggler) {
       tabContent.children[i].classList.remove("hidden");
       tabContent.children[i].removeAttribute("hidden");
 
-      if ("#" + tabContent.children[i].id === tabID) {
+      if (tabContent.children[i].id === tabID) {
         continue;
       }
       tabContent.children[i].classList.add("hidden");
