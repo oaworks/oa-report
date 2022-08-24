@@ -66,6 +66,8 @@ var queryHiddenInput = document.querySelector("#download-form-q"),
 var articlesContents = document.querySelector("#articles"),
     oaArticlesContents = document.querySelector("#articles_oa"),
     oaPercentageContents = document.querySelector("#percent_oa"),
+    freeArticlesContents = document.querySelector("#articles_free"),
+    freePercentageContents = document.querySelector("#percent_free"),
     compliantArticlesContents = document.querySelector("#articles_compliant"),
     compliantPercentageContents = document.querySelector("#percent_compliant"),
     complianceContents = document.querySelector("#compliance");
@@ -119,6 +121,7 @@ oareport = function(org) {
       isPaperQuery   = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_paper);
       isEligibleQuery = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_covered_by_policy);
       isOAQuery      = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_oa);
+      isFreeQuery      = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.analysis.is_free_to_read);
       canArchiveAAMQuery  = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
       canArchiveAAMListQuery = (queryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
       canArchiveVORQuery  = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_vor.query);
@@ -128,6 +131,7 @@ oareport = function(org) {
       isPaper        = axios.get(isPaperQuery);
       isEligible     = axios.get(isEligibleQuery);
       isOA           = axios.get(isOAQuery);
+      isFree           = axios.get(isFreeQuery);
       canArchiveAAM  = axios.get(canArchiveAAMQuery);
       canArchiveAAMList = axios.get(canArchiveAAMListQuery);
       canArchiveVOR  = axios.get(canArchiveVORQuery);
@@ -164,23 +168,33 @@ oareport = function(org) {
 
     /**  Display Insights **/
     displayInsights = function() {
-      Promise.all([isPaper, isOA, isCompliant, isEligible])
+      Promise.all([isPaper, isOA, isCompliant, isEligible, isFree])
         .then(function (results) {
           let isPaper = results[0].data,
               isOA    = results[1].data,
               isCompliant = results[2].data,
-              isEligible = results[3].data;
+              isEligible = results[3].data,
+              isFree = results[4].data;
 
           // Display totals and % of articles
           articlesContents.textContent = makeNumberReadable(isPaper);
 
           // Display totals and % of OA articles
-          if (isOA) {
-            oaArticlesContents.textContent = makeNumberReadable(isOA) + " in total";
-            oaPercentageContents.textContent = Math.round(((isOA/isPaper)*100)) + "%";
+          // TODO: only display OA rates for orgs w/out policies
+          // if (isOA) {
+          //   oaArticlesContents.textContent = makeNumberReadable(isOA) + " in total";
+          //   oaPercentageContents.textContent = Math.round(((isOA/isPaper)*100)) + "%";
+          // } else {
+          //   oaArticlesContents.textContent = "";
+          //   oaPercentageContents.textContent = "N/A";
+          // }
+
+          if (isFree) {
+            freeArticlesContents.textContent = makeNumberReadable(isFree) + " in total";
+            freePercentageContents.textContent = Math.round(((isFree/isPaper)*100)) + "%";
           } else {
-            oaArticlesContents.textContent = "";
-            oaPercentageContents.textContent = "N/A";
+            freeArticlesContents.textContent = "";
+            freePercentageContents.textContent = "N/A";
           }
 
           // Set total of articles depending on whether or not articles need to be covered by policy
