@@ -169,6 +169,7 @@ oareport = function(org) {
     };
 
     /**  Display Insights **/
+    // TODO: break these down into one function per metric
     displayInsights = function() {
       Promise.all([isPaper, isFree, isCompliant, isEligible])
         .then(function (results) {
