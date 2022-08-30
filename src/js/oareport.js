@@ -34,26 +34,27 @@ makeDateReadable = function(date) {
 makeNumberReadable = function(number) {
   number = number.toLocaleString(getUsersLocale());
   return number;
-}
+};
 
 // Format dates into ISO format — used in ElasticSearch query
 formatDateToISO = function(date) {
   date = date.toISOString().substring(0, 10);
   return date;
-}
+};
 
-// Set today’s date and 12 months ago date to display most recent Insights data as default
-const currentDate           = new Date(),
-      currentDateReadable   = makeDateReadable(currentDate),
-      currentDateQuery      = changeDays(+1, currentDate), // add 1 day for ElasticSearch (greater than but not equal)
-      currentDateISO        = formatDateToISO(currentDateQuery),
+// Change start and end dates
+replaceDateRange = function(newStart, newEnd) {
+  startDateContents.textContent = makeDateReadable(newStart);
+  endDateContents.textContent = makeDateReadable(newEnd);
+  startDate     = changeDays(-1, newStart);
+  startDate     = formatDateToISO(startDate);
+  endDate       = changeDays(+1, newEnd);
+  endDate       = formatDateToISO(endDate);
+  dateRange     = "(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")%20AND%20";
+  return startDate, endDate, dateRange;
+};
 
-      startYearDate         = new Date(new Date().getFullYear(), 0, 1),
-      startYearDateReadable = makeDateReadable(startYearDate),
-      startYearDateQuery    = changeDays(-1, startYearDate),
-      startYearDateISO      = formatDateToISO(startYearDateQuery);
-
-// Get report page elements where data will be inserted
+/* Get report page elements where data will be inserted */
 // Date range
 var endDateContents      = document.querySelector("#end_date"),
     startDateContents    = document.querySelector("#start_date");
@@ -82,37 +83,36 @@ var totalAAMActionsContents = document.querySelector("#total_aam_actions"),
     canArchiveAAMTable = document.querySelector("#can_archive_aam_list"),
     countAAMActionsContents = document.querySelector("#count_aam");
 
+/* Date display and filtering */
+// Set today’s date and 12 months ago date to display most recent Insights data as default
+const currentDate           = new Date(),
+      currentDateReadable   = makeDateReadable(currentDate),
+      currentDateQuery      = changeDays(+1, currentDate), // add 1 day for ElasticSearch (greater than but not equal)
+      currentDateISO        = formatDateToISO(currentDateQuery),
+
+      startYearDate         = new Date(new Date().getFullYear(), 0, 1),
+      startYearDateReadable = makeDateReadable(startYearDate),
+      startYearDateQuery    = changeDays(-1, startYearDate),
+      startYearDateISO      = formatDateToISO(startYearDateQuery);
+
+// Get all dates for filtering data by dates
+let startDate            = "",
+    endDate              = "";
+
+// Display default date range: since start of the current year
+endDateContents.textContent    = currentDateReadable;
+startDateContents.textContent  = startYearDateReadable;
+startDate                      = startYearDateISO;
+endDate                        = currentDateISO;
+
+var dateRange                  = "(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")%20AND%20",
+    recordSize                 = "&size=100"; // Set record size for number of actions shown in Strategies
+
 // Get organisational data to produce reports
 oareport = function(org) {
   let report = base + "orgs?q=name:%22" + org + "%22";
 
-  /* Default date filtering */
   axios.get(report).then(function (response) {
-
-    // Get all dates for filtering data by dates
-    let startDate            = "",
-        endDate              = "";
-
-    // Display default date range: since start of the current year
-    endDateContents.textContent    = currentDateReadable;
-    startDateContents.textContent  = startYearDateReadable;
-    startDate                      = startYearDateISO;
-    endDate                        = currentDateISO;
-
-    var dateRange                  = "(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")%20AND%20",
-        recordSize                 = "&size=100"; // Set record size for number of actions shown in Strategies
-
-    // Change start and end dates
-    replaceDateRange = function(newStart, newEnd) {
-      startDateContents.textContent = makeDateReadable(newStart);
-      endDateContents.textContent = makeDateReadable(newEnd);
-      startDate     = changeDays(-1, newStart);
-      startDate     = formatDateToISO(startDate);
-      endDate       = changeDays(+1, newEnd);
-      endDate       = formatDateToISO(endDate);
-      dateRange     = "(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")%20AND%20";
-      return startDate, endDate, dateRange;
-    };
 
     /** Get queries for article counts and strategy action list **/
     getCountQueries = function() {
