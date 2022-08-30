@@ -34,26 +34,27 @@ makeDateReadable = function(date) {
 makeNumberReadable = function(number) {
   number = number.toLocaleString(getUsersLocale());
   return number;
-}
+};
 
 // Format dates into ISO format — used in ElasticSearch query
 formatDateToISO = function(date) {
   date = date.toISOString().substring(0, 10);
   return date;
-}
+};
 
-// Set today’s date and 12 months ago date to display most recent Insights data as default
-const currentDate           = new Date(),
-      currentDateReadable   = makeDateReadable(currentDate),
-      currentDateQuery      = changeDays(+1, currentDate), // add 1 day for ElasticSearch (greater than but not equal)
-      currentDateISO        = formatDateToISO(currentDateQuery),
+// Change start and end dates
+replaceDateRange = function(newStart, newEnd) {
+  startDateContents.textContent = makeDateReadable(newStart);
+  endDateContents.textContent = makeDateReadable(newEnd);
+  startDate     = changeDays(-1, newStart);
+  startDate     = formatDateToISO(startDate);
+  endDate       = changeDays(+1, newEnd);
+  endDate       = formatDateToISO(endDate);
+  dateRange     = "(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")%20AND%20";
+  return startDate, endDate, dateRange;
+};
 
-      startYearDate         = new Date(new Date().getFullYear(), 0, 1),
-      startYearDateReadable = makeDateReadable(startYearDate),
-      startYearDateQuery    = changeDays(-1, startYearDate),
-      startYearDateISO      = formatDateToISO(startYearDateQuery);
-
-// Get report page elements where data will be inserted
+/* Get report page elements where data will be inserted */
 // Date range
 var endDateContents      = document.querySelector("#end_date"),
     startDateContents    = document.querySelector("#start_date");
@@ -82,37 +83,36 @@ var totalAAMActionsContents = document.querySelector("#total_aam_actions"),
     canArchiveAAMTable = document.querySelector("#can_archive_aam_list"),
     countAAMActionsContents = document.querySelector("#count_aam");
 
+/* Date display and filtering */
+// Set today’s date and 12 months ago date to display most recent Insights data as default
+const currentDate           = new Date(),
+      currentDateReadable   = makeDateReadable(currentDate),
+      currentDateQuery      = changeDays(+1, currentDate), // add 1 day for ElasticSearch (greater than but not equal)
+      currentDateISO        = formatDateToISO(currentDateQuery),
+
+      startYearDate         = new Date(new Date().getFullYear(), 0, 1),
+      startYearDateReadable = makeDateReadable(startYearDate),
+      startYearDateQuery    = changeDays(-1, startYearDate),
+      startYearDateISO      = formatDateToISO(startYearDateQuery);
+
+// Get all dates for filtering data by dates
+let startDate            = "",
+    endDate              = "";
+
+// Display default date range: since start of the current year
+endDateContents.textContent    = currentDateReadable;
+startDateContents.textContent  = startYearDateReadable;
+startDate                      = startYearDateISO;
+endDate                        = currentDateISO;
+
+var dateRange                  = "(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")%20AND%20",
+    recordSize                 = "&size=100"; // Set record size for number of actions shown in Strategies
+
 // Get organisational data to produce reports
 oareport = function(org) {
   let report = base + "orgs?q=name:%22" + org + "%22";
 
-  /* Default date filtering */
   axios.get(report).then(function (response) {
-
-    // Get all dates for filtering data by dates
-    let startDate            = "",
-        endDate              = "";
-
-    // Display default date range: since start of the current year
-    endDateContents.textContent    = currentDateReadable;
-    startDateContents.textContent  = startYearDateReadable;
-    startDate                      = startYearDateISO;
-    endDate                        = currentDateISO;
-
-    var dateRange                  = "(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")%20AND%20",
-        recordSize                 = "&size=100"; // Set record size for number of actions shown in Strategies
-
-    // Change start and end dates
-    replaceDateRange = function(newStart, newEnd) {
-      startDateContents.textContent = makeDateReadable(newStart);
-      endDateContents.textContent = makeDateReadable(newEnd);
-      startDate     = changeDays(-1, newStart);
-      startDate     = formatDateToISO(startDate);
-      endDate       = changeDays(+1, newEnd);
-      endDate       = formatDateToISO(endDate);
-      dateRange     = "(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")%20AND%20";
-      return startDate, endDate, dateRange;
-    };
 
     /** Get queries for article counts and strategy action list **/
     getCountQueries = function() {
@@ -120,8 +120,8 @@ oareport = function(org) {
       isPaperURL    = (dateRange + response.data.hits.hits[0]._source.analysis.is_paper); // used for full-email download in getExportLink()
       isPaperQuery   = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_paper);
       isEligibleQuery = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_covered_by_policy);
-      isOAQuery      = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_oa);
-      isFreeQuery      = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.analysis.is_free_to_read);
+      //isOAQuery      = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_oa);
+      isFreeQuery      = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_free_to_read);
       canArchiveAAMQuery  = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
       canArchiveAAMListQuery = (queryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
       canArchiveVORQuery  = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_vor.query);
@@ -130,15 +130,17 @@ oareport = function(org) {
 
       isPaper        = axios.get(isPaperQuery);
       isEligible     = axios.get(isEligibleQuery);
-      isOA           = axios.get(isOAQuery);
+      //isOA           = axios.get(isOAQuery);
       isFree           = axios.get(isFreeQuery);
       canArchiveAAM  = axios.get(canArchiveAAMQuery);
       canArchiveAAMList = axios.get(canArchiveAAMListQuery);
       canArchiveVOR  = axios.get(canArchiveVORQuery);
       canArchiveVORList = axios.get(canArchiveVORListQuery);
 
+      console.log("org index: " + base + "orgs?q=name:%22" + org + "%22");
       console.log("canArchiveVORListQuery: " + canArchiveVORListQuery);
       console.log("canArchiveAAMListQuery: " + canArchiveAAMListQuery);
+      console.log("isFreeQuery: " + isFreeQuery);
     };
 
     /** Check for an OA policy and display a link to the policy page in a tooltip **/
@@ -168,13 +170,12 @@ oareport = function(org) {
 
     /**  Display Insights **/
     displayInsights = function() {
-      Promise.all([isPaper, isOA, isCompliant, isEligible, isFree])
+      Promise.all([isPaper, isFree, isCompliant, isEligible])
         .then(function (results) {
           let isPaper = results[0].data,
-              isOA    = results[1].data,
+              isFree    = results[1].data,
               isCompliant = results[2].data,
-              isEligible = results[3].data,
-              isFree = results[4].data;
+              isEligible = results[3].data;
 
           // Display totals and % of articles
           articlesContents.textContent = makeNumberReadable(isPaper);
@@ -392,8 +393,6 @@ oareport = function(org) {
     displayStrategyVOR();
     displayStrategyAAM();
     getExportLink();
-
-    console.log("org index: " + base + "orgs?q=name:%22" + org + "%22");
   })
   .catch(function (error) { console.log("ERROR: " + error); });
 };
@@ -435,43 +434,23 @@ twoYearsBtn.textContent       = twoYearsStartDate.getFullYear();
 startYearBtn.addEventListener("click", function() {
   replaceDateRange(startYearDate, currentDate);
   insightsDateRange.textContent = "Since the start of " + startYearDate.getFullYear();
-  getCountQueries();
-  getPolicy();
-  displayInsights();
-  displayStrategyVOR();
-  displayStrategyAAM();
-  getExportLink();
+  oareport(org);
 });
 
 lastYearBtn.addEventListener("click", function() {
   replaceDateRange(lastYearStartDate, lastYearEndDate);
   insightsDateRange.textContent = "In " + lastYearStartDate.getFullYear();
-  getCountQueries();
-  getPolicy();
-  displayInsights();
-  displayStrategyVOR();
-  displayStrategyAAM();
-  getExportLink();
+  oareport(org);
 });
 
 twoYearsBtn.addEventListener("click", function() {
   replaceDateRange(twoYearsStartDate, twoYearsEndDate);
   insightsDateRange.textContent = "In " + twoYearsStartDate.getFullYear();
-  getCountQueries();
-  getPolicy();
-  displayInsights();
-  displayStrategyVOR();
-  displayStrategyAAM();
-  getExportLink();
+  oareport(org);
 });
 
 allTimeBtn.addEventListener("click", function() {
   replaceDateRange(new Date(1980, 0, 1), currentDate);
   insightsDateRange.textContent = "All-time";
-  getCountQueries();
-  getPolicy();
-  displayInsights();
-  displayStrategyVOR();
-  displayStrategyAAM();
-  getExportLink();
+  oareport(org);
 });
