@@ -242,7 +242,7 @@ oareport = function(org) {
             // canArchiveOaPercentageContents = document.querySelector("#can_archive_percent_oa");
             var canArchiveVORTableRows = "";
 
-            for (i = 0; i <= (canArchiveVORLength-1); i++) {
+            for (i = 0; i <= (canArchiveVORLength); i++) {
               var title = canArchiveVORList[i]._source.title,
                   author = canArchiveVORList[i]._source.author_email_name,
                   doi   = canArchiveVORList[i]._source.DOI,
@@ -307,7 +307,7 @@ oareport = function(org) {
             // Set up and get list of emails for archivable AAMs
             var canArchiveAAMTableRows = "";
 
-            for (i = 0; i < (canArchiveAAMLength-1); i++) {
+            for (i = 0; i < (canArchiveAAMLength); i++) {
               var title = canArchiveAAMList[i]._source.title,
                   author = canArchiveAAMList[i]._source.author_email_name,
                   doi   = canArchiveAAMList[i]._source.DOI,
