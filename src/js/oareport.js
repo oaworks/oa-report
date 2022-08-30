@@ -120,8 +120,8 @@ oareport = function(org) {
       isPaperURL    = (dateRange + response.data.hits.hits[0]._source.analysis.is_paper); // used for full-email download in getExportLink()
       isPaperQuery   = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_paper);
       isEligibleQuery = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_covered_by_policy);
-      isOAQuery      = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_oa);
-      isFreeQuery      = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.analysis.is_free_to_read);
+      //isOAQuery      = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_oa);
+      isFreeQuery      = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_free_to_read);
       canArchiveAAMQuery  = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
       canArchiveAAMListQuery = (queryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
       canArchiveVORQuery  = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_vor.query);
@@ -130,15 +130,18 @@ oareport = function(org) {
 
       isPaper        = axios.get(isPaperQuery);
       isEligible     = axios.get(isEligibleQuery);
-      isOA           = axios.get(isOAQuery);
+      //isOA           = axios.get(isOAQuery);
       isFree           = axios.get(isFreeQuery);
       canArchiveAAM  = axios.get(canArchiveAAMQuery);
       canArchiveAAMList = axios.get(canArchiveAAMListQuery);
       canArchiveVOR  = axios.get(canArchiveVORQuery);
       canArchiveVORList = axios.get(canArchiveVORListQuery);
 
+
+      console.log("org index: " + base + "orgs?q=name:%22" + org + "%22");
       console.log("canArchiveVORListQuery: " + canArchiveVORListQuery);
       console.log("canArchiveAAMListQuery: " + canArchiveAAMListQuery);
+      console.log("isFreeQuery: " + isFreeQuery);
     };
 
     /** Check for an OA policy and display a link to the policy page in a tooltip **/
@@ -168,13 +171,12 @@ oareport = function(org) {
 
     /**  Display Insights **/
     displayInsights = function() {
-      Promise.all([isPaper, isOA, isCompliant, isEligible, isFree])
+      Promise.all([isPaper, isFree, isCompliant, isEligible])
         .then(function (results) {
           let isPaper = results[0].data,
-              isOA    = results[1].data,
+              isFree    = results[1].data,
               isCompliant = results[2].data,
-              isEligible = results[3].data,
-              isFree = results[4].data;
+              isEligible = results[3].data;
 
           // Display totals and % of articles
           articlesContents.textContent = makeNumberReadable(isPaper);
@@ -392,8 +394,6 @@ oareport = function(org) {
     displayStrategyVOR();
     displayStrategyAAM();
     getExportLink();
-
-    console.log("org index: " + base + "orgs?q=name:%22" + org + "%22");
   })
   .catch(function (error) { console.log("ERROR: " + error); });
 };
