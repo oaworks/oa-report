@@ -137,7 +137,6 @@ oareport = function(org) {
       canArchiveVOR  = axios.get(canArchiveVORQuery);
       canArchiveVORList = axios.get(canArchiveVORListQuery);
 
-
       console.log("org index: " + base + "orgs?q=name:%22" + org + "%22");
       console.log("canArchiveVORListQuery: " + canArchiveVORListQuery);
       console.log("canArchiveAAMListQuery: " + canArchiveAAMListQuery);
@@ -435,43 +434,23 @@ twoYearsBtn.textContent       = twoYearsStartDate.getFullYear();
 startYearBtn.addEventListener("click", function() {
   replaceDateRange(startYearDate, currentDate);
   insightsDateRange.textContent = "Since the start of " + startYearDate.getFullYear();
-  getCountQueries();
-  getPolicy();
-  displayInsights();
-  displayStrategyVOR();
-  displayStrategyAAM();
-  getExportLink();
+  oareport(org);
 });
 
 lastYearBtn.addEventListener("click", function() {
   replaceDateRange(lastYearStartDate, lastYearEndDate);
   insightsDateRange.textContent = "In " + lastYearStartDate.getFullYear();
-  getCountQueries();
-  getPolicy();
-  displayInsights();
-  displayStrategyVOR();
-  displayStrategyAAM();
-  getExportLink();
+  oareport(org);
 });
 
 twoYearsBtn.addEventListener("click", function() {
   replaceDateRange(twoYearsStartDate, twoYearsEndDate);
   insightsDateRange.textContent = "In " + twoYearsStartDate.getFullYear();
-  getCountQueries();
-  getPolicy();
-  displayInsights();
-  displayStrategyVOR();
-  displayStrategyAAM();
-  getExportLink();
+  oareport(org);
 });
 
 allTimeBtn.addEventListener("click", function() {
   replaceDateRange(new Date(1980, 0, 1), currentDate);
   insightsDateRange.textContent = "All-time";
-  getCountQueries();
-  getPolicy();
-  displayInsights();
-  displayStrategyVOR();
-  displayStrategyAAM();
-  getExportLink();
+  oareport(org);
 });
