@@ -72,6 +72,50 @@ permalink: "{{ org._source.objectID | slug }}/"
     </header>
 
     <dl class="col-span-12 mb-6 grid grid-cols-1 gap-3 lg:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden">
+        <dt>
+          <div class="absolute bg-carnation-500 text-white rounded-md p-6">
+            {% icon "file-text" %}
+          </div>
+          <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
+            Articles published
+            {{ component("tooltip", {
+              msg: "The total number of articles published by grantees or authors at your organization."
+            }) }}
+          </p>
+        </dt>
+        <dd class="ml-24 flex items-baseline">
+          <p class="text-4xl font-semibold text-neutral-900">
+            <span id="articles">000</span>
+          </p>
+        </dd>
+      </div>
+
+      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden">
+        <dt>
+          <div class="absolute bg-carnation-500 text-white rounded-md p-6">
+            {% icon "unlock" %}
+          </div>
+          <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
+            Free-to-read articles
+            {{ component("tooltip", {
+              msg: "The total number of articles that are free to read on the publisher website or any online repository, including temporarily accessible articles (“bronze Open Access”)."
+            }) }}
+          </p>
+        </dt>
+        <dd class="ml-24 flex items-baseline">
+          <p class="text-4xl font-semibold text-neutral-900">
+            {# TODO: only display OA rates for orgs w/out policies #}
+            {# <span id="percent_oa">00%</span> #}
+            <span id="percent_free">00%</span>
+          </p>
+          <p class="ml-2 text-sm font-medium text-neutral-600">
+            {# <span id="articles_oa">000</span> #}
+            <span id="articles_free">000</span>
+          </p>
+        </dd>
+      </div>
+
       <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden" id="compliance">
         <dt>
           <div class="absolute bg-carnation-500 text-white rounded-md p-6">
@@ -88,47 +132,6 @@ permalink: "{{ org._source.objectID | slug }}/"
           </p>
           <p class="ml-2 text-sm font-medium text-neutral-600">
             <span id="articles_compliant">000</span>
-          </p>
-        </dd>
-      </div>
-
-      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden">
-        <dt>
-          <div class="absolute bg-carnation-500 text-white rounded-md p-6">
-            {% icon "unlock" %}
-          </div>
-          <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
-            Open Access articles
-            {{ component("tooltip", {
-              msg: "The total number of articles that are currently Open Access, either because the version of record is Open Access (“gold”, “diamond”, or “hybrid” Open Access) or because the article was preprinted or been made available through self-archiving (“green” Open Access)."
-            }) }}
-          </p>
-        </dt>
-        <dd class="ml-24 flex items-baseline">
-          <p class="text-4xl font-semibold text-neutral-900">
-            <span id="percent_oa">00%</span>
-          </p>
-          <p class="ml-2 text-sm font-medium text-neutral-600">
-            <span id="articles_oa">000</span>
-          </p>
-        </dd>
-      </div>
-
-      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden">
-        <dt>
-          <div class="absolute bg-carnation-500 text-white rounded-md p-6">
-            {% icon "file-text" %}
-          </div>
-          <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
-            Articles published
-            {{ component("tooltip", {
-              msg: "The total number of articles published by grantees or authors at your organization."
-            }) }}
-          </p>
-        </dt>
-        <dd class="ml-24 flex items-baseline">
-          <p class="text-4xl font-semibold text-neutral-900">
-            <span id="articles">000</span>
           </p>
         </dd>
       </div>
@@ -170,36 +173,36 @@ permalink: "{{ org._source.objectID | slug }}/"
       Use an "onChange" listener to redirect the user to the selected tab URL. #}
     <div class="sm:hidden">
       <label for="tabs" class="sr-only">Select a tab</label>
-      <select id="tabs" name="tabs" class="block w-full pl-3 pr-10 py-2 text-base border-neutral-300 focus:outline-none focus:ring-carnation-500 focus:border-carnation-500 sm:text-sm rounded-md">
-        <option>Deposit Publisher PDFs</option>
-        <option selected>Deposit Accepted Manuscripts</option>
+      <select name="tabs" class="block w-full pl-3 pr-10 py-2 text-base border-neutral-300 focus:outline-none focus:ring-carnation-500 focus:border-carnation-500 sm:text-sm rounded-md js-strategy-select">
+        <option value="canArchiveVOR" selected>Deposit publisher PDFs</option>
+        <option value="canArchiveAAM">Deposit accepted manuscripts</option>
       </select>
     </div>
 
     <div class="hidden sm:block">
       <div class="border-b border-neutral-200">
-        <ul class="-mb-px flex divide-x divide-neutral-300 border-b border-neutral-300 js-tabs" aria-label="Tabs">
+        <ul class="-mb-px flex divide-x divide-neutral-300 border-b border-neutral-300 js-tabs" role="tablist" aria-label="Strategies Tabs">
           <li class="js-tab-item">
-            <a href="#item1" class="border-transparent whitespace-nowrap flex p-4 border-t-4 bg-white text-sm transition duration-300 ease-in-out font-bold border-neutral-900 text-neutral-900">
+            <button role="tab" tabindex="0" aria-selected="true" aria-controls="can-archive-vor" class="border-transparent whitespace-nowrap flex p-4 border-t-4 bg-white text-sm transition duration-300 ease-in-out font-bold border-neutral-900 text-neutral-900" id="tab-can-archive-vor">
               Deposit publisher PDFs
               <span id="count_vor" class="bg-neutral-800 text-white hidden ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block">0</span>
-            </a>
+            </button>
           </li>
           <li class="js-tab-item">
-            <a href="#item2" class="border-transparent whitespace-nowrap flex p-4 border-t-4 bg-white text-sm transition duration-300 ease-in-out font-normal hover:text-neutral-700 hover:border-neutral-300">
+            <button role="tab" tabindex="-1" aria-selected="false" aria-controls="can-archive-aam" class="border-transparent whitespace-nowrap flex p-4 border-t-4 bg-white text-sm transition duration-300 ease-in-out font-normal hover:text-neutral-700 hover:border-neutral-300" id="tab-can-archive-aam">
               Deposit accepted manuscripts
               <span id="count_aam" class="bg-neutral-800 text-white hidden ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block">0</span>
-            </a>
+            </button>
           </li>
         </ul>
       </div>
     </div>
   </nav>
 
-  <div class="js-tab-content">
+  <div class="js-tab-content-all">
     {# TODO: don’t hardcode these tabs #}
     {# Deposit publisher PDF (VORs) #}
-    <section class="grid grid-cols-12 gap-3 lg:gap-6 md:gap-12 js-tab-content" id="item1">
+    <section class="grid grid-cols-12 gap-3 lg:gap-6 md:gap-12 js-tab-content" role="tabpanel" tabindex="0" aria-labelledby="tab-can-archive-vor" id="can-archive-vor">
       <header class="md:mb-12 col-span-12 lg:col-span-4">
         <div class=" lg:sticky lg:top-3">
           <p class="mb-3 text-base font-normal text-neutral-700 lg:duration-500 js-label_text_toggle"><span class="text-carnation-500 js-icon_toggle">{% icon_small "archive" %}</span> Self-archive articles</p>
@@ -207,7 +210,7 @@ permalink: "{{ org._source.objectID | slug }}/"
           <p class="text-xs md:text-base mb-3 md:mb-6">Send emails to authors to request they make their work free to read. In these cases, they can do that by making a <strong>publisher PDF (version of record, VOR)</strong> available in a repository.</p>
         </div>
       </header>
-      <div class="col-span-12 lg:col-span-8 border-t sm:border-0">
+      <div class="col-span-12 lg:col-span-8 border-t pt-3 sm:pt-0 sm:border-0">
         <div class="grid grid-cols-12 gap-3 lg:gap-6 flex justify-between">
           <div class="mb-3 col-span-12 md:col-span-6">
             <p class="mb-1 text-neutral-900 text-lg font-semibold leading-6">
@@ -216,7 +219,6 @@ permalink: "{{ org._source.objectID | slug }}/"
                 msg: "<p class='mb-2'>The number of articles that are currently behind a paywall and where the publisher allows the author to make the publisher PDF available in a repository.</p><p>We tried to remove common errors and articles that are already in a repository (either embargoed or available). This list was produced using Unpaywall, Crossref, and ShareYourPaper Permissions data.</p>"
               }) }}
             </p>
-            <p class="text-neutral-700 text-base" id="latest_vor_actions">Showing the 100 most recent articles</p>
           </div>
           {# TODO: think more about the potential percentage #}
           {# <div class="col-span-12 md:col-span-6 md:text-right">
@@ -228,7 +230,7 @@ permalink: "{{ org._source.objectID | slug }}/"
           <table class="divide-y divide-neutral-300 table-fixed w-full">
             <thead class="bg-neutral-800 text-white">
               <tr>
-                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-6/12">Article</th>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-10/12 sm:w-6/12">Article</th>
                 <th scope="col" class="hidden px-3 py-3.5 text-left text-sm font-semibold w-4/12 sm:table-cell">Corresponding author</th>
                 <th scope="col" class="text-sm font-semibold py-3.5 pl-3 pr-4 w-2/12">
                   Open draft
@@ -245,7 +247,7 @@ permalink: "{{ org._source.objectID | slug }}/"
     </section>
 
     {# Deposit AAMs #}
-    <section class="grid grid-cols-12 gap-3 lg:gap-6 md:gap-12 js-tab-content hidden" id="item2">
+    <section class="grid grid-cols-12 gap-3 lg:gap-6 md:gap-12 js-tab-content hidden" role="tabpanel" tabindex="0" aria-labelledby="tab-can-archive-aam" id="can-archive-aam" hidden>
       <header class="md:mb-12 col-span-12 lg:col-span-4">
         <div class=" lg:sticky lg:top-3">
           <p class="mb-3 text-base font-normal text-neutral-700 lg:duration-500 js-label_text_toggle"><span class="text-carnation-500 js-icon_toggle">{% icon_small "archive" %}</span> Self-archive articles</p>
@@ -253,7 +255,7 @@ permalink: "{{ org._source.objectID | slug }}/"
           <p class="text-xs md:text-base mb-3 md:mb-6">Send emails to authors to request they make their work free to read. In these cases, they can do that by making an <strong>author accepted manuscript (AAM)</strong> available in a repository.</p>
         </div>
       </header>
-      <div class="col-span-12 lg:col-span-8 border-t sm:border-0">
+      <div class="col-span-12 lg:col-span-8 border-t pt-3 sm:pt-0 sm:border-0">
         <div class="grid grid-cols-12 gap-3 lg:gap-6 flex justify-between">
           <div class="mb-3 col-span-12 md:col-span-6">
             <p class="mb-1 text-neutral-900 text-lg font-semibold leading-6">
@@ -262,14 +264,13 @@ permalink: "{{ org._source.objectID | slug }}/"
                 msg: "<p class='mb-2'>The number of articles that are currently behind a paywall and where the publisher allows the author to make the author accepted manuscript in a repository.</p><p>We tried to remove common errors and articles that are already in a repository (either embargoed or available). This list was produced using Unpaywall, Crossref, and ShareYourPaper Permissions data.</p>"
               }) }}
             </p>
-            <p class="text-neutral-700 text-base" id="latest_aam_actions">Showing the 100 most recent articles</p>
           </div>
         </div>
         <div class="mb-8 overflow-hidden sm:-mx-6 md:mx-0 md:rounded-lg drop-shadow-lg">
           <table class="divide-y divide-neutral-300 table-fixed w-full">
             <thead class="bg-neutral-800 text-white">
               <tr>
-                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-6/12">Article</th>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-10/12 sm:w-6/12">Article</th>
                 <th scope="col" class="hidden px-3 py-3.5 text-left text-sm font-semibold w-4/12 sm:table-cell">Corresponding author</th>
                 <th scope="col" class="text-sm font-semibold py-3.5 pl-3 pr-4 w-2/12">
                   Open draft
