@@ -393,7 +393,8 @@ oareport = function(org) {
     displayInsights();
     displayStrategyVOR();
     displayStrategyAAM();
-    getExportLink();
+    // TODO: uncomment once oaworks/internal-planning#316 is done
+    // getExportLink();
   })
   .catch(function (error) { console.log("ERROR: " + error); });
 };
