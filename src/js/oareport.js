@@ -169,6 +169,7 @@ oareport = function(org) {
     };
 
     /**  Display Insights **/
+    // TODO: break these down into one function per metric
     displayInsights = function() {
       Promise.all([isPaper, isFree, isCompliant, isEligible])
         .then(function (results) {
@@ -241,7 +242,7 @@ oareport = function(org) {
             // canArchiveOaPercentageContents = document.querySelector("#can_archive_percent_oa");
             var canArchiveVORTableRows = "";
 
-            for (i = 0; i <= (canArchiveVORLength-1); i++) {
+            for (i = 0; i <= (canArchiveVORLength); i++) {
               var title = canArchiveVORList[i]._source.title,
                   author = canArchiveVORList[i]._source.author_email_name,
                   doi   = canArchiveVORList[i]._source.DOI,
@@ -306,7 +307,7 @@ oareport = function(org) {
             // Set up and get list of emails for archivable AAMs
             var canArchiveAAMTableRows = "";
 
-            for (i = 0; i < (canArchiveAAMLength-1); i++) {
+            for (i = 0; i < (canArchiveAAMLength); i++) {
               var title = canArchiveAAMList[i]._source.title,
                   author = canArchiveAAMList[i]._source.author_email_name,
                   doi   = canArchiveAAMList[i]._source.DOI,
@@ -392,7 +393,8 @@ oareport = function(org) {
     displayInsights();
     displayStrategyVOR();
     displayStrategyAAM();
-    getExportLink();
+    // TODO: uncomment once oaworks/internal-planning#316 is done
+    // getExportLink();
   })
   .catch(function (error) { console.log("ERROR: " + error); });
 };
