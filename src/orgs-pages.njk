@@ -198,7 +198,7 @@ permalink: "{{ org._source.objectID | slug }}/"
             </button>
           </li>
 
-          <li class="js-tab-item">
+          <li class="js-tab-item" id="has-apc-followup-item">
             <button role="tab" tabindex="-1" aria-selected="false" aria-controls="has-apc-followup" class="border-transparent whitespace-nowrap flex p-4 border-t-4 bg-white text-sm transition duration-300 ease-in-out font-normal hover:text-neutral-700 hover:border-neutral-300" id="tab-has-apc-followup">
               Publisher follow-up
               <span id="count_apc" class="bg-neutral-800 text-white hidden ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block">0</span>
@@ -301,7 +301,7 @@ permalink: "{{ org._source.objectID | slug }}/"
       <header class="md:mb-12 col-span-12 lg:col-span-4">
         <div class=" lg:sticky lg:top-3">
           {# <p class="mb-3 text-base font-normal text-neutral-700 lg:duration-500 js-label_text_toggle"><span class="text-carnation-500 js-icon_toggle">{% icon_small "archive" %}</span> Self-archive articles</p> #}
-          <h3 class="font-semibold text-xl md:text-4xl mb-3 md:mb-6">Email publishers when APC is paid, but article isn't compliant</h3>
+          <h3 class="font-semibold text-xl md:text-4xl mb-3 md:mb-6">Email publishers when APC is paid, but article isn’t compliant</h3>
           <p class="text-xs md:text-base mb-3 md:mb-6">Follow up with publishers to ensure that when an APC is paid, the article is made compliant.</p>
         </div>
       </header>
