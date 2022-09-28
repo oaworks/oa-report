@@ -83,6 +83,11 @@ var totalAAMActionsContents = document.querySelector("#total_aam_actions"),
     canArchiveAAMTable = document.querySelector("#can_archive_aam_list"),
     countAAMActionsContents = document.querySelector("#count_aam");
 
+// Follow up paid APCs strategy
+var totalAPCActionsContents = document.querySelector("#total_apc_actions"),
+    hasAPCFollowupTable = document.querySelector("#has_apc_followup_list"),
+    countAPCActionsContents = document.querySelector("#count_apc");
+
 /* Date display and filtering */
 // Set today’s date and 12 months ago date to display most recent Insights data as default
 const currentDate           = new Date(),
@@ -126,6 +131,8 @@ oareport = function(org) {
       canArchiveAAMListQuery = (queryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
       canArchiveVORQuery  = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_vor.query);
       canArchiveVORListQuery = (queryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_vor.query);
+      hasAPCFollowupQuery  = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.apc_followup.query);
+      hasAPCFollowupListQuery = (queryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.apc_followup.query);
       hasCustomExportIncludes = (response.data.hits.hits[0]._source.export_includes);
 
       isPaper        = axios.get(isPaperQuery);
@@ -136,6 +143,8 @@ oareport = function(org) {
       canArchiveAAMList = axios.get(canArchiveAAMListQuery);
       canArchiveVOR  = axios.get(canArchiveVORQuery);
       canArchiveVORList = axios.get(canArchiveVORListQuery);
+      hasAPCFollowup  = axios.get(hasAPCFollowupQuery);
+      hasAPCFollowupList = axios.get(hasAPCFollowupListQuery);
 
       console.log("org index: " + base + "orgs?q=name:%22" + org + "%22");
       console.log("canArchiveVORListQuery: " + canArchiveVORListQuery);
@@ -244,11 +253,13 @@ oareport = function(org) {
 
             for (i = 0; i <= (canArchiveVORLength); i++) {
               var title = canArchiveVORList[i]._source.title,
-                  author = canArchiveVORList[i]._source.author_email_name,
+                  //author = canArchiveVORList[i]._source.author_email_name,
+                  author = "Test",
                   doi   = canArchiveVORList[i]._source.DOI,
                   pubDate = canArchiveVORList[i]._source.published_date,
                   journal = canArchiveVORList[i]._source.journal,
-                  authorEmail = canArchiveVORList[i]._source.email;
+                  // authorEmail = canArchiveVORList[i]._source.email;
+                  authorEmail = "email@email.com";
                   pubDate = makeDateReadable(new Date(pubDate));
 
               canArchiveVORMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
@@ -286,7 +297,7 @@ oareport = function(org) {
       ).catch(function (error) { console.log("displayStrategyVOR error: " + error); });
     };
 
-    /** Display Strategies: deposit AAM (accepted manuscripts) **/
+    /** Display Strategies: deposit AAM (accepted manuscripts)  **/
     displayStrategyAAM = function() {
       Promise.all([canArchiveAAM, canArchiveAAMList])
         .then(function (results) {
@@ -350,6 +361,70 @@ oareport = function(org) {
       ).catch(function (error) { console.log("displayStrategyAAM error: " + error); })
     };
 
+    /** Display Strategies: follow up with uncompliant articles with paid APCs **/
+    displayStrategyAPCFollowup = function() {
+      Promise.all([hasAPCFollowup, hasAPCFollowupList])
+        .then(function (results) {
+          let hasAPCFollowup = results[0].data,
+              hasAPCFollowupList = results[1].data.hits.hits,
+              hasAPCFollowupLength = parseFloat(hasAPCFollowup);
+
+          // Show total number of actions in tab & above table
+          totalAPCActionsContents.textContent = makeNumberReadable(hasAPCFollowupLength);
+          countAPCActionsContents.textContent = makeNumberReadable(hasAPCFollowupLength);
+
+          // Generate list of APC followups if there are any
+          if (hasAPCFollowup === 0) {
+            totalAPCActionsContents.textContent = "No ";
+            hasAPCFollowupTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find accepted manuscripts that could be deposited. <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
+          }
+          else if (hasAPCFollowup > 0 || hasAPCFollowup !== null) {
+            // Set up and get list of emails for APC followups
+            var hasAPCFollowupTableRows = "";
+
+            for (i = 0; i < (hasAPCFollowupLength); i++) {
+              var title = hasAPCFollowupList[i]._source.title,
+                  author = hasAPCFollowupList[i]._source.author_email_name,
+                  doi   = hasAPCFollowupList[i]._source.DOI,
+                  pubDate = hasAPCFollowupList[i]._source.published_date,
+                  journal = hasAPCFollowupList[i]._source.journal,
+                  authorEmail = hasAPCFollowupList[i]._source.email;
+              pubDate = makeDateReadable(new Date(pubDate));
+
+              // Get email draft/body for this article and replace with its metadata
+              hasAPCFollowupMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
+              hasAPCFollowupMailto = hasAPCFollowupMailto.replaceAll("\'", "’");
+              hasAPCFollowupMailto = hasAPCFollowupMailto.replaceAll("{title}", (title ? title : "[No article title found]"));
+              hasAPCFollowupMailto = hasAPCFollowupMailto.replaceAll("{doi}", (doi ? doi : "[No DOI found]"));
+              hasAPCFollowupMailto = hasAPCFollowupMailto.replaceAll("{author_name}", (author ? author : "researcher"));
+              hasAPCFollowupMailto = hasAPCFollowupMailto.replaceAll("{author_email}", (authorEmail ? authorEmail : ""));
+
+              /*jshint multistr: true */
+              hasAPCFollowupTableRows += '<tr>\
+                <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
+                  <div class="mb-1 text-neutral-500">' + (pubDate ? pubDate : "[No date found]") + '</div>\
+                  <div class="mb-1 font-medium text-neutral-900 hover:text-carnation-500">\
+                    <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + (title ? title : "[No article title found]") + '</a>\
+                  </div>\
+                  <div class="text-neutral-500">' + (journal ? journal : "[No journal name found]") + '</div>\
+                </td>\
+                <td class="hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell">\
+                  <div class="mb-1 text-neutral-900">' + (author ? author : "[No author’s name found]") + '</div>\
+                  <div class="text-neutral-500">' + (authorEmail ? authorEmail : "[No email found]") + '</div>\
+                </td>\
+                <td class="whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium">\
+                  <a href="mailto:' + hasAPCFollowupMailto + '" target="_blank" rel="noopener" class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200">\
+                    <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail inline-block h-4 duration-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>\
+                  </a>\
+                </td>\
+              </tr>';
+            }
+            hasAPCFollowupTable.innerHTML = hasAPCFollowupTableRows;
+          }
+        }
+      ).catch(function (error) { console.log("displayStrategyAPCFollowup error: " + error); })
+    };
+
     /* "Download CSV" form: set query and date range in hidden input */
     getExportLink = function() {
       Promise.all([hasCustomExportIncludes])
@@ -393,6 +468,7 @@ oareport = function(org) {
     displayInsights();
     displayStrategyVOR();
     displayStrategyAAM();
+    displayStrategyAPCFollowup();
     // TODO: uncomment once oaworks/internal-planning#316 is done
     // getExportLink();
   })
