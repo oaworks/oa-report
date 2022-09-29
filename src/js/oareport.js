@@ -362,7 +362,7 @@ oareport = function(org) {
       hasAPCFollowup  = axios.get(hasAPCFollowupQuery);
       hasAPCFollowupList = axios.get(hasAPCFollowupListQuery);
 
-      console.log("")
+      console.log("hasAPCFollowupListQuery: " + hasAPCFollowupListQuery);
       if (response.data.hits.hits[0]._source.strategy.apc_followup) {
         Promise.all([hasAPCFollowup, hasAPCFollowupList])
           .then(function (results) {
@@ -391,6 +391,16 @@ oareport = function(org) {
                     journal = hasAPCFollowupList[i]._source.journal,
                     authorEmail = hasAPCFollowupList[i]._source.email;
                 pubDate = makeDateReadable(new Date(pubDate));
+
+                console.log("title: " + hasAPCFollowupList[i]._source.title);
+                console.log("publisher: " + hasAPCFollowupList[i]._source.publisher);
+                console.log("journal_oa_type: " + hasAPCFollowupList[i]._source.journal_oa_type);
+                console.log("oa_status: " + hasAPCFollowupList[i]._source.oa_status);
+                console.log("publisher_license: " + hasAPCFollowupList[i]._source.publisher_license);
+                console.log("supplements[0].apc_cost: " + hasAPCFollowupList[i]._source.supplements[0].apc_cost);
+                console.log("supplements[0].invoice_number: " + hasAPCFollowupList[i]._source.supplements[0].invoice_number);
+                console.log("supplements[0].invoice_date: " + hasAPCFollowupList[i]._source.supplements[0].invoice_date);
+                console.log("-------------------");
 
                 // Get email draft/body for this article and replace with its metadata
                 hasAPCFollowupMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
@@ -425,6 +435,7 @@ oareport = function(org) {
           }
         ).catch(function (error) { console.log("displayStrategyAPCFollowup error: " + error); })
       } else {
+        // remove tab if this strategy doesn’t exist for this org
         document.querySelector("#has-apc-followup-item").outerHTML = "";
         document.querySelector("#has-apc-followup").outerHTML = "";
       }
