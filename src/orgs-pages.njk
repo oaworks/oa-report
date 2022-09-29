@@ -320,14 +320,11 @@ permalink: "{{ org._source.objectID | slug }}/"
           <table class="divide-y divide-neutral-300 table-fixed w-full">
             <thead class="bg-neutral-800 text-white">
               <tr>
-                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-10/12 sm:w-6/12">Article</th>
-                <th scope="col" class="hidden px-3 py-3.5 text-left text-sm font-semibold w-4/12 sm:table-cell">Corresponding author</th>
-                <th scope="col" class="text-sm font-semibold py-3.5 pl-3 pr-4 w-2/12">
-                  Open draft
-                  {{ component("tooltip", {
-                    msg: "This will open a preset message in your email client. If you make any changes to the email, it will not be saved here."
-                  }) }}
-                </th>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-4/12 sm:w-3/12">Publisher</th>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-4/12 sm:w-3/12">Article</th>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-4/12 sm:w-2/12">Article’s OA status</th>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-4/12 sm:w-2/12">Journal</th>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-4/12 sm:w-2/12">Invoice</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-neutral-200 bg-white" id="has_apc_followup_list"></tbody>

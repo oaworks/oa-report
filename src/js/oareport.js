@@ -383,11 +383,16 @@ oareport = function(org) {
 
               for (i = 0; i < (hasAPCFollowupLength); i++) {
                 var title = hasAPCFollowupList[i]._source.title,
-                    author = hasAPCFollowupList[i]._source.author_email_name,
+                    publisher = hasAPCFollowupList[i]._source.publisher,
+                    journalOATtype = hasAPCFollowupList[i]._source.journal_oa_type,
+                    articleOAStatus = hasAPCFollowupList[i]._source.oa_status,
+                    license = hasAPCFollowupList[i]._source.publisher_license,
+                    costAPC = hasAPCFollowupList[i]._source.supplements[0].apc_cost,
+                    invoiceNb = hasAPCFollowupList[i]._source.supplements[0].invoice_number,
+                    invoiceDate = hasAPCFollowupList[i]._source.supplements[0].invoice_date,
                     doi   = hasAPCFollowupList[i]._source.DOI,
                     pubDate = hasAPCFollowupList[i]._source.published_date,
-                    journal = hasAPCFollowupList[i]._source.journal,
-                    authorEmail = hasAPCFollowupList[i]._source.email;
+                    journal = hasAPCFollowupList[i]._source.journal;
                 pubDate = makeDateReadable(new Date(pubDate));
 
                 console.log("title: " + hasAPCFollowupList[i]._source.title);
@@ -400,31 +405,49 @@ oareport = function(org) {
                 console.log("supplements[0].invoice_date: " + hasAPCFollowupList[i]._source.supplements[0].invoice_date);
                 console.log("-------------------");
 
-                // Get email draft/body for this article and replace with its metadata
-                hasAPCFollowupMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
-                hasAPCFollowupMailto = hasAPCFollowupMailto.replaceAll("\'", "’");
-                hasAPCFollowupMailto = hasAPCFollowupMailto.replaceAll("{title}", (title ? title : "[No article title found]"));
-                hasAPCFollowupMailto = hasAPCFollowupMailto.replaceAll("{doi}", (doi ? doi : "[No DOI found]"));
-                hasAPCFollowupMailto = hasAPCFollowupMailto.replaceAll("{author_name}", (author ? author : "researcher"));
-                hasAPCFollowupMailto = hasAPCFollowupMailto.replaceAll("{author_email}", (authorEmail ? authorEmail : ""));
-
                 /*jshint multistr: true */
                 hasAPCFollowupTableRows += '<tr>\
                   <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
+                    <div class="font-medium text-neutral-900">\
+                      ' + (publisher ? publisher : "[No publisher found]") + '\
+                    </div>\
+                  </td>\
+                  <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
                     <div class="mb-1 text-neutral-500">' + (pubDate ? pubDate : "[No date found]") + '</div>\
-                    <div class="mb-1 font-medium text-neutral-900 hover:text-carnation-500">\
+                    <div class="text-neutral-900 hover:text-carnation-500">\
                       <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + (title ? title : "[No article title found]") + '</a>\
                     </div>\
-                    <div class="text-neutral-500">' + (journal ? journal : "[No journal name found]") + '</div>\
                   </td>\
-                  <td class="hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell">\
-                    <div class="mb-1 text-neutral-900">' + (author ? author : "[No author’s name found]") + '</div>\
-                    <div class="text-neutral-500">' + (authorEmail ? authorEmail : "[No email found]") + '</div>\
+                  <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
+                    <div class="mb-1 text-neutral-900">\
+                      <span class="capitalize">\
+                      ' + (articleOAStatus ? articleOAStatus : "[No status found for this article]") + '\
+                      </span> article\
+                    </div>\
+                    <div class="text-neutral-500 uppercase">\
+                      ' + (license ? license : "[No license found]") + '\
+                    </div>\
                   </td>\
-                  <td class="whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium">\
-                    <a href="mailto:' + hasAPCFollowupMailto + '" target="_blank" rel="noopener" class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200">\
-                      <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail inline-block h-4 duration-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>\
-                    </a>\
+                  <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
+                    <div class="mb-1 text-neutral-900">\
+                      <span class="capitalize">\
+                      ' + (journalOATtype ? journalOATtype : "[No status found for this journal]") + '\
+                      </span> journal\
+                    </div>\
+                    <div class="text-neutral-500">\
+                      ' + (journal ? journal : "[No journal found]") + '\
+                    </div>\
+                  </td>\
+                  <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
+                    <div class="mb-1 text-neutral-900">\
+                      ' + (invoiceNb ? invoiceNb : "[No invoice number found]") + '\
+                    </div>\
+                    <div class="mb-1 text-neutral-500 uppercase">\
+                      ' + (invoiceDate ? invoiceDate : "[No invoice date found]") + '\
+                    </div>\
+                    <div class="text-neutral-500 uppercase">\
+                      ' + (costAPC ? costAPC : "[No APC cost found]") + '\
+                    </div>\
                   </td>\
                 </tr>';
               }
