@@ -246,13 +246,11 @@ oareport = function(org) {
 
             for (i = 0; i <= (canArchiveVORLength); i++) {
               var title = canArchiveVORList[i]._source.title,
-                  //author = canArchiveVORList[i]._source.author_email_name,
-                  author = "Test",
+                  author = canArchiveVORList[i]._source.author_email_name,
                   doi   = canArchiveVORList[i]._source.DOI,
                   pubDate = canArchiveVORList[i]._source.published_date,
                   journal = canArchiveVORList[i]._source.journal,
-                  // authorEmail = canArchiveVORList[i]._source.email;
-                  authorEmail = "email@email.com";
+                  authorEmail = canArchiveVORList[i]._source.email;
                   pubDate = makeDateReadable(new Date(pubDate));
 
               canArchiveVORMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
