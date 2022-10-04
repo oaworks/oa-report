@@ -423,8 +423,8 @@ oareport = function(org) {
                     <div class="mb-3 text-neutral-900">\
                       ' + (invoiceNb ? invoiceNb : "[No invoice number found]") + '\
                     </div>\
-                    <div class="mb-3 text-neutral-500 uppercase">\
-                      ' + (invoiceDate ? invoiceDate : "[No invoice date found]") + '\
+                    <div class="mb-3 text-neutral-500">\
+                      ' + (invoiceDate ? ('Issued on ' + invoiceDate) : "[No invoice date found]") + '\
                     </div>\
                     <div class="text-neutral-500 uppercase">\
                       ' + (costAPC ? costAPC : "[No APC cost found]") + '\
