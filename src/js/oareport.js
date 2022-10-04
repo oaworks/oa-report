@@ -387,7 +387,7 @@ oareport = function(org) {
                     journalOATtype = hasAPCFollowupList[i]._source.journal_oa_type,
                     articleOAStatus = hasAPCFollowupList[i]._source.oa_status,
                     license = hasAPCFollowupList[i]._source.publisher_license,
-                    costAPC = hasAPCFollowupList[i]._source.supplements[0].apc_cost,
+                    costAPC = "US$" + hasAPCFollowupList[i]._source.supplements[0].apc_cost,
                     invoiceNb = hasAPCFollowupList[i]._source.supplements[0].invoice_number,
                     invoiceDate = hasAPCFollowupList[i]._source.supplements[0].invoice_date,
                     doi   = hasAPCFollowupList[i]._source.DOI,
@@ -408,41 +408,31 @@ oareport = function(org) {
                 /*jshint multistr: true */
                 hasAPCFollowupTableRows += '<tr>\
                   <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
-                    <div class="font-medium text-neutral-900">\
+                    <div class="mb-1 font-medium text-neutral-900">\
                       ' + (publisher ? publisher : "[No publisher found]") + '\
+                    </div>\
+                    <div class="mb-3 text-neutral-900">\
+                      ' + (journal ? journal : "[No journal found]") + '\
+                    </div>\
+                    <div class="text-neutral-500">\
+                      ' + (journalOATtype ? ('<span class="capitalize font-bold">' + journalOATtype + '</span> journal') : "[No status found for this journal]") + '\
                     </div>\
                   </td>\
                   <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
                     <div class="mb-1 text-neutral-500">' + (pubDate ? pubDate : "[No date found]") + '</div>\
-                    <div class="text-neutral-900 hover:text-carnation-500">\
+                    <div class="mb-3 text-neutral-900 hover:text-carnation-500">\
                       <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + (title ? title : "[No article title found]") + '</a>\
                     </div>\
+                  <div class="text-neutral-500">\
+                    ' + (articleOAStatus ? ('<span class="capitalize font-bold">' + articleOAStatus + '</span> article') : "[No status found for this article]") + '\
+                     — ' + (license ? ('<span class="uppercase font-bold">' + license + '</span>') : "[No license found]") + '\
+                  </div>\
                   </td>\
                   <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
-                    <div class="mb-1 text-neutral-900">\
-                      <span class="capitalize">\
-                      ' + (articleOAStatus ? articleOAStatus : "[No status found for this article]") + '\
-                      </span> article\
-                    </div>\
-                    <div class="text-neutral-500 uppercase">\
-                      ' + (license ? license : "[No license found]") + '\
-                    </div>\
-                  </td>\
-                  <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
-                    <div class="mb-1 text-neutral-900">\
-                      <span class="capitalize">\
-                      ' + (journalOATtype ? journalOATtype : "[No status found for this journal]") + '\
-                      </span> journal\
-                    </div>\
-                    <div class="text-neutral-500">\
-                      ' + (journal ? journal : "[No journal found]") + '\
-                    </div>\
-                  </td>\
-                  <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
-                    <div class="mb-1 text-neutral-900">\
+                    <div class="mb-3 text-neutral-900">\
                       ' + (invoiceNb ? invoiceNb : "[No invoice number found]") + '\
                     </div>\
-                    <div class="mb-1 text-neutral-500 uppercase">\
+                    <div class="mb-3 text-neutral-500 uppercase">\
                       ' + (invoiceDate ? invoiceDate : "[No invoice date found]") + '\
                     </div>\
                     <div class="text-neutral-500 uppercase">\
