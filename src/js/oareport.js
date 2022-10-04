@@ -395,16 +395,6 @@ oareport = function(org) {
                     journal = hasAPCFollowupList[i]._source.journal;
                 pubDate = makeDateReadable(new Date(pubDate));
 
-                console.log("title: " + hasAPCFollowupList[i]._source.title);
-                console.log("publisher: " + hasAPCFollowupList[i]._source.publisher);
-                console.log("journal_oa_type: " + hasAPCFollowupList[i]._source.journal_oa_type);
-                console.log("oa_status: " + hasAPCFollowupList[i]._source.oa_status);
-                console.log("publisher_license: " + hasAPCFollowupList[i]._source.publisher_license);
-                console.log("supplements[0].apc_cost: " + hasAPCFollowupList[i]._source.supplements[0].apc_cost);
-                console.log("supplements[0].invoice_number: " + hasAPCFollowupList[i]._source.supplements[0].invoice_number);
-                console.log("supplements[0].invoice_date: " + hasAPCFollowupList[i]._source.supplements[0].invoice_date);
-                console.log("-------------------");
-
                 /*jshint multistr: true */
                 hasAPCFollowupTableRows += '<tr>\
                   <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
