@@ -151,14 +151,14 @@ oareport = function(org) {
 
     /** Check for an OA policy and display a link to the policy page in a tooltip **/
     getPolicy = function() {
-      const instance = tippy(document.querySelector('#org_oa_policy'), {
+      const instance = tippy(document.querySelector('#compliant_info'), {
         allowHTML: true,
         interactive: true,
         placement: 'bottom',
         appendTo: document.body,
       });
 
-      var policyURLContent = "";
+      var policyInfo = "";
 
       // ...get its URL
       hasPolicy = response.data.hits.hits[0]._source.policy.supported_policy;
@@ -169,13 +169,13 @@ oareport = function(org) {
         isCompliantQuery = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.compliance);
         isCompliant = axios.get(isCompliantQuery);
         /*jshint multistr: true */
-        policyURLContent = "The percentage of articles that are compliant with <a href='" + policyURL + "' target='_blank' rel='noopener' class='underline'>your organization’s Open Access policy</a>. This number is specific to your policy and your requirements.";
+        policyInfo = "The percentage of articles that are compliant with <a href='" + policyURL + "' target='_blank' rel='noopener' class='underline'>your organization’s Open Access policy</a>. This number is specific to your policy and your requirements.";
       } else {
-        policyURLContent = "We couldn’t track a policy for your organization.";
+        policyInfo = "We couldn’t track a policy for your organization.";
         compliantArticlesContents.textContent = "";
         compliantPercentageContents.textContent = "N/A";
       }
-      instance.setContent(policyURLContent);
+      instance.setContent(policyInfo);
     };
 
     /** Check for data availability statements **/
