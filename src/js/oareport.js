@@ -73,7 +73,9 @@ var articlesContents               = document.querySelector("#articles"),
     compliantPercentageContents    = document.querySelector("#percent_compliant"),
     complianceContents             = document.querySelector("#compliance"),
     dataStatementPercentageContents= document.querySelector("#percent_data_statement"),
-    dataStatementContents          = document.querySelector("#articles_data_statement");
+    dataStatementContents          = document.querySelector("#articles_data_statement"),
+    openDataPercentageContents     = document.querySelector("#percent_open_data"),
+    openDataContents               = document.querySelector("#articles_open_data");
 
 // Deposit VOR strategy
 var totalVORActionsContents        = document.querySelector("#total_vor_actions"),
@@ -208,10 +210,43 @@ oareport = function(org) {
       instance.setContent(dataStatementInfo);
     };
 
+    /** Check for open data **/
+    getOpenData = function() {
+      const instance = tippy(document.querySelector('#open_data_info'), {
+        allowHTML: true,
+        interactive: true,
+        placement: 'top',
+        appendTo: document.body,
+      });
+
+      var openDataInfo = "";
+
+      // ...check if there are any at al
+      hasOpenData = response.data.hits.hits[0]._source.analysis.has_open_data;
+
+      // Display whether or not articles have a data availability statement after being checked
+      if (hasOpenData) {
+        // Get their count
+        hasOpenDataQuery             = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_open_data);
+        hasCheckedDataQuery          = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_data);
+        hasOpenDataCount             = axios.get(hasOpenDataQuery);
+        hasCheckedDataCount          = axios.get(hasCheckedDataQuery);
+        /*jshint multistr: true */
+        openDataInfo = "Articles that generated and shared data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noopener'>CC-BY</a> license.";
+        console.log("hasOpenDataQuery: " + hasOpenDataQuery);
+        console.log("hasCheckedDataQuery: " + hasCheckedDataQuery);
+      } else {
+        openDataInfo = "We haven’t looked for articles sharing data openly for your organization.";
+        openDataContents.textContent = "";
+        openDataPercentageContents.textContent = "N/A";
+      }
+      instance.setContent(openDataInfo);
+    };
+
     /**  Display Insights **/
     // TODO: break these down into one function per metric
     displayInsights = function() {
-      Promise.all([isPaper, isFree, isEligible, isCompliant, hasDataStatementCount, hasCheckedDataStatementCount])
+      Promise.all([isPaper, isFree, isEligible, isCompliant, hasDataStatementCount, hasCheckedDataStatementCount, hasOpenDataCount, hasCheckedDataCount])
         .then(function (results) {
           let isPaper = results[0].data,
               isFree    = results[1].data,
@@ -260,6 +295,14 @@ oareport = function(org) {
                 hasCheckedDataStatementCount = results[5].data;
             dataStatementContents.textContent = makeNumberReadable(hasDataStatementCount) + " of " + makeNumberReadable(hasCheckedDataStatementCount) + " checked";
             dataStatementPercentageContents.textContent = Math.round(((hasDataStatementCount/hasCheckedDataStatementCount)*100)) + "%";
+          }
+
+          // Display totals and % of articles sharing data openly
+          if (hasOpenDataCount) {
+            let hasOpenDataCount = results[6].data,
+                hasCheckedDataCount = results[7].data;
+            openDataContents.textContent = makeNumberReadable(hasOpenDataCount) + " of " + makeNumberReadable(hasCheckedDataCount) + " checked";
+            openDataPercentageContents.textContent = Math.round(((hasOpenDataCount/hasCheckedDataCount)*100)) + "%";
           }
 
         }
@@ -524,6 +567,7 @@ oareport = function(org) {
     getCountQueries();
     getPolicy();
     getDataStatements();
+    getOpenData();
     displayInsights();
     displayStrategyVOR();
     displayStrategyAAM();
