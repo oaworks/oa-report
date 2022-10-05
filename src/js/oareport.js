@@ -2,7 +2,7 @@ const base           = "https://beta.oa.works/report/",
       queryBase      = base + "works?size=100&",
       countQueryBase = base + "works/count?",
       csvExportBase  = "https://bg.beta.oa.works/report/works.csv?";
-let isPaper, isEligible, isOA, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL, dateRangeButton, csvEmailButton, totalArticles;
+let isPaper, isEligible, isOA, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL, dateRangeButton, csvEmailButton, totalArticles, hasCheckedDataStatement;
 let isCompliant = false;
 
 // Detect browser’s locale to display human-readable numbers
@@ -115,7 +115,9 @@ var dateRange                  = "(published_date:>" + startDate + "%20AND%20pub
 
 // Get organisational data to produce reports
 oareport = function(org) {
-  let report = base + "orgs?q=name:%22" + org + "%22";
+  let report = base + "orgs?q=name:%22" + org + "%22",
+      queryPrefix = queryBase + "q=" + dateRange,
+      countQueryPrefix = countQueryBase + "q=" + dateRange;
 
   axios.get(report).then(function (response) {
 
@@ -123,20 +125,24 @@ oareport = function(org) {
     getCountQueries = function() {
 
       isPaperURL    = (dateRange + response.data.hits.hits[0]._source.analysis.is_paper); // used for full-email download in getExportLink()
-      isPaperQuery   = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_paper);
-      isEligibleQuery = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_covered_by_policy);
-      //isOAQuery      = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_oa);
-      isFreeQuery      = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_free_to_read);
-      canArchiveAAMQuery  = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
-      canArchiveAAMListQuery = (queryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
-      canArchiveVORQuery  = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_vor.query);
-      canArchiveVORListQuery = (queryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_vor.query);
+      isPaperQuery   = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_paper);
+      isEligibleQuery = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_covered_by_policy);
+      //isOAQuery      = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_oa);
+      isFreeQuery      = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_free_to_read);
+      hasDataStatementQuery = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_data_availability_statement);
+      hasCheckedDataStatementQuery = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_checked_data_availability_statement);
+      canArchiveAAMQuery  = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
+      canArchiveAAMListQuery = (queryPrefix + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
+      canArchiveVORQuery  = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.email_author_vor.query);
+      canArchiveVORListQuery = (queryPrefix + response.data.hits.hits[0]._source.strategy.email_author_vor.query);
       hasCustomExportIncludes = (response.data.hits.hits[0]._source.export_includes);
 
       isPaper        = axios.get(isPaperQuery);
       isEligible     = axios.get(isEligibleQuery);
       //isOA           = axios.get(isOAQuery);
       isFree           = axios.get(isFreeQuery);
+      hasDataStatement = axios.get(hasDataStatementQuery);
+      hasCheckedDataStatement = axios.get(hasCheckedDataStatement);
       canArchiveAAM  = axios.get(canArchiveAAMQuery);
       canArchiveAAMList = axios.get(canArchiveAAMListQuery);
       canArchiveVOR  = axios.get(canArchiveVORQuery);
@@ -160,7 +166,7 @@ oareport = function(org) {
       // ...then get the number of compliant articles and display a tooltip
       if (hasPolicy) {
         policyURL = response.data.hits.hits[0]._source.policy.url;
-        isCompliantQuery = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.compliance);
+        isCompliantQuery = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.compliance);
         isCompliant = axios.get(isCompliantQuery);
         /*jshint multistr: true */
         var policyURLContent = "The percentage of articles that are compliant with <a href='" + policyURL + "' target='_blank' rel='noopener' class='underline'>your organization’s Open Access policy</a>. This number is specific to your policy and your requirements.";
@@ -356,8 +362,8 @@ oareport = function(org) {
     displayStrategyAPCFollowup = function() {
 
       hasAPCFollowupSort = "&sort=publisher.keyword:asc,journal.keyword:asc,supplements.invoice_date.keyword:desc";
-      hasAPCFollowupQuery  = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.apc_followup.query);
-      hasAPCFollowupListQuery = (queryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.apc_followup.query) + hasAPCFollowupSort;
+      hasAPCFollowupQuery  = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.apc_followup.query);
+      hasAPCFollowupListQuery = (queryPrefix + response.data.hits.hits[0]._source.strategy.apc_followup.query) + hasAPCFollowupSort;
       hasAPCFollowup  = axios.get(hasAPCFollowupQuery);
       hasAPCFollowupList = axios.get(hasAPCFollowupListQuery);
 
