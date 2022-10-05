@@ -56,97 +56,97 @@ replaceDateRange = function(newStart, newEnd) {
 
 /* Get report page elements where data will be inserted */
 // Date range
-var endDateContents      = document.querySelector("#end_date"),
-    startDateContents    = document.querySelector("#start_date");
+var endDateContents                = document.querySelector("#end_date"),
+    startDateContents              = document.querySelector("#start_date");
 
 // Send CSV data by email form
-var queryHiddenInput = document.querySelector("#download-form-q"),
-    includeHiddenInput = document.querySelector("#download-form-include");
+var queryHiddenInput               = document.querySelector("#download-form-q"),
+    includeHiddenInput             = document.querySelector("#download-form-include");
 
 // Individual insights (metrics)
-var articlesContents = document.querySelector("#articles"),
-    oaArticlesContents = document.querySelector("#articles_oa"),
-    oaPercentageContents = document.querySelector("#percent_oa"),
-    freeArticlesContents = document.querySelector("#articles_free"),
-    freePercentageContents = document.querySelector("#percent_free"),
-    compliantArticlesContents = document.querySelector("#articles_compliant"),
-    compliantPercentageContents = document.querySelector("#percent_compliant"),
-    complianceContents = document.querySelector("#compliance");
+var articlesContents               = document.querySelector("#articles"),
+    oaArticlesContents             = document.querySelector("#articles_oa"),
+    oaPercentageContents           = document.querySelector("#percent_oa"),
+    freeArticlesContents           = document.querySelector("#articles_free"),
+    freePercentageContents         = document.querySelector("#percent_free"),
+    compliantArticlesContents      = document.querySelector("#articles_compliant"),
+    compliantPercentageContents    = document.querySelector("#percent_compliant"),
+    complianceContents             = document.querySelector("#compliance");
 
 // Deposit VOR strategy
-var totalVORActionsContents = document.querySelector("#total_vor_actions"),
-    canArchiveVORTable = document.querySelector("#can_archive_vor_list"),
-    countVORActionsContents = document.querySelector("#count_vor");
+var totalVORActionsContents        = document.querySelector("#total_vor_actions"),
+    canArchiveVORTable             = document.querySelector("#can_archive_vor_list"),
+    countVORActionsContents        = document.querySelector("#count_vor");
 
 // Deposit AAM strategy
-var totalAAMActionsContents = document.querySelector("#total_aam_actions"),
-    canArchiveAAMTable = document.querySelector("#can_archive_aam_list"),
-    countAAMActionsContents = document.querySelector("#count_aam");
+var totalAAMActionsContents        = document.querySelector("#total_aam_actions"),
+    canArchiveAAMTable             = document.querySelector("#can_archive_aam_list"),
+    countAAMActionsContents        = document.querySelector("#count_aam");
 
 // Follow up paid APCs strategy
-var totalAPCActionsContents = document.querySelector("#total_apc_actions"),
-    hasAPCFollowupTable = document.querySelector("#has_apc_followup_list"),
-    countAPCActionsContents = document.querySelector("#count_apc");
+var totalAPCActionsContents        = document.querySelector("#total_apc_actions"),
+    hasAPCFollowupTable            = document.querySelector("#has_apc_followup_list"),
+    countAPCActionsContents        = document.querySelector("#count_apc");
 
 /* Date display and filtering */
 // Set today’s date and 12 months ago date to display most recent Insights data as default
-const currentDate           = new Date(),
-      currentDateReadable   = makeDateReadable(currentDate),
-      currentDateQuery      = changeDays(+1, currentDate), // add 1 day for ElasticSearch (greater than but not equal)
-      currentDateISO        = formatDateToISO(currentDateQuery),
+const currentDate                  = new Date(),
+      currentDateReadable          = makeDateReadable(currentDate),
+      currentDateQuery             = changeDays(+1, currentDate), // add 1 day for ElasticSearch (greater than but not equal)
+      currentDateISO               = formatDateToISO(currentDateQuery),
 
-      startYearDate         = new Date(new Date().getFullYear(), 0, 1),
-      startYearDateReadable = makeDateReadable(startYearDate),
-      startYearDateQuery    = changeDays(-1, startYearDate),
-      startYearDateISO      = formatDateToISO(startYearDateQuery);
+      startYearDate                = new Date(new Date().getFullYear(), 0, 1),
+      startYearDateReadable        = makeDateReadable(startYearDate),
+      startYearDateQuery           = changeDays(-1, startYearDate),
+      startYearDateISO             = formatDateToISO(startYearDateQuery);
 
 // Get all dates for filtering data by dates
-let startDate            = "",
-    endDate              = "";
+let startDate                      = "",
+    endDate                        = "";
 
 // Display default date range: since start of the current year
-endDateContents.textContent    = currentDateReadable;
-startDateContents.textContent  = startYearDateReadable;
-startDate                      = startYearDateISO;
-endDate                        = currentDateISO;
+endDateContents.textContent        = currentDateReadable;
+startDateContents.textContent      = startYearDateReadable;
+startDate                          = startYearDateISO;
+endDate                            = currentDateISO;
 
-var dateRange                  = "(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")%20AND%20",
-    recordSize                 = "&size=100"; // Set record size for number of actions shown in Strategies
+var dateRange                      = "(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")%20AND%20",
+    recordSize                     = "&size=100"; // Set record size for number of actions shown in Strategies
 
 // Get organisational data to produce reports
 oareport = function(org) {
-  let report = base + "orgs?q=name:%22" + org + "%22",
-      queryPrefix = queryBase + "q=" + dateRange,
-      countQueryPrefix = countQueryBase + "q=" + dateRange;
+  let report                       = base + "orgs?q=name:%22" + org + "%22",
+      queryPrefix                  = queryBase + "q=" + dateRange,
+      countQueryPrefix             = countQueryBase + "q=" + dateRange;
 
   axios.get(report).then(function (response) {
 
     /** Get queries for article counts and strategy action list **/
     getCountQueries = function() {
 
-      isPaperURL    = (dateRange + response.data.hits.hits[0]._source.analysis.is_paper); // used for full-email download in getExportLink()
-      isPaperQuery   = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_paper);
-      isEligibleQuery = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_covered_by_policy);
-      //isOAQuery      = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_oa);
-      isFreeQuery      = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_free_to_read);
-      hasDataStatementQuery = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_data_availability_statement);
+      isPaperURL                   = (dateRange + response.data.hits.hits[0]._source.analysis.is_paper); // used for full-email download in getExportLink()
+      isPaperQuery                 = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_paper);
+      isEligibleQuery              = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_covered_by_policy);
+      //isOAQuery                  = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_oa);
+      isFreeQuery                  = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_free_to_read);
+      hasDataStatementQuery        = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_data_availability_statement);
       hasCheckedDataStatementQuery = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_checked_data_availability_statement);
-      canArchiveAAMQuery  = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
-      canArchiveAAMListQuery = (queryPrefix + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
-      canArchiveVORQuery  = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.email_author_vor.query);
-      canArchiveVORListQuery = (queryPrefix + response.data.hits.hits[0]._source.strategy.email_author_vor.query);
-      hasCustomExportIncludes = (response.data.hits.hits[0]._source.export_includes);
+      canArchiveAAMQuery           = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
+      canArchiveAAMListQuery       = (queryPrefix + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
+      canArchiveVORQuery           = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.email_author_vor.query);
+      canArchiveVORListQuery       = (queryPrefix + response.data.hits.hits[0]._source.strategy.email_author_vor.query);
+      hasCustomExportIncludes      = (response.data.hits.hits[0]._source.export_includes);
 
-      isPaper        = axios.get(isPaperQuery);
-      isEligible     = axios.get(isEligibleQuery);
-      //isOA           = axios.get(isOAQuery);
-      isFree           = axios.get(isFreeQuery);
-      hasDataStatement = axios.get(hasDataStatementQuery);
-      hasCheckedDataStatement = axios.get(hasCheckedDataStatement);
-      canArchiveAAM  = axios.get(canArchiveAAMQuery);
-      canArchiveAAMList = axios.get(canArchiveAAMListQuery);
-      canArchiveVOR  = axios.get(canArchiveVORQuery);
-      canArchiveVORList = axios.get(canArchiveVORListQuery);
+      isPaper                      = axios.get(isPaperQuery);
+      isEligible                   = axios.get(isEligibleQuery);
+      //isOA                       = axios.get(isOAQuery);
+      isFree                       = axios.get(isFreeQuery);
+      hasDataStatement             = axios.get(hasDataStatementQuery);
+      hasCheckedDataStatement      = axios.get(hasCheckedDataStatement);
+      canArchiveAAM                = axios.get(canArchiveAAMQuery);
+      canArchiveAAMList            = axios.get(canArchiveAAMListQuery);
+      canArchiveVOR                = axios.get(canArchiveVORQuery);
+      canArchiveVORList            = axios.get(canArchiveVORListQuery);
 
       console.log("org index: " + base + "orgs?q=name:%22" + org + "%22");
     };
