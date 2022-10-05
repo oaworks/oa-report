@@ -154,7 +154,7 @@ oareport = function(org) {
       const instance = tippy(document.querySelector('#compliant_info'), {
         allowHTML: true,
         interactive: true,
-        placement: 'bottom',
+        placement: 'top',
         appendTo: document.body,
       });
 
@@ -183,7 +183,7 @@ oareport = function(org) {
       const instance = tippy(document.querySelector('#data_statement_info'), {
         allowHTML: true,
         interactive: true,
-        placement: 'bottom',
+        placement: 'top',
         appendTo: document.body,
       });
 
