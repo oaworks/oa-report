@@ -67,7 +67,7 @@ permalink: "{{ org._source.objectID | slug }}/"
     <header class="col-span-12 md:col-span-6">
       <h2 class="mb-3 text-lg leading-6">
         <span class="block font-medium text-neutral-900 uppercase">
-          Insights
+          Insights on <strong class="font-bold">articles</strong>
           {{ component("tooltip", {
             msg: "The <em>Insights</em> section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/' target='_blank' class='underline'>infrastructure page</a>."
           }) }}
@@ -83,7 +83,7 @@ permalink: "{{ org._source.objectID | slug }}/"
             {% icon "file-text" %}
           </div>
           <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
-            Articles published
+            Total published
             {{ component("tooltip", {
               msg: "The total number of articles published by grantees or authors at your organization."
             }) }}
@@ -102,7 +102,7 @@ permalink: "{{ org._source.objectID | slug }}/"
             {% icon "unlock" %}
           </div>
           <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
-            Free-to-read articles
+            Free-to-read
             {{ component("tooltip", {
               msg: "Articles that are free to read on the publisher website or any online repository, including temporarily accessible articles (“bronze Open Access”)."
             }) }}
@@ -127,7 +127,7 @@ permalink: "{{ org._source.objectID | slug }}/"
             {% icon "check-circle" %}
           </div>
           <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
-            Policy-compliant articles
+            Policy-compliant
             <sup id="org_oa_policy">{% icon_small "help-circle" %}</sup>
           </p>
         </dt>
@@ -150,7 +150,7 @@ permalink: "{{ org._source.objectID | slug }}/"
             {% icon "file-text" %}
           </div>
           <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
-            Articles with data availability <strong class="font-bold">statements</strong>
+            With data availability statements
             <sup id="data_statement_info">{% icon_small "help-circle" %}</sup>
           </p>
         </dt>
