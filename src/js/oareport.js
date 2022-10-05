@@ -212,14 +212,11 @@ oareport = function(org) {
     /**  Display Insights **/
     // TODO: break these down into one function per metric
     displayInsights = function() {
-      Promise.all([isPaper, isFree, isCompliant, isEligible, hasDataStatementCount, hasCheckedDataStatementCount])
+      Promise.all([isPaper, isFree, isEligible, isCompliant, hasDataStatementCount, hasCheckedDataStatementCount])
         .then(function (results) {
           let isPaper = results[0].data,
               isFree    = results[1].data,
-              isCompliant = results[2].data,
-              isEligible = results[3].data,
-              hasDataStatementCount = results[4].data,
-              hasCheckedDataStatementCount = results[5].data;
+              isEligible = results[2].data;
 
           // Display totals and % of articles
           articlesContents.textContent = makeNumberReadable(isPaper);
@@ -245,7 +242,7 @@ oareport = function(org) {
           // Set total of articles depending on whether or not articles need to be covered by policy
           if (isEligible) {
             totalArticles = isEligible;
-            totalArticlesString = " eligible articles";
+            totalArticlesString = " eligible";
           } else {
             totalArticles = isPaper;
             totalArticlesString =  " articles";
@@ -253,13 +250,16 @@ oareport = function(org) {
 
           // Display totals and % of policy-compliant articles
           if (isCompliant) {
+            let isCompliant = results[3].data;
             compliantArticlesContents.textContent = makeNumberReadable(isCompliant) + " of " + makeNumberReadable(totalArticles) + totalArticlesString;
             compliantPercentageContents.textContent = Math.round(((isCompliant/totalArticles)*100)) + "%";
           }
 
           // Display totals and % of articles for which we’ve verified data availability statements
           if (hasDataStatementCount) {
-            dataStatementContents.textContent = makeNumberReadable(hasDataStatementCount) + " of " + makeNumberReadable(hasCheckedDataStatementCount) + " articles checked";
+            let hasDataStatementCount = results[4].data,
+                hasCheckedDataStatementCount = results[5].data;
+            dataStatementContents.textContent = makeNumberReadable(hasDataStatementCount) + " of " + makeNumberReadable(hasCheckedDataStatementCount) + " checked";
             dataStatementPercentageContents.textContent = Math.round(((hasDataStatementCount/hasCheckedDataStatementCount)*100)) + "%";
           }
 
