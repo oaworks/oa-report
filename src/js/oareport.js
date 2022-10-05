@@ -158,6 +158,8 @@ oareport = function(org) {
         appendTo: document.body,
       });
 
+      var policyURLContent = "";
+
       // ...get its URL
       hasPolicy = response.data.hits.hits[0]._source.policy.supported_policy;
 
@@ -167,9 +169,11 @@ oareport = function(org) {
         isCompliantQuery = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.compliance);
         isCompliant = axios.get(isCompliantQuery);
         /*jshint multistr: true */
-        var policyURLContent = "The percentage of articles that are compliant with <a href='" + policyURL + "' target='_blank' rel='noopener' class='underline'>your organization’s Open Access policy</a>. This number is specific to your policy and your requirements.";
+        policyURLContent = "The percentage of articles that are compliant with <a href='" + policyURL + "' target='_blank' rel='noopener' class='underline'>your organization’s Open Access policy</a>. This number is specific to your policy and your requirements.";
       } else {
-        var policyURLContent = "We couldn’t track a policy for your organization.";
+        policyURLContent = "We couldn’t track a policy for your organization.";
+        compliantArticlesContents.textContent = "";
+        compliantPercentageContents.textContent = "N/A";
       }
       instance.setContent(policyURLContent);
     };
@@ -251,18 +255,12 @@ oareport = function(org) {
           if (isCompliant) {
             compliantArticlesContents.textContent = makeNumberReadable(isCompliant) + " of " + makeNumberReadable(totalArticles) + totalArticlesString;
             compliantPercentageContents.textContent = Math.round(((isCompliant/totalArticles)*100)) + "%";
-          } else {
-            compliantArticlesContents.textContent = "";
-            compliantPercentageContents.textContent = "N/A";
           }
 
           // Display totals and % of articles for which we’ve verified data availability statements
           if (hasDataStatementCount) {
             dataStatementContents.textContent = makeNumberReadable(hasDataStatementCount) + " of " + makeNumberReadable(hasCheckedDataStatementCount) + " articles checked";
             dataStatementPercentageContents.textContent = Math.round(((hasDataStatementCount/hasCheckedDataStatementCount)*100)) + "%";
-          } else {
-            dataStatementContents.textContent = "";
-            dataStatementPercentageContents.textContent = "N/A";
           }
 
         }
