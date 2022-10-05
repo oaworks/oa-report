@@ -144,20 +144,21 @@ permalink: "{{ org._source.objectID | slug }}/"
 
     {# Second row of insights: custom, data-related insights #}
     <dl class="col-span-12 mb-6 grid grid-cols-1 gap-3 lg:gap-6 sm:grid-cols-2">
-      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden">
+      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden" id="data_statement">
         <dt>
           <div class="absolute bg-carnation-500 text-white rounded-md p-6">
             {% icon "file-text" %}
           </div>
           <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
             Articles with data availability <strong class="font-bold">statements</strong>
-            {{ component("tooltip", {
-              msg: "Articles that we’ve verified manually and for which we found data availability statements."
-            }) }}
+            <sup id="data_statement_info">{% icon_small "help-circle" %}</sup>
           </p>
         </dt>
         <dd class="ml-24 flex items-baseline">
           <p class="text-4xl font-semibold text-neutral-900">
+            <span id="percent_data_statement">00%</span>
+          </p>
+          <p class="ml-2 text-sm font-medium text-neutral-600">
             <span id="articles_data_statement">000</span>
           </p>
         </dd>

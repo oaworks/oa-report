@@ -2,7 +2,7 @@ const base           = "https://beta.oa.works/report/",
       queryBase      = base + "works?size=100&",
       countQueryBase = base + "works/count?",
       csvExportBase  = "https://bg.beta.oa.works/report/works.csv?";
-let isPaper, isEligible, isOA, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL, dateRangeButton, csvEmailButton, totalArticles, hasCheckedDataStatement;
+let isPaper, isEligible, isOA, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL, dateRangeButton, csvEmailButton, totalArticles, hasDataStatementCount, hasCheckedDataStatementCount;
 let isCompliant = false;
 
 // Detect browser’s locale to display human-readable numbers
@@ -71,7 +71,9 @@ var articlesContents               = document.querySelector("#articles"),
     freePercentageContents         = document.querySelector("#percent_free"),
     compliantArticlesContents      = document.querySelector("#articles_compliant"),
     compliantPercentageContents    = document.querySelector("#percent_compliant"),
-    complianceContents             = document.querySelector("#compliance");
+    complianceContents             = document.querySelector("#compliance"),
+    dataStatementPercentageContents= document.querySelector("#percent_data_statement"),
+    dataStatementContents          = document.querySelector("#articles_data_statement");
 
 // Deposit VOR strategy
 var totalVORActionsContents        = document.querySelector("#total_vor_actions"),
@@ -129,8 +131,6 @@ oareport = function(org) {
       isEligibleQuery              = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_covered_by_policy);
       //isOAQuery                  = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_oa);
       isFreeQuery                  = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_free_to_read);
-      hasDataStatementQuery        = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_data_availability_statement);
-      hasCheckedDataStatementQuery = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_checked_data_availability_statement);
       canArchiveAAMQuery           = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
       canArchiveAAMListQuery       = (queryPrefix + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
       canArchiveVORQuery           = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.email_author_vor.query);
@@ -141,8 +141,6 @@ oareport = function(org) {
       isEligible                   = axios.get(isEligibleQuery);
       //isOA                       = axios.get(isOAQuery);
       isFree                       = axios.get(isFreeQuery);
-      hasDataStatement             = axios.get(hasDataStatementQuery);
-      hasCheckedDataStatement      = axios.get(hasCheckedDataStatement);
       canArchiveAAM                = axios.get(canArchiveAAMQuery);
       canArchiveAAMList            = axios.get(canArchiveAAMListQuery);
       canArchiveVOR                = axios.get(canArchiveVORQuery);
@@ -176,15 +174,48 @@ oareport = function(org) {
       instance.setContent(policyURLContent);
     };
 
+    /** Check for data availability statements **/
+    getDataStatements = function() {
+      const instance = tippy(document.querySelector('#data_statement_info'), {
+        allowHTML: true,
+        interactive: true,
+        placement: 'bottom',
+        appendTo: document.body,
+      });
+
+      var dataStatementInfo = "";
+
+      // ...check if there are any at al
+      hasDataStatement = response.data.hits.hits[0]._source.analysis.has_data_availability_statement;
+
+      // Display whether or not articles have a data availability statement after being checked
+      if (hasDataStatement) {
+        // Get their count
+        hasDataStatementQuery        = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_data_availability_statement);
+        hasCheckedDataStatementQuery = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_checked_data_availability_statement);
+        hasDataStatementCount        = axios.get(hasDataStatementQuery);
+        hasCheckedDataStatementCount = axios.get(hasCheckedDataStatementQuery);
+        /*jshint multistr: true */
+        dataStatementInfo = "Articles that we’ve verified manually and for which we found data availability statements.";
+      } else {
+        dataStatementInfo = "We haven’t verified articles containing data availability statements for you organization.";
+        dataStatementContents.textContent = "";
+        dataStatementPercentageContents.textContent = "N/A";
+      }
+      instance.setContent(dataStatementInfo);
+    };
+
     /**  Display Insights **/
     // TODO: break these down into one function per metric
     displayInsights = function() {
-      Promise.all([isPaper, isFree, isCompliant, isEligible])
+      Promise.all([isPaper, isFree, isCompliant, isEligible, hasDataStatementCount, hasCheckedDataStatementCount])
         .then(function (results) {
           let isPaper = results[0].data,
               isFree    = results[1].data,
               isCompliant = results[2].data,
-              isEligible = results[3].data;
+              isEligible = results[3].data,
+              hasDataStatementCount = results[4].data,
+              hasCheckedDataStatementCount = results[5].data;
 
           // Display totals and % of articles
           articlesContents.textContent = makeNumberReadable(isPaper);
@@ -223,6 +254,15 @@ oareport = function(org) {
           } else {
             compliantArticlesContents.textContent = "";
             compliantPercentageContents.textContent = "N/A";
+          }
+
+          // Display totals and % of articles for which we’ve verified data availability statements
+          if (hasDataStatementCount) {
+            dataStatementContents.textContent = makeNumberReadable(hasDataStatementCount) + " of " + makeNumberReadable(hasCheckedDataStatementCount) + " articles checked";
+            dataStatementPercentageContents.textContent = Math.round(((hasDataStatementCount/hasCheckedDataStatementCount)*100)) + "%";
+          } else {
+            dataStatementContents.textContent = "";
+            dataStatementPercentageContents.textContent = "N/A";
           }
 
         }
@@ -265,8 +305,6 @@ oareport = function(org) {
               canArchiveVORMailto = canArchiveVORMailto.replaceAll("{doi}", (doi ? doi : "[No DOI found]"));
               canArchiveVORMailto = canArchiveVORMailto.replaceAll("{author_name}", (author ? author : "researcher"));
               canArchiveVORMailto = canArchiveVORMailto.replaceAll("{author_email}", (authorEmail ? authorEmail : ""));
-
-              console.log("canArchiveVORMailto: " + canArchiveVORMailto);
 
               /*jshint multistr: true */
               canArchiveVORTableRows += '<tr>\
@@ -367,7 +405,6 @@ oareport = function(org) {
       hasAPCFollowup  = axios.get(hasAPCFollowupQuery);
       hasAPCFollowupList = axios.get(hasAPCFollowupListQuery);
 
-      console.log("hasAPCFollowupListQuery: " + hasAPCFollowupListQuery);
       if (response.data.hits.hits[0]._source.strategy.apc_followup) {
         Promise.all([hasAPCFollowup, hasAPCFollowupList])
           .then(function (results) {
@@ -489,6 +526,7 @@ oareport = function(org) {
 
     getCountQueries();
     getPolicy();
+    getDataStatements();
     displayInsights();
     displayStrategyVOR();
     displayStrategyAAM();
