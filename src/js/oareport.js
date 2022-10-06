@@ -2,7 +2,7 @@ const base           = "https://beta.oa.works/report/",
       queryBase      = base + "works?size=100&",
       countQueryBase = base + "works/count?",
       csvExportBase  = "https://bg.beta.oa.works/report/works.csv?";
-let isPaper, isEligible, isOA, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL, dateRangeButton, csvEmailButton, totalArticles, hasDataStatementCount, hasCheckedDataStatementCount;
+let isPaper, isEligible, isOA, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL, dateRangeButton, csvEmailButton, totalArticles, hasDataStatementCount, hasCheckedDataStatementCount, hasOpenDataCount, hasCheckedDataCount;
 let isCompliant = false;
 
 // Detect browser’s locale to display human-readable numbers
@@ -444,7 +444,7 @@ oareport = function(org) {
       hasAPCFollowup  = axios.get(hasAPCFollowupQuery);
       hasAPCFollowupList = axios.get(hasAPCFollowupListQuery);
 
-      if (response.data.hits.hits[0]._source.strategy.apc_followup) {
+      if (response.data.hits.hits[0]._source.strategy.apc_followup.query) {
         Promise.all([hasAPCFollowup, hasAPCFollowupList])
           .then(function (results) {
             let hasAPCFollowup = results[0].data,
