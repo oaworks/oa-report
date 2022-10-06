@@ -202,9 +202,8 @@ oareport = function(org) {
         /*jshint multistr: true */
         dataStatementInfo = "Articles that we’ve verified manually and for which we found data availability statements.";
       } else {
-        dataStatementInfo = "We haven’t verified articles containing data availability statements for you organization.";
-        dataStatementContents.textContent = "";
-        dataStatementPercentageContents.textContent = "N/A";
+        // Do not display card at all
+        document.querySelector('#data_statement').outerHTML = "";
       }
       instance.setContent(dataStatementInfo);
     };
