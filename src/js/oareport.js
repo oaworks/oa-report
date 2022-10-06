@@ -236,9 +236,8 @@ oareport = function(org) {
         console.log("hasOpenDataQuery: " + hasOpenDataQuery);
         console.log("hasCheckedDataQuery: " + hasCheckedDataQuery);
       } else {
-        openDataInfo = "We haven’t looked for articles sharing data openly for your organization.";
-        openDataContents.textContent = "";
-        openDataPercentageContents.textContent = "N/A";
+        // Do not display card at all
+        document.querySelector('#open_data').outerHTML = "";
       }
       instance.setContent(openDataInfo);
     };
