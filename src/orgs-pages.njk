@@ -250,7 +250,7 @@ permalink: "{{ org._source.objectID | slug }}/"
 
           <li class="js-tab-item" id="has-apc-followup-item">
             <button role="tab" tabindex="-1" aria-selected="false" aria-controls="has-apc-followup" class="border-transparent whitespace-nowrap flex p-4 border-t-4 bg-white text-sm transition duration-300 ease-in-out font-normal hover:text-neutral-700 hover:border-neutral-300" id="tab-has-apc-followup">
-              Follow up with publishers
+              Correct publisher errors
               <span id="count_apc" class="bg-neutral-800 text-white hidden ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block">0</span>
             </button>
           </li>
@@ -351,8 +351,8 @@ permalink: "{{ org._source.objectID | slug }}/"
       <header class="md:mb-12 col-span-12 lg:col-span-4">
         <div class=" lg:sticky lg:top-3">
           {# <p class="mb-3 text-base font-normal text-neutral-700 lg:duration-500 js-label_text_toggle"><span class="text-carnation-500 js-icon_toggle">{% icon_small "archive" %}</span> Self-archive articles</p> #}
-          <h3 class="font-semibold text-xl md:text-4xl mb-3 md:mb-6">Track publishers that accepted APCs but the article is uncompliant</h3>
-          <p class="text-xs md:text-base mb-3 md:mb-6">Use this list to follow up with publishers so that when an APC is paid, the article is made compliant.</p>
+          <h3 class="font-semibold text-xl md:text-4xl mb-3 md:mb-6">Follow up with publishers that accepted an APC but didn't make the article compliant</h3>
+          <p class="text-xs md:text-base mb-3 md:mb-6">These are articles where an APC has been paid, but the article isn't compliant with the policy. Use this list to follow up with publishers. If an article is made compliant, and the metadata is updated, it will be removed from this list.</p>
         </div>
       </header>
       <div class="col-span-12 lg:col-span-8 border-t pt-3 sm:pt-0 sm:border-0">
