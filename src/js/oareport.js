@@ -202,7 +202,7 @@ oareport = function(org) {
         hasDataStatementCount        = axios.get(hasDataStatementQuery);
         hasCheckedDataStatementCount = axios.get(hasCheckedDataStatementQuery);
         /*jshint multistr: true */
-        dataStatementInfo = "Articles that we’ve verified manually and for which we found data availability statements.";
+        dataStatementInfo = "This number tells you how many papers that we’ve analyzed have a data availability statement. To check if a paper has a data availability statement, we use data from PubMed and review papers manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data)";
       } else {
         // Do not display card at all
         document.querySelector('#data_statement').outerHTML = "";
