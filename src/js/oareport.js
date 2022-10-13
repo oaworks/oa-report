@@ -234,15 +234,16 @@ oareport = function(org) {
           countVORActionsContents.textContent = makeNumberReadable(canArchiveVORLength);
 
           // Generate list of archivable VORs if there are any
-          if (canArchiveVOR === 0 ) {
+          if (canArchiveVOR === 0) {
             totalVORActionsContents.textContent = "No ";
             canArchiveVORTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find publisher PDFs that could be deposited. <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
-          } else if (canArchiveVOR > 0 || canArchiveVOR !== null) {
+          }
+          else if (canArchiveVOR > 0 || canArchiveVOR !== null) {
             // TODO: think more about the potential percentage
             // canArchiveOaPercentageContents = document.querySelector("#can_archive_percent_oa");
             var canArchiveVORTableRows = "";
 
-            for (i = 0; i <= (canArchiveVORLength); i++) {
+            for (i = 0; i < (canArchiveVORLength); i++) {
               var title = canArchiveVORList[i]._source.title,
                   author = canArchiveVORList[i]._source.author_email_name,
                   doi   = canArchiveVORList[i]._source.DOI,
@@ -257,8 +258,6 @@ oareport = function(org) {
               canArchiveVORMailto = canArchiveVORMailto.replaceAll("{doi}", (doi ? doi : "[No DOI found]"));
               canArchiveVORMailto = canArchiveVORMailto.replaceAll("{author_name}", (author ? author : "researcher"));
               canArchiveVORMailto = canArchiveVORMailto.replaceAll("{author_email}", (authorEmail ? authorEmail : ""));
-
-              console.log("canArchiveVORMailto: " + canArchiveVORMailto);
 
               /*jshint multistr: true */
               canArchiveVORTableRows += '<tr>\
