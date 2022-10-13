@@ -232,7 +232,7 @@ oareport = function(org) {
         hasOpenDataCount             = axios.get(hasOpenDataQuery);
         hasCheckedDataCount          = axios.get(hasCheckedDataQuery);
         /*jshint multistr: true */
-        openDataInfo = "Articles that generated and shared data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noopener'>CC-BY</a> license.";
+        openDataInfo = "The percentage of articles that shared any data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noopener'>CC-BY</a> license. This figure only measures how many articles shared Open Data if they generated data in the first place. It also only measures if any of the datasets generated were open, not if all of them were open. To analyze this we work with Dataseer, who uses a combination of machine learning and human review to review the text of the papers.";
         console.log("hasOpenDataQuery: " + hasOpenDataQuery);
         console.log("hasCheckedDataQuery: " + hasCheckedDataQuery);
       } else {
@@ -300,7 +300,7 @@ oareport = function(org) {
           if (hasOpenDataCount) {
             let hasOpenDataCount = results[6].data,
                 hasCheckedDataCount = results[7].data;
-            openDataContents.textContent = makeNumberReadable(hasOpenDataCount) + " of " + makeNumberReadable(hasCheckedDataCount) + " checked";
+            openDataContents.textContent = makeNumberReadable(hasOpenDataCount) + " of " + makeNumberReadable(hasCheckedDataCount) + " articles that generate data";
             openDataPercentageContents.textContent = Math.round(((hasOpenDataCount/hasCheckedDataCount)*100)) + "%";
           }
 
