@@ -67,14 +67,15 @@ permalink: "{{ org._source.objectID | slug }}/"
     <header class="col-span-12 md:col-span-6">
       <h2 class="mb-3 text-lg leading-6">
         <span class="block font-medium text-neutral-900 uppercase">
-          Insights
+          Insights on <strong class="font-bold">articles</strong>
           {{ component("tooltip", {
-            msg: "The <em>Insights</em> section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/' target='_blank' class='underline'>infrastructure page</a>."
+            msg: "The <em>Insights</em> section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/developers/infrastructure/' target='_blank' class='underline'>infrastructure page</a>."
           }) }}
         </span>
       </h2>
     </header>
 
+    {# First row of insights: all defaults #}
     <dl class="col-span-12 mb-6 grid grid-cols-1 gap-3 lg:gap-6 sm:grid-cols-2 lg:grid-cols-3">
       <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden">
         <dt>
@@ -82,7 +83,7 @@ permalink: "{{ org._source.objectID | slug }}/"
             {% icon "file-text" %}
           </div>
           <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
-            Articles published
+            Total published
             {{ component("tooltip", {
               msg: "The total number of articles published by grantees or authors at your organization."
             }) }}
@@ -101,9 +102,9 @@ permalink: "{{ org._source.objectID | slug }}/"
             {% icon "unlock" %}
           </div>
           <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
-            Free-to-read articles
+            Free-to-read
             {{ component("tooltip", {
-              msg: "The total number of articles that are free to read on the publisher website or any online repository, including temporarily accessible articles (“bronze Open Access”)."
+              msg: "Articles that are free to read on the publisher website or any online repository, including temporarily accessible articles (“bronze Open Access”)."
             }) }}
           </p>
         </dt>
@@ -126,8 +127,8 @@ permalink: "{{ org._source.objectID | slug }}/"
             {% icon "check-circle" %}
           </div>
           <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
-            Policy-compliant articles
-            <sup id="org_oa_policy">{% icon_small "help-circle" %}</sup>
+            Policy-compliant
+            <sup id="compliant_info">{% icon_small "help-circle" %}</sup>
           </p>
         </dt>
         <dd class="ml-24 flex items-baseline">
@@ -140,6 +141,53 @@ permalink: "{{ org._source.objectID | slug }}/"
         </dd>
       </div>
     </dl>
+
+    {# Second row of insights: custom, data-related insights #}
+    <dl class="col-span-12 mb-6 grid grid-cols-1 gap-3 lg:gap-6 sm:grid-cols-2">
+      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden" id="data_statement">
+        <dt>
+          <div class="absolute bg-carnation-500 text-white rounded-md p-6">
+            {% icon "search" %}
+          </div>
+          <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
+            Have data availability statements
+            <sup id="data_statement_info">{% icon_small "help-circle" %}</sup>
+          </p>
+        </dt>
+        <dd class="ml-24 flex items-baseline">
+          <p class="text-4xl font-semibold text-neutral-900">
+            <span id="percent_data_statement">00%</span>
+          </p>
+          <p class="ml-2 text-sm font-medium text-neutral-600">
+            <span id="articles_data_statement">000</span>
+          </p>
+        </dd>
+      </div>
+
+      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden" id="open_data">
+        <dt>
+          <div class="absolute bg-carnation-500 text-white rounded-md p-6">
+            {% icon "database" %}
+          </div>
+          <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
+            With Open Data
+            <sup id="open_data_info">{% icon_small "help-circle" %}</sup>
+            {# {{ component("tooltip", {
+              msg: "Articles that generated and shared data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noopener'>CC-BY</a> license"
+            }) }} #}
+          </p>
+        </dt>
+        <dd class="ml-24 flex items-baseline">
+          <p class="text-4xl font-semibold text-neutral-900">
+            <span id="percent_open_data">00%</span>
+          </p>
+          <p class="ml-2 text-sm font-medium text-neutral-600">
+            <span id="articles_open_data">000</span>
+          </p>
+        </dd>
+      </div>
+    </dl>
+
     {# TODO: Filter by date #}
     {# <div class="col-span-12 mb-6 grid grid-cols-12 gap-3 lg:gap-6">
       <section>
@@ -161,6 +209,8 @@ permalink: "{{ org._source.objectID | slug }}/"
         </form>
       </section>
     </div> #}
+
+
   </div>
 </section>
 
@@ -190,10 +240,18 @@ permalink: "{{ org._source.objectID | slug }}/"
               <span id="count_vor" class="bg-neutral-800 text-white hidden ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block">0</span>
             </button>
           </li>
+
           <li class="js-tab-item">
             <button role="tab" tabindex="-1" aria-selected="false" aria-controls="can-archive-aam" class="border-transparent whitespace-nowrap flex p-4 border-t-4 bg-white text-sm transition duration-300 ease-in-out font-normal hover:text-neutral-700 hover:border-neutral-300" id="tab-can-archive-aam">
               Deposit accepted manuscripts
               <span id="count_aam" class="bg-neutral-800 text-white hidden ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block">0</span>
+            </button>
+          </li>
+
+          <li class="js-tab-item" id="has-apc-followup-item">
+            <button role="tab" tabindex="-1" aria-selected="false" aria-controls="has-apc-followup" class="border-transparent whitespace-nowrap flex p-4 border-t-4 bg-white text-sm transition duration-300 ease-in-out font-normal hover:text-neutral-700 hover:border-neutral-300" id="tab-has-apc-followup">
+              Correct publisher errors
+              <span id="count_apc" class="bg-neutral-800 text-white hidden ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block">0</span>
             </button>
           </li>
         </ul>
@@ -283,6 +341,41 @@ permalink: "{{ org._source.objectID | slug }}/"
               </tr>
             </thead>
             <tbody class="divide-y divide-neutral-200 bg-white" id="can_archive_aam_list"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    {# Follow up with uncompliant articles with paid APCs #}
+    <section class="grid grid-cols-12 gap-3 lg:gap-6 md:gap-12 js-tab-content hidden" role="tabpanel" tabindex="0" aria-labelledby="tab-has-apc-followup" id="has-apc-followup" hidden>
+      <header class="md:mb-12 col-span-12 lg:col-span-4">
+        <div class=" lg:sticky lg:top-3">
+          {# <p class="mb-3 text-base font-normal text-neutral-700 lg:duration-500 js-label_text_toggle"><span class="text-carnation-500 js-icon_toggle">{% icon_small "archive" %}</span> Self-archive articles</p> #}
+          <h3 class="font-semibold text-xl md:text-4xl mb-3 md:mb-6">Follow up with publishers that accepted an APC but didn't make the article compliant</h3>
+          <p class="text-xs md:text-base mb-3 md:mb-6">These are articles where an APC has been paid, but the article isn't compliant with the policy. Use this list to follow up with publishers. If an article is made compliant, and the metadata is updated, it will be removed from this list.</p>
+        </div>
+      </header>
+      <div class="col-span-12 lg:col-span-8 border-t pt-3 sm:pt-0 sm:border-0">
+        <div class="grid grid-cols-12 gap-3 lg:gap-6 flex justify-between">
+          <div class="mb-3 col-span-12 md:col-span-6">
+            <p class="mb-1 text-neutral-900 text-lg font-semibold leading-6">
+              <span id="total_apc_actions">00</span> actions</span>
+              {{ component("tooltip", {
+                msg: "<p class='mb-2'>The number of articles that are currently behind a paywall and where the publisher allows the author to make the author accepted manuscript in a repository.</p><p>We tried to remove common errors and articles that are already in a repository (either embargoed or available). This list was produced using Unpaywall, Crossref, and ShareYourPaper Permissions data.</p>"
+              }) }}
+            </p>
+          </div>
+        </div>
+        <div class="mb-8 overflow-hidden sm:-mx-6 md:mx-0 md:rounded-lg drop-shadow-lg">
+          <table class="divide-y divide-neutral-300 table-fixed w-full">
+            <thead class="bg-neutral-800 text-white">
+              <tr>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-3/12 sm:w-4/12">Publisher & journal</th>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-5/12 sm:w-4/12">Article</th>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-4/12 sm:w-4/12">Invoice</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-neutral-200 bg-white" id="has_apc_followup_list"></tbody>
           </table>
         </div>
       </div>
