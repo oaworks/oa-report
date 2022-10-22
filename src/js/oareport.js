@@ -130,7 +130,6 @@ oareport = function(org) {
 
       isPaperURL                   = (dateRange + response.data.hits.hits[0]._source.analysis.is_paper); // used for full-email download in getExportLink()
       isPaperQuery                 = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_paper);
-      isEligibleQuery              = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_covered_by_policy);
       //isOAQuery                  = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_oa);
       isFreeQuery                  = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_free_to_read);
       canArchiveAAMQuery           = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
@@ -140,7 +139,6 @@ oareport = function(org) {
       hasCustomExportIncludes      = (response.data.hits.hits[0]._source.export_includes);
 
       isPaper                      = axios.get(isPaperQuery);
-      isEligible                   = axios.get(isEligibleQuery);
       //isOA                       = axios.get(isOAQuery);
       isFree                       = axios.get(isFreeQuery);
       canArchiveAAM                = axios.get(canArchiveAAMQuery);
@@ -168,14 +166,26 @@ oareport = function(org) {
       // ...then get the number of compliant articles and display a tooltip
       if (hasPolicy) {
         policyURL = response.data.hits.hits[0]._source.policy.url;
-        isCompliantQuery = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_compliant);
-        isCompliant = axios.get(isCompliantQuery);
+
+        // isCompliantQuery = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_compliant);
+        // isCompliant = axios.get(isCompliantQuery);
+        //
+        // isEligibleQuery = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_covered_by_policy);
+        // isEligible = axios.get(isEligibleQuery);
+
+        isCompliantQuery = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_compliant);
+        isEligibleQuery  = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_covered_by_policy);
+        isCompliantCount = axios.get(isCompliantQuery);
+        isEligibleCount  = axios.get(isEligibleQuery);
+
         /*jshint multistr: true */
         policyInfo = "The percentage of articles that are compliant with <a href='" + policyURL + "' target='_blank' rel='noopener' class='underline'>your organization’s Open Access policy</a>. This number is specific to your policy and your requirements.";
       } else {
         policyInfo = "We couldn’t track a policy for your organization.";
         compliantArticlesContents.textContent = "";
         compliantPercentageContents.textContent = "N/A";
+        isCompliantCount = "";
+        isEligibleCount = "";
       }
       instance.setContent(policyInfo);
     };
@@ -233,8 +243,6 @@ oareport = function(org) {
         hasCheckedDataCount          = axios.get(hasCheckedDataQuery);
         /*jshint multistr: true */
         openDataInfo = "The percentage of articles that shared any data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noopener'>CC-BY</a> license. This figure only measures how many articles shared Open Data if they generated data in the first place. It also only measures if any of the datasets generated were open, not if all of them were open. To analyze this we work with Dataseer, who uses a combination of machine learning and human review to review the text of the papers.";
-        console.log("hasOpenDataQuery: " + hasOpenDataQuery);
-        console.log("hasCheckedDataQuery: " + hasCheckedDataQuery);
       } else {
         // Do not display card at all
         document.querySelector('#open_data').outerHTML = "";
@@ -245,11 +253,10 @@ oareport = function(org) {
     /**  Display Insights **/
     // TODO: break these down into one function per metric
     displayInsights = function() {
-      Promise.all([isPaper, isFree, isEligible, isCompliant, hasDataStatementCount, hasCheckedDataStatementCount, hasOpenDataCount, hasCheckedDataCount])
+      Promise.all([isPaper, isFree, isEligibleCount, isCompliantCount, hasDataStatementCount, hasCheckedDataStatementCount, hasOpenDataCount, hasCheckedDataCount])
         .then(function (results) {
           let isPaper = results[0].data,
-              isFree    = results[1].data,
-              isEligible = results[2].data;
+              isFree    = results[1].data;
 
           // Display totals and % of articles
           articlesContents.textContent = makeNumberReadable(isPaper);
@@ -273,8 +280,9 @@ oareport = function(org) {
           }
 
           // Set total of articles depending on whether or not articles need to be covered by policy
-          if (isEligible) {
-            totalArticles = isEligible;
+          if (isEligibleCount) {
+            let isEligibleCount = results[2].data;
+            totalArticles = isEligibleCount;
             totalArticlesString = " eligible";
           } else {
             totalArticles = isPaper;
@@ -282,10 +290,10 @@ oareport = function(org) {
           }
 
           // Display totals and % of policy-compliant articles
-          if (isCompliant) {
-            let isCompliant = results[3].data;
-            compliantArticlesContents.textContent = makeNumberReadable(isCompliant) + " of " + makeNumberReadable(totalArticles) + totalArticlesString;
-            compliantPercentageContents.textContent = Math.round(((isCompliant/totalArticles)*100)) + "%";
+          if (isCompliantCount) {
+            let isCompliantCount = results[3].data;
+            compliantArticlesContents.textContent = makeNumberReadable(isCompliantCount) + " of " + makeNumberReadable(totalArticles) + totalArticlesString;
+            compliantPercentageContents.textContent = Math.round(((isCompliantCount/totalArticles)*100)) + "%";
           }
 
           // Display totals and % of articles for which we’ve verified data availability statements
