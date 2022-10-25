@@ -209,6 +209,8 @@ oareport = function(org) {
         // Do not display card at all
         document.querySelector('#data_statement').outerHTML = "";
       }
+
+      // Display help text popover
       instance.setContent(dataStatementInfo);
 
       Promise.all([hasDataStatementCount, hasCheckedDataStatementCount])
@@ -223,7 +225,7 @@ oareport = function(org) {
           }
 
         }
-      ).catch(function (error) { console.log("getDataStatements error: " + error); })
+      ).catch(function (error) { console.log("getDataStatements error: " + error); });
     };
 
     /** Check for open data **/
@@ -253,7 +255,22 @@ oareport = function(org) {
         // Do not display card at all
         document.querySelector('#open_data').outerHTML = "";
       }
+
+      // Display help text popover
       instance.setContent(openDataInfo);
+
+      Promise.all([hasOpenDataCount, hasCheckedDataCount])
+        .then(function (results) {
+
+          // Display totals and % of articles sharing data openly
+          if (hasOpenDataCount) {
+            let hasOpenDataCount = results[0].data,
+                hasCheckedDataCount = results[1].data;
+            openDataContents.textContent = makeNumberReadable(hasOpenDataCount) + " of " + makeNumberReadable(hasCheckedDataCount) + " articles that generate data";
+            openDataPercentageContents.textContent = Math.round(((hasOpenDataCount/hasCheckedDataCount)*100)) + "%";
+          }
+        }
+      ).catch(function (error) { console.log("getDataStatements error: " + error); });
     };
 
     /**  Display Insights **/
@@ -301,15 +318,6 @@ oareport = function(org) {
             compliantArticlesContents.textContent = makeNumberReadable(isCompliantCount) + " of " + makeNumberReadable(totalArticles) + totalArticlesString;
             compliantPercentageContents.textContent = Math.round(((isCompliantCount/totalArticles)*100)) + "%";
           }
-
-          // Display totals and % of articles sharing data openly
-          if (hasOpenDataCount) {
-            let hasOpenDataCount = results[6].data,
-                hasCheckedDataCount = results[7].data;
-            openDataContents.textContent = makeNumberReadable(hasOpenDataCount) + " of " + makeNumberReadable(hasCheckedDataCount) + " articles that generate data";
-            openDataPercentageContents.textContent = Math.round(((hasOpenDataCount/hasCheckedDataCount)*100)) + "%";
-          }
-
         }
       ).catch(function (error) { console.log("displayInsights error: " + error); })
     };
