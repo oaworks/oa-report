@@ -2,7 +2,7 @@ const base           = "https://beta.oa.works/report/",
       queryBase      = base + "works?size=100&",
       countQueryBase = base + "works/count?",
       csvExportBase  = "https://bg.beta.oa.works/report/works.csv?";
-let isPaper, isEligible, isOA, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL, dateRangeButton, csvEmailButton, totalArticles, hasDataStatementCount, hasCheckedDataStatementCount, hasOpenDataCount, hasCheckedDataCount;
+let isPaperCount, isEligibleCount, isOA, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL, dateRangeButton, csvEmailButton, totalArticles, hasDataStatementCount, hasCheckedDataStatementCount, hasOpenDataCount, hasCheckedDataCount;
 let isCompliant = false;
 
 // Detect browser’s locale to display human-readable numbers
@@ -125,10 +125,8 @@ oareport = function(org) {
 
   axios.get(report).then(function (response) {
 
-    /** Get queries for article counts and strategy action list **/
+    /** Get queries for default article counts and strategy action list **/
     getCountQueries = function() {
-
-      isPaperURL                   = (dateRange + response.data.hits.hits[0]._source.analysis.is_paper); // used for full-email download in getExportLink()
       isPaperQuery                 = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_paper);
       //isOAQuery                  = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_oa);
       isFreeQuery                  = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_free_to_read);
@@ -138,9 +136,9 @@ oareport = function(org) {
       canArchiveVORListQuery       = (queryPrefix + response.data.hits.hits[0]._source.strategy.email_author_vor.query);
       hasCustomExportIncludes      = (response.data.hits.hits[0]._source.export_includes);
 
-      isPaper                      = axios.get(isPaperQuery);
+      isPaperCount                 = axios.get(isPaperQuery);
       //isOA                       = axios.get(isOAQuery);
-      isFree                       = axios.get(isFreeQuery);
+      isFreeCount                  = axios.get(isFreeQuery);
       canArchiveAAM                = axios.get(canArchiveAAMQuery);
       canArchiveAAMList            = axios.get(canArchiveAAMListQuery);
       canArchiveVOR                = axios.get(canArchiveVORQuery);
@@ -166,12 +164,6 @@ oareport = function(org) {
       // ...then get the number of compliant articles and display a tooltip
       if (hasPolicy) {
         policyURL = response.data.hits.hits[0]._source.policy.url;
-
-        // isCompliantQuery = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_compliant);
-        // isCompliant = axios.get(isCompliantQuery);
-        //
-        // isEligibleQuery = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_covered_by_policy);
-        // isEligible = axios.get(isEligibleQuery);
 
         isCompliantQuery = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_compliant);
         isEligibleQuery  = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_covered_by_policy);
@@ -253,27 +245,27 @@ oareport = function(org) {
     /**  Display Insights **/
     // TODO: break these down into one function per metric
     displayInsights = function() {
-      Promise.all([isPaper, isFree, isEligibleCount, isCompliantCount, hasDataStatementCount, hasCheckedDataStatementCount, hasOpenDataCount, hasCheckedDataCount])
+      Promise.all([isPaperCount, isFreeCount, isEligibleCount, isCompliantCount, hasDataStatementCount, hasCheckedDataStatementCount, hasOpenDataCount, hasCheckedDataCount])
         .then(function (results) {
-          let isPaper = results[0].data,
-              isFree    = results[1].data;
+          let isPaperCount   = results[0].data,
+              isFreeCount    = results[1].data;
 
           // Display totals and % of articles
-          articlesContents.textContent = makeNumberReadable(isPaper);
+          articlesContents.textContent = makeNumberReadable(isPaperCount);
 
           // Display totals and % of OA articles
           // TODO: only display OA rates for orgs w/out policies
           // if (isOA) {
           //   oaArticlesContents.textContent = makeNumberReadable(isOA) + " in total";
-          //   oaPercentageContents.textContent = Math.round(((isOA/isPaper)*100)) + "%";
+          //   oaPercentageContents.textContent = Math.round(((isOA/isPaperCount)*100)) + "%";
           // } else {
           //   oaArticlesContents.textContent = "";
           //   oaPercentageContents.textContent = "N/A";
           // }
 
-          if (isFree) {
-            freeArticlesContents.textContent = makeNumberReadable(isFree) + " in total";
-            freePercentageContents.textContent = Math.round(((isFree/isPaper)*100)) + "%";
+          if (isFreeCount) {
+            freeArticlesContents.textContent = makeNumberReadable(isFreeCount) + " in total";
+            freePercentageContents.textContent = Math.round(((isFreeCount/isPaperCount)*100)) + "%";
           } else {
             freeArticlesContents.textContent = "";
             freePercentageContents.textContent = "N/A";
@@ -285,7 +277,7 @@ oareport = function(org) {
             totalArticles = isEligibleCount;
             totalArticlesString = " eligible";
           } else {
-            totalArticles = isPaper;
+            totalArticles = isPaperCount;
             totalArticlesString =  " articles";
           }
 
@@ -542,6 +534,8 @@ oareport = function(org) {
           }
         ).catch(function (error) { console.log("Export error: " + error); });
 
+
+      isPaperURL = (dateRange + response.data.hits.hits[0]._source.analysis.is_paper); // used for full-email download in getExportLink()
       let query = isPaperURL.replaceAll(" ", "%20"),
           form = document.querySelector("#download_csv");
 
