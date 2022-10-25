@@ -2,7 +2,7 @@ const base           = "https://api.oa.works/report/",
       queryBase      = base + "works?",
       countQueryBase = base + "works/count?",
       csvExportBase  = "https://bg.beta.oa.works/report/works.csv?";
-let isPaper, isEligible, isOA, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL, dateRangeButton, csvEmailButton, totalArticles;
+let isPaper, isEligible, isOA, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL, dateRangeButton, csvEmailButton, totalArticles, hasDataStatementCount, hasCheckedDataStatementCount, hasOpenDataCount, hasCheckedDataCount;
 let isCompliant = false;
 
 // Detect browser’s locale to display human-readable numbers
@@ -56,101 +56,109 @@ replaceDateRange = function(newStart, newEnd) {
 
 /* Get report page elements where data will be inserted */
 // Date range
-var endDateContents      = document.querySelector("#end_date"),
-    startDateContents    = document.querySelector("#start_date");
+var endDateContents                = document.querySelector("#end_date"),
+    startDateContents              = document.querySelector("#start_date");
 
 // Send CSV data by email form
-var queryHiddenInput = document.querySelector("#download-form-q"),
-    includeHiddenInput = document.querySelector("#download-form-include");
+var queryHiddenInput               = document.querySelector("#download-form-q"),
+    includeHiddenInput             = document.querySelector("#download-form-include");
 
 // Individual insights (metrics)
-var articlesContents = document.querySelector("#articles"),
-    oaArticlesContents = document.querySelector("#articles_oa"),
-    oaPercentageContents = document.querySelector("#percent_oa"),
-    freeArticlesContents = document.querySelector("#articles_free"),
-    freePercentageContents = document.querySelector("#percent_free"),
-    compliantArticlesContents = document.querySelector("#articles_compliant"),
-    compliantPercentageContents = document.querySelector("#percent_compliant"),
-    complianceContents = document.querySelector("#compliance");
+var articlesContents               = document.querySelector("#articles"),
+    oaArticlesContents             = document.querySelector("#articles_oa"),
+    oaPercentageContents           = document.querySelector("#percent_oa"),
+    freeArticlesContents           = document.querySelector("#articles_free"),
+    freePercentageContents         = document.querySelector("#percent_free"),
+    compliantArticlesContents      = document.querySelector("#articles_compliant"),
+    compliantPercentageContents    = document.querySelector("#percent_compliant"),
+    complianceContents             = document.querySelector("#compliance"),
+    dataStatementPercentageContents= document.querySelector("#percent_data_statement"),
+    dataStatementContents          = document.querySelector("#articles_data_statement"),
+    openDataPercentageContents     = document.querySelector("#percent_open_data"),
+    openDataContents               = document.querySelector("#articles_open_data");
 
 // Deposit VOR strategy
-var totalVORActionsContents = document.querySelector("#total_vor_actions"),
-    canArchiveVORTable = document.querySelector("#can_archive_vor_list"),
-    countVORActionsContents = document.querySelector("#count_vor");
+var totalVORActionsContents        = document.querySelector("#total_vor_actions"),
+    canArchiveVORTable             = document.querySelector("#can_archive_vor_list"),
+    countVORActionsContents        = document.querySelector("#count_vor");
 
 // Deposit AAM strategy
-var totalAAMActionsContents = document.querySelector("#total_aam_actions"),
-    canArchiveAAMTable = document.querySelector("#can_archive_aam_list"),
-    countAAMActionsContents = document.querySelector("#count_aam");
+var totalAAMActionsContents        = document.querySelector("#total_aam_actions"),
+    canArchiveAAMTable             = document.querySelector("#can_archive_aam_list"),
+    countAAMActionsContents        = document.querySelector("#count_aam");
+
+// Follow up paid APCs strategy
+var totalAPCActionsContents        = document.querySelector("#total_apc_actions"),
+    hasAPCFollowupTable            = document.querySelector("#has_apc_followup_list"),
+    countAPCActionsContents        = document.querySelector("#count_apc");
 
 /* Date display and filtering */
 // Set today’s date and 12 months ago date to display most recent Insights data as default
-const currentDate           = new Date(),
-      currentDateReadable   = makeDateReadable(currentDate),
-      currentDateQuery      = changeDays(+1, currentDate), // add 1 day for ElasticSearch (greater than but not equal)
-      currentDateISO        = formatDateToISO(currentDateQuery),
+const currentDate                  = new Date(),
+      currentDateReadable          = makeDateReadable(currentDate),
+      currentDateQuery             = changeDays(+1, currentDate), // add 1 day for ElasticSearch (greater than but not equal)
+      currentDateISO               = formatDateToISO(currentDateQuery),
 
-      startYearDate         = new Date(new Date().getFullYear(), 0, 1),
-      startYearDateReadable = makeDateReadable(startYearDate),
-      startYearDateQuery    = changeDays(-1, startYearDate),
-      startYearDateISO      = formatDateToISO(startYearDateQuery);
+      startYearDate                = new Date(new Date().getFullYear(), 0, 1),
+      startYearDateReadable        = makeDateReadable(startYearDate),
+      startYearDateQuery           = changeDays(-1, startYearDate),
+      startYearDateISO             = formatDateToISO(startYearDateQuery);
 
 // Get all dates for filtering data by dates
-let startDate            = "",
-    endDate              = "";
+let startDate                      = "",
+    endDate                        = "";
 
 // Display default date range: since start of the current year
-endDateContents.textContent    = currentDateReadable;
-startDateContents.textContent  = startYearDateReadable;
-startDate                      = startYearDateISO;
-endDate                        = currentDateISO;
+endDateContents.textContent        = currentDateReadable;
+startDateContents.textContent      = startYearDateReadable;
+startDate                          = startYearDateISO;
+endDate                            = currentDateISO;
 
-var dateRange                  = "(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")%20AND%20",
-    recordSize                 = "&size=100"; // Set record size for number of actions shown in Strategies
+var dateRange                      = "(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")%20AND%20",
+    recordSize                     = "&size=100"; // Set record size for number of actions shown in Strategies
 
 // Get organisational data to produce reports
 oareport = function(org) {
-  let report = base + "orgs?q=name:%22" + org + "%22";
+  let report                       = base + "orgs?q=name:%22" + org + "%22",
+      queryPrefix                  = queryBase + "q=" + dateRange,
+      countQueryPrefix             = countQueryBase + "q=" + dateRange;
 
   axios.get(report).then(function (response) {
 
     /** Get queries for article counts and strategy action list **/
     getCountQueries = function() {
 
-      isPaperURL    = (dateRange + response.data.hits.hits[0]._source.analysis.is_paper); // used for full-email download in getExportLink()
-      isPaperQuery   = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_paper);
-      isEligibleQuery = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_covered_by_policy);
-      //isOAQuery      = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_oa);
-      isFreeQuery      = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_free_to_read);
-      canArchiveAAMQuery  = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
-      canArchiveAAMListQuery = (queryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
-      canArchiveVORQuery  = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_vor.query);
-      canArchiveVORListQuery = (queryBase + "q=" + dateRange + response.data.hits.hits[0]._source.strategy.email_author_vor.query);
-      hasCustomExportIncludes = (response.data.hits.hits[0]._source.export_includes);
+      isPaperURL                   = (dateRange + response.data.hits.hits[0]._source.analysis.is_paper); // used for full-email download in getExportLink()
+      isPaperQuery                 = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_paper);
+      //isOAQuery                  = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_oa);
+      isFreeQuery                  = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_free_to_read);
+      canArchiveAAMQuery           = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
+      canArchiveAAMListQuery       = (queryPrefix + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
+      canArchiveVORQuery           = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.email_author_vor.query);
+      canArchiveVORListQuery       = (queryPrefix + response.data.hits.hits[0]._source.strategy.email_author_vor.query);
+      hasCustomExportIncludes      = (response.data.hits.hits[0]._source.export_includes);
 
-      isPaper        = axios.get(isPaperQuery);
-      isEligible     = axios.get(isEligibleQuery);
-      //isOA           = axios.get(isOAQuery);
-      isFree           = axios.get(isFreeQuery);
-      canArchiveAAM  = axios.get(canArchiveAAMQuery);
-      canArchiveAAMList = axios.get(canArchiveAAMListQuery);
-      canArchiveVOR  = axios.get(canArchiveVORQuery);
-      canArchiveVORList = axios.get(canArchiveVORListQuery);
+      isPaper                      = axios.get(isPaperQuery);
+      //isOA                       = axios.get(isOAQuery);
+      isFree                       = axios.get(isFreeQuery);
+      canArchiveAAM                = axios.get(canArchiveAAMQuery);
+      canArchiveAAMList            = axios.get(canArchiveAAMListQuery);
+      canArchiveVOR                = axios.get(canArchiveVORQuery);
+      canArchiveVORList            = axios.get(canArchiveVORListQuery);
 
       console.log("org index: " + base + "orgs?q=name:%22" + org + "%22");
-      console.log("canArchiveVORListQuery: " + canArchiveVORListQuery);
-      console.log("canArchiveAAMListQuery: " + canArchiveAAMListQuery);
-      console.log("isFreeQuery: " + isFreeQuery);
     };
 
     /** Check for an OA policy and display a link to the policy page in a tooltip **/
     getPolicy = function() {
-      const instance = tippy(document.querySelector('#org_oa_policy'), {
+      const instance = tippy(document.querySelector('#compliant_info'), {
         allowHTML: true,
         interactive: true,
-        placement: 'bottom',
+        placement: 'top',
         appendTo: document.body,
       });
+
+      var policyInfo = "";
 
       // ...get its URL
       hasPolicy = response.data.hits.hits[0]._source.policy.supported_policy;
@@ -158,25 +166,97 @@ oareport = function(org) {
       // ...then get the number of compliant articles and display a tooltip
       if (hasPolicy) {
         policyURL = response.data.hits.hits[0]._source.policy.url;
-        isCompliantQuery = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.compliance);
-        isCompliant = axios.get(isCompliantQuery);
+
+        // isCompliantQuery = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_compliant);
+        // isCompliant = axios.get(isCompliantQuery);
+        //
+        // isEligibleQuery = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_covered_by_policy);
+        // isEligible = axios.get(isEligibleQuery);
+
+        isCompliantQuery = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_compliant);
+        isEligibleQuery  = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_covered_by_policy);
+        isCompliantCount = axios.get(isCompliantQuery);
+        isEligibleCount  = axios.get(isEligibleQuery);
+
         /*jshint multistr: true */
-        var policyURLContent = "The percentage of articles that are compliant with <a href='" + policyURL + "' target='_blank' rel='noopener' class='underline'>your organization’s Open Access policy</a>. This number is specific to your policy and your requirements.";
+        policyInfo = "The percentage of articles that are compliant with <a href='" + policyURL + "' target='_blank' rel='noopener' class='underline'>your organization’s Open Access policy</a>. This number is specific to your policy and your requirements.";
       } else {
-        var policyURLContent = "We couldn’t track a policy for your organization.";
+        policyInfo = "We couldn’t track a policy for your organization.";
+        compliantArticlesContents.textContent = "";
+        compliantPercentageContents.textContent = "N/A";
+        isCompliantCount = "";
+        isEligibleCount = "";
       }
-      instance.setContent(policyURLContent);
+      instance.setContent(policyInfo);
+    };
+
+    /** Check for data availability statements **/
+    getDataStatements = function() {
+      const instance = tippy(document.querySelector('#data_statement_info'), {
+        allowHTML: true,
+        interactive: true,
+        placement: 'top',
+        appendTo: document.body,
+      });
+
+      var dataStatementInfo = "";
+
+      // ...check if there are any at al
+      hasDataStatement = response.data.hits.hits[0]._source.analysis.has_data_availability_statement;
+
+      // Display whether or not articles have a data availability statement after being checked
+      if (hasDataStatement) {
+        // Get their count
+        hasDataStatementQuery        = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_data_availability_statement);
+        hasCheckedDataStatementQuery = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_checked_data_availability_statement);
+        hasDataStatementCount        = axios.get(hasDataStatementQuery);
+        hasCheckedDataStatementCount = axios.get(hasCheckedDataStatementQuery);
+        /*jshint multistr: true */
+        dataStatementInfo = "This number tells you how many papers that we’ve analyzed have a data availability statement. To check if a paper has a data availability statement, we use data from PubMed and review papers manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data)";
+      } else {
+        // Do not display card at all
+        document.querySelector('#data_statement').outerHTML = "";
+      }
+      instance.setContent(dataStatementInfo);
+    };
+
+    /** Check for open data **/
+    getOpenData = function() {
+      const instance = tippy(document.querySelector('#open_data_info'), {
+        allowHTML: true,
+        interactive: true,
+        placement: 'top',
+        appendTo: document.body,
+      });
+
+      var openDataInfo = "";
+
+      // ...check if there are any at al
+      hasOpenData = response.data.hits.hits[0]._source.analysis.has_open_data;
+
+      // Display whether or not articles have a data availability statement after being checked
+      if (hasOpenData) {
+        // Get their count
+        hasOpenDataQuery             = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_open_data);
+        hasCheckedDataQuery          = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_data);
+        hasOpenDataCount             = axios.get(hasOpenDataQuery);
+        hasCheckedDataCount          = axios.get(hasCheckedDataQuery);
+        /*jshint multistr: true */
+        openDataInfo = "The percentage of articles that shared any data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noopener'>CC-BY</a> license. This figure only measures how many articles shared Open Data if they generated data in the first place. It also only measures if any of the datasets generated were open, not if all of them were open. To analyze this we work with Dataseer, who uses a combination of machine learning and human review to review the text of the papers.";
+      } else {
+        // Do not display card at all
+        document.querySelector('#open_data').outerHTML = "";
+      }
+      instance.setContent(openDataInfo);
     };
 
     /**  Display Insights **/
     // TODO: break these down into one function per metric
     displayInsights = function() {
-      Promise.all([isPaper, isFree, isCompliant, isEligible])
+      Promise.all([isPaper, isFree, isEligibleCount, isCompliantCount, hasDataStatementCount, hasCheckedDataStatementCount, hasOpenDataCount, hasCheckedDataCount])
         .then(function (results) {
           let isPaper = results[0].data,
-              isFree    = results[1].data,
-              isCompliant = results[2].data,
-              isEligible = results[3].data;
+              isFree    = results[1].data;
 
           // Display totals and % of articles
           articlesContents.textContent = makeNumberReadable(isPaper);
@@ -200,21 +280,36 @@ oareport = function(org) {
           }
 
           // Set total of articles depending on whether or not articles need to be covered by policy
-          if (isEligible) {
-            totalArticles = isEligible;
-            totalArticlesString = " eligible articles";
+          if (isEligibleCount) {
+            let isEligibleCount = results[2].data;
+            totalArticles = isEligibleCount;
+            totalArticlesString = " eligible";
           } else {
             totalArticles = isPaper;
             totalArticlesString =  " articles";
           }
 
           // Display totals and % of policy-compliant articles
-          if (isCompliant) {
-            compliantArticlesContents.textContent = makeNumberReadable(isCompliant) + " of " + makeNumberReadable(totalArticles) + totalArticlesString;
-            compliantPercentageContents.textContent = Math.round(((isCompliant/totalArticles)*100)) + "%";
-          } else {
-            compliantArticlesContents.textContent = "";
-            compliantPercentageContents.textContent = "N/A";
+          if (isCompliantCount) {
+            let isCompliantCount = results[3].data;
+            compliantArticlesContents.textContent = makeNumberReadable(isCompliantCount) + " of " + makeNumberReadable(totalArticles) + totalArticlesString;
+            compliantPercentageContents.textContent = Math.round(((isCompliantCount/totalArticles)*100)) + "%";
+          }
+
+          // Display totals and % of articles for which we’ve verified data availability statements
+          if (hasDataStatementCount) {
+            let hasDataStatementCount = results[4].data,
+                hasCheckedDataStatementCount = results[5].data;
+            dataStatementContents.textContent = makeNumberReadable(hasDataStatementCount) + " of " + makeNumberReadable(hasCheckedDataStatementCount) + " checked";
+            dataStatementPercentageContents.textContent = Math.round(((hasDataStatementCount/hasCheckedDataStatementCount)*100)) + "%";
+          }
+
+          // Display totals and % of articles sharing data openly
+          if (hasOpenDataCount) {
+            let hasOpenDataCount = results[6].data,
+                hasCheckedDataCount = results[7].data;
+            openDataContents.textContent = makeNumberReadable(hasOpenDataCount) + " of " + makeNumberReadable(hasCheckedDataCount) + " articles that generate data";
+            openDataPercentageContents.textContent = Math.round(((hasOpenDataCount/hasCheckedDataCount)*100)) + "%";
           }
 
         }
@@ -285,7 +380,7 @@ oareport = function(org) {
       ).catch(function (error) { console.log("displayStrategyVOR error: " + error); });
     };
 
-    /** Display Strategies: deposit AAM (accepted manuscripts) **/
+    /** Display Strategies: deposit AAM (accepted manuscripts)  **/
     displayStrategyAAM = function() {
       Promise.all([canArchiveAAM, canArchiveAAMList])
         .then(function (results) {
@@ -349,6 +444,96 @@ oareport = function(org) {
       ).catch(function (error) { console.log("displayStrategyAAM error: " + error); })
     };
 
+    /** Display Strategies: follow up with uncompliant articles with paid APCs **/
+    displayStrategyAPCFollowup = function() {
+
+      hasAPCFollowupSort = "&sort=publisher.keyword:asc,journal.keyword:asc,supplements.invoice_date.keyword:desc";
+      hasAPCFollowupQuery  = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.apc_followup.query);
+      hasAPCFollowupListQuery = (queryPrefix + response.data.hits.hits[0]._source.strategy.apc_followup.query) + hasAPCFollowupSort;
+      hasAPCFollowup  = axios.get(hasAPCFollowupQuery);
+      hasAPCFollowupList = axios.get(hasAPCFollowupListQuery);
+
+      if (response.data.hits.hits[0]._source.strategy.apc_followup.query) {
+        Promise.all([hasAPCFollowup, hasAPCFollowupList])
+          .then(function (results) {
+            let hasAPCFollowup = results[0].data,
+                hasAPCFollowupList = results[1].data.hits.hits,
+                hasAPCFollowupLength = parseFloat(hasAPCFollowup);
+
+            // Show total number of actions in tab & above table
+            totalAPCActionsContents.textContent = makeNumberReadable(hasAPCFollowupLength);
+            countAPCActionsContents.textContent = makeNumberReadable(hasAPCFollowupLength);
+
+            // Generate list of APC followups if there are any
+            if (hasAPCFollowup === 0) {
+              totalAPCActionsContents.textContent = "No ";
+              hasAPCFollowupTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find accepted manuscripts that could be deposited. <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
+            }
+            else if (hasAPCFollowup > 0 || hasAPCFollowup !== null) {
+              // Set up and get list of emails for APC followups
+              var hasAPCFollowupTableRows = "";
+
+              for (i = 0; i < (hasAPCFollowupLength); i++) {
+                var title = hasAPCFollowupList[i]._source.title,
+                    publisher = hasAPCFollowupList[i]._source.publisher,
+                    journalOATtype = hasAPCFollowupList[i]._source.journal_oa_type,
+                    articleOAStatus = hasAPCFollowupList[i]._source.oa_status,
+                    license = hasAPCFollowupList[i]._source.publisher_license,
+                    costAPC = "US$" + hasAPCFollowupList[i]._source.supplements[0].apc_cost,
+                    invoiceNb = hasAPCFollowupList[i]._source.supplements[0].invoice_number,
+                    invoiceDate = hasAPCFollowupList[i]._source.supplements[0].invoice_date,
+                    doi   = hasAPCFollowupList[i]._source.DOI,
+                    pubDate = hasAPCFollowupList[i]._source.published_date,
+                    journal = hasAPCFollowupList[i]._source.journal;
+                pubDate = makeDateReadable(new Date(pubDate));
+
+                /*jshint multistr: true */
+                hasAPCFollowupTableRows += '<tr>\
+                  <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
+                    <div class="mb-1 font-medium text-neutral-900">\
+                      ' + (publisher ? publisher : "[No publisher found]") + '\
+                    </div>\
+                    <div class="mb-3 text-neutral-900">\
+                      ' + (journal ? journal : "[No journal found]") + '\
+                    </div>\
+                    <div class="text-neutral-500">\
+                      ' + (journalOATtype ? ('<span class="capitalize font-bold">' + journalOATtype + '</span> journal') : "[No status found for this journal]") + '\
+                    </div>\
+                  </td>\
+                  <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
+                    <div class="mb-1 text-neutral-500">' + (pubDate ? ('Published on ' + pubDate) : "[No date found]") + '</div>\
+                    <div class="mb-3 text-neutral-900 hover:text-carnation-500">\
+                      <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + (title ? title : "[No article title found]") + '</a>\
+                    </div>\
+                  <div class="text-neutral-500">\
+                    ' + (articleOAStatus ? ('<span class="capitalize font-bold">' + articleOAStatus + '</span> article') : "[No status found for this article]") + '\
+                     — ' + (license ? ('<span class="uppercase font-bold">' + license + '</span>') : "[No license found]") + '\
+                  </div>\
+                  </td>\
+                  <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
+                    <div class="mb-3 text-neutral-500">\
+                      ' + (invoiceDate ? ('Issued on ' + invoiceDate) : "[No invoice date found]") + '\
+                    </div>\
+                    <div class="mb-3 text-neutral-900">\
+                      ' + (invoiceNb ? invoiceNb : "[No invoice number found]") + '\
+                    </div>\
+                    <div class="text-neutral-500 uppercase">\
+                      ' + (costAPC ? costAPC : "[No APC cost found]") + '\
+                    </div>\
+                  </td>\
+                </tr>';
+              }
+              hasAPCFollowupTable.innerHTML = hasAPCFollowupTableRows;
+            }
+          }
+        ).catch(function (error) { console.log("displayStrategyAPCFollowup error: " + error); })
+      } else {
+        // remove tab if this strategy doesn’t exist for this org
+        document.querySelector("#has-apc-followup-item").outerHTML = "";
+        document.querySelector("#has-apc-followup").outerHTML = "";
+      }
+    };
+
     /* "Download CSV" form: set query and date range in hidden input */
     getExportLink = function() {
       Promise.all([hasCustomExportIncludes])
@@ -389,9 +574,12 @@ oareport = function(org) {
 
     getCountQueries();
     getPolicy();
+    getDataStatements();
+    getOpenData();
     displayInsights();
     displayStrategyVOR();
     displayStrategyAAM();
+    displayStrategyAPCFollowup();
     // TODO: uncomment once oaworks/internal-planning#316 is done
     // getExportLink();
   })
