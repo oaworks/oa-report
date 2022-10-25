@@ -270,7 +270,7 @@ oareport = function(org) {
             openDataPercentageContents.textContent = Math.round(((hasOpenDataCount/hasCheckedDataCount)*100)) + "%";
           }
         }
-      ).catch(function (error) { console.log("getDataStatements error: " + error); });
+      ).catch(function (error) { console.log("getOpenData error: " + error); });
     };
 
     /**  Display Insights **/
