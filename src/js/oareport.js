@@ -161,6 +161,8 @@ oareport = function(org) {
       // ...get its URL
       hasPolicy = response.data.hits.hits[0]._source.policy.supported_policy;
 
+      console.log("hasPolicy: " + hasPolicy)
+
       // ...then get the number of compliant articles and display a tooltip
       if (hasPolicy) {
         policyURL = response.data.hits.hits[0]._source.policy.url;
@@ -206,16 +208,9 @@ oareport = function(org) {
 
     /** Check for data availability statements **/
     getDataStatements = function() {
-      const instance = tippy(document.querySelector('#data_statement_info'), {
-        allowHTML: true,
-        interactive: true,
-        placement: 'top',
-        appendTo: document.body,
-      });
-
       var dataStatementInfo = "";
 
-      // ...check if there are any at al
+      // ...check if there are any at all
       hasDataStatement = response.data.hits.hits[0]._source.analysis.has_data_availability_statement;
 
       // Display whether or not articles have a data availability statement after being checked
@@ -227,44 +222,46 @@ oareport = function(org) {
         hasCheckedDataStatementCount = axios.get(hasCheckedDataStatementQuery);
         /*jshint multistr: true */
         dataStatementInfo = "This number tells you how many papers that we’ve analyzed have a data availability statement. To check if a paper has a data availability statement, we use data from PubMed and review papers manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data)";
+
+        // Display help text popover
+        const instance = tippy(document.querySelector('#data_statement_info'), {
+          allowHTML: true,
+          interactive: true,
+          placement: 'top',
+          appendTo: document.body,
+        });
+
+        instance.setContent(dataStatementInfo);
+
+        Promise.all([hasDataStatementCount, hasCheckedDataStatementCount])
+          .then(function (results) {
+
+            // Display totals and % of articles for which we’ve verified data availability statements
+            if (hasDataStatementCount) {
+              let hasDataStatementCount        = results[0].data,
+                  hasCheckedDataStatementCount = results[1].data;
+              dataStatementContents.textContent = makeNumberReadable(hasDataStatementCount) + " of " + makeNumberReadable(hasCheckedDataStatementCount) + " checked";
+              dataStatementPercentageContents.textContent = Math.round(((hasDataStatementCount/hasCheckedDataStatementCount)*100)) + "%";
+            }
+
+          }
+        ).catch(function (error) { console.log("getDataStatements error: " + error); });
       } else {
         // Do not display card at all
-        document.querySelector('#data_statement').outerHTML = "";
+        document.querySelector('#data_statement').innerHTML = "";
+        hasDataStatementCount = "";
+        hasCheckedDataStatementCount = "";
       }
-
-      // Display help text popover
-      instance.setContent(dataStatementInfo);
-
-      Promise.all([hasDataStatementCount, hasCheckedDataStatementCount])
-        .then(function (results) {
-
-          // Display totals and % of articles for which we’ve verified data availability statements
-          if (hasDataStatementCount) {
-            let hasDataStatementCount        = results[0].data,
-                hasCheckedDataStatementCount = results[1].data;
-            dataStatementContents.textContent = makeNumberReadable(hasDataStatementCount) + " of " + makeNumberReadable(hasCheckedDataStatementCount) + " checked";
-            dataStatementPercentageContents.textContent = Math.round(((hasDataStatementCount/hasCheckedDataStatementCount)*100)) + "%";
-          }
-
-        }
-      ).catch(function (error) { console.log("getDataStatements error: " + error); });
     };
 
     /** Check for open data **/
     getOpenData = function() {
-      const instance = tippy(document.querySelector('#open_data_info'), {
-        allowHTML: true,
-        interactive: true,
-        placement: 'top',
-        appendTo: document.body,
-      });
-
       var openDataInfo = "";
 
-      // ...check if there are any at al
+      // ...check if there are any at all
       hasOpenData = response.data.hits.hits[0]._source.analysis.has_open_data;
 
-      // Display whether or not articles have a data availability statement after being checked
+      // Display whether or not articles have open data after being checked
       if (hasOpenData) {
         // Get their count
         hasOpenDataQuery             = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_open_data);
@@ -273,26 +270,36 @@ oareport = function(org) {
         hasCheckedDataCount          = axios.get(hasCheckedDataQuery);
         /*jshint multistr: true */
         openDataInfo = "The percentage of articles that shared any data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noopener'>CC-BY</a> license. This figure only measures how many articles shared Open Data if they generated data in the first place. It also only measures if any of the datasets generated were open, not if all of them were open. To analyze this we work with Dataseer, who uses a combination of machine learning and human review to review the text of the papers.";
+
+        // Display help text popover
+        const instance = tippy(document.querySelector('#open_data_info'), {
+          allowHTML: true,
+          interactive: true,
+          placement: 'top',
+          appendTo: document.body,
+        });
+
+        instance.setContent(openDataInfo);
+
+        Promise.all([hasOpenDataCount, hasCheckedDataCount])
+          .then(function (results) {
+
+            // Display totals and % of articles sharing data openly
+            if (hasOpenDataCount) {
+              let hasOpenDataCount = results[0].data,
+                  hasCheckedDataCount = results[1].data;
+              openDataContents.textContent = makeNumberReadable(hasOpenDataCount) + " of " + makeNumberReadable(hasCheckedDataCount) + " articles that generate data";
+              openDataPercentageContents.textContent = Math.round(((hasOpenDataCount/hasCheckedDataCount)*100)) + "%";
+            }
+          }
+        ).catch(function (error) { console.log("getOpenData error: " + error); });
       } else {
         // Do not display card at all
-        document.querySelector('#open_data').outerHTML = "";
+        document.querySelector('#open_data').innerHTML = "";
+        hasOpenDataCount = "";
+        hasCheckedDataCount = "";
       }
 
-      // Display help text popover
-      instance.setContent(openDataInfo);
-
-      Promise.all([hasOpenDataCount, hasCheckedDataCount])
-        .then(function (results) {
-
-          // Display totals and % of articles sharing data openly
-          if (hasOpenDataCount) {
-            let hasOpenDataCount = results[0].data,
-                hasCheckedDataCount = results[1].data;
-            openDataContents.textContent = makeNumberReadable(hasOpenDataCount) + " of " + makeNumberReadable(hasCheckedDataCount) + " articles that generate data";
-            openDataPercentageContents.textContent = Math.round(((hasOpenDataCount/hasCheckedDataCount)*100)) + "%";
-          }
-        }
-      ).catch(function (error) { console.log("getOpenData error: " + error); });
     };
 
     /**  Display basic Insights (total article & free article counts) **/
@@ -305,6 +312,7 @@ oareport = function(org) {
 
           // Display totals and % of articles
           articlesContents.textContent = makeNumberReadable(isPaperCount);
+          console.log("isPaperCount: " + isPaperCount);
 
           // Display totals and % of OA articles
           // TODO: only display OA rates for orgs w/out policies
@@ -595,6 +603,7 @@ oareport = function(org) {
     displayStrategyAPCFollowup();
     // TODO: uncomment once oaworks/internal-planning#316 is done
     // getExportLink();
+    console.log("isPaperQuery: "+ isPaperQuery);
   })
   .catch(function (error) { console.log("ERROR: " + error); });
 };
