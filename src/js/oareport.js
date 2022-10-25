@@ -210,6 +210,20 @@ oareport = function(org) {
         document.querySelector('#data_statement').outerHTML = "";
       }
       instance.setContent(dataStatementInfo);
+
+      Promise.all([hasDataStatementCount, hasCheckedDataStatementCount])
+        .then(function (results) {
+
+          // Display totals and % of articles for which we’ve verified data availability statements
+          if (hasDataStatementCount) {
+            let hasDataStatementCount        = results[0].data,
+                hasCheckedDataStatementCount = results[1].data;
+            dataStatementContents.textContent = makeNumberReadable(hasDataStatementCount) + " of " + makeNumberReadable(hasCheckedDataStatementCount) + " checked";
+            dataStatementPercentageContents.textContent = Math.round(((hasDataStatementCount/hasCheckedDataStatementCount)*100)) + "%";
+          }
+
+        }
+      ).catch(function (error) { console.log("getDataStatements error: " + error); })
     };
 
     /** Check for open data **/
@@ -286,14 +300,6 @@ oareport = function(org) {
             let isCompliantCount = results[3].data;
             compliantArticlesContents.textContent = makeNumberReadable(isCompliantCount) + " of " + makeNumberReadable(totalArticles) + totalArticlesString;
             compliantPercentageContents.textContent = Math.round(((isCompliantCount/totalArticles)*100)) + "%";
-          }
-
-          // Display totals and % of articles for which we’ve verified data availability statements
-          if (hasDataStatementCount) {
-            let hasDataStatementCount = results[4].data,
-                hasCheckedDataStatementCount = results[5].data;
-            dataStatementContents.textContent = makeNumberReadable(hasDataStatementCount) + " of " + makeNumberReadable(hasCheckedDataStatementCount) + " checked";
-            dataStatementPercentageContents.textContent = Math.round(((hasDataStatementCount/hasCheckedDataStatementCount)*100)) + "%";
           }
 
           // Display totals and % of articles sharing data openly
