@@ -180,6 +180,28 @@ oareport = function(org) {
         isEligibleCount = "";
       }
       instance.setContent(policyInfo);
+
+      Promise.all([isCompliantCount, isEligibleCount])
+        .then(function (results) {
+
+          // Set total of articles depending on whether or not articles need to be covered by policy
+          if (isEligibleCount) {
+            let isEligibleCount = results[1].data;
+            totalArticles = isEligibleCount;
+            totalArticlesString = " eligible";
+          } else {
+            totalArticles = isPaperCount;
+            totalArticlesString =  " articles";
+          }
+
+          // Display totals and % of policy-compliant articles
+          if (isCompliantCount) {
+            let isCompliantCount = results[0].data;
+            compliantArticlesContents.textContent = makeNumberReadable(isCompliantCount) + " of " + makeNumberReadable(totalArticles) + totalArticlesString;
+            compliantPercentageContents.textContent = Math.round(((isCompliantCount/totalArticles)*100)) + "%";
+          }
+        }
+      ).catch(function (error) { console.log("getPolicy error: " + error); });
     };
 
     /** Check for data availability statements **/
@@ -273,10 +295,10 @@ oareport = function(org) {
       ).catch(function (error) { console.log("getOpenData error: " + error); });
     };
 
-    /**  Display Insights **/
+    /**  Display basic Insights (total article & free article counts) **/
     // TODO: break these down into one function per metric
     displayInsights = function() {
-      Promise.all([isPaperCount, isFreeCount, isEligibleCount, isCompliantCount, hasDataStatementCount, hasCheckedDataStatementCount, hasOpenDataCount, hasCheckedDataCount])
+      Promise.all([isPaperCount, isFreeCount])
         .then(function (results) {
           let isPaperCount   = results[0].data,
               isFreeCount    = results[1].data;
@@ -300,23 +322,6 @@ oareport = function(org) {
           } else {
             freeArticlesContents.textContent = "";
             freePercentageContents.textContent = "N/A";
-          }
-
-          // Set total of articles depending on whether or not articles need to be covered by policy
-          if (isEligibleCount) {
-            let isEligibleCount = results[2].data;
-            totalArticles = isEligibleCount;
-            totalArticlesString = " eligible";
-          } else {
-            totalArticles = isPaperCount;
-            totalArticlesString =  " articles";
-          }
-
-          // Display totals and % of policy-compliant articles
-          if (isCompliantCount) {
-            let isCompliantCount = results[3].data;
-            compliantArticlesContents.textContent = makeNumberReadable(isCompliantCount) + " of " + makeNumberReadable(totalArticles) + totalArticlesString;
-            compliantPercentageContents.textContent = Math.round(((isCompliantCount/totalArticles)*100)) + "%";
           }
         }
       ).catch(function (error) { console.log("displayInsights error: " + error); })
