@@ -145,6 +145,8 @@ oareport = function(org) {
       canArchiveVORList            = axios.get(canArchiveVORListQuery);
 
       console.log("org index: " + base + "orgs?q=name:%22" + org + "%22");
+      console.log("canArchiveAAMListQuery: "+ canArchiveAAMListQuery);
+
     };
 
     /** Check for an OA policy and display a link to the policy page in a tooltip **/
@@ -354,8 +356,7 @@ oareport = function(org) {
             canArchiveVORTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find publisher PDFs that could be deposited. <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
           }
           else if (canArchiveVOR > 0 || canArchiveVOR !== null) {
-            // TODO: think more about the potential percentage
-            // canArchiveOaPercentageContents = document.querySelector("#can_archive_percent_oa");
+            // Set up and get list of emails
             var canArchiveVORTableRows = "";
 
             for (i = 0; i < (canArchiveVORLength); i++) {
@@ -366,6 +367,7 @@ oareport = function(org) {
                   journal = canArchiveVORList[i]._source.journal,
                   authorEmail = canArchiveVORList[i]._source.email;
                   pubDate = makeDateReadable(new Date(pubDate));
+
 
               canArchiveVORMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
               canArchiveVORMailto = canArchiveVORMailto.replaceAll("\'", "’");
@@ -596,12 +598,12 @@ oareport = function(org) {
 
     getCountQueries();
     getPolicy();
-    getDataStatements();
-    getOpenData();
     displayInsights();
     displayStrategyVOR();
     displayStrategyAAM();
     displayStrategyAPCFollowup();
+    getDataStatements();
+    getOpenData();
     // TODO: uncomment once oaworks/internal-planning#316 is done
     // getExportLink();
     console.log("isPaperQuery: "+ isPaperQuery);
