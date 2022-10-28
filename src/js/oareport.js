@@ -248,7 +248,7 @@ oareport = function(org) {
         ).catch(function (error) { console.log("getDataStatements error: " + error); });
       } else {
         // Do not display card at all
-        document.querySelector('#data_statement').innerHTML = "";
+        document.querySelector('#data_statement').remove();
         hasDataStatementCount = "";
         hasCheckedDataStatementCount = "";
       }
@@ -256,6 +256,7 @@ oareport = function(org) {
 
     /** Check for open data **/
     getOpenData = function() {
+
       var openDataInfo = "";
 
       // ...check if there are any at all
@@ -295,7 +296,7 @@ oareport = function(org) {
         ).catch(function (error) { console.log("getOpenData error: " + error); });
       } else {
         // Do not display card at all
-        document.querySelector('#open_data').innerHTML = "";
+        document.querySelector('#open_data').remove();
         hasOpenDataCount = "";
         hasCheckedDataCount = "";
       }
