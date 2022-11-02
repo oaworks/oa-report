@@ -359,7 +359,7 @@ oareport = function(org) {
             // Set up and get list of emails
             var canArchiveVORTableRows = "";
 
-            for (i = 0; i < canArchiveVORLength; i++) {
+            for (i = 0; i < 1; i++) {
               var title = canArchiveVORList[i]._source.title,
                   author = canArchiveVORList[i]._source.author_email_name,
                   doi   = canArchiveVORList[i]._source.DOI,
@@ -421,7 +421,7 @@ oareport = function(org) {
             // Set up and get list of emails for archivable AAMs
             var canArchiveAAMTableRows = "";
 
-            for (j = 0; j < canArchiveAAMLength; j++) {
+            for (j = 0; j < 1; j++) {
               var title = canArchiveAAMList[j]._source.title,
                   author = canArchiveAAMList[j]._source.author_email_name,
                   doi   = canArchiveAAMList[j]._source.DOI,
