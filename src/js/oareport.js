@@ -345,6 +345,9 @@ oareport = function(org) {
           let canArchiveVOR = results[0].data,
               canArchiveVORList = results[1].data.hits.hits,
               canArchiveVORLength = parseFloat(canArchiveVOR);
+              if (canArchiveVORLength > 100) {
+                canArchiveVORLength = 100;
+              }
 
           // Show total number of actions in tab & above table
           totalVORActionsContents.textContent = makeNumberReadable(canArchiveVORLength);
@@ -359,7 +362,7 @@ oareport = function(org) {
             // Set up and get list of emails
             var canArchiveVORTableRows = "";
 
-            for (i = 0; i < 2; i++) {
+            for (i = 0; i < canArchiveVORLength; i++) {
               var title = canArchiveVORList[i]._source.title,
                   author = canArchiveVORList[i]._source.author_email_name,
                   doi   = canArchiveVORList[i]._source.DOI,
@@ -407,6 +410,9 @@ oareport = function(org) {
           let canArchiveAAM = results[0].data,
               canArchiveAAMList = results[1].data.hits.hits,
               canArchiveAAMLength = parseFloat(canArchiveAAM);
+              if (canArchiveAAMLength > 100) {
+                canArchiveAAMLength = 100;
+              }
 
           // Show total number of actions in tab & above table
           totalAAMActionsContents.textContent = makeNumberReadable(canArchiveAAMLength);
@@ -421,7 +427,7 @@ oareport = function(org) {
             // Set up and get list of emails for archivable AAMs
             var canArchiveAAMTableRows = "";
 
-            for (j = 0; j < 2; j++) {
+            for (j = 0; j < canArchiveAAMLength; j++) {
               var title = canArchiveAAMList[j]._source.title,
                   author = canArchiveAAMList[j]._source.author_email_name,
                   doi   = canArchiveAAMList[j]._source.DOI,
