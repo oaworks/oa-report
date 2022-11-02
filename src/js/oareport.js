@@ -362,7 +362,7 @@ oareport = function(org) {
           }
           else if (canArchiveVOR > 0 || canArchiveVOR !== null) {
             // Set up and get list of emails
-            var canArchiveVORTableRows = "";
+            var i, canArchiveVORTableRows = "";
 
             for (i = 0; i < canArchiveVORLength; i++) {
               var title = canArchiveVORList[i]._source.title,
@@ -429,7 +429,7 @@ oareport = function(org) {
           }
           else if (canArchiveAAM > 0 || canArchiveAAM !== null) {
             // Set up and get list of emails for archivable AAMs
-            var canArchiveAAMTableRows = "";
+            var j, canArchiveAAMTableRows = "";
 
             for (j = 0; j < canArchiveAAMLength; j++) {
               var title = canArchiveAAMList[j]._source.title,
@@ -496,7 +496,7 @@ oareport = function(org) {
             if (hasAPCFollowupLength > 100) {
               hasAPCFollowupLength = 100;
             }
-            
+
             totalAPCActionsContents.textContent = makeNumberReadable(hasAPCFollowupLength);
 
             // Generate list of APC followups if there are any
@@ -506,7 +506,7 @@ oareport = function(org) {
             }
             else if (hasAPCFollowup > 0 || hasAPCFollowup !== null) {
               // Set up and get list of emails for APC followups
-              var hasAPCFollowupTableRows = "";
+              var k, hasAPCFollowupTableRows = "";
 
               for (k = 0; k < hasAPCFollowupLength; k++) {
                 var title = hasAPCFollowupList[k]._source.title,
