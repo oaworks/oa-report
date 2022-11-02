@@ -366,8 +366,6 @@ oareport = function(org) {
                   pubDate = canArchiveVORList[i]._source.published_date,
                   journal = canArchiveVORList[i]._source.journal,
                   authorEmail = canArchiveVORList[i]._source.email;
-                  pubDate = makeDateReadable(new Date(pubDate));
-
 
               canArchiveVORMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
               canArchiveVORMailto = canArchiveVORMailto.replaceAll("\'", "’");
@@ -379,7 +377,7 @@ oareport = function(org) {
               /*jshint multistr: true */
               canArchiveVORTableRows += '<tr>\
                 <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
-                  <div class="mb-1 text-neutral-500">' + (pubDate ? pubDate : "[No date found]") + '</div>\
+                  <div class="mb-1 text-neutral-500">' + (pubDate ? makeDateReadable(new Date(pubDate)) : "[No date found]") + '</div>\
                   <div class="mb-1 font-medium text-neutral-900 hover:text-carnation-500">\
                     <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + (title ? title : "[No article title found]") + '</a>\
                   </div>\
@@ -430,7 +428,6 @@ oareport = function(org) {
                   pubDate = canArchiveAAMList[i]._source.published_date,
                   journal = canArchiveAAMList[i]._source.journal,
                   authorEmail = canArchiveAAMList[i]._source.email;
-              pubDate = makeDateReadable(new Date(pubDate));
 
               // Get email draft/body for this article and replace with its metadata
               canArchiveAAMMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
@@ -443,7 +440,7 @@ oareport = function(org) {
               /*jshint multistr: true */
               canArchiveAAMTableRows += '<tr>\
                 <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
-                  <div class="mb-1 text-neutral-500">' + (pubDate ? pubDate : "[No date found]") + '</div>\
+                  <div class="mb-1 text-neutral-500">' + (pubDate ? makeDateReadable(new Date(pubDate)) : "[No date found]") + '</div>\
                   <div class="mb-1 font-medium text-neutral-900 hover:text-carnation-500">\
                     <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + (title ? title : "[No article title found]") + '</a>\
                   </div>\
@@ -508,7 +505,6 @@ oareport = function(org) {
                     doi   = hasAPCFollowupList[i]._source.DOI,
                     pubDate = hasAPCFollowupList[i]._source.published_date,
                     journal = hasAPCFollowupList[i]._source.journal;
-                pubDate = makeDateReadable(new Date(pubDate));
                 console.log("costAPC: " + costAPC);
 
                 /*jshint multistr: true */
@@ -525,7 +521,7 @@ oareport = function(org) {
                     </div>\
                   </td>\
                   <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
-                    <div class="mb-1 text-neutral-500">' + (pubDate ? ('Published on ' + pubDate) : "[No date found]") + '</div>\
+                    <div class="mb-1 text-neutral-500">' + (pubDate ? ('Published on ' + makeDateReadable(new Date(pubDate))) : "[No date found]") + '</div>\
                     <div class="mb-3 text-neutral-900 hover:text-carnation-500">\
                       <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + (title ? title : "[No article title found]") + '</a>\
                     </div>\
