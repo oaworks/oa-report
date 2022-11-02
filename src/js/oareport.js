@@ -1,4 +1,4 @@
-const base           = "https://api.oa.works/report/",
+const base           = "https://beta.oa.works/report/",
       queryBase      = base + "works?size=100&",
       countQueryBase = base + "works/count?",
       csvExportBase  = "https://bg.beta.oa.works/report/works.csv?";
@@ -352,7 +352,7 @@ oareport = function(org) {
           if (canArchiveVORLength > 100) {
             canArchiveVORLength = 100;
           }
-          
+
           totalVORActionsContents.textContent = makeNumberReadable(canArchiveVORLength);
 
           // Generate list of archivable VORs if there are any
