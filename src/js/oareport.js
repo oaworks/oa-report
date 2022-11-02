@@ -359,7 +359,7 @@ oareport = function(org) {
             // Set up and get list of emails
             var canArchiveVORTableRows = "";
 
-            for (i = 0; i < (canArchiveVORLength); i++) {
+            for (i = 0; i < 100; i++) {
               var title = canArchiveVORList[i]._source.title,
                   author = canArchiveVORList[i]._source.author_email_name,
                   doi   = canArchiveVORList[i]._source.DOI,
@@ -423,7 +423,7 @@ oareport = function(org) {
             // Set up and get list of emails for archivable AAMs
             var canArchiveAAMTableRows = "";
 
-            for (i = 0; i < (canArchiveAAMLength); i++) {
+            for (i = 0; i < 100; i++) {
               var title = canArchiveAAMList[i]._source.title,
                   author = canArchiveAAMList[i]._source.author_email_name,
                   doi   = canArchiveAAMList[i]._source.DOI,
@@ -496,7 +496,7 @@ oareport = function(org) {
               // Set up and get list of emails for APC followups
               var hasAPCFollowupTableRows = "";
 
-              for (i = 0; i < (hasAPCFollowupLength); i++) {
+              for (i = 0; i < 100; i++) {
                 var title = hasAPCFollowupList[i]._source.title,
                     publisher = hasAPCFollowupList[i]._source.publisher,
                     journalOATtype = hasAPCFollowupList[i]._source.journal_oa_type,
