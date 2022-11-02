@@ -352,7 +352,7 @@ oareport = function(org) {
           if (canArchiveVORLength > 100) {
             canArchiveVORLength = 100;
           }
-          
+
           totalVORActionsContents.textContent = makeNumberReadable(canArchiveVORLength);
 
           // Generate list of archivable VORs if there are any
@@ -491,8 +491,13 @@ oareport = function(org) {
                 hasAPCFollowupLength = parseFloat(hasAPCFollowup);
 
             // Show total number of actions in tab & above table
-            totalAPCActionsContents.textContent = makeNumberReadable(hasAPCFollowupLength);
             countAPCActionsContents.textContent = makeNumberReadable(hasAPCFollowupLength);
+
+            if (hasAPCFollowupLength > 100) {
+              hasAPCFollowupLength = 100;
+            }
+            
+            totalAPCActionsContents.textContent = makeNumberReadable(hasAPCFollowupLength);
 
             // Generate list of APC followups if there are any
             if (hasAPCFollowup === 0) {
