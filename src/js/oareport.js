@@ -514,7 +514,7 @@ oareport = function(org) {
                     journalOATtype = hasAPCFollowupList[i]._source.journal_oa_type,
                     articleOAStatus = hasAPCFollowupList[i]._source.oa_status,
                     license = hasAPCFollowupList[i]._source.publisher_license,
-                    costAPC = "US$" + hasAPCFollowupList[i]._source.supplements[1].apc_cost,
+                    costAPC = hasAPCFollowupList[i]._source.supplements[1].apc_cost,
                     invoiceNb = hasAPCFollowupList[i]._source.supplements[1].invoice_number,
                     invoiceDate = hasAPCFollowupList[i]._source.supplements[1].invoice_date,
                     doi   = hasAPCFollowupList[i]._source.DOI,
@@ -552,7 +552,7 @@ oareport = function(org) {
                       ' + (invoiceNb ? invoiceNb : "[No invoice number found]") + '\
                     </div>\
                     <div class="text-neutral-500 uppercase">\
-                      ' + (costAPC ? costAPC : "[No APC cost found]") + '\
+                      ' + (costAPC ? ('US$' + costAPC) : "[No APC cost found]") + '\
                     </div>\
                   </td>\
                 </tr>';
