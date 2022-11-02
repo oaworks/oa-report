@@ -345,13 +345,15 @@ oareport = function(org) {
           let canArchiveVOR = results[0].data,
               canArchiveVORList = results[1].data.hits.hits,
               canArchiveVORLength = parseFloat(canArchiveVOR);
-              if (canArchiveVORLength > 100) {
-                canArchiveVORLength = 100;
-              }
 
           // Show total number of actions in tab & above table
-          totalVORActionsContents.textContent = makeNumberReadable(canArchiveVORLength);
           countVORActionsContents.textContent = makeNumberReadable(canArchiveVORLength);
+
+          if (canArchiveVORLength > 100) {
+            canArchiveVORLength = 100;
+          }
+          
+          totalVORActionsContents.textContent = makeNumberReadable(canArchiveVORLength);
 
           // Generate list of archivable VORs if there are any
           if (canArchiveVOR === 0) {
@@ -410,13 +412,15 @@ oareport = function(org) {
           let canArchiveAAM = results[0].data,
               canArchiveAAMList = results[1].data.hits.hits,
               canArchiveAAMLength = parseFloat(canArchiveAAM);
-              if (canArchiveAAMLength > 100) {
-                canArchiveAAMLength = 100;
-              }
 
           // Show total number of actions in tab & above table
-          totalAAMActionsContents.textContent = makeNumberReadable(canArchiveAAMLength);
           countAAMActionsContents.textContent = makeNumberReadable(canArchiveAAMLength);
+
+          if (canArchiveAAMLength > 100) {
+            canArchiveAAMLength = 100;
+          }
+
+          totalAAMActionsContents.textContent = makeNumberReadable(canArchiveAAMLength);
 
           // Generate list of archivable AAMs if there are any
           if (canArchiveAAM === 0) {
