@@ -51,7 +51,7 @@ replaceDateRange = function(newStart, newEnd) {
   endDate       = changeDays(+1, newEnd);
   endDate       = formatDateToISO(endDate);
   dateRange     = "(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")%20AND%20";
-  return startDate, endDate, dateRange;
+  return dateRange;
 };
 
 /* Get report page elements where data will be inserted */
