@@ -1,4 +1,4 @@
-const base           = "https://beta.oa.works/report/",
+const base           = "https://api.oa.works/report/",
       queryBase      = base + "works?size=100&",
       countQueryBase = base + "works/count?",
       csvExportBase  = "https://bg.beta.oa.works/report/works.csv?";
@@ -474,6 +474,7 @@ oareport = function(org) {
       hasAPCFollowupListQuery = (queryPrefix + response.data.hits.hits[0]._source.strategy.apc_followup.query) + hasAPCFollowupSort;
       hasAPCFollowup  = axios.get(hasAPCFollowupQuery);
       hasAPCFollowupList = axios.get(hasAPCFollowupListQuery);
+      console.log("hasAPCFollowupListQuery: "+ hasAPCFollowupListQuery);
 
       if (response.data.hits.hits[0]._source.strategy.apc_followup.query) {
         Promise.all([hasAPCFollowup, hasAPCFollowupList])
@@ -501,13 +502,14 @@ oareport = function(org) {
                     journalOATtype = hasAPCFollowupList[i]._source.journal_oa_type,
                     articleOAStatus = hasAPCFollowupList[i]._source.oa_status,
                     license = hasAPCFollowupList[i]._source.publisher_license,
-                    costAPC = "US$" + hasAPCFollowupList[i]._source.supplements[0].apc_cost,
-                    invoiceNb = hasAPCFollowupList[i]._source.supplements[0].invoice_number,
-                    invoiceDate = hasAPCFollowupList[i]._source.supplements[0].invoice_date,
+                    costAPC = "US$" + hasAPCFollowupList[i]._source.supplements[1].apc_cost,
+                    invoiceNb = hasAPCFollowupList[i]._source.supplements[1].invoice_number,
+                    invoiceDate = hasAPCFollowupList[i]._source.supplements[1].invoice_date,
                     doi   = hasAPCFollowupList[i]._source.DOI,
                     pubDate = hasAPCFollowupList[i]._source.published_date,
                     journal = hasAPCFollowupList[i]._source.journal;
                 pubDate = makeDateReadable(new Date(pubDate));
+                console.log("costAPC: " + costAPC);
 
                 /*jshint multistr: true */
                 hasAPCFollowupTableRows += '<tr>\
