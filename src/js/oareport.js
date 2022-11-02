@@ -429,15 +429,15 @@ oareport = function(org) {
           }
           else if (canArchiveAAM > 0 || canArchiveAAM !== null) {
             // Set up and get list of emails for archivable AAMs
-            var j, canArchiveAAMTableRows = "";
+            var i, canArchiveAAMTableRows = "";
 
-            for (j = 0; j < canArchiveAAMLength; j++) {
-              var title = canArchiveAAMList[j]._source.title,
-                  author = canArchiveAAMList[j]._source.author_email_name,
-                  doi   = canArchiveAAMList[j]._source.DOI,
-                  pubDate = canArchiveAAMList[j]._source.published_date,
-                  journal = canArchiveAAMList[j]._source.journal,
-                  authorEmail = canArchiveAAMList[j]._source.email;
+            for (i = 0; i < canArchiveAAMLength; i++) {
+              var title = canArchiveAAMList[i]._source.title,
+                  author = canArchiveAAMList[i]._source.author_email_name,
+                  doi   = canArchiveAAMList[i]._source.DOI,
+                  pubDate = canArchiveAAMList[i]._source.published_date,
+                  journal = canArchiveAAMList[i]._source.journal,
+                  authorEmail = canArchiveAAMList[i]._source.email;
 
               // Get email draft/body for this article and replace with its metadata
               canArchiveAAMMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
@@ -506,20 +506,20 @@ oareport = function(org) {
             }
             else if (hasAPCFollowup > 0 || hasAPCFollowup !== null) {
               // Set up and get list of emails for APC followups
-              var k, hasAPCFollowupTableRows = "";
+              var i, hasAPCFollowupTableRows = "";
 
-              for (k = 0; k < hasAPCFollowupLength; k++) {
-                var title = hasAPCFollowupList[k]._source.title,
-                    publisher = hasAPCFollowupList[k]._source.publisher,
-                    journalOATtype = hasAPCFollowupList[k]._source.journal_oa_type,
-                    articleOAStatus = hasAPCFollowupList[k]._source.oa_status,
-                    license = hasAPCFollowupList[k]._source.publisher_license,
-                    costAPC = "US$" + hasAPCFollowupList[k]._source.supplements[1].apc_cost,
-                    invoiceNb = hasAPCFollowupList[k]._source.supplements[1].invoice_number,
-                    invoiceDate = hasAPCFollowupList[k]._source.supplements[1].invoice_date,
-                    doi   = hasAPCFollowupList[k]._source.DOI,
-                    pubDate = hasAPCFollowupList[k]._source.published_date,
-                    journal = hasAPCFollowupList[k]._source.journal;
+              for (i = 0; i < hasAPCFollowupLength; i++) {
+                var title = hasAPCFollowupList[i]._source.title,
+                    publisher = hasAPCFollowupList[i]._source.publisher,
+                    journalOATtype = hasAPCFollowupList[i]._source.journal_oa_type,
+                    articleOAStatus = hasAPCFollowupList[i]._source.oa_status,
+                    license = hasAPCFollowupList[i]._source.publisher_license,
+                    costAPC = "US$" + hasAPCFollowupList[i]._source.supplements[1].apc_cost,
+                    invoiceNb = hasAPCFollowupList[i]._source.supplements[1].invoice_number,
+                    invoiceDate = hasAPCFollowupList[i]._source.supplements[1].invoice_date,
+                    doi   = hasAPCFollowupList[i]._source.DOI,
+                    pubDate = hasAPCFollowupList[i]._source.published_date,
+                    journal = hasAPCFollowupList[i]._source.journal;
 
                 /*jshint multistr: true */
                 hasAPCFollowupTableRows += '<tr>\
