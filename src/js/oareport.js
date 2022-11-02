@@ -362,9 +362,9 @@ oareport = function(org) {
           }
           else if (canArchiveVOR > 0 || canArchiveVOR !== null) {
             // Set up and get list of emails
-            var i, canArchiveVORTableRows = "";
+            var canArchiveVORTableRows = "";
 
-            for (i = 0; i < canArchiveVORLength; i++) {
+            for (var i = 0; i < canArchiveVORLength; i++) {
               var title = canArchiveVORList[i]._source.title,
                   author = canArchiveVORList[i]._source.author_email_name,
                   doi   = canArchiveVORList[i]._source.DOI,
@@ -372,7 +372,7 @@ oareport = function(org) {
                   journal = canArchiveVORList[i]._source.journal,
                   authorEmail = canArchiveVORList[i]._source.email;
 
-              canArchiveVORMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
+              var canArchiveVORMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
               canArchiveVORMailto = canArchiveVORMailto.replaceAll("\'", "’");
               canArchiveVORMailto = canArchiveVORMailto.replaceAll("{title}", (title ? title : "[No title found]"));
               canArchiveVORMailto = canArchiveVORMailto.replaceAll("{doi}", (doi ? doi : "[No DOI found]"));
@@ -429,9 +429,9 @@ oareport = function(org) {
           }
           else if (canArchiveAAM > 0 || canArchiveAAM !== null) {
             // Set up and get list of emails for archivable AAMs
-            var i, canArchiveAAMTableRows = "";
+            var canArchiveAAMTableRows = "";
 
-            for (i = 0; i < canArchiveAAMLength; i++) {
+            for (var i = 0; i < canArchiveAAMLength; i++) {
               var title = canArchiveAAMList[i]._source.title,
                   author = canArchiveAAMList[i]._source.author_email_name,
                   doi   = canArchiveAAMList[i]._source.DOI,
@@ -440,7 +440,7 @@ oareport = function(org) {
                   authorEmail = canArchiveAAMList[i]._source.email;
 
               // Get email draft/body for this article and replace with its metadata
-              canArchiveAAMMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
+              var canArchiveAAMMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
               canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("\'", "’");
               canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{title}", (title ? title : "[No article title found]"));
               canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{doi}", (doi ? doi : "[No DOI found]"));
@@ -506,9 +506,9 @@ oareport = function(org) {
             }
             else if (hasAPCFollowup > 0 || hasAPCFollowup !== null) {
               // Set up and get list of emails for APC followups
-              var i, hasAPCFollowupTableRows = "";
+              var hasAPCFollowupTableRows = "";
 
-              for (i = 0; i < hasAPCFollowupLength; i++) {
+              for (var i = 0; i < hasAPCFollowupLength; i++) {
                 var title = hasAPCFollowupList[i]._source.title,
                     publisher = hasAPCFollowupList[i]._source.publisher,
                     journalOATtype = hasAPCFollowupList[i]._source.journal_oa_type,
