@@ -531,7 +531,7 @@ oareport = function(org) {
                   </td>\
                   <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
                     <div class="mb-3 text-neutral-500">\
-                      ' + (invoiceDate ? ('Issued on ' + invoiceDate) : "[No invoice date found]") + '\
+                      ' + (invoiceDate ? ('Issued on ' + makeDateReadable(new Date(invoiceDate))) : "[No invoice date found]") + '\
                     </div>\
                     <div class="mb-3 text-neutral-900">\
                       ' + (invoiceNb ? invoiceNb : "[No invoice number found]") + '\
