@@ -491,8 +491,13 @@ oareport = function(org) {
                 hasAPCFollowupLength = parseFloat(hasAPCFollowup);
 
             // Show total number of actions in tab & above table
-            totalAPCActionsContents.textContent = makeNumberReadable(hasAPCFollowupLength);
             countAPCActionsContents.textContent = makeNumberReadable(hasAPCFollowupLength);
+
+            if (hasAPCFollowupLength > 100) {
+              hasAPCFollowupLength = 100;
+            }
+            
+            totalAPCActionsContents.textContent = makeNumberReadable(hasAPCFollowupLength);
 
             // Generate list of APC followups if there are any
             if (hasAPCFollowup === 0) {
