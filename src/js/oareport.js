@@ -502,7 +502,7 @@ oareport = function(org) {
             // Generate list of APC followups if there are any
             if (hasAPCFollowup === 0) {
               totalAPCActionsContents.textContent = "No ";
-              hasAPCFollowupTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find accepted manuscripts that could be deposited. <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
+              hasAPCFollowupTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find articles to follow up on. <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
             }
             else if (hasAPCFollowup > 0 || hasAPCFollowup !== null) {
               // Set up and get list of emails for APC followups
