@@ -28,6 +28,11 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addShortcode('icon', iconShortcode);
   eleventyConfig.addShortcode('icon_small', iconShortcodeSmall);
 
+  // Get Axios and place in assets dir to use client-side
+  eleventyConfig.addPassthroughCopy({
+        "./node_modules/axios/dist/axios.min.js": "/js/axios.min.js"
+    });
+
   // Watch tailwindCSS
   eleventyConfig.addWatchTarget('./styles/tailwind.config.js');
   eleventyConfig.addWatchTarget('./styles/input.css');

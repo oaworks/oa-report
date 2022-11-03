@@ -1,8 +1,8 @@
 const base           = "https://api.oa.works/report/",
-      queryBase      = base + "works?",
+      queryBase      = base + "works?size=100&",
       countQueryBase = base + "works/count?",
       csvExportBase  = "https://bg.beta.oa.works/report/works.csv?";
-let isPaper, isEligible, isOA, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL, dateRangeButton, csvEmailButton, totalArticles, hasDataStatementCount, hasCheckedDataStatementCount, hasOpenDataCount, hasCheckedDataCount;
+let isPaperCount, isEligibleCount, isOA, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL, dateRangeButton, csvEmailButton, totalArticles, hasDataStatementCount, hasCheckedDataStatementCount, hasOpenDataCount, hasCheckedDataCount;
 let isCompliant = false;
 
 // Detect browser’s locale to display human-readable numbers
@@ -51,7 +51,7 @@ replaceDateRange = function(newStart, newEnd) {
   endDate       = changeDays(+1, newEnd);
   endDate       = formatDateToISO(endDate);
   dateRange     = "(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")%20AND%20";
-  return startDate, endDate, dateRange;
+  return dateRange;
 };
 
 /* Get report page elements where data will be inserted */
@@ -125,10 +125,8 @@ oareport = function(org) {
 
   axios.get(report).then(function (response) {
 
-    /** Get queries for article counts and strategy action list **/
+    /** Get queries for default article counts and strategy action list **/
     getCountQueries = function() {
-
-      isPaperURL                   = (dateRange + response.data.hits.hits[0]._source.analysis.is_paper); // used for full-email download in getExportLink()
       isPaperQuery                 = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_paper);
       //isOAQuery                  = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_oa);
       isFreeQuery                  = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_free_to_read);
@@ -138,15 +136,17 @@ oareport = function(org) {
       canArchiveVORListQuery       = (queryPrefix + response.data.hits.hits[0]._source.strategy.email_author_vor.query);
       hasCustomExportIncludes      = (response.data.hits.hits[0]._source.export_includes);
 
-      isPaper                      = axios.get(isPaperQuery);
+      isPaperCount                 = axios.get(isPaperQuery);
       //isOA                       = axios.get(isOAQuery);
-      isFree                       = axios.get(isFreeQuery);
+      isFreeCount                  = axios.get(isFreeQuery);
       canArchiveAAM                = axios.get(canArchiveAAMQuery);
       canArchiveAAMList            = axios.get(canArchiveAAMListQuery);
       canArchiveVOR                = axios.get(canArchiveVORQuery);
       canArchiveVORList            = axios.get(canArchiveVORListQuery);
 
       console.log("org index: " + base + "orgs?q=name:%22" + org + "%22");
+      console.log("canArchiveAAMListQuery: "+ canArchiveAAMListQuery);
+
     };
 
     /** Check for an OA policy and display a link to the policy page in a tooltip **/
@@ -163,15 +163,11 @@ oareport = function(org) {
       // ...get its URL
       hasPolicy = response.data.hits.hits[0]._source.policy.supported_policy;
 
+      console.log("hasPolicy: " + hasPolicy)
+
       // ...then get the number of compliant articles and display a tooltip
       if (hasPolicy) {
         policyURL = response.data.hits.hits[0]._source.policy.url;
-
-        // isCompliantQuery = (countQueryBase + "q=" + dateRange + response.data.hits.hits[0]._source.analysis.is_compliant);
-        // isCompliant = axios.get(isCompliantQuery);
-        //
-        // isEligibleQuery = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_covered_by_policy);
-        // isEligible = axios.get(isEligibleQuery);
 
         isCompliantQuery = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_compliant);
         isEligibleQuery  = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_covered_by_policy);
@@ -188,20 +184,35 @@ oareport = function(org) {
         isEligibleCount = "";
       }
       instance.setContent(policyInfo);
+
+      Promise.all([isCompliantCount, isEligibleCount])
+        .then(function (results) {
+
+          // Set total of articles depending on whether or not articles need to be covered by policy
+          if (isEligibleCount) {
+            let isEligibleCount = results[1].data;
+            totalArticles = isEligibleCount;
+            totalArticlesString = " eligible";
+          } else {
+            totalArticles = isPaperCount;
+            totalArticlesString =  " articles";
+          }
+
+          // Display totals and % of policy-compliant articles
+          if (isCompliantCount) {
+            let isCompliantCount = results[0].data;
+            compliantArticlesContents.textContent = makeNumberReadable(isCompliantCount) + " of " + makeNumberReadable(totalArticles) + totalArticlesString;
+            compliantPercentageContents.textContent = Math.round(((isCompliantCount/totalArticles)*100)) + "%";
+          }
+        }
+      ).catch(function (error) { console.log("getPolicy error: " + error); });
     };
 
     /** Check for data availability statements **/
     getDataStatements = function() {
-      const instance = tippy(document.querySelector('#data_statement_info'), {
-        allowHTML: true,
-        interactive: true,
-        placement: 'top',
-        appendTo: document.body,
-      });
-
       var dataStatementInfo = "";
 
-      // ...check if there are any at al
+      // ...check if there are any at all
       hasDataStatement = response.data.hits.hits[0]._source.analysis.has_data_availability_statement;
 
       // Display whether or not articles have a data availability statement after being checked
@@ -213,28 +224,47 @@ oareport = function(org) {
         hasCheckedDataStatementCount = axios.get(hasCheckedDataStatementQuery);
         /*jshint multistr: true */
         dataStatementInfo = "This number tells you how many papers that we’ve analyzed have a data availability statement. To check if a paper has a data availability statement, we use data from PubMed and review papers manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data)";
+
+        // Display help text popover
+        const instance = tippy(document.querySelector('#data_statement_info'), {
+          allowHTML: true,
+          interactive: true,
+          placement: 'top',
+          appendTo: document.body,
+        });
+
+        instance.setContent(dataStatementInfo);
+
+        Promise.all([hasDataStatementCount, hasCheckedDataStatementCount])
+          .then(function (results) {
+
+            // Display totals and % of articles for which we’ve verified data availability statements
+            if (hasDataStatementCount) {
+              let hasDataStatementCount        = results[0].data,
+                  hasCheckedDataStatementCount = results[1].data;
+              dataStatementContents.textContent = makeNumberReadable(hasDataStatementCount) + " of " + makeNumberReadable(hasCheckedDataStatementCount) + " checked";
+              dataStatementPercentageContents.textContent = Math.round(((hasDataStatementCount/hasCheckedDataStatementCount)*100)) + "%";
+            }
+
+          }
+        ).catch(function (error) { console.log("getDataStatements error: " + error); });
       } else {
         // Do not display card at all
-        document.querySelector('#data_statement').outerHTML = "";
+        document.querySelector('#data_statement').remove();
+        hasDataStatementCount = "";
+        hasCheckedDataStatementCount = "";
       }
-      instance.setContent(dataStatementInfo);
     };
 
     /** Check for open data **/
     getOpenData = function() {
-      const instance = tippy(document.querySelector('#open_data_info'), {
-        allowHTML: true,
-        interactive: true,
-        placement: 'top',
-        appendTo: document.body,
-      });
 
       var openDataInfo = "";
 
-      // ...check if there are any at al
+      // ...check if there are any at all
       hasOpenData = response.data.hits.hits[0]._source.analysis.has_open_data;
 
-      // Display whether or not articles have a data availability statement after being checked
+      // Display whether or not articles have open data after being checked
       if (hasOpenData) {
         // Get their count
         hasOpenDataQuery             = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_open_data);
@@ -243,75 +273,67 @@ oareport = function(org) {
         hasCheckedDataCount          = axios.get(hasCheckedDataQuery);
         /*jshint multistr: true */
         openDataInfo = "The percentage of articles that shared any data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noopener'>CC-BY</a> license. This figure only measures how many articles shared Open Data if they generated data in the first place. It also only measures if any of the datasets generated were open, not if all of them were open. To analyze this we work with Dataseer, who uses a combination of machine learning and human review to review the text of the papers.";
+
+        // Display help text popover
+        const instance = tippy(document.querySelector('#open_data_info'), {
+          allowHTML: true,
+          interactive: true,
+          placement: 'top',
+          appendTo: document.body,
+        });
+
+        instance.setContent(openDataInfo);
+
+        Promise.all([hasOpenDataCount, hasCheckedDataCount])
+          .then(function (results) {
+
+            // Display totals and % of articles sharing data openly
+            if (hasOpenDataCount) {
+              let hasOpenDataCount = results[0].data,
+                  hasCheckedDataCount = results[1].data;
+              openDataContents.textContent = makeNumberReadable(hasOpenDataCount) + " of " + makeNumberReadable(hasCheckedDataCount) + " articles that generate data";
+              openDataPercentageContents.textContent = Math.round(((hasOpenDataCount/hasCheckedDataCount)*100)) + "%";
+            }
+          }
+        ).catch(function (error) { console.log("getOpenData error: " + error); });
       } else {
         // Do not display card at all
-        document.querySelector('#open_data').outerHTML = "";
+        document.querySelector('#open_data').remove();
+        hasOpenDataCount = "";
+        hasCheckedDataCount = "";
       }
-      instance.setContent(openDataInfo);
+
     };
 
-    /**  Display Insights **/
+    /**  Display basic Insights (total article & free article counts) **/
     // TODO: break these down into one function per metric
     displayInsights = function() {
-      Promise.all([isPaper, isFree, isEligibleCount, isCompliantCount, hasDataStatementCount, hasCheckedDataStatementCount, hasOpenDataCount, hasCheckedDataCount])
+      Promise.all([isPaperCount, isFreeCount])
         .then(function (results) {
-          let isPaper = results[0].data,
-              isFree    = results[1].data;
+          let isPaperCount   = results[0].data,
+              isFreeCount    = results[1].data;
 
           // Display totals and % of articles
-          articlesContents.textContent = makeNumberReadable(isPaper);
+          articlesContents.textContent = makeNumberReadable(isPaperCount);
+          console.log("isPaperCount: " + isPaperCount);
 
           // Display totals and % of OA articles
           // TODO: only display OA rates for orgs w/out policies
           // if (isOA) {
           //   oaArticlesContents.textContent = makeNumberReadable(isOA) + " in total";
-          //   oaPercentageContents.textContent = Math.round(((isOA/isPaper)*100)) + "%";
+          //   oaPercentageContents.textContent = Math.round(((isOA/isPaperCount)*100)) + "%";
           // } else {
           //   oaArticlesContents.textContent = "";
           //   oaPercentageContents.textContent = "N/A";
           // }
 
-          if (isFree) {
-            freeArticlesContents.textContent = makeNumberReadable(isFree) + " in total";
-            freePercentageContents.textContent = Math.round(((isFree/isPaper)*100)) + "%";
+          if (isFreeCount) {
+            freeArticlesContents.textContent = makeNumberReadable(isFreeCount) + " in total";
+            freePercentageContents.textContent = Math.round(((isFreeCount/isPaperCount)*100)) + "%";
           } else {
             freeArticlesContents.textContent = "";
             freePercentageContents.textContent = "N/A";
           }
-
-          // Set total of articles depending on whether or not articles need to be covered by policy
-          if (isEligibleCount) {
-            let isEligibleCount = results[2].data;
-            totalArticles = isEligibleCount;
-            totalArticlesString = " eligible";
-          } else {
-            totalArticles = isPaper;
-            totalArticlesString =  " articles";
-          }
-
-          // Display totals and % of policy-compliant articles
-          if (isCompliantCount) {
-            let isCompliantCount = results[3].data;
-            compliantArticlesContents.textContent = makeNumberReadable(isCompliantCount) + " of " + makeNumberReadable(totalArticles) + totalArticlesString;
-            compliantPercentageContents.textContent = Math.round(((isCompliantCount/totalArticles)*100)) + "%";
-          }
-
-          // Display totals and % of articles for which we’ve verified data availability statements
-          if (hasDataStatementCount) {
-            let hasDataStatementCount = results[4].data,
-                hasCheckedDataStatementCount = results[5].data;
-            dataStatementContents.textContent = makeNumberReadable(hasDataStatementCount) + " of " + makeNumberReadable(hasCheckedDataStatementCount) + " checked";
-            dataStatementPercentageContents.textContent = Math.round(((hasDataStatementCount/hasCheckedDataStatementCount)*100)) + "%";
-          }
-
-          // Display totals and % of articles sharing data openly
-          if (hasOpenDataCount) {
-            let hasOpenDataCount = results[6].data,
-                hasCheckedDataCount = results[7].data;
-            openDataContents.textContent = makeNumberReadable(hasOpenDataCount) + " of " + makeNumberReadable(hasCheckedDataCount) + " articles that generate data";
-            openDataPercentageContents.textContent = Math.round(((hasOpenDataCount/hasCheckedDataCount)*100)) + "%";
-          }
-
         }
       ).catch(function (error) { console.log("displayInsights error: " + error); })
     };
@@ -325,8 +347,13 @@ oareport = function(org) {
               canArchiveVORLength = parseFloat(canArchiveVOR);
 
           // Show total number of actions in tab & above table
-          totalVORActionsContents.textContent = makeNumberReadable(canArchiveVORLength);
           countVORActionsContents.textContent = makeNumberReadable(canArchiveVORLength);
+
+          if (canArchiveVORLength > 100) {
+            canArchiveVORLength = 100;
+          }
+
+          totalVORActionsContents.textContent = makeNumberReadable(canArchiveVORLength);
 
           // Generate list of archivable VORs if there are any
           if (canArchiveVOR === 0) {
@@ -334,20 +361,18 @@ oareport = function(org) {
             canArchiveVORTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find publisher PDFs that could be deposited. <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
           }
           else if (canArchiveVOR > 0 || canArchiveVOR !== null) {
-            // TODO: think more about the potential percentage
-            // canArchiveOaPercentageContents = document.querySelector("#can_archive_percent_oa");
+            // Set up and get list of emails
             var canArchiveVORTableRows = "";
 
-            for (i = 0; i < (canArchiveVORLength); i++) {
+            for (var i = 0; i < canArchiveVORLength; i++) {
               var title = canArchiveVORList[i]._source.title,
                   author = canArchiveVORList[i]._source.author_email_name,
                   doi   = canArchiveVORList[i]._source.DOI,
                   pubDate = canArchiveVORList[i]._source.published_date,
                   journal = canArchiveVORList[i]._source.journal,
                   authorEmail = canArchiveVORList[i]._source.email;
-                  pubDate = makeDateReadable(new Date(pubDate));
 
-              canArchiveVORMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
+              var canArchiveVORMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
               canArchiveVORMailto = canArchiveVORMailto.replaceAll("\'", "’");
               canArchiveVORMailto = canArchiveVORMailto.replaceAll("{title}", (title ? title : "[No title found]"));
               canArchiveVORMailto = canArchiveVORMailto.replaceAll("{doi}", (doi ? doi : "[No DOI found]"));
@@ -357,7 +382,7 @@ oareport = function(org) {
               /*jshint multistr: true */
               canArchiveVORTableRows += '<tr>\
                 <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
-                  <div class="mb-1 text-neutral-500">' + (pubDate ? pubDate : "[No date found]") + '</div>\
+                  <div class="mb-1 text-neutral-500">' + (pubDate ? makeDateReadable(new Date(pubDate)) : "[No date found]") + '</div>\
                   <div class="mb-1 font-medium text-neutral-900 hover:text-carnation-500">\
                     <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + (title ? title : "[No article title found]") + '</a>\
                   </div>\
@@ -389,8 +414,13 @@ oareport = function(org) {
               canArchiveAAMLength = parseFloat(canArchiveAAM);
 
           // Show total number of actions in tab & above table
-          totalAAMActionsContents.textContent = makeNumberReadable(canArchiveAAMLength);
           countAAMActionsContents.textContent = makeNumberReadable(canArchiveAAMLength);
+
+          if (canArchiveAAMLength > 100) {
+            canArchiveAAMLength = 100;
+          }
+
+          totalAAMActionsContents.textContent = makeNumberReadable(canArchiveAAMLength);
 
           // Generate list of archivable AAMs if there are any
           if (canArchiveAAM === 0) {
@@ -401,17 +431,16 @@ oareport = function(org) {
             // Set up and get list of emails for archivable AAMs
             var canArchiveAAMTableRows = "";
 
-            for (i = 0; i < (canArchiveAAMLength); i++) {
+            for (var i = 0; i < canArchiveAAMLength; i++) {
               var title = canArchiveAAMList[i]._source.title,
                   author = canArchiveAAMList[i]._source.author_email_name,
                   doi   = canArchiveAAMList[i]._source.DOI,
                   pubDate = canArchiveAAMList[i]._source.published_date,
                   journal = canArchiveAAMList[i]._source.journal,
                   authorEmail = canArchiveAAMList[i]._source.email;
-              pubDate = makeDateReadable(new Date(pubDate));
 
               // Get email draft/body for this article and replace with its metadata
-              canArchiveAAMMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
+              var canArchiveAAMMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
               canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("\'", "’");
               canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{title}", (title ? title : "[No article title found]"));
               canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{doi}", (doi ? doi : "[No DOI found]"));
@@ -421,7 +450,7 @@ oareport = function(org) {
               /*jshint multistr: true */
               canArchiveAAMTableRows += '<tr>\
                 <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
-                  <div class="mb-1 text-neutral-500">' + (pubDate ? pubDate : "[No date found]") + '</div>\
+                  <div class="mb-1 text-neutral-500">' + (pubDate ? makeDateReadable(new Date(pubDate)) : "[No date found]") + '</div>\
                   <div class="mb-1 font-medium text-neutral-900 hover:text-carnation-500">\
                     <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + (title ? title : "[No article title found]") + '</a>\
                   </div>\
@@ -452,6 +481,7 @@ oareport = function(org) {
       hasAPCFollowupListQuery = (queryPrefix + response.data.hits.hits[0]._source.strategy.apc_followup.query) + hasAPCFollowupSort;
       hasAPCFollowup  = axios.get(hasAPCFollowupQuery);
       hasAPCFollowupList = axios.get(hasAPCFollowupListQuery);
+      console.log("hasAPCFollowupListQuery: "+ hasAPCFollowupListQuery);
 
       if (response.data.hits.hits[0]._source.strategy.apc_followup.query) {
         Promise.all([hasAPCFollowup, hasAPCFollowupList])
@@ -461,8 +491,13 @@ oareport = function(org) {
                 hasAPCFollowupLength = parseFloat(hasAPCFollowup);
 
             // Show total number of actions in tab & above table
-            totalAPCActionsContents.textContent = makeNumberReadable(hasAPCFollowupLength);
             countAPCActionsContents.textContent = makeNumberReadable(hasAPCFollowupLength);
+
+            if (hasAPCFollowupLength > 100) {
+              hasAPCFollowupLength = 100;
+            }
+
+            totalAPCActionsContents.textContent = makeNumberReadable(hasAPCFollowupLength);
 
             // Generate list of APC followups if there are any
             if (hasAPCFollowup === 0) {
@@ -473,19 +508,18 @@ oareport = function(org) {
               // Set up and get list of emails for APC followups
               var hasAPCFollowupTableRows = "";
 
-              for (i = 0; i < (hasAPCFollowupLength); i++) {
+              for (var i = 0; i < hasAPCFollowupLength; i++) {
                 var title = hasAPCFollowupList[i]._source.title,
                     publisher = hasAPCFollowupList[i]._source.publisher,
                     journalOATtype = hasAPCFollowupList[i]._source.journal_oa_type,
                     articleOAStatus = hasAPCFollowupList[i]._source.oa_status,
                     license = hasAPCFollowupList[i]._source.publisher_license,
-                    costAPC = "US$" + hasAPCFollowupList[i]._source.supplements[0].apc_cost,
-                    invoiceNb = hasAPCFollowupList[i]._source.supplements[0].invoice_number,
-                    invoiceDate = hasAPCFollowupList[i]._source.supplements[0].invoice_date,
+                    costAPC = hasAPCFollowupList[i]._source.supplements[1].apc_cost,
+                    invoiceNb = hasAPCFollowupList[i]._source.supplements[1].invoice_number,
+                    invoiceDate = hasAPCFollowupList[i]._source.supplements[1].invoice_date,
                     doi   = hasAPCFollowupList[i]._source.DOI,
                     pubDate = hasAPCFollowupList[i]._source.published_date,
                     journal = hasAPCFollowupList[i]._source.journal;
-                pubDate = makeDateReadable(new Date(pubDate));
 
                 /*jshint multistr: true */
                 hasAPCFollowupTableRows += '<tr>\
@@ -501,7 +535,7 @@ oareport = function(org) {
                     </div>\
                   </td>\
                   <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
-                    <div class="mb-1 text-neutral-500">' + (pubDate ? ('Published on ' + pubDate) : "[No date found]") + '</div>\
+                    <div class="mb-1 text-neutral-500">' + (pubDate ? ('Published on ' + makeDateReadable(new Date(pubDate))) : "[No date found]") + '</div>\
                     <div class="mb-3 text-neutral-900 hover:text-carnation-500">\
                       <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + (title ? title : "[No article title found]") + '</a>\
                     </div>\
@@ -512,13 +546,13 @@ oareport = function(org) {
                   </td>\
                   <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
                     <div class="mb-3 text-neutral-500">\
-                      ' + (invoiceDate ? ('Issued on ' + invoiceDate) : "[No invoice date found]") + '\
+                      ' + (invoiceDate ? ('Issued on ' + makeDateReadable(new Date(invoiceDate))) : "[No invoice date found]") + '\
                     </div>\
                     <div class="mb-3 text-neutral-900">\
                       ' + (invoiceNb ? invoiceNb : "[No invoice number found]") + '\
                     </div>\
                     <div class="text-neutral-500 uppercase">\
-                      ' + (costAPC ? costAPC : "[No APC cost found]") + '\
+                      ' + (costAPC ? ('US$' + costAPC) : "[No APC cost found]") + '\
                     </div>\
                   </td>\
                 </tr>';
@@ -542,6 +576,8 @@ oareport = function(org) {
           }
         ).catch(function (error) { console.log("Export error: " + error); });
 
+
+      isPaperURL = (dateRange + response.data.hits.hits[0]._source.analysis.is_paper); // used for full-email download in getExportLink()
       let query = isPaperURL.replaceAll(" ", "%20"),
           form = document.querySelector("#download_csv");
 
@@ -574,14 +610,15 @@ oareport = function(org) {
 
     getCountQueries();
     getPolicy();
-    getDataStatements();
-    getOpenData();
     displayInsights();
     displayStrategyVOR();
     displayStrategyAAM();
     displayStrategyAPCFollowup();
+    getDataStatements();
+    getOpenData();
     // TODO: uncomment once oaworks/internal-planning#316 is done
     // getExportLink();
+    console.log("isPaperQuery: "+ isPaperQuery);
   })
   .catch(function (error) { console.log("ERROR: " + error); });
 };
