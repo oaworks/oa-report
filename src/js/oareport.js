@@ -514,12 +514,20 @@ oareport = function(org) {
                     journalOATtype = hasAPCFollowupList[i]._source.journal_oa_type,
                     articleOAStatus = hasAPCFollowupList[i]._source.oa_status,
                     license = hasAPCFollowupList[i]._source.publisher_license,
-                    costAPC = hasAPCFollowupList[i]._source.supplements[1].apc_cost,
-                    invoiceNb = hasAPCFollowupList[i]._source.supplements[1].invoice_number,
-                    invoiceDate = hasAPCFollowupList[i]._source.supplements[1].invoice_date,
                     doi   = hasAPCFollowupList[i]._source.DOI,
                     pubDate = hasAPCFollowupList[i]._source.published_date,
                     journal = hasAPCFollowupList[i]._source.journal;
+
+                // Loop over supplements array to access APC info without index number
+                var dataAPC = hasAPCFollowupList[i]._source.supplements.find(
+                  function(i) {
+                    return (i.apc_cost);
+                  }
+                );
+
+                var costAPC = dataAPC.apc_cost,
+                    invoiceNb = dataAPC.invoice_number,
+                    invoiceDate = dataAPC.invoice_date;
 
                 /*jshint multistr: true */
                 hasAPCFollowupTableRows += '<tr>\
