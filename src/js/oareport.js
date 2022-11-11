@@ -476,12 +476,12 @@ oareport = function(org) {
     /** Display Strategies: follow up with uncompliant articles with paid APCs **/
     displayStrategyAPCFollowup = function() {
       if (response.data.hits.hits[0]._source.strategy.apc_followup.query) {
-        hasAPCFollowupSort = "&sort=publisher.keyword:asc,journal.keyword:asc,supplements.invoice_date.keyword:desc";
+        hasAPCFollowupSort = "&sort=publisher.keyword:asc,journal.keyword:asc,supplements.invoice_date:desc";
         hasAPCFollowupQuery  = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.apc_followup.query);
         hasAPCFollowupListQuery = (queryPrefix + response.data.hits.hits[0]._source.strategy.apc_followup.query) + hasAPCFollowupSort;
         hasAPCFollowup  = axios.get(hasAPCFollowupQuery);
         hasAPCFollowupList = axios.get(hasAPCFollowupListQuery);
-        
+
         Promise.all([hasAPCFollowup, hasAPCFollowupList])
           .then(function (results) {
             let hasAPCFollowup = results[0].data,
