@@ -588,6 +588,7 @@ oareport = function(org) {
       isPaperURL = (dateRange + response.data.hits.hits[0]._source.analysis.is_paper); // used for full-email download in getExportLink()
       let query = isPaperURL.replaceAll(" ", "%20"),
           form = document.querySelector("#download_csv");
+          console.log("isPaperURL: " + isPaperURL);
 
       // Check for custom include parameters
       var include;
@@ -625,7 +626,7 @@ oareport = function(org) {
     getDataStatements();
     getOpenData();
     // TODO: uncomment once oaworks/internal-planning#316 is done
-    // getExportLink();
+    getExportLink();
     console.log("isPaperQuery: "+ isPaperQuery);
   })
   .catch(function (error) { console.log("ERROR: " + error); });
