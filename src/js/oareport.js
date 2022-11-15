@@ -475,15 +475,13 @@ oareport = function(org) {
 
     /** Display Strategies: follow up with uncompliant articles with paid APCs **/
     displayStrategyAPCFollowup = function() {
-
-      hasAPCFollowupSort = "&sort=publisher.keyword:asc,journal.keyword:asc,supplements.invoice_date:desc";
-      hasAPCFollowupQuery  = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.apc_followup.query);
-      hasAPCFollowupListQuery = (queryPrefix + response.data.hits.hits[0]._source.strategy.apc_followup.query) + hasAPCFollowupSort;
-      hasAPCFollowup  = axios.get(hasAPCFollowupQuery);
-      hasAPCFollowupList = axios.get(hasAPCFollowupListQuery);
-      console.log("hasAPCFollowupListQuery: "+ hasAPCFollowupListQuery);
-
       if (response.data.hits.hits[0]._source.strategy.apc_followup.query) {
+        hasAPCFollowupSort = "&sort=publisher.keyword:asc,journal.keyword:asc,supplements.invoice_date:desc";
+        hasAPCFollowupQuery  = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.apc_followup.query);
+        hasAPCFollowupListQuery = (queryPrefix + response.data.hits.hits[0]._source.strategy.apc_followup.query) + hasAPCFollowupSort;
+        hasAPCFollowup  = axios.get(hasAPCFollowupQuery);
+        hasAPCFollowupList = axios.get(hasAPCFollowupListQuery);
+
         Promise.all([hasAPCFollowup, hasAPCFollowupList])
           .then(function (results) {
             let hasAPCFollowup = results[0].data,
@@ -544,13 +542,14 @@ oareport = function(org) {
                   </td>\
                   <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
                     <div class="mb-1 text-neutral-500">' + (pubDate ? ('Published on ' + makeDateReadable(new Date(pubDate))) : "[No date found]") + '</div>\
-                    <div class="mb-3 text-neutral-900 hover:text-carnation-500">\
+                    <div class="mb-1 text-neutral-900 hover:text-carnation-500">\
                       <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + (title ? title : "[No article title found]") + '</a>\
                     </div>\
-                  <div class="text-neutral-500">\
-                    ' + (articleOAStatus ? ('<span class="capitalize font-bold">' + articleOAStatus + '</span> article') : "[No status found for this article]") + '\
-                     — ' + (license ? ('<span class="uppercase font-bold">' + license + '</span>') : "[No license found]") + '\
-                  </div>\
+                    <div class="mb-3 text-neutral-500">' + (doi ? doi : "[No DOI found]") + '</div>\
+                    <div class="text-neutral-500">\
+                      ' + (articleOAStatus ? ('<span class="capitalize font-bold">' + articleOAStatus + '</span> article') : "[No status found for this article]") + '\
+                       — ' + (license ? ('<span class="uppercase font-bold">' + license + '</span>') : "[No license found]") + '\
+                    </div>\
                   </td>\
                   <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
                     <div class="mb-3 text-neutral-500">\

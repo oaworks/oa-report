@@ -99,18 +99,26 @@ function changeTabs(e) {
 }
 
 /* Select menu navigation for strategies (XS + SM viewports) */
+// TODO: this should be optimised
 let strategySelect = document.querySelector(".js-strategy-select"),
     canArchiveVORContent = document.querySelector("#can-archive-vor"),
-    canArchiveAAMContent = document.querySelector("#can-archive-aam");
+    canArchiveAAMContent = document.querySelector("#can-archive-aam"),
+    hasAPCFollowupContent = document.querySelector("#has-apc-followup");
 
 strategySelect.addEventListener("change", function(e) {
   if (e.target.value === "canArchiveVOR") {
       canArchiveVORContent.classList.remove("hidden");
       canArchiveAAMContent.classList.add("hidden");
+      hasAPCFollowupContent.classList.add("hidden");
   } else if (e.target.value === "canArchiveAAM") {
       canArchiveAAMContent.classList.remove("hidden");
       canArchiveVORContent.classList.add("hidden");
-  };
+      hasAPCFollowupContent.classList.add("hidden");
+  } else if (e.target.value === "hasAPCFollowup") {
+      hasAPCFollowupContent.classList.remove("hidden");
+      canArchiveAAMContent.classList.add("hidden");
+      canArchiveVORContent.classList.add("hidden");
+  }
 });
 
 /* Quick selects pills */
