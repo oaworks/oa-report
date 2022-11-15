@@ -613,7 +613,7 @@ oareport = function(org) {
         document.querySelector("#csv_email_msg").textContent = "OAreport has started building your CSV export. Please check your email to get the full data once it’s ready.";
 
         // Do not navigate away from the page on submit
-        return false;
+        //return false;
       };
     };
 
