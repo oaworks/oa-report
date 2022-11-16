@@ -607,7 +607,7 @@ oareport = function(org) {
       // Display message when server responds
       xhr.onload = function () {
         console.log(this.response);
-        document.querySelector("#csv_email_msg").textContent = "OAreport has started building your CSV export. Please check your email to get the full data once it’s ready.";
+        document.querySelector("#csv_email_msg").innerHTML = "OAreport has started building your CSV export at the URL <br><strong><a href='" + this.response + "' target='_blank' class='break-all'>" + this.response + "</a></strong>.<br> Please check your email to get the full data once it’s ready.";
       };
       xhr.send();
 
