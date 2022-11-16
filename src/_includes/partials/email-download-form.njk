@@ -1,6 +1,5 @@
 {# Download in CSV #}
-<form method="POST" class="lg:w-1/2 md:float-right" id="download_csv" action="">
-  <input type="hidden" id="size" name="size" value="all">
+<form class="lg:w-1/2 md:float-right" id="download_csv" onsubmit="return getExportLink()">
   <h2 class="mb-3 font-medium text-base text-neutral-900">
     Get data in CSV by email {{ component("tooltip", {
       msg: "Enter your email address to receive a link to a CSV for download. <strong>We do not save email addresses or use them for any purpose</strong> other than sending you the CSV file containing OAreport data when you request it."
@@ -19,7 +18,5 @@
       Send CSV
     </button>
   </div>
-  <input type="hidden" id="download-form-q" name="q" value="">
-  <input type="hidden" id="download-form-include" name="include" value="">
   <p class="leading-5 text-xs text-neutral-600" id="csv_email_msg"></p>
 </form>

@@ -1,7 +1,7 @@
 const base           = "https://beta.oa.works/report/",
       queryBase      = base + "works?size=100&",
       countQueryBase = base + "works/count?",
-      csvExportBase  = "https://bg.beta.oa.works/report/works.csv?";
+      csvExportBase  = "https://bg.beta.oa.works/report/works.csv?size=all&";
 let isPaperCount, isEligibleCount, isOA, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL, dateRangeButton, csvEmailButton, totalArticles, hasDataStatementCount, hasCheckedDataStatementCount, hasOpenDataCount, hasCheckedDataCount;
 let isCompliant = false;
 
@@ -586,36 +586,34 @@ oareport = function(org) {
 
 
       isPaperURL = (dateRange + response.data.hits.hits[0]._source.analysis.is_paper); // used for full-email download in getExportLink()
-      let query = isPaperURL.replaceAll(" ", "%20"),
-          form = document.querySelector("#download_csv");
-          console.log("isPaperURL: " + isPaperURL);
+      let query = "q=" + isPaperURL.replaceAll(" ", "%20"),
+          form = new FormData(document.getElementById("download_csv"));
 
-      // Check for custom include parameters
+      // Get form content — email address input
+      var email = "&" + new URLSearchParams(form).toString();
+
       var include;
-
       if (hasCustomExportIncludes !== undefined) {
-        include = hasCustomExportIncludes;
+        include = "&include=" + hasCustomExportIncludes;
       } else {
-        include =  "DOI,title,subtitle,publisher,journal,issn,published,published_year,PMCID,volume,issue,authorships.author.display_name,authorships.author.orcid,authorships.institutions.display_name,authorships.institutions.ror,funder.name,funder.award,is_oa,oa_status,journal_oa_type,publisher_license,has_repository_copy,repository_license,repository_version,repository_url,has_oa_locations_embargoed,can_archive,version,concepts.display_name,concepts.level,concepts.score,subject,pmc_has_data_availability_statement,cited_by_count";
+        include =  "&include=DOI,title,subtitle,publisher,journal,issn,published,published_year,PMCID,volume,issue,authorships.author.display_name,authorships.author.orcid,authorships.institutions.display_name,authorships.institutions.ror,funder.name,funder.award,is_oa,oa_status,journal_oa_type,publisher_license,has_repository_copy,repository_license,repository_version,repository_url,has_oa_locations_embargoed,can_archive,version,concepts.display_name,concepts.level,concepts.score,subject,pmc_has_data_availability_statement,cited_by_count";
       }
 
-      // Set form attributes
-      form.setAttribute("action", csvExportBase);
-      queryHiddenInput.setAttribute("value", query);
-      includeHiddenInput.setAttribute("value", include);
+      // Build full query
+      query = csvExportBase + query + include + email;
 
-      form.onsubmit = function(event) {
-        fetch(form.action, {
-          method: form.method,
-          body: new FormData(form),
-        });
-        // Display message
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", query);
+      // Display message when server responds
+      xhr.onload = function () {
+        console.log(this.response);
         document.querySelector("#csv_email_msg").textContent = "OAreport has started building your CSV export. Please check your email to get the full data once it’s ready.";
-
-        // Do not navigate away from the page on submit
-        //return false;
       };
-    };
+      xhr.send();
+
+      // Do not navigate away from the page on submit
+      return false;
+    }
 
     getCountQueries();
     getPolicy();
@@ -625,8 +623,6 @@ oareport = function(org) {
     displayStrategyAPCFollowup();
     getDataStatements();
     getOpenData();
-    // TODO: uncomment once oaworks/internal-planning#316 is done
-    getExportLink();
     console.log("isPaperQuery: "+ isPaperQuery);
   })
   .catch(function (error) { console.log("ERROR: " + error); });
