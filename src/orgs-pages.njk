@@ -19,8 +19,6 @@ permalink: "{{ org._source.objectID | slug }}/"
   <h2 class="mb-1 sr-only" id="insights_range">
     Since the start of 2022
   </h2>
-  {# TODO: remove this once oaworks/internal-planning#316 is done #}
-  <h2 class="mb-4 text-sm font-medium text-neutral-700 uppercase"><span id="start_date"></span> — <span id="end_date"></span></h2>
   <p class="sr-only">Quick date filters</p>
   <ul>
     <li class="mr-1 inline-block">
@@ -56,10 +54,10 @@ permalink: "{{ org._source.objectID | slug }}/"
 
 <section class="col-span-12 md:col-span-6 md:text-right">
   {# TODO: uncomment once oaworks/internal-planning#316 is done #}
-  {# {% include 'partials/email-download-form.njk' %} #}
+  {% include 'partials/email-download-form.njk' %}
   {# <br>
-  {# TODO: add popover explaining data download form
-  <button class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-white bg-neutral-700 hover:bg-neutral-900 popover" data-tippy-content="TEST POPOVER">Download data</button> #}
+  {# TODO: add popover explaining data download form #}
+  {# <button class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-white bg-neutral-700 hover:bg-neutral-900 popover" data-tippy-content="TEST POPOVER">Download data</button> #}
 </section>
 
 <section class="col-span-12 grid grid-cols-12 gap-3 lg:gap-6 top-0 mb-2 pt-2 bg-[#F4F0F0]">
@@ -76,7 +74,7 @@ permalink: "{{ org._source.objectID | slug }}/"
     </header>
 
     {# First row of insights: all defaults #}
-    <dl class="col-span-12 mb-6 grid grid-cols-1 gap-3 lg:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <dl class="col-span-12 sm:mb-3 grid grid-cols-1 gap-3 lg:gap-6 sm:grid-cols-2 lg:grid-cols-3">
       <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden">
         <dt>
           <div class="absolute bg-carnation-500 text-white rounded-md p-6">
