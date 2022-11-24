@@ -578,13 +578,11 @@ oareport = function(org) {
     /** Display Strategies: escalate unanswered requests **/
     displayStrategyUnansweredRequests = function() {
       if (response.data.hits.hits[0]._source.strategy.unanswered_requests.query) {
-        // hasUnansweredRequestsSort = "&sort=publisher.keyword:asc,journal.keyword:asc,supplements.invoice_date:desc";
         hasUnansweredRequestsQuery  = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.unanswered_requests.query);
         hasUnansweredRequestsListQuery = (queryPrefix + response.data.hits.hits[0]._source.strategy.unanswered_requests.query);
         hasUnansweredRequests  = axios.get(hasUnansweredRequestsQuery);
         hasUnansweredRequestsList = axios.get(hasUnansweredRequestsListQuery);
 
-        console.log("hasUnansweredRequestsListQuery: " + hasUnansweredRequestsListQuery);
 
         Promise.all([hasUnansweredRequests, hasUnansweredRequestsList])
           .then(function (results) {
@@ -615,34 +613,39 @@ oareport = function(org) {
                     doi = hasUnansweredRequestsList[i]._source.doi,
                     journal = hasUnansweredRequestsList[i]._source.journal,
                     authorEmail = hasUnansweredRequestsList[i]._source.email,
-                    authorName = hasUnansweredRequestsList[i]._source.author_email_name;
+                    author = hasUnansweredRequestsList[i]._source.author_email_name,
+                    author = hasUnansweredRequestsList[i]._source.author_email_name;
 
-                // Loop over supplements array to access APC info without index number
-                // var dataAPC = hasUnansweredRequestsList[i]._source.supplements.find(
-                //   function(i) {
-                //     return (i.apc_cost);
-                //   }
-                // );
+                // Loop over supplements array to access grant ID without index number
+                var dataGrant = hasUnansweredRequestsList[i]._source.supplements.find(
+                  function(i) {
+                    return (i.grantid__bmgf);
+                  }
+                );
 
-                // var costAPC = dataAPC.apc_cost,
-                //     invoiceNb = dataAPC.invoice_number,
-                //     invoiceDate = dataAPC.invoice_date;
+                var grantID = dataGrant.grantid__bmgf;
 
                 /*jshint multistr: true */
                 hasUnansweredRequestsTableRows += '<tr>\
                   <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
-                    <div class="mb-1 font-medium text-neutral-900">\
+                    <div class="mb-3 font-medium text-neutral-900">\
+                      ' + (grantID ? grantID : "[No grant ID found]") + '\
+                    </div>\
+                  </td>\
+                  <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
+                    <div class="mb-1 font-medium text-neutral-900">' + (author ? author : "[No author’s name found]") + '</div>\
+                    <div class="mb-1 text-neutral-900">\
                       <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + (title ? title : "[No article title found]") + '</a>\
                     </div>\
                     <div class="text-neutral-500">' + (journal ? journal : "[No journal name found]") + '</div>\
                   </td>\
-                  <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
-                  </td>\
-                  <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
+                  <td class="whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium">\
+                    <a href="mailto:' + authorEmail + '" target="_blank" rel="noopener" class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200">\
+                    <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail inline-block h-4 duration-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>\
                   </td>\
                 </tr>';
               }
-              hasUnansweredRequestsTable.innerHTML = "hasUnansweredRequestsTableRows";
+              hasUnansweredRequestsTable.innerHTML = hasUnansweredRequestsTableRows;
             }
           }
         ).catch(function (error) { console.log("displayStrategyUnansweredRequests error: " + error); })
