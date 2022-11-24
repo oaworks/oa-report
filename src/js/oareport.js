@@ -150,8 +150,6 @@ oareport = function(org) {
       canArchiveVORList            = axios.get(canArchiveVORListQuery);
 
       console.log("org index: " + base + "orgs?q=name:%22" + org + "%22");
-      console.log("canArchiveAAMListQuery: "+ canArchiveAAMListQuery);
-
     };
 
     /** Check for an OA policy and display a link to the policy page in a tooltip **/
@@ -167,8 +165,6 @@ oareport = function(org) {
 
       // ...get its URL
       hasPolicy = response.data.hits.hits[0]._source.policy.supported_policy;
-
-      console.log("hasPolicy: " + hasPolicy)
 
       // ...then get the number of compliant articles and display a tooltip
       if (hasPolicy) {
@@ -320,7 +316,6 @@ oareport = function(org) {
 
           // Display totals and % of articles
           articlesContents.textContent = makeNumberReadable(isPaperCount);
-          console.log("isPaperCount: " + isPaperCount);
 
           // Display totals and % of OA articles
           // TODO: only display OA rates for orgs w/out policies
@@ -705,7 +700,6 @@ oareport = function(org) {
     displayStrategyUnansweredRequests();
     getDataStatements();
     getOpenData();
-    console.log("isPaperQuery: "+ isPaperQuery);
   })
   .catch(function (error) { console.log("ERROR: " + error); });
 };
