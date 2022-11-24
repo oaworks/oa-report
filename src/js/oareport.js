@@ -92,6 +92,11 @@ var totalAPCActionsContents        = document.querySelector("#total_apc_actions"
     hasAPCFollowupTable            = document.querySelector("#has_apc_followup_list"),
     countAPCActionsContents        = document.querySelector("#count_apc");
 
+// Escalate unanswered requests
+var totalUnansweredActionsContents = document.querySelector("#total_unanswered_actions"),
+    hasUnansweredRequestsTable     = document.querySelector("#has_unanswered_requests_list"),
+    countUnansweredActionsContents = document.querySelector("#count_unanswered");
+
 /* Date display and filtering */
 // Set today’s date and 12 months ago date to display most recent Insights data as default
 const currentDate                  = new Date(),
@@ -575,6 +580,84 @@ oareport = function(org) {
       }
     };
 
+    /** Display Strategies: escalate unanswered requests **/
+    displayStrategyUnansweredRequests = function() {
+      if (response.data.hits.hits[0]._source.strategy.unanswered_requests.query) {
+        // hasUnansweredRequestsSort = "&sort=publisher.keyword:asc,journal.keyword:asc,supplements.invoice_date:desc";
+        hasUnansweredRequestsQuery  = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.unanswered_requests.query);
+        hasUnansweredRequestsListQuery = (queryPrefix + response.data.hits.hits[0]._source.strategy.unanswered_requests.query);
+        hasUnansweredRequests  = axios.get(hasUnansweredRequestsQuery);
+        hasUnansweredRequestsList = axios.get(hasUnansweredRequestsListQuery);
+
+        console.log("hasUnansweredRequestsListQuery: " + hasUnansweredRequestsListQuery);
+
+        Promise.all([hasUnansweredRequests, hasUnansweredRequestsList])
+          .then(function (results) {
+            let hasUnansweredRequests = results[0].data,
+                hasUnansweredRequestsList = results[1].data.hits.hits,
+                hasUnansweredRequestsLength = parseFloat(hasUnansweredRequests);
+
+            // Show total number of actions in tab & above table
+            countUnansweredActionsContents.textContent = makeNumberReadable(hasUnansweredRequestsLength);
+
+            if (hasUnansweredRequestsLength > 100) {
+              hasUnansweredRequestsLength = 100;
+            }
+
+            totalUnansweredActionsContents.textContent = makeNumberReadable(hasUnansweredRequestsLength);
+
+            // Generate list of APC followups if there are any
+            if (hasUnansweredRequests === 0) {
+              totalUnansweredActionsContents.textContent = "No ";
+              hasUnansweredRequestsTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any requests to escalate. <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
+            }
+            else if (hasUnansweredRequests > 0 || hasUnansweredRequests !== null) {
+              // Set up and get list of emails for APC followups
+              var hasUnansweredRequestsTableRows = "";
+
+              for (var i = 0; i < hasUnansweredRequestsLength; i++) {
+                var title = hasUnansweredRequestsList[i]._source.title,
+                    doi = hasUnansweredRequestsList[i]._source.doi,
+                    journal = hasUnansweredRequestsList[i]._source.journal,
+                    authorEmail = hasUnansweredRequestsList[i]._source.email,
+                    authorName = hasUnansweredRequestsList[i]._source.author_email_name;
+
+                // Loop over supplements array to access APC info without index number
+                // var dataAPC = hasUnansweredRequestsList[i]._source.supplements.find(
+                //   function(i) {
+                //     return (i.apc_cost);
+                //   }
+                // );
+
+                // var costAPC = dataAPC.apc_cost,
+                //     invoiceNb = dataAPC.invoice_number,
+                //     invoiceDate = dataAPC.invoice_date;
+
+                /*jshint multistr: true */
+                hasUnansweredRequestsTableRows += '<tr>\
+                  <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
+                    <div class="mb-1 font-medium text-neutral-900">\
+                      <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + (title ? title : "[No article title found]") + '</a>\
+                    </div>\
+                    <div class="text-neutral-500">' + (journal ? journal : "[No journal name found]") + '</div>\
+                  </td>\
+                  <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
+                  </td>\
+                  <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
+                  </td>\
+                </tr>';
+              }
+              hasUnansweredRequestsTable.innerHTML = "hasUnansweredRequestsTableRows";
+            }
+          }
+        ).catch(function (error) { console.log("displayStrategyUnansweredRequests error: " + error); })
+      } else {
+        // remove tab if this strategy doesn’t exist for this org
+        document.querySelector("#has-unanswred-requests-item").outerHTML = "";
+        document.querySelector("#has-unanswred-requests").outerHTML = "";
+      }
+    };
+
     /* "Download CSV" form: set query and date range in hidden input */
     getExportLink = function() {
       Promise.all([hasCustomExportIncludes])
@@ -619,6 +702,7 @@ oareport = function(org) {
     displayStrategyVOR();
     displayStrategyAAM();
     displayStrategyAPCFollowup();
+    displayStrategyUnansweredRequests();
     getDataStatements();
     getOpenData();
     console.log("isPaperQuery: "+ isPaperQuery);
