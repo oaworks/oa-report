@@ -617,18 +617,24 @@ oareport = function(org) {
                     author = hasUnansweredRequestsList[i]._source.author_email_name;
 
                 // Loop over supplements array to access grant ID without index number
+                  // TODO: this is for BMGF only — format will always be grantid__{org}
+                  // Get acronym from the org index instead of hardcoding it here
                 var dataGrant = hasUnansweredRequestsList[i]._source.supplements.find(
                   function(i) {
                     return (i.grantid__bmgf);
                   }
                 );
 
-                var grantID = dataGrant.grantid__bmgf;
+                var grantID = dataGrant.grantid__bmgf,
+                    program = dataGrant.program__bmgf;
 
                 /*jshint multistr: true */
                 hasUnansweredRequestsTableRows += '<tr>\
                   <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
-                    <div class="mb-3 font-medium text-neutral-900">\
+                    <div class="mb-1 font-medium text-neutral-900">\
+                      ' + (program ? program : "[No program found]") + '\
+                    </div>\
+                    <div class="text-neutral-900">\
                       ' + (grantID ? grantID : "[No grant ID found]") + '\
                     </div>\
                   </td>\
