@@ -583,7 +583,6 @@ oareport = function(org) {
         hasUnansweredRequests  = axios.get(hasUnansweredRequestsQuery);
         hasUnansweredRequestsList = axios.get(hasUnansweredRequestsListQuery);
 
-
         Promise.all([hasUnansweredRequests, hasUnansweredRequestsList])
           .then(function (results) {
             let hasUnansweredRequests = results[0].data,
@@ -664,8 +663,8 @@ oareport = function(org) {
         ).catch(function (error) { console.log("displayStrategyUnansweredRequests error: " + error); })
       } else {
         // remove tab if this strategy doesn’t exist for this org
-        document.querySelector("#has-unanswred-requests-item").outerHTML = "";
-        document.querySelector("#has-unanswred-requests").outerHTML = "";
+        document.querySelector("#has-unanswered-requests-item").outerHTML = "";
+        document.querySelector("#has-unanswered-requests").outerHTML = "";
       }
     };
 
