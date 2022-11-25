@@ -668,7 +668,7 @@ oareport = function(org) {
       }
     };
 
-    /* "Download CSV" form: set query and date range in hidden input */
+    /* "Download CSV" form: all articles displayed on page */
     getExportLink = function() {
       Promise.all([hasCustomExportIncludes])
         .then(function (results) {
@@ -676,8 +676,7 @@ oareport = function(org) {
           }
         ).catch(function (error) { console.log("Export error: " + error); });
 
-
-      isPaperURL = (dateRange + response.data.hits.hits[0]._source.analysis.is_paper); // used for full-email download in getExportLink()
+      isPaperURL = (dateRange + response.data.hits.hits[0]._source.analysis.is_paper);
       let query = "q=" + isPaperURL.replaceAll(" ", "%20"),
           form = new FormData(document.getElementById("download_csv"));
 
@@ -699,6 +698,43 @@ oareport = function(org) {
       // Display message when server responds
       xhr.onload = function () {
         document.querySelector("#csv_email_msg").innerHTML = "OAreport has started building your CSV export at <a href='" + this.response + "' target='_blank' class='underline'>this URL</a>. Please check your email to get the full data once it’s ready.";
+      };
+      xhr.send();
+
+      // Do not navigate away from the page on submit
+      return false;
+    }
+
+    /* Strategy-level "download CSV" form: escalate unanswered requests */
+    getUnansweredExportLink = function() {
+      hasCustomExportIncludes = (response.data.hits.hits[0]._source.strategy.unanswered_requests.export);
+
+      Promise.all([hasCustomExportIncludes])
+        .then(function (results) {
+          let hasCustomExportIncludes = results[0].data;
+          }
+        ).catch(function (error) { console.log("Export error: " + error); });
+
+      isPaperURL = (dateRange + response.data.hits.hits[0]._source.strategy.unanswered_requests.query);
+      let query = "q=" + isPaperURL.replaceAll(" ", "%20"),
+          form = new FormData(document.getElementById("download_csv_unanswered"));
+
+      // Get form content — email address input
+      var email = "&" + new URLSearchParams(form).toString();
+
+      var include;
+      if (hasCustomExportIncludes !== undefined) {
+        include = "&include=" + hasCustomExportIncludes;
+      }
+
+      // Build full query
+      query = csvExportBase + query + include + email;
+
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", query);
+      // Display message when server responds
+      xhr.onload = function () {
+        document.querySelector("#csv_email_msg_unanswered").innerHTML = "OAreport has started building your CSV export at <a href='" + this.response + "' target='_blank' class='underline'>this URL</a>. Please check your email to get the full data once it’s ready.";
       };
       xhr.send();
 
