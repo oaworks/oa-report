@@ -707,7 +707,7 @@ oareport = function(org) {
 
     /* Strategy-level "download CSV" form: escalate unanswered requests */
     getUnansweredExportLink = function() {
-      hasCustomExportIncludes = (response.data.hits.hits[0]._source.strategy.unanswered_requests.export);
+      hasCustomExportIncludes = (response.data.hits.hits[0]._source.strategy.unanswered_requests.export_includes);
 
       Promise.all([hasCustomExportIncludes])
         .then(function (results) {
