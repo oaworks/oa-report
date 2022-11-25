@@ -80,22 +80,22 @@ var articlesContents               = document.querySelector("#articles"),
 // Deposit VOR strategy
 var totalVORActionsContents        = document.querySelector("#total_vor_actions"),
     canArchiveVORTable             = document.querySelector("#can_archive_vor_list"),
-    countVORActionsContents        = document.querySelector("#count_vor");
+    countVORActionsContents        = document.querySelector("#count-can-archive-vor");
 
 // Deposit AAM strategy
 var totalAAMActionsContents        = document.querySelector("#total_aam_actions"),
     canArchiveAAMTable             = document.querySelector("#can_archive_aam_list"),
-    countAAMActionsContents        = document.querySelector("#count_aam");
+    countAAMActionsContents        = document.querySelector("#count-can-archive-aam");
 
 // Follow up paid APCs strategy
 var totalAPCActionsContents        = document.querySelector("#total_apc_actions"),
     hasAPCFollowupTable            = document.querySelector("#has_apc_followup_list"),
-    countAPCActionsContents        = document.querySelector("#count_apc");
+    countAPCActionsContents        = document.querySelector("#count-has-apc-followup");
 
 // Escalate unanswered requests
 var totalUnansweredActionsContents = document.querySelector("#total_unanswered_actions"),
     hasUnansweredRequestsTable     = document.querySelector("#has_unanswered_requests_list"),
-    countUnansweredActionsContents = document.querySelector("#count_unanswered");
+    countUnansweredActionsContents = document.querySelector("#count-has-unanswered-requests");
 
 /* Date display and filtering */
 // Set today’s date and 12 months ago date to display most recent Insights data as default
@@ -570,7 +570,7 @@ oareport = function(org) {
         ).catch(function (error) { console.log("displayStrategyAPCFollowup error: " + error); })
       } else {
         // remove tab if this strategy doesn’t exist for this org
-        document.querySelector("#has-apc-followup-item").outerHTML = "";
+        document.querySelector("#item-has-apc-followup").outerHTML = "";
         document.querySelector("#has-apc-followup").outerHTML = "";
       }
     };
@@ -663,7 +663,7 @@ oareport = function(org) {
         ).catch(function (error) { console.log("displayStrategyUnansweredRequests error: " + error); })
       } else {
         // remove tab if this strategy doesn’t exist for this org
-        document.querySelector("#has-unanswered-requests-item").outerHTML = "";
+        document.querySelector("#item-has-unanswered-requests").outerHTML = "";
         document.querySelector("#has-unanswered-requests").outerHTML = "";
       }
     };

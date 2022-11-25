@@ -233,28 +233,24 @@ permalink: "{{ org._source.objectID | slug }}/"
           {{ component("tab-item", {
             id: "can-archive-vor",
             txt: "Deposit publisher PDFs",
-            count_id: "count_vor",
             first: true
           }) }}
 
           {{ component("tab-item", {
             id: "can-archive-aam",
             txt: "Deposit accepted manuscripts",
-            count_id: "count_aam",
             first: false
           }) }}
 
           {{ component("tab-item", {
             id: "has-apc-followup",
             txt: "Correct publisher errors",
-            count_id: "count_apc",
             first: false
           }) }}
 
           {{ component("tab-item", {
             id: "has-unanswered-requests",
             txt: "Escalate unanswered requests",
-            count_id: "count_unanswered",
             first: false
           }) }}
         </ul>
