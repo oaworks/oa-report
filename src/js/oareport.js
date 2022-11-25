@@ -92,6 +92,11 @@ var totalAPCActionsContents        = document.querySelector("#total_apc_actions"
     hasAPCFollowupTable            = document.querySelector("#has_apc_followup_list"),
     countAPCActionsContents        = document.querySelector("#count_apc");
 
+// Escalate unanswered requests
+var totalUnansweredActionsContents = document.querySelector("#total_unanswered_actions"),
+    hasUnansweredRequestsTable     = document.querySelector("#has_unanswered_requests_list"),
+    countUnansweredActionsContents = document.querySelector("#count_unanswered");
+
 /* Date display and filtering */
 // Set today’s date and 12 months ago date to display most recent Insights data as default
 const currentDate                  = new Date(),
@@ -145,8 +150,6 @@ oareport = function(org) {
       canArchiveVORList            = axios.get(canArchiveVORListQuery);
 
       console.log("org index: " + base + "orgs?q=name:%22" + org + "%22");
-      console.log("canArchiveAAMListQuery: "+ canArchiveAAMListQuery);
-
     };
 
     /** Check for an OA policy and display a link to the policy page in a tooltip **/
@@ -162,8 +165,6 @@ oareport = function(org) {
 
       // ...get its URL
       hasPolicy = response.data.hits.hits[0]._source.policy.supported_policy;
-
-      console.log("hasPolicy: " + hasPolicy)
 
       // ...then get the number of compliant articles and display a tooltip
       if (hasPolicy) {
@@ -315,7 +316,6 @@ oareport = function(org) {
 
           // Display totals and % of articles
           articlesContents.textContent = makeNumberReadable(isPaperCount);
-          console.log("isPaperCount: " + isPaperCount);
 
           // Display totals and % of OA articles
           // TODO: only display OA rates for orgs w/out policies
@@ -575,7 +575,100 @@ oareport = function(org) {
       }
     };
 
-    /* "Download CSV" form: set query and date range in hidden input */
+    /** Display Strategies: escalate unanswered requests **/
+    displayStrategyUnansweredRequests = function() {
+      if (response.data.hits.hits[0]._source.strategy.unanswered_requests.query) {
+        hasUnansweredRequestsQuery  = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.unanswered_requests.query);
+        hasUnansweredRequestsListQuery = (queryPrefix + response.data.hits.hits[0]._source.strategy.unanswered_requests.query);
+        hasUnansweredRequests  = axios.get(hasUnansweredRequestsQuery);
+        hasUnansweredRequestsList = axios.get(hasUnansweredRequestsListQuery);
+
+        Promise.all([hasUnansweredRequests, hasUnansweredRequestsList])
+          .then(function (results) {
+            let hasUnansweredRequests = results[0].data,
+                hasUnansweredRequestsList = results[1].data.hits.hits,
+                hasUnansweredRequestsLength = parseFloat(hasUnansweredRequests);
+
+            // Show total number of actions in tab & above table
+            countUnansweredActionsContents.textContent = makeNumberReadable(hasUnansweredRequestsLength);
+
+            if (hasUnansweredRequestsLength > 100) {
+              hasUnansweredRequestsLength = 100;
+            }
+
+            totalUnansweredActionsContents.textContent = makeNumberReadable(hasUnansweredRequestsLength);
+
+            // Generate list of APC followups if there are any
+            if (hasUnansweredRequests === 0) {
+              totalUnansweredActionsContents.textContent = "No ";
+              hasUnansweredRequestsTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any requests to escalate. <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
+            }
+            else if (hasUnansweredRequests > 0 || hasUnansweredRequests !== null) {
+              // Set up and get list of emails for APC followups
+              var hasUnansweredRequestsTableRows = "";
+
+              for (var i = 0; i < hasUnansweredRequestsLength; i++) {
+                var title = hasUnansweredRequestsList[i]._source.title,
+                    doi = hasUnansweredRequestsList[i]._source.doi,
+                    journal = hasUnansweredRequestsList[i]._source.journal,
+                    authorEmail = hasUnansweredRequestsList[i]._source.email,
+                    author = hasUnansweredRequestsList[i]._source.author_email_name,
+                    author = hasUnansweredRequestsList[i]._source.author_email_name;
+
+                // Loop over supplements array to access grant ID without index number
+                  // TODO: this is for BMGF only — format will always be grantid__{org}
+                  // Get acronym from the org index instead of hardcoding it here
+                var dataGrant = hasUnansweredRequestsList[i]._source.supplements.find(
+                  function(i) {
+                    return (i.grantid__bmgf);
+                  }
+                );
+
+                var grantID = dataGrant.grantid__bmgf,
+                    program = dataGrant.program__bmgf;
+
+                // Get email draft/body for this article and replace with its metadata
+                var hasUnansweredRequestsMailto = response.data.hits.hits[0]._source.strategy.unanswered_requests.mailto;
+                hasUnansweredRequestsMailto = hasUnansweredRequestsMailto.replaceAll("\'", "’");
+                hasUnansweredRequestsMailto = hasUnansweredRequestsMailto.replaceAll("{doi}", (doi ? doi : "[No DOI found]"));
+                hasUnansweredRequestsMailto = hasUnansweredRequestsMailto.replaceAll("{author_name}", (author ? author : "researcher"));
+                hasUnansweredRequestsMailto = hasUnansweredRequestsMailto.replaceAll("{author_email}", (authorEmail ? authorEmail : ""));
+
+                /*jshint multistr: true */
+                hasUnansweredRequestsTableRows += '<tr>\
+                  <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
+                    <div class="mb-1 font-medium text-neutral-900">\
+                      ' + (program ? program : "[No program found]") + '\
+                    </div>\
+                    <div class="text-neutral-900">\
+                      ' + (grantID ? grantID : "[No grant ID found]") + '\
+                    </div>\
+                  </td>\
+                  <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
+                    <div class="mb-1 font-medium text-neutral-900">' + (author ? author : "[No author’s name found]") + '</div>\
+                    <div class="mb-1 text-neutral-900">\
+                      <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + (title ? title : "[No article title found]") + '</a>\
+                    </div>\
+                    <div class="text-neutral-500">' + (journal ? journal : "[No journal name found]") + '</div>\
+                  </td>\
+                  <td class="whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium">\
+                    <a href="mailto:' + hasUnansweredRequestsMailto + '" target="_blank" rel="noopener" class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200">\
+                    <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail inline-block h-4 duration-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>\
+                  </td>\
+                </tr>';
+              }
+              hasUnansweredRequestsTable.innerHTML = hasUnansweredRequestsTableRows;
+            }
+          }
+        ).catch(function (error) { console.log("displayStrategyUnansweredRequests error: " + error); })
+      } else {
+        // remove tab if this strategy doesn’t exist for this org
+        document.querySelector("#has-unanswered-requests-item").outerHTML = "";
+        document.querySelector("#has-unanswered-requests").outerHTML = "";
+      }
+    };
+
+    /* "Download CSV" form: all articles displayed on page */
     getExportLink = function() {
       Promise.all([hasCustomExportIncludes])
         .then(function (results) {
@@ -583,8 +676,7 @@ oareport = function(org) {
           }
         ).catch(function (error) { console.log("Export error: " + error); });
 
-
-      isPaperURL = (dateRange + response.data.hits.hits[0]._source.analysis.is_paper); // used for full-email download in getExportLink()
+      isPaperURL = (dateRange + response.data.hits.hits[0]._source.analysis.is_paper);
       let query = "q=" + isPaperURL.replaceAll(" ", "%20"),
           form = new FormData(document.getElementById("download_csv"));
 
@@ -613,15 +705,52 @@ oareport = function(org) {
       return false;
     }
 
+    /* Strategy-level "download CSV" form: escalate unanswered requests */
+    getUnansweredExportLink = function() {
+      hasCustomExportIncludes = (response.data.hits.hits[0]._source.strategy.unanswered_requests.export_includes);
+
+      Promise.all([hasCustomExportIncludes])
+        .then(function (results) {
+          let hasCustomExportIncludes = results[0].data;
+          }
+        ).catch(function (error) { console.log("Export error: " + error); });
+
+      isPaperURL = (dateRange + response.data.hits.hits[0]._source.strategy.unanswered_requests.query);
+      let query = "q=" + isPaperURL.replaceAll(" ", "%20"),
+          form = new FormData(document.getElementById("download_csv_unanswered"));
+
+      // Get form content — email address input
+      var email = "&" + new URLSearchParams(form).toString();
+
+      var include;
+      if (hasCustomExportIncludes !== undefined) {
+        include = "&include=" + hasCustomExportIncludes;
+      }
+
+      // Build full query
+      query = csvExportBase + query + include + email;
+
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", query);
+      // Display message when server responds
+      xhr.onload = function () {
+        document.querySelector("#csv_email_msg_unanswered").innerHTML = "OAreport has started building your CSV export at <a href='" + this.response + "' target='_blank' class='underline'>this URL</a>. Please check your email to get the full data once it’s ready.";
+      };
+      xhr.send();
+
+      // Do not navigate away from the page on submit
+      return false;
+    }
+
     getCountQueries();
     getPolicy();
     displayInsights();
     displayStrategyVOR();
     displayStrategyAAM();
     displayStrategyAPCFollowup();
+    displayStrategyUnansweredRequests();
     getDataStatements();
     getOpenData();
-    console.log("isPaperQuery: "+ isPaperQuery);
   })
   .catch(function (error) { console.log("ERROR: " + error); });
 };
