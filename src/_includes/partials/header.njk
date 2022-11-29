@@ -5,18 +5,18 @@
     </a>
   </h2>
   {# TODO: create static pages + implement search tool #}
-  {# <nav>
+  <nav>
     <ul class="flex self-center">
       {% for item in nav_header %}
       <li>
-        <a href="{{ item.url }}" class="text-sm md:text-base hover:text-carnation-500 transition duration-300">{{ item.label }}</a>
+        <a href="{{ item.url }}" class="text-sm font-medium md:text-base uppercase hover:text-carnation-500 transition duration-300">{{ item.label }}</a>
       </li>
       {% endfor %}
-      {% if page.url != "/" %}
+      {# {% if page.url != "/" %}
       <li>
         <div id="search"></div>
       </li>
-      {% endif %}
+      {% endif %} #}
     </ul>
-  </nav> #}
+  </nav>
 </header>
