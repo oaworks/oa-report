@@ -1,1 +1,8 @@
+{# Tooltip component
+{{ component("tooltip", {
+  msg: "",
+  id: ""
+}) }}
+#}
+
 <sup class="tooltip" data-tippy-content="{{ params.msg }}" id="{{ params.id }}">{% icon_small "help-circle" %}</sup>
