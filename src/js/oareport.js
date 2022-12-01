@@ -637,8 +637,11 @@ oareport = function(org) {
                 );
 
                 var requestSent = dataOASupport.oasupport.request_sent,
-                    nbFollowups = dataOASupport.oasupport.followups_sent;
-                console.log("dataOASupport: " + dataOASupport.oasupport.followups_sent);
+                    nbFollowups = dataOASupport.oasupport.followups_sent,
+                    clicked = dataOASupport.oasupport.clicked;
+                console.log("requestSent: " + requestSent);
+                console.log("nbFollowups: " + nbFollowups);
+                console.log("clicked: " + clicked);
 
                 // Get email draft/body for this article and replace with its metadata
                 var hasUnansweredRequestsMailto = response.data.hits.hits[0]._source.strategy.unanswered_requests.mailto;
