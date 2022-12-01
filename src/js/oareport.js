@@ -78,23 +78,23 @@ var articlesContents               = document.querySelector("#articles"),
     openDataContents               = document.querySelector("#articles_open_data");
 
 // Deposit VOR strategy
-var totalVORActionsContents        = document.querySelector("#total_vor_actions"),
-    canArchiveVORTable             = document.querySelector("#can_archive_vor_list"),
+var totalVORActionsContents        = document.querySelector("#total-can-archive-vor"),
+    canArchiveVORTable             = document.querySelector("#table-can-archive-vor"),
     countVORActionsContents        = document.querySelector("#count-can-archive-vor");
 
 // Deposit AAM strategy
-var totalAAMActionsContents        = document.querySelector("#total_aam_actions"),
-    canArchiveAAMTable             = document.querySelector("#can_archive_aam_list"),
+var totalAAMActionsContents        = document.querySelector("#total-can-archive-aam"),
+    canArchiveAAMTable             = document.querySelector("#table-can-archive-aam"),
     countAAMActionsContents        = document.querySelector("#count-can-archive-aam");
 
 // Follow up paid APCs strategy
-var totalAPCActionsContents        = document.querySelector("#total_apc_actions"),
-    hasAPCFollowupTable            = document.querySelector("#has_apc_followup_list"),
+var totalAPCActionsContents        = document.querySelector("#total-has-apc-followup"),
+    hasAPCFollowupTable            = document.querySelector("#table-has-apc-followup"),
     countAPCActionsContents        = document.querySelector("#count-has-apc-followup");
 
 // Escalate unanswered requests
-var totalUnansweredActionsContents = document.querySelector("#total_unanswered_actions"),
-    hasUnansweredRequestsTable     = document.querySelector("#has_unanswered_requests_list"),
+var totalUnansweredActionsContents = document.querySelector("#total-has-unanswered-requests"),
+    hasUnansweredRequestsTable     = document.querySelector("#table-has-unanswered-requests"),
     countUnansweredActionsContents = document.querySelector("#count-has-unanswered-requests");
 
 /* Date display and filtering */
