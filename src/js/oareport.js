@@ -711,18 +711,19 @@ oareport = function(org) {
       var test = "email_author_aam";
       console.log("formID: " + formID)
       /* TODO: temp solution for oaworks/Gates#369 — clean this up */
+      // Set export includes and queries for all types of strategies
       if (formID == "can-archive-vor") {
         hasCustomExportIncludes = (response.data.hits.hits[0]._source.strategy.email_author_vor.export_includes);
-        strategyQuery = (response.data.hits.hits[0]._source.strategy.email_author_vor.query);
+        strategyQuery           = (response.data.hits.hits[0]._source.strategy.email_author_vor.query);
       } else if (formID == "can-archive-aam") {
         hasCustomExportIncludes = (response.data.hits.hits[0]._source.strategy.email_author_aam.export_includes);
-        strategyQuery = (response.data.hits.hits[0]._source.strategy.email_author_aam.query);
+        strategyQuery           = (response.data.hits.hits[0]._source.strategy.email_author_aam.query);
       } else if (formID == "has-apc-followup") {
         hasCustomExportIncludes = (response.data.hits.hits[0]._source.strategy.apc_followup.export_includes);
-        strategyQuery = (response.data.hits.hits[0]._source.strategy.apc_followup.query);
+        strategyQuery           = (response.data.hits.hits[0]._source.strategy.apc_followup.query);
       } else if (formID == "has-unanswered-requests") {
         hasCustomExportIncludes = (response.data.hits.hits[0]._source.strategy.unanswered_requests.export_includes);
-        strategyQuery = (response.data.hits.hits[0]._source.strategy.unanswered_requests.query);
+        strategyQuery           = (response.data.hits.hits[0]._source.strategy.unanswered_requests.query);
       }
 
       Promise.all([hasCustomExportIncludes])
@@ -731,6 +732,7 @@ oareport = function(org) {
           }
         ).catch(function (error) { console.log("Export error: " + error); });
 
+      // Set up export query
       isPaperURL = (dateRange + strategyQuery);
       let query = "q=" + isPaperURL.replaceAll(" ", "%20"),
           form = new FormData(document.getElementById("form-" + formID));
@@ -738,6 +740,7 @@ oareport = function(org) {
       // Get form content — email address input
       var email = "&" + new URLSearchParams(form).toString();
 
+      // Display export includes if there are any
       var include;
       if (hasCustomExportIncludes !== undefined) {
         include = "&include=" + hasCustomExportIncludes;
