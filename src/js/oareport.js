@@ -717,7 +717,7 @@ oareport = function(org) {
 
       isPaperURL = (dateRange + response.data.hits.hits[0]._source.strategy.unanswered_requests.query);
       let query = "q=" + isPaperURL.replaceAll(" ", "%20"),
-          form = new FormData(document.getElementById("download_csv_unanswered"));
+          form = new FormData(document.getElementById("form-has-unanswered-requests"));
 
       // Get form content — email address input
       var email = "&" + new URLSearchParams(form).toString();
@@ -734,7 +734,7 @@ oareport = function(org) {
       xhr.open("GET", query);
       // Display message when server responds
       xhr.onload = function () {
-        document.querySelector("#csv_email_msg_unanswered").innerHTML = "OAreport has started building your CSV export at <a href='" + this.response + "' target='_blank' class='underline'>this URL</a>. Please check your email to get the full data once it’s ready.";
+        document.querySelector("#msg-has-unanswered-requests").innerHTML = "OAreport has started building your CSV export at <a href='" + this.response + "' target='_blank' class='underline'>this URL</a>. Please check your email to get the full data once it’s ready.";
       };
       xhr.send();
 
