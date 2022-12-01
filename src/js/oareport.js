@@ -77,26 +77,6 @@ var articlesContents               = document.querySelector("#articles"),
     openDataPercentageContents     = document.querySelector("#percent_open_data"),
     openDataContents               = document.querySelector("#articles_open_data");
 
-// Deposit VOR strategy
-var totalVORActionsContents        = document.querySelector("#total-can-archive-vor"),
-    canArchiveVORTable             = document.querySelector("#table-can-archive-vor"),
-    countVORActionsContents        = document.querySelector("#count-can-archive-vor");
-
-// Deposit AAM strategy
-var totalAAMActionsContents        = document.querySelector("#total-can-archive-aam"),
-    canArchiveAAMTable             = document.querySelector("#table-can-archive-aam"),
-    countAAMActionsContents        = document.querySelector("#count-can-archive-aam");
-
-// Follow up paid APCs strategy
-var totalAPCActionsContents        = document.querySelector("#total-has-apc-followup"),
-    hasAPCFollowupTable            = document.querySelector("#table-has-apc-followup"),
-    countAPCActionsContents        = document.querySelector("#count-has-apc-followup");
-
-// Escalate unanswered requests
-var totalUnansweredActionsContents = document.querySelector("#total-has-unanswered-requests"),
-    hasUnansweredRequestsTable     = document.querySelector("#table-has-unanswered-requests"),
-    countUnansweredActionsContents = document.querySelector("#count-has-unanswered-requests");
-
 /* Date display and filtering */
 // Set today’s date and 12 months ago date to display most recent Insights data as default
 const currentDate                  = new Date(),
@@ -340,6 +320,10 @@ oareport = function(org) {
 
     /** Display Strategies: deposit VOR (publisher PDF) **/
     displayStrategyVOR = function() {
+      var totalVORActionsContents        = document.querySelector("#total-can-archive-vor"),
+          canArchiveVORTable             = document.querySelector("#table-can-archive-vor"),
+          countVORActionsContents        = document.querySelector("#count-can-archive-vor");
+
       Promise.all([canArchiveVOR, canArchiveVORList])
         .then(function (results) {
           let canArchiveVOR = results[0].data,
@@ -407,6 +391,10 @@ oareport = function(org) {
 
     /** Display Strategies: deposit AAM (accepted manuscripts)  **/
     displayStrategyAAM = function() {
+      var totalAAMActionsContents        = document.querySelector("#total-can-archive-aam"),
+          canArchiveAAMTable             = document.querySelector("#table-can-archive-aam"),
+          countAAMActionsContents        = document.querySelector("#count-can-archive-aam");
+
       Promise.all([canArchiveAAM, canArchiveAAMList])
         .then(function (results) {
           let canArchiveAAM = results[0].data,
@@ -475,6 +463,10 @@ oareport = function(org) {
 
     /** Display Strategies: follow up with uncompliant articles with paid APCs **/
     displayStrategyAPCFollowup = function() {
+      var totalAPCActionsContents        = document.querySelector("#total-has-apc-followup"),
+          hasAPCFollowupTable            = document.querySelector("#table-has-apc-followup"),
+          countAPCActionsContents        = document.querySelector("#count-has-apc-followup");
+
       if (response.data.hits.hits[0]._source.strategy.apc_followup.query) {
         hasAPCFollowupSort = "&sort=publisher.keyword:asc,journal.keyword:asc,supplements.invoice_date:desc";
         hasAPCFollowupQuery  = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.apc_followup.query);
@@ -577,6 +569,10 @@ oareport = function(org) {
 
     /** Display Strategies: escalate unanswered requests **/
     displayStrategyUnansweredRequests = function() {
+      var totalUnansweredActionsContents = document.querySelector("#total-has-unanswered-requests"),
+          hasUnansweredRequestsTable     = document.querySelector("#table-has-unanswered-requests"),
+          countUnansweredActionsContents = document.querySelector("#count-has-unanswered-requests");
+
       if (response.data.hits.hits[0]._source.strategy.unanswered_requests.query) {
         hasUnansweredRequestsQuery  = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.unanswered_requests.query);
         hasUnansweredRequestsListQuery = (queryPrefix + response.data.hits.hits[0]._source.strategy.unanswered_requests.query);
