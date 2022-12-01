@@ -77,26 +77,6 @@ var articlesContents               = document.querySelector("#articles"),
     openDataPercentageContents     = document.querySelector("#percent_open_data"),
     openDataContents               = document.querySelector("#articles_open_data");
 
-// Deposit VOR strategy
-var totalVORActionsContents        = document.querySelector("#total_vor_actions"),
-    canArchiveVORTable             = document.querySelector("#can_archive_vor_list"),
-    countVORActionsContents        = document.querySelector("#count_vor");
-
-// Deposit AAM strategy
-var totalAAMActionsContents        = document.querySelector("#total_aam_actions"),
-    canArchiveAAMTable             = document.querySelector("#can_archive_aam_list"),
-    countAAMActionsContents        = document.querySelector("#count_aam");
-
-// Follow up paid APCs strategy
-var totalAPCActionsContents        = document.querySelector("#total_apc_actions"),
-    hasAPCFollowupTable            = document.querySelector("#has_apc_followup_list"),
-    countAPCActionsContents        = document.querySelector("#count_apc");
-
-// Escalate unanswered requests
-var totalUnansweredActionsContents = document.querySelector("#total_unanswered_actions"),
-    hasUnansweredRequestsTable     = document.querySelector("#has_unanswered_requests_list"),
-    countUnansweredActionsContents = document.querySelector("#count_unanswered");
-
 /* Date display and filtering */
 // Set today’s date and 12 months ago date to display most recent Insights data as default
 const currentDate                  = new Date(),
@@ -340,6 +320,10 @@ oareport = function(org) {
 
     /** Display Strategies: deposit VOR (publisher PDF) **/
     displayStrategyVOR = function() {
+      var totalVORActionsContents        = document.querySelector("#total-can-archive-vor"),
+          canArchiveVORTable             = document.querySelector("#table-can-archive-vor"),
+          countVORActionsContents        = document.querySelector("#count-can-archive-vor");
+
       Promise.all([canArchiveVOR, canArchiveVORList])
         .then(function (results) {
           let canArchiveVOR = results[0].data,
@@ -358,7 +342,7 @@ oareport = function(org) {
           // Generate list of archivable VORs if there are any
           if (canArchiveVOR === 0) {
             totalVORActionsContents.textContent = "No ";
-            canArchiveVORTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find publisher PDFs that could be deposited. <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
+            canArchiveVORTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
           }
           else if (canArchiveVOR > 0 || canArchiveVOR !== null) {
             // Set up and get list of emails
@@ -407,6 +391,10 @@ oareport = function(org) {
 
     /** Display Strategies: deposit AAM (accepted manuscripts)  **/
     displayStrategyAAM = function() {
+      var totalAAMActionsContents        = document.querySelector("#total-can-archive-aam"),
+          canArchiveAAMTable             = document.querySelector("#table-can-archive-aam"),
+          countAAMActionsContents        = document.querySelector("#count-can-archive-aam");
+
       Promise.all([canArchiveAAM, canArchiveAAMList])
         .then(function (results) {
           let canArchiveAAM = results[0].data,
@@ -425,7 +413,7 @@ oareport = function(org) {
           // Generate list of archivable AAMs if there are any
           if (canArchiveAAM === 0) {
             totalAAMActionsContents.textContent = "No ";
-            canArchiveAAMTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find accepted manuscripts that could be deposited. <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
+            canArchiveAAMTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
           }
           else if (canArchiveAAM > 0 || canArchiveAAM !== null) {
             // Set up and get list of emails for archivable AAMs
@@ -475,6 +463,10 @@ oareport = function(org) {
 
     /** Display Strategies: follow up with uncompliant articles with paid APCs **/
     displayStrategyAPCFollowup = function() {
+      var totalAPCActionsContents        = document.querySelector("#total-has-apc-followup"),
+          hasAPCFollowupTable            = document.querySelector("#table-has-apc-followup"),
+          countAPCActionsContents        = document.querySelector("#count-has-apc-followup");
+
       if (response.data.hits.hits[0]._source.strategy.apc_followup.query) {
         hasAPCFollowupSort = "&sort=publisher.keyword:asc,journal.keyword:asc,supplements.invoice_date:desc";
         hasAPCFollowupQuery  = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.apc_followup.query);
@@ -500,7 +492,7 @@ oareport = function(org) {
             // Generate list of APC followups if there are any
             if (hasAPCFollowup === 0) {
               totalAPCActionsContents.textContent = "No ";
-              hasAPCFollowupTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find articles to follow up on. <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
+              hasAPCFollowupTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
             }
             else if (hasAPCFollowup > 0 || hasAPCFollowup !== null) {
               // Set up and get list of emails for APC followups
@@ -570,13 +562,17 @@ oareport = function(org) {
         ).catch(function (error) { console.log("displayStrategyAPCFollowup error: " + error); })
       } else {
         // remove tab if this strategy doesn’t exist for this org
-        document.querySelector("#has-apc-followup-item").outerHTML = "";
+        document.querySelector("#item-has-apc-followup").outerHTML = "";
         document.querySelector("#has-apc-followup").outerHTML = "";
       }
     };
 
     /** Display Strategies: escalate unanswered requests **/
     displayStrategyUnansweredRequests = function() {
+      var totalUnansweredActionsContents = document.querySelector("#total-has-unanswered-requests"),
+          hasUnansweredRequestsTable     = document.querySelector("#table-has-unanswered-requests"),
+          countUnansweredActionsContents = document.querySelector("#count-has-unanswered-requests");
+
       if (response.data.hits.hits[0]._source.strategy.unanswered_requests.query) {
         hasUnansweredRequestsQuery  = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.unanswered_requests.query);
         hasUnansweredRequestsListQuery = (queryPrefix + response.data.hits.hits[0]._source.strategy.unanswered_requests.query);
@@ -601,7 +597,7 @@ oareport = function(org) {
             // Generate list of APC followups if there are any
             if (hasUnansweredRequests === 0) {
               totalUnansweredActionsContents.textContent = "No ";
-              hasUnansweredRequestsTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any requests to escalate. <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
+              hasUnansweredRequestsTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
             }
             else if (hasUnansweredRequests > 0 || hasUnansweredRequests !== null) {
               // Set up and get list of emails for APC followups
@@ -663,7 +659,7 @@ oareport = function(org) {
         ).catch(function (error) { console.log("displayStrategyUnansweredRequests error: " + error); })
       } else {
         // remove tab if this strategy doesn’t exist for this org
-        document.querySelector("#has-unanswered-requests-item").outerHTML = "";
+        document.querySelector("#item-has-unanswered-requests").outerHTML = "";
         document.querySelector("#has-unanswered-requests").outerHTML = "";
       }
     };
@@ -705,9 +701,24 @@ oareport = function(org) {
       return false;
     }
 
-    /* Strategy-level "download CSV" form: escalate unanswered requests */
-    getUnansweredExportLink = function() {
-      hasCustomExportIncludes = (response.data.hits.hits[0]._source.strategy.unanswered_requests.export_includes);
+    /* Strategy-level "download CSV" form */
+    getStrategyExportLink = function(id) {
+      var formID = id;
+      /* TODO: temp solution for oaworks/Gates#369 — clean this up */
+      // Set export includes and queries for all types of strategies
+      if (formID == "can-archive-vor") {
+        hasCustomExportIncludes = (response.data.hits.hits[0]._source.strategy.email_author_vor.export_includes);
+        strategyQuery           = (response.data.hits.hits[0]._source.strategy.email_author_vor.query);
+      } else if (formID == "can-archive-aam") {
+        hasCustomExportIncludes = (response.data.hits.hits[0]._source.strategy.email_author_aam.export_includes);
+        strategyQuery           = (response.data.hits.hits[0]._source.strategy.email_author_aam.query);
+      } else if (formID == "has-apc-followup") {
+        hasCustomExportIncludes = (response.data.hits.hits[0]._source.strategy.apc_followup.export_includes);
+        strategyQuery           = (response.data.hits.hits[0]._source.strategy.apc_followup.query);
+      } else if (formID == "has-unanswered-requests") {
+        hasCustomExportIncludes = (response.data.hits.hits[0]._source.strategy.unanswered_requests.export_includes);
+        strategyQuery           = (response.data.hits.hits[0]._source.strategy.unanswered_requests.query);
+      }
 
       Promise.all([hasCustomExportIncludes])
         .then(function (results) {
@@ -715,13 +726,15 @@ oareport = function(org) {
           }
         ).catch(function (error) { console.log("Export error: " + error); });
 
-      isPaperURL = (dateRange + response.data.hits.hits[0]._source.strategy.unanswered_requests.query);
+      // Set up export query
+      isPaperURL = (dateRange + strategyQuery);
       let query = "q=" + isPaperURL.replaceAll(" ", "%20"),
-          form = new FormData(document.getElementById("download_csv_unanswered"));
+          form = new FormData(document.getElementById("form-" + formID));
 
       // Get form content — email address input
       var email = "&" + new URLSearchParams(form).toString();
 
+      // Display export includes if there are any
       var include;
       if (hasCustomExportIncludes !== undefined) {
         include = "&include=" + hasCustomExportIncludes;
@@ -734,7 +747,7 @@ oareport = function(org) {
       xhr.open("GET", query);
       // Display message when server responds
       xhr.onload = function () {
-        document.querySelector("#csv_email_msg_unanswered").innerHTML = "OAreport has started building your CSV export at <a href='" + this.response + "' target='_blank' class='underline'>this URL</a>. Please check your email to get the full data once it’s ready.";
+        document.querySelector("#msg-" + formID).innerHTML = "OAreport has started building your CSV export at <a href='" + this.response + "' target='_blank' class='underline'>this URL</a>. Please check your email to get the full data once it’s ready.";
       };
       xhr.send();
 
