@@ -705,9 +705,25 @@ oareport = function(org) {
       return false;
     }
 
-    /* Strategy-level "download CSV" form: escalate unanswered requests */
-    getUnansweredExportLink = function() {
-      hasCustomExportIncludes = (response.data.hits.hits[0]._source.strategy.unanswered_requests.export_includes);
+    /* Strategy-level "download CSV" form */
+    getStrategyExportLink = function(id) {
+      var formID = id;
+      var test = "email_author_aam";
+      console.log("formID: " + formID)
+      /* TODO: temp solution for oaworks/Gates#369 — clean this up */
+      if (formID == "can-archive-vor") {
+        hasCustomExportIncludes = (response.data.hits.hits[0]._source.strategy.email_author_vor.export_includes);
+        strategyQuery = (response.data.hits.hits[0]._source.strategy.email_author_vor.query);
+      } else if (formID == "can-archive-aam") {
+        hasCustomExportIncludes = (response.data.hits.hits[0]._source.strategy.email_author_aam.export_includes);
+        strategyQuery = (response.data.hits.hits[0]._source.strategy.email_author_aam.query);
+      } else if (formID == "has-apc-followup") {
+        hasCustomExportIncludes = (response.data.hits.hits[0]._source.strategy.apc_followup.export_includes);
+        strategyQuery = (response.data.hits.hits[0]._source.strategy.apc_followup.query);
+      } else if (formID == "has-unanswered-requests") {
+        hasCustomExportIncludes = (response.data.hits.hits[0]._source.strategy.unanswered_requests.export_includes);
+        strategyQuery = (response.data.hits.hits[0]._source.strategy.unanswered_requests.query);
+      }
 
       Promise.all([hasCustomExportIncludes])
         .then(function (results) {
@@ -715,9 +731,9 @@ oareport = function(org) {
           }
         ).catch(function (error) { console.log("Export error: " + error); });
 
-      isPaperURL = (dateRange + response.data.hits.hits[0]._source.strategy.unanswered_requests.query);
+      isPaperURL = (dateRange + strategyQuery);
       let query = "q=" + isPaperURL.replaceAll(" ", "%20"),
-          form = new FormData(document.getElementById("form-has-unanswered-requests"));
+          form = new FormData(document.getElementById("form-" + formID));
 
       // Get form content — email address input
       var email = "&" + new URLSearchParams(form).toString();
@@ -734,7 +750,7 @@ oareport = function(org) {
       xhr.open("GET", query);
       // Display message when server responds
       xhr.onload = function () {
-        document.querySelector("#msg-has-unanswered-requests").innerHTML = "OAreport has started building your CSV export at <a href='" + this.response + "' target='_blank' class='underline'>this URL</a>. Please check your email to get the full data once it’s ready.";
+        document.querySelector("#msg-" + formID).innerHTML = "OAreport has started building your CSV export at <a href='" + this.response + "' target='_blank' class='underline'>this URL</a>. Please check your email to get the full data once it’s ready.";
       };
       xhr.send();
 
