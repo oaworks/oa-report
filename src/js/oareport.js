@@ -589,6 +589,8 @@ oareport = function(org) {
                 hasUnansweredRequestsList = results[1].data.hits.hits,
                 hasUnansweredRequestsLength = parseFloat(hasUnansweredRequests);
 
+            console.log("hasUnansweredRequestsListQuery: " + hasUnansweredRequestsListQuery);
+
             // Show total number of actions in tab & above table
             countUnansweredActionsContents.textContent = makeNumberReadable(hasUnansweredRequestsLength);
 
@@ -627,6 +629,17 @@ oareport = function(org) {
                 var grantID = dataGrant.grantid__bmgf,
                     program = dataGrant.program__bmgf;
 
+                // Loop over supplements array to access oasupport info without index number
+                var dataOASupport = hasUnansweredRequestsList[i]._source.supplements.find(
+                  function(i) {
+                    return (i.oasupport);
+                  }
+                );
+
+                var requestSent = dataOASupport.oasupport.request_sent,
+                    nbFollowups = dataOASupport.oasupport.followups_sent;
+                console.log("dataOASupport: " + dataOASupport.oasupport.followups_sent);
+
                 // Get email draft/body for this article and replace with its metadata
                 var hasUnansweredRequestsMailto = response.data.hits.hits[0]._source.strategy.unanswered_requests.mailto;
                 hasUnansweredRequestsMailto = hasUnansweredRequestsMailto.replaceAll("\'", "’");
@@ -645,11 +658,16 @@ oareport = function(org) {
                     </div>\
                   </td>\
                   <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
-                    <div class="mb-1 font-medium text-neutral-900">' + (author ? author : "[No author’s name found]") + '</div>\
-                    <div class="mb-1 text-neutral-900">\
-                      <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + (title ? title : "[No article title found]") + '</a>\
+                    <div class="text-neutral-900">\
+                      <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">\
+                        ' + (author ? ('<span class="font-medium">' + author + '. </span>') : "[No author’s name found]") + '\
+                        ' + (title ? (title + '. ') : "[No article title found]") + '\
+                        ' + (journal ? ('<span class="italic text-neutral-500">' + journal + '</span>') : "[No journal name found]") + '\
+                      </a>\
                     </div>\
-                    <div class="text-neutral-500">' + (journal ? journal : "[No journal name found]") + '</div>\
+                    <div class="mt-3">\
+                      ' + (nbFollowups ? ('<span class="font-normal">Contacted ' + nbFollowups + ' times since ' + makeDateReadable(new Date(requestSent)) + '</span>') : "") + '\
+                    </div>\
                   </td>\
                   <td class="whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium">\
                     <a href="mailto:' + hasUnansweredRequestsMailto + '" target="_blank" rel="noopener" class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200">\
