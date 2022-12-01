@@ -358,7 +358,7 @@ oareport = function(org) {
           // Generate list of archivable VORs if there are any
           if (canArchiveVOR === 0) {
             totalVORActionsContents.textContent = "No ";
-            canArchiveVORTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find publisher PDFs that could be deposited. <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
+            canArchiveVORTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
           }
           else if (canArchiveVOR > 0 || canArchiveVOR !== null) {
             // Set up and get list of emails
@@ -425,7 +425,7 @@ oareport = function(org) {
           // Generate list of archivable AAMs if there are any
           if (canArchiveAAM === 0) {
             totalAAMActionsContents.textContent = "No ";
-            canArchiveAAMTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find accepted manuscripts that could be deposited. <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
+            canArchiveAAMTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
           }
           else if (canArchiveAAM > 0 || canArchiveAAM !== null) {
             // Set up and get list of emails for archivable AAMs
@@ -500,7 +500,7 @@ oareport = function(org) {
             // Generate list of APC followups if there are any
             if (hasAPCFollowup === 0) {
               totalAPCActionsContents.textContent = "No ";
-              hasAPCFollowupTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find articles to follow up on. <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
+              hasAPCFollowupTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
             }
             else if (hasAPCFollowup > 0 || hasAPCFollowup !== null) {
               // Set up and get list of emails for APC followups
@@ -601,7 +601,7 @@ oareport = function(org) {
             // Generate list of APC followups if there are any
             if (hasUnansweredRequests === 0) {
               totalUnansweredActionsContents.textContent = "No ";
-              hasUnansweredRequestsTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any requests to escalate. <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
+              hasUnansweredRequestsTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
             }
             else if (hasUnansweredRequests > 0 || hasUnansweredRequests !== null) {
               // Set up and get list of emails for APC followups
@@ -708,8 +708,6 @@ oareport = function(org) {
     /* Strategy-level "download CSV" form */
     getStrategyExportLink = function(id) {
       var formID = id;
-      var test = "email_author_aam";
-      console.log("formID: " + formID)
       /* TODO: temp solution for oaworks/Gates#369 — clean this up */
       // Set export includes and queries for all types of strategies
       if (formID == "can-archive-vor") {

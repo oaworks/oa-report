@@ -17,7 +17,7 @@
       <form id="form-{{ params.id }}" onsubmit="return getStrategyExportLink('{{ params.id }}')">
         <h2 class="mb-3 font-medium text-base text-neutral-900">
           Get data in CSV by email {{ component("tooltip", {
-            msg: "Enter your email address to receive a link to a CSV for download. <strong>We do not save email addresses or use them for any purpose</strong> other than sending you the CSV file containing OAreport data when you request it."
+            msg: "Enter your email address to receive a link to a CSV for download. We do not use email addresses for any purpose other than sending you the CSV file containing OAreport data when you request it."
           }) }}
         </h2>
         <label for="email" class="sr-only">Email address</label>
@@ -41,9 +41,11 @@
       <div class="mb-3 col-span-12 md:col-span-6">
         <p class="mb-1 text-neutral-900 text-lg font-semibold leading-6">
           <span id="total-{{ params.id }}">00</span> actions shown</span>
+          {% if params.action_help_txt %}
           {{ component("tooltip", {
             msg: "<p class='mb-2'>We tried to remove common errors and articles that are already in a repository (either embargoed or available). This list was produced using Unpaywall, Crossref, and ShareYourPaper Permissions data.</p>"
           }) }}
+          {% endif %}
         </p>
       </div>
     </div>

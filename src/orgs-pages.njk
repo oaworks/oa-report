@@ -261,32 +261,35 @@ permalink: "{{ org._source.objectID | slug }}/"
   <div class="js-tab-content-all">
     {{ component("tab-contents", {
       id: "can-archive-vor",
-      heading: "Ask authors to deposit their publisher PDFs",
+      heading: "Deposit publisher PDFs",
       desc: "Send emails to authors to request they make their work free to read. In these cases, they can do that by making a <strong>publisher PDF (version of record, VOR)</strong> available in a repository.",
       table_headings: "<th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-10/12 sm:w-6/12'>Article</th>\
                        <th scope='col' class='hidden px-3 py-3.5 text-left text-sm font-semibold w-4/12 sm:table-cell'>Corresponding author</th>",
       draft_btn: true,
+      action_help_txt: true,
       hidden: false
     }) }}
 
     {{ component("tab-contents", {
       id: "can-archive-aam",
-      heading: "Ask authors to deposit accepted manuscripts",
+      heading: "Deposit accepted manuscripts",
       desc: "Send emails to authors to request they make their work free to read. In these cases, they can do that by making an <strong>author accepted manuscript (AAM)</strong> available in a repository.",
       table_headings: "<th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-10/12 sm:w-6/12'>Article</th>\
                        <th scope='col' class='hidden px-3 py-3.5 text-left text-sm font-semibold w-4/12 sm:table-cell'>Corresponding author</th>",
       draft_btn: true,
+      action_help_txt: true,
       hidden: true
     }) }}
 
     {{ component("tab-contents", {
       id: "has-apc-followup",
-      heading: "Follow up with publishers that accepted an APC but didn't make the article compliant",
+      heading: "Correct publisher errors",
       desc: "These are articles where an APC has been paid, but the article isn't compliant with the policy. Use this list to follow up with publishers. If an article is made compliant, and the metadata is updated, it will be removed from this list.",
       table_headings: "<th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-4/12 sm:w-4/12'>Publisher & journal</th>\
                        <th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-3/12 sm:w-4/12'>Article</th>\
                        <th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-5/12 sm:w-4/12'>Invoice</th>",
       draft_btn: false,
+      action_help_txt: false,
       hidden: true
     }) }}
 
@@ -297,6 +300,7 @@ permalink: "{{ org._source.objectID | slug }}/"
       table_headings: "<th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-3/12'>Grant</th>\
                        <th scope='col' class='px-3 py-3.5 text-left text-sm font-semibold w-7/12'>Author & article</th>",
       draft_btn: true,
+      action_help_txt: false,
       hidden: true
     }) }}
   </div>
