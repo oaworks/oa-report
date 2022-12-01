@@ -1,3 +1,4 @@
+{# Macro for creating HTML components (see _includes/components/ directory) #}
 {%- macro component(name, params) -%}
   {% include "../components/" + name + ".njk" ignore missing %}
 {%- endmacro -%}
