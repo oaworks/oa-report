@@ -55,6 +55,7 @@ if (window.location.search.includes('key=')) {
       key = str.split('key=')[1].split('&')[0];
       window.OAKEYS[org] = key;
       _OAcookie(window.OAKEYS);
+      try { history.pushState(null, null, window.location.href.split('?')[0]); } catch (e) {};
     }
   }
 }
@@ -62,4 +63,5 @@ if (window.location.search.includes('key=')) {
 if (window.location.search.includes('logout')) {
   window.OAKEYS = {}; // or work out the org here and only logout of that org?
   _OAcookie(false);
+  try { history.pushState(null, null, window.location.href.split('?')[0]); } catch (e) {};
 }
