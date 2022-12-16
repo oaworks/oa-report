@@ -28,7 +28,7 @@ _OAcookie = function(obj) {
         c = c.substring(1);
       }
       if (c.indexOf('OAKeys=') !== -1) {
-        return JSON.parse(decodeURIComponent(c.substring(n.length + 1, c.length)));
+        return JSON.parse(decodeURIComponent(c.substring(7, c.length)));
       }
     }
     return false;
