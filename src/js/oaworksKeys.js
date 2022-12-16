@@ -1,4 +1,4 @@
-var _OAcookie, ck, key, org, str;
+var _OAcookie, ck, o, ak;
 
 _OAcookie = function(obj) {
   var c, d, domain, expires, i, len, ref, t;
@@ -40,20 +40,18 @@ ck = _OAcookie();
 window.OAKEYS = typeof ck === 'object' ? ck : {};
 
 if (window.location.search.includes('key=')) {
-  str = window.location.search.replace('apikey', '');
-  if (str.includes('key=')) {
+  ak = window.location.search.replace('apikey', '');
+  if (ak.includes('key=')) {
     try {
-      org = window.location.search.split('org=')[1].split('&')[0];
+      o = window.location.search.split('org=')[1].split('&')[0];
     } catch (error) {}
     try {
-      if (org == null) {
-        org = window.location.href.split('//')[1].split('/')[1];
+      if (o == null) {
+        o = window.location.href.split('//')[1].split('/')[1];
       }
     } catch (error) {}
-    if (org) {
-      org = decodeURIComponent(org);
-      key = str.split('key=')[1].split('&')[0];
-      window.OAKEYS[org] = key;
+    if (o) {
+      window.OAKEYS[decodeURIComponent(o)] = ak.split('key=')[1].split('&')[0];
       _OAcookie(window.OAKEYS);
       try { history.pushState(null, null, window.location.href.split('?')[0]); } catch (e) {};
     }
