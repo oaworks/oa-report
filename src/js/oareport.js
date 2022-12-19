@@ -759,8 +759,6 @@ oareport = function(org) {
     }
 
     getCountQueries();
-    getDataStatements();
-    getOpenData();
     getPolicy();
     displayInsights();
     displayStrategyVOR();
