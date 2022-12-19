@@ -316,6 +316,9 @@ oareport = function(org) {
           }
         }
       ).catch(function (error) { console.log("displayInsights error: " + error); })
+
+      getDataStatements();
+      getOpenData();
     };
 
     /** Display Strategies: deposit VOR (publisher PDF) **/
