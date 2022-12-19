@@ -756,14 +756,14 @@ oareport = function(org) {
     }
 
     getCountQueries();
+    getDataStatements();
+    getOpenData();
     getPolicy();
     displayInsights();
     displayStrategyVOR();
     displayStrategyAAM();
     displayStrategyAPCFollowup();
     displayStrategyUnansweredRequests();
-    getDataStatements();
-    getOpenData();
   })
   .catch(function (error) { console.log("ERROR: " + error); });
 };
