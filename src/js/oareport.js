@@ -316,6 +316,9 @@ oareport = function(org) {
           }
         }
       ).catch(function (error) { console.log("displayInsights error: " + error); })
+
+      getDataStatements();
+      getOpenData();
     };
 
     /** Display Strategies: deposit VOR (publisher PDF) **/
@@ -762,8 +765,6 @@ oareport = function(org) {
     displayStrategyAAM();
     displayStrategyAPCFollowup();
     displayStrategyUnansweredRequests();
-    getDataStatements();
-    getOpenData();
   })
   .catch(function (error) { console.log("ERROR: " + error); });
 };
