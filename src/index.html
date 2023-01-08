@@ -18,7 +18,18 @@ meta_description: "OAreport is an open-source tool that analyzes papers covered 
   <div class="col col--1of2 flex-center flex-col bg-white align-center colour-block cover__tagline">
     <section>
       <p class="label">{{ site.name }}</p>
-      <h2 class="type-1 font-sans fw-900">{{ site.tagline }}</h2>
+      <h2 class="type-2 font-sans fw-900">{{ site.tagline }}</h2>
+      <div class="flex-center flex-col align-center" data-sal-delay="100">
+        <div id="newsletter-inner">
+          <form id="newsletter">
+            <label for="email">Sign up for updates</label>
+            <div class="flex">
+              <input type="email" class="_oaworks_form" name="signup" id="email" placeholder="you@institution.edu" required/>
+              <button id="submit" type="submit" href="{{ site.base_url }}#newsletter-inner">Sign up</button>
+            </div>
+          </form>
+        </div>
+      </div>
       <p class="type-1 no-margin"><a href="#content"><span class="sr-only"> Scroll down</span>↓</a></p>
     </section>
   </div>
@@ -74,6 +85,7 @@ meta_description: "OAreport is an open-source tool that analyzes papers covered 
     </div>
   </section>
 
+  {% comment %}
   <aside class="row row--centered bg-white section colour-block" id="newsletter-form">
     <div class="col col--1of2 flex-center flex-col align-center" data-sal="slide-left" data-sal-delay="100">
       <h2 class="label"><span class="type-3">Stay up to date</span></h2>
@@ -89,6 +101,7 @@ meta_description: "OAreport is an open-source tool that analyzes papers covered 
       </div>
     </div>
   </aside>
+  {% endcomment %}
 
   <section class="section">
     <h2 class="label border-top-thick padding-top"><span class="type-4">How {% include 'partials/app-name.liquid' %} works for you</span></h2>
