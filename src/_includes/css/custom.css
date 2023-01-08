@@ -58,6 +58,11 @@ html {
   color: rgba(0, 0, 0, 0);
 }
 
+.bg-gradient {
+  background: linear-gradient(to right, var(--secondary-colour), var(--primary-colour));
+  color: var(--black);
+}
+
 .cover {
   position: fixed;
   width: 100%;
