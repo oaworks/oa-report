@@ -9,6 +9,12 @@
     <p class="browserupgrade">You are using an outdated browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
     <![endif]-->
 
+    {% if site.banner %}
+    <section class="row bg-black flex-center align-center" style="z-index: 5; padding: 1em 0; position: sticky; top: 0;">
+      {{ site.banner }}
+    </section>
+    {% endif %}
+
     <main>
       {{ content }}
     </main>
