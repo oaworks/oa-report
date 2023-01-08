@@ -6,7 +6,7 @@
 
 @media only screen and (min-width: 768px) {
   .section {
-    padding: calc(3 * var(--gutter)) calc(4 * var(--gutter));
+    padding: calc(3 * var(--gutter)) calc(6 * var(--gutter));
   }
 }
 
