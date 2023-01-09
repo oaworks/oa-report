@@ -1,0 +1,25 @@
+[
+  {
+    "name": "the Bill & Melinda Gates Foundation",
+    "acronym": "BMGF",
+    "logo": "img/users/bmgf.png",
+    "url": "https://www.gatesfoundation.org/"
+  },
+  {
+    "name": "Aligning Science Across Parkinson’s",
+    "acronym": "ASAP",
+    "logo": "img/users/asap.png",
+    "url": "https://parkinsonsroadmap.org/"
+  },
+  {
+    "name": "the Robert Wood Johnson Foundation",
+    "acronym": "RWJF",
+    "url": "https://www.rwjf.org/"
+  },
+  {
+    "name": "the Templeton World Charity Foundation",
+    "acronym": "TWCF",
+    "logo": "img/users/twcf.png",
+    "url": "https://www.templetonworldcharity.org/"
+  }
+]

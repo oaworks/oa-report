@@ -19,7 +19,7 @@ meta_description: "OAreport is an open-source tool that analyzes papers covered 
     <section>
       <p class="label">{{ site.name }}</p>
       <h2 class="type-2 font-sans fw-900">{{ site.tagline }}</h2>
-      <div class="flex-center flex-col align-center" data-sal-delay="100">
+      <div class="flex-center flex-col align-center margin-bottom" data-sal-delay="100">
         <div id="newsletter-inner">
           <form id="newsletter">
             <label for="email">Sign up for updates</label>
@@ -30,13 +30,13 @@ meta_description: "OAreport is an open-source tool that analyzes papers covered 
           </form>
         </div>
       </div>
-      <p class="type-1 no-margin"><a href="#content"><span class="sr-only"> Scroll down</span>↓</a></p>
+      <p class="type-6 no-margin"><a href="#content">Scroll down to learn more <div class="type-1">↓</div></a></p>
     </section>
   </div>
 </div>
 
-<div class="bg-black content" id="content">
-  <section class="section">
+<div class="content" id="content">
+  <section class="section bg-black">
     <div class="row">
       <div class="col col--4of6">
         <h2 class="sr-only">What is this?</h2>
@@ -72,16 +72,25 @@ meta_description: "OAreport is an open-source tool that analyzes papers covered 
       </li>
     </ul>
 
-    <h2 class="label">Our funders</h2>
+    <h2 class="label border-top padding-top">Our users</h2>
     <div class="row">
-      <div class="col col--1of2">
-        <p class="type-4">Built in partnership with the <a href="https://www.gatesfoundation.org/" target="_blank" rel="noopener" class="border-bottom">Bill & Melinda Gates Foundation</a>.</p>
+      <div class="col col--4of6">
+        <p class="type-5">
+          {% include 'partials/app-name.liquid' %} is already being used by {% for user in users %}{% if forloop.first != true %}, {% elsif forloop.last %} & {% endif %}<a href="{{ user.url }}" target="_blank" rel="noopener" class="border-bottom" title="Go to the {{ user.acronym }} website">{{ user.name }}</a> ({{ user.acronym }}){% endfor %}.
+        </p>
       </div>
-      <div class="col col--1of2">
-        <div style="margin: 0 5rem 5rem 5rem;">
-          <a href="https://www.gatesfoundation.org/" target="_blank" rel="noopener" class="block-link" title="Go to the BMGF website">{% include 'svg/bmgf.svg' %}</a>
-        </div>
+    </div>
+
+    <div class="row row--centered">
+      {% for user in users %}
+      {% if user.logo %}
+      <div class="col col--1of3">
+        <a href="{{ user.url }}" target="_blank" rel="noopener" class="block-link margin-bottom-xl" title="Go to the {{ user.acronym }} website">
+          <img src="../{{ user.logo }}" alt="Logo for {{ user.acronym }}"/>
+        </a>
       </div>
+      {% endif %}
+      {% endfor %}
     </div>
   </section>
 
@@ -103,23 +112,43 @@ meta_description: "OAreport is an open-source tool that analyzes papers covered 
   </aside>
   {% endcomment %}
 
-  <section class="section">
-    <h2 class="label border-top-thick padding-top"><span class="type-4">How {% include 'partials/app-name.liquid' %} works for you</span></h2>
-    <ol class="unstyled-list row row--centered">
-      <li class="col col--1of3" data-sal="slide-up" data-sal-delay="50">
-        <div class="type-1 fw-900">1</div>
-        <p class="type-3 fw-300">Tell us what institution you’re from.</p>
-      </li>
-      <li class="col col--1of3" data-sal="slide-up" data-sal-delay="100">
-        <div class="type-1 fw-900">2</div>
-        <p class="type-3 fw-300">We’ll provide a custom report.</p>
-      </li>
-      <li class="col col--1of3" data-sal="slide-up" data-sal-delay="150">
-        <div class="type-1 fw-900">3</div>
-        <p class="type-3 fw-300">You use it to make papers more open.</p>
-      </li>
-    </ol>
+  <section class="section bg-white colour-block">
+    <div class="margin-bottom-xl">
+      <h2 class="label border-top-thick padding-top"><span class="type-4">How {% include 'partials/app-name.liquid' %} works for you</span></h2>
+      <ol class="unstyled-list row row--centered">
+        <li class="col col--1of3" data-sal="slide-up" data-sal-delay="50">
+          <div class="type-1 fw-900">1</div>
+          <p class="type-3 fw-300 no-margin">Tell us what institution you’re from.</p>
+        </li>
+        <li class="col col--1of3" data-sal="slide-up" data-sal-delay="100">
+          <div class="type-1 fw-900">2</div>
+          <p class="type-3 fw-300 no-margin">We’ll provide a custom report.</p>
+        </li>
+        <li class="col col--1of3" data-sal="slide-up" data-sal-delay="150">
+          <div class="type-1 fw-900">3</div>
+          <p class="type-3 fw-300 no-margin">You use it to make papers more open.</p>
+        </li>
+      </ol>
+    </div>
   </section>
+
+  <div class="row row--centered bg-black">
+    <div class="col">
+      <section class="section">
+        <h2 class="label">Our funders</h2>
+        <div class="row">
+          <div class="col col--1of2">
+            <p class="type-5 no-margin">Built in partnership with the <a href="https://blog.oa.works/grant-to-bolster-oa-policies-from-bmgf/" target="_blank" rel="noopener" class="border-bottom text-black">Bill & Melinda Gates Foundation</a> with grant support from the <a href="https://blog.oa.works/grant-from-robert-wood-johnson-foundation/" target="_blank" rel="noopener" class="border-bottom text-black">Robert Wood Johnson Foundation</a>.</p>
+          </div>
+          <div class="col col--1of2">
+            <div style="margin: 0 5rem 2rem 5rem;">
+              <a href="https://www.gatesfoundation.org/" target="_blank" rel="noopener" class="block-link" title="Go to the BMGF website">{% include 'svg/bmgf.svg' %}</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
 
   <div class="row row--centered bg-white colour-block">
     <div class="col">
