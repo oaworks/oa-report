@@ -76,7 +76,7 @@ meta_description: "OAreport is an open-source tool that analyzes papers covered 
     <div class="row">
       <div class="col col--4of6">
         <p class="type-5">
-          {% include 'partials/app-name.liquid' %} is already being used by {% for user in users %}{% if forloop.first != true %}, {% elsif forloop.last %} & {% endif %}<a href="{{ user.url }}" target="_blank" rel="noopener" class="border-bottom" title="Go to the {{ user.acronym }} website">{{ user.name }}</a> ({{ user.acronym }}){% endfor %}.
+          {% include 'partials/app-name.liquid' %} is in use at {% for user in users %}{% if forloop.first != true %}, {% elsif forloop.last %} & {% endif %}<a href="{{ user.url }}" target="_blank" rel="noopener" class="border-bottom" title="Go to the {{ user.acronym }} website">{{ user.name }}</a> ({{ user.acronym }}){% endfor %}.
         </p>
       </div>
     </div>
