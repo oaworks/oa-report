@@ -799,7 +799,7 @@ var startYearBtn              = document.querySelector("#start-year"),
     twoYearsEndDateQuery      = changeDays(+1, twoYearsEndDate),
     twoYearsEndDateISO        = formatDateToISO(twoYearsEndDate);
 
-startYearBtn.textContent      = startYearDate.getFullYear();
+startYearBtn.textContent      = "This year";
 lastYearBtn.textContent       = lastYearStartDate.getFullYear();
 twoYearsBtn.textContent       = twoYearsStartDate.getFullYear();
 
