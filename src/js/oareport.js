@@ -124,7 +124,7 @@ oareport = function(org) {
     /** Get queries for default article counts and strategy action list **/
     getCountQueries = function() {
       isPaperQuery                 = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_paper);
-      //isOAQuery                  = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_oa);
+      isOAQuery                    = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_oa);
       isFreeQuery                  = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_free_to_read);
       canArchiveAAMQuery           = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
       canArchiveAAMListQuery       = (queryPrefix + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
@@ -133,7 +133,7 @@ oareport = function(org) {
       hasCustomExportIncludes      = (response.data.hits.hits[0]._source.export_includes);
 
       isPaperCount                 = axios.get(isPaperQuery);
-      //isOA                       = axios.get(isOAQuery);
+      isOACount                    = axios.get(isOAQuery);
       isFreeCount                  = axios.get(isFreeQuery);
       canArchiveAAM                = axios.get(canArchiveAAMQuery);
       canArchiveAAMList            = axios.get(canArchiveAAMListQuery);
@@ -141,6 +141,7 @@ oareport = function(org) {
       canArchiveVORList            = axios.get(canArchiveVORListQuery);
 
       console.log("org index: " + base + "orgs?q=name:%22" + org + "%22");
+      console.log("isOAQuery: " + isOAQuery);
     };
 
     /** Check for an OA policy and display a link to the policy page in a tooltip **/
@@ -300,24 +301,26 @@ oareport = function(org) {
     /**  Display basic Insights (total article & free article counts) **/
     // TODO: break these down into one function per metric
     displayInsights = function() {
-      Promise.all([isPaperCount, isFreeCount])
+      Promise.all([isPaperCount, isFreeCount, isOACount])
         .then(function (results) {
           let isPaperCount   = results[0].data,
-              isFreeCount    = results[1].data;
+              isFreeCount    = results[1].data,
+              isOACount      = results[2].data;
 
           // Display totals and % of articles
           articlesContents.textContent = makeNumberReadable(isPaperCount);
 
-          // Display totals and % of OA articles
+          // Display OA articles
           // TODO: only display OA rates for orgs w/out policies
-          // if (isOA) {
-          //   oaArticlesContents.textContent = makeNumberReadable(isOA) + " in total";
-          //   oaPercentageContents.textContent = Math.round(((isOA/isPaperCount)*100)) + "%";
-          // } else {
-          //   oaArticlesContents.textContent = "";
-          //   oaPercentageContents.textContent = "N/A";
-          // }
+          if (isOACount) {
+            oaArticlesContents.textContent = makeNumberReadable(isOACount) + " in total";
+            oaPercentageContents.textContent = Math.round(((isOACount/isPaperCount)*100)) + "%";
+          } else {
+            oaArticlesContents.textContent = "";
+            oaPercentageContents.textContent = "N/A";
+          }
 
+          // Display free-to-read articles
           if (isFreeCount) {
             freeArticlesContents.textContent = makeNumberReadable(isFreeCount) + " in total";
             freePercentageContents.textContent = Math.round(((isFreeCount/isPaperCount)*100)) + "%";
