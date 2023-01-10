@@ -307,9 +307,6 @@ oareport = function(org) {
           //   oaPercentageContents.textContent = "N/A";
           // }
 
-          getDataStatements();
-          getOpenData();
-
           if (isFreeCount) {
             freeArticlesContents.textContent = makeNumberReadable(isFreeCount) + " in total";
             freePercentageContents.textContent = Math.round(((isFreeCount/isPaperCount)*100)) + "%";
@@ -317,6 +314,9 @@ oareport = function(org) {
             freeArticlesContents.textContent = "";
             freePercentageContents.textContent = "N/A";
           }
+
+          getDataStatements();
+          getOpenData();
         }
       ).catch(function (error) { console.log("displayInsights error: " + error); })
     };
