@@ -116,16 +116,14 @@ permalink: "{{ org._source.objectID | slug }}/"
         </dd>
       </div>
 
-      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden">
+      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden" id="open_access">
         <dt>
           <div class="absolute bg-carnation-500 text-white rounded-md p-6">
             {% icon "unlock" %}
           </div>
           <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
             Open Access
-            {{ component("tooltip", {
-              msg: "Articles that generated and shared data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noopener'>CC-BY</a> license."
-            }) }}
+            <sup id="open_access_info">{% icon_small "help-circle" %}</sup>
           </p>
         </dt>
         <dd class="ml-24 flex items-baseline">
