@@ -87,17 +87,28 @@ const currentDate                  = new Date(),
       startYearDate                = new Date(new Date().getFullYear(), 0, 1),
       startYearDateReadable        = makeDateReadable(startYearDate),
       startYearDateQuery           = changeDays(-1, startYearDate),
-      startYearDateISO             = formatDateToISO(startYearDateQuery);
+      startYearDateISO             = formatDateToISO(startYearDateQuery),
+
+      // Get last year’s start and end date as temporary default (see oaworks/Gates#420)
+      lastYearStartDate         = new Date(new Date().getFullYear()-1, 0, 1),
+      lastYearStartDateReadable = makeDateReadable(lastYearStartDate),
+      lastYearStartDateQuery    = changeDays(-1, lastYearStartDate),
+      lastYearStartDateISO      = formatDateToISO(lastYearStartDate),
+
+      lastYearEndDate           = new Date(new Date().getFullYear()-1, 11, 31),
+      lastYearEndDateReadable   = makeDateReadable(lastYearEndDate),
+      lastYearEndDateQuery      = changeDays(+1, lastYearEndDate),
+      lastYearEndDateISO        = formatDateToISO(lastYearEndDate);
 
 // Get all dates for filtering data by dates
 let startDate                      = "",
     endDate                        = "";
 
 // Display default date range: since start of the current year
-endDateContents.textContent        = currentDateReadable;
-startDateContents.textContent      = startYearDateReadable;
-startDate                          = startYearDateISO;
-endDate                            = currentDateISO;
+endDateContents.textContent        = lastYearEndDateReadable;
+startDateContents.textContent      = lastYearStartDateReadable;
+startDate                          = lastYearStartDateISO;
+endDate                            = lastYearEndDateISO;
 
 var dateRange                      = "(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")%20AND%20",
     recordSize                     = "&size=100"; // Set record size for number of actions shown in Strategies
@@ -696,7 +707,7 @@ oareport = function(org) {
       xhr.open("GET", query);
       // Display message when server responds
       xhr.onload = function () {
-        document.querySelector("#csv_email_msg").innerHTML = "OAreport has started building your CSV export at <a href='" + this.response + "' target='_blank' class='underline'>this URL</a>. Please check your email to get the full data once it’s ready.";
+        document.querySelector("#csv_email_msg").innerHTML = "OA.Report has started building your CSV export at <a href='" + this.response + "' target='_blank' class='underline'>this URL</a>. Please check your email to get the full data once it’s ready.";
       };
       xhr.send();
 
@@ -750,7 +761,7 @@ oareport = function(org) {
       xhr.open("GET", query);
       // Display message when server responds
       xhr.onload = function () {
-        document.querySelector("#msg-" + formID).innerHTML = "OAreport has started building your CSV export at <a href='" + this.response + "' target='_blank' class='underline'>this URL</a>. Please check your email to get the full data once it’s ready.";
+        document.querySelector("#msg-" + formID).innerHTML = "OA.Report has started building your CSV export at <a href='" + this.response + "' target='_blank' class='underline'>this URL</a>. Please check your email to get the full data once it’s ready.";
       };
       xhr.send();
 
@@ -779,16 +790,6 @@ var startYearBtn              = document.querySelector("#start-year"),
     allTimeBtn                = document.querySelector("#all-time"),
     insightsDateRange         = document.querySelector("#insights_range"),
 
-    lastYearStartDate         = new Date(new Date().getFullYear()-1, 0, 1),
-    lastYearStartDateReadable = makeDateReadable(lastYearStartDate),
-    lastYearStartDateQuery    = changeDays(-1, lastYearStartDate),
-    lastYearStartDateISO      = formatDateToISO(lastYearStartDate),
-
-    lastYearEndDate           = new Date(new Date().getFullYear()-1, 11, 31),
-    lastYearEndDateReadable   = makeDateReadable(lastYearEndDate),
-    lastYearEndDateQuery      = changeDays(+1, lastYearEndDate),
-    lastYearEndDateISO        = formatDateToISO(lastYearEndDate),
-
     twoYearsStartDate         = new Date(new Date().getFullYear()-2, 0, 1),
     twoYearsStartDateReadable = makeDateReadable(twoYearsStartDate),
     twoYearsStartDateQuery    = changeDays(-1, twoYearsStartDate),
@@ -799,7 +800,7 @@ var startYearBtn              = document.querySelector("#start-year"),
     twoYearsEndDateQuery      = changeDays(+1, twoYearsEndDate),
     twoYearsEndDateISO        = formatDateToISO(twoYearsEndDate);
 
-startYearBtn.textContent      = startYearDate.getFullYear();
+startYearBtn.textContent      = "This year";
 lastYearBtn.textContent       = lastYearStartDate.getFullYear();
 twoYearsBtn.textContent       = twoYearsStartDate.getFullYear();
 
