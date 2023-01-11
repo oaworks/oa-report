@@ -23,16 +23,9 @@ permalink: "{{ org._source.objectID | slug }}/"
   <ul>
     <li class="mr-1 inline-block">
       {{ component("pill", {
-        id: "start-year",
-        txt: "",
-        class: "bg-neutral-900"
-      }) }}
-    </li>
-    <li class="mr-1 inline-block">
-      {{ component("pill", {
         id: "last-year",
         txt: "",
-        class: "bg-neutral-200 text-neutral-900"
+        class: "bg-neutral-900"
       }) }}
     </li>
     <li class="mr-1 inline-block">
@@ -42,10 +35,17 @@ permalink: "{{ org._source.objectID | slug }}/"
         class: "bg-neutral-200 text-neutral-900"
       }) }}
     </li>
-    <li class="inline-block">
+    <li class="mr-1 inline-block">
       {{ component("pill", {
         id: "all-time",
         txt: "All time",
+        class: "bg-neutral-200 text-neutral-900"
+      }) }}
+    </li>
+    <li class="mr-1 inline-block">
+      {{ component("pill", {
+        id: "start-year",
+        txt: "",
         class: "bg-neutral-200 text-neutral-900"
       }) }}
     </li>
