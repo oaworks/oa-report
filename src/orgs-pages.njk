@@ -97,7 +97,7 @@ permalink: "{{ org._source.objectID | slug }}/"
       <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden">
         <dt>
           <div class="absolute bg-carnation-500 text-white rounded-md p-6">
-            {% icon "unlock" %}
+            {% icon "gift" %}
           </div>
           <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
             Free-to-read
@@ -108,12 +108,9 @@ permalink: "{{ org._source.objectID | slug }}/"
         </dt>
         <dd class="ml-24 flex items-baseline">
           <p class="text-4xl font-semibold text-neutral-900">
-            {# TODO: only display OA rates for orgs w/out policies #}
-            {# <span id="percent_oa">00%</span> #}
             <span id="percent_free">00%</span>
           </p>
           <p class="ml-2 text-sm font-medium text-neutral-600">
-            {# <span id="articles_oa">000</span> #}
             <span id="articles_free">000</span>
           </p>
         </dd>
@@ -141,7 +138,27 @@ permalink: "{{ org._source.objectID | slug }}/"
     </dl>
 
     {# Second row of insights: custom, data-related insights #}
-    <dl class="col-span-12 mb-6 grid grid-cols-1 gap-3 lg:gap-6 sm:grid-cols-2">
+    <dl class="col-span-12 sm:mb-3 grid grid-cols-1 gap-3 lg:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden" id="open_access">
+        <dt>
+          <div class="absolute bg-carnation-500 text-white rounded-md p-6">
+            {% icon "unlock" %}
+          </div>
+          <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
+            Open Access
+            <sup id="open_access_info">{% icon_small "help-circle" %}</sup>
+          </p>
+        </dt>
+        <dd class="ml-24 flex items-baseline">
+          <p class="text-4xl font-semibold text-neutral-900">
+            <span id="percent_oa">00%</span>
+          </p>
+          <p class="ml-2 text-sm font-medium text-neutral-600">
+            <span id="articles_oa">000</span>
+          </p>
+        </dd>
+      </div>
+
       <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden" id="data_statement">
         <dt>
           <div class="absolute bg-carnation-500 text-white rounded-md p-6">
