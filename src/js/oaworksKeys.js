@@ -1,4 +1,4 @@
-var _OAcookie, ck, o, ak;
+var _OAcookie, ck, o;
 
 _OAcookie = function(obj) {
   var c, d, domain, expires, i, len, ref, t;
@@ -39,22 +39,19 @@ ck = _OAcookie();
 
 window.OAKEYS = typeof ck === 'object' ? ck : {};
 
-if (window.location.search.includes('key=')) {
-  ak = window.location.search.replace('apikey', '');
-  if (ak.includes('key=')) {
-    try {
-      o = window.location.search.split('org=')[1].split('&')[0];
-    } catch (error) {}
-    try {
-      if (o == null) {
-        o = window.location.href.split('//')[1].split('/')[1];
-      }
-    } catch (error) {}
-    if (o) {
-      window.OAKEYS[decodeURIComponent(o)] = ak.split('key=')[1].split('&')[0];
-      _OAcookie(window.OAKEYS);
-      try { history.pushState(null, null, window.location.href.split('?')[0]); } catch (e) {};
+if (window.location.search.includes('orgkey=')) {
+  try {
+    o = window.location.search.split('org=')[1].split('&')[0];
+  } catch (error) {}
+  try {
+    if (o == null) {
+      o = window.location.href.split('//')[1].split('/')[1];
     }
+  } catch (error) {}
+  if (o) {
+    window.OAKEYS[decodeURIComponent(o)] = window.location.search.split('orgkey=')[1].split('&')[0];
+    _OAcookie(window.OAKEYS);
+    try { history.pushState(null, null, window.location.href.split('?')[0]); } catch (e) {};
   }
 }
 
