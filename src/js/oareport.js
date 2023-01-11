@@ -124,7 +124,6 @@ oareport = function(org) {
     /** Get queries for default article counts and strategy action list **/
     getCountQueries = function() {
       isPaperQuery                 = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_paper);
-      //isOAQuery                  = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_oa);
       isFreeQuery                  = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_free_to_read);
       canArchiveAAMQuery           = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
       canArchiveAAMListQuery       = (queryPrefix + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
@@ -133,7 +132,6 @@ oareport = function(org) {
       hasCustomExportIncludes      = (response.data.hits.hits[0]._source.export_includes);
 
       isPaperCount                 = axios.get(isPaperQuery);
-      //isOA                       = axios.get(isOAQuery);
       isFreeCount                  = axios.get(isFreeQuery);
       canArchiveAAM                = axios.get(canArchiveAAMQuery);
       canArchiveAAMList            = axios.get(canArchiveAAMListQuery);
@@ -308,16 +306,7 @@ oareport = function(org) {
           // Display totals and % of articles
           articlesContents.textContent = makeNumberReadable(isPaperCount);
 
-          // Display totals and % of OA articles
-          // TODO: only display OA rates for orgs w/out policies
-          // if (isOA) {
-          //   oaArticlesContents.textContent = makeNumberReadable(isOA) + " in total";
-          //   oaPercentageContents.textContent = Math.round(((isOA/isPaperCount)*100)) + "%";
-          // } else {
-          //   oaArticlesContents.textContent = "";
-          //   oaPercentageContents.textContent = "N/A";
-          // }
-
+          // Display free-to-read articles
           if (isFreeCount) {
             freeArticlesContents.textContent = makeNumberReadable(isFreeCount) + " in total";
             freePercentageContents.textContent = Math.round(((isFreeCount/isPaperCount)*100)) + "%";
@@ -330,6 +319,45 @@ oareport = function(org) {
           getOpenData();
         }
       ).catch(function (error) { console.log("displayInsights error: " + error); })
+
+      // TODO make this its own function as part of oaworks/Gates#421
+      var openAccessInfo = "";
+
+      // ...check if there are tracked OA articles
+      isOA = response.data.hits.hits[0]._source.analysis.is_oa;
+
+      if (isOA) {
+        // Get their count
+        isOAQuery = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_oa);
+        isOACount = axios.get(isOAQuery);
+        /*jshint multistr: true */
+        openAccessInfo = "Articles that generated and shared data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' class='underline' target='_blank' rel='noopener'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' class='underline' target='_blank' rel='noopener'>CC-BY</a> license.";
+
+        // Display help text popover
+        const instance = tippy(document.querySelector('#open_access_info'), {
+          allowHTML: true,
+          interactive: true,
+          placement: 'top',
+          appendTo: document.body,
+        });
+
+        instance.setContent(openAccessInfo);
+
+        Promise.all([isOACount, isPaperCount])
+          .then(function (results) {
+            // Display totals and % of articles sharing data openly
+            if (isOACount) {
+              let isOACount    = results[0].data,
+                  isPaperCount = results[1].data;
+              oaArticlesContents.textContent = makeNumberReadable(isOACount) + " in total";
+              oaPercentageContents.textContent = Math.round(((isOACount/isPaperCount)*100)) + "%";
+            }
+          }
+        ).catch(function (error) { console.log("isOA error: " + error); });
+      } else {
+        // Do not display card at all
+        document.querySelector('#open_access').remove();
+      }
     };
 
     /** Display Strategies: deposit VOR (publisher PDF) **/
