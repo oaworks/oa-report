@@ -1,7 +1,8 @@
 const base           = "https://beta.oa.works/report/",
       queryBase      = base + "works?size=100&",
       countQueryBase = base + "works/count?",
-      csvExportBase  = "https://bg.beta.oa.works/report/works.csv?size=all&";
+      csvExportBase  = "https://bg.beta.oa.works/report/works.csv?size=all&",
+      recordSize = "&size=100"; // Set record size for number of actions shown in Strategies
 let isPaperCount, isEligibleCount, isOA, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL, dateRangeButton, csvEmailButton, totalArticles, hasDataStatementCount, hasCheckedDataStatementCount, hasOpenDataCount, hasCheckedDataCount;
 let isCompliant = false;
 
@@ -100,18 +101,9 @@ const currentDate                  = new Date(),
       lastYearEndDateQuery      = changeDays(+1, lastYearEndDate),
       lastYearEndDateISO        = formatDateToISO(lastYearEndDate);
 
-// Get all dates for filtering data by dates
-let startDate                      = "",
-    endDate                        = "";
-
 // Display default date range: since start of the current year
-endDateContents.textContent        = lastYearEndDateReadable;
-startDateContents.textContent      = lastYearStartDateReadable;
-startDate                          = lastYearStartDateISO;
-endDate                            = lastYearEndDateISO;
+replaceDateRange(lastYearStartDate, lastYearEndDate);
 
-var dateRange                      = "(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")%20AND%20",
-    recordSize                     = "&size=100"; // Set record size for number of actions shown in Strategies
 
 // Get organisational data to produce reports
 oareport = function(org) {
