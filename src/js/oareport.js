@@ -3,7 +3,7 @@ const base           = "https://beta.oa.works/report/",
       countQueryBase = base + "works/count?",
       csvExportBase  = "https://bg.beta.oa.works/report/works.csv?size=all&",
       recordSize = "&size=100"; // Set record size for number of actions shown in Strategies
-let isPaperCount, isEligibleCount, isOA, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL, dateRangeButton, csvEmailButton, totalArticles, hasDataStatementCount, hasCheckedDataStatementCount, hasOpenDataCount, hasCheckedDataCount;
+let isPaperCount, isEligibleCount, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL, dateRangeButton, csvEmailButton, totalArticles, hasDataStatementCount, hasCheckedDataStatementCount, hasOpenDataCount, hasCheckedDataCount;
 let isCompliant = false;
 
 // Detect browser’s locale to display human-readable numbers
@@ -130,7 +130,16 @@ oareport = function(org) {
       canArchiveVOR                = axios.get(canArchiveVORQuery);
       canArchiveVORList            = axios.get(canArchiveVORListQuery);
 
+
       console.log("org index: " + base + "orgs?q=name:%22" + org + "%22");
+      console.log("----------------------------");
+      console.log("isPaperQuery: " + isPaperQuery);
+      console.log("----------------------------");
+      console.log("isFreeQuery: " + isFreeQuery);
+      console.log("----------------------------");
+      console.log("canArchiveVORQuery: " + canArchiveVORQuery);
+      console.log("----------------------------");
+      console.log("canArchiveAAMQuery: " + canArchiveAAMQuery);
     };
 
     /** Check for an OA policy and display a link to the policy page in a tooltip **/
@@ -193,144 +202,103 @@ oareport = function(org) {
     /** Check for data availability statements **/
     getDataStatements = function() {
       var dataStatementInfo = "";
+      /*jshint multistr: true */
+      dataStatementInfo = "This number tells you how many papers that we’ve analyzed have a data availability statement. To check if a paper has a data availability statement, we use data from PubMed and review papers manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data)";
 
-      // ...check if there are any at all
-      hasDataStatement = response.data.hits.hits[0]._source.analysis.has_data_availability_statement;
+      // Display help text popover
+      const instance = tippy(document.querySelector('#data_statement_info'), {
+        allowHTML: true,
+        interactive: true,
+        placement: 'top',
+        appendTo: document.body,
+      });
 
-      // Display whether or not articles have a data availability statement after being checked
-      if (hasDataStatement) {
-        // Get their count
-        hasDataStatementQuery        = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_data_availability_statement);
-        hasCheckedDataStatementQuery = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_checked_data_availability_statement);
-        hasDataStatementCount        = axios.get(hasDataStatementQuery);
-        hasCheckedDataStatementCount = axios.get(hasCheckedDataStatementQuery);
-        /*jshint multistr: true */
-        dataStatementInfo = "This number tells you how many papers that we’ve analyzed have a data availability statement. To check if a paper has a data availability statement, we use data from PubMed and review papers manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data)";
+      instance.setContent(dataStatementInfo);
 
-        // Display help text popover
-        const instance = tippy(document.querySelector('#data_statement_info'), {
-          allowHTML: true,
-          interactive: true,
-          placement: 'top',
-          appendTo: document.body,
-        });
+      hasDataStatementQuery        = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_data_availability_statement);
+      hasCheckedDataStatementQuery = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_checked_data_availability_statement);
+      hasDataStatementCount        = axios.get(hasDataStatementQuery);
+      hasCheckedDataStatementCount = axios.get(hasCheckedDataStatementQuery);
 
-        instance.setContent(dataStatementInfo);
+      Promise.all([hasDataStatementCount, hasCheckedDataStatementCount])
+        .then(function (results) {
 
-        Promise.all([hasDataStatementCount, hasCheckedDataStatementCount])
-          .then(function (results) {
-
-            // Display totals and % of articles for which we’ve verified data availability statements
-            if (hasDataStatementCount) {
-              let hasDataStatementCount        = results[0].data,
-                  hasCheckedDataStatementCount = results[1].data;
-              dataStatementContents.textContent = makeNumberReadable(hasDataStatementCount) + " of " + makeNumberReadable(hasCheckedDataStatementCount) + " checked";
-              dataStatementPercentageContents.textContent = Math.round(((hasDataStatementCount/hasCheckedDataStatementCount)*100)) + "%";
-            }
-
+          // Display totals and % of articles for which we’ve verified data availability statements
+          if (hasDataStatementCount) {
+            let hasDataStatementCount        = results[0].data,
+                hasCheckedDataStatementCount = results[1].data;
+            dataStatementContents.textContent = makeNumberReadable(hasDataStatementCount) + " of " + makeNumberReadable(hasCheckedDataStatementCount) + " checked";
+            dataStatementPercentageContents.textContent = Math.round(((hasDataStatementCount/hasCheckedDataStatementCount)*100)) + "%";
           }
-        ).catch(function (error) { console.log("getDataStatements error: " + error); });
-      } else {
-        // Do not display card at all
-        document.querySelector('#data_statement').remove();
-        hasDataStatementCount = "";
-        hasCheckedDataStatementCount = "";
-      }
+
+        }
+      ).catch(function (error) { console.log("getDataStatements error: " + error); });
     };
 
     /** Check for open data **/
     getOpenData = function() {
-
       var openDataInfo = "";
+      /*jshint multistr: true */
+      openDataInfo = "The percentage of articles that shared any data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noopener'>CC-BY</a> license. This figure only measures how many articles shared Open Data if they generated data in the first place. It also only measures if any of the datasets generated were open, not if all of them were open. To analyze this we work with Dataseer, who uses a combination of machine learning and human review to review the text of the papers.";
 
-      // ...check if there are any at all
-      hasOpenData = response.data.hits.hits[0]._source.analysis.has_open_data;
+      // Display help text popover
+      const instance = tippy(document.querySelector('#open_data_info'), {
+        allowHTML: true,
+        interactive: true,
+        placement: 'top',
+        appendTo: document.body,
+      });
 
-      // Display whether or not articles have open data after being checked
-      if (hasOpenData) {
-        // Get their count
-        hasOpenDataQuery             = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_open_data);
-        hasCheckedDataQuery          = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_data);
-        hasOpenDataCount             = axios.get(hasOpenDataQuery);
-        hasCheckedDataCount          = axios.get(hasCheckedDataQuery);
-        /*jshint multistr: true */
-        openDataInfo = "The percentage of articles that shared any data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noopener'>CC-BY</a> license. This figure only measures how many articles shared Open Data if they generated data in the first place. It also only measures if any of the datasets generated were open, not if all of them were open. To analyze this we work with Dataseer, who uses a combination of machine learning and human review to review the text of the papers.";
+      instance.setContent(openDataInfo);
 
-        // Display help text popover
-        const instance = tippy(document.querySelector('#open_data_info'), {
-          allowHTML: true,
-          interactive: true,
-          placement: 'top',
-          appendTo: document.body,
-        });
+      hasOpenDataQuery             = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_open_data);
+      hasCheckedDataQuery          = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_data);
+      hasOpenDataCount             = axios.get(hasOpenDataQuery);
+      hasCheckedDataCount          = axios.get(hasCheckedDataQuery);
 
-        instance.setContent(openDataInfo);
+      Promise.all([hasOpenDataCount, hasCheckedDataCount]).then(function (results) {
+        // Display totals and % of articles sharing data openly
+        if (hasOpenDataCount) {
+          let hasOpenDataCount = results[0].data,
+          hasCheckedDataCount = results[1].data;
+          openDataContents.textContent = makeNumberReadable(hasOpenDataCount) + " of " + makeNumberReadable(hasCheckedDataCount) + " articles that generate data";
+          openDataPercentageContents.textContent = Math.round(((hasOpenDataCount/hasCheckedDataCount)*100)) + "%";
 
-        Promise.all([hasOpenDataCount, hasCheckedDataCount])
-          .then(function (results) {
-
-            // Display totals and % of articles sharing data openly
-            if (hasOpenDataCount) {
-              let hasOpenDataCount = results[0].data,
-                  hasCheckedDataCount = results[1].data;
-              openDataContents.textContent = makeNumberReadable(hasOpenDataCount) + " of " + makeNumberReadable(hasCheckedDataCount) + " articles that generate data";
-              openDataPercentageContents.textContent = Math.round(((hasOpenDataCount/hasCheckedDataCount)*100)) + "%";
-            }
-          }
-        ).catch(function (error) { console.log("getOpenData error: " + error); });
-      } else {
-        // Do not display card at all
-        document.querySelector('#open_data').remove();
-        hasOpenDataCount = "";
-        hasCheckedDataCount = "";
-      }
-
+          console.log("hasOpenDataCount: " + hasOpenDataCount);
+        }
+      }).catch(function (error) { console.log("getOpenData error: " + error); });
     };
 
     /** Check for open access **/
     getOAInsight = function() {
       var openAccessInfo = "";
+      /*jshint multistr: true */
+      openAccessInfo = "Articles that generated and shared data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' class='underline' target='_blank' rel='noopener'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' class='underline' target='_blank' rel='noopener'>CC-BY</a> license.";
 
-      // ...check if there are tracked OA articles
-      isOA = response.data.hits.hits[0]._source.analysis.is_oa;
+      // Display help text popover
+      const instance = tippy(document.querySelector('#open_access_info'), {
+        allowHTML: true,
+        interactive: true,
+        placement: 'top',
+        appendTo: document.body,
+      });
 
-      if (isOA) {
-        // Get their count
-        isOAQuery = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_oa);
-        isOACount = axios.get(isOAQuery);
-        /*jshint multistr: true */
-        openAccessInfo = "Articles that generated and shared data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' class='underline' target='_blank' rel='noopener'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' class='underline' target='_blank' rel='noopener'>CC-BY</a> license.";
+      instance.setContent(openAccessInfo);
 
-        // Display help text popover
-        const instance = tippy(document.querySelector('#open_access_info'), {
-          allowHTML: true,
-          interactive: true,
-          placement: 'top',
-          appendTo: document.body,
-        });
+      isOAQuery = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_oa);
+      isOACount = axios.get(isOAQuery);
 
-        instance.setContent(openAccessInfo);
-
-        Promise.all([isOACount, isPaperCount])
-        .then(function (results) {
-          // Display totals and % of articles sharing data openly
-          if (isOACount) {
-            let isOACount    = results[0].data,
-            isPaperCount = results[1].data;
-            oaArticlesContents.textContent = makeNumberReadable(isOACount) + " in total";
-            oaPercentageContents.textContent = Math.round(((isOACount/isPaperCount)*100)) + "%";
-          }
+      Promise.all([isOACount, isPaperCount]).then(function (results) {
+        if (isOACount) {
+          let isOACount     = results[0].data,
+          isPaperCount  = results[1].data;
+          oaArticlesContents.textContent = makeNumberReadable(isOACount) + " in total";
+          oaPercentageContents.textContent = Math.round(((isOACount/isPaperCount)*100)) + "%";
         }
-      ).catch(function (error) { console.log("isOA error: " + error); });
-    } else {
-      // Do not display card at all
-      document.querySelector('#open_access').remove();
-      isOACount = "";
-    }
-  }
+      }).catch(function (error) { console.log("isOA error: " + error); });
+    };
 
     /**  Display basic Insights (total article & free article counts) **/
-    // TODO: break these down into one function per metric
     displayInsights = function() {
       Promise.all([isPaperCount, isFreeCount])
         .then(function (results) {
@@ -351,7 +319,6 @@ oareport = function(org) {
         }
       ).catch(function (error) { console.log("displayInsights error: " + error); })
     };
-
 
     /** Display Strategies: deposit VOR (publisher PDF) **/
     displayStrategyVOR = function() {
@@ -509,6 +476,9 @@ oareport = function(org) {
         hasAPCFollowup  = axios.get(hasAPCFollowupQuery);
         hasAPCFollowupList = axios.get(hasAPCFollowupListQuery);
 
+        console.log("----------------------------");
+        console.log("hasAPCFollowupQuery: " + hasAPCFollowupQuery);
+
         Promise.all([hasAPCFollowup, hasAPCFollowupList])
           .then(function (results) {
             let hasAPCFollowup = results[0].data,
@@ -613,6 +583,9 @@ oareport = function(org) {
         hasUnansweredRequestsListQuery = (queryPrefix + response.data.hits.hits[0]._source.strategy.unanswered_requests.query);
         hasUnansweredRequests  = axios.get(hasUnansweredRequestsQuery);
         hasUnansweredRequestsList = axios.get(hasUnansweredRequestsListQuery);
+
+        console.log("----------------------------");
+        console.log("hasUnansweredRequestsQuery: " + hasUnansweredRequestsQuery);
 
         Promise.all([hasUnansweredRequests, hasUnansweredRequestsList])
           .then(function (results) {
@@ -797,9 +770,36 @@ oareport = function(org) {
     displayStrategyAAM();
     displayStrategyAPCFollowup();
     displayStrategyUnansweredRequests();
-    getDataStatements();
-    getOpenData();
-    getOAInsight();
+
+    /* Check if we track OA articles and display the data */
+    // TODO improve this and do it for all insights as part oaworks/Gates$421
+    isOA = response.data.hits.hits[0]._source.analysis.is_oa;
+    if (isOA) {
+      getOAInsight();
+    }  else {
+      var elem = document.querySelector('#open_access');
+          elem.style.display = 'none';
+    };
+
+    /* Check if we track Open Data and display the data */
+    hasOpenData = response.data.hits.hits[0]._source.analysis.has_open_data;
+    if (hasOpenData) {
+      getOpenData();
+      console.log("Yes open data");
+    } else {
+      var elem = document.querySelector('#open_data');
+          elem.style.display = 'none';
+    };
+
+    /* Check if we track Data Availability Statements and display the data */
+    hasDataStatement = response.data.hits.hits[0]._source.analysis.has_data_availability_statement;
+    if (hasDataStatement) {
+      getDataStatements();
+    } else {
+      var elem = document.querySelector('#data_statement');
+          elem.style.display = 'none';
+    };
+
   })
   .catch(function (error) { console.log("ERROR: " + error); });
 };
