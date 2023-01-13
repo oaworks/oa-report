@@ -287,32 +287,8 @@ oareport = function(org) {
 
     };
 
-    /**  Display basic Insights (total article & free article counts) **/
-    // TODO: break these down into one function per metric
-    displayInsights = function() {
-      Promise.all([isPaperCount, isFreeCount])
-        .then(function (results) {
-          let isPaperCount   = results[0].data,
-              isFreeCount    = results[1].data;
-
-          // Display totals and % of articles
-          articlesContents.textContent = makeNumberReadable(isPaperCount);
-
-          // Display free-to-read articles
-          if (isFreeCount) {
-            freeArticlesContents.textContent = makeNumberReadable(isFreeCount) + " in total";
-            freePercentageContents.textContent = Math.round(((isFreeCount/isPaperCount)*100)) + "%";
-          } else {
-            freeArticlesContents.textContent = "";
-            freePercentageContents.textContent = "N/A";
-          }
-
-          getDataStatements();
-          getOpenData();
-        }
-      ).catch(function (error) { console.log("displayInsights error: " + error); })
-
-      // TODO make this its own function as part of oaworks/Gates#421
+    /** Check for open access **/
+    getOAInsight = function() {
       var openAccessInfo = "";
 
       // ...check if there are tracked OA articles
@@ -336,21 +312,46 @@ oareport = function(org) {
         instance.setContent(openAccessInfo);
 
         Promise.all([isOACount, isPaperCount])
-          .then(function (results) {
-            // Display totals and % of articles sharing data openly
-            if (isOACount) {
-              let isOACount    = results[0].data,
-                  isPaperCount = results[1].data;
-              oaArticlesContents.textContent = makeNumberReadable(isOACount) + " in total";
-              oaPercentageContents.textContent = Math.round(((isOACount/isPaperCount)*100)) + "%";
-            }
+        .then(function (results) {
+          // Display totals and % of articles sharing data openly
+          if (isOACount) {
+            let isOACount    = results[0].data,
+            isPaperCount = results[1].data;
+            oaArticlesContents.textContent = makeNumberReadable(isOACount) + " in total";
+            oaPercentageContents.textContent = Math.round(((isOACount/isPaperCount)*100)) + "%";
           }
-        ).catch(function (error) { console.log("isOA error: " + error); });
-      } else {
-        // Do not display card at all
-        document.querySelector('#open_access').remove();
-      }
+        }
+      ).catch(function (error) { console.log("isOA error: " + error); });
+    } else {
+      // Do not display card at all
+      document.querySelector('#open_access').remove();
+      isOACount = "";
+    }
+  }
+
+    /**  Display basic Insights (total article & free article counts) **/
+    // TODO: break these down into one function per metric
+    displayInsights = function() {
+      Promise.all([isPaperCount, isFreeCount])
+        .then(function (results) {
+          let isPaperCount   = results[0].data,
+              isFreeCount    = results[1].data;
+
+          // Display totals and % of articles
+          articlesContents.textContent = makeNumberReadable(isPaperCount);
+
+          // Display free-to-read articles
+          if (isFreeCount) {
+            freeArticlesContents.textContent = makeNumberReadable(isFreeCount) + " in total";
+            freePercentageContents.textContent = Math.round(((isFreeCount/isPaperCount)*100)) + "%";
+          } else {
+            freeArticlesContents.textContent = "";
+            freePercentageContents.textContent = "N/A";
+          }
+        }
+      ).catch(function (error) { console.log("displayInsights error: " + error); })
     };
+
 
     /** Display Strategies: deposit VOR (publisher PDF) **/
     displayStrategyVOR = function() {
@@ -796,6 +797,9 @@ oareport = function(org) {
     displayStrategyAAM();
     displayStrategyAPCFollowup();
     displayStrategyUnansweredRequests();
+    getDataStatements();
+    getOpenData();
+    getOAInsight();
   })
   .catch(function (error) { console.log("ERROR: " + error); });
 };
