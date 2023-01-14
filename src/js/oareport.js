@@ -132,14 +132,6 @@ oareport = function(org) {
 
 
       console.log("org index: " + base + "orgs?q=name:%22" + org + "%22");
-      console.log("----------------------------");
-      console.log("isPaperQuery: " + isPaperQuery);
-      console.log("----------------------------");
-      console.log("isFreeQuery: " + isFreeQuery);
-      console.log("----------------------------");
-      console.log("canArchiveVORQuery: " + canArchiveVORQuery);
-      console.log("----------------------------");
-      console.log("canArchiveAAMQuery: " + canArchiveAAMQuery);
     };
 
     /** Check for an OA policy and display a link to the policy page in a tooltip **/
@@ -263,8 +255,6 @@ oareport = function(org) {
           hasCheckedDataCount = results[1].data;
           openDataContents.textContent = makeNumberReadable(hasOpenDataCount) + " of " + makeNumberReadable(hasCheckedDataCount) + " articles that generate data";
           openDataPercentageContents.textContent = Math.round(((hasOpenDataCount/hasCheckedDataCount)*100)) + "%";
-
-          console.log("hasOpenDataCount: " + hasOpenDataCount);
         }
       }).catch(function (error) { console.log("getOpenData error: " + error); });
     };
@@ -476,9 +466,6 @@ oareport = function(org) {
         hasAPCFollowup  = axios.get(hasAPCFollowupQuery);
         hasAPCFollowupList = axios.get(hasAPCFollowupListQuery);
 
-        console.log("----------------------------");
-        console.log("hasAPCFollowupQuery: " + hasAPCFollowupQuery);
-
         Promise.all([hasAPCFollowup, hasAPCFollowupList])
           .then(function (results) {
             let hasAPCFollowup = results[0].data,
@@ -566,9 +553,10 @@ oareport = function(org) {
           }
         ).catch(function (error) { console.log("displayStrategyAPCFollowup error: " + error); })
       } else {
-        // remove tab if this strategy doesn’t exist for this org
-        document.querySelector("#item-has-apc-followup").outerHTML = "";
-        document.querySelector("#has-apc-followup").outerHTML = "";
+        // hide tab and its content if this strategy doesn’t exist for this org
+        document.querySelectorAll('#item-has-apc-followup, #has-apc-followup').forEach(function(elems) {
+          elems.style.display = 'none';
+        });
       }
     };
 
@@ -583,9 +571,6 @@ oareport = function(org) {
         hasUnansweredRequestsListQuery = (queryPrefix + response.data.hits.hits[0]._source.strategy.unanswered_requests.query);
         hasUnansweredRequests  = axios.get(hasUnansweredRequestsQuery);
         hasUnansweredRequestsList = axios.get(hasUnansweredRequestsListQuery);
-
-        console.log("----------------------------");
-        console.log("hasUnansweredRequestsQuery: " + hasUnansweredRequestsQuery);
 
         Promise.all([hasUnansweredRequests, hasUnansweredRequestsList])
           .then(function (results) {
@@ -666,9 +651,10 @@ oareport = function(org) {
           }
         ).catch(function (error) { console.log("displayStrategyUnansweredRequests error: " + error); })
       } else {
-        // remove tab if this strategy doesn’t exist for this org
-        document.querySelector("#item-has-unanswered-requests").outerHTML = "";
-        document.querySelector("#has-unanswered-requests").outerHTML = "";
+        // hide tab and its content if this strategy doesn’t exist for this org
+        document.querySelectorAll('#item-has-unanswered-requests, #has-unanswered-requests').forEach(function(elems) {
+          elems.style.display = 'none';
+        });
       }
     };
 
@@ -785,7 +771,6 @@ oareport = function(org) {
     hasOpenData = response.data.hits.hits[0]._source.analysis.has_open_data;
     if (hasOpenData) {
       getOpenData();
-      console.log("Yes open data");
     } else {
       var elem = document.querySelector('#open_data');
           elem.style.display = 'none';
