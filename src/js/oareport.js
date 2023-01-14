@@ -129,9 +129,6 @@ oareport = function(org) {
       canArchiveAAMList            = axios.get(canArchiveAAMListQuery);
       canArchiveVOR                = axios.get(canArchiveVORQuery);
       canArchiveVORList            = axios.get(canArchiveVORListQuery);
-
-
-      console.log("org index: " + base + "orgs?q=name:%22" + org + "%22");
     };
 
     /** Check for an OA policy and display a link to the policy page in a tooltip **/
