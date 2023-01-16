@@ -1,8 +1,9 @@
 const base           = "https://beta.oa.works/report/",
       queryBase      = base + "works?size=100&",
       countQueryBase = base + "works/count?",
-      csvExportBase  = "https://bg.beta.oa.works/report/works.csv?size=all&";
-let isPaperCount, isEligibleCount, isOA, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL, dateRangeButton, csvEmailButton, totalArticles, hasDataStatementCount, hasCheckedDataStatementCount, hasOpenDataCount, hasCheckedDataCount;
+      csvExportBase  = "https://bg.beta.oa.works/report/works.csv?size=all&",
+      recordSize = "&size=100"; // Set record size for number of actions shown in Strategies
+let isPaperCount, isEligibleCount, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL, dateRangeButton, csvEmailButton, totalArticles, hasDataStatementCount, hasCheckedDataStatementCount, hasOpenDataCount, hasCheckedDataCount;
 let isCompliant = false;
 
 // Detect browser’s locale to display human-readable numbers
@@ -87,20 +88,22 @@ const currentDate                  = new Date(),
       startYearDate                = new Date(new Date().getFullYear(), 0, 1),
       startYearDateReadable        = makeDateReadable(startYearDate),
       startYearDateQuery           = changeDays(-1, startYearDate),
-      startYearDateISO             = formatDateToISO(startYearDateQuery);
+      startYearDateISO             = formatDateToISO(startYearDateQuery),
 
-// Get all dates for filtering data by dates
-let startDate                      = "",
-    endDate                        = "";
+      // Get last year’s start and end date as temporary default (see oaworks/Gates#420)
+      lastYearStartDate         = new Date(new Date().getFullYear()-1, 0, 1),
+      lastYearStartDateReadable = makeDateReadable(lastYearStartDate),
+      lastYearStartDateQuery    = changeDays(-1, lastYearStartDate),
+      lastYearStartDateISO      = formatDateToISO(lastYearStartDate),
+
+      lastYearEndDate           = new Date(new Date().getFullYear()-1, 11, 31),
+      lastYearEndDateReadable   = makeDateReadable(lastYearEndDate),
+      lastYearEndDateQuery      = changeDays(+1, lastYearEndDate),
+      lastYearEndDateISO        = formatDateToISO(lastYearEndDate);
 
 // Display default date range: since start of the current year
-endDateContents.textContent        = currentDateReadable;
-startDateContents.textContent      = startYearDateReadable;
-startDate                          = startYearDateISO;
-endDate                            = currentDateISO;
+replaceDateRange(lastYearStartDate, lastYearEndDate);
 
-var dateRange                      = "(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")%20AND%20",
-    recordSize                     = "&size=100"; // Set record size for number of actions shown in Strategies
 
 // Get organisational data to produce reports
 oareport = function(org) {
@@ -113,7 +116,6 @@ oareport = function(org) {
     /** Get queries for default article counts and strategy action list **/
     getCountQueries = function() {
       isPaperQuery                 = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_paper);
-      //isOAQuery                  = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_oa);
       isFreeQuery                  = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_free_to_read);
       canArchiveAAMQuery           = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
       canArchiveAAMListQuery       = (queryPrefix + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
@@ -122,14 +124,11 @@ oareport = function(org) {
       hasCustomExportIncludes      = (response.data.hits.hits[0]._source.export_includes);
 
       isPaperCount                 = axios.get(isPaperQuery);
-      //isOA                       = axios.get(isOAQuery);
       isFreeCount                  = axios.get(isFreeQuery);
       canArchiveAAM                = axios.get(canArchiveAAMQuery);
       canArchiveAAMList            = axios.get(canArchiveAAMListQuery);
       canArchiveVOR                = axios.get(canArchiveVORQuery);
       canArchiveVORList            = axios.get(canArchiveVORListQuery);
-
-      console.log("org index: " + base + "orgs?q=name:%22" + org + "%22");
     };
 
     /** Check for an OA policy and display a link to the policy page in a tooltip **/
@@ -192,102 +191,101 @@ oareport = function(org) {
     /** Check for data availability statements **/
     getDataStatements = function() {
       var dataStatementInfo = "";
+      /*jshint multistr: true */
+      dataStatementInfo = "This number tells you how many papers that we’ve analyzed have a data availability statement. To check if a paper has a data availability statement, we use data from PubMed and review papers manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data)";
 
-      // ...check if there are any at all
-      hasDataStatement = response.data.hits.hits[0]._source.analysis.has_data_availability_statement;
+      // Display help text popover
+      const instance = tippy(document.querySelector('#data_statement_info'), {
+        allowHTML: true,
+        interactive: true,
+        placement: 'top',
+        appendTo: document.body,
+      });
 
-      // Display whether or not articles have a data availability statement after being checked
-      if (hasDataStatement) {
-        // Get their count
-        hasDataStatementQuery        = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_data_availability_statement);
-        hasCheckedDataStatementQuery = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_checked_data_availability_statement);
-        hasDataStatementCount        = axios.get(hasDataStatementQuery);
-        hasCheckedDataStatementCount = axios.get(hasCheckedDataStatementQuery);
-        /*jshint multistr: true */
-        dataStatementInfo = "This number tells you how many papers that we’ve analyzed have a data availability statement. To check if a paper has a data availability statement, we use data from PubMed and review papers manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data)";
+      instance.setContent(dataStatementInfo);
 
-        // Display help text popover
-        const instance = tippy(document.querySelector('#data_statement_info'), {
-          allowHTML: true,
-          interactive: true,
-          placement: 'top',
-          appendTo: document.body,
-        });
+      hasDataStatementQuery        = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_data_availability_statement);
+      hasCheckedDataStatementQuery = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_checked_data_availability_statement);
+      hasDataStatementCount        = axios.get(hasDataStatementQuery);
+      hasCheckedDataStatementCount = axios.get(hasCheckedDataStatementQuery);
 
-        instance.setContent(dataStatementInfo);
+      Promise.all([hasDataStatementCount, hasCheckedDataStatementCount])
+        .then(function (results) {
 
-        Promise.all([hasDataStatementCount, hasCheckedDataStatementCount])
-          .then(function (results) {
-
-            // Display totals and % of articles for which we’ve verified data availability statements
-            if (hasDataStatementCount) {
-              let hasDataStatementCount        = results[0].data,
-                  hasCheckedDataStatementCount = results[1].data;
-              dataStatementContents.textContent = makeNumberReadable(hasDataStatementCount) + " of " + makeNumberReadable(hasCheckedDataStatementCount) + " checked";
-              dataStatementPercentageContents.textContent = Math.round(((hasDataStatementCount/hasCheckedDataStatementCount)*100)) + "%";
-            }
-
+          // Display totals and % of articles for which we’ve verified data availability statements
+          if (hasDataStatementCount) {
+            let hasDataStatementCount        = results[0].data,
+                hasCheckedDataStatementCount = results[1].data;
+            dataStatementContents.textContent = makeNumberReadable(hasDataStatementCount) + " of " + makeNumberReadable(hasCheckedDataStatementCount) + " checked";
+            dataStatementPercentageContents.textContent = Math.round(((hasDataStatementCount/hasCheckedDataStatementCount)*100)) + "%";
           }
-        ).catch(function (error) { console.log("getDataStatements error: " + error); });
-      } else {
-        // Do not display card at all
-        document.querySelector('#data_statement').remove();
-        hasDataStatementCount = "";
-        hasCheckedDataStatementCount = "";
-      }
+
+        }
+      ).catch(function (error) { console.log("getDataStatements error: " + error); });
     };
 
     /** Check for open data **/
     getOpenData = function() {
-
       var openDataInfo = "";
+      /*jshint multistr: true */
+      openDataInfo = "The percentage of articles that shared any data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noopener'>CC-BY</a> license. This figure only measures how many articles shared Open Data if they generated data in the first place. It also only measures if any of the datasets generated were open, not if all of them were open. To analyze this we work with Dataseer, who uses a combination of machine learning and human review to review the text of the papers.";
 
-      // ...check if there are any at all
-      hasOpenData = response.data.hits.hits[0]._source.analysis.has_open_data;
+      // Display help text popover
+      const instance = tippy(document.querySelector('#open_data_info'), {
+        allowHTML: true,
+        interactive: true,
+        placement: 'top',
+        appendTo: document.body,
+      });
 
-      // Display whether or not articles have open data after being checked
-      if (hasOpenData) {
-        // Get their count
-        hasOpenDataQuery             = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_open_data);
-        hasCheckedDataQuery          = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_data);
-        hasOpenDataCount             = axios.get(hasOpenDataQuery);
-        hasCheckedDataCount          = axios.get(hasCheckedDataQuery);
-        /*jshint multistr: true */
-        openDataInfo = "The percentage of articles that shared any data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noopener'>CC-BY</a> license. This figure only measures how many articles shared Open Data if they generated data in the first place. It also only measures if any of the datasets generated were open, not if all of them were open. To analyze this we work with Dataseer, who uses a combination of machine learning and human review to review the text of the papers.";
+      instance.setContent(openDataInfo);
 
-        // Display help text popover
-        const instance = tippy(document.querySelector('#open_data_info'), {
-          allowHTML: true,
-          interactive: true,
-          placement: 'top',
-          appendTo: document.body,
-        });
+      hasOpenDataQuery             = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_open_data);
+      hasCheckedDataQuery          = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_data);
+      hasOpenDataCount             = axios.get(hasOpenDataQuery);
+      hasCheckedDataCount          = axios.get(hasCheckedDataQuery);
 
-        instance.setContent(openDataInfo);
+      Promise.all([hasOpenDataCount, hasCheckedDataCount]).then(function (results) {
+        // Display totals and % of articles sharing data openly
+        if (hasOpenDataCount) {
+          let hasOpenDataCount = results[0].data,
+          hasCheckedDataCount = results[1].data;
+          openDataContents.textContent = makeNumberReadable(hasOpenDataCount) + " of " + makeNumberReadable(hasCheckedDataCount) + " articles that generate data";
+          openDataPercentageContents.textContent = Math.round(((hasOpenDataCount/hasCheckedDataCount)*100)) + "%";
+        }
+      }).catch(function (error) { console.log("getOpenData error: " + error); });
+    };
 
-        Promise.all([hasOpenDataCount, hasCheckedDataCount])
-          .then(function (results) {
+    /** Check for open access **/
+    getOAInsight = function() {
+      var openAccessInfo = "";
+      /*jshint multistr: true */
+      openAccessInfo = "Articles that generated and shared data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' class='underline' target='_blank' rel='noopener'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' class='underline' target='_blank' rel='noopener'>CC-BY</a> license.";
 
-            // Display totals and % of articles sharing data openly
-            if (hasOpenDataCount) {
-              let hasOpenDataCount = results[0].data,
-                  hasCheckedDataCount = results[1].data;
-              openDataContents.textContent = makeNumberReadable(hasOpenDataCount) + " of " + makeNumberReadable(hasCheckedDataCount) + " articles that generate data";
-              openDataPercentageContents.textContent = Math.round(((hasOpenDataCount/hasCheckedDataCount)*100)) + "%";
-            }
-          }
-        ).catch(function (error) { console.log("getOpenData error: " + error); });
-      } else {
-        // Do not display card at all
-        document.querySelector('#open_data').remove();
-        hasOpenDataCount = "";
-        hasCheckedDataCount = "";
-      }
+      // Display help text popover
+      const instance = tippy(document.querySelector('#open_access_info'), {
+        allowHTML: true,
+        interactive: true,
+        placement: 'top',
+        appendTo: document.body,
+      });
 
+      instance.setContent(openAccessInfo);
+
+      isOAQuery = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_oa);
+      isOACount = axios.get(isOAQuery);
+
+      Promise.all([isOACount, isPaperCount]).then(function (results) {
+        if (isOACount) {
+          let isOACount     = results[0].data,
+          isPaperCount  = results[1].data;
+          oaArticlesContents.textContent = makeNumberReadable(isOACount) + " in total";
+          oaPercentageContents.textContent = Math.round(((isOACount/isPaperCount)*100)) + "%";
+        }
+      }).catch(function (error) { console.log("isOA error: " + error); });
     };
 
     /**  Display basic Insights (total article & free article counts) **/
-    // TODO: break these down into one function per metric
     displayInsights = function() {
       Promise.all([isPaperCount, isFreeCount])
         .then(function (results) {
@@ -297,16 +295,7 @@ oareport = function(org) {
           // Display totals and % of articles
           articlesContents.textContent = makeNumberReadable(isPaperCount);
 
-          // Display totals and % of OA articles
-          // TODO: only display OA rates for orgs w/out policies
-          // if (isOA) {
-          //   oaArticlesContents.textContent = makeNumberReadable(isOA) + " in total";
-          //   oaPercentageContents.textContent = Math.round(((isOA/isPaperCount)*100)) + "%";
-          // } else {
-          //   oaArticlesContents.textContent = "";
-          //   oaPercentageContents.textContent = "N/A";
-          // }
-
+          // Display free-to-read articles
           if (isFreeCount) {
             freeArticlesContents.textContent = makeNumberReadable(isFreeCount) + " in total";
             freePercentageContents.textContent = Math.round(((isFreeCount/isPaperCount)*100)) + "%";
@@ -561,9 +550,10 @@ oareport = function(org) {
           }
         ).catch(function (error) { console.log("displayStrategyAPCFollowup error: " + error); })
       } else {
-        // remove tab if this strategy doesn’t exist for this org
-        document.querySelector("#item-has-apc-followup").outerHTML = "";
-        document.querySelector("#has-apc-followup").outerHTML = "";
+        // hide tab and its content if this strategy doesn’t exist for this org
+        document.querySelectorAll('#item-has-apc-followup, #has-apc-followup').forEach(function(elems) {
+          elems.style.display = 'none';
+        });
       }
     };
 
@@ -658,9 +648,10 @@ oareport = function(org) {
           }
         ).catch(function (error) { console.log("displayStrategyUnansweredRequests error: " + error); })
       } else {
-        // remove tab if this strategy doesn’t exist for this org
-        document.querySelector("#item-has-unanswered-requests").outerHTML = "";
-        document.querySelector("#has-unanswered-requests").outerHTML = "";
+        // hide tab and its content if this strategy doesn’t exist for this org
+        document.querySelectorAll('#item-has-unanswered-requests, #has-unanswered-requests').forEach(function(elems) {
+          elems.style.display = 'none';
+        });
       }
     };
 
@@ -693,7 +684,7 @@ oareport = function(org) {
       xhr.open("GET", query);
       // Display message when server responds
       xhr.onload = function () {
-        document.querySelector("#csv_email_msg").innerHTML = "OAreport has started building your CSV export at <a href='" + this.response + "' target='_blank' class='underline'>this URL</a>. Please check your email to get the full data once it’s ready.";
+        document.querySelector("#csv_email_msg").innerHTML = "OA.Report has started building your CSV export at <a href='" + this.response + "' target='_blank' class='underline'>this URL</a>. Please check your email to get the full data once it’s ready.";
       };
       xhr.send();
 
@@ -747,7 +738,7 @@ oareport = function(org) {
       xhr.open("GET", query);
       // Display message when server responds
       xhr.onload = function () {
-        document.querySelector("#msg-" + formID).innerHTML = "OAreport has started building your CSV export at <a href='" + this.response + "' target='_blank' class='underline'>this URL</a>. Please check your email to get the full data once it’s ready.";
+        document.querySelector("#msg-" + formID).innerHTML = "OA.Report has started building your CSV export at <a href='" + this.response + "' target='_blank' class='underline'>this URL</a>. Please check your email to get the full data once it’s ready.";
       };
       xhr.send();
 
@@ -762,8 +753,35 @@ oareport = function(org) {
     displayStrategyAAM();
     displayStrategyAPCFollowup();
     displayStrategyUnansweredRequests();
-    getDataStatements();
-    getOpenData();
+
+    /* Check if we track OA articles and display the data */
+    // TODO improve this and do it for all insights as part oaworks/Gates$421
+    isOA = response.data.hits.hits[0]._source.analysis.is_oa;
+    if (isOA) {
+      getOAInsight();
+    }  else {
+      var elem = document.querySelector('#open_access');
+          elem.style.display = 'none';
+    };
+
+    /* Check if we track Open Data and display the data */
+    hasOpenData = response.data.hits.hits[0]._source.analysis.has_open_data;
+    if (hasOpenData) {
+      getOpenData();
+    } else {
+      var elem = document.querySelector('#open_data');
+          elem.style.display = 'none';
+    };
+
+    /* Check if we track Data Availability Statements and display the data */
+    hasDataStatement = response.data.hits.hits[0]._source.analysis.has_data_availability_statement;
+    if (hasDataStatement) {
+      getDataStatements();
+    } else {
+      var elem = document.querySelector('#data_statement');
+          elem.style.display = 'none';
+    };
+
   })
   .catch(function (error) { console.log("ERROR: " + error); });
 };
@@ -778,16 +796,6 @@ var startYearBtn              = document.querySelector("#start-year"),
     allTimeBtn                = document.querySelector("#all-time"),
     insightsDateRange         = document.querySelector("#insights_range"),
 
-    lastYearStartDate         = new Date(new Date().getFullYear()-1, 0, 1),
-    lastYearStartDateReadable = makeDateReadable(lastYearStartDate),
-    lastYearStartDateQuery    = changeDays(-1, lastYearStartDate),
-    lastYearStartDateISO      = formatDateToISO(lastYearStartDate),
-
-    lastYearEndDate           = new Date(new Date().getFullYear()-1, 11, 31),
-    lastYearEndDateReadable   = makeDateReadable(lastYearEndDate),
-    lastYearEndDateQuery      = changeDays(+1, lastYearEndDate),
-    lastYearEndDateISO        = formatDateToISO(lastYearEndDate),
-
     twoYearsStartDate         = new Date(new Date().getFullYear()-2, 0, 1),
     twoYearsStartDateReadable = makeDateReadable(twoYearsStartDate),
     twoYearsStartDateQuery    = changeDays(-1, twoYearsStartDate),
@@ -798,7 +806,7 @@ var startYearBtn              = document.querySelector("#start-year"),
     twoYearsEndDateQuery      = changeDays(+1, twoYearsEndDate),
     twoYearsEndDateISO        = formatDateToISO(twoYearsEndDate);
 
-startYearBtn.textContent      = startYearDate.getFullYear();
+startYearBtn.textContent      = "This year";
 lastYearBtn.textContent       = lastYearStartDate.getFullYear();
 twoYearsBtn.textContent       = twoYearsStartDate.getFullYear();
 

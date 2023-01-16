@@ -23,16 +23,9 @@ permalink: "{{ org._source.objectID | slug }}/"
   <ul>
     <li class="mr-1 inline-block">
       {{ component("pill", {
-        id: "start-year",
-        txt: "",
-        class: "bg-neutral-900"
-      }) }}
-    </li>
-    <li class="mr-1 inline-block">
-      {{ component("pill", {
         id: "last-year",
         txt: "",
-        class: "bg-neutral-200 text-neutral-900"
+        class: "bg-neutral-900"
       }) }}
     </li>
     <li class="mr-1 inline-block">
@@ -42,10 +35,17 @@ permalink: "{{ org._source.objectID | slug }}/"
         class: "bg-neutral-200 text-neutral-900"
       }) }}
     </li>
-    <li class="inline-block">
+    <li class="mr-1 inline-block">
       {{ component("pill", {
         id: "all-time",
         txt: "All time",
+        class: "bg-neutral-200 text-neutral-900"
+      }) }}
+    </li>
+    <li class="mr-1 inline-block">
+      {{ component("pill", {
+        id: "start-year",
+        txt: "",
         class: "bg-neutral-200 text-neutral-900"
       }) }}
     </li>
@@ -97,7 +97,7 @@ permalink: "{{ org._source.objectID | slug }}/"
       <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden">
         <dt>
           <div class="absolute bg-carnation-500 text-white rounded-md p-6">
-            {% icon "unlock" %}
+            {% icon "gift" %}
           </div>
           <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
             Free-to-read
@@ -108,12 +108,9 @@ permalink: "{{ org._source.objectID | slug }}/"
         </dt>
         <dd class="ml-24 flex items-baseline">
           <p class="text-4xl font-semibold text-neutral-900">
-            {# TODO: only display OA rates for orgs w/out policies #}
-            {# <span id="percent_oa">00%</span> #}
             <span id="percent_free">00%</span>
           </p>
           <p class="ml-2 text-sm font-medium text-neutral-600">
-            {# <span id="articles_oa">000</span> #}
             <span id="articles_free">000</span>
           </p>
         </dd>
@@ -141,45 +138,71 @@ permalink: "{{ org._source.objectID | slug }}/"
     </dl>
 
     {# Second row of insights: custom, data-related insights #}
-    <dl class="col-span-12 mb-6 grid grid-cols-1 gap-3 lg:gap-6 sm:grid-cols-2">
-      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden" id="data_statement">
-        <dt>
-          <div class="absolute bg-carnation-500 text-white rounded-md p-6">
-            {% icon "search" %}
-          </div>
-          <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
-            Have data availability statements
-            <sup id="data_statement_info">{% icon_small "help-circle" %}</sup>
-          </p>
-        </dt>
-        <dd class="ml-24 flex items-baseline">
-          <p class="text-4xl font-semibold text-neutral-900">
-            <span id="percent_data_statement">00%</span>
-          </p>
-          <p class="ml-2 text-sm font-medium text-neutral-600">
-            <span id="articles_data_statement">000</span>
-          </p>
-        </dd>
+    <dl class="col-span-12 sm:mb-3 grid grid-cols-1 gap-3 lg:gap-6 grid-flow-col auto-cols-fr">
+      <div id="open_access">
+        <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden">
+          <dt>
+            <div class="absolute bg-carnation-500 text-white rounded-md p-6">
+              {% icon "unlock" %}
+            </div>
+            <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
+              Open Access
+              <sup id="open_access_info">{% icon_small "help-circle" %}</sup>
+            </p>
+          </dt>
+          <dd class="ml-24 flex items-baseline">
+            <p class="text-4xl font-semibold text-neutral-900">
+              <span id="percent_oa">00%</span>
+            </p>
+            <p class="ml-2 text-sm font-medium text-neutral-600">
+              <span id="articles_oa">000</span>
+            </p>
+          </dd>
+        </div>
       </div>
 
-      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden" id="open_data">
-        <dt>
-          <div class="absolute bg-carnation-500 text-white rounded-md p-6">
-            {% icon "database" %}
-          </div>
-          <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
-            With Open Data
-            <sup id="open_data_info">{% icon_small "help-circle" %}</sup>
-          </p>
-        </dt>
-        <dd class="ml-24 flex items-baseline">
-          <p class="text-4xl font-semibold text-neutral-900">
-            <span id="percent_open_data">00%</span>
-          </p>
-          <p class="ml-2 text-sm font-medium text-neutral-600">
-            <span id="articles_open_data">000</span>
-          </p>
-        </dd>
+      <div id="data_statement">
+        <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden">
+          <dt>
+            <div class="absolute bg-carnation-500 text-white rounded-md p-6">
+              {% icon "search" %}
+            </div>
+            <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
+              Have data availability statements
+              <sup id="data_statement_info">{% icon_small "help-circle" %}</sup>
+            </p>
+          </dt>
+          <dd class="ml-24 flex items-baseline">
+            <p class="text-4xl font-semibold text-neutral-900">
+              <span id="percent_data_statement">00%</span>
+            </p>
+            <p class="ml-2 text-sm font-medium text-neutral-600">
+              <span id="articles_data_statement">000</span>
+            </p>
+          </dd>
+        </div>
+      </div>
+
+      <div id="open_data">
+        <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden">
+          <dt>
+            <div class="absolute bg-carnation-500 text-white rounded-md p-6">
+              {% icon "database" %}
+            </div>
+            <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
+              With Open Data
+              <sup id="open_data_info">{% icon_small "help-circle" %}</sup>
+            </p>
+          </dt>
+          <dd class="ml-24 flex items-baseline">
+            <p class="text-4xl font-semibold text-neutral-900">
+              <span id="percent_open_data">00%</span>
+            </p>
+            <p class="ml-2 text-sm font-medium text-neutral-600">
+              <span id="articles_open_data">000</span>
+            </p>
+          </dd>
+        </div>
       </div>
     </dl>
 
