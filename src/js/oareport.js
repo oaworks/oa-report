@@ -104,12 +104,20 @@ const currentDate                  = new Date(),
 // Display default date range: since start of the current year
 replaceDateRange(lastYearStartDate, lastYearEndDate);
 
-
 // Get organisational data to produce reports
 oareport = function(org) {
   let report                       = base + "orgs?q=name:%22" + org + "%22",
       queryPrefix                  = queryBase + "q=" + dateRange,
       countQueryPrefix             = countQueryBase + "q=" + dateRange;
+
+  // Check if user is authentified
+  let orgKey = "";
+  if (Object.keys(OAKEYS).length !== 0) {
+    orgKey = "&orgkey=" + Object.values(OAKEYS);
+    console.log("orgKey: " + orgKey);
+  } else {
+    console.log("No orgKey.")
+  }
 
   axios.get(report).then(function (response) {
 
@@ -678,7 +686,8 @@ oareport = function(org) {
       }
 
       // Build full query
-      query = csvExportBase + query + include + email;
+      query = csvExportBase + query + include + email + orgKey;
+      console.log("query: " + query);
 
       var xhr = new XMLHttpRequest();
       xhr.open("GET", query);
@@ -732,7 +741,8 @@ oareport = function(org) {
       }
 
       // Build full query
-      query = csvExportBase + query + include + email;
+      query = csvExportBase + query + include + email + orgKey;
+      console.log("query: " + query);
 
       var xhr = new XMLHttpRequest();
       xhr.open("GET", query);
