@@ -38,19 +38,44 @@ meta_description: "OAreport is an open-source tool that analyzes articles covere
 <div class="content" id="content">
   <section class="section bg-black">
     <div class="row">
-      <div class="col col--1of2 align-center margin-bottom-xl" style=" display: flex; flex-wrap: wrap; overflow: hidden; justify-content: center;">
+      <div class="col col--2of3 align-center margin-bottom-md" style=" display: flex; flex-wrap: wrap; overflow: hidden; justify-content: center;">
         <figure>
           <img src="/img/screenshot.png" alt="A screenshot of the OA.Report user interface showing Open Access insights and a list of proposed strategies to open closed-access content." style="border-radius: var(--space-xxs);">
-          <figcaption class="no-margin type-6">{% include 'partials/app-name.liquid' %} provides key insights and actionable strategies, such as contacting authors to unpaywall their articles.</figcaption>
+          <!-- <figcaption class="no-margin type-6"></figcaption> -->
         </figure>
       </div>
-      <div class="col col--1of2">
+      <div class="col col--1of3">
         <h2 class="sr-only">What is this?</h2>
-        <!-- <p class="type-2 fw-200">{{ site.description }}</p> -->
-        <p class="type-2 fw-200">{% include 'partials/app-name.liquid' %} helps increase the impact of research and Open Access policies by finding research an organization supports, analyzing how open it is, and streamlining taking action to make results more open.</p>
+        <p class="type-3 fw-200">{% include 'partials/app-name.liquid' %} provides key insights and actionable strategies, such as contacting authors to unpaywall their articles.</p>
       </div>
+    </div>
+
+    <h2 class="label border-top padding-top">Our users</h2>
+    <div class="row">
+      <div class="col col--4of6">
+        <p class="type-5">
+          {% include 'partials/app-name.liquid' %} is in use at {% for user in users %}{% if forloop.first != true %}, {% elsif forloop.last %} & {% endif %}<a href="{{ user.url }}" target="_blank" rel="noopener" class="border-bottom" title="Go to the {{ user.acronym }} website">{{ user.name }}</a><span class="sr-only">({{ user.acronym }})</span>{% endfor %}.
+        </p>
+      </div>
+    </div>
+
+    <div class="row row--centered">
+      {% for user in users %}
+      {% if user.logo %}
+      <div class="col col--1of3">
+        <a href="{{ user.url }}" target="_blank" rel="noopener" class="block-link margin-bottom-xl" title="Go to the {{ user.acronym }} website">
+          <img src="../{{ user.logo }}" alt="Logo for {{ user.acronym }}"/>
+        </a>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="section bg-white colour-block">
+    <div class="row">
       <div class="col col--3of4">
-        <p class="type-2 fw-200">{% include 'partials/app-name.liquid' %} translates policy to impact by helping libraries and funders:</p>
+        <p class="type-3 fw-200">{% include 'partials/app-name.liquid' %} translates <span style="background-color: rgba(255, 255, 255, 0.5);">policy to practice</span> by helping libraries and funders:</p>
       </div>
     </div>
 
@@ -81,26 +106,21 @@ meta_description: "OAreport is an open-source tool that analyzes articles covere
       </li>
     </ul>
 
-    <h2 class="label border-top padding-top">Our users</h2>
-    <div class="row">
-      <div class="col col--4of6">
-        <p class="type-5">
-          {% include 'partials/app-name.liquid' %} is in use at {% for user in users %}{% if forloop.first != true %}, {% elsif forloop.last %} & {% endif %}<a href="{{ user.url }}" target="_blank" rel="noopener" class="border-bottom" title="Go to the {{ user.acronym }} website">{{ user.name }}</a> ({{ user.acronym }}){% endfor %}.
-        </p>
-      </div>
-    </div>
-
-    <div class="row row--centered">
-      {% for user in users %}
-      {% if user.logo %}
-      <div class="col col--1of3">
-        <a href="{{ user.url }}" target="_blank" rel="noopener" class="block-link margin-bottom-xl" title="Go to the {{ user.acronym }} website">
-          <img src="../{{ user.logo }}" alt="Logo for {{ user.acronym }}"/>
-        </a>
-      </div>
-      {% endif %}
-      {% endfor %}
-    </div>
+    <h2 class="label border-top-thick padding-top"><span class="type-4">How {% include 'partials/app-name.liquid' %} works for you</span></h2>
+    <ol class="unstyled-list row row--centered">
+      <li class="col col--1of3" data-sal="slide-up" data-sal-delay="50">
+        <div class="type-1 fw-900">1</div>
+        <p class="type-3 fw-300 no-margin">Tell us what institution you’re from.</p>
+      </li>
+      <li class="col col--1of3" data-sal="slide-up" data-sal-delay="100">
+        <div class="type-1 fw-900">2</div>
+        <p class="type-3 fw-300 no-margin">We’ll provide a custom report.</p>
+      </li>
+      <li class="col col--1of3" data-sal="slide-up" data-sal-delay="150">
+        <div class="type-1 fw-900">3</div>
+        <p class="type-3 fw-300 no-margin">You use it to make articles more open.</p>
+      </li>
+    </ol>
   </section>
 
   {% comment %}
@@ -120,26 +140,6 @@ meta_description: "OAreport is an open-source tool that analyzes articles covere
     </div>
   </aside>
   {% endcomment %}
-
-  <section class="section bg-white colour-block">
-    <div class="margin-bottom-xl">
-      <h2 class="label border-top-thick padding-top"><span class="type-4">How {% include 'partials/app-name.liquid' %} works for you</span></h2>
-      <ol class="unstyled-list row row--centered">
-        <li class="col col--1of3" data-sal="slide-up" data-sal-delay="50">
-          <div class="type-1 fw-900">1</div>
-          <p class="type-3 fw-300 no-margin">Tell us what institution you’re from.</p>
-        </li>
-        <li class="col col--1of3" data-sal="slide-up" data-sal-delay="100">
-          <div class="type-1 fw-900">2</div>
-          <p class="type-3 fw-300 no-margin">We’ll provide a custom report.</p>
-        </li>
-        <li class="col col--1of3" data-sal="slide-up" data-sal-delay="150">
-          <div class="type-1 fw-900">3</div>
-          <p class="type-3 fw-300 no-margin">You use it to make articles more open.</p>
-        </li>
-      </ol>
-    </div>
-  </section>
 
   <div class="row row--centered bg-black">
     <div class="col">

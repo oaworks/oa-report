@@ -74,6 +74,10 @@ html {
   overflow-x: hidden;
 }
 
+.illus {
+  background-color: var(--black);
+}
+
 .illus svg {
   margin-top: var(--space-sm);
   margin-bottom: var(--space-sm);

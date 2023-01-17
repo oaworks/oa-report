@@ -157,6 +157,10 @@
   margin-bottom: var(--space-sm);
 }
 
+.margin-bottom-md {
+  margin-bottom: var(--space-md);
+}
+
 .margin-bottom-xl {
   margin-bottom: var(--space-xl);
 }
