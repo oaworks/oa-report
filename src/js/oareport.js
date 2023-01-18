@@ -1,8 +1,9 @@
-const base           = "https://beta.oa.works/report/",
-      queryBase      = base + "works?size=100&",
-      countQueryBase = base + "works/count?",
-      csvExportBase  = "https://bg.beta.oa.works/report/works.csv?size=all&",
-      recordSize = "&size=100"; // Set record size for number of actions shown in Strategies
+const base             = "https://beta.oa.works/report/",
+      baseBg           = "https://bg.beta.oa.works/report/",
+      queryBase        = base + "works?size=100&",
+      countQueryBase   = base + "works/count?",
+      csvExportBase    = baseBg + "works.csv?size=all&",
+      articleEmailBase = baseBg + "email/";
 let isPaperCount, isEligibleCount, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL, dateRangeButton, csvEmailButton, totalArticles, hasDataStatementCount, hasCheckedDataStatementCount, hasOpenDataCount, hasCheckedDataCount;
 let isCompliant = false;
 
