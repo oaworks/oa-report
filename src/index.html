@@ -1,6 +1,6 @@
 ---
 layout: "layouts/base.liquid"
-meta_description: "OAreport is an open-source tool that analyzes articles covered by your Open Access policy to help you make them open."
+meta_description: "OA.Report is an open-source tool that analyzes articles covered by your Open Access policy to help you make them open."
 ---
 
 <video id="video" autoplay muted loop>
@@ -37,16 +37,12 @@ meta_description: "OAreport is an open-source tool that analyzes articles covere
 
 <div class="content" id="content">
   <section class="section bg-black">
-    <div class="row">
-      <div class="col col--2of3 align-center margin-bottom-md" style=" display: flex; flex-wrap: wrap; overflow: hidden; justify-content: center;">
-        <figure>
+    <div class="row row--centered">
+      <div class="col col--2of3">
+        <figure class="align-center margin-bottom-md">
+          <figcaption class="no-margin type-4">Use {% include 'partials/app-name.liquid' %}’s open <span class="highlight">insights</span> and actionable <span class="highlight">strategies</span> to unlock your institution’s research.</figcaption>
           <img src="/img/screenshot.png" alt="A screenshot of the OA.Report user interface showing Open Access insights and a list of proposed strategies to open closed-access content." style="border-radius: var(--space-xxs);">
-          <!-- <figcaption class="no-margin type-6"></figcaption> -->
         </figure>
-      </div>
-      <div class="col col--1of3">
-        <h2 class="sr-only">What is this?</h2>
-        <p class="type-3 fw-200">{% include 'partials/app-name.liquid' %} provides key insights and actionable strategies, such as contacting authors to unpaywall their articles.</p>
       </div>
     </div>
 
@@ -75,7 +71,7 @@ meta_description: "OAreport is an open-source tool that analyzes articles covere
   <section class="section bg-white colour-block">
     <div class="row">
       <div class="col col--3of4">
-        <p class="type-3 fw-200">{% include 'partials/app-name.liquid' %} translates <span style="background-color: rgba(255, 255, 255, 0.5);">policy to practice</span> by helping libraries and funders:</p>
+        <p class="type-3 fw-200">{% include 'partials/app-name.liquid' %} translates <span class="highlight--white">policy to practice</span> by helping libraries and funders:</p>
       </div>
     </div>
 
