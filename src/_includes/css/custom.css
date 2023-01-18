@@ -37,6 +37,16 @@ html {
   background-color: var(--primary-colour);
 }
 
+.highlight {
+  border-radius: 0.8em 0.3em;
+  background-image: linear-gradient(to right, rgba(255,105,180, 0.095), rgba(255,105,180, 0.5) 4%, rgba(255,105,180, 0.25));
+}
+
+.highlight--white {
+  border-radius: 0.8em 0.3em;
+  background-image: linear-gradient(to right, rgba(255,255,255, 0.095), rgba(255,255,255, 0.5) 4%, rgba(255,255,255, 0.25));
+}
+
 .app-name {
   font-family: var(--serif-bold);
   letter-spacing: -.025em;
@@ -77,6 +87,10 @@ html {
   padding: var(--gutter);
   position: relative;
   overflow-x: hidden;
+}
+
+.illus {
+  background-color: var(--black);
 }
 
 .illus svg {
