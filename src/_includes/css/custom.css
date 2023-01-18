@@ -84,7 +84,7 @@ html {
 
 .content {
   margin: 100vh var(--gutter-negative) 0 var(--gutter-negative);
-  padding: var(--gutter);
+  padding: var(--gutter) var(--gutter) 0 var(--gutter);
   position: relative;
   overflow-x: hidden;
 }
