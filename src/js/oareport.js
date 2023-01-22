@@ -431,7 +431,6 @@ oareport = function(org) {
               canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{title}", (title ? title : "[No article title found]"));
               canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{doi}", (doi ? doi : "[No DOI found]"));
               canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{author_name}", (author ? author : "researcher"));
-              canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{author_email}", (authorEmail ? authorEmail : ""));
 
               /*jshint multistr: true */
               canArchiveAAMTableRows += '<tr>\
@@ -444,12 +443,12 @@ oareport = function(org) {
                 </td>\
                 <td class="hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell">\
                   <div class="mb-1 text-neutral-900">' + (author ? author : "[No author’s name found]") + '</div>\
-                  <div class="text-neutral-500">' + (authorEmail ? authorEmail : "[No email found]") + '</div>\
+                  <div class="text-neutral-500">' + (authorEmail ? "[Email found]" : "[No email found]") + '</div>\
                 </td>\
                 <td class="whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium">\
-                  <a href="mailto:' + canArchiveAAMMailto + '" target="_blank" rel="noopener" class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200">\
+                  <button class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200 js-btn-can-archive-aam" onclick="unencryptEmail(\'' + authorEmail + '\', \'' + doi +  '\', \'' + encodeURI(canArchiveAAMMailto) +'\');">\
                     <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail inline-block h-4 duration-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>\
-                  </a>\
+                  </button>\
                 </td>\
               </tr>';
             }
@@ -457,6 +456,24 @@ oareport = function(org) {
           }
         }
       ).catch(function (error) { console.log("displayStrategyAAM error: " + error); })
+    };
+
+    /* Unencrypt emails if user has an orgKey*/
+    unencryptEmail = function(email, doi, mailto) {
+      // if email is not undefined and there is an orgkey, unencrypt the author’s email
+      if (email && Object.keys(OAKEYS).length !== 0) {
+        axios.get(articleEmailBase + doi  + "?" +  orgKey)
+          .then(function (response) {
+            let authorEmail = response.data;
+
+            mailto = decodeURI(mailto);
+            mailto = mailto.replaceAll("{author_email}", authorEmail);
+            window.open('mailto:' + mailto);
+          }
+        ).catch(function (error) { console.log("unencryptEmail error: " + error); })
+      } else {
+        window.open('mailto:' + decodeURI(mailto));
+      }
     };
 
     /** Display Strategies: follow up with uncompliant articles with paid APCs **/
