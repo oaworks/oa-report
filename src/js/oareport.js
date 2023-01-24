@@ -115,9 +115,6 @@ oareport = function(org) {
   let orgKey = "";
   if (Object.keys(OAKEYS).length !== 0) {
     orgKey = "&orgkey=" + Object.values(OAKEYS);
-    console.log("orgKey: " + orgKey);
-  } else {
-    console.log("No orgKey.")
   }
 
   axios.get(report).then(function (response) {
