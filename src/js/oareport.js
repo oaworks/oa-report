@@ -443,7 +443,7 @@ oareport = function(org) {
                 </td>\
                 <td class="hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell">\
                   <div class="mb-1 text-neutral-900">' + (author ? author : "[No author’s name found]") + '</div>\
-                  <div class="text-neutral-500">' + (authorEmail ? "[Email found]" : "[No email found]") + '</div>\
+                  <div class="text-neutral-500">' + (authorEmail ? "Email available" : "No email") + '</div>\
                 </td>\
                 <td class="whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium">\
                   <button class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200 js-btn-can-archive-aam" onclick="unencryptEmail(\'' + authorEmail + '\', \'' + doi +  '\', \'' + encodeURI(canArchiveAAMMailto) +'\');">\
@@ -461,11 +461,10 @@ oareport = function(org) {
     /* Unencrypt emails if user has an orgKey*/
     unencryptEmail = function(email, doi, mailto) {
       // if email is not undefined and there is an orgkey, unencrypt the author’s email
-      if (email && Object.keys(OAKEYS).length !== 0) {
+      if (email !== 'undefined' && Object.keys(OAKEYS).length !== 0) {
         axios.get(articleEmailBase + doi  + "?" +  orgKey)
           .then(function (response) {
             let authorEmail = response.data;
-
             mailto = decodeURI(mailto);
             mailto = mailto.replaceAll("{author_email}", authorEmail);
             window.open('mailto:' + mailto);
