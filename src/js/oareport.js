@@ -316,6 +316,23 @@ oareport = function(org) {
       ).catch(function (error) { console.log("displayInsights error: " + error); })
     };
 
+    /** Unencrypt emails if user has an orgKey **/
+    unencryptEmail = function(email, doi, mailto) {
+      // if email is not undefined and there is an orgkey, unencrypt the author’s email
+      if (email !== 'undefined' && Object.keys(OAKEYS).length !== 0) {
+        axios.get(articleEmailBase + doi  + "?" +  orgKey)
+          .then(function (response) {
+            let authorEmail = response.data;
+            mailto = decodeURI(mailto);
+            mailto = mailto.replaceAll("{author_email}", authorEmail);
+            window.open('mailto:' + mailto);
+          }
+        ).catch(function (error) { console.log("unencryptEmail error: " + error); })
+      } else {
+        window.open('mailto:' + decodeURI(mailto));
+      }
+    };
+
     /** Display Strategies: deposit VOR (publisher PDF) **/
     displayStrategyVOR = function() {
       var totalVORActionsContents        = document.querySelector("#total-can-archive-vor"),
@@ -455,23 +472,6 @@ oareport = function(org) {
           }
         }
       ).catch(function (error) { console.log("displayStrategyAAM error: " + error); })
-    };
-
-    /* Unencrypt emails if user has an orgKey*/
-    unencryptEmail = function(email, doi, mailto) {
-      // if email is not undefined and there is an orgkey, unencrypt the author’s email
-      if (email !== 'undefined' && Object.keys(OAKEYS).length !== 0) {
-        axios.get(articleEmailBase + doi  + "?" +  orgKey)
-          .then(function (response) {
-            let authorEmail = response.data;
-            mailto = decodeURI(mailto);
-            mailto = mailto.replaceAll("{author_email}", authorEmail);
-            window.open('mailto:' + mailto);
-          }
-        ).catch(function (error) { console.log("unencryptEmail error: " + error); })
-      } else {
-        window.open('mailto:' + decodeURI(mailto));
-      }
     };
 
     /** Display Strategies: follow up with uncompliant articles with paid APCs **/
