@@ -1,8 +1,9 @@
-const base           = "https://api.oa.works/report/",
-      queryBase      = base + "works?size=100&",
-      countQueryBase = base + "works/count?",
-      csvExportBase  = "https://bg.beta.oa.works/report/works.csv?size=all&",
-      recordSize = "&size=100"; // Set record size for number of actions shown in Strategies
+const base             = "https://api.oa.works/report/",
+      baseBg           = "https://bg.api.oa.works/report/",
+      queryBase        = base + "works?size=100&",
+      countQueryBase   = base + "works/count?",
+      csvExportBase    = baseBg + "works.csv?size=all&",
+      articleEmailBase = baseBg + "email/";
 let isPaperCount, isEligibleCount, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL, dateRangeButton, csvEmailButton, totalArticles, hasDataStatementCount, hasCheckedDataStatementCount, hasOpenDataCount, hasCheckedDataCount;
 let isCompliant = false;
 
@@ -104,12 +105,17 @@ const currentDate                  = new Date(),
 // Display default date range: since start of the current year
 replaceDateRange(lastYearStartDate, lastYearEndDate);
 
-
 // Get organisational data to produce reports
 oareport = function(org) {
   let report                       = base + "orgs?q=name:%22" + org + "%22",
       queryPrefix                  = queryBase + "q=" + dateRange,
       countQueryPrefix             = countQueryBase + "q=" + dateRange;
+
+  // Check if user is authentified
+  let orgKey = "";
+  if (Object.keys(OAKEYS).length !== 0) {
+    orgKey = "&orgkey=" + Object.values(OAKEYS);
+  }
 
   axios.get(report).then(function (response) {
 
@@ -307,6 +313,23 @@ oareport = function(org) {
       ).catch(function (error) { console.log("displayInsights error: " + error); })
     };
 
+    /** Decrypt emails if user has an orgKey **/
+    decryptEmail = function(email, doi, mailto) {
+      // if email is not undefined and there is an orgkey, decrypt the author’s email
+      if (email !== 'undefined' && Object.keys(OAKEYS).length !== 0) {
+        axios.get(articleEmailBase + doi  + "?" +  orgKey)
+          .then(function (response) {
+            let authorEmail = response.data;
+            mailto = decodeURI(mailto);
+            mailto = mailto.replaceAll("{author_email}", authorEmail);
+            window.open('mailto:' + mailto);
+          }
+        ).catch(function (error) { console.log("decryptEmail error: " + error); })
+      } else {
+        window.open('mailto:' + decodeURI(mailto));
+      }
+    };
+
     /** Display Strategies: deposit VOR (publisher PDF) **/
     displayStrategyVOR = function() {
       var totalVORActionsContents        = document.querySelector("#total-can-archive-vor"),
@@ -350,7 +373,6 @@ oareport = function(org) {
               canArchiveVORMailto = canArchiveVORMailto.replaceAll("{title}", (title ? title : "[No title found]"));
               canArchiveVORMailto = canArchiveVORMailto.replaceAll("{doi}", (doi ? doi : "[No DOI found]"));
               canArchiveVORMailto = canArchiveVORMailto.replaceAll("{author_name}", (author ? author : "researcher"));
-              canArchiveVORMailto = canArchiveVORMailto.replaceAll("{author_email}", (authorEmail ? authorEmail : ""));
 
               /*jshint multistr: true */
               canArchiveVORTableRows += '<tr>\
@@ -363,12 +385,12 @@ oareport = function(org) {
                 </td>\
                 <td class="hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell">\
                   <div class="mb-1 text-neutral-900">' + (author ? author : "[No author’s name found]") + '</div>\
-                  <div class="text-neutral-500">' + (authorEmail ? authorEmail : "[No email found]") + '</div>\
+                  <div class="text-neutral-500">' + (authorEmail ? "Email available" : "No email") + '</div>\
                 </td>\
                 <td class="whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium">\
-                  <a href="mailto:' + canArchiveVORMailto + '" target="_blank" rel="noopener" class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200">\
+                  <button class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200 js-btn-can-archive-aam" onclick="decryptEmail(\'' + authorEmail + '\', \'' + doi +  '\', \'' + encodeURI(canArchiveVORMailto) +'\');">\
                     <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail inline-block h-4 duration-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>\
-                  </a>\
+                  </button>\
                 </td>\
               </tr>';
             }
@@ -422,7 +444,6 @@ oareport = function(org) {
               canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{title}", (title ? title : "[No article title found]"));
               canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{doi}", (doi ? doi : "[No DOI found]"));
               canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{author_name}", (author ? author : "researcher"));
-              canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{author_email}", (authorEmail ? authorEmail : ""));
 
               /*jshint multistr: true */
               canArchiveAAMTableRows += '<tr>\
@@ -435,12 +456,12 @@ oareport = function(org) {
                 </td>\
                 <td class="hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell">\
                   <div class="mb-1 text-neutral-900">' + (author ? author : "[No author’s name found]") + '</div>\
-                  <div class="text-neutral-500">' + (authorEmail ? authorEmail : "[No email found]") + '</div>\
+                  <div class="text-neutral-500">' + (authorEmail ? "Email available" : "No email") + '</div>\
                 </td>\
                 <td class="whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium">\
-                  <a href="mailto:' + canArchiveAAMMailto + '" target="_blank" rel="noopener" class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200">\
+                  <button class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200 js-btn-can-archive-aam" onclick="decryptEmail(\'' + authorEmail + '\', \'' + doi +  '\', \'' + encodeURI(canArchiveAAMMailto) +'\');">\
                     <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail inline-block h-4 duration-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>\
-                  </a>\
+                  </button>\
                 </td>\
               </tr>';
             }
@@ -598,7 +619,6 @@ oareport = function(org) {
                     doi = hasUnansweredRequestsList[i]._source.doi,
                     journal = hasUnansweredRequestsList[i]._source.journal,
                     authorEmail = hasUnansweredRequestsList[i]._source.email,
-                    author = hasUnansweredRequestsList[i]._source.author_email_name,
                     author = hasUnansweredRequestsList[i]._source.author_email_name;
 
                 // Loop over supplements array to access grant ID without index number
@@ -618,7 +638,6 @@ oareport = function(org) {
                 hasUnansweredRequestsMailto = hasUnansweredRequestsMailto.replaceAll("\'", "’");
                 hasUnansweredRequestsMailto = hasUnansweredRequestsMailto.replaceAll("{doi}", (doi ? doi : "[No DOI found]"));
                 hasUnansweredRequestsMailto = hasUnansweredRequestsMailto.replaceAll("{author_name}", (author ? author : "researcher"));
-                hasUnansweredRequestsMailto = hasUnansweredRequestsMailto.replaceAll("{author_email}", (authorEmail ? authorEmail : ""));
 
                 /*jshint multistr: true */
                 hasUnansweredRequestsTableRows += '<tr>\
@@ -638,8 +657,9 @@ oareport = function(org) {
                     <div class="text-neutral-500">' + (journal ? journal : "[No journal name found]") + '</div>\
                   </td>\
                   <td class="whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium">\
-                    <a href="mailto:' + hasUnansweredRequestsMailto + '" target="_blank" rel="noopener" class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200">\
-                    <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail inline-block h-4 duration-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>\
+                    <button class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200 js-btn-can-archive-aam" onclick="decryptEmail(\'' + authorEmail + '\', \'' + doi +  '\', \'' + encodeURI(hasUnansweredRequestsMailto) +'\');">\
+                      <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail inline-block h-4 duration-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>\
+                    </button>\
                   </td>\
                 </tr>';
               }
@@ -678,7 +698,8 @@ oareport = function(org) {
       }
 
       // Build full query
-      query = csvExportBase + query + include + email;
+      query = csvExportBase + query + include + email + orgKey;
+      console.log("query: " + query);
 
       var xhr = new XMLHttpRequest();
       xhr.open("GET", query);
@@ -732,7 +753,8 @@ oareport = function(org) {
       }
 
       // Build full query
-      query = csvExportBase + query + include + email;
+      query = csvExportBase + query + include + email + orgKey;
+      console.log("query: " + query);
 
       var xhr = new XMLHttpRequest();
       xhr.open("GET", query);

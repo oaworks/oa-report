@@ -2,5 +2,9 @@
   {
     "label": "About",
     "url": "https://about.oa.report/"
+  },
+  {
+    "label": "Logout",
+    "url": "?logout"
   }
 ]
