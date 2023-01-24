@@ -19,6 +19,24 @@
   <meta name="msapplication-TileColor" content="#FFC0CB">
   <meta name="theme-color" content="#25201E">
 
+  {# OpenGraph #}
+  <meta property="og:url" content="{{ site.base_url }}/{{ page.fileSlug }}">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{{ site.tagline }}">
+  <meta property="og:image" content="{{ site.base_url }}/img/meta.png">
+  <meta property="og:image:alt" content="The OA.Report wordmark is shown alongside three small illustrations. Those illustrations include a simplified table displaying the status of paper, checkboxes, and a button that says unlock.">
+  <meta property="og:description" content="{{ site.description }}">
+  <meta property="og:site_name" content="{{ site.name }}">
+  <meta property="og:locale" content="en_US">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="{{ site.twitter }}">
+  <meta name="twitter:url" content="{{ site.base_url }}/{{ page.fileSlug }}">
+  <meta name="twitter:title" content="{{ site.tagline }}">
+  <meta name="twitter:description" content="{{ site.description }}">
+  <meta name="twitter:image" content="{{ site.base_url }}/img/meta.png">
+  <meta name="twitter:image:alt" content="The OA.Report wordmark is shown alongside three small illustrations. Those illustrations include a simplified table displaying the status of paper, checkboxes, and a button that says unlock.">
+  
   {# SimpleAnalytics tracking code #}
   <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
   <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif" alt="" referrerpolicy="no-referrer-when-downgrade" /></noscript>
