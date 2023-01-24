@@ -260,7 +260,7 @@ oareport = function(org) {
     getOAInsight = function() {
       var openAccessInfo = "";
       /*jshint multistr: true */
-      openAccessInfo = "The number of articles that are free and <a href='https://creativecommons.org/licenses/by/4.0/' class='underline' target='_blank' rel='noopener'>CC BY</a> <strong class='bold'>or</strong> <a href='https://creativecommons.org/publicdomain/zero/1.0/' class='underline' target='_blank' rel='noopener'>CC0</a> (public domain) on the publishers website, or a repository, or a preprint server.";
+      openAccessInfo = "The number of articles that are free and <a href='https://creativecommons.org/licenses/by/4.0/' class='underline' target='_blank' rel='noopener'>CC BY</a> <strong class='bold'>or</strong> <a href='https://creativecommons.org/publicdomain/zero/1.0/' class='underline' target='_blank' rel='noopener'>CC0</a> (in the public domain) on the publisher’s website, a repository or a preprint server.";
 
       // Display help text popover
       const instance = tippy(document.querySelector('#open_access_info'), {
