@@ -12,6 +12,11 @@ getUsersLocale = function() {
   return navigator.languages && navigator.languages.length ? navigator.languages[0] : navigator.language;
 };
 
+displayNone = function(id) {
+  var elem = document.querySelector(id);
+      elem.style.display = 'none';
+}
+
 // Do math with days on a date
 changeDays = function(numOfDays, date) {
   const dateCopy = new Date(date.getTime());
@@ -115,6 +120,8 @@ oareport = function(org) {
   let orgKey = "";
   if (Object.keys(OAKEYS).length !== 0) {
     orgKey = "&orgkey=" + Object.values(OAKEYS);
+  } else {
+    displayNone("#logout");
   }
 
   axios.get(report).then(function (response) {
@@ -782,8 +789,7 @@ oareport = function(org) {
     if (isOA) {
       getOAInsight();
     }  else {
-      var elem = document.querySelector('#open_access');
-          elem.style.display = 'none';
+      displayNone("#open_access");
     };
 
     /* Check if we track Open Data and display the data */
@@ -791,8 +797,7 @@ oareport = function(org) {
     if (hasOpenData) {
       getOpenData();
     } else {
-      var elem = document.querySelector('#open_data');
-          elem.style.display = 'none';
+      displayNone("#open_data");
     };
 
     /* Check if we track Data Availability Statements and display the data */
@@ -800,8 +805,7 @@ oareport = function(org) {
     if (hasDataStatement) {
       getDataStatements();
     } else {
-      var elem = document.querySelector('#data_statement');
-          elem.style.display = 'none';
+      displayNone("#data_statement");
     };
 
   })
