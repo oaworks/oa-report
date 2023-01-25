@@ -5,6 +5,7 @@
   },
   {
     "label": "Logout",
-    "url": "?logout"
+    "url": "?logout",
+    "id": "logout"
   }
 ]

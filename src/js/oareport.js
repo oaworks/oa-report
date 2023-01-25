@@ -12,6 +12,11 @@ getUsersLocale = function() {
   return navigator.languages && navigator.languages.length ? navigator.languages[0] : navigator.language;
 };
 
+displayNone = function(id) {
+  var elem = document.querySelector(id);
+      elem.style.display = 'none';
+}
+
 // Do math with days on a date
 changeDays = function(numOfDays, date) {
   const dateCopy = new Date(date.getTime());
@@ -115,6 +120,8 @@ oareport = function(org) {
   let orgKey = "";
   if (Object.keys(OAKEYS).length !== 0) {
     orgKey = "&orgkey=" + Object.values(OAKEYS);
+  } else {
+    displayNone("#logout");
   }
 
   axios.get(report).then(function (response) {
