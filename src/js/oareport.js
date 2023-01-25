@@ -789,8 +789,7 @@ oareport = function(org) {
     if (isOA) {
       getOAInsight();
     }  else {
-      var elem = document.querySelector('#open_access');
-          elem.style.display = 'none';
+      displayNone("#open_access");
     };
 
     /* Check if we track Open Data and display the data */
@@ -798,8 +797,7 @@ oareport = function(org) {
     if (hasOpenData) {
       getOpenData();
     } else {
-      var elem = document.querySelector('#open_data');
-          elem.style.display = 'none';
+      displayNone("#open_data");
     };
 
     /* Check if we track Data Availability Statements and display the data */
@@ -807,8 +805,7 @@ oareport = function(org) {
     if (hasDataStatement) {
       getDataStatements();
     } else {
-      var elem = document.querySelector('#data_statement');
-          elem.style.display = 'none';
+      displayNone("#data_statement");
     };
 
   })
