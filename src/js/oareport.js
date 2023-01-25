@@ -333,6 +333,7 @@ oareport = function(org) {
           }
         ).catch(function (error) { console.log("decryptEmail error: " + error); })
       } else {
+        mailto = mailto.replaceAll("{author_email}", ""); // Blank space when there’s no email
         window.open('mailto:' + decodeURI(mailto));
       }
     };
