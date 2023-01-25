@@ -68,7 +68,7 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy('./src/fonts/');
   eleventyConfig.addPassthroughCopy('./src/js/');
   eleventyConfig.addPassthroughCopy('./src/css/');
-  // TODO: eleventyConfig.addPassthroughCopy('./src/favicons/');
+  eleventyConfig.addPassthroughCopy('./src/favicons/');
 
   eleventyConfig.setLiquidOptions({
     dynamicPartials: true
