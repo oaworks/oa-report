@@ -126,6 +126,62 @@ oareport = function(org) {
 
   axios.get(report).then(function (response) {
 
+    getInsight = function(id, info, numerator, denominator) {
+      var percentID          = "#percent_",
+          percentID          = percentID.concat(id),
+          articlesID         = "#articles_",
+          articlesID         = articlesID.concat(id),
+          infoID             = "#info_"
+          infoID             = infoID.concat(id),
+          contentID          = "#",
+          contentID          = contentID.concat(id),
+          query              = response.data.hits.hits[0]._source.analysis[numerator];
+
+      var percentageContents = document.querySelector(percentID), // % value
+          articlesContents   = document.querySelector(articlesID), // full-text value
+          infoContents       = document.querySelector(infoID), // help text value
+          contents           = document.querySelector(contentID); // the whole card
+
+      // Check if there are any data, otherwise remove card
+      if (query) {
+
+        // Display help text / info popover
+        const instance = tippy(infoContents, {
+          allowHTML: true,
+          interactive: true,
+          placement: 'top',
+          appendTo: document.body,
+        }).setContent(info);
+
+        // Get insight’s count queries
+        num = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.analysis[numerator]);
+        denom = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.analysis[denominator]);
+
+        // Display data in the UI
+        Promise.all([num, denom])
+          .then(function (results) {
+            if (num) {
+              let numeratorCount   = results[0].data,
+                  denominatorCount = results[1].data;
+              articlesContents.textContent = makeNumberReadable(numeratorCount) + " of " + makeNumberReadable(denominatorCount) + " checked";
+              percentageContents.textContent = Math.round(((numeratorCount/denominatorCount)*100)) + "%";
+            }
+          }
+        ).catch(function (error) { console.log(" error: " + error); });
+
+      } else {
+        console.log("Nothing");
+      };
+
+    }
+
+    getInsight(
+      "data_statement",
+      "This number tells you how many papers that we’ve analyzed have a data availability statement. To check if a paper has a data availability statement, we use data from PubMed and review papers manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data)",
+      "has_data_availability_statement",
+      "has_checked_data_availability_statement"
+    );
+
     /** Get queries for default article counts and strategy action list **/
     getCountQueries = function() {
       isPaperQuery                 = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_paper);
@@ -199,42 +255,6 @@ oareport = function(org) {
           }
         }
       ).catch(function (error) { console.log("getPolicy error: " + error); });
-    };
-
-    /** Check for data availability statements **/
-    getDataStatements = function() {
-      var dataStatementInfo = "";
-      /*jshint multistr: true */
-      dataStatementInfo = "This number tells you how many papers that we’ve analyzed have a data availability statement. To check if a paper has a data availability statement, we use data from PubMed and review papers manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data)";
-
-      // Display help text popover
-      const instance = tippy(document.querySelector('#data_statement_info'), {
-        allowHTML: true,
-        interactive: true,
-        placement: 'top',
-        appendTo: document.body,
-      });
-
-      instance.setContent(dataStatementInfo);
-
-      hasDataStatementQuery        = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_data_availability_statement);
-      hasCheckedDataStatementQuery = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_checked_data_availability_statement);
-      hasDataStatementCount        = axios.get(hasDataStatementQuery);
-      hasCheckedDataStatementCount = axios.get(hasCheckedDataStatementQuery);
-
-      Promise.all([hasDataStatementCount, hasCheckedDataStatementCount])
-        .then(function (results) {
-
-          // Display totals and % of articles for which we’ve verified data availability statements
-          if (hasDataStatementCount) {
-            let hasDataStatementCount        = results[0].data,
-                hasCheckedDataStatementCount = results[1].data;
-            dataStatementContents.textContent = makeNumberReadable(hasDataStatementCount) + " of " + makeNumberReadable(hasCheckedDataStatementCount) + " checked";
-            dataStatementPercentageContents.textContent = Math.round(((hasDataStatementCount/hasCheckedDataStatementCount)*100)) + "%";
-          }
-
-        }
-      ).catch(function (error) { console.log("getDataStatements error: " + error); });
     };
 
     /** Check for open data **/
@@ -801,12 +821,12 @@ oareport = function(org) {
     };
 
     /* Check if we track Data Availability Statements and display the data */
-    hasDataStatement = response.data.hits.hits[0]._source.analysis.has_data_availability_statement;
-    if (hasDataStatement) {
-      getDataStatements();
-    } else {
-      displayNone("#data_statement");
-    };
+    // hasDataStatement = response.data.hits.hits[0]._source.analysis.has_data_availability_statement;
+    // if (hasDataStatement) {
+    //   getDataStatements();
+    // } else {
+    //   displayNone("#data_statement");
+    // };
 
   })
   .catch(function (error) { console.log("ERROR: " + error); });
