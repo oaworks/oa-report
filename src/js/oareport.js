@@ -215,63 +215,6 @@ oareport = function(org) {
       canArchiveVORList            = axios.get(canArchiveVORListQuery);
     };
 
-    /** Check for an OA policy and display a link to the policy page in a tooltip **/
-    getPolicy = function() {
-      const instance = tippy(document.querySelector('#compliant_info'), {
-        allowHTML: true,
-        interactive: true,
-        placement: 'top',
-        appendTo: document.body,
-      });
-
-      var policyInfo = "";
-
-      // ...get its URL
-      hasPolicy = response.data.hits.hits[0]._source.policy.supported_policy;
-
-      // ...then get the number of compliant articles and display a tooltip
-      if (hasPolicy) {
-        policyURL = response.data.hits.hits[0]._source.policy.url;
-
-        isCompliantQuery = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_compliant);
-        isEligibleQuery  = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_covered_by_policy);
-        isCompliantCount = axios.get(isCompliantQuery);
-        isEligibleCount  = axios.get(isEligibleQuery);
-
-        /*jshint multistr: true */
-        policyInfo = "The percentage of articles that are compliant with <a href='" + policyURL + "' target='_blank' rel='noopener' class='underline'>your organization’s Open Access policy</a>. This number is specific to your policy and your requirements.";
-      } else {
-        policyInfo = "We couldn’t track a policy for your organization.";
-        compliantArticlesContents.textContent = "";
-        compliantPercentageContents.textContent = "N/A";
-        isCompliantCount = "";
-        isEligibleCount = "";
-      }
-      instance.setContent(policyInfo);
-
-      Promise.all([isCompliantCount, isEligibleCount])
-        .then(function (results) {
-
-          // Set total of articles depending on whether or not articles need to be covered by policy
-          if (isEligibleCount) {
-            let isEligibleCount = results[1].data;
-            totalArticles = isEligibleCount;
-            totalArticlesString = " eligible";
-          } else {
-            totalArticles = isPaperCount;
-            totalArticlesString =  " articles";
-          }
-
-          // Display totals and % of policy-compliant articles
-          if (isCompliantCount) {
-            let isCompliantCount = results[0].data;
-            compliantArticlesContents.textContent = makeNumberReadable(isCompliantCount) + " of " + makeNumberReadable(totalArticles) + totalArticlesString;
-            compliantPercentageContents.textContent = Math.round(((isCompliantCount/totalArticles)*100)) + "%";
-          }
-        }
-      ).catch(function (error) { console.log("getPolicy error: " + error); });
-    };
-
     /** Check for open access **/
     getOAInsight = function() {
       var openAccessInfo = "";
@@ -779,7 +722,6 @@ oareport = function(org) {
     }
 
     getCountQueries();
-    //getPolicy();
     displayInsights();
     displayStrategyVOR();
     displayStrategyAAM();
