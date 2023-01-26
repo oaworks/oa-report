@@ -175,7 +175,7 @@ oareport = function(org) {
 
     getInsight(
       "compliance",
-      "The percentage of articles that are compliant with <a href='" + policyURL + "' target='_blank' rel='noopener' class='underline'>your organization’s Open Access policy</a>. This number is specific to your policy and your requirements.",
+      "The percentage of articles that are compliant with <a href='" + response.data.hits.hits[0]._source.policy.url + "' target='_blank' rel='noopener' class='underline'>your organization’s Open Access policy</a>. This number is specific to your policy and your requirements.",
       "is_compliant",
       "is_covered_by_policy",
       "eligible"
