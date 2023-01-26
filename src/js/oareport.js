@@ -72,8 +72,6 @@ var queryHiddenInput               = document.querySelector("#download-form-q"),
 
 // Individual insights (metrics)
 var articlesContents               = document.querySelector("#articles"),
-    oaArticlesContents             = document.querySelector("#articles_oa"),
-    oaPercentageContents           = document.querySelector("#percent_oa"),
     freeArticlesContents           = document.querySelector("#articles_free"),
     freePercentageContents         = document.querySelector("#percent_free"),
     compliantArticlesContents      = document.querySelector("#articles_compliant"),
@@ -176,12 +174,20 @@ oareport = function(org) {
     };
 
     getInsight(
+      "open_access",
+      "The number of articles that are free and <a href='https://creativecommons.org/licenses/by/4.0/' class='underline' target='_blank' rel='noopener'>CC BY</a> <strong class='bold'>or</strong> <a href='https://creativecommons.org/publicdomain/zero/1.0/' class='underline' target='_blank' rel='noopener'>CC0</a> (in the public domain) on the publisher’s website, a repository or a preprint server.",
+      "is_oa",
+      "is_paper",
+      "articles"
+    )
+
+    getInsight(
       "compliance",
       "The percentage of articles that are compliant with <a href='" + policyURL + "' target='_blank' rel='noopener' class='underline'>your organization’s Open Access policy</a>. This number is specific to your policy and your requirements.",
       "is_compliant",
       "is_covered_by_policy",
       "eligible"
-    )
+    );
 
 
     getInsight(
@@ -216,35 +222,6 @@ oareport = function(org) {
       canArchiveAAMList            = axios.get(canArchiveAAMListQuery);
       canArchiveVOR                = axios.get(canArchiveVORQuery);
       canArchiveVORList            = axios.get(canArchiveVORListQuery);
-    };
-
-    /** Check for open access **/
-    getOAInsight = function() {
-      var openAccessInfo = "";
-      /*jshint multistr: true */
-      openAccessInfo = "The number of articles that are free and <a href='https://creativecommons.org/licenses/by/4.0/' class='underline' target='_blank' rel='noopener'>CC BY</a> <strong class='bold'>or</strong> <a href='https://creativecommons.org/publicdomain/zero/1.0/' class='underline' target='_blank' rel='noopener'>CC0</a> (in the public domain) on the publisher’s website, a repository or a preprint server.";
-
-      // Display help text popover
-      const instance = tippy(document.querySelector('#open_access_info'), {
-        allowHTML: true,
-        interactive: true,
-        placement: 'top',
-        appendTo: document.body,
-      });
-
-      instance.setContent(openAccessInfo);
-
-      isOAQuery = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_oa);
-      isOACount = axios.get(isOAQuery);
-
-      Promise.all([isOACount, isPaperCount]).then(function (results) {
-        if (isOACount) {
-          let isOACount     = results[0].data,
-          isPaperCount  = results[1].data;
-          oaArticlesContents.textContent = makeNumberReadable(isOACount) + " in total";
-          oaPercentageContents.textContent = Math.round(((isOACount/isPaperCount)*100)) + "%";
-        }
-      }).catch(function (error) { console.log("isOA error: " + error); });
     };
 
     /**  Display basic Insights (total article & free article counts) **/
@@ -730,15 +707,6 @@ oareport = function(org) {
     displayStrategyAAM();
     displayStrategyAPCFollowup();
     displayStrategyUnansweredRequests();
-
-    /* Check if we track OA articles and display the data */
-    // TODO improve this and do it for all insights as part oaworks/Gates$421
-    isOA = response.data.hits.hits[0]._source.analysis.is_oa;
-    if (isOA) {
-      getOAInsight();
-    }  else {
-      displayNone("#open_access");
-    };
 
   })
   .catch(function (error) { console.log("ERROR: " + error); });
