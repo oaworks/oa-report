@@ -70,18 +70,6 @@ var endDateContents                = document.querySelector("#end_date"),
 var queryHiddenInput               = document.querySelector("#download-form-q"),
     includeHiddenInput             = document.querySelector("#download-form-include");
 
-// Individual insights (metrics)
-var articlesContents               = document.querySelector("#articles"),
-    freeArticlesContents           = document.querySelector("#articles_free"),
-    freePercentageContents         = document.querySelector("#percent_free"),
-    compliantArticlesContents      = document.querySelector("#articles_compliant"),
-    compliantPercentageContents    = document.querySelector("#percent_compliant"),
-    complianceContents             = document.querySelector("#compliance"),
-    dataStatementPercentageContents= document.querySelector("#percent_data_statement"),
-    dataStatementContents          = document.querySelector("#articles_data_statement"),
-    openDataPercentageContents     = document.querySelector("#percent_open_data"),
-    openDataContents               = document.querySelector("#articles_open_data");
-
 /* Date display and filtering */
 // Set today’s date and 12 months ago date to display most recent Insights data as default
 const currentDate                  = new Date(),
@@ -193,7 +181,6 @@ oareport = function(org) {
       "eligible"
     );
 
-
     getInsight(
       "data_statement",
       "This number tells you how many papers that we’ve analyzed have a data availability statement. To check if a paper has a data availability statement, we use data from PubMed and review papers manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data)",
@@ -228,6 +215,8 @@ oareport = function(org) {
 
     /**  Display basic Insights (total article & free article counts) **/
     displayInsights = function() {
+      var articlesContents               = document.querySelector("#articles");
+
       Promise.all([isPaperCount])
         .then(function (results) {
           let isPaperCount   = results[0].data;
