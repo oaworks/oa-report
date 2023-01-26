@@ -125,14 +125,10 @@ oareport = function(org) {
   axios.get(report).then(function (response) {
 
     getInsight = function(id, info, numerator, denominator, denominatorText) {
-      var percentID          = "#percent_",
-          percentID          = percentID.concat(id),
-          articlesID         = "#articles_",
-          articlesID         = articlesID.concat(id),
-          infoID             = "#info_"
-          infoID             = infoID.concat(id),
-          contentID          = "#",
-          contentID          = contentID.concat(id),
+      var percentID          = "#percent_" + id,
+          articlesID         = "#articles_" + id,
+          infoID             = "#info_" + id,
+          contentID          = "#" + id,
           query              = response.data.hits.hits[0]._source.analysis[numerator];
 
       var percentageContents = document.querySelector(percentID), // % value
