@@ -787,22 +787,6 @@ oareport = function(org) {
       displayNone("#open_access");
     };
 
-    /* Check if we track Open Data and display the data */
-    hasOpenData = response.data.hits.hits[0]._source.analysis.has_open_data;
-    if (hasOpenData) {
-      getOpenData();
-    } else {
-      displayNone("#open_data");
-    };
-
-    /* Check if we track Data Availability Statements and display the data */
-    // hasDataStatement = response.data.hits.hits[0]._source.analysis.has_data_availability_statement;
-    // if (hasDataStatement) {
-    //   getDataStatements();
-    // } else {
-    //   displayNone("#data_statement");
-    // };
-
   })
   .catch(function (error) { console.log("ERROR: " + error); });
 };
