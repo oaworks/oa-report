@@ -174,12 +174,20 @@ oareport = function(org) {
     };
 
     getInsight(
+      "free",
+      "Articles that are free to read on the publisher website or any online repository, including temporarily accessible articles (“bronze Open Access”).",
+      "is_free_to_read",
+      "is_paper",
+      "articles"
+    );
+
+    getInsight(
       "open_access",
       "The number of articles that are free and <a href='https://creativecommons.org/licenses/by/4.0/' class='underline' target='_blank' rel='noopener'>CC BY</a> <strong class='bold'>or</strong> <a href='https://creativecommons.org/publicdomain/zero/1.0/' class='underline' target='_blank' rel='noopener'>CC0</a> (in the public domain) on the publisher’s website, a repository or a preprint server.",
       "is_oa",
       "is_paper",
       "articles"
-    )
+    );
 
     getInsight(
       "compliance",
@@ -226,22 +234,12 @@ oareport = function(org) {
 
     /**  Display basic Insights (total article & free article counts) **/
     displayInsights = function() {
-      Promise.all([isPaperCount, isFreeCount])
+      Promise.all([isPaperCount])
         .then(function (results) {
-          let isPaperCount   = results[0].data,
-              isFreeCount    = results[1].data;
+          let isPaperCount   = results[0].data;
 
           // Display totals and % of articles
           articlesContents.textContent = makeNumberReadable(isPaperCount);
-
-          // Display free-to-read articles
-          if (isFreeCount) {
-            freeArticlesContents.textContent = makeNumberReadable(isFreeCount) + " in total";
-            freePercentageContents.textContent = Math.round(((isFreeCount/isPaperCount)*100)) + "%";
-          } else {
-            freeArticlesContents.textContent = "";
-            freePercentageContents.textContent = "N/A";
-          }
         }
       ).catch(function (error) { console.log("displayInsights error: " + error); })
     };
