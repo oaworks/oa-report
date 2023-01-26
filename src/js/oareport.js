@@ -112,11 +112,11 @@ oareport = function(org) {
 
   axios.get(report).then(function (response) {
 
-    getInsight = function(id, info, numerator, denominator, denominatorText) {
-      var percentID          = "#percent_" + id,
-          articlesID         = "#articles_" + id,
-          infoID             = "#info_" + id,
-          contentID          = "#" + id,
+    getInsight = function(numerator, denominator, denominatorText, info) {
+      var percentID          = "#percent_" + numerator,
+          articlesID         = "#articles_" + numerator,
+          infoID             = "#info_" + numerator,
+          contentID          = "#" + numerator,
           query              = response.data.hits.hits[0]._source.analysis[numerator];
 
       var percentageContents = document.querySelector(percentID), // % value
@@ -158,43 +158,38 @@ oareport = function(org) {
     };
 
     getInsight(
-      "free",
-      "Articles that are free to read on the publisher website or any online repository, including temporarily accessible articles (“bronze Open Access”).",
       "is_free_to_read",
       "is_paper",
-      "articles"
+      "articles",
+      "Articles that are free to read on the publisher website or any online repository, including temporarily accessible articles (“bronze Open Access”)."
     );
 
     getInsight(
-      "open_access",
-      "The number of articles that are free and <a href='https://creativecommons.org/licenses/by/4.0/' class='underline' target='_blank' rel='noopener'>CC BY</a> <strong class='bold'>or</strong> <a href='https://creativecommons.org/publicdomain/zero/1.0/' class='underline' target='_blank' rel='noopener'>CC0</a> (in the public domain) on the publisher’s website, a repository or a preprint server.",
       "is_oa",
       "is_paper",
-      "articles"
+      "articles",
+      "The number of articles that are free and <a href='https://creativecommons.org/licenses/by/4.0/' class='underline' target='_blank' rel='noopener'>CC BY</a> <strong class='bold'>or</strong> <a href='https://creativecommons.org/publicdomain/zero/1.0/' class='underline' target='_blank' rel='noopener'>CC0</a> (in the public domain) on the publisher’s website, a repository or a preprint server."
     );
 
     getInsight(
-      "compliance",
-      "The percentage of articles that are compliant with <a href='" + response.data.hits.hits[0]._source.policy.url + "' target='_blank' rel='noopener' class='underline'>your organization’s Open Access policy</a>. This number is specific to your policy and your requirements.",
       "is_compliant",
       "is_covered_by_policy",
-      "eligible"
+      "eligible",
+      "The percentage of articles that are compliant with <a href='" + response.data.hits.hits[0]._source.policy.url + "' target='_blank' rel='noopener' class='underline'>your organization’s Open Access policy</a>. This number is specific to your policy and your requirements."
     );
 
     getInsight(
-      "data_statement",
-      "This number tells you how many papers that we’ve analyzed have a data availability statement. To check if a paper has a data availability statement, we use data from PubMed and review papers manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data)",
       "has_data_availability_statement",
       "has_checked_data_availability_statement",
-      "articles checked"
+      "articles checked",
+      "This number tells you how many papers that we’ve analyzed have a data availability statement. To check if a paper has a data availability statement, we use data from PubMed and review papers manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data)"
     );
 
     getInsight(
-      "open_data",
-      "The percentage of articles that shared any data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener' class='underline'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noopener' class='underline'>CC-BY</a> license. This figure only measures how many articles shared Open Data if they generated data in the first place. It also only measures if any of the datasets generated were open, not if all of them were open. To analyze this we work with Dataseer, who uses a combination of machine learning and human review to review the text of the papers",
       "has_open_data",
       "has_data",
-      "articles generating data"
+      "articles generating data",
+      "The percentage of articles that shared any data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener' class='underline'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noopener' class='underline'>CC-BY</a> license. This figure only measures how many articles shared Open Data if they generated data in the first place. It also only measures if any of the datasets generated were open, not if all of them were open. To analyze this we work with Dataseer, who uses a combination of machine learning and human review to review the text of the papers"
     );
 
     /** Get queries for default article counts and strategy action list **/

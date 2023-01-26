@@ -94,42 +94,42 @@ permalink: "{{ org._source.objectID | slug }}/"
         </dd>
       </div>
 
-      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden" id="free">
+      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden" id="is_free_to_read">
         <dt>
           <div class="absolute bg-carnation-500 text-white rounded-md p-6">
             {% icon "gift" %}
           </div>
           <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
             Free-to-read
-            <sup id="info_free">{% icon_small "help-circle" %}</sup>
+            <sup id="info_is_free_to_read">{% icon_small "help-circle" %}</sup>
           </p>
         </dt>
         <dd class="ml-24 flex items-baseline">
           <p class="text-4xl font-semibold text-neutral-900">
-            <span id="percent_free">00%</span>
+            <span id="percent_is_free_to_read">00%</span>
           </p>
           <p class="ml-2 text-sm font-medium text-neutral-600">
-            <span id="articles_free">000</span>
+            <span id="articles_is_free_to_read">000</span>
           </p>
         </dd>
       </div>
 
-      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden" id="compliance">
+      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden" id="is_compliant">
         <dt>
           <div class="absolute bg-carnation-500 text-white rounded-md p-6">
             {% icon "check-circle" %}
           </div>
           <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
             Policy-compliant
-            <sup id="info_compliance">{% icon_small "help-circle" %}</sup>
+            <sup id="info_is_compliant">{% icon_small "help-circle" %}</sup>
           </p>
         </dt>
         <dd class="ml-24 flex items-baseline">
           <p class="text-4xl font-semibold text-neutral-900">
-            <span id="percent_compliance">00%</span>
+            <span id="percent_is_compliant">00%</span>
           </p>
           <p class="ml-2 text-sm font-medium text-neutral-600">
-            <span id="articles_compliance">000</span>
+            <span id="articles_is_compliant">000</span>
           </p>
         </dd>
       </div>
@@ -137,7 +137,7 @@ permalink: "{{ org._source.objectID | slug }}/"
 
     {# Second row of insights: custom, data-related insights #}
     <dl class="col-span-12 sm:mb-3 grid grid-cols-1 gap-3 lg:gap-6 grid-flow-col auto-cols-fr">
-      <div id="open_access">
+      <div id="is_oa">
         <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden">
           <dt>
             <div class="absolute bg-carnation-500 text-white rounded-md p-6">
@@ -145,21 +145,21 @@ permalink: "{{ org._source.objectID | slug }}/"
             </div>
             <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
               Open Access
-              <sup id="info_open_access">{% icon_small "help-circle" %}</sup>
+              <sup id="info_is_oa">{% icon_small "help-circle" %}</sup>
             </p>
           </dt>
           <dd class="ml-24 flex items-baseline">
             <p class="text-4xl font-semibold text-neutral-900">
-              <span id="percent_open_access">00%</span>
+              <span id="percent_is_oa">00%</span>
             </p>
             <p class="ml-2 text-sm font-medium text-neutral-600">
-              <span id="articles_open_access">000</span>
+              <span id="articles_is_oa">000</span>
             </p>
           </dd>
         </div>
       </div>
 
-      <div id="data_statement">
+      <div id="has_data_availability_statement">
         <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden">
           <dt>
             <div class="absolute bg-carnation-500 text-white rounded-md p-6">
@@ -167,21 +167,21 @@ permalink: "{{ org._source.objectID | slug }}/"
             </div>
             <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
               Have data availability statements
-              <sup id="info_data_statement">{% icon_small "help-circle" %}</sup>
+              <sup id="info_has_data_availability_statement">{% icon_small "help-circle" %}</sup>
             </p>
           </dt>
           <dd class="ml-24 flex items-baseline">
             <p class="text-4xl font-semibold text-neutral-900">
-              <span id="percent_data_statement">00%</span>
+              <span id="percent_has_data_availability_statement">00%</span>
             </p>
             <p class="ml-2 text-sm font-medium text-neutral-600">
-              <span id="articles_data_statement">000</span>
+              <span id="articles_has_data_availability_statement">000</span>
             </p>
           </dd>
         </div>
       </div>
 
-      <div id="open_data">
+      <div id="has_open_data">
         <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden">
           <dt>
             <div class="absolute bg-carnation-500 text-white rounded-md p-6">
@@ -189,15 +189,15 @@ permalink: "{{ org._source.objectID | slug }}/"
             </div>
             <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
               With Open Data
-              <sup id="info_open_data">{% icon_small "help-circle" %}</sup>
+              <sup id="info_has_open_data">{% icon_small "help-circle" %}</sup>
             </p>
           </dt>
           <dd class="ml-24 flex items-baseline">
             <p class="text-4xl font-semibold text-neutral-900">
-              <span id="percent_open_data">00%</span>
+              <span id="percent_has_open_data">00%</span>
             </p>
             <p class="ml-2 text-sm font-medium text-neutral-600">
-              <span id="articles_open_data">000</span>
+              <span id="articles_has_open_data">000</span>
             </p>
           </dd>
         </div>
