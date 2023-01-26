@@ -1,5 +1,4 @@
 ::placeholder {
-  font-style: italic;
   font-size: .85rem;
   color: var(--mid-grey);
 }
@@ -17,7 +16,7 @@ label {
 
 input {
   padding: var(--space-xs);
-  background-color: transparent;
+  background-color: var(--white);
   border: 1px solid;
   font-size: var(--typescale-5);
   font-family: var(--sans-serif);
