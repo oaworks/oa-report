@@ -173,7 +173,15 @@ oareport = function(org) {
         displayNone(contentID);
       };
 
-    }
+    };
+
+    getInsight(
+      "compliance",
+      "The percentage of articles that are compliant with <a href='" + policyURL + "' target='_blank' rel='noopener' class='underline'>your organization’s Open Access policy</a>. This number is specific to your policy and your requirements.",
+      "is_compliant",
+      "is_covered_by_policy"
+    )
+
 
     getInsight(
       "data_statement",
@@ -771,7 +779,7 @@ oareport = function(org) {
     }
 
     getCountQueries();
-    getPolicy();
+    //getPolicy();
     displayInsights();
     displayStrategyVOR();
     displayStrategyAAM();
