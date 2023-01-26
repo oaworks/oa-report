@@ -182,6 +182,13 @@ oareport = function(org) {
       "has_checked_data_availability_statement"
     );
 
+    getInsight(
+      "open_data",
+      "The percentage of articles that shared any data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener' class='underline'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noopener' class='underline'>CC-BY</a> license. This figure only measures how many articles shared Open Data if they generated data in the first place. It also only measures if any of the datasets generated were open, not if all of them were open. To analyze this we work with Dataseer, who uses a combination of machine learning and human review to review the text of the papers",
+      "has_open_data",
+      "has_data"
+    );
+
     /** Get queries for default article counts and strategy action list **/
     getCountQueries = function() {
       isPaperQuery                 = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_paper);
@@ -255,38 +262,6 @@ oareport = function(org) {
           }
         }
       ).catch(function (error) { console.log("getPolicy error: " + error); });
-    };
-
-    /** Check for open data **/
-    getOpenData = function() {
-      var openDataInfo = "";
-      /*jshint multistr: true */
-      openDataInfo = "The percentage of articles that shared any data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noopener'>CC-BY</a> license. This figure only measures how many articles shared Open Data if they generated data in the first place. It also only measures if any of the datasets generated were open, not if all of them were open. To analyze this we work with Dataseer, who uses a combination of machine learning and human review to review the text of the papers.";
-
-      // Display help text popover
-      const instance = tippy(document.querySelector('#open_data_info'), {
-        allowHTML: true,
-        interactive: true,
-        placement: 'top',
-        appendTo: document.body,
-      });
-
-      instance.setContent(openDataInfo);
-
-      hasOpenDataQuery             = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_open_data);
-      hasCheckedDataQuery          = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.has_data);
-      hasOpenDataCount             = axios.get(hasOpenDataQuery);
-      hasCheckedDataCount          = axios.get(hasCheckedDataQuery);
-
-      Promise.all([hasOpenDataCount, hasCheckedDataCount]).then(function (results) {
-        // Display totals and % of articles sharing data openly
-        if (hasOpenDataCount) {
-          let hasOpenDataCount = results[0].data,
-          hasCheckedDataCount = results[1].data;
-          openDataContents.textContent = makeNumberReadable(hasOpenDataCount) + " of " + makeNumberReadable(hasCheckedDataCount) + " articles that generate data";
-          openDataPercentageContents.textContent = Math.round(((hasOpenDataCount/hasCheckedDataCount)*100)) + "%";
-        }
-      }).catch(function (error) { console.log("getOpenData error: " + error); });
     };
 
     /** Check for open access **/
