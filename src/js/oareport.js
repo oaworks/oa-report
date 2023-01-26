@@ -217,7 +217,6 @@ oareport = function(org) {
     /** Get queries for default article counts and strategy action list **/
     getCountQueries = function() {
       isPaperQuery                 = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_paper);
-      isFreeQuery                  = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_free_to_read);
       canArchiveAAMQuery           = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
       canArchiveAAMListQuery       = (queryPrefix + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
       canArchiveVORQuery           = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.email_author_vor.query);
@@ -225,7 +224,6 @@ oareport = function(org) {
       hasCustomExportIncludes      = (response.data.hits.hits[0]._source.export_includes);
 
       isPaperCount                 = axios.get(isPaperQuery);
-      isFreeCount                  = axios.get(isFreeQuery);
       canArchiveAAM                = axios.get(canArchiveAAMQuery);
       canArchiveAAMList            = axios.get(canArchiveAAMListQuery);
       canArchiveVOR                = axios.get(canArchiveVORQuery);
