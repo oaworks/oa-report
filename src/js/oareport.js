@@ -170,7 +170,7 @@ oareport = function(org) {
         ).catch(function (error) { console.log(" error: " + error); });
 
       } else {
-        console.log("Nothing");
+        displayNone(contentID);
       };
 
     }
