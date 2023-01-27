@@ -89,106 +89,35 @@ permalink: "{{ org._source.objectID | slug }}/"
         </dd>
       </div>
 
-      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden" id="is_free_to_read">
-        <dt>
-          <div class="absolute bg-carnation-500 text-white rounded-md p-6">
-            {% icon "gift" %}
-          </div>
-          <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
-            Free-to-read
-            <sup id="info_is_free_to_read">{% icon_small "help-circle" %}</sup>
-          </p>
-        </dt>
-        <dd class="ml-24 flex items-baseline">
-          <p class="text-4xl font-semibold text-neutral-900">
-            <span id="percent_is_free_to_read">00%</span>
-          </p>
-          <p class="ml-2 text-sm font-medium text-neutral-600">
-            <span id="articles_is_free_to_read">000</span>
-          </p>
-        </dd>
-      </div>
+      {{ component("card", {
+        id: "is_free_to_read",
+        title: "Free-to-read",
+        icon: "gift"
+      }) }}
 
-      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden" id="is_compliant">
-        <dt>
-          <div class="absolute bg-carnation-500 text-white rounded-md p-6">
-            {% icon "check-circle" %}
-          </div>
-          <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
-            Policy-compliant
-            <sup id="info_is_compliant">{% icon_small "help-circle" %}</sup>
-          </p>
-        </dt>
-        <dd class="ml-24 flex items-baseline">
-          <p class="text-4xl font-semibold text-neutral-900">
-            <span id="percent_is_compliant">00%</span>
-          </p>
-          <p class="ml-2 text-sm font-medium text-neutral-600">
-            <span id="articles_is_compliant">000</span>
-          </p>
-        </dd>
-      </div>
+      {{ component("card", {
+        id: "is_compliant",
+        title: "Policy-compliant",
+        icon: "check-circle"
+      }) }}
 
-      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden" id="is_oa">
-        <dt>
-          <div class="absolute bg-carnation-500 text-white rounded-md p-6">
-            {% icon "unlock" %}
-          </div>
-          <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
-            Open Access
-            <sup id="info_is_oa">{% icon_small "help-circle" %}</sup>
-          </p>
-        </dt>
-        <dd class="ml-24 flex items-baseline">
-          <p class="text-4xl font-semibold text-neutral-900">
-            <span id="percent_is_oa">00%</span>
-          </p>
-          <p class="ml-2 text-sm font-medium text-neutral-600">
-            <span id="articles_is_oa">000</span>
-          </p>
-        </dd>
-      </div>
+      {{ component("card", {
+        id: "is_oa",
+        title: "Open Access",
+        icon: "unlock"
+      }) }}
 
-      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden" id="has_data_availability_statement">
-        <dt>
-          <div class="absolute bg-carnation-500 text-white rounded-md p-6">
-            {% icon "search" %}
-          </div>
-          <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
-            Have data availability statements
-            <sup id="info_has_data_availability_statement">{% icon_small "help-circle" %}</sup>
-          </p>
-        </dt>
-        <dd class="ml-24 flex items-baseline">
-          <p class="text-4xl font-semibold text-neutral-900">
-            <span id="percent_has_data_availability_statement">00%</span>
-          </p>
-          <p class="ml-2 text-sm font-medium text-neutral-600">
-            <span id="articles_has_data_availability_statement">000</span>
-          </p>
-        </dd>
-      </div>
+      {{ component("card", {
+        id: "has_data_availability_statement",
+        title: "Have data availability statements",
+        icon: "search"
+      }) }}
 
-      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden" id="has_open_data">
-        <dt>
-          <div class="absolute bg-carnation-500 text-white rounded-md p-6">
-            {% icon "database" %}
-          </div>
-          <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
-            With Open Data
-            <sup id="info_has_open_data">{% icon_small "help-circle" %}</sup>
-          </p>
-        </dt>
-        <dd class="ml-24 flex items-baseline">
-          <p class="text-4xl font-semibold text-neutral-900">
-            <span id="percent_has_open_data">00%</span>
-          </p>
-          <p class="ml-2 text-sm font-medium text-neutral-600">
-            <span id="articles_has_open_data">000</span>
-          </p>
-        </dd>
-      </div>
-    </dl>
+      {{ component("card", {
+        id: "has_open_data",
+        title: "With Open Data",
+        icon: "database"
+      }) }}
 
     {# TODO: Filter by date #}
     {# <div class="col-span-12 mb-6 grid grid-cols-12 gap-3 lg:gap-6">
