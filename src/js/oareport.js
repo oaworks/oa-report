@@ -114,20 +114,61 @@ oareport = function(org) {
 
   axios.get(report).then(function (response) {
 
+    // getInsight = function(numerator, denominator, denominatorText, info) {
+    //   var percentID          = "#percent_" + numerator,
+    //       articlesID         = "#articles_" + numerator,
+    //       infoID             = "#info_" + numerator,
+    //       contentID          = "#" + numerator;
+    //
+    //   var percentageContents = document.querySelector(percentID), // % value
+    //       articlesContents   = document.querySelector(articlesID), // full-text value
+    //       infoContents       = document.querySelector(infoID), // help text value
+    //       contents           = document.querySelector(contentID); // the whole card
+    //
+    //   // Check if there are any data, otherwise remove card
+    //   if (query) {
+    //
+    //     // Display help text / info popover
+    //     const instance = tippy(infoContents, {
+    //       allowHTML: true,
+    //       interactive: true,
+    //       placement: 'top',
+    //       appendTo: document.body,
+    //     }).setContent(info);
+    //
+    //     // Get insight’s count queries
+    //     shown = response.data.hits.hits[0]._source.analysis[numerator].show_on_web;
+    //     num = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.analysis[numerator].query);
+    //     denom = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.analysis[denominator].query);
+    //
+    //     // Display data in the UI
+    //     Promise.all([num, denom])
+    //       .then(function (results) {
+    //         if (num) {
+    //           let numeratorCount   = results[0].data,
+    //               denominatorCount = results[1].data;
+    //           articlesContents.textContent = makeNumberReadable(numeratorCount) + " of " + makeNumberReadable(denominatorCount) + " " + denominatorText;
+    //           percentageContents.textContent = Math.round(((numeratorCount/denominatorCount)*100)) + "%";
+    //         }
+    //       }
+    //     ).catch(function (error) { console.log(" error: " + error); });
+    //
+    //   } else {
+    //     displayNone(contentID);
+    //   };
+    //
+    // };
+
     getInsight = function(numerator, denominator, denominatorText, info) {
-      var percentID          = "#percent_" + numerator,
-          articlesID         = "#articles_" + numerator,
-          infoID             = "#info_" + numerator,
-          contentID          = "#" + numerator,
-          query              = response.data.hits.hits[0]._source.analysis[numerator];
 
-      var percentageContents = document.querySelector(percentID), // % value
-          articlesContents   = document.querySelector(articlesID), // full-text value
-          infoContents       = document.querySelector(infoID), // help text value
-          contents           = document.querySelector(contentID); // the whole card
+      var shown     = response.data.hits.hits[0]._source.analysis[numerator].show_on_web,
+          contentID = "#" + numerator; // the whole insight’s data card
 
-      // Check if there are any data, otherwise remove card
-      if (query) {
+      if (shown == true) {
+        // Select elements to show data
+        var percentageContents = document.querySelector("#percent_" + numerator), // % value
+            articlesContents   = document.querySelector("#articles_" + numerator), // full-text value
+            infoContents       = document.querySelector("#info_" + numerator); // help text value
 
         // Display help text / info popover
         const instance = tippy(infoContents, {
@@ -144,19 +185,20 @@ oareport = function(org) {
         // Display data in the UI
         Promise.all([num, denom])
           .then(function (results) {
-            if (num) {
-              let numeratorCount   = results[0].data,
-                  denominatorCount = results[1].data;
+            let numeratorCount   = results[0].data,
+                denominatorCount = results[1].data;
+            if (denominatorCount) {
               articlesContents.textContent = makeNumberReadable(numeratorCount) + " of " + makeNumberReadable(denominatorCount) + " " + denominatorText;
               percentageContents.textContent = Math.round(((numeratorCount/denominatorCount)*100)) + "%";
-            }
+            } else {
+              articlesContents.textContent = "";
+              percentageContents.textContent = "N/A";
+            };
           }
         ).catch(function (error) { console.log(" error: " + error); });
-
       } else {
         displayNone(contentID);
       };
-
     };
 
     getInsight(
@@ -176,7 +218,7 @@ oareport = function(org) {
     getInsight(
       "is_compliant",
       "is_covered_by_policy",
-      "eligible",
+      "articles covered",
       "The percentage of articles that are compliant with <a href='" + response.data.hits.hits[0]._source.policy.url + "' target='_blank' rel='noopener' class='underline'>your organization’s Open Access policy</a>. This number is specific to your policy and your requirements."
     );
 
