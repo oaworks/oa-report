@@ -102,6 +102,8 @@ oareport = function(org) {
       queryPrefix                  = queryBase + "q=" + dateRange,
       countQueryPrefix             = countQueryBase + "q=" + dateRange;
 
+      console.log(report);
+
   // Check if user is authentified
   let orgKey = "";
   if (Object.keys(OAKEYS).length !== 0) {
@@ -136,8 +138,8 @@ oareport = function(org) {
         }).setContent(info);
 
         // Get insight’s count queries
-        num = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.analysis[numerator]);
-        denom = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.analysis[denominator]);
+        num = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.analysis[numerator].query);
+        denom = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.analysis[denominator].query);
 
         // Display data in the UI
         Promise.all([num, denom])
@@ -194,7 +196,7 @@ oareport = function(org) {
 
     /** Get queries for default article counts and strategy action list **/
     getCountQueries = function() {
-      isPaperQuery                 = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_paper);
+      isPaperQuery                 = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_paper.query);
       canArchiveAAMQuery           = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
       canArchiveAAMListQuery       = (queryPrefix + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
       canArchiveVORQuery           = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.email_author_vor.query);
