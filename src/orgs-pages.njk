@@ -73,8 +73,7 @@ permalink: "{{ org._source.objectID | slug }}/"
       </h2>
     </header>
 
-    {# First row of insights: all defaults #}
-    <dl class="col-span-12 sm:mb-3 grid grid-cols-1 gap-3 lg:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="col-span-12 gap-3 lg:gap-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
       <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden">
         <dt>
           <div class="absolute bg-carnation-500 text-white rounded-md p-6">
@@ -133,74 +132,65 @@ permalink: "{{ org._source.objectID | slug }}/"
           </p>
         </dd>
       </div>
-    </dl>
 
-    {# Second row of insights: custom, data-related insights #}
-    <dl class="col-span-12 sm:mb-3 grid grid-cols-1 gap-3 lg:gap-6 grid-flow-col auto-cols-fr">
-      <div id="is_oa">
-        <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden">
-          <dt>
-            <div class="absolute bg-carnation-500 text-white rounded-md p-6">
-              {% icon "unlock" %}
-            </div>
-            <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
-              Open Access
-              <sup id="info_is_oa">{% icon_small "help-circle" %}</sup>
-            </p>
-          </dt>
-          <dd class="ml-24 flex items-baseline">
-            <p class="text-4xl font-semibold text-neutral-900">
-              <span id="percent_is_oa">00%</span>
-            </p>
-            <p class="ml-2 text-sm font-medium text-neutral-600">
-              <span id="articles_is_oa">000</span>
-            </p>
-          </dd>
-        </div>
+      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden" id="is_oa">
+        <dt>
+          <div class="absolute bg-carnation-500 text-white rounded-md p-6">
+            {% icon "unlock" %}
+          </div>
+          <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
+            Open Access
+            <sup id="info_is_oa">{% icon_small "help-circle" %}</sup>
+          </p>
+        </dt>
+        <dd class="ml-24 flex items-baseline">
+          <p class="text-4xl font-semibold text-neutral-900">
+            <span id="percent_is_oa">00%</span>
+          </p>
+          <p class="ml-2 text-sm font-medium text-neutral-600">
+            <span id="articles_is_oa">000</span>
+          </p>
+        </dd>
       </div>
 
-      <div id="has_data_availability_statement">
-        <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden">
-          <dt>
-            <div class="absolute bg-carnation-500 text-white rounded-md p-6">
-              {% icon "search" %}
-            </div>
-            <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
-              Have data availability statements
-              <sup id="info_has_data_availability_statement">{% icon_small "help-circle" %}</sup>
-            </p>
-          </dt>
-          <dd class="ml-24 flex items-baseline">
-            <p class="text-4xl font-semibold text-neutral-900">
-              <span id="percent_has_data_availability_statement">00%</span>
-            </p>
-            <p class="ml-2 text-sm font-medium text-neutral-600">
-              <span id="articles_has_data_availability_statement">000</span>
-            </p>
-          </dd>
-        </div>
+      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden" id="has_data_availability_statement">
+        <dt>
+          <div class="absolute bg-carnation-500 text-white rounded-md p-6">
+            {% icon "search" %}
+          </div>
+          <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
+            Have data availability statements
+            <sup id="info_has_data_availability_statement">{% icon_small "help-circle" %}</sup>
+          </p>
+        </dt>
+        <dd class="ml-24 flex items-baseline">
+          <p class="text-4xl font-semibold text-neutral-900">
+            <span id="percent_has_data_availability_statement">00%</span>
+          </p>
+          <p class="ml-2 text-sm font-medium text-neutral-600">
+            <span id="articles_has_data_availability_statement">000</span>
+          </p>
+        </dd>
       </div>
 
-      <div id="has_open_data">
-        <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden">
-          <dt>
-            <div class="absolute bg-carnation-500 text-white rounded-md p-6">
-              {% icon "database" %}
-            </div>
-            <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
-              With Open Data
-              <sup id="info_has_open_data">{% icon_small "help-circle" %}</sup>
-            </p>
-          </dt>
-          <dd class="ml-24 flex items-baseline">
-            <p class="text-4xl font-semibold text-neutral-900">
-              <span id="percent_has_open_data">00%</span>
-            </p>
-            <p class="ml-2 text-sm font-medium text-neutral-600">
-              <span id="articles_has_open_data">000</span>
-            </p>
-          </dd>
-        </div>
+      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden" id="has_open_data">
+        <dt>
+          <div class="absolute bg-carnation-500 text-white rounded-md p-6">
+            {% icon "database" %}
+          </div>
+          <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
+            With Open Data
+            <sup id="info_has_open_data">{% icon_small "help-circle" %}</sup>
+          </p>
+        </dt>
+        <dd class="ml-24 flex items-baseline">
+          <p class="text-4xl font-semibold text-neutral-900">
+            <span id="percent_has_open_data">00%</span>
+          </p>
+          <p class="ml-2 text-sm font-medium text-neutral-600">
+            <span id="articles_has_open_data">000</span>
+          </p>
+        </dd>
       </div>
     </dl>
 
