@@ -112,7 +112,7 @@ replaceDateRange(lastYearStartDate, lastYearEndDate);
 
 // Get organisational data to produce reports
 oareport = function(org) {
-  let report                       = base + "orgs?q=name:%22" + org + "%22",
+  let report                       = "https://api.oa.works/report/" + "orgs?q=name:%22" + org + "%22",
       queryPrefix                  = queryBase + "q=" + dateRange,
       countQueryPrefix             = countQueryBase + "q=" + dateRange;
 
