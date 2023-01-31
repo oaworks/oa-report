@@ -164,11 +164,18 @@ oareport = function(org) {
       var shown     = response.data.hits.hits[0]._source.analysis[numerator].show_on_web,
           contentID = "#" + numerator; // the whole insight’s data card
 
-      if (shown == true) {
+      if (shown === true) {
         // Select elements to show data
         var percentageContents = document.querySelector("#percent_" + numerator), // % value
             articlesContents   = document.querySelector("#articles_" + numerator), // full-text value
             infoContents       = document.querySelector("#info_" + numerator); // help text value
+
+        // Check if there’s help text specified in orgindex, otherwise use text provided
+        var helpText  = response.data.hits.hits[0]._source.analysis[numerator].help_text;
+
+        if (helpText === "" || helpText === undefined) {
+          helpText = info;
+        }
 
         // Display help text / info popover
         const instance = tippy(infoContents, {
@@ -176,7 +183,7 @@ oareport = function(org) {
           interactive: true,
           placement: 'top',
           appendTo: document.body,
-        }).setContent(info);
+        }).setContent(helpText);
 
         // Get insight’s count queries
         num = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.analysis[numerator].query);
