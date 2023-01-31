@@ -4,8 +4,6 @@ const base             = "https://beta.oa.works/report/",
       countQueryBase   = base + "works/count?",
       csvExportBase    = baseBg + "works.csv?size=all&",
       articleEmailBase = baseBg + "email/";
-let canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL, dateRangeButton, csvEmailButton, totalArticles, hasDataStatementCount, hasCheckedDataStatementCount, hasOpenDataCount, hasCheckedDataCount;
-let isCompliant = false;
 
 // Detect browser’s locale to display human-readable numbers
 getUsersLocale = function() {
@@ -174,7 +172,7 @@ oareport = function(org) {
         displayNone(contentID);
       };
     };
-    
+
     /**  Display total articles **/
     // TODO: allow this to use getInsight()
     // getInsight(
