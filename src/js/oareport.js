@@ -166,7 +166,8 @@ oareport = function(org) {
 
       if (shown === true) {
         // Select elements to show data
-        var percentageContents = document.querySelector("#percent_" + numerator), // % value
+        var cardContents       = document.querySelector(contentID),
+            percentageContents = document.querySelector("#percent_" + numerator), // % value
             articlesContents   = document.querySelector("#articles_" + numerator), // full-text value
             infoContents       = document.querySelector("#info_" + numerator); // help text value
 
@@ -194,6 +195,7 @@ oareport = function(org) {
           .then(function (results) {
             let numeratorCount   = results[0].data,
                 denominatorCount = results[1].data;
+
             if (denominatorCount) {
               articlesContents.textContent = makeNumberReadable(numeratorCount) + " of " + makeNumberReadable(denominatorCount) + " " + denominatorText;
               percentageContents.textContent = Math.round(((numeratorCount/denominatorCount)*100)) + "%";
@@ -201,6 +203,10 @@ oareport = function(org) {
               articlesContents.textContent = "";
               percentageContents.textContent = "N/A";
             };
+
+            // Once data has loaded, display the card
+            cardContents.classList.remove("invisible");
+            cardContents.classList.add("visible");
           }
         ).catch(function (error) { console.log(" error: " + error); });
       } else {
