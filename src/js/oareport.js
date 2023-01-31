@@ -122,51 +122,6 @@ oareport = function(org) {
 
   axios.get(report).then(function (response) {
 
-    // getInsight = function(numerator, denominator, denominatorText, info) {
-    //   var percentID          = "#percent_" + numerator,
-    //       articlesID         = "#articles_" + numerator,
-    //       infoID             = "#info_" + numerator,
-    //       contentID          = "#" + numerator;
-    //
-    //   var percentageContents = document.querySelector(percentID), // % value
-    //       articlesContents   = document.querySelector(articlesID), // full-text value
-    //       infoContents       = document.querySelector(infoID), // help text value
-    //       contents           = document.querySelector(contentID); // the whole card
-    //
-    //   // Check if there are any data, otherwise remove card
-    //   if (query) {
-    //
-    //     // Display help text / info popover
-    //     const instance = tippy(infoContents, {
-    //       allowHTML: true,
-    //       interactive: true,
-    //       placement: 'top',
-    //       appendTo: document.body,
-    //     }).setContent(info);
-    //
-    //     // Get insight’s count queries
-    //     shown = response.data.hits.hits[0]._source.analysis[numerator].show_on_web;
-    //     num = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.analysis[numerator].query);
-    //     denom = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.analysis[denominator].query);
-    //
-    //     // Display data in the UI
-    //     Promise.all([num, denom])
-    //       .then(function (results) {
-    //         if (num) {
-    //           let numeratorCount   = results[0].data,
-    //               denominatorCount = results[1].data;
-    //           articlesContents.textContent = makeNumberReadable(numeratorCount) + " of " + makeNumberReadable(denominatorCount) + " " + denominatorText;
-    //           percentageContents.textContent = Math.round(((numeratorCount/denominatorCount)*100)) + "%";
-    //         }
-    //       }
-    //     ).catch(function (error) { console.log(" error: " + error); });
-    //
-    //   } else {
-    //     displayNone(contentID);
-    //   };
-    //
-    // };
-
     getInsight = function(numerator, denominator, denominatorText, info) {
 
       var shown     = response.data.hits.hits[0]._source.analysis[numerator].show_on_web,
