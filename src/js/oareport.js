@@ -131,20 +131,13 @@ oareport = function(org) {
             articlesContents   = document.querySelector("#articles_" + numerator), // full-text value
             infoContents       = document.querySelector("#info_" + numerator); // help text value
 
-        // Check if there’s help text specified in orgindex, otherwise use text provided
-        var helpText  = response.data.hits.hits[0]._source.analysis[numerator].help_text;
-
-        if (helpText === "" || helpText === undefined) {
-          helpText = info;
-        }
-
         // Display help text / info popover
         const instance = tippy(infoContents, {
           allowHTML: true,
           interactive: true,
           placement: 'top',
           appendTo: document.body,
-        }).setContent(helpText);
+        }).setContent(info);
 
         // Get insight’s count queries
         num = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.analysis[numerator].query);
