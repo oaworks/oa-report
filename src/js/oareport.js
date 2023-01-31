@@ -614,7 +614,7 @@ oareport = function(org) {
           }
         ).catch(function (error) { console.log("Export error: " + error); });
 
-      isPaperURL = (dateRange + response.data.hits.hits[0]._source.analysis.is_paper);
+      isPaperURL = (dateRange + response.data.hits.hits[0]._source.analysis.is_paper.query);
       let query = "q=" + isPaperURL.replaceAll(" ", "%20"),
           form = new FormData(document.getElementById("download_csv"));
 
@@ -622,7 +622,7 @@ oareport = function(org) {
       var email = "&" + new URLSearchParams(form).toString();
 
       var include;
-      if (hasCustomExportIncludes !== undefined) {
+      if (hasCustomExportIncludes !== undefined && hasCustomExportIncludes !== "") {
         include = "&include=" + hasCustomExportIncludes;
       } else {
         include =  "&include=DOI,title,subtitle,publisher,journal,issn,published,published_year,PMCID,volume,issue,authorships.author.display_name,authorships.author.orcid,authorships.institutions.display_name,authorships.institutions.ror,funder.name,funder.award,is_oa,oa_status,journal_oa_type,publisher_license,has_repository_copy,repository_license,repository_version,repository_url,has_oa_locations_embargoed,can_archive,version,concepts.display_name,concepts.level,concepts.score,subject,pmc_has_data_availability_statement,cited_by_count";
