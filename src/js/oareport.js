@@ -12,9 +12,17 @@ getUsersLocale = function() {
   return navigator.languages && navigator.languages.length ? navigator.languages[0] : navigator.language;
 };
 
+// Visually hide an element
 displayNone = function(id) {
   var elem = document.querySelector(id);
       elem.style.display = 'none';
+}
+
+// Turn opacity to 100% for an element
+changeOpacity = function(id) {
+  var elem = document.querySelector(id);
+      elem.classList.remove("opacity-0");
+      elem.classList.add("opacity-100");
 }
 
 // Do math with days on a date
@@ -166,8 +174,7 @@ oareport = function(org) {
 
       if (shown === true) {
         // Select elements to show data
-        var cardContents       = document.querySelector(contentID),
-            percentageContents = document.querySelector("#percent_" + numerator), // % value
+        var percentageContents = document.querySelector("#percent_" + numerator), // % value
             articlesContents   = document.querySelector("#articles_" + numerator), // full-text value
             infoContents       = document.querySelector("#info_" + numerator); // help text value
 
@@ -205,8 +212,7 @@ oareport = function(org) {
             };
 
             // Once data has loaded, display the card
-            cardContents.classList.remove("invisible");
-            cardContents.classList.add("visible");
+            changeOpacity(contentID);
           }
         ).catch(function (error) { console.log(" error: " + error); });
       } else {
