@@ -2,7 +2,8 @@
 {{ component("card", {
   id: "",
   title: "",
-  icon: ""
+  icon: "",
+  raw_number: false
 }) }}
 #}
 
@@ -20,8 +21,10 @@
     <p class="text-4xl font-semibold text-neutral-900">
       <span id="percent_{{ params.id }}">00%</span>
     </p>
+    {% if not params.raw_number %}
     <p class="ml-2 text-sm font-medium text-neutral-600">
       <span id="articles_{{ params.id }}">000</span>
     </p>
+    {% endif %}
   </dd>
 </div>

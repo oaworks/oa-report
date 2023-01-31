@@ -70,24 +70,12 @@ permalink: "{{ org._source.objectID | slug }}/"
     </header>
 
     <div class="col-span-12 gap-3 lg:gap-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-      <div class="relative bg-white py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden">
-        <dt>
-          <div class="absolute bg-carnation-500 text-white rounded-md p-6">
-            {% icon "file-text" %}
-          </div>
-          <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
-            Total published
-            {{ component("tooltip", {
-              msg: "The total number of articles published by grantees or authors at your organization."
-            }) }}
-          </p>
-        </dt>
-        <dd class="ml-24 flex items-baseline">
-          <p class="text-4xl font-semibold text-neutral-900">
-            <span id="articles">000</span>
-          </p>
-        </dd>
-      </div>
+      {{ component("card", {
+        id: "is_paper",
+        title: "Total published",
+        icon: "file-text",
+        raw_number: true
+      }) }}
 
       {{ component("card", {
         id: "is_free_to_read",

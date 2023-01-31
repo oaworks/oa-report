@@ -4,7 +4,7 @@ const base             = "https://beta.oa.works/report/",
       countQueryBase   = base + "works/count?",
       csvExportBase    = baseBg + "works.csv?size=all&",
       articleEmailBase = baseBg + "email/";
-let isPaperCount, isEligibleCount, canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL, dateRangeButton, csvEmailButton, totalArticles, hasDataStatementCount, hasCheckedDataStatementCount, hasOpenDataCount, hasCheckedDataCount;
+let canArchiveAAM, canArchiveAAMMailto, canArchiveAAMList, downloadAllArticles, hasPolicy, policyURL, dateRangeButton, csvEmailButton, totalArticles, hasDataStatementCount, hasCheckedDataStatementCount, hasOpenDataCount, hasCheckedDataCount;
 let isCompliant = false;
 
 // Detect browser’s locale to display human-readable numbers
@@ -174,6 +174,35 @@ oareport = function(org) {
         displayNone(contentID);
       };
     };
+    
+    /**  Display total articles **/
+    // TODO: allow this to use getInsight()
+    // getInsight(
+    //   "is_paper",
+    //   "is_paper",
+    //   "articles",
+    //   "The total number of articles published by grantees or authors at your organization."
+    // );
+    displayAllArticles = function() {
+      var articlesContents = document.querySelector("#percent_is_paper"),
+          infoContents     = document.querySelector("#info_is_paper"),
+          isPaperCount     = countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_paper.query,
+          helpText         = "The total number of articles published by grantees or authors at your organization.";
+
+      axios.get(isPaperCount).then(function (response) {
+        articlesContents.textContent = makeNumberReadable(response.data);
+
+        // Display help text / info popover
+        const instance = tippy(infoContents, {
+          allowHTML: true,
+          interactive: true,
+          placement: 'top',
+          appendTo: document.body,
+        }).setContent(helpText);
+
+        changeOpacity("#is_paper");
+      });
+    };
 
     getInsight(
       "is_free_to_read",
@@ -212,32 +241,16 @@ oareport = function(org) {
 
     /** Get queries for default article counts and strategy action list **/
     getCountQueries = function() {
-      isPaperQuery                 = (countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_paper.query);
       canArchiveAAMQuery           = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
       canArchiveAAMListQuery       = (queryPrefix + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
       canArchiveVORQuery           = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.email_author_vor.query);
       canArchiveVORListQuery       = (queryPrefix + response.data.hits.hits[0]._source.strategy.email_author_vor.query);
       hasCustomExportIncludes      = (response.data.hits.hits[0]._source.export_includes);
 
-      isPaperCount                 = axios.get(isPaperQuery);
       canArchiveAAM                = axios.get(canArchiveAAMQuery);
       canArchiveAAMList            = axios.get(canArchiveAAMListQuery);
       canArchiveVOR                = axios.get(canArchiveVORQuery);
       canArchiveVORList            = axios.get(canArchiveVORListQuery);
-    };
-
-    /**  Display basic Insights (total article & free article counts) **/
-    displayInsights = function() {
-      var articlesContents               = document.querySelector("#articles");
-
-      Promise.all([isPaperCount])
-        .then(function (results) {
-          let isPaperCount   = results[0].data;
-
-          // Display totals and % of articles
-          articlesContents.textContent = makeNumberReadable(isPaperCount);
-        }
-      ).catch(function (error) { console.log("displayInsights error: " + error); })
     };
 
     /** Decrypt emails if user has an orgKey **/
@@ -696,7 +709,7 @@ oareport = function(org) {
     }
 
     getCountQueries();
-    displayInsights();
+    displayAllArticles();
     displayStrategyVOR();
     displayStrategyAAM();
     displayStrategyAPCFollowup();
