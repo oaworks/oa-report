@@ -56,81 +56,77 @@ permalink: "{{ org._source.objectID | slug }}/"
   {% include 'partials/email-download-form.njk' %}
 </section>
 
-<section class="col-span-12 grid grid-cols-12 gap-3 lg:gap-6 top-0 mb-2 pt-2 bg-[#F4F0F0]">
-  <div class="col-span-12 grid grid-cols-12 gap-3">
-    <header class="col-span-12 md:col-span-6">
-      <h2 class="mb-3 text-lg leading-6">
-        <span class="block font-medium text-neutral-900 uppercase">
-          Insights on <strong class="font-bold">articles</strong>
-          {{ component("tooltip", {
-            msg: "The <em>Insights</em> section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/developers/infrastructure/' target='_blank' class='underline'>infrastructure page</a>."
-          }) }}
-        </span>
-      </h2>
-    </header>
+<section class="col-span-12 grid grid-cols-3 gap-3 lg:gap-6 top-0 mb-2 pt-2 bg-[#F4F0F0]">
+  <header class="col-span-3">
+    <h2 class="mb-3 text-lg leading-6">
+      <span class="block font-medium text-neutral-900 uppercase">
+        Insights on <strong class="font-bold">articles</strong>
+        {{ component("tooltip", {
+          msg: "The <em>Insights</em> section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/developers/infrastructure/' target='_blank' class='underline'>infrastructure page</a>."
+        }) }}
+      </span>
+    </h2>
+  </header>
 
-    <div class="col-span-12 gap-3 lg:gap-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-      {{ component("card", {
-        id: "is_paper",
-        title: "Total published",
-        icon: "file-text",
-        raw_number: true
-      }) }}
+  <div class="col-span-3 gap-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+    {{ component("card", {
+      id: "is_paper",
+      title: "Total published",
+      icon: "file-text",
+      raw_number: true
+    }) }}
 
-      {{ component("card", {
-        id: "is_free_to_read",
-        title: "Free-to-read",
-        icon: "gift"
-      }) }}
+    {{ component("card", {
+      id: "is_free_to_read",
+      title: "Free-to-read",
+      icon: "gift"
+    }) }}
 
-      {{ component("card", {
-        id: "is_compliant",
-        title: "Policy-compliant",
-        icon: "check-circle"
-      }) }}
+    {{ component("card", {
+      id: "is_compliant",
+      title: "Policy-compliant",
+      icon: "check-circle"
+    }) }}
 
-      {{ component("card", {
-        id: "is_oa",
-        title: "Open Access",
-        icon: "unlock"
-      }) }}
+    {{ component("card", {
+      id: "is_oa",
+      title: "Open Access",
+      icon: "unlock"
+    }) }}
 
-      {{ component("card", {
-        id: "has_data_availability_statement",
-        title: "Have data availability statements",
-        icon: "search"
-      }) }}
+    {{ component("card", {
+      id: "has_data_availability_statement",
+      title: "Have data availability statements",
+      icon: "search"
+    }) }}
 
-      {{ component("card", {
-        id: "has_open_data",
-        title: "With Open Data",
-        icon: "database"
-      }) }}
+    {{ component("card", {
+      id: "has_open_data",
+      title: "With Open Data",
+      icon: "database"
+    }) }}
 
-    {# TODO: Filter by date #}
-    {# <div class="col-span-12 mb-6 grid grid-cols-12 gap-3 lg:gap-6">
-      <section>
-        <h2 class="sr-only">Filter by date</h2>
-        <form onsubmit="changeDateRange()" method="get" id="change_date_range">
-          <div class="flex items-end mb-3">
-            <fieldset class="mr-6">
-              <label for="report-start-date" class="mb-2 block text-base text-neutral-800">From</label>
-              <input type="date" min="2021-01-01" name="report-start-date" id="report_start_date" class="focus:ring-carnation-500 focus:border-carnation-500 block w-full sm:text-sm shadow-md rounded-md border-0" required>
-            </fieldset>
-            <fieldset class="mr-6">
-              <label for="report-end-date" class="mb-2 block text-base text-neutral-800">To</label>
-              <input type="date" min="2021-01-01" name="report-start-date" id="report_end_date" class="focus:ring-carnation-500 focus:border-carnation-500 block w-full sm:text-sm shadow-md rounded-md border-0" required>
-            </fieldset>
-            <button type="submit" class="block px-4 py-2 text-sm font-medium rounded-md text-white bg-neutral-900 hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-500 focus:border-carnation-500 focus:border-carnation-500 duration-500 shadow-md border-0 h-fit whitespace-nowrap">
-              Filter by dates
-            </button>
-          </div>
-        </form>
-      </section>
-    </div> #}
-
-
-  </div>
+  {# TODO: Filter by date #}
+  {# <div class="col-span-12 mb-6 grid grid-cols-12 gap-3 lg:gap-6">
+    <section>
+      <h2 class="sr-only">Filter by date</h2>
+      <form onsubmit="changeDateRange()" method="get" id="change_date_range">
+        <div class="flex items-end mb-3">
+          <fieldset class="mr-6">
+            <label for="report-start-date" class="mb-2 block text-base text-neutral-800">From</label>
+            <input type="date" min="2021-01-01" name="report-start-date" id="report_start_date" class="focus:ring-carnation-500 focus:border-carnation-500 block w-full sm:text-sm shadow-md rounded-md border-0" required>
+          </fieldset>
+          <fieldset class="mr-6">
+            <label for="report-end-date" class="mb-2 block text-base text-neutral-800">To</label>
+            <input type="date" min="2021-01-01" name="report-start-date" id="report_end_date" class="focus:ring-carnation-500 focus:border-carnation-500 block w-full sm:text-sm shadow-md rounded-md border-0" required>
+          </fieldset>
+          <button type="submit" class="block px-4 py-2 text-sm font-medium rounded-md text-white bg-neutral-900 hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-500 focus:border-carnation-500 focus:border-carnation-500 duration-500 shadow-md border-0 h-fit whitespace-nowrap">
+            Filter by dates
+          </button>
+        </div>
+      </form>
+    </section>
+  </div> #}
 </section>
 
 <section class="col-span-12" id="strategies">
