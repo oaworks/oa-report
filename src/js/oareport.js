@@ -139,66 +139,52 @@ oareport = function(org) {
           appendTo: document.body,
         }).setContent(info);
 
-        // Get insight’s count queries
+        // Get numerator’s count query
         num = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.analysis[numerator].query);
-        denom = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.analysis[denominator].query);
 
-        // Display data in the UI
-        Promise.all([num, denom])
-          .then(function (results) {
-            let numeratorCount   = results[0].data,
-                denominatorCount = results[1].data;
+        // Display data in UI if both a numerator & denominator were defined
+        if (numerator && denominator) {
+          // Get denominator’s count query
+          denom = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.analysis[denominator].query);
 
-            if (denominatorCount) {
-              articlesContents.textContent = makeNumberReadable(numeratorCount) + " of " + makeNumberReadable(denominatorCount) + " " + denominatorText;
-              percentageContents.textContent = Math.round(((numeratorCount/denominatorCount)*100)) + "%";
-            } else {
-              articlesContents.textContent = "";
-              percentageContents.textContent = "N/A";
-            };
+          Promise.all([num, denom])
+            .then(function (results) {
+              var numeratorCount   = results[0].data,
+                  denominatorCount = results[1].data;
 
-            // Once data has loaded, display the card
-            changeOpacity(contentID);
-          }
-        ).catch(function (error) { console.log(" error: " + error); });
+              if (denominatorCount) {
+                articlesContents.textContent = makeNumberReadable(numeratorCount) + " of " + makeNumberReadable(denominatorCount) + " " + denominatorText;
+                percentageContents.textContent = Math.round(((numeratorCount/denominatorCount)*100)) + "%";
+              } else {
+                articlesContents.textContent = "";
+                percentageContents.textContent = "N/A";
+              };
+            }
+          ).catch(function (error) { console.log("error: " + error); });
+
+        // Display plain number when it’s just a numerator
+        } else {
+          num.then(function (result) {
+            var numCount = result.data;
+            percentageContents.textContent = makeNumberReadable(result.data);
+          }).catch(function (error) { console.log("error: " + error); });
+        };
+
+        // Once data has loaded, display the card
+        changeOpacity(contentID);
+
       } else {
         displayNone(contentID);
       };
     };
 
     /**  Display total articles **/
-    // TODO: allow this to use getInsight()
-    // getInsight(
-    //   "is_paper",
-    //   "is_paper",
-    //   "articles",
-    //   "The total number of articles published by grantees or authors at your organization."
-    // );
-    displayAllArticles = function() {
-      var articlesContents = document.querySelector("#percent_is_paper"),
-          infoContents     = document.querySelector("#info_is_paper"),
-          isPaperCount     = countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_paper.query,
-          helpText         = "The total number of articles published by grantees or authors at your organization.",
-          shown            = response.data.hits.hits[0]._source.analysis.is_paper.show_on_web;
-
-      if (shown === true) {
-        axios.get(isPaperCount).then(function (response) {
-          articlesContents.textContent = makeNumberReadable(response.data);
-
-          // Display help text / info popover
-          const instance = tippy(infoContents, {
-            allowHTML: true,
-            interactive: true,
-            placement: 'top',
-            appendTo: document.body,
-          }).setContent(helpText);
-
-          changeOpacity("#is_paper");
-        }).catch(function (error) { console.log(" error: " + error); });
-      }  else {
-        displayNone("#is_paper");
-      };
-    };
+    getInsight(
+      "is_paper",
+      null,
+      "articles",
+      "The total number of articles published by grantees or authors at your organization."
+    );
 
     getInsight(
       "is_free_to_read",
@@ -703,7 +689,32 @@ oareport = function(org) {
     }
 
     getCountQueries();
-    displayAllArticles();
+    // displayAllArticles = function() {
+    //   var articlesContents = document.querySelector("#percent_is_paper"),
+    //       infoContents     = document.querySelector("#info_is_paper"),
+    //       isPaperCount     = countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_paper.query,
+    //       helpText         = "The total number of articles published by grantees or authors at your organization.",
+    //       shown            = response.data.hits.hits[0]._source.analysis.is_paper.show_on_web;
+    //
+    //   if (shown === true) {
+    //     axios.get(isPaperCount).then(function (response) {
+    //       articlesContents.textContent = makeNumberReadable(response.data);
+    //
+    //       // Display help text / info popover
+    //       const instance = tippy(infoContents, {
+    //         allowHTML: true,
+    //         interactive: true,
+    //         placement: 'top',
+    //         appendTo: document.body,
+    //       }).setContent(helpText);
+    //
+    //       changeOpacity("#is_paper");
+    //     }).catch(function (error) { console.log(" error: " + error); });
+    //   }  else {
+    //     displayNone("#is_paper");
+    //   };
+    // };
+    // displayAllArticles();
     displayStrategyVOR();
     displayStrategyAAM();
     displayStrategyAPCFollowup();
