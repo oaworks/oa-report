@@ -31,7 +31,7 @@ changeDays = function(numOfDays, date) {
 };
 
 // Set readable date options
-var readableDateOptions = {
+const readableDateOptions = {
   day: "numeric",
   month: "long",
   year: "numeric"
@@ -102,24 +102,24 @@ const currentDate                  = new Date(),
 // Display default date range: since start of the current year
 replaceDateRange(lastYearStartDate, lastYearEndDate);
 
-// Get organisational data to produce reports
+// Check if user is authentified
+let orgKey = "";
+if (Object.keys(OAKEYS).length !== 0) {
+  orgKey = "&orgkey=" + Object.values(OAKEYS);
+} else {
+  displayNone("#logout");
+}
+
+// Generate report’s UI for any given date range
 oareport = function(org) {
+
+  // Set paths for orgindex
   let report                       = base + "orgs?q=name:%22" + org + "%22",
       queryPrefix                  = queryBase + "q=" + dateRange,
       countQueryPrefix             = countQueryBase + "q=" + dateRange;
 
-      console.log(report);
-
-  // Check if user is authentified
-  let orgKey = "";
-  if (Object.keys(OAKEYS).length !== 0) {
-    orgKey = "&orgkey=" + Object.values(OAKEYS);
-  } else {
-    displayNone("#logout");
-  }
-
+  // Get organisational data to produce reports
   axios.get(report).then(function (response) {
-
     getInsight = function(numerator, denominator, denominatorText, info) {
 
       var shown     = response.data.hits.hits[0]._source.analysis[numerator].show_on_web,
@@ -178,21 +178,26 @@ oareport = function(org) {
       var articlesContents = document.querySelector("#percent_is_paper"),
           infoContents     = document.querySelector("#info_is_paper"),
           isPaperCount     = countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_paper.query,
-          helpText         = "The total number of articles published by grantees or authors at your organization.";
+          helpText         = "The total number of articles published by grantees or authors at your organization.",
+          shown            = response.data.hits.hits[0]._source.analysis.is_paper.show_on_web;
 
-      axios.get(isPaperCount).then(function (response) {
-        articlesContents.textContent = makeNumberReadable(response.data);
+      if (shown === true) {
+        axios.get(isPaperCount).then(function (response) {
+          articlesContents.textContent = makeNumberReadable(response.data);
 
-        // Display help text / info popover
-        const instance = tippy(infoContents, {
-          allowHTML: true,
-          interactive: true,
-          placement: 'top',
-          appendTo: document.body,
-        }).setContent(helpText);
+          // Display help text / info popover
+          const instance = tippy(infoContents, {
+            allowHTML: true,
+            interactive: true,
+            placement: 'top',
+            appendTo: document.body,
+          }).setContent(helpText);
 
-        changeOpacity("#is_paper");
-      });
+          changeOpacity("#is_paper");
+        }).catch(function (error) { console.log(" error: " + error); });
+      }  else {
+        displayNone("#is_paper");
+      };
     };
 
     getInsight(
@@ -203,17 +208,17 @@ oareport = function(org) {
     );
 
     getInsight(
-      "is_oa",
-      "is_paper",
-      "articles",
-      "The number of articles that are free and <a href='https://creativecommons.org/licenses/by/4.0/' class='underline' target='_blank' rel='noopener'>CC BY</a> <strong class='bold'>or</strong> <a href='https://creativecommons.org/publicdomain/zero/1.0/' class='underline' target='_blank' rel='noopener'>CC0</a> (in the public domain) on the publisher’s website, a repository or a preprint server."
-    );
-
-    getInsight(
       "is_compliant",
       "is_covered_by_policy",
       "articles covered",
       "The percentage of articles that are compliant with <a href='" + response.data.hits.hits[0]._source.policy.url + "' target='_blank' rel='noopener' class='underline'>your organization’s Open Access policy</a>. This number is specific to your policy and your requirements."
+    );
+
+    getInsight(
+      "is_oa",
+      "is_paper",
+      "articles",
+      "The number of articles that are free and <a href='https://creativecommons.org/licenses/by/4.0/' class='underline' target='_blank' rel='noopener'>CC BY</a> <strong class='bold'>or</strong> <a href='https://creativecommons.org/publicdomain/zero/1.0/' class='underline' target='_blank' rel='noopener'>CC0</a> (in the public domain) on the publisher’s website, a repository or a preprint server."
     );
 
     getInsight(
@@ -630,7 +635,6 @@ oareport = function(org) {
 
       // Build full query
       query = csvExportBase + query + include + email + orgKey;
-      console.log("query: " + query);
 
       var xhr = new XMLHttpRequest();
       xhr.open("GET", query);
@@ -685,7 +689,6 @@ oareport = function(org) {
 
       // Build full query
       query = csvExportBase + query + include + email + orgKey;
-      console.log("query: " + query);
 
       var xhr = new XMLHttpRequest();
       xhr.open("GET", query);
@@ -706,8 +709,7 @@ oareport = function(org) {
     displayStrategyAPCFollowup();
     displayStrategyUnansweredRequests();
 
-  })
-  .catch(function (error) { console.log("ERROR: " + error); });
+  }).catch(function (error) { console.log("Report ERROR: " + error); });
 };
 
 oareport(org);
