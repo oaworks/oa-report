@@ -11,7 +11,7 @@ permalink: "{{ org._source.objectID | slug }}/"
 
 <header class="mb-3 col-span-12 md:col-span-6">
   <h1 class="mb-6 text-2xl sm:text-3xl md:text-4xl font-light">
-    {% if org._source.policy.supported_policy === true %}Put OA policy into practice at {% else %}Advance OA at {% endif %}
+    {% if org._source.policy.has_policy === true %}Put OA policy into practice at {% else %}Advance OA at {% endif %}
     <br>
     <strong class="font-bold">{{ org._source.name }}</strong>
   </h1>
