@@ -1,9 +1,17 @@
+// Set URLs paths
 const base             = "https://beta.oa.works/report/",
       baseBg           = "https://bg.beta.oa.works/report/",
       queryBase        = base + "works?size=100&",
       countQueryBase   = base + "works/count?",
       csvExportBase    = baseBg + "works.csv?size=all&",
       articleEmailBase = baseBg + "email/";
+
+// Set readable date options
+const readableDateOptions = {
+  day: "numeric",
+  month: "long",
+  year: "numeric"
+};
 
 // Detect browser’s locale to display human-readable numbers
 getUsersLocale = function() {
@@ -17,10 +25,10 @@ displayNone = function(id) {
 }
 
 // Turn opacity to 100% for an element
-changeOpacity = function(id) {
+changeOpacity = function(id, opacity = 100) {
   var elem = document.querySelector(id);
       elem.classList.remove("opacity-0");
-      elem.classList.add("opacity-100");
+      elem.classList.add("opacity-" + opacity);
 }
 
 // Do math with days on a date
@@ -28,13 +36,6 @@ changeDays = function(numOfDays, date) {
   const dateCopy = new Date(date.getTime());
   dateCopy.setDate(dateCopy.getDate() + numOfDays);
   return dateCopy;
-};
-
-// Set readable date options
-const readableDateOptions = {
-  day: "numeric",
-  month: "long",
-  year: "numeric"
 };
 
 // Make dates readable for display in the UI
@@ -121,7 +122,23 @@ oareport = function(org) {
       countQueryPrefix             = countQueryBase + "q=" + dateRange;
 
   // Get organisational data to produce reports
-  axios.get(report).then(function (response) {
+  axios.get(report).then(function (response) {/** Decrypt emails if user has an orgKey **/
+    decryptEmail = function(email, doi, mailto) {
+      mailto = decodeURI(mailto);
+      // if email is not undefined and there is an orgkey, decrypt the author’s email
+      if (email !== 'undefined' && Object.keys(OAKEYS).length !== 0) {
+        axios.get(articleEmailBase + doi  + "?" +  orgKey)
+          .then(function (response) {
+            let authorEmail = response.data;
+            mailto = mailto.replaceAll("{author_email}", authorEmail);
+            window.open('mailto:' + mailto);
+          }
+        ).catch(function (error) { console.log("decryptEmail error: " + error); })
+      } else {
+        window.open('mailto:' + mailto);
+      }
+    };
+
     getInsight = function(numerator, denominator, denominatorText, info) {
 
       var shown     = response.data.hits.hits[0]._source.analysis[numerator].show_on_web,
@@ -234,23 +251,6 @@ oareport = function(org) {
       canArchiveAAMList            = axios.get(canArchiveAAMListQuery);
       canArchiveVOR                = axios.get(canArchiveVORQuery);
       canArchiveVORList            = axios.get(canArchiveVORListQuery);
-    };
-
-    /** Decrypt emails if user has an orgKey **/
-    decryptEmail = function(email, doi, mailto) {
-      mailto = decodeURI(mailto);
-      // if email is not undefined and there is an orgkey, decrypt the author’s email
-      if (email !== 'undefined' && Object.keys(OAKEYS).length !== 0) {
-        axios.get(articleEmailBase + doi  + "?" +  orgKey)
-          .then(function (response) {
-            let authorEmail = response.data;
-            mailto = mailto.replaceAll("{author_email}", authorEmail);
-            window.open('mailto:' + mailto);
-          }
-        ).catch(function (error) { console.log("decryptEmail error: " + error); })
-      } else {
-        window.open('mailto:' + mailto);
-      }
     };
 
     /** Display Strategies: deposit VOR (publisher PDF) **/
