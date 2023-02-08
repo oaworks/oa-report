@@ -691,32 +691,6 @@ oareport = function(org) {
     }
 
     getCountQueries();
-    // displayAllArticles = function() {
-    //   var articlesContents = document.querySelector("#percent_is_paper"),
-    //       infoContents     = document.querySelector("#info_is_paper"),
-    //       isPaperCount     = countQueryPrefix + response.data.hits.hits[0]._source.analysis.is_paper.query,
-    //       helpText         = "The total number of articles published by grantees or authors at your organization.",
-    //       shown            = response.data.hits.hits[0]._source.analysis.is_paper.show_on_web;
-    //
-    //   if (shown === true) {
-    //     axios.get(isPaperCount).then(function (response) {
-    //       articlesContents.textContent = makeNumberReadable(response.data);
-    //
-    //       // Display help text / info popover
-    //       const instance = tippy(infoContents, {
-    //         allowHTML: true,
-    //         interactive: true,
-    //         placement: 'top',
-    //         appendTo: document.body,
-    //       }).setContent(helpText);
-    //
-    //       changeOpacity("#is_paper");
-    //     }).catch(function (error) { console.log(" error: " + error); });
-    //   }  else {
-    //     displayNone("#is_paper");
-    //   };
-    // };
-    // displayAllArticles();
     displayStrategyVOR();
     displayStrategyAAM();
     displayStrategyAPCFollowup();
