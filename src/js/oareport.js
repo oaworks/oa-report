@@ -110,12 +110,14 @@ if (Object.keys(OAKEYS).length !== 0) {
   displayNone("#logout");
 }
 
+// Set report base path
+let report = base + "orgs?q=name:%22" + org + "%22";
+
 // Generate report’s UI for any given date range
 oareport = function(org) {
 
   // Set paths for orgindex
-  let report                       = base + "orgs?q=name:%22" + org + "%22",
-      queryPrefix                  = queryBase + "q=" + dateRange,
+  let queryPrefix                  = queryBase + "q=" + dateRange,
       countQueryPrefix             = countQueryBase + "q=" + dateRange;
 
   // Get organisational data to produce reports
