@@ -180,7 +180,6 @@ oareport = function(org) {
       };
     };
 
-    /**  Display total articles **/
     getInsight(
       "is_paper",
       null,
