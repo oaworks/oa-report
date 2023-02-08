@@ -122,7 +122,11 @@ oareport = function(org) {
       countQueryPrefix             = countQueryBase + "q=" + dateRange;
 
   // Get organisational data to produce reports
-  axios.get(report).then(function (response) {/** Decrypt emails if user has an orgKey **/
+  axios.get(report).then(function (response) {
+    // Get queries for default article counts and strategy action list
+    var hasCustomExportIncludes = (response.data.hits.hits[0]._source.export_includes);
+
+    /** Decrypt emails if user has an orgKey **/
     decryptEmail = function(email, doi, mailto) {
       mailto = decodeURI(mailto);
       // if email is not undefined and there is an orgkey, decrypt the author’s email
@@ -139,6 +143,7 @@ oareport = function(org) {
       }
     };
 
+    /** Get Insights data and display it **/
     getInsight = function(numerator, denominator, denominatorText, info) {
 
       var shown     = response.data.hits.hits[0]._source.analysis[numerator].show_on_web,
@@ -186,7 +191,7 @@ oareport = function(org) {
           num.then(function (result) {
             var numCount = result.data;
             percentageContents.textContent = makeNumberReadable(result.data);
-          }).catch(function (error) { console.log("error: " + error); });
+          }).catch(function (error) { console.log(`${numerator} error: ${error}`); });
         };
 
         // Once data has loaded, display the card
@@ -231,7 +236,7 @@ oareport = function(org) {
       "articles checked",
       "This number tells you how many papers that we’ve analyzed have a data availability statement. To check if a paper has a data availability statement, we use data from PubMed and review papers manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data)"
     );
-
+  
     getInsight(
       "has_open_data",
       "has_data",
@@ -239,23 +244,13 @@ oareport = function(org) {
       "The percentage of articles that shared any data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener' class='underline'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noopener' class='underline'>CC-BY</a> license. This figure only measures how many articles shared Open Data if they generated data in the first place. It also only measures if any of the datasets generated were open, not if all of them were open. To analyze this we work with Dataseer, who uses a combination of machine learning and human review to review the text of the papers"
     );
 
-    /** Get queries for default article counts and strategy action list **/
-    getCountQueries = function() {
-      canArchiveAAMQuery           = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
-      canArchiveAAMListQuery       = (queryPrefix + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
-      canArchiveVORQuery           = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.email_author_vor.query);
-      canArchiveVORListQuery       = (queryPrefix + response.data.hits.hits[0]._source.strategy.email_author_vor.query);
-      hasCustomExportIncludes      = (response.data.hits.hits[0]._source.export_includes);
-
-      canArchiveAAM                = axios.get(canArchiveAAMQuery);
-      canArchiveAAMList            = axios.get(canArchiveAAMListQuery);
-      canArchiveVOR                = axios.get(canArchiveVORQuery);
-      canArchiveVORList            = axios.get(canArchiveVORListQuery);
-    };
-
     /** Display Strategies: deposit VOR (publisher PDF) **/
     displayStrategyVOR = function() {
-      var totalVORActionsContents        = document.querySelector("#total-can-archive-vor"),
+      var canArchiveVORQuery           = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.email_author_vor.query),
+          canArchiveVORListQuery       = (queryPrefix + response.data.hits.hits[0]._source.strategy.email_author_vor.query),canArchiveVOR                = axios.get(canArchiveVORQuery),
+          canArchiveVORList            = axios.get(canArchiveVORListQuery),
+      
+          totalVORActionsContents        = document.querySelector("#total-can-archive-vor"),
           canArchiveVORTable             = document.querySelector("#table-can-archive-vor"),
           countVORActionsContents        = document.querySelector("#count-can-archive-vor");
 
@@ -325,7 +320,12 @@ oareport = function(org) {
 
     /** Display Strategies: deposit AAM (accepted manuscripts)  **/
     displayStrategyAAM = function() {
-      var totalAAMActionsContents        = document.querySelector("#total-can-archive-aam"),
+      var canArchiveAAMQuery           = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.email_author_aam.query),
+          canArchiveAAMListQuery       = (queryPrefix + response.data.hits.hits[0]._source.strategy.email_author_aam.query),
+          canArchiveAAM                = axios.get(canArchiveAAMQuery),
+          canArchiveAAMList            = axios.get(canArchiveAAMListQuery),
+
+          totalAAMActionsContents        = document.querySelector("#total-can-archive-aam"),
           canArchiveAAMTable             = document.querySelector("#table-can-archive-aam"),
           countAAMActionsContents        = document.querySelector("#count-can-archive-aam");
 
@@ -689,7 +689,6 @@ oareport = function(org) {
       return false;
     }
 
-    getCountQueries();
     displayStrategyVOR();
     displayStrategyAAM();
     displayStrategyAPCFollowup();
