@@ -245,131 +245,204 @@ oareport = function(org) {
     );
 
     /** Display Strategies: deposit VOR (publisher PDF) **/
-    displayStrategyVOR = function() {
-      var canArchiveVORQuery           = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.email_author_vor.query),
-          canArchiveVORListQuery       = (queryPrefix + response.data.hits.hits[0]._source.strategy.email_author_vor.query),canArchiveVOR                = axios.get(canArchiveVORQuery),
-          canArchiveVORList            = axios.get(canArchiveVORListQuery),
+    // displayStrategyVOR = function() {
+    //   var canArchiveVORQuery           = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.email_author_vor.query),
+    //       canArchiveVORListQuery       = (queryPrefix + response.data.hits.hits[0]._source.strategy.email_author_vor.query),canArchiveVOR                = axios.get(canArchiveVORQuery),
+    //       canArchiveVORList            = axios.get(canArchiveVORListQuery),
       
-          totalVORActionsContents        = document.querySelector("#total-can-archive-vor"),
-          canArchiveVORTable             = document.querySelector("#table-can-archive-vor"),
-          countVORActionsContents        = document.querySelector("#count-can-archive-vor");
+    //       totalVORActionsContents        = document.querySelector("#total_can-archive-vor"),
+    //       canArchiveVORTable             = document.querySelector("#table_can-archive-vor"),
+    //       countVORActionsContents        = document.querySelector("#count_can-archive-vor");
 
-      Promise.all([canArchiveVOR, canArchiveVORList])
-        .then(function (results) {
-          let canArchiveVOR = results[0].data,
-              canArchiveVORList = results[1].data.hits.hits,
-              canArchiveVORLength = parseFloat(canArchiveVOR);
+    //   Promise.all([canArchiveVOR, canArchiveVORList])
+    //     .then(function (results) {
+    //       let canArchiveVOR = results[0].data,
+    //           canArchiveVORList = results[1].data.hits.hits,
+    //           canArchiveVORLength = parseFloat(canArchiveVOR);
 
-          // Show total number of actions in tab & above table
-          countVORActionsContents.textContent = makeNumberReadable(canArchiveVORLength);
+    //       // Show total number of actions in tab & above table
+    //       countVORActionsContents.textContent = makeNumberReadable(canArchiveVORLength);
 
-          if (canArchiveVORLength > 100) {
-            canArchiveVORLength = 100;
-          }
+    //       if (canArchiveVORLength > 100) {
+    //         canArchiveVORLength = 100;
+    //       }
 
-          totalVORActionsContents.textContent = makeNumberReadable(canArchiveVORLength);
+    //       totalVORActionsContents.textContent = makeNumberReadable(canArchiveVORLength);
 
-          // Generate list of archivable VORs if there are any
-          if (canArchiveVOR === 0) {
-            totalVORActionsContents.textContent = "No ";
-            canArchiveVORTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
-          }
-          else if (canArchiveVOR > 0 || canArchiveVOR !== null) {
-            // Set up and get list of emails
-            var canArchiveVORTableRows = "";
+    //       // Generate list of archivable VORs if there are any
+    //       if (canArchiveVOR === 0) {
+    //         totalVORActionsContents.textContent = "No ";
+    //         canArchiveVORTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
+    //       }
+    //       else if (canArchiveVOR > 0 || canArchiveVOR !== null) {
+    //         // Set up and get list of emails
+    //         var canArchiveVORTableRows = "";
 
-            for (var i = 0; i < canArchiveVORLength; i++) {
-              var title = canArchiveVORList[i]._source.title,
-                  author = canArchiveVORList[i]._source.author_email_name,
-                  doi   = canArchiveVORList[i]._source.DOI,
-                  pubDate = canArchiveVORList[i]._source.published_date,
-                  journal = canArchiveVORList[i]._source.journal,
-                  authorEmail = canArchiveVORList[i]._source.email;
+    //         for (var i = 0; i < canArchiveVORLength; i++) {
+    //           var title = canArchiveVORList[i]._source.title,
+    //               author = canArchiveVORList[i]._source.author_email_name,
+    //               doi   = canArchiveVORList[i]._source.DOI,
+    //               pubDate = canArchiveVORList[i]._source.published_date,
+    //               journal = canArchiveVORList[i]._source.journal,
+    //               authorEmail = canArchiveVORList[i]._source.email;
 
-              var canArchiveVORMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
-              canArchiveVORMailto = canArchiveVORMailto.replaceAll("\'", "’");
-              canArchiveVORMailto = canArchiveVORMailto.replaceAll("{title}", (title ? title : "[No title found]"));
-              canArchiveVORMailto = canArchiveVORMailto.replaceAll("{doi}", (doi ? doi : "[No DOI found]"));
-              canArchiveVORMailto = canArchiveVORMailto.replaceAll("{author_name}", (author ? author : "researcher"));
+    //           var canArchiveVORMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
+    //           canArchiveVORMailto = canArchiveVORMailto.replaceAll("\'", "’");
+    //           canArchiveVORMailto = canArchiveVORMailto.replaceAll("{title}", (title ? title : "[No title found]"));
+    //           canArchiveVORMailto = canArchiveVORMailto.replaceAll("{doi}", (doi ? doi : "[No DOI found]"));
+    //           canArchiveVORMailto = canArchiveVORMailto.replaceAll("{author_name}", (author ? author : "researcher"));
 
-              /*jshint multistr: true */
-              canArchiveVORTableRows += '<tr>\
-                <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
-                  <div class="mb-1 text-neutral-500">' + (pubDate ? makeDateReadable(new Date(pubDate)) : "[No date found]") + '</div>\
-                  <div class="mb-1 font-medium text-neutral-900 hover:text-carnation-500">\
-                    <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + (title ? title : "[No article title found]") + '</a>\
-                  </div>\
-                  <div class="text-neutral-500">' + (journal ? journal : "[No journal name found]") + '</div>\
-                </td>\
-                <td class="hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell">\
-                  <div class="mb-1 text-neutral-900">' + (author ? author : "[No author’s name found]") + '</div>\
-                  <div class="text-neutral-500">' + (authorEmail ? "Email available" : "No email") + '</div>\
-                </td>\
-                <td class="whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium">\
-                  <button class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200 js-btn-can-archive-aam" onclick="decryptEmail(\'' + authorEmail + '\', \'' + doi +  '\', \'' + encodeURI(canArchiveVORMailto) +'\');">\
-                    <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail inline-block h-4 duration-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>\
-                  </button>\
-                </td>\
-              </tr>';
-            }
-            canArchiveVORTable.innerHTML = canArchiveVORTableRows;
-          }
-        }
-      ).catch(function (error) { console.log("displayStrategyVOR error: " + error); });
-    };
+    //           /*jshint multistr: true */
+    //           canArchiveVORTableRows += '<tr>\
+    //             <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
+    //               <div class="mb-1 text-neutral-500">' + (pubDate ? makeDateReadable(new Date(pubDate)) : "[No date found]") + '</div>\
+    //               <div class="mb-1 font-medium text-neutral-900 hover:text-carnation-500">\
+    //                 <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + (title ? title : "[No article title found]") + '</a>\
+    //               </div>\
+    //               <div class="text-neutral-500">' + (journal ? journal : "[No journal name found]") + '</div>\
+    //             </td>\
+    //             <td class="hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell">\
+    //               <div class="mb-1 text-neutral-900">' + (author ? author : "[No author’s name found]") + '</div>\
+    //               <div class="text-neutral-500">' + (authorEmail ? "Email available" : "No email") + '</div>\
+    //             </td>\
+    //             <td class="whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium">\
+    //               <button class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200 js-btn-can-archive-aam" onclick="decryptEmail(\'' + authorEmail + '\', \'' + doi +  '\', \'' + encodeURI(canArchiveVORMailto) +'\');">\
+    //                 <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail inline-block h-4 duration-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>\
+    //               </button>\
+    //             </td>\
+    //           </tr>';
+    //         }
+    //         canArchiveVORTable.innerHTML = canArchiveVORTableRows;
+    //       }
+    //     }
+    //   ).catch(function (error) { console.log("displayStrategyVOR error: " + error); });
+    // };
 
     /** Display Strategies: deposit AAM (accepted manuscripts)  **/
-    displayStrategyAAM = function() {
-      var canArchiveAAMQuery           = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.email_author_aam.query),
-          canArchiveAAMListQuery       = (queryPrefix + response.data.hits.hits[0]._source.strategy.email_author_aam.query),
-          canArchiveAAM                = axios.get(canArchiveAAMQuery),
-          canArchiveAAMList            = axios.get(canArchiveAAMListQuery),
+    // displayStrategyAAM = function() {
+    //   var canArchiveAAMQuery           = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.email_author_aam.query),
+    //       canArchiveAAMListQuery       = (queryPrefix + response.data.hits.hits[0]._source.strategy.email_author_aam.query),
+    //       canArchiveAAM                = axios.get(canArchiveAAMQuery),
+    //       canArchiveAAMList            = axios.get(canArchiveAAMListQuery),
 
-          totalAAMActionsContents        = document.querySelector("#total-can-archive-aam"),
-          canArchiveAAMTable             = document.querySelector("#table-can-archive-aam"),
-          countAAMActionsContents        = document.querySelector("#count-can-archive-aam");
+    //       totalAAMActionsContents        = document.querySelector("#total-can-archive-aam"),
+    //       canArchiveAAMTable             = document.querySelector("#table-can-archive-aam"),
+    //       countAAMActionsContents        = document.querySelector("#count-can-archive-aam");
 
-      Promise.all([canArchiveAAM, canArchiveAAMList])
+    //   Promise.all([canArchiveAAM, canArchiveAAMList])
+    //     .then(function (results) {
+    //       let canArchiveAAM = parseFloat(results[0].data),
+    //           canArchiveAAMList = results[1].data.hits.hits;
+          
+    //           console.log("canArchiveAAM: " + typeof(canArchiveAAM));
+
+    //       // Show total number of actions in tab & above table
+    //       countAAMActionsContents.textContent = makeNumberReadable(canArchiveAAM);
+
+    //       if (canArchiveAAM > 100) {
+    //         canArchiveAAM = 100;
+    //       }
+
+    //       totalAAMActionsContents.textContent = makeNumberReadable(canArchiveAAM);
+
+    //       // Generate list of archivable AAMs if there are any
+    //       if (canArchiveAAM === 0) {
+    //         totalAAMActionsContents.textContent = "No ";
+    //         canArchiveAAMTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
+    //       }
+    //       else if (canArchiveAAM > 0 || canArchiveAAM !== null) {
+    //         // Set up and get list of emails for archivable AAMs
+    //         var canArchiveAAMTableRows = "";
+
+    //         for (var i = 0; i < canArchiveAAM; i++) {
+    //           var title = canArchiveAAMList[i]._source.title,
+    //               author = canArchiveAAMList[i]._source.author_email_name,
+    //               doi   = canArchiveAAMList[i]._source.DOI,
+    //               pubDate = canArchiveAAMList[i]._source.published_date,
+    //               journal = canArchiveAAMList[i]._source.journal,
+    //               authorEmail = canArchiveAAMList[i]._source.email;
+
+    //           // Get email draft/body for this article and replace with its metadata
+    //           var canArchiveAAMMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
+    //           canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("\'", "’");
+    //           canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{title}", (title ? title : "[No article title found]"));
+    //           canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{doi}", (doi ? doi : "[No DOI found]"));
+    //           canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{author_name}", (author ? author : "researcher"));
+
+    //           /*jshint multistr: true */
+    //           canArchiveAAMTableRows += '<tr>\
+    //             <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
+    //               <div class="mb-1 text-neutral-500">' + (pubDate ? makeDateReadable(new Date(pubDate)) : "[No date found]") + '</div>\
+    //               <div class="mb-1 font-medium text-neutral-900 hover:text-carnation-500">\
+    //                 <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + (title ? title : "[No article title found]") + '</a>\
+    //               </div>\
+    //               <div class="text-neutral-500">' + (journal ? journal : "[No journal name found]") + '</div>\
+    //             </td>\
+    //             <td class="hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell">\
+    //               <div class="mb-1 text-neutral-900">' + (author ? author : "[No author’s name found]") + '</div>\
+    //               <div class="text-neutral-500">' + (authorEmail ? "Email available" : "No email") + '</div>\
+    //             </td>\
+    //             <td class="whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium">\
+    //               <button class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200 js-btn-can-archive-aam" onclick="decryptEmail(\'' + authorEmail + '\', \'' + doi +  '\', \'' + encodeURI(canArchiveAAMMailto) +'\');">\
+    //                 <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail inline-block h-4 duration-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>\
+    //               </button>\
+    //             </td>\
+    //           </tr>';
+    //         }
+    //         canArchiveAAMTable.innerHTML = canArchiveAAMTableRows;
+    //       }
+    //     }
+    //   ).catch(function (error) { console.log("displayStrategyAAM error: " + error); })
+    // };
+
+    displayStrategy = function(strategy) {
+      var count = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query),
+          list  = axios.get(queryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query),
+  
+          tabCountContents   = document.querySelector("#count_" + strategy),
+          tableCountContents = document.querySelector("#total_" + strategy),
+          table = document.querySelector("#table_" + strategy);
+  
+      Promise.all([count, list])
         .then(function (results) {
-          let canArchiveAAM = results[0].data,
-              canArchiveAAMList = results[1].data.hits.hits,
-              canArchiveAAMLength = parseFloat(canArchiveAAM);
-
+          let count = parseFloat(results[0].data),
+              list = results[1].data.hits.hits;
+  
           // Show total number of actions in tab & above table
-          countAAMActionsContents.textContent = makeNumberReadable(canArchiveAAMLength);
-
-          if (canArchiveAAMLength > 100) {
-            canArchiveAAMLength = 100;
+          tabCountContents.textContent = makeNumberReadable(count);
+  
+          if (count > 100) {
+            count = 100;
           }
-
-          totalAAMActionsContents.textContent = makeNumberReadable(canArchiveAAMLength);
-
+  
+          tableCountContents.textContent = makeNumberReadable(count);
+  
           // Generate list of archivable AAMs if there are any
-          if (canArchiveAAM === 0) {
-            totalAAMActionsContents.textContent = "No ";
-            canArchiveAAMTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
+          if (count === 0) {
+            tableCountContents.textContent = "No ";
+            table.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
           }
-          else if (canArchiveAAM > 0 || canArchiveAAM !== null) {
+          else if (count > 0 || count !== null) {
             // Set up and get list of emails for archivable AAMs
-            var canArchiveAAMTableRows = "";
-
-            for (var i = 0; i < canArchiveAAMLength; i++) {
-              var title = canArchiveAAMList[i]._source.title,
-                  author = canArchiveAAMList[i]._source.author_email_name,
-                  doi   = canArchiveAAMList[i]._source.DOI,
-                  pubDate = canArchiveAAMList[i]._source.published_date,
-                  journal = canArchiveAAMList[i]._source.journal,
-                  authorEmail = canArchiveAAMList[i]._source.email;
-
+            var tableRows = "";
+  
+            for (var i = 0; i < count; i++) {
+              var title = list[i]._source.title,
+                  author = list[i]._source.author_email_name,
+                  doi   = list[i]._source.DOI,
+                  pubDate = list[i]._source.published_date,
+                  journal = list[i]._source.journal,
+                  authorEmail = list[i]._source.email;
+  
               // Get email draft/body for this article and replace with its metadata
-              var canArchiveAAMMailto = response.data.hits.hits[0]._source.strategy.email_author_aam.mailto;
-              canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("\'", "’");
-              canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{title}", (title ? title : "[No article title found]"));
-              canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{doi}", (doi ? doi : "[No DOI found]"));
-              canArchiveAAMMailto = canArchiveAAMMailto.replaceAll("{author_name}", (author ? author : "researcher"));
-
+              var mailtoContents = response.data.hits.hits[0]._source.strategy[strategy].mailto;
+              mailtoContents = mailtoContents.replaceAll("\'", "’");
+              mailtoContents = mailtoContents.replaceAll("{title}", (title ? title : "[No article title found]"));
+              mailtoContents = mailtoContents.replaceAll("{doi}", (doi ? doi : "[No DOI found]"));
+              mailtoContents = mailtoContents.replaceAll("{author_name}", (author ? author : "researcher"));
+  
               /*jshint multistr: true */
-              canArchiveAAMTableRows += '<tr>\
+              tableRows += '<tr>\
                 <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
                   <div class="mb-1 text-neutral-500">' + (pubDate ? makeDateReadable(new Date(pubDate)) : "[No date found]") + '</div>\
                   <div class="mb-1 font-medium text-neutral-900 hover:text-carnation-500">\
@@ -382,23 +455,26 @@ oareport = function(org) {
                   <div class="text-neutral-500">' + (authorEmail ? "Email available" : "No email") + '</div>\
                 </td>\
                 <td class="whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium">\
-                  <button class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200 js-btn-can-archive-aam" onclick="decryptEmail(\'' + authorEmail + '\', \'' + doi +  '\', \'' + encodeURI(canArchiveAAMMailto) +'\');">\
+                  <button class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200 js-btn-can-archive-aam" onclick="decryptEmail(\'' + authorEmail + '\', \'' + doi +  '\', \'' + encodeURI(mailtoContents) +'\');">\
                     <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail inline-block h-4 duration-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>\
                   </button>\
                 </td>\
               </tr>';
             }
-            canArchiveAAMTable.innerHTML = canArchiveAAMTableRows;
+            table.innerHTML = tableRows;
           }
         }
-      ).catch(function (error) { console.log("displayStrategyAAM error: " + error); })
+      ).catch(function (error) { console.log(`${strategy} error: ${error}`); })
     };
+
+    displayStrategy("email_author_vor");
+    displayStrategy("email_author_aam");
 
     /** Display Strategies: follow up with uncompliant articles with paid APCs **/
     displayStrategyAPCFollowup = function() {
-      var totalAPCActionsContents        = document.querySelector("#total-has-apc-followup"),
-          hasAPCFollowupTable            = document.querySelector("#table-has-apc-followup"),
-          countAPCActionsContents        = document.querySelector("#count-has-apc-followup");
+      var totalAPCActionsContents        = document.querySelector("#total_has-apc-followup"),
+          hasAPCFollowupTable            = document.querySelector("#table_has-apc-followup"),
+          countAPCActionsContents        = document.querySelector("#count_has-apc-followup");
 
       if (response.data.hits.hits[0]._source.strategy.apc_followup.query) {
         hasAPCFollowupSort = "&sort=publisher.keyword:asc,journal.keyword:asc,supplements.invoice_date:desc";
@@ -503,9 +579,9 @@ oareport = function(org) {
 
     /** Display Strategies: escalate unanswered requests **/
     displayStrategyUnansweredRequests = function() {
-      var totalUnansweredActionsContents = document.querySelector("#total-has-unanswered-requests"),
-          hasUnansweredRequestsTable     = document.querySelector("#table-has-unanswered-requests"),
-          countUnansweredActionsContents = document.querySelector("#count-has-unanswered-requests");
+      var totalUnansweredActionsContents = document.querySelector("#total_has-unanswered-requests"),
+          hasUnansweredRequestsTable     = document.querySelector("#table_has-unanswered-requests"),
+          countUnansweredActionsContents = document.querySelector("#count_has-unanswered-requests");
 
       if (response.data.hits.hits[0]._source.strategy.unanswered_requests.query) {
         hasUnansweredRequestsQuery  = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.unanswered_requests.query);
@@ -689,8 +765,8 @@ oareport = function(org) {
       return false;
     }
 
-    displayStrategyVOR();
-    displayStrategyAAM();
+    //displayStrategyVOR();
+    //displayStrategyAAM();
     displayStrategyAPCFollowup();
     displayStrategyUnansweredRequests();
 

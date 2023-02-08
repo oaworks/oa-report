@@ -151,13 +151,13 @@ permalink: "{{ org._source.objectID | slug }}/"
       <div class="border-b border-neutral-200">
         <ul class="-mb-px flex divide-x divide-neutral-300 border-b border-neutral-300 js-tabs" role="tablist" aria-label="Strategies Tabs">
           {{ component("tab-item", {
-            id: "can-archive-vor",
+            id: "email_author_vor",
             txt: "Deposit publisher PDFs",
             first: true
           }) }}
 
           {{ component("tab-item", {
-            id: "can-archive-aam",
+            id: "email_author_aam",
             txt: "Deposit accepted manuscripts",
             first: false
           }) }}
@@ -180,7 +180,7 @@ permalink: "{{ org._source.objectID | slug }}/"
 
   <div class="js-tab-content-all">
     {{ component("tab-contents", {
-      id: "can-archive-vor",
+      id: "email_author_vor",
       heading: "Deposit publisher PDFs",
       desc: "Send emails to authors to request they make their work free to read. In these cases, they can do that by making a <strong>publisher PDF (version of record, VOR)</strong> available in a repository.",
       table_headings: "<th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-10/12 sm:w-6/12'>Article</th>\
@@ -191,7 +191,7 @@ permalink: "{{ org._source.objectID | slug }}/"
     }) }}
 
     {{ component("tab-contents", {
-      id: "can-archive-aam",
+      id: "email_author_aam",
       heading: "Deposit accepted manuscripts",
       desc: "Send emails to authors to request they make their work free to read. In these cases, they can do that by making an <strong>author accepted manuscript (AAM)</strong> available in a repository.",
       table_headings: "<th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-10/12 sm:w-6/12'>Article</th>\
