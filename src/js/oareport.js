@@ -251,21 +251,21 @@ oareport = function(org) {
           tabCountContents   = document.querySelector("#count_" + strategy),
           tableCountContents = document.querySelector("#total_" + strategy),
           table = document.querySelector("#table_" + strategy);
+
+          console.log(strategy + " • " + queryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query);
   
       Promise.all([count, list])
         .then(function (results) {
           let count = parseFloat(results[0].data),
               list = results[1].data.hits.hits;
-  
+
           // Show total number of actions in tab & above table
           tabCountContents.textContent = makeNumberReadable(count);
-  
           if (count > 100) {
-            count = 100;
+            count = 100; // limit to 100
           }
-  
           tableCountContents.textContent = makeNumberReadable(count);
-  
+
           // Generate list of archivable AAMs if there are any
           if (count === 0) {
             tableCountContents.textContent = "No ";
@@ -285,11 +285,13 @@ oareport = function(org) {
   
               // Get email draft/body for this article and replace with its metadata
               var mailtoContents = response.data.hits.hits[0]._source.strategy[strategy].mailto;
-              mailtoContents = mailtoContents.replaceAll("\'", "’");
-              mailtoContents = mailtoContents.replaceAll("{title}", (title ? title : "[No article title found]"));
-              mailtoContents = mailtoContents.replaceAll("{doi}", (doi ? doi : "[No DOI found]"));
-              mailtoContents = mailtoContents.replaceAll("{author_name}", (author ? author : "researcher"));
-  
+              if (mailtoContents) {
+                mailtoContents = mailtoContents.replaceAll("\'", "’");
+                mailtoContents = mailtoContents.replaceAll("{title}", (title ? title : "[No article title found]"));
+                mailtoContents = mailtoContents.replaceAll("{doi}", (doi ? doi : "[No DOI found]"));
+                mailtoContents = mailtoContents.replaceAll("{author_name}", (author ? author : "researcher"));
+              }
+
               /*jshint multistr: true */
               tableRows += '<tr>\
                 <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
@@ -320,112 +322,114 @@ oareport = function(org) {
 
     displayStrategy("email_author_aam");
 
+    displayStrategy("apc_followup");
+
     /** Display Strategies: follow up with uncompliant articles with paid APCs **/
-    displayStrategyAPCFollowup = function() {
-      var totalAPCActionsContents        = document.querySelector("#total_has-apc-followup"),
-          hasAPCFollowupTable            = document.querySelector("#table_has-apc-followup"),
-          countAPCActionsContents        = document.querySelector("#count_has-apc-followup");
+    // displayStrategyAPCFollowup = function() {
+    //   var totalAPCActionsContents        = document.querySelector("#total_has-apc-followup"),
+    //       hasAPCFollowupTable            = document.querySelector("#table_has-apc-followup"),
+    //       countAPCActionsContents        = document.querySelector("#count_has-apc-followup");
 
-      if (response.data.hits.hits[0]._source.strategy.apc_followup.query) {
-        hasAPCFollowupSort = "&sort=publisher.keyword:asc,journal.keyword:asc,supplements.invoice_date:desc";
-        hasAPCFollowupQuery  = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.apc_followup.query);
-        hasAPCFollowupListQuery = (queryPrefix + response.data.hits.hits[0]._source.strategy.apc_followup.query) + hasAPCFollowupSort;
-        hasAPCFollowup  = axios.get(hasAPCFollowupQuery);
-        hasAPCFollowupList = axios.get(hasAPCFollowupListQuery);
+    //   if (response.data.hits.hits[0]._source.strategy.apc_followup.query) {
+    //     hasAPCFollowupSort = "&sort=publisher.keyword:asc,journal.keyword:asc,supplements.invoice_date:desc";
+    //     hasAPCFollowupQuery  = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.apc_followup.query);
+    //     hasAPCFollowupListQuery = (queryPrefix + response.data.hits.hits[0]._source.strategy.apc_followup.query) + hasAPCFollowupSort;
+    //     hasAPCFollowup  = axios.get(hasAPCFollowupQuery);
+    //     hasAPCFollowupList = axios.get(hasAPCFollowupListQuery);
 
-        Promise.all([hasAPCFollowup, hasAPCFollowupList])
-          .then(function (results) {
-            let hasAPCFollowup = results[0].data,
-                hasAPCFollowupList = results[1].data.hits.hits,
-                hasAPCFollowupLength = parseFloat(hasAPCFollowup);
+    //     Promise.all([hasAPCFollowup, hasAPCFollowupList])
+    //       .then(function (results) {
+    //         let hasAPCFollowup = results[0].data,
+    //             hasAPCFollowupList = results[1].data.hits.hits,
+    //             hasAPCFollowupLength = parseFloat(hasAPCFollowup);
 
-            // Show total number of actions in tab & above table
-            countAPCActionsContents.textContent = makeNumberReadable(hasAPCFollowupLength);
+    //         // Show total number of actions in tab & above table
+    //         countAPCActionsContents.textContent = makeNumberReadable(hasAPCFollowupLength);
 
-            if (hasAPCFollowupLength > 100) {
-              hasAPCFollowupLength = 100;
-            }
+    //         if (hasAPCFollowupLength > 100) {
+    //           hasAPCFollowupLength = 100;
+    //         }
 
-            totalAPCActionsContents.textContent = makeNumberReadable(hasAPCFollowupLength);
+    //         totalAPCActionsContents.textContent = makeNumberReadable(hasAPCFollowupLength);
 
-            // Generate list of APC followups if there are any
-            if (hasAPCFollowup === 0) {
-              totalAPCActionsContents.textContent = "No ";
-              hasAPCFollowupTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
-            }
-            else if (hasAPCFollowup > 0 || hasAPCFollowup !== null) {
-              // Set up and get list of emails for APC followups
-              var hasAPCFollowupTableRows = "";
+    //         // Generate list of APC followups if there are any
+    //         if (hasAPCFollowup === 0) {
+    //           totalAPCActionsContents.textContent = "No ";
+    //           hasAPCFollowupTable.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
+    //         }
+    //         else if (hasAPCFollowup > 0 || hasAPCFollowup !== null) {
+    //           // Set up and get list of emails for APC followups
+    //           var hasAPCFollowupTableRows = "";
 
-              for (var i = 0; i < hasAPCFollowupLength; i++) {
-                var title = hasAPCFollowupList[i]._source.title,
-                    publisher = hasAPCFollowupList[i]._source.publisher,
-                    journalOATtype = hasAPCFollowupList[i]._source.journal_oa_type,
-                    articleOAStatus = hasAPCFollowupList[i]._source.oa_status,
-                    license = hasAPCFollowupList[i]._source.publisher_license,
-                    doi   = hasAPCFollowupList[i]._source.DOI,
-                    pubDate = hasAPCFollowupList[i]._source.published_date,
-                    journal = hasAPCFollowupList[i]._source.journal;
+    //           for (var i = 0; i < hasAPCFollowupLength; i++) {
+    //             var title = hasAPCFollowupList[i]._source.title,
+    //                 publisher = hasAPCFollowupList[i]._source.publisher,
+    //                 journalOATtype = hasAPCFollowupList[i]._source.journal_oa_type,
+    //                 articleOAStatus = hasAPCFollowupList[i]._source.oa_status,
+    //                 license = hasAPCFollowupList[i]._source.publisher_license,
+    //                 doi   = hasAPCFollowupList[i]._source.DOI,
+    //                 pubDate = hasAPCFollowupList[i]._source.published_date,
+    //                 journal = hasAPCFollowupList[i]._source.journal;
 
-                // Loop over supplements array to access APC info without index number
-                var dataAPC = hasAPCFollowupList[i]._source.supplements.find(
-                  function(i) {
-                    return (i.apc_cost);
-                  }
-                );
+    //             // Loop over supplements array to access APC info without index number
+    //             var dataAPC = hasAPCFollowupList[i]._source.supplements.find(
+    //               function(i) {
+    //                 return (i.apc_cost);
+    //               }
+    //             );
 
-                var costAPC = dataAPC.apc_cost,
-                    invoiceNb = dataAPC.invoice_number,
-                    invoiceDate = dataAPC.invoice_date;
+    //             var costAPC = dataAPC.apc_cost,
+    //                 invoiceNb = dataAPC.invoice_number,
+    //                 invoiceDate = dataAPC.invoice_date;
 
-                /*jshint multistr: true */
-                hasAPCFollowupTableRows += '<tr>\
-                  <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
-                    <div class="mb-1 font-medium text-neutral-900">\
-                      ' + (publisher ? publisher : "[No publisher found]") + '\
-                    </div>\
-                    <div class="mb-3 text-neutral-900">\
-                      ' + (journal ? journal : "[No journal found]") + '\
-                    </div>\
-                    <div class="text-neutral-500">\
-                      ' + (journalOATtype ? ('<span class="capitalize font-bold">' + journalOATtype + '</span> journal') : "[No status found for this journal]") + '\
-                    </div>\
-                  </td>\
-                  <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
-                    <div class="mb-1 text-neutral-500">' + (pubDate ? ('Published on ' + makeDateReadable(new Date(pubDate))) : "[No date found]") + '</div>\
-                    <div class="mb-1 text-neutral-900 hover:text-carnation-500">\
-                      <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + (title ? title : "[No article title found]") + '</a>\
-                    </div>\
-                    <div class="mb-3 text-neutral-500">' + (doi ? doi : "[No DOI found]") + '</div>\
-                    <div class="text-neutral-500">\
-                      ' + (articleOAStatus ? ('<span class="capitalize font-bold">' + articleOAStatus + '</span> article') : "[No status found for this article]") + '\
-                       — ' + (license ? ('<span class="uppercase font-bold">' + license + '</span>') : "[No license found]") + '\
-                    </div>\
-                  </td>\
-                  <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
-                    <div class="mb-3 text-neutral-500">\
-                      ' + (invoiceDate ? ('Issued on ' + makeDateReadable(new Date(invoiceDate))) : "[No invoice date found]") + '\
-                    </div>\
-                    <div class="mb-3 text-neutral-900">\
-                      ' + (invoiceNb ? invoiceNb : "[No invoice number found]") + '\
-                    </div>\
-                    <div class="text-neutral-500 uppercase">\
-                      ' + (costAPC ? ('US$' + costAPC) : "[No APC cost found]") + '\
-                    </div>\
-                  </td>\
-                </tr>';
-              }
-              hasAPCFollowupTable.innerHTML = hasAPCFollowupTableRows;
-            }
-          }
-        ).catch(function (error) { console.log("displayStrategyAPCFollowup error: " + error); })
-      } else {
-        // hide tab and its content if this strategy doesn’t exist for this org
-        document.querySelectorAll('#item-has-apc-followup, #has-apc-followup').forEach(function(elems) {
-          elems.style.display = 'none';
-        });
-      }
-    };
+    //             /*jshint multistr: true */
+    //             hasAPCFollowupTableRows += '<tr>\
+    //               <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
+    //                 <div class="mb-1 font-medium text-neutral-900">\
+    //                   ' + (publisher ? publisher : "[No publisher found]") + '\
+    //                 </div>\
+    //                 <div class="mb-3 text-neutral-900">\
+    //                   ' + (journal ? journal : "[No journal found]") + '\
+    //                 </div>\
+    //                 <div class="text-neutral-500">\
+    //                   ' + (journalOATtype ? ('<span class="capitalize font-bold">' + journalOATtype + '</span> journal') : "[No status found for this journal]") + '\
+    //                 </div>\
+    //               </td>\
+    //               <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
+    //                 <div class="mb-1 text-neutral-500">' + (pubDate ? ('Published on ' + makeDateReadable(new Date(pubDate))) : "[No date found]") + '</div>\
+    //                 <div class="mb-1 text-neutral-900 hover:text-carnation-500">\
+    //                   <a href="https://doi.org/' + doi + '" target="_blank" rel="noopener" title="Open article">' + (title ? title : "[No article title found]") + '</a>\
+    //                 </div>\
+    //                 <div class="mb-3 text-neutral-500">' + (doi ? doi : "[No DOI found]") + '</div>\
+    //                 <div class="text-neutral-500">\
+    //                   ' + (articleOAStatus ? ('<span class="capitalize font-bold">' + articleOAStatus + '</span> article') : "[No status found for this article]") + '\
+    //                    — ' + (license ? ('<span class="uppercase font-bold">' + license + '</span>') : "[No license found]") + '\
+    //                 </div>\
+    //               </td>\
+    //               <td class="py-4 pl-4 pr-3 text-sm align-top break-words">\
+    //                 <div class="mb-3 text-neutral-500">\
+    //                   ' + (invoiceDate ? ('Issued on ' + makeDateReadable(new Date(invoiceDate))) : "[No invoice date found]") + '\
+    //                 </div>\
+    //                 <div class="mb-3 text-neutral-900">\
+    //                   ' + (invoiceNb ? invoiceNb : "[No invoice number found]") + '\
+    //                 </div>\
+    //                 <div class="text-neutral-500 uppercase">\
+    //                   ' + (costAPC ? ('US$' + costAPC) : "[No APC cost found]") + '\
+    //                 </div>\
+    //               </td>\
+    //             </tr>';
+    //           }
+    //           hasAPCFollowupTable.innerHTML = hasAPCFollowupTableRows;
+    //         }
+    //       }
+    //     ).catch(function (error) { console.log("displayStrategyAPCFollowup error: " + error); })
+    //   } else {
+    //     // hide tab and its content if this strategy doesn’t exist for this org
+    //     document.querySelectorAll('#item-has-apc-followup, #has-apc-followup').forEach(function(elems) {
+    //       elems.style.display = 'none';
+    //     });
+    //   }
+    // };
 
     /** Display Strategies: escalate unanswered requests **/
     displayStrategyUnansweredRequests = function() {
@@ -615,7 +619,7 @@ oareport = function(org) {
       return false;
     }
 
-    displayStrategyAPCFollowup();
+    // displayStrategyAPCFollowup();
     displayStrategyUnansweredRequests();
 
   }).catch(function (error) { console.log("Report ERROR: " + error); });

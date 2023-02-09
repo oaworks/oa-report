@@ -143,7 +143,7 @@ permalink: "{{ org._source.objectID | slug }}/"
       <select name="tabs" class="block w-full pl-3 pr-10 py-2 text-base border-neutral-300 focus:outline-none focus:ring-carnation-500 focus:border-carnation-500 sm:text-sm rounded-md js-strategy-select">
         <option value="email_author_vor" selected>Deposit publisher PDFs</option>
         <option value="email_author_aam">Deposit accepted manuscripts</option>
-        <option value="hasAPCFollowup">Correct publisher errors</option>
+        <option value="apc_followup">Correct publisher errors</option>
       </select>
     </div>
 
@@ -163,7 +163,7 @@ permalink: "{{ org._source.objectID | slug }}/"
           }) }}
 
           {{ component("tab-item", {
-            id: "has-apc-followup",
+            id: "apc_followup",
             txt: "Correct publisher errors",
             first: false
           }) }}
@@ -202,7 +202,7 @@ permalink: "{{ org._source.objectID | slug }}/"
     }) }}
 
     {{ component("tab-contents", {
-      id: "has-apc-followup",
+      id: "apc_followup",
       heading: "Correct publisher errors",
       desc: "These are articles where an APC has been paid, but the article isn't compliant with the policy. Use this list to follow up with publishers. If an article is made compliant, and the metadata is updated, it will be removed from this list.",
       table_headings: "<th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-4/12 sm:w-4/12'>Publisher & journal</th>\
