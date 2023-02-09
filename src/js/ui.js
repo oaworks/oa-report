@@ -23,7 +23,7 @@ for (let tabBtn of strategyTabBtns) {
     const selectedStrategy = tabBtn.getAttribute("aria-controls"),
           selectedTabContents = document.querySelector(`.js-tab-content-all #${selectedStrategy}`),
           otherTabContents = document.querySelectorAll(`.js-tab-content:not(#${selectedStrategy})`),
-          otherTabBtns = document.querySelectorAll(`.js-tab-btn:not(#tab-${selectedStrategy})`);
+          otherTabBtns = document.querySelectorAll(`.js-tab-btn:not(#tab_${selectedStrategy})`);
 
     for (let tabContents of otherTabContents) {
       tabContents.classList.add("hidden");
