@@ -98,28 +98,26 @@ function changeTabs(e) {
     .removeAttribute('hidden');
 }
 
-/* Select menu navigation for strategies (XS + SM viewports) */
-// TODO: this should be optimised
-let strategySelect = document.querySelector(".js-strategy-select"),
-    canArchiveVORContent = document.querySelector("#can-archive-vor"),
-    canArchiveAAMContent = document.querySelector("#can-archive-aam"),
-    hasAPCFollowupContent = document.querySelector("#has-apc-followup");
+/* Display tab contents on menu selection (XS + SM viewports) */
+const strategySelect = document.querySelector('.js-strategy-select');
 
-strategySelect.addEventListener("change", function(e) {
-  if (e.target.value === "canArchiveVOR") {
-      canArchiveVORContent.classList.remove("hidden");
-      canArchiveAAMContent.classList.add("hidden");
-      hasAPCFollowupContent.classList.add("hidden");
-  } else if (e.target.value === "canArchiveAAM") {
-      canArchiveAAMContent.classList.remove("hidden");
-      canArchiveVORContent.classList.add("hidden");
-      hasAPCFollowupContent.classList.add("hidden");
-  } else if (e.target.value === "hasAPCFollowup") {
-      hasAPCFollowupContent.classList.remove("hidden");
-      canArchiveAAMContent.classList.add("hidden");
-      canArchiveVORContent.classList.add("hidden");
-  }
+strategySelect.addEventListener("change", (event) => {
+  const selectedTabContents = document.querySelector(`.js-tab-content-all #${event.target.value}`),
+        otherTabContents = document.querySelectorAll(`.js-tab-content:not(#${event.target.value})`);
+
+  for (let tabContents of otherTabContents) {
+    tabContents.classList.add("hidden");
+    tabContents.setAttribute("hidden", true);
+  };
+
+  selectedTabContents.classList.remove("hidden");
+  selectedTabContents.removeAttribute("hidden");
 });
+
+/* Display tab contents on UI tab selection (MD + larger viewports) */
+const strategyTab = document.querySelector(".js-tab-item");
+
+
 
 /* Quick selects pills */
 let quickDateItems = document.querySelectorAll(".js-pill");
