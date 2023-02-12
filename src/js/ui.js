@@ -1,7 +1,7 @@
 /* Display tab contents on menu selection (XS + SM viewports) */
 const strategySelect = document.querySelector('.js-strategy-select');
 
-strategySelect.addEventListener("change", (event) => {
+strategySelect.addEventListener("change", function (event) {
   const selectedTabContents = document.querySelector(`.js-tab-content-all #${event.target.value}`),
         otherTabContents = document.querySelectorAll(`.js-tab-content:not(#${event.target.value})`);
 
@@ -11,10 +11,13 @@ strategySelect.addEventListener("change", (event) => {
     tabContents.setAttribute("hidden", true);
   };
 
-  selectedTabContents.classList.remove("hidden");
-  selectedTabContents.removeAttribute("hidden");
+  if (event.target.matches(selectedTabContents)) {
+    selectedTabContents.classList.remove("hidden");
+    selectedTabContents.removeAttribute("hidden");
+  } else {
+    console.log("Not clicked");
+  };
 });
-
 /* Display tab contents on UI tab selection (MD + larger viewports) */
 const strategyTabBtns = document.querySelectorAll(".js-tab-btn");
 
