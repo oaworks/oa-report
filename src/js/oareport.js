@@ -222,6 +222,13 @@ oareport = function(org) {
       "The percentage of articles that shared any data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener' class='underline'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noopener' class='underline'>CC-BY</a> license. This figure only measures how many articles shared Open Data if they generated data in the first place. It also only measures if any of the datasets generated were open, not if all of them were open. To analyze this we work with Dataseer, who uses a combination of machine learning and human review to review the text of the papers"
     );
 
+    getInsight(
+      "has_open_code",
+      "has_code",
+      "articles generating code",
+      ""
+    );
+
     /** Get queries for default article counts and strategy action list **/
     getCountQueries = function() {
       canArchiveAAMQuery           = (countQueryPrefix + response.data.hits.hits[0]._source.strategy.email_author_aam.query);
