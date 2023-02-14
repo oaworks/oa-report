@@ -226,7 +226,7 @@ oareport = function(org) {
       "has_open_code",
       "has_code",
       "articles generating code",
-      "The percentage of articles that shared any code under a permissive open-source licence, such as MIT. This figure measures how many articles shared Open Code if they generated code in the first place. It also only measures if any parts of the code generated are open, not if all of it is open. We work with <a href='https://dataseer.ai/'  target='_blank' rel='noopener' class='underline'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content."
+      "The percentage of articles that shared any code under a permissive open-source licence, such as MIT. This figure measures how many articles shared Open Code if they generated code in the first place. It also only measures if <strong>any parts</strong> of the code generated are open, not if <strong>all</strong> of it is open. We work with <a href='https://dataseer.ai/'  target='_blank' rel='noopener' class='underline'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content."
     );
 
     /** Get queries for default article counts and strategy action list **/
