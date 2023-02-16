@@ -318,13 +318,13 @@ oareport = function(org) {
     //   ).catch(function (error) { console.log(`${strategy} error: ${error}`); })
     // };
 
-    displayStrategy = function(strategy, keys) {
+    displayStrategy = function(strategy, keys, tableRow) {
       var count = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query),
           list  = axios.get(queryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query),
   
           tabCountContents   = document.querySelector("#count_" + strategy),
           tableCountContents = document.querySelector("#total_" + strategy),
-          table = document.querySelector("#table_" + strategy);
+          tableBody = document.querySelector("#table_" + strategy).getElementsByTagName('tbody')[0];
           console.log(strategy + " • " + queryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query);
         
       Promise.all([count, list])
@@ -341,16 +341,17 @@ oareport = function(org) {
           // If no actions are available, show message
           if (count === 0) {
             tableCountContents.textContent = "No ";
-            table.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
+            tableBody.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
           }
           // Otherwise, generate list of actions
           else if (count > 0 || count !== null) {
-            var tableRows = ""; // Stores the entire contents of the list 
+            var tableRows = ""; // Contents of the list to be displayed in the UI as a table
 
-            console.log("--------");
-            console.log("strategy: " + strategy);
             // For each individual action, create a row
             for (var i = 0; i < count; i++) {
+              var action = {}; // Create object to store key-value pairs for each action
+
+              tableRows += "<tr>";
 
               // Get data for each of key required for a strategy
               for (var key of keys) {
@@ -363,13 +364,18 @@ oareport = function(org) {
                     }
                   );
                   var value = suppKey[key];
-                  console.log(key + " — " + value);
+                  action[key] = value;
                 } else {
                   var value = list[i]._source[key];
-                  console.log(key + " — " + value);
+                  action[key] = value;
                 }
               }
-            } 
+              var tableRowLiteral = eval('`'+ tableRow +'`'); // Convert given tableRow to template literal
+              tableRows += tableRowLiteral; // Populates the table with a row w/ replaced placeholders for each action 
+              tableRows += "</tr>";
+            }
+            // Fill table with all actions
+            tableBody.innerHTML = tableRows;
           }
         }
       ).catch(function (error) { console.log(`${strategy} error: ${error}`); })
@@ -377,22 +383,79 @@ oareport = function(org) {
 
     displayStrategy(
       "email_author_vor",
-      ['published_date', 'title', 'journal', 'author_email_name', 'email', 'doi']
+      ['published_date', 'title', 'journal', 'author_email_name', 'email', 'doi'],
+      "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
+        <div class='mb-1 text-neutral-500'>${action.published_date}</div>\
+        <div class='mb-1 font-medium text-neutral-900 hover:text-carnation-500'>\
+          <a href='https://doi.org/${action.doi}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
+        </div>\
+        <div class='text-neutral-500'>${action.journal}</div>\
+      </td>\
+      <td class='hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell'>\
+        <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
+        <div class='text-neutral-500'>${action.email}</div>\
+      </td>\
+      <td class='hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell'>\
+      </td>"
     );
 
     displayStrategy(
       "email_author_aam",
-      ['published_date', 'title', 'journal', 'author_email_name', 'email', 'doi']
+      ['published_date', 'title', 'journal', 'author_email_name', 'email', 'doi'],
+      "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
+        <div class='mb-1 text-neutral-500'>${action.published_date}</div>\
+        <div class='mb-1 font-medium text-neutral-900 hover:text-carnation-500'>\
+          <a href='https://doi.org/${action.doi}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
+        </div>\
+        <div class='text-neutral-500'>${action.journal}</div>\
+      </td>\
+      <td class='hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell'>\
+        <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
+        <div class='text-neutral-500'>${action.email}</div>\
+      </td>\
+      <td class='hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell'>\
+      </td>"
     );
     
     displayStrategy(
       "apc_followup",
-      ['published_date', 'title', 'journal', 'doi', 'supplements.apc_cost', 'supplements.invoice_number', 'supplements.invoice_date']
+      ['published_date', 'title', 'journal', 'doi', 'publisher', 'journal_oa_type', 'oa_status', 'supplements.apc_cost', 'supplements.invoice_number', 'supplements.invoice_date'],
+      "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
+        <div class='mb-1 font-medium text-neutral-900'>${action.publisher}</div>\
+        <div class='mb-3 text-neutral-900'>${action.journal}</div>\
+        <div class='text-neutral-500'>${action.journal_oa_type}</div>\
+      </td>\
+      <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
+        <div class='mb-1 text-neutral-500'>${action.published_date}</div>\
+        <div class='mb-1 text-neutral-900 hover:text-carnation-500'>\
+          <a href='https://doi.org/${action.doi}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
+        </div>\
+        <div class='mb-3 text-neutral-500'>${action.doi}</div>\
+        <div class='text-neutral-500'>${action.oa_status}; [LICENSE]</div>\
+      </td>\
+      <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
+        <div class='mb-3 text-neutral-500'>${action.invoice_date}</div>\
+        <div class='mb-3 text-neutral-900'>${action.invoice_number}</div>\
+        <div class='text-neutral-500 uppercase'>US$${action.apc_cost}</div>\
+      </td>"
     );
 
     displayStrategy(
       "unanswered_requests",
-      ['title', 'journal', 'author_email_name', 'email', 'doi', 'supplements.program__bmgf', 'supplements.grantid__bmgf']
+      ['title', 'journal', 'author_email_name', 'email', 'doi', 'supplements.program__bmgf', 'supplements.grantid__bmgf'],
+      "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
+        <div class='mb-1 font-medium text-neutral-900'>${action.program__bmgf}</div>\
+        <div class='text-neutral-900'>${action.grantid__bmgf}</div>\
+      </td>\
+      <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
+        <div class='mb-1 font-medium text-neutral-900'>${action.author_email_name}</div>\
+        <div class='mb-1 text-neutral-900'>\
+          <a href='https://doi.org/${action.doi}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
+        </div>\
+        <div class='text-neutral-500'>${action.journal}</div>\
+      </td>\
+      <td class='whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium'>\
+      </td>"
     );
 
     /** Display Strategies: follow up with uncompliant articles with paid APCs **/
