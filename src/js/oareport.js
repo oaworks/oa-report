@@ -442,7 +442,7 @@ oareport = function(org) {
           <a href='https://doi.org/${action.doi}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
         </div>\
         <div class='mb-3 text-neutral-500'>${action.doi}</div>\
-        <div class='text-neutral-500'>${action.oa_status}; [LICENSE]</div>\
+        <div class='text-neutral-500'>${action.oa_status}; ${action.publisher_license}</div>\
       </td>\
       <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
         <div class='mb-3 text-neutral-500'>${action.invoice_date}</div>\
