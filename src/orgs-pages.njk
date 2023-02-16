@@ -106,6 +106,12 @@ permalink: "{{ org._source.objectID | slug }}/"
       icon: "database"
     }) }}
 
+    {{ component("card", {
+      id: "has_open_code",
+      title: "With Open Code",
+      icon: "code"
+    }) }}
+
   {# TODO: Filter by date #}
   {# <div class="col-span-12 mb-6 grid grid-cols-12 gap-3 lg:gap-6">
     <section>
