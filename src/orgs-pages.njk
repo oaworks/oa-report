@@ -144,6 +144,7 @@ permalink: "{{ org._source.objectID | slug }}/"
         <option value="email_author_vor" selected>Deposit publisher PDFs</option>
         <option value="email_author_aam">Deposit accepted manuscripts</option>
         <option value="apc_followup">Correct publisher errors</option>
+        <option value="unanswered_requests">Escalate unanswered requests</option>
       </select>
     </div>
 
@@ -169,7 +170,7 @@ permalink: "{{ org._source.objectID | slug }}/"
           }) }}
 
           {{ component("tab-item", {
-            id: "has-unanswered-requests",
+            id: "unanswered_requests",
             txt: "Escalate unanswered requests",
             first: false
           }) }}
@@ -214,7 +215,7 @@ permalink: "{{ org._source.objectID | slug }}/"
     }) }}
 
     {{ component("tab-contents", {
-      id: "has-unanswered-requests",
+      id: "unanswered_requests",
       heading: "Escalate unanswered requests",
       desc: "These articles are not compliant with policy, and their authors haven’t answered multiple requests to comply. Use this list to escalate requests to authors and request they make their work freely available.",
       table_headings: "<th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-3/12'>Grant</th>\
