@@ -331,6 +331,7 @@ oareport = function(org) {
         .then(function (results) {
           var count = parseFloat(results[0].data),
               list = results[1].data.hits.hits;
+
           // Show total number of actions in tab & above table
           tabCountContents.textContent = makeNumberReadable(count);
           if (count > 100) {
@@ -343,6 +344,7 @@ oareport = function(org) {
             tableCountContents.textContent = "No ";
             tableBody.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
           }
+
           // Otherwise, generate list of actions
           else if (count > 0 || count !== null) {
             var tableRows = ""; // Contents of the list to be displayed in the UI as a table
@@ -368,14 +370,16 @@ oareport = function(org) {
                 } else {
                   var value = list[i]._source[key];
                   action[key] = value;
+
+                  if (key.includes('published_date')) action[key] = makeDateReadable(new Date(action[key]));
                 }
               }
+
               var tableRowLiteral = eval('`'+ tableRow +'`'); // Convert given tableRow to template literal
-              tableRows += tableRowLiteral; // Populates the table with a row w/ replaced placeholders for each action 
+              tableRows += tableRowLiteral; // Populate the table with a row w/ replaced placeholders for each action 
               tableRows += "</tr>";
             }
-            // Fill table with all actions
-            tableBody.innerHTML = tableRows;
+            tableBody.innerHTML = tableRows; // Fill table with all actions
           }
         }
       ).catch(function (error) { console.log(`${strategy} error: ${error}`); })
