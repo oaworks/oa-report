@@ -189,7 +189,6 @@ oareport = function(org) {
         // Display plain number when it’s just a numerator
         } else {
           num.then(function (result) {
-            var numCount = result.data;
             percentageContents.textContent = makeNumberReadable(result.data);
           }).catch(function (error) { console.log(`${numerator} error: ${error}`); });
         };
@@ -380,12 +379,12 @@ oareport = function(org) {
                     action[key] = value;
                     
                     if (key.includes('invoice_date')) action[key] = makeDateReadable(new Date(action[key]));
+                    if (key.includes('apc_cost')) action[key] = makeNumberReadable(action[key]);
                   } else {
                     var value = list[i]._source[key];
                     action[key] = value;
 
                     if (key.includes('published_date')) action[key] = makeDateReadable(new Date(action[key]));
-                    if (key.includes('email')) action[key] = makeDateReadable(new Date(action[key]));
                   }
 
                   if (value == undefined || value == null) {
