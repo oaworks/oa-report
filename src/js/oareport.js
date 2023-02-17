@@ -374,11 +374,17 @@ oareport = function(org) {
                   );
                   var value = suppKey[key];
                   action[key] = value;
+                  
+                  if (key.includes('invoice_date')) action[key] = makeDateReadable(new Date(action[key]));
                 } else {
                   var value = list[i]._source[key];
                   action[key] = value;
 
                   if (key.includes('published_date')) action[key] = makeDateReadable(new Date(action[key]));
+                }
+
+                if (value == undefined || value == null) {
+                  action[key] = "N/A";
                 }
               }
 
