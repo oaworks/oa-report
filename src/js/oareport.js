@@ -326,76 +326,88 @@ oareport = function(org) {
     // };
 
     displayStrategy = function(strategy, keys, tableRow) {
-      var count = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query),
+      var shown = response.data.hits.hits[0]._source.strategy[strategy].show_on_web,
+          count = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query),
           list  = axios.get(queryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query),
+          tabID = "#item_" + strategy;
+           
+      console.log(strategy + " • " + queryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query);
   
-          tabCountContents   = document.querySelector("#count_" + strategy),
-          tableCountContents = document.querySelector("#total_" + strategy),
-          tableBody = document.querySelector("#table_" + strategy).getElementsByTagName('tbody')[0];
-          console.log(strategy + " • " + queryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query);
-        
-      Promise.all([count, list])
-        .then(function (results) {
-          var count = parseFloat(results[0].data),
-              list = results[1].data.hits.hits;
+      if (shown === true) {
+        var tabCountContents   = document.querySelector("#count_" + strategy),
+            tableCountContents = document.querySelector("#total_" + strategy),
+            tableBody = document.querySelector("#table_" + strategy).getElementsByTagName('tbody')[0];
+          
+        Promise.all([count, list])
+          .then(function (results) {
+            var count = parseFloat(results[0].data),
+                list = results[1].data.hits.hits;
 
-          // Show total number of actions in tab & above table
-          tabCountContents.textContent = makeNumberReadable(count);
-          if (count > 100) {
-            count = 100; // limit to 100
-          }
-          tableCountContents.textContent = makeNumberReadable(count);
-
-          // If no actions are available, show message
-          if (count === 0) {
-            tableCountContents.textContent = "No ";
-            tableBody.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
-          }
-
-          // Otherwise, generate list of actions
-          else if (count > 0 || count !== null) {
-            var tableRows = ""; // Contents of the list to be displayed in the UI as a table
-
-            // For each individual action, create a row
-            for (var i = 0; i < count; i++) {
-              var action = {}; // Create object to store key-value pairs for each action
-
-              tableRows += "<tr>";
-
-              // Get data for each of key required for a strategy
-              for (var key of keys) {
-                // If it’s from the supplements array, loop over supplements to access data without index number
-                if (key.startsWith('supplements.')) {
-                  key = key.replace('supplements.', ''); // Remove prefix 
-                  var suppKey = list[i]._source.supplements.find(
-                    function(i) {
-                      return (i[key]);
-                    }
-                  );
-                  var value = suppKey[key];
-                  action[key] = value;
-                  
-                  if (key.includes('invoice_date')) action[key] = makeDateReadable(new Date(action[key]));
-                } else {
-                  var value = list[i]._source[key];
-                  action[key] = value;
-
-                  if (key.includes('published_date')) action[key] = makeDateReadable(new Date(action[key]));
-                }
-
-                if (value == undefined || value == null) {
-                  action[key] = "N/A";
-                }
-              }
-
-              var tableRowLiteral = eval('`'+ tableRow +'`'); // Convert given tableRow to template literal
-              tableRows += tableRowLiteral; // Populate the table with a row w/ replaced placeholders for each action 
-              tableRows += "</tr>";
+            // Show total number of actions in tab & above table
+            tabCountContents.textContent = makeNumberReadable(count);
+            if (count > 100) {
+              count = 100; // limit to 100
             }
-            tableBody.innerHTML = tableRows; // Fill table with all actions
+            tableCountContents.textContent = makeNumberReadable(count);
+
+            // If no actions are available, show message
+            if (count === 0) {
+              tableCountContents.textContent = "No ";
+              tableBody.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
+            }
+
+            // Otherwise, generate list of actions
+            else if (count > 0 || count !== null) {
+              var tableRows = ""; // Contents of the list to be displayed in the UI as a table
+
+              // For each individual action, create a row
+              for (var i = 0; i < count; i++) {
+                var action = {}; // Create object to store key-value pairs for each action
+
+                tableRows += "<tr>";
+
+                // Get data for each of key required for a strategy
+                for (var key of keys) {
+                  // If it’s from the supplements array, loop over supplements to access data without index number
+                  if (key.startsWith('supplements.')) {
+                    key = key.replace('supplements.', ''); // Remove prefix 
+                    var suppKey = list[i]._source.supplements.find(
+                      function(i) {
+                        return (i[key]);
+                      }
+                    );
+                    var value = suppKey[key];
+                    action[key] = value;
+                    
+                    if (key.includes('invoice_date')) action[key] = makeDateReadable(new Date(action[key]));
+                  } else {
+                    var value = list[i]._source[key];
+                    action[key] = value;
+
+                    if (key.includes('published_date')) action[key] = makeDateReadable(new Date(action[key]));
+                    if (key.includes('email')) action[key] = makeDateReadable(new Date(action[key]));
+                  }
+
+                  if (value == undefined || value == null) {
+                    action[key] = "N/A";
+                  }
+                }
+
+                var tableRowLiteral = eval('`'+ tableRow +'`'); // Convert given tableRow to template literal
+                tableRows += tableRowLiteral; // Populate the table with a row w/ replaced placeholders for each action 
+                tableRows += "</tr>";
+              }
+              tableBody.innerHTML = tableRows; // Fill table with all actions
+            }
           }
-        }
-      ).catch(function (error) { console.log(`${strategy} error: ${error}`); })
+        ).catch(function (error) { console.log(`${strategy} error: ${error}`); })
+
+        // Once data has loaded, display the card
+        changeOpacity(tabID);
+
+      } else {
+        displayNone(tabID);
+      };
     };
 
     displayStrategy(

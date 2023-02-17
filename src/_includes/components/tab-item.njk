@@ -6,7 +6,7 @@
 }) }}
 #}
 
-<li class="js-tab-item" id="item_{{ params.id }}">
+<li class="js-tab-item opacity-0" id="item_{{ params.id }}">
   <button role="tab" tabindex="{% if params.first %}0{% else %}1{% endif %}" aria-selected="{% if params.first %}true{% else %}false{% endif %}" aria-controls="{{ params.id }}" class="border-transparent whitespace-nowrap flex p-4 border-t-4 bg-white text-sm transition duration-300 ease-in-out js-tab-btn {% if params.first %}font-bold border-neutral-900 text-neutral-900{% else %}font-normal hover:text-neutral-700 hover:border-neutral-300{% endif %}js-tab-item" id="tab_{{ params.id }}">
     {{ params.txt }}
     <span id="count_{{ params.id }}" class="bg-neutral-800 text-white ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block">0</span>
