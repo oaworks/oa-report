@@ -407,6 +407,7 @@ oareport = function(org) {
 
       } else {
         displayNone(tabID);
+        document.getElementById(strategy).remove();
       };
     };
 
