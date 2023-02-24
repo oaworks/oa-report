@@ -18,6 +18,12 @@
     "url": "https://www.templetonworldcharity.org/"
   },
   {
+    "name": "the Howard Hughes Medical Institute",
+    "acronym": "HHMI",
+    "logo": "img/users/hhmi.png",
+    "url": "https://www.hhmi.org/"
+  },
+  {
     "name": "the Robert Wood Johnson Foundation",
     "acronym": "RWJF",
     "url": "https://www.rwjf.org/"
