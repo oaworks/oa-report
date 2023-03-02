@@ -134,7 +134,7 @@ oareport = function(org) {
         axios.get(articleEmailBase + doi  + "?" +  orgKey)
           .then(function (response) {
             let authorEmail = response.data;
-            mailto = mailto.replaceAll("{author_email}", authorEmail);
+            mailto = mailto.replaceAll("{email}", authorEmail);
             window.open('mailto:' + mailto);
           }
         ).catch(function (error) { console.log("decryptEmail error: " + error); })
@@ -251,13 +251,12 @@ oareport = function(org) {
     );
 
     displayStrategy = function(strategy, keys, tableRow) {
-      var shown = response.data.hits.hits[0]._source.strategy[strategy].show_on_web,
-          count = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query),
-          list  = axios.get(queryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query),
-          tabID = "#item_" + strategy;
-           
-      console.log(strategy + " • " + queryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query);
-  
+      var shown  = response.data.hits.hits[0]._source.strategy[strategy].show_on_web,
+          count  = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query),
+          list   = axios.get(queryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query),
+          mailto = response.data.hits.hits[0]._source.strategy[strategy].mailto,
+          tabID  = "#item_" + strategy;
+
       if (shown === true) {
         var tabCountContents   = document.querySelector("#count_" + strategy),
             tableCountContents = document.querySelector("#total_" + strategy),
@@ -284,14 +283,13 @@ oareport = function(org) {
             // Otherwise, generate list of actions
             else if (count > 0 || count !== null) {
               var tableRows = ""; // Contents of the list to be displayed in the UI as a table
-
+              
               // For each individual action, create a row
-              for (var i = 0; i < count; i++) {
+              for (let i = 0; i < count; i++) {
                 var action = {}; // Create object to store key-value pairs for each action
-
                 tableRows += "<tr>";
 
-                // Get data for each of key required for a strategy
+                // Populate action array with values for each key
                 for (var key of keys) {
                   // If it’s from the supplements array, loop over supplements to access data without index number
                   if (key.startsWith('supplements.')) {
@@ -306,22 +304,35 @@ oareport = function(org) {
                     
                     if (key.includes('invoice_date')) action[key] = makeDateReadable(new Date(action[key]));
                     if (key.includes('apc_cost')) action[key] = makeNumberReadable(action[key]);
-                  } else {
+                  } else { 
                     var value = list[i]._source[key];
                     action[key] = value;
 
-                    if (key.includes('published_date')) action[key] = makeDateReadable(new Date(action[key]));
+                    if (key === 'published_date') action[key] = makeDateReadable(new Date(action[key]));
+                    if (key === 'mailto') value = newMailto;
                   }
 
                   if (value == undefined || value == null) {
                     action[key] = "N/A";
                   }
-                }
+                };
+
+                // Replace mailto body’s content with data
+                if (mailto) {
+                  var newMailto = mailto.replaceAll("\'", "’");
+                  newMailto = newMailto.replaceAll("{doi}", (action.doi ? action.doi : "[No DOI found]"));
+                  newMailto = newMailto.replaceAll("{author_email_name}", (action.author_email_name ? action.author_email_name : "[No author’s name found]"));
+                  newMailto = newMailto.replaceAll("{title}", (action.title ? action.title : "[No title found]"));
+
+                  // And add it to the action array
+                  action["mailto"] = encodeURI(newMailto);
+                };
 
                 var tableRowLiteral = eval('`'+ tableRow +'`'); // Convert given tableRow to template literal
                 tableRows += tableRowLiteral; // Populate the table with a row w/ replaced placeholders for each action 
                 tableRows += "</tr>";
               }
+
               tableBody.innerHTML = tableRows; // Fill table with all actions
             }
           }
@@ -338,7 +349,7 @@ oareport = function(org) {
 
     displayStrategy(
       "email_author_vor",
-      ['published_date', 'title', 'journal', 'author_email_name', 'email', 'doi'],
+      ['published_date', 'title', 'journal', 'author_email_name', 'email', 'doi', 'mailto'],
       "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
         <div class='mb-1 text-neutral-500'>${action.published_date}</div>\
         <div class='mb-1 font-medium text-neutral-900 hover:text-carnation-500'>\
@@ -351,12 +362,15 @@ oareport = function(org) {
         <div class='text-neutral-500'>${action.email}</div>\
       </td>\
       <td class='hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell'>\
+        <button class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200' onclick='decryptEmail(\"${action.email}\", \"${action.doi}\", \"${action.mailto}\")'>\
+          <svg class='h-4 w-4' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-mail inline-block h-4 duration-500'><path d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'></path><polyline points='22,6 12,13 2,6'></polyline></svg>\
+        </button>\
       </td>"
     );
 
     displayStrategy(
       "email_author_aam",
-      ['published_date', 'title', 'journal', 'author_email_name', 'email', 'doi'],
+      ['published_date', 'title', 'journal', 'author_email_name', 'email', 'doi', 'mailto'],
       "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
         <div class='mb-1 text-neutral-500'>${action.published_date}</div>\
         <div class='mb-1 font-medium text-neutral-900 hover:text-carnation-500'>\
@@ -369,6 +383,9 @@ oareport = function(org) {
         <div class='text-neutral-500'>${action.email}</div>\
       </td>\
       <td class='hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell'>\
+        <button class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200' onclick='decryptEmail(\"${action.email}\", \"${action.doi}\", \"${action.mailto}\")'>\
+          <svg class='h-4 w-4' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-mail inline-block h-4 duration-500'><path d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'></path><polyline points='22,6 12,13 2,6'></polyline></svg>\
+        </button>\
       </td>"
     );
     
@@ -397,7 +414,7 @@ oareport = function(org) {
 
     displayStrategy(
       "unanswered_requests",
-      ['title', 'journal', 'author_email_name', 'email', 'doi', 'supplements.program__bmgf', 'supplements.grantid__bmgf'],
+      ['title', 'journal', 'author_email_name', 'email', 'doi', 'supplements.program__bmgf', 'supplements.grantid__bmgf', 'mailto'],
       "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
         <div class='mb-1 font-medium text-neutral-900'>${action.program__bmgf}</div>\
         <div class='text-neutral-900'>${action.grantid__bmgf}</div>\
@@ -410,6 +427,9 @@ oareport = function(org) {
         <div class='text-neutral-500'>${action.journal}</div>\
       </td>\
       <td class='whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium'>\
+        <button class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200' onclick='decryptEmail(\"${action.email}\", \"${action.doi}\", \"${action.mailto}\")'>\
+          <svg class='h-4 w-4' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-mail inline-block h-4 duration-500'><path d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'></path><polyline points='22,6 12,13 2,6'></polyline></svg>\
+        </button>\
       </td>"
     );
 
