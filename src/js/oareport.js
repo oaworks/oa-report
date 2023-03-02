@@ -359,7 +359,6 @@ oareport = function(org) {
       </td>\
       <td class='hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell'>\
         <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
-        <div class='text-neutral-500'>${action.email}</div>\
       </td>\
       <td class='hidden px-3 py-4 text-sm text-center text-neutral-500 align-top break-words sm:table-cell'>\
         <button class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200' onclick='decryptEmail(\"${action.email}\", \"${action.doi}\", \"${action.mailto}\")'>\
@@ -380,7 +379,6 @@ oareport = function(org) {
       </td>\
       <td class='hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell'>\
         <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
-        <div class='text-neutral-500'>${action.email}</div>\
       </td>\
       <td class='hidden px-3 py-4 text-sm text-center text-neutral-500 align-top break-words sm:table-cell'>\
         <button class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200' onclick='decryptEmail(\"${action.email}\", \"${action.doi}\", \"${action.mailto}\")'>\
@@ -395,7 +393,7 @@ oareport = function(org) {
       "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
         <div class='mb-1 font-medium text-neutral-900'>${action.publisher}</div>\
         <div class='mb-3 text-neutral-900'>${action.journal}</div>\
-        <div class='text-neutral-500'>${action.journal_oa_type}</div>\
+        <div class='text-neutral-500'>OA type: <span class='font-medium'>${action.journal_oa_type}</span></div>\
       </td>\
       <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
         <div class='mb-1 text-neutral-500'>${action.published_date}</div>\
@@ -403,7 +401,8 @@ oareport = function(org) {
           <a href='https://doi.org/${action.doi}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
         </div>\
         <div class='mb-3 text-neutral-500'>${action.doi}</div>\
-        <div class='text-neutral-500'>${action.oa_status}; ${action.publisher_license}</div>\
+        <div class='text-neutral-500'>OA status: <span class='font-medium'>${action.oa_status}<span></div>\
+        <div class='text-neutral-500'>License: <span class='font-medium uppercase'>${action.publisher_license}</span></div>\
       </td>\
       <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
         <div class='mb-3 text-neutral-500'>${action.invoice_date}</div>\
