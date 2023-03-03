@@ -252,14 +252,17 @@ oareport = function(org) {
 
     displayStrategy = function(strategy, keys, tableRow) {
       var shown  = response.data.hits.hits[0]._source.strategy[strategy].show_on_web,
-          count  = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query),
-          list   = axios.get(queryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query),
           tabID  = "#item_" + strategy;
 
       if (shown === true) {
+        // Get tab elements
         var tabCountContents   = document.querySelector("#count_" + strategy),
             tableCountContents = document.querySelector("#total_" + strategy),
-            tableBody = document.querySelector("#table_" + strategy).getElementsByTagName('tbody')[0];
+            tableBody          = document.querySelector("#table_" + strategy).getElementsByTagName('tbody')[0];
+        
+        // Get total action (article) count for this strategy & full list of actions
+        var count              = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query),
+            list               = axios.get(queryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query);
           
         Promise.all([count, list])
           .then(function (results) {
@@ -317,7 +320,6 @@ oareport = function(org) {
                 
                 // If mailto is included, replace its body’s content with the action’s values
                 if ("mailto" in action) {
-                  console.log("ues");
                   mailto = response.data.hits.hits[0]._source.strategy[strategy].mailto;
 
                   var newMailto = mailto.replaceAll("\'", "’");
