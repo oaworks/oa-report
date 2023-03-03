@@ -14,7 +14,7 @@
     <div class=" lg:sticky lg:top-3">
       <h3 class="font-semibold text-xl md:text-4xl mb-3 md:mb-6">{{ params.heading }}</h3>
       <p class="text-xs md:text-base mb-3 md:mb-6">{{ params.desc|safe }}</p>
-      <form id="form-{{ params.id }}" onsubmit="return getStrategyExportLink('{{ params.id }}')">
+      <form id="form_{{ params.id }}" onsubmit="return getStrategyExportLink('{{ params.id }}')">
         <h2 class="mb-3 font-medium text-base text-neutral-900">
           Get data in CSV by email {{ component("tooltip", {
             msg: "Enter your email address to receive a link to a CSV for download. We do not use email addresses for any purpose other than sending you the CSV file containing OA.Report data when you request it."

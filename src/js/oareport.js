@@ -484,33 +484,22 @@ oareport = function(org) {
 
     /* Strategy-level "download CSV" form */
     getStrategyExportLink = function(id) {
-      var formID = id;
-      /* TODO: temp solution for oaworks/Gates#369 — clean this up */
-      // Set export includes and queries for all types of strategies
-      if (formID == "can-archive-vor") {
-        hasCustomExportIncludes = (response.data.hits.hits[0]._source.strategy.email_author_vor.export_includes);
-        strategyQuery           = (response.data.hits.hits[0]._source.strategy.email_author_vor.query);
-      } else if (formID == "can-archive-aam") {
-        hasCustomExportIncludes = (response.data.hits.hits[0]._source.strategy.email_author_aam.export_includes);
-        strategyQuery           = (response.data.hits.hits[0]._source.strategy.email_author_aam.query);
-      } else if (formID == "has-apc-followup") {
-        hasCustomExportIncludes = (response.data.hits.hits[0]._source.strategy.apc_followup.export_includes);
-        strategyQuery           = (response.data.hits.hits[0]._source.strategy.apc_followup.query);
-      } else if (formID == "has-unanswered-requests") {
-        hasCustomExportIncludes = (response.data.hits.hits[0]._source.strategy.unanswered_requests.export_includes);
-        strategyQuery           = (response.data.hits.hits[0]._source.strategy.unanswered_requests.query);
-      }
+      var hasCustomExportIncludes = (response.data.hits.hits[0]._source.strategy[id].export_includes),
+          strategyQuery           = (response.data.hits.hits[0]._source.strategy[id].query);
+
+          console.log(hasCustomExportIncludes);
+          console.log(strategyQuery);
 
       Promise.all([hasCustomExportIncludes])
         .then(function (results) {
-          let hasCustomExportIncludes = results[0].data;
+          hasCustomExportIncludes = results[0].data;
           }
         ).catch(function (error) { console.log("Export error: " + error); });
 
       // Set up export query
       isPaperURL = (dateRange + strategyQuery);
       let query = "q=" + isPaperURL.replaceAll(" ", "%20"),
-          form = new FormData(document.getElementById("form_" + formID));
+          form = new FormData(document.getElementById("form_" + id));
 
       // Get form content — email address input
       var email = "&" + new URLSearchParams(form).toString();
@@ -528,7 +517,7 @@ oareport = function(org) {
       xhr.open("GET", query);
       // Display message when server responds
       xhr.onload = function () {
-        document.querySelector("#msg-" + formID).innerHTML = "OA.Report has started building your CSV export at <a href='" + this.response + "' target='_blank' class='underline'>this URL</a>. Please check your email to get the full data once it’s ready.";
+        document.querySelector("#msg-" + id).innerHTML = "OA.Report has started building your CSV export at <a href='" + this.response + "' target='_blank' class='underline'>this URL</a>. Please check your email to get the full data once it’s ready.";
       };
       xhr.send();
 
