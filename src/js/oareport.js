@@ -345,7 +345,7 @@ oareport = function(org) {
 
             // Otherwise, display a message prompting user to log or contact us to access strategies
             else {
-              tableBody.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'><p class='text-xl'>Strategies help you take action to make your institution’s research more open. Find out more about strategies by <a href='mailto:hello@oa.works?subject=OA.Report' class='underline'>contacting us</a> or logging in to your account to access them.</p></td></tr>";
+              tableBody.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-base text-center align-top break-words' colspan='3'><p class='font-bold'>Strategies help you take action to make your institution’s research more open.</p> <p>Find out more about strategies by <a href='mailto:hello@oa.works?subject=OA.Report' class='underline'>contacting us</a> or logging in to your account to access them.</p></td></tr>";
               displayNone(`#form_${strategy}`);
             }            
           }
