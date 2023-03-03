@@ -104,8 +104,9 @@ const currentDate                  = new Date(),
 replaceDateRange(lastYearStartDate, lastYearEndDate);
 
 // Check if user is authentified
-let orgKey = "";
-if (Object.keys(OAKEYS).length !== 0) {
+let orgKey = "",
+    hasOrgKey = Object.keys(OAKEYS).length !== 0;
+if (hasOrgKey) {
   orgKey = "&orgkey=" + Object.values(OAKEYS);
 } else {
   displayNone("#logout");
@@ -130,7 +131,7 @@ oareport = function(org) {
     decryptEmail = function(email, doi, mailto) {
       mailto = decodeURI(mailto);
       // if email is not undefined and there is an orgkey, decrypt the author’s email
-      if (email !== 'undefined' && Object.keys(OAKEYS).length !== 0) {
+      if (email !== 'undefined' && hasOrgKey) {
         axios.get(articleEmailBase + doi  + "?" +  orgKey)
           .then(function (response) {
             let authorEmail = response.data;
@@ -256,9 +257,9 @@ oareport = function(org) {
 
       if (shown === true) {
         // Get tab elements
-        var tabCountContents   = document.querySelector("#count_" + strategy),
-            tableCountContents = document.querySelector("#total_" + strategy),
-            tableBody          = document.querySelector("#table_" + strategy).getElementsByTagName('tbody')[0];
+        var tabCountContents   = document.querySelector(`#count_${strategy}`),
+            tableCountContents = document.querySelector(`#total_${strategy}`),
+            tableBody          = document.querySelector(`#table_${strategy}`).getElementsByTagName('tbody')[0];
         
         // Get total action (article) count for this strategy & full list of actions
         var count              = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query),
@@ -276,68 +277,77 @@ oareport = function(org) {
             }
             tableCountContents.textContent = makeNumberReadable(count);
 
-            // If no actions are available, show message
-            if (count === 0) {
-              tableCountContents.textContent = "No ";
-              tableBody.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
-            }
-
-            // Otherwise, generate list of actions
-            else if (count > 0 || count !== null) {
-              var tableRows = ""; // Contents of the list to be displayed in the UI as a table
-              
-              // For each individual action, create a row
-              for (let i = 0; i < count; i++) {
-                var action = {}; // Create object to store key-value pairs for each action
-                tableRows += "<tr>";
-
-                // Populate action array with values for each key
-                for (var key of keys) {
-                  // If it’s from the supplements array, loop over supplements to access data without index number
-                  if (key.startsWith('supplements.')) {
-                    key = key.replace('supplements.', ''); // Remove prefix 
-                    var suppKey = list[i]._source.supplements.find(
-                      function(i) {
-                        return (i[key]);
-                      }
-                    );
-                    var value = suppKey[key];
-                    action[key] = value;
-                    
-                    if (key.includes('invoice_date')) action[key] = makeDateReadable(new Date(action[key]));
-                    if (key.includes('apc_cost')) action[key] = makeNumberReadable(action[key]);
-                  } else { 
-                    var value = list[i]._source[key];
-                    action[key] = value;
-
-                    if (key === 'published_date') action[key] = makeDateReadable(new Date(action[key]));
-                  }
-
-                  if (value == undefined || value == null) {
-                    action[key] = "N/A";
-                  }
-                };
-                
-                // If mailto is included, replace its body’s content with the action’s values
-                if ("mailto" in action) {
-                  mailto = response.data.hits.hits[0]._source.strategy[strategy].mailto;
-
-                  var newMailto = mailto.replaceAll("\'", "’");
-                  newMailto = newMailto.replaceAll("{doi}", (action.doi ? action.doi : "[No DOI found]"));
-                  newMailto = newMailto.replaceAll("{author_email_name}", (action.author_email_name ? action.author_email_name : "[No author’s name found]"));
-                  newMailto = newMailto.replaceAll("{title}", (action.title ? action.title : "[No title found]"));
-
-                  // And add it to the action array
-                  action["mailto"] = encodeURI(newMailto);
-                };
-
-                var tableRowLiteral = eval('`'+ tableRow +'`'); // Convert given tableRow to template literal
-                tableRows += tableRowLiteral; // Populate the table with a row w/ replaced placeholders for each action 
-                tableRows += "</tr>";
+            // If there’s an orgkey, show full list of strategies
+            if (hasOrgKey) {
+              // If no actions are available, show message
+              if (count === 0) {
+                tableCountContents.textContent = "No ";
+                tableBody.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
               }
 
-              tableBody.innerHTML = tableRows; // Fill table with all actions
+              // Otherwise, generate list of actions
+              else if (count > 0 || count !== null) {
+                var tableRows = ""; // Contents of the list to be displayed in the UI as a table
+                
+                // For each individual action, create a row
+                for (let i = 0; i < count; i++) {
+                  var action = {}; // Create object to store key-value pairs for each action
+                  tableRows += "<tr>";
+
+                  // Populate action array with values for each key
+                  for (var key of keys) {
+                    // If it’s from the supplements array, loop over supplements to access data without index number
+                    if (key.startsWith('supplements.')) {
+                      key = key.replace('supplements.', ''); // Remove prefix 
+                      var suppKey = list[i]._source.supplements.find(
+                        function(i) {
+                          return (i[key]);
+                        }
+                      );
+                      var value = suppKey[key];
+                      action[key] = value;
+                      
+                      if (key.includes('invoice_date')) action[key] = makeDateReadable(new Date(action[key]));
+                      if (key.includes('apc_cost')) action[key] = makeNumberReadable(action[key]);
+                    } else { 
+                      var value = list[i]._source[key];
+                      action[key] = value;
+
+                      if (key === 'published_date') action[key] = makeDateReadable(new Date(action[key]));
+                    }
+
+                    if (value == undefined || value == null) {
+                      action[key] = "N/A";
+                    }
+                  };
+                  
+                  // If mailto is included, replace its body’s content with the action’s values
+                  if ("mailto" in action) {
+                    mailto = response.data.hits.hits[0]._source.strategy[strategy].mailto;
+
+                    var newMailto = mailto.replaceAll("\'", "’");
+                    newMailto = newMailto.replaceAll("{doi}", (action.doi ? action.doi : "[No DOI found]"));
+                    newMailto = newMailto.replaceAll("{author_email_name}", (action.author_email_name ? action.author_email_name : "[No author’s name found]"));
+                    newMailto = newMailto.replaceAll("{title}", (action.title ? action.title : "[No title found]"));
+
+                    // And add it to the action array
+                    action["mailto"] = encodeURI(newMailto);
+                  };
+
+                  var tableRowLiteral = eval('`'+ tableRow +'`'); // Convert given tableRow to template literal
+                  tableRows += tableRowLiteral; // Populate the table with a row w/ replaced placeholders for each action 
+                  tableRows += "</tr>";
+                }
+
+                tableBody.innerHTML = tableRows; // Fill table with all actions
+              }
             }
+
+            // Otherwise, display a message prompting user to log or contact us to access strategies
+            else {
+              tableBody.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'><p class='text-xl'>Strategies help you take action to make your institution’s research more open. Find out more about strategies by <a href='mailto:hello@oa.works?subject=OA.Report' class='underline'>contacting us</a> or logging in to your account to access them.</p></td></tr>";
+              displayNone(`#form_${strategy}`);
+            }            
           }
         ).catch(function (error) { console.log(`${strategy} error: ${error}`); })
 
@@ -500,7 +510,7 @@ oareport = function(org) {
       // Set up export query
       isPaperURL = (dateRange + strategyQuery);
       let query = "q=" + isPaperURL.replaceAll(" ", "%20"),
-          form = new FormData(document.getElementById("form-" + formID));
+          form = new FormData(document.getElementById("form_" + formID));
 
       // Get form content — email address input
       var email = "&" + new URLSearchParams(form).toString();
