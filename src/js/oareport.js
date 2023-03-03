@@ -254,7 +254,6 @@ oareport = function(org) {
       var shown  = response.data.hits.hits[0]._source.strategy[strategy].show_on_web,
           count  = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query),
           list   = axios.get(queryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query),
-          mailto = response.data.hits.hits[0]._source.strategy[strategy].mailto,
           tabID  = "#item_" + strategy;
 
       if (shown === true) {
@@ -309,16 +308,18 @@ oareport = function(org) {
                     action[key] = value;
 
                     if (key === 'published_date') action[key] = makeDateReadable(new Date(action[key]));
-                    if (key === 'mailto') value = newMailto;
                   }
 
                   if (value == undefined || value == null) {
                     action[key] = "N/A";
                   }
                 };
+                
+                // If mailto is included, replace its body’s content with the action’s values
+                if ("mailto" in action) {
+                  console.log("ues");
+                  mailto = response.data.hits.hits[0]._source.strategy[strategy].mailto;
 
-                // Replace mailto body’s content with data
-                if (mailto) {
                   var newMailto = mailto.replaceAll("\'", "’");
                   newMailto = newMailto.replaceAll("{doi}", (action.doi ? action.doi : "[No DOI found]"));
                   newMailto = newMailto.replaceAll("{author_email_name}", (action.author_email_name ? action.author_email_name : "[No author’s name found]"));
