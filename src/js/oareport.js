@@ -261,15 +261,14 @@ oareport = function(org) {
             tableCountContents = document.querySelector(`#total_${strategy}`),
             tableBody          = document.querySelector(`#table_${strategy}`).getElementsByTagName('tbody')[0];
         
-        // Get total action (article) count for this strategy & full list of actions
-        var count              = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query),
-            list               = axios.get(queryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query);
-          
-        Promise.all([count, list])
-          .then(function (results) {
-            var count = parseFloat(results[0].data),
-                list = results[1].data.hits.hits;
-
+        var countQuery              = countQueryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query,
+            listQuery               = queryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query;
+        
+        // Get total action (article) count for this strategy
+        axios.get(countQuery)
+          .then(function (countResponse) {
+            var count = parseFloat(countResponse.data);
+            
             // Show total number of actions in tab & above table
             tabCountContents.textContent = makeNumberReadable(count);
             if (count > 100) {
@@ -287,59 +286,66 @@ oareport = function(org) {
 
               // Otherwise, generate list of actions
               else if (count > 0 || count !== null) {
-                var tableRows = ""; // Contents of the list to be displayed in the UI as a table
+
+                // Get full list of actions for this strategy 
+                axios.get(listQuery)
+                  .then(function (listResponse) {
+                    var list = listResponse.data.hits.hits,
+                        tableRows = ""; // Contents of the list to be displayed in the UI as a table
                 
-                // For each individual action, create a row
-                for (let i = 0; i < count; i++) {
-                  var action = {}; // Create object to store key-value pairs for each action
-                  tableRows += "<tr>";
+                    // For each individual action, create a row
+                    for (let i = 0; i < count; i++) {
+                      var action = {}; // Create object to store key-value pairs for each action
+                      tableRows += "<tr>";
 
-                  // Populate action array with values for each key
-                  for (var key of keys) {
-                    // If it’s from the supplements array, loop over supplements to access data without index number
-                    if (key.startsWith('supplements.')) {
-                      key = key.replace('supplements.', ''); // Remove prefix 
-                      var suppKey = list[i]._source.supplements.find(
-                        function(i) {
-                          return (i[key]);
+                      // Populate action array with values for each key
+                      for (var key of keys) {
+                        // If it’s from the supplements array, loop over supplements to access data without index number
+                        if (key.startsWith('supplements.')) {
+                          key = key.replace('supplements.', ''); // Remove prefix 
+                          var suppKey = list[i]._source.supplements.find(
+                            function(i) {
+                              return (i[key]);
+                            }
+                          );
+                          var value = suppKey[key];
+                          action[key] = value;
+                          
+                          if (key.includes('invoice_date')) action[key] = makeDateReadable(new Date(action[key]));
+                          if (key.includes('apc_cost')) action[key] = makeNumberReadable(action[key]);
+                        } else { 
+                          var value = list[i]._source[key];
+                          action[key] = value;
+
+                          if (key === 'published_date') action[key] = makeDateReadable(new Date(action[key]));
                         }
-                      );
-                      var value = suppKey[key];
-                      action[key] = value;
+
+                        if (value == undefined || value == null) {
+                          action[key] = "N/A";
+                        }
+                      };
                       
-                      if (key.includes('invoice_date')) action[key] = makeDateReadable(new Date(action[key]));
-                      if (key.includes('apc_cost')) action[key] = makeNumberReadable(action[key]);
-                    } else { 
-                      var value = list[i]._source[key];
-                      action[key] = value;
+                      // If mailto is included, replace its body’s content with the action’s values
+                      if ("mailto" in action) {
+                        mailto = response.data.hits.hits[0]._source.strategy[strategy].mailto;
 
-                      if (key === 'published_date') action[key] = makeDateReadable(new Date(action[key]));
+                        var newMailto = mailto.replaceAll("\'", "’");
+                        newMailto = newMailto.replaceAll("{doi}", (action.doi ? action.doi : "[No DOI found]"));
+                        newMailto = newMailto.replaceAll("{author_email_name}", (action.author_email_name ? action.author_email_name : "[No author’s name found]"));
+                        newMailto = newMailto.replaceAll("{title}", (action.title ? action.title : "[No title found]"));
+
+                        // And add it to the action array
+                        action["mailto"] = encodeURI(newMailto);
+                      };
+
+                      var tableRowLiteral = eval('`'+ tableRow +'`'); // Convert given tableRow to template literal
+                      tableRows += tableRowLiteral; // Populate the table with a row w/ replaced placeholders for each action 
+                      tableRows += "</tr>";
                     }
 
-                    if (value == undefined || value == null) {
-                      action[key] = "N/A";
-                    }
-                  };
-                  
-                  // If mailto is included, replace its body’s content with the action’s values
-                  if ("mailto" in action) {
-                    mailto = response.data.hits.hits[0]._source.strategy[strategy].mailto;
-
-                    var newMailto = mailto.replaceAll("\'", "’");
-                    newMailto = newMailto.replaceAll("{doi}", (action.doi ? action.doi : "[No DOI found]"));
-                    newMailto = newMailto.replaceAll("{author_email_name}", (action.author_email_name ? action.author_email_name : "[No author’s name found]"));
-                    newMailto = newMailto.replaceAll("{title}", (action.title ? action.title : "[No title found]"));
-
-                    // And add it to the action array
-                    action["mailto"] = encodeURI(newMailto);
-                  };
-
-                  var tableRowLiteral = eval('`'+ tableRow +'`'); // Convert given tableRow to template literal
-                  tableRows += tableRowLiteral; // Populate the table with a row w/ replaced placeholders for each action 
-                  tableRows += "</tr>";
-                }
-
-                tableBody.innerHTML = tableRows; // Fill table with all actions
+                    tableBody.innerHTML = tableRows; // Fill table with all actions
+                  }
+                )
               }
             }
 
@@ -347,9 +353,11 @@ oareport = function(org) {
             else {
               tableBody.innerHTML = `<tr><td class='py-4 pl-4 pr-3 text-base text-center align-top break-words' colspan='3'><p class='font-bold'>Strategies help you take action to make your institution’s research more open.</p> <p>Find out more about them by <a href='mailto:hello@oa.works?subject=OA.Report%20&mdash;%20${decodeURIComponent(org)}' class='underline'>contacting us</a> or <a href='https://about.oa.report/docs/user-accounts' class='underline' title='Information on user accounts'>logging in to your account</a> to access them.</p></td></tr>`;
               displayNone(`#form_${strategy}`);
-            }            
-          }
-        ).catch(function (error) { console.log(`${strategy} error: ${error}`); })
+            }
+          })
+          .catch(function (error) { console.log(`${strategy} error: ${error}`); })
+
+          
 
         // Once data has loaded, display the card
         changeOpacity(tabID);
