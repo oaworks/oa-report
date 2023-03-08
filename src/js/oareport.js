@@ -277,7 +277,7 @@ oareport = function(org) {
             tableCountContents.textContent = makeNumberReadable(count);
 
             // If there’s an orgkey, show full list of strategies
-            if (hasOrgKey) {
+            if (hasOrgKey && OAKEYS[orgSlug]) {
               // If no actions are available, show message
               if (count === 0) {
                 tableCountContents.textContent = "No ";
