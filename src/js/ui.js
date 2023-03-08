@@ -14,8 +14,6 @@ strategySelect.addEventListener("change", function (event) {
   if (event.target.matches(selectedTabContents)) {
     selectedTabContents.classList.remove("hidden");
     selectedTabContents.removeAttribute("hidden");
-  } else {
-    console.log("Not clicked");
   };
 });
 /* Display tab contents on UI tab selection (MD + larger viewports) */
