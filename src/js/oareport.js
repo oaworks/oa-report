@@ -360,8 +360,6 @@ oareport = function(org) {
           })
           .catch(function (error) { console.log(`${strategy} error: ${error}`); })
 
-          
-
         // Once data has loaded, display the card
         changeOpacity(tabID);
 
@@ -472,7 +470,8 @@ oareport = function(org) {
       var email = "&" + new URLSearchParams(form).toString();
 
       var include;
-      if (hasCustomExportIncludes !== undefined && hasCustomExportIncludes !== "") {
+      // If the org has custom export includes AND there is an orgkey, show these custom includes in the public CSV
+      if ((hasCustomExportIncludes !== undefined && hasCustomExportIncludes !== "") && (hasOrgKey && OAKEYS[orgSlug])) {
         include = `&include=${hasCustomExportIncludes}`;
       } else {
         include = exportIncludes;
