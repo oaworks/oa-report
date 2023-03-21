@@ -114,6 +114,9 @@ if (hasOrgKey) {
 // Set report base path
 let report = base + "orgs?q=name:%22" + org + "%22";
 
+// Set default export_includes
+let exportIncludes = "&include=DOI,title,subtitle,publisher,journal,issn,published,published_year,PMCID,volume,issue,authorships.author.display_name,authorships.author.orcid,authorships.institutions.display_name,authorships.institutions.ror,funder.name,funder.award,is_oa,oa_status,journal_oa_type,publisher_license,has_repository_copy,repository_license,repository_version,repository_url,has_oa_locations_embargoed,can_archive,version,concepts.display_name,concepts.level,concepts.score,subject,pmc_has_data_availability_statement,cited_by_count";
+
 // Generate report’s UI for any given date range
 oareport = function(org) {
 
@@ -356,8 +359,6 @@ oareport = function(org) {
           })
           .catch(function (error) { console.log(`${strategy} error: ${error}`); })
 
-          
-
         // Once data has loaded, display the card
         changeOpacity(tabID);
 
@@ -468,10 +469,11 @@ oareport = function(org) {
       var email = "&" + new URLSearchParams(form).toString();
 
       var include;
-      if (hasCustomExportIncludes !== undefined && hasCustomExportIncludes !== "") {
-        include = "&include=" + hasCustomExportIncludes;
+      // If the org has custom export includes AND there is an orgkey, show these custom includes in the public CSV
+      if ((hasCustomExportIncludes !== undefined && hasCustomExportIncludes !== "") && (hasOrgKey && OAKEYS[orgSlug])) {
+        include = `&include=${hasCustomExportIncludes}`;
       } else {
-        include =  "&include=DOI,title,subtitle,publisher,journal,issn,published,published_year,PMCID,volume,issue,authorships.author.display_name,authorships.author.orcid,authorships.institutions.display_name,authorships.institutions.ror,funder.name,funder.award,is_oa,oa_status,journal_oa_type,publisher_license,has_repository_copy,repository_license,repository_version,repository_url,has_oa_locations_embargoed,can_archive,version,concepts.display_name,concepts.level,concepts.score,subject,pmc_has_data_availability_statement,cited_by_count";
+        include = exportIncludes;
       }
 
       // Build full query
@@ -514,7 +516,7 @@ oareport = function(org) {
       // Display export includes if there are any
       var include;
       if (hasCustomExportIncludes !== undefined) {
-        include = "&include=" + hasCustomExportIncludes;
+        include = `&include=${hasCustomExportIncludes}`;
       }
 
       // Build full query
