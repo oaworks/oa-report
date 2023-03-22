@@ -19,9 +19,9 @@
   <meta name="theme-color" content="#25201E">
 
   {# OpenGraph #}
-  <meta property="og:url" content="{{ site.base_url }}/{{ page.fileSlug }}">
+  <meta property="og:url" content="{{ site.base_url }}{{ page.url }}">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="{{ site.tagline }}">
+  <meta property="og:title" content="{% if page.fileSlug == 'orgs-pages' %}{{ org._source.name | safe }}’s report{% else %}{{ page.title }}{% endif %}">
   <meta property="og:image" content="{{ site.base_url }}/img/meta.png">
   <meta property="og:image:alt" content="The OA.Report wordmark is shown alongside three small illustrations. Those illustrations include a simplified table displaying the status of paper, checkboxes, and a button that says unlock.">
   <meta property="og:description" content="{{ site.description }}">
@@ -30,8 +30,8 @@
 
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="{{ site.twitter }}">
-  <meta name="twitter:url" content="{{ site.base_url }}/{{ page.fileSlug }}">
-  <meta name="twitter:title" content="{{ site.tagline }}">
+  <meta name="twitter:url" content="{{ site.base_url }}{{ page.url }}">
+  <meta name="twitter:title" content="{% if page.fileSlug == 'orgs-pages' %}{{ org._source.name | safe }}’s report{% else %}{% endif %}">
   <meta name="twitter:description" content="{{ site.description }}">
   <meta name="twitter:image" content="{{ site.base_url }}/img/meta.png">
   <meta name="twitter:image:alt" content="The OA.Report wordmark is shown alongside three small illustrations. Those illustrations include a simplified table displaying the status of paper, checkboxes, and a button that says unlock.">
