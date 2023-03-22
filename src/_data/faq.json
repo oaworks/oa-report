@@ -1,0 +1,26 @@
+[
+  {
+    "q": "When will OA.Report be available?",
+    "a": "OA.Report is available now, but we’re rolling it out slowly. To get access, you can reach out directly, or if you sign up, we’ll be in touch."
+  },
+  {
+    "q": "What will OA.Report cost?",
+    "a": "We will provide a free tier (as with all OA.Works tools), and we’ll provide a paid option with flexible pricing."
+  },
+  {
+    "q": "What data does OA.Report use?",
+    "a": "We build on open data like OpenAlex, Crossref and ShareYourPaper. In our paid plans, we can ingest an institution's internal data, and collect our own to help power more insights and strategies."
+  },
+  {
+    "q": "Does OA.Report work without an Open Access Policy?",
+    "a": "Yes! We can measure a wide range of Open Access indicators with or without a policy."
+  },
+  {
+    "q": "Can you track data, code, and other research outputs?",
+    "a": "Yes! At the moment, we focus on research outputs associated with articles, but we plan to expand to any outputs."
+  },
+  {
+    "q": "What type of policies will OA.Report cover?",
+    "a": "Almost any type of policy, e.g funder, university, and national. This includes policies that require submission dates, grant IDs, or other complex criteria to determine compliance. "
+  }
+]
