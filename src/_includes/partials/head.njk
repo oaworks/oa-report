@@ -1,7 +1,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% if org._source.name %}{{ org._source.name }} — {% endif %}OA.Report</title>
+  <title>{% if org._source.name %}{{ org._source.name }}{% if org._source.acronyms %} ({{ org._source.acronyms }}){% endif %} — {% endif %}OA.Report</title>
   {# <link rel="preload" href="/assets/fonts/WremenaRegular.woff" as="font" crossorigin>
   <link rel="preload" href="/assets/fonts/WremenaBold.woff" as="font" crossorigin> #}
   {# <link rel="preload" href="/assets/fonts/Inter.woff2" as="font" crossorigin> #}
