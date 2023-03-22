@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 2400 1020">
+  <defs/>
+  <path fill="url(#paint0_radial)" fill-opacity=".5" d="M0 0h2400v1019.2H0z"/>
+  <path fill="url(#paint1_linear)" d="M0 0h2400v1019.2H0z"/>
+  <path fill="url(#paint2_radial)" fill-opacity=".5" d="M2400 1019.2h2400v1019.2H2400z" transform="rotate(-180 2400 1019.2)"/>
+  <path fill="url(#paint3_radial)" fill-opacity=".5" d="M0 0h2400v1019.2H0z" transform="matrix(1 0 0 -1 0 1019.2)"/>
+  <path fill="url(#paint4_radial)" fill-opacity=".5" d="M0 0h2400v1019.2H0z" transform="matrix(-1 0 0 1 2400 0)"/>
+  <defs>
+    <radialGradient id="paint0_radial" cx="0" cy="0" r="1" gradientTransform="rotate(30.2 230.2 1384) scale(1763.8 1586.66)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D666FF"/>
+      <stop offset=".4" stop-color="#D666FF" stop-opacity=".5"/>
+      <stop offset="1" stop-color="#07F"/>
+    </radialGradient>
+    <radialGradient id="paint2_radial" cx="0" cy="0" r="1" gradientTransform="matrix(1955.84807 724.7206 -476.63461 1286.32315 2727.3 1204.6)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#07F"/>
+      <stop offset=".5" stop-color="#D666FF" stop-opacity=".5"/>
+      <stop offset="1" stop-color="#D666FF"/>
+    </radialGradient>
+    <radialGradient id="paint3_radial" cx="0" cy="0" r="1" gradientTransform="rotate(34.5 132.7 578) scale(1560.05 1628.35)" gradientUnits="userSpaceOnUse">
+      <stop offset=".1" stop-color="#D666FF"/>
+      <stop offset=".5" stop-color="#D666FF" stop-opacity=".5"/>
+      <stop offset=".8" stop-color="#00FFD0" stop-opacity=".5"/>
+    </radialGradient>
+    <radialGradient id="paint4_radial" cx="0" cy="0" r="1" gradientTransform="rotate(24.4 -53.6 11.6) scale(1514.41 1141.67)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#07F"/>
+      <stop offset=".5" stop-color="#07F" stop-opacity=".5"/>
+      <stop offset="1" stop-color="#D666FF" stop-opacity=".5"/>
+    </radialGradient>
+    <linearGradient id="paint1_linear" x1="0" x2="1994.3" y1="0" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D666FF"/>
+      <stop offset=".5" stop-color="#07F" stop-opacity=".5"/>
+      <stop offset="1" stop-color="#07F" stop-opacity=".3"/>
+    </linearGradient>
+  </defs>
+</svg>
