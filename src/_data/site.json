@@ -1,5 +1,5 @@
 {
-    "base_url": "https://localhost:8080",
+    "base_url": "https://dev.oa.report",
     "name": "OA.Report",
     "description": "Use OA.Report’s open insights and actionable strategies to unlock your institution’s research.",
     "twitter": "@oa_works"
