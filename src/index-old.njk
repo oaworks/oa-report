@@ -1,0 +1,40 @@
+{% extends 'layouts/base.njk' %}
+
+{% block content %}
+<div class="col-span-12 md:col-span-7 mt-12 lg:mt-24 xl:mt-36">
+  <h1 class="text-3xl md:text-6xl font-light">Discover, analyze, & unlock your organization’s scholarly articles</h1>
+  <figure class="bg-azure-500 h-72 flex mt-6"><p class="self-center m-auto">PLACEHOLDER IMAGE</p></figure>
+</div>
+
+<section class="col-span-12 md:col-span-5 mt:12 lg:mt-48">
+  <p class="mb-6 lg:mb-12">Freely access the {% include 'partials/app-name.njk' %} page for more than 999,999 institutions, organizations, and consortia.</p>
+
+  <h2 class="mb-3 lg:mb-6 font-serif text-2xl md:text-5xl">Start with yours now:</h2>
+  {# <form>
+    <label for="org_search" class="sr-only">Organization, institution or consortium</label>
+    <div class="flex">
+      <input type="text" class="p-4 w-9/12 border-neutral-800 border " id="org_search" placeholder="Organization, institution or consortium" autofocus></input>
+      <button class="py-4 px-4 md:px-6 w-3/12 border-neutral-800 border-t border-r border-b hover:bg-neutral-900 hover:text-white transition duration-300">
+        {% icon "search" %}
+        <span class="sr-only">Search</span>
+      </button>
+    </div>
+  </form> #}
+  
+  <div id="search"></div>
+</section>
+
+<section class="col-span-12 md:col-span-5 mt-6 mb-3 lg:mt-24 lg:mb-12">
+  <header>
+    <h2 class="uppercase font-semibold text-sm">About this tool</h2>
+    <p class="mb-6 font-serif text-2xl md:text-5xl">Put open access policies into practice in minutes, not months.</p>
+  </header>
+  <p>{% include 'partials/app-name.njk' %} translates policy to impact by helping libraries and funders discover papers covered by their policies, analyze if and how papers comply, and unlock individual papers and systemic changes.</p>
+  <p class="mt-6">-> <a href="https://oa.works" target="_blank" rel="noopener" class="underline">More about OA.Works</a></p>
+  <figure></figure>
+</section>
+
+<figure class="col-span-12 md:col-span-7 mt:6 mb-3 lg:mt-48 lg:mb-24">
+  <figure class="bg-carnation-500 h-72 flex"><p class="self-center m-auto">PLACEHOLDER IMAGE</p></figure>
+</figure>
+{% endblock %}
