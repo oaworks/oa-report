@@ -69,6 +69,7 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy('./src/js/');
   eleventyConfig.addPassthroughCopy('./src/css/');
   eleventyConfig.addPassthroughCopy('./src/img/');
+  eleventyConfig.addPassthroughCopy('./src/media/');
   eleventyConfig.addPassthroughCopy('./src/favicons/');
 
   eleventyConfig.setLiquidOptions({
