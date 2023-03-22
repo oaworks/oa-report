@@ -2,6 +2,7 @@
     "base_url": "https://localhost:8080",
     "name": "OA.Report",
     "description": "Use OA.Report’s open insights and actionable strategies to unlock your institution’s research.",
+    "tagline": "Put OA policies into practice in minutes, not months.",
     "twitter": "@oa_works",
     "facebook": "oadotworks",
     "github": "oaworks",
