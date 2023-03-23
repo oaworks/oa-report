@@ -1,0 +1,10 @@
+---
+permalink: robots.txt
+layout: null
+eleventyExcludeFromCollections: true
+---
+
+# Disallow crawling of everything (report pages) except for landing/homepage 
+User-agent: *
+Allow: /$
+Disallow: /
