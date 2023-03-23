@@ -1,28 +1,4 @@
-@font-face {
-    font-family: 'Wremena';
-    src: url('/fonts/WremenaRegular.woff') format('woff');
-    unicode-range: U+0020-007F; /* The bare minimum for English */
-    font-display: swap;
-  }
-  
-  @font-face {
-    font-family: 'WremenaBold';
-    src: url('/fonts/WremenaBold.woff') format('woff');
-    unicode-range: U+0020-007F; /* The bare minimum for English */
-    font-display: swap;
-    font-weight: bold;
-  }
-  
-  @font-face {
-    font-family: 'Inter';
-    src: url('/fonts/Inter.woff2') format('woff2 supports variations');
-    src: url('/fonts/Inter.woff2') format('woff2-variations');
-    font-weight: 200 900;
-    unicode-range: U+0020-007F;
-    font-display: swap;
-  }
-  
-    :root {
+:root {
     --typescale-1:     2.488em;
     --typescale-2:     2.074em;
     --typescale-3:     1.728em;
@@ -31,8 +7,7 @@
     --typescale-6:     .833em;
   
     --sans-serif:      'Inter', sans-serif;
-    --serif:           'Wremena', serif;
-    --serif-bold:      'WremenaBold', serif;
+    --serif:           serif;
   
     --gutter:           1.5vw;
     --gutter-negative:  -1.5vw;
@@ -572,7 +547,7 @@
   
   h1, h2, h3, h4, h5, h6 {
       margin: 0 0 var(--space-md) 0;
-    font-family: var(--serif);
+      font-family: var(--serif);
       font-weight: 400;
       line-height: 1.15;
     letter-spacing: -0.015em;
@@ -1823,7 +1798,7 @@
   }
   
   .app-name {
-    font-family: var(--serif-bold);
+    font-family: var(--serif);
     letter-spacing: -.025em;
   
     background: linear-gradient(to right, var(--secondary-colour), var(--primary-colour));
