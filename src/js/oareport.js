@@ -1,5 +1,5 @@
-const base             = "https://beta.oa.works/report/",
-      baseBg           = "https://bg.beta.oa.works/report/",
+const base             = "https://api.oa.works/report/",
+      baseBg           = "https://bg.api.oa.works/report/",
       queryBase        = base + "works?size=100&",
       countQueryBase   = base + "works/count?",
       csvExportBase    = baseBg + "works.csv?size=all&",
