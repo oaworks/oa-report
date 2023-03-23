@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .app-name {
-  font-family: 'WremenaBold', serif;
+  font-family: serif;
   letter-spacing: -.025em;
 
   background: linear-gradient(to right, hotpink, pink);

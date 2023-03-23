@@ -2,7 +2,6 @@
 <html class="no-js" lang="en">
   <head>
     {% include 'partials/head.njk' %}
-    <link rel="stylesheet" href="/css/sal.css">
   </head>
 
   <body>
@@ -33,7 +32,7 @@
           <section>
             <p class="label">{{ site.name }}</p>
             <h2 class="type-2 font-sans fw-900">{{ site.tagline }}</h2>
-            <div class="flex-center flex-col align-center margin-bottom" data-sal-delay="100">
+            <div class="flex-center flex-col align-center margin-bottom">
               <div id="newsletter-inner">
                 <form id="newsletter">
                   <label for="email">Sign up for updates</label>
@@ -104,7 +103,7 @@
           </div>
       
           <ul class="unstyled-list row row--centered">
-            <li class="col col--1of3 flex-space-between flex-col" data-sal="slide-up" data-sal-delay="50">
+            <li class="col col--1of3 flex-space-between flex-col">
               <h3 class="label border-top-thick padding-top"><span class="type-3">Discover</span></h3>
               <p class="type-5 no-margin fw-300">articles covered by their policies</p>
               <div>
@@ -112,7 +111,7 @@
                 <p class="type-6 fw-300">We discover articles and data using open scholarly metadata, targeted text and data mining, and an institution’s internal data sources.</p>
               </div>
             </li>
-            <li class="col col--1of3 flex-space-between flex-col" data-sal="slide-up" data-sal-delay="100">
+            <li class="col col--1of3 flex-space-between flex-col">
               <h3 class="label border-top-thick padding-top"><span class="type-3">Analyze</span></h3>
               <p class="type-5 no-margin fw-300">if and how articles comply</p>
               <div>
@@ -120,7 +119,7 @@
                 <p class="type-6 fw-300">We transparently analyse those articles against all the terms of the institution’s current policy, or custom criteria, to provide detailed statistics and key insights.</p>
               </div>
             </li>
-            <li class="col col--1of3 flex-space-between flex-col" data-sal="slide-up" data-sal-delay="150">
+            <li class="col col--1of3 flex-space-between flex-col">
               <h3 class="label border-top-thick padding-top"><span class="type-3">Unlock</span></h3>
               <p class="type-5 no-margin fw-300">individual articles and systemic changes</p>
               <div>
@@ -132,15 +131,15 @@
       
           <h2 class="label border-top-thick padding-top"><span class="type-4">How {% include 'partials/app-name.njk' %} works for you</span></h2>
           <ol class="unstyled-list row row--centered">
-            <li class="col col--1of3" data-sal="slide-up" data-sal-delay="50">
+            <li class="col col--1of3">
               <div class="type-1 fw-900">1</div>
               <p class="type-3 fw-300 no-margin">Tell us what institution you’re from.</p>
             </li>
-            <li class="col col--1of3" data-sal="slide-up" data-sal-delay="100">
+            <li class="col col--1of3">
               <div class="type-1 fw-900">2</div>
               <p class="type-3 fw-300 no-margin">We’ll provide a custom report.</p>
             </li>
-            <li class="col col--1of3" data-sal="slide-up" data-sal-delay="150">
+            <li class="col col--1of3">
               <div class="type-1 fw-900">3</div>
               <p class="type-3 fw-300 no-margin">You use it to make articles more open.</p>
             </li>
@@ -170,7 +169,7 @@
             <section class="section">
               <h2 class="label border-top-thick padding-top fw-700"><span class="type-1">Q&A</span></h2>
               {% for q in faq %}
-              <details class="type-5 fw-300" data-sal="slide-up" data-sal-delay="50">
+              <details class="type-5 fw-300">
                 <summary class="border-top fw-900 padding-top margin-bottom">{{ q.q }}</summary>
                 <p>{{ q.a }}</p>
               </details>
@@ -201,20 +200,10 @@
       </div>    
     </main>
 
-    <script src="{{ site.base_url }}/js/sal.js"></script>
-
     <noscript><img src="https://sa.oa.works/noscript.gif" alt=""/></noscript>
     <script async defer src="https://sa.oa.works/latest.js"></script>
     <script src="/js/jquery-3.6.0.min.js"></script>
     <script src="/js/newsletter.js"></script>
-
-    <script>
-      // Initalise animation on scroll
-      sal({
-        threshold: .25,
-      });
-    </script>
-
     {% block extra_js %}{% endblock %}
   </body>
 </html>
