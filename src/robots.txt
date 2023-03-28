@@ -1,5 +1,0 @@
-src/robots.txt
-Sitemap: https://dev--dev-oa-report.netlify.app/sitemap.xml
-
-User-agent: *
-Disallow:
