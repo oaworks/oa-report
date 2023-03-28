@@ -7,6 +7,9 @@
   {# TODO: create static pages + implement search tool #}
   <nav>
     <ul class="flex self-center">
+      <li>
+        <span id="search"></span>
+      </li>
       {% for item in nav_header %}
       <li class="ml-6"{% if item.id %} id="{{ item.id }}"{% endif %}>
         <a href="{{ item.url }}" class="text-sm font-medium md:text-base uppercase hover:text-carnation-500 transition duration-300">{{ item.label }}</a>
