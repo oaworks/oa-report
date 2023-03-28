@@ -100,7 +100,7 @@ const currentDate                  = new Date(),
       lastYearEndDateISO        = formatDateToISO(lastYearEndDate);
 
 // Display default date range: since start of the current year
-replaceDateRange(lastYearStartDate, lastYearEndDate);
+replaceDateRange(startYearDate, currentDate);
 
 // Check if user is authentified
 let orgKey = "",
@@ -557,7 +557,7 @@ var startYearBtn              = document.querySelector("#start-year"),
     twoYearsEndDateQuery      = changeDays(+1, twoYearsEndDate),
     twoYearsEndDateISO        = formatDateToISO(twoYearsEndDate);
 
-startYearBtn.textContent      = "This year";
+startYearBtn.textContent      = startYearDate.getFullYear();
 lastYearBtn.textContent       = lastYearStartDate.getFullYear();
 twoYearsBtn.textContent       = twoYearsStartDate.getFullYear();
 
