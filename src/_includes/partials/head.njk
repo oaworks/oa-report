@@ -1,6 +1,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% if org._source.private == true %}
+  <meta name="robots" content="noindex">
+  {% endif %}
   <title>{% if org._source.name %}{{ org._source.name }}{% if org._source.acronyms %} ({{ org._source.acronyms }}){% endif %} — {% endif %}OA.Report</title>
   {# <link rel="preload" href="/assets/fonts/WremenaRegular.woff" as="font" crossorigin>
   <link rel="preload" href="/assets/fonts/WremenaBold.woff" as="font" crossorigin> #}
