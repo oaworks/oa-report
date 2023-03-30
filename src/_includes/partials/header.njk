@@ -7,19 +7,17 @@
   {# TODO: create static pages + implement search tool #}
   <nav>
     <ul class="flex self-center">
-      <li>
-        <span id="search"></span>
-      </li>
       {% for item in nav_header %}
       <li class="ml-6"{% if item.id %} id="{{ item.id }}"{% endif %}>
         <a href="{{ item.url }}" class="text-sm font-medium md:text-base uppercase hover:text-carnation-500 transition duration-300">{{ item.label }}</a>
       </li>
       {% endfor %}
-      {# {% if page.url != "/" %}
+      {% if page.url != "/" %}
       <li>
-        <div id="search"></div>
+        <input type="text" id="searchBox" placeholder="Find an organization by name, acronym, or ROR&hellips;" autocomplete="off">
+        <ul id="suggestionsList"></ul>
       </li>
-      {% endif %} #}
+      {% endif %}
     </ul>
   </nav>
 </header>
