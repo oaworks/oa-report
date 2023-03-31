@@ -13,9 +13,17 @@
       </li>
       {% endfor %}
       {% if page.url != "/" %}
-      <li>
-        <input type="text" id="searchBox" placeholder="Find an organization by name, acronym, or ROR&hellips;" autocomplete="off">
-        <ul id="suggestionsList"></ul>
+      <li class="ml-6">
+        <label for="js-search-box" class="sr-only">Search</label>
+        <div class="flex rounded-sm shadow-sm">
+          <div class="relative flex items-stretch flex-grow focus-within:z-10">
+            <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+              {% icon_small "search" %}
+            </div>
+            <input type="text" name="js-search-box" id="js-search-box" class="focus:ring-carnation-500 focus:border-carnation-500 block w-full rounded-md pl-10 sm:text-sm shadow-md border-0" placeholder="Find an organization by name, acronym, or ROR&hellips;" role="combobox" aria-controls="options" aria-expanded="false">
+          </div>
+        </div>
+        <ul id="js-suggestions-list" class="absolute z-10 mt-1 max-h-60 w-auto overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-carnation-500 ring-opacity-5 focus:outline-none sm:text-sm" style="display: none" role="listbox"></ul>
       </li>
       {% endif %}
     </ul>
