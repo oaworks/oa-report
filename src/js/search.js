@@ -1,5 +1,5 @@
-const searchBox = document.getElementById('searchBox');
-const suggestionsList = document.getElementById('suggestionsList');
+const searchBox = document.getElementById('js-search-box');
+const suggestionsList = document.getElementById('js-suggestions-list');
 let debounceTimeout;
 
 async function fetchSuggestions(searchTerm) {
