@@ -20,7 +20,7 @@ async function fetchSuggestions(searchTerm) {
             suggestionsList.innerHTML = filteredData.map(result => `<li class="relative cursor-default select-none p-3 text-neutral-700 hover:font-semibold hover:text-white hover:bg-neutral-900"><a href="https://oa.report/${result.objectID}"><span class="block truncate">${result.name}</span></a></li>`).join('');
             suggestionsList.style.display = 'block';
         } else {
-            suggestionsList.innerHTML = '<li>No results! If you think there should be, <a href="mailto:contact@yourdomain.com">get in touch</a>.</li>';
+            suggestionsList.innerHTML = '<li class="relative cursor-default select-none p-3 text-neutral-900">No results! If you think there should be, <a href="mailto:contact@yourdomain.com" class="underline">get in touch</a>.</li>';
             suggestionsList.style.display = 'block';
         }
     } catch (error) {
@@ -34,7 +34,7 @@ searchBox.addEventListener('input', (event) => {
     clearTimeout(debounceTimeout);
     debounceTimeout = setTimeout(() => {
         fetchSuggestions(searchTerm);
-    }, 300);
+    }, 200);
 });
 
 suggestionsList.addEventListener('click', (event) => {
