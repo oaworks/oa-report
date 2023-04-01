@@ -1,5 +1,5 @@
-const base             = "https://api.oa.works/report/",
-      baseBg           = "https://bg.api.oa.works/report/",
+const base             = "https://beta.oa.works/report/",
+      baseBg           = "https://bg.beta.oa.works/report/",
       queryBase        = base + "works?size=100&",
       countQueryBase   = base + "works/count?",
       csvExportBase    = baseBg + "works.csv?size=all&",
@@ -100,7 +100,7 @@ const currentDate                  = new Date(),
       lastYearEndDateISO        = formatDateToISO(lastYearEndDate);
 
 // Display default date range: since start of the current year
-replaceDateRange(lastYearStartDate, lastYearEndDate);
+replaceDateRange(startYearDate, currentDate);
 
 // Check if user is authentified
 let orgKey = "",
@@ -115,7 +115,7 @@ if (hasOrgKey) {
 let report = base + "orgs?q=name:%22" + org + "%22";
 
 // Set default export_includes
-let exportIncludes = "&include=DOI,title,subtitle,publisher,journal,issn,published,published_year,PMCID,volume,issue,authorships.author.display_name,authorships.author.orcid,authorships.institutions.display_name,authorships.institutions.ror,funder.name,funder.award,is_oa,oa_status,journal_oa_type,publisher_license,has_repository_copy,repository_license,repository_version,repository_url,has_oa_locations_embargoed,can_archive,version,concepts.display_name,concepts.level,concepts.score,subject,pmc_has_data_availability_statement,cited_by_count";
+let exportIncludes = "&include=DOI,title,subtitle,publisher,journal,issn,published,published_year,PMCID,volume,issue,authorships.author.display_name,authorships.author.orcid,authorships.institutions.display_name,authorships.institutions.ror,funder.name,funder.award,is_oa,oa_status,journal_oa_type,publisher_license,has_repository_copy,repository_license,repository_version,repository_url,has_oa_locations_embargoed,can_archive,version,concepts.display_name,subject,pmc_has_data_availability_statement,cited_by_count";
 
 // Generate report’s UI for any given date range
 oareport = function(org) {
@@ -557,7 +557,7 @@ var startYearBtn              = document.querySelector("#start-year"),
     twoYearsEndDateQuery      = changeDays(+1, twoYearsEndDate),
     twoYearsEndDateISO        = formatDateToISO(twoYearsEndDate);
 
-startYearBtn.textContent      = "This year";
+startYearBtn.textContent      = startYearDate.getFullYear();
 lastYearBtn.textContent       = lastYearStartDate.getFullYear();
 twoYearsBtn.textContent       = twoYearsStartDate.getFullYear();
 

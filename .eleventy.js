@@ -1,3 +1,6 @@
+// .env
+require('dotenv').config();
+
 // Markdown
 const markdownIt = require('markdown-it');
 const markdownItAttrs = require('markdown-it-attrs');
@@ -23,6 +26,9 @@ const now = String(Date.now());
 // Configs
 module.exports = function(eleventyConfig) {
   eleventyConfig.setLibrary('md', markdownLib);
+  
+  // Make .env variables to templates 
+  eleventyConfig.addGlobalData('env', process.env);
 
   // Add NJK template tag to access feathericons
   eleventyConfig.addShortcode('icon', iconShortcode);
@@ -71,6 +77,8 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy('./src/img/');
   eleventyConfig.addPassthroughCopy('./src/media/');
   eleventyConfig.addPassthroughCopy('./src/favicons/');
+  eleventyConfig.addPassthroughCopy("./src/*.xml");
+  eleventyConfig.addPassthroughCopy("./src/*.txt");
 
   eleventyConfig.setLiquidOptions({
     dynamicPartials: true
