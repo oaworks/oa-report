@@ -16,9 +16,9 @@
     {% endif %}
 
     <main>      
-      <div class="row cover">
+      <section class="row cover">
         <div class="col col--1of2 cover__background">
-          <section class="section flex-space-between flex-col">
+          <div class="section flex-space-between flex-col">
             <h1>
               {% include 'partials/app-name.njk' %}
             </h1>
@@ -26,20 +26,20 @@
               <a href="/img/screenshot.png" class="block-link" target="_blank" title="See screenshot in full size"><img src="/img/screenshot.png" alt="A screenshot of the OA.Report user interface showing Open Access insights and a list of proposed strategies to open closed-access content." style="border-radius: var(--space-xxs);"></a>
               <figcaption class="no-margin type-5 fw-700">{{ site.tagline }}</figcaption>
             </figure>
-          </section>
+          </div>
         </div>
         <div class="col col--1of2 flex-center flex-col bg-white colour-block cover__tagline">
-          <section class="align-center">
-            <h2 class="margin-bottom align-center type-5">Use {% include 'partials/app-name.njk' %}’s open <span class="highlight">insights</span> and actionable <span class="highlight">strategies</span> to unlock your institution’s research.</h2>
+          <div class="align-center">
+            <p class="margin-bottom align-center type-5">Use {% include 'partials/app-name.njk' %}’s open <span class="highlight">insights</span> and actionable <span class="highlight">strategies</span> to unlock your institution’s research.</p>
             <div class="margin-bottom-md search-container ">
               <label for="js-search-box">Find an organization</label>
               <input type="text" name="js-search-box" id="js-search-box" class="no-margin align-center" placeholder="By name, acronym, or ROR&hellip;" role="combobox" aria-controls="options" aria-expanded="false">
               <ul id="js-suggestions-list" style="display: none" role="listbox"></ul>
             </div>
             <p class="type-6 no-margin"><a href="#content">Or scroll down to learn more <div class="type-1">↓</div></a></p>
-          </section>
+          </duv>
         </div>
-      </div>
+      </section>
       
       <div class="content" id="content">      
         <section class="section bg-white">
