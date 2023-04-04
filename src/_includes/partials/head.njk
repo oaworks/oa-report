@@ -1,6 +1,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% if org._source.private == true %}
+  <meta name="robots" content="noindex">
+  {% endif %}
   <title>{% if org._source.name %}{{ org._source.name }}{% if org._source.acronyms %} ({{ org._source.acronyms }}){% endif %} — {% endif %}OA.Report</title>
   {# <link rel="preload" href="/assets/fonts/WremenaRegular.woff" as="font" crossorigin>
   <link rel="preload" href="/assets/fonts/WremenaBold.woff" as="font" crossorigin> #}
@@ -57,4 +60,16 @@
   {% endif %}
 
   {% block extra_head %}{% endblock %}
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@algolia/algoliasearch-netlify-frontend@1/dist/algoliasearchNetlify.css" />
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@algolia/algoliasearch-netlify-frontend@1/dist/algoliasearchNetlify.js"></script>
+  <script type="text/javascript">
+    algoliasearchNetlify({
+      appId: 'KV3QJPY2L8',
+      apiKey: '{{ env.ALGOLIA_SEARCH_KEY }}',
+      siteId: 'df11cc41-9d85-4801-95c0-63a9fd3342e3',
+      branch: 'dev',
+      selector: '#search',
+    });
+  </script>
 </head>
