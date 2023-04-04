@@ -22,32 +22,26 @@
             <h1>
               {% include 'partials/app-name.njk' %}
             </h1>
-            <figure class="align-center margin-bottom-md">
+            <figure class="align-center">
               <a href="/img/screenshot.png" class="block-link" target="_blank" title="See screenshot in full size"><img src="/img/screenshot.png" alt="A screenshot of the OA.Report user interface showing Open Access insights and a list of proposed strategies to open closed-access content." style="border-radius: var(--space-xxs);"></a>
-              <figcaption class="no-margin type-5">Use {% include 'partials/app-name.njk' %}’s open <span class="highlight">insights</span> and actionable <span class="highlight">strategies</span> to unlock your institution’s research.</figcaption>
+              <figcaption class="no-margin type-5 fw-700">{{ site.tagline }}</figcaption>
             </figure>
           </section>
         </div>
-        <div class="col col--1of2 flex-center flex-col bg-white align-center colour-block cover__tagline">
-          <section>
-            <h2 class="type-2 font-sans fw-700">{{ site.tagline }}</h2>
-            <div class="flex-center flex-col align-center margin-bottom">
-              <div id="newsletter-inner">
-                <form id="newsletter">
-                  <label for="email">Sign up for updates</label>
-                  <div class="flex">
-                    <input type="email" class="_oaworks_form" name="signup" id="email" placeholder="you@institution.edu" required/>
-                    <button id="submit" type="submit" href="{{ site.base_url }}#newsletter-inner">Sign up</button>
-                  </div>
-                </form>
-              </div>
+        <div class="col col--1of2 flex-center flex-col bg-white colour-block cover__tagline">
+          <section class="align-center">
+            <h2 class="margin-bottom align-center type-5">Use {% include 'partials/app-name.njk' %}’s open <span class="highlight">insights</span> and actionable <span class="highlight">strategies</span> to unlock your institution’s research.</h2>
+            <div class="margin-bottom-md search-container ">
+              <label for="js-search-box">Find an organization</label>
+              <input type="text" name="js-search-box" id="js-search-box" class="no-margin align-center" placeholder="By name, acronym, or ROR&hellip;" role="combobox" aria-controls="options" aria-expanded="false">
+              <ul id="js-suggestions-list" style="display: none" role="listbox"></ul>
             </div>
-            <p class="type-6 no-margin"><a href="#content">Scroll down to learn more <div class="type-1">↓</div></a></p>
+            <p class="type-6 no-margin"><a href="#content">Or scroll down to learn more <div class="type-1">↓</div></a></p>
           </section>
         </div>
       </div>
       
-      <div class="content" id="content">
+      <div class="content" id="content">      
         <section class="section bg-white">
           <div class="row row--centered">
             <div class="col col--2of3 col--group row">
@@ -60,23 +54,13 @@
             </div>
           </div>
         </section>
-      
+
         <section class="section bg-black">
-          <div class="row row--centered">
-            <div class="col col--2of3">
-              <figure class="align-center margin-bottom-md">
-                <figcaption class="no-margin type-4">Use {% include 'partials/app-name.njk' %}’s open <span class="highlight">insights</span> and actionable <span class="highlight">strategies</span> to unlock your institution’s research.</figcaption>
-                <a href="/img/screenshot.png" class="block-link" target="_blank" title="See screenshot in full size"><img src="/img/screenshot.png" alt="A screenshot of the OA.Report user interface showing Open Access insights and a list of proposed strategies to open closed-access content." style="border-radius: var(--space-xxs);"></a>
-              </figure>
-            </div>
-          </div>
-      
-      
-          <h2 class="label border-top padding-top">Our users</h2>
+          <h2 class="label padding-top">Our users</h2>
           <div class="row">
             <div class="col col--4of6">
               <p class="type-5">
-                {% include 'partials/app-name.njk' %} is in use at {% for user in users %}{% if forloop.first != true %}, {% elseif forloop.last %} & {% endif %}<a href="{{ user.url }}" target="_blank" rel="noopener" class="border-bottom" title="Go to the {{ user.acronym }} website">{{ user.name }}</a><span class="sr-only">({{ user.acronym }})</span>{% endfor %}.
+                {% include 'partials/app-name.njk' %} is in use at {% for user in users %}{% if loop.first != true %}, {% elseif loop.last %} & {% endif %}<a href="{{ user.url }}" target="_blank" rel="noopener" class="border-bottom" title="Go to the {{ user.acronym }} website">{{ user.name }}</a><span class="sr-only">({{ user.acronym }})</span>{% endfor %}.
               </p>
             </div>
           </div>
@@ -148,14 +132,25 @@
         <div class="row row--centered bg-black">
           <div class="col">
             <section class="section">
-              <h2 class="label">Our funders</h2>
               <div class="row">
                 <div class="col col--1of2">
+                  <h2 class="label">Our funders</h2>
                   <p class="type-5">Built in partnership with the <a href="https://blog.oa.works/grant-to-bolster-oa-policies-from-bmgf/" target="_blank" rel="noopener" class="border-bottom text-black">Bill & Melinda Gates Foundation</a> with grant support from the <a href="https://blog.oa.works/grant-from-robert-wood-johnson-foundation/" target="_blank" rel="noopener" class="border-bottom text-black">Robert Wood Johnson Foundation</a>.</p>
-                </div>
-                <div class="col col--1of2">
                   <div style="margin: 0 5rem 2rem 5rem;">
                     <a href="https://www.gatesfoundation.org/" target="_blank" rel="noopener" class="block-link" title="Go to the BMGF website">{% include 'svg/bmgf.svg' %}</a>
+                  </div>
+                </div>
+                <div class="col col--1of2">
+                  <div class="flex-center flex-col margin-bottom">
+                    <div id="newsletter-inner">
+                      <form id="newsletter">
+                        <label for="email" class="label">Sign up for updates</label>
+                        <div class="flex">
+                          <input type="email" class="_oaworks_form" name="signup" id="email" placeholder="you@institution.edu" required/>
+                          <button id="submit" type="submit" href="{{ site.base_url }}#newsletter-inner">Sign up</button>
+                        </div>
+                      </form>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -203,6 +198,7 @@
     <script async defer src="https://sa.oa.works/latest.js"></script>
     <script src="/js/jquery-3.6.0.min.js"></script>
     <script src="/js/newsletter.js"></script>
+    <script src="/js/search.js"></script>
     {% block extra_js %}{% endblock %}
   </body>
 </html>
