@@ -140,14 +140,14 @@
                     <a href="https://www.gatesfoundation.org/" target="_blank" rel="noopener" class="block-link" title="Go to the BMGF website">{% include 'svg/bmgf.svg' %}</a>
                   </div>
                 </div>
-                <div class="col col--1of2">
+                <div class="col col--1of2" id="newsletter-outer">
                   <div class="flex-center flex-col margin-bottom">
                     <div id="newsletter-inner">
                       <form id="newsletter">
                         <label for="email" class="label">Sign up for updates</label>
                         <div class="flex">
                           <input type="email" class="_oaworks_form" name="signup" id="email" placeholder="you@institution.edu" required/>
-                          <button id="submit" type="submit" href="{{ site.base_url }}#newsletter-inner">Sign up</button>
+                          <button id="submit" type="submit" href="#newsletter-outer">Sign up</button>
                         </div>
                       </form>
                     </div>
