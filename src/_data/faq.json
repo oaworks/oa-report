@@ -1,7 +1,7 @@
 [
   {
     "q": "When will OA.Report be available?",
-    "a": "OA.Report is available now, but we’re rolling it out slowly. To get access, you can reach out directly, or if you sign up, we’ll be in touch."
+    "a": "OA.Report is available now, but we’re rolling it out slowly. To get access, you can <a href='mailto:hello@oa.works?subject=OA.Report' class='border-bottom'>reach out directly</a>, or if you <a href='#funders-newsletter' class='border-bottom'>sign up</a>, we’ll be in touch."
   },
   {
     "q": "What will OA.Report cost?",
