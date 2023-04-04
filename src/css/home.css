@@ -1800,7 +1800,7 @@ background-image: linear-gradient(to right, rgba(255,255,255, 0.095), rgba(255,2
 .app-name {
 font-family: var(--serif);
 letter-spacing: -.025em;
-
+font-weight: 700;
 background: linear-gradient(to right, var(--secondary-colour), var(--primary-colour));
 background-size: 200% 200%;
 background-clip: text;
