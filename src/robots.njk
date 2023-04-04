@@ -4,5 +4,7 @@ layout: null
 eleventyExcludeFromCollections: true
 ---
 
-Sitemap: {{ site.base_url }}/sitemap.xml
+# Disallow crawling of everything (report pages) except for landing/homepage 
 User-agent: *
+Allow: /$
+Disallow: /
