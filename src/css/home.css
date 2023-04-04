@@ -1920,3 +1920,9 @@ border: 1px solid;
 }
 }
 
+#video {
+  margin-left: var(--gutter-negative);
+  position: fixed;
+  transform: scaleX(-1);
+}
+
