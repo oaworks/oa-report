@@ -1,6 +1,0 @@
-[[plugins]]
-package = "@algolia/netlify-plugin-crawler"
-  [plugins.inputs]
-  branches = ['main', 'staging', 'dev', '187-add-search']
-  disabled = false
-  renderJavaScript = true
