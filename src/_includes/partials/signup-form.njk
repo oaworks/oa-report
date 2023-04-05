@@ -1,0 +1,28 @@
+<form data-netlify="true" action="#" name="signup" data-netlify-honeypot>
+  <div class="">
+    <label for="signup-email" class="text-base">Email</label>
+    <div class="mt-1 mb-6 flex">
+      <div class="relative flex items-stretch flex-grow focus-within:z-10">
+        <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+          {% icon_small "mail" %}
+        </div>
+        <input type="email" name="signup-email" id="signup-email" class="focus:ring-carnation-500 focus:border-carnation-500 block w-full md:w-8/12 lg:w-6/12 rounded-md pl-10 sm:text-sm shadow-md border-0" placeholder="you@example.com" required>
+      </div>
+    </div>
+
+    <label for="signup-org" class="text-base">Organization or institution</label>
+    <div class="mt-1 mb-6 flex">
+      <div class="relative flex items-stretch flex-grow focus-within:z-10">
+        <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+          {% icon_small "users" %}
+        </div>
+        <input type="text" name="signup-org" id="signup-org" class="focus:ring-carnation-500 focus:border-carnation-500 block w-full md:w-8/12 lg:w-6/12 rounded-md pl-10 sm:text-sm shadow-md border-0">
+      </div>
+    </div>
+  </div>
+  <label for="signup-page" hidden>Signed up from this page</label>
+  <input type="hidden" name="signup-page" id="signup-page" value="{{ site.base_url }}/{{ org._source.objectID }}"/>
+  <button type="submit" class="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-md text-white bg-neutral-900 hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-500 focus:border-carnation-500 duration-500 shadow-md border-0">
+    Sign up
+  </button>
+</form>
