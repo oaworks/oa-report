@@ -17,7 +17,7 @@ async function fetchSuggestions(searchTerm) {
         const filteredData = data.filter(item => !item.private);
 
         if (Array.isArray(filteredData) && filteredData.some(item => item.hasOwnProperty('name'))) {
-            suggestionsList.innerHTML = filteredData.map(result => `<li class="relative cursor-default select-none p-3 text-neutral-700 hover:font-semibold hover:text-white hover:bg-neutral-900"><a href="${result.objectID}"><span class="block truncate">${result.name}</span></a></li>`).join('');
+            suggestionsList.innerHTML = filteredData.map(result => `<li class="relative cursor-default select-none p-3 text-neutral-700 hover:font-semibold hover:text-white hover:bg-neutral-900"><a href="/${result.objectID}"><span class="block truncate">${result.name}</span></a></li>`).join('');
             suggestionsList.style.display = 'block';
         } else {
             suggestionsList.innerHTML = '<li class="relative cursor-default select-none p-3 text-neutral-900">No results! If you think there should be, <a href="mailto:contact@yourdomain.com" class="underline border-bottom">get in touch</a>.</li>';
