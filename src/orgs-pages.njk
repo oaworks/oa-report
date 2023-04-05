@@ -238,10 +238,17 @@ permalink: "{{ org._source.objectID | slug }}/"
     <h2 class="mb-5 text-lg leading-6 font-medium text-neutral-900 uppercase">
       About your report
     </h2>
+    {% if org._source.paid == true %}
     <p>
-      Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. 
+      Lorem ipsum dolor sit amet, placeholder for PAID USERS. Lorem ipsum dolor sit amet, placeholder for PAID USERS. Lorem ipsum dolor sit amet, placeholder for PAID USERS. Lorem ipsum dolor sit amet, placeholder for PAID USERS. Lorem ipsum dolor sit amet, placeholder for PAID USERS. Lorem ipsum dolor sit amet, placeholder for PAID USERS. Lorem ipsum dolor sit amet, placeholder for PAID USERS. Lorem ipsum dolor sit amet, placeholder for PAID USERS. 
     </p>
+    {% else %}
+    <p>
+      Lorem ipsum dolor sit amet, placeholder for FREE USERS. Lorem ipsum dolor sit amet, placeholder for FREE USERS. Lorem ipsum dolor sit amet, placeholder for FREE USERS. Lorem ipsum dolor sit amet, placeholder for FREE USERS. Lorem ipsum dolor sit amet, placeholder for FREE USERS. Lorem ipsum dolor sit amet, placeholder for FREE USERS. Lorem ipsum dolor sit amet, placeholder for FREE USERS. Lorem ipsum dolor sit amet, placeholder for FREE USERS. Lorem ipsum dolor sit amet, placeholder for FREE USERS. Lorem ipsum dolor sit amet, placeholder for FREE USERS. 
+    </p>
+    {% endif %}
   </div>
+  {% if org._source.paid != true %}
   <div id="newsletter-inner">
     <form id="newsletter">
       <label for="email">Sign up to access yours</label>
@@ -258,4 +265,5 @@ permalink: "{{ org._source.objectID | slug }}/"
       </div>
     </form>
   </div>
+  {% endif %}
 </section>
