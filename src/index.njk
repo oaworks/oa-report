@@ -143,10 +143,10 @@
                 <section class="col col--1of2">
                   <div class="flex-center flex-col margin-bottom">
                     <div id="newsletter-inner">
-                      <form id="newsletter">
-                        <label for="email" class="label">Sign up for updates</label>
+                      <form id="newsletter" data-netlify="true" action="#" name="homepage-signup" data-netlify-honeypot>
+                        <label for="homepage-signup-email" class="label">Sign up for updates</label>
                         <div class="flex">
-                          <input type="email" class="_oaworks_form" name="signup" id="email" placeholder="you@institution.edu" required/>
+                          <input type="email" name="homepage-signup-email" id="homepage-signup-email" placeholder="you@institution.edu" required/>
                           <button id="submit" type="submit" href="#funders-newsletter">Sign up</button>
                         </div>
                       </form>
