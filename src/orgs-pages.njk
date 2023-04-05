@@ -249,20 +249,37 @@ permalink: "{{ org._source.objectID | slug }}/"
     {% endif %}
   </div>
   {% if org._source.paid != true %}
-  <form data-netlify="true" action="#" data-netlify-honeypot>
-    <label for="email-signup">Sign up to access yours</label>
-    <div class="mt-1 mb-3 flex rounded-sm shadow-sm">
-      <div class="relative flex items-stretch flex-grow focus-within:z-10">
-        <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
-          {% icon_small "mail" %}
+  <div>
+    <h2 class="mb-5 text-lg leading-6 font-medium text-neutral-900 uppercase">
+      Sign up to access yours
+    </h2>
+    <form data-netlify="true" action="#" data-netlify-honeypot>
+      <div class="">
+        <label for="signup-email" class="text-base">Email</label>
+        <div class="mt-1 mb-6 flex">
+          <div class="relative flex items-stretch flex-grow focus-within:z-10">
+            <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+              {% icon_small "mail" %}
+            </div>
+            <input type="email" name="signup-email" id="signup-email" class="focus:ring-carnation-500 focus:border-carnation-500 block w-6/12 rounded-md pl-10 sm:text-sm shadow-md border-0" placeholder="you@example.com" required>
+          </div>
         </div>
-        <input type="email" name="signup" id="email-signup" class="focus:ring-carnation-500 focus:border-carnation-500 block w-full rounded-none rounded-l-md pl-10 sm:text-sm shadow-md border-0" placeholder="you@example.com" required>
-        <input type="hidden" name="report-page" id="report-page" value="{{ site.base_url }}/{{ org._source.objectID }}"/>
+
+        <label for="signup-org" class="text-base">Organization or institution</label>
+        <div class="mt-1 mb-6 flex">
+          <div class="relative flex items-stretch flex-grow focus-within:z-10">
+            <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+              {% icon_small "users" %}
+            </div>
+            <input type="email" name="signup-org" id="signup-org" class="focus:ring-carnation-500 focus:border-carnation-500 block w-6/12 rounded-md pl-10 sm:text-sm shadow-md border-0">
+          </div>
+        </div>
       </div>
-      <button type="submit" class="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-r-md text-white bg-neutral-900 hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-500 focus:border-carnation-500 duration-500 shadow-md border-0">
+      <input type="hidden" name="signup-page" id="report-page" value="{{ site.base_url }}/{{ org._source.objectID }}"/>
+      <button type="submit" class="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-md text-white bg-neutral-900 hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-500 focus:border-carnation-500 duration-500 shadow-md border-0">
         Sign up
       </button>
-    </div>
-  </form>
+    </form>
+  </div>
   {% endif %}
 </section>
