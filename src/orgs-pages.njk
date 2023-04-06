@@ -35,6 +35,7 @@ permalink: "{{ org._source.objectID | slug }}/"
         class: "bg-neutral-200 text-neutral-900"
       }) }}
     </li>
+    {% if org._source.paid == true %}
     <li class="mr-1 inline-block">
       {{ component("pill", {
         id: "two-years-ago",
@@ -49,6 +50,7 @@ permalink: "{{ org._source.objectID | slug }}/"
         class: "bg-neutral-200 text-neutral-900"
       }) }}
     </li>
+    {% endif %}
   </ul>
 </header>
 
