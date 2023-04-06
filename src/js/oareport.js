@@ -544,17 +544,6 @@ var startYearBtn              = document.getElementById("start-year"),
     allTimeBtn                = document.getElementById("all-time"),
     insightsDateRange         = document.getElementById("insights_range");
 
-// Set dates two years prior to current year
-var twoYearsStartDate         = new Date(new Date().getFullYear()-2, 0, 1),
-    twoYearsStartDateReadable = makeDateReadable(twoYearsStartDate),
-    twoYearsStartDateQuery    = changeDays(-1, twoYearsStartDate),
-    twoYearsStartDateISO      = formatDateToISO(twoYearsStartDate),
-
-    twoYearsEndDate           = new Date(new Date().getFullYear()-2, 11, 31),
-    twoYearsEndDateReadable   = makeDateReadable(twoYearsEndDate),
-    twoYearsEndDateQuery      = changeDays(+1, twoYearsEndDate),
-    twoYearsEndDateISO        = formatDateToISO(twoYearsEndDate);
-
 startYearBtn.textContent      = startYearDate.getFullYear();
 lastYearBtn.textContent       = lastYearStartDate.getFullYear();
 
@@ -573,6 +562,17 @@ lastYearBtn.addEventListener("click", function() {
 // Only paid users can see data from two years ago and all time
 // These buttons won’t be displayed for free users
 if (twoYearsBtn) {
+  // Set dates two years prior to current year
+  var twoYearsStartDate         = new Date(new Date().getFullYear()-2, 0, 1),
+      twoYearsStartDateReadable = makeDateReadable(twoYearsStartDate),
+      twoYearsStartDateQuery    = changeDays(-1, twoYearsStartDate),
+      twoYearsStartDateISO      = formatDateToISO(twoYearsStartDate),
+
+      twoYearsEndDate           = new Date(new Date().getFullYear()-2, 11, 31),
+      twoYearsEndDateReadable   = makeDateReadable(twoYearsEndDate),
+      twoYearsEndDateQuery      = changeDays(+1, twoYearsEndDate),
+      twoYearsEndDateISO        = formatDateToISO(twoYearsEndDate);
+
   twoYearsBtn.textContent = twoYearsStartDate.getFullYear();
   twoYearsBtn.addEventListener("click", function() {
     replaceDateRange(twoYearsStartDate, twoYearsEndDate);
