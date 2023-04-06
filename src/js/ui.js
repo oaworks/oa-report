@@ -57,10 +57,10 @@ quickDateItems.forEach(function(toggler) {
     e.preventDefault();
 
     for (let i = 0; i < quickDateItems.length; i++) {
-      quickDateItems[i].classList.remove("bg-neutral-900");
+      quickDateItems[i].classList.remove("bg-neutral-900", "text-white");
       quickDateItems[i].classList.add("bg-neutral-200", "text-neutral-900");
     }
-    e.target.classList.add("bg-neutral-900");
+    e.target.classList.add("bg-neutral-900", "text-white");
     e.target.classList.remove("bg-neutral-200", "text-neutral-900");
   });
 });
