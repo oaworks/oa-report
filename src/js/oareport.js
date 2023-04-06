@@ -1,9 +1,9 @@
 const base             = "https://beta.oa.works/report/",
       baseBg           = "https://bg.beta.oa.works/report/",
-      queryBase        = base + "works?size=100&",
-      countQueryBase   = base + "works/count?",
-      csvExportBase    = baseBg + "works.csv?size=all&",
-      articleEmailBase = baseBg + "email/";
+      queryBase        = `${base}works?size=100&`,
+      countQueryBase   = `${base}works/count?`,
+      csvExportBase    = `${baseBg}works.csv?size=all&`,
+      articleEmailBase = `${baseBg}email/`;
 
 // Set readable date options
 const readableDateOptions = {
@@ -27,7 +27,7 @@ displayNone = function(id) {
 changeOpacity = function(id, opacity = 100) {
   var elem = document.querySelector(id);
       elem.classList.remove("opacity-0");
-      elem.classList.add("opacity-" + opacity);
+      elem.classList.add(`opacity-${opacity}`);
 }
 
 // Do math with days on a date
@@ -63,7 +63,7 @@ replaceDateRange = function(newStart, newEnd) {
   startDate     = formatDateToISO(startDate);
   endDate       = changeDays(+1, newEnd);
   endDate       = formatDateToISO(endDate);
-  dateRange     = "(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")%20AND%20";
+  dateRange     = `(published_date:>${startDate}%20AND%20published_date:<${endDate})%20AND%20`;
   return dateRange;
 };
 
@@ -106,13 +106,13 @@ replaceDateRange(startYearDate, currentDate);
 let orgKey = "",
     hasOrgKey = Object.keys(OAKEYS).length !== 0;
 if (hasOrgKey) {
-  orgKey = "&orgkey=" + Object.values(OAKEYS);
+  orgKey = `&orgkey=${Object.values(OAKEYS)}`;
 } else {
   displayNone("#logout");
 }
 
 // Set report base path
-let report = base + "orgs?q=name:%22" + org + "%22";
+let report = `${base}orgs?q=name:%22${org}%22`;
 
 // Set default export_includes
 let exportIncludes = "&include=DOI,title,subtitle,publisher,journal,issn,published,published_year,PMCID,volume,issue,authorships.author.display_name,authorships.author.orcid,authorships.institutions.display_name,authorships.institutions.ror,funder.name,funder.award,is_oa,oa_status,journal_oa_type,publisher_license,has_repository_copy,repository_license,repository_version,repository_url,has_oa_locations_embargoed,can_archive,version,concepts.display_name,subject,pmc_has_data_availability_statement,cited_by_count";
@@ -121,8 +121,8 @@ let exportIncludes = "&include=DOI,title,subtitle,publisher,journal,issn,publish
 oareport = function(org) {
 
   // Set paths for orgindex
-  let queryPrefix                  = queryBase + "q=" + dateRange,
-      countQueryPrefix             = countQueryBase + "q=" + dateRange;
+  let queryPrefix                  = `${queryBase}q=${dateRange}`,
+      countQueryPrefix             = `${countQueryBase}q=${dateRange}`;
 
   // Get organisational data to produce reports
   axios.get(report).then(function (response) {
@@ -134,15 +134,15 @@ oareport = function(org) {
       mailto = decodeURI(mailto);
       // if email is not undefined and there is an orgkey, decrypt the author’s email
       if (email !== 'undefined' && hasOrgKey) {
-        axios.get(articleEmailBase + doi  + "?" +  orgKey)
+        axios.get(`${articleEmailBase + doi}?${orgKey}`)
           .then(function (response) {
             let authorEmail = response.data;
             mailto = mailto.replaceAll("{email}", authorEmail);
-            window.open('mailto:' + mailto);
+            window.open(`mailto:${mailto}`);
           }
-        ).catch(function (error) { console.log("decryptEmail error: " + error); })
+        ).catch(function (error) { console.log(`decryptEmail error: ${error}`); })
       } else {
-        window.open('mailto:' + mailto);
+        window.open(`mailto:${mailto}`);
       }
     };
 
@@ -150,13 +150,13 @@ oareport = function(org) {
     getInsight = function(numerator, denominator, denominatorText, info) {
 
       var shown     = response.data.hits.hits[0]._source.analysis[numerator].show_on_web,
-          contentID = "#" + numerator; // the whole insight’s data card
+          contentID = `#${numerator}`; // the whole insight’s data card
 
       if (shown === true) {
         // Select elements to show data
-        var percentageContents = document.querySelector("#percent_" + numerator), // % value
-            articlesContents   = document.querySelector("#articles_" + numerator), // full-text value
-            infoContents       = document.querySelector("#info_" + numerator); // help text value
+        var percentageContents = document.querySelector(`#percent_${numerator}`), // % value
+            articlesContents   = document.querySelector(`#articles_${numerator}`), // full-text value
+            infoContents       = document.querySelector(`#info_${numerator}`); // help text value
 
         // Display help text / info popover
         const instance = tippy(infoContents, {
@@ -180,14 +180,14 @@ oareport = function(org) {
                   denominatorCount = results[1].data;
 
               if (denominatorCount) {
-                articlesContents.textContent = makeNumberReadable(numeratorCount) + " of " + makeNumberReadable(denominatorCount) + " " + denominatorText;
-                percentageContents.textContent = Math.round(((numeratorCount/denominatorCount)*100)) + "%";
+                articlesContents.textContent = `${makeNumberReadable(numeratorCount)} of ${makeNumberReadable(denominatorCount)} ${denominatorText}`;
+                percentageContents.textContent = `${Math.round(((numeratorCount / denominatorCount) * 100))}%`;
               } else {
                 articlesContents.textContent = "";
                 percentageContents.textContent = "N/A";
               };
             }
-          ).catch(function (error) { console.log("error: " + error); });
+          ).catch(function (error) { console.log(`error: ${error}`); });
 
         // Display plain number when it’s just a numerator
         } else {
@@ -222,7 +222,7 @@ oareport = function(org) {
       "is_compliant",
       "is_covered_by_policy",
       "articles covered",
-      "<p class='mb-2'>The percentage of articles that are compliant with <a href='" + response.data.hits.hits[0]._source.policy.url + "' target='_blank' rel='noopener' class='underline'>your organization’s Open Access policy</a>.</p> <p>This number is specific to your policy and your requirements.</p>"
+      `<p class='mb-2'>The percentage of articles that are compliant with <a href='${response.data.hits.hits[0]._source.policy.url}' target='_blank' rel='noopener' class='underline'>your organization’s Open Access policy</a>.</p> <p>This number is specific to your policy and your requirements.</p>`
     );
 
     getInsight(
@@ -255,7 +255,7 @@ oareport = function(org) {
 
     displayStrategy = function(strategy, keys, tableRow) {
       var shown  = response.data.hits.hits[0]._source.strategy[strategy].show_on_web,
-          tabID  = "#item_" + strategy;
+          tabID  = `#item_${strategy}`;
 
       if (shown === true) {
         // Get tab elements
@@ -464,14 +464,14 @@ oareport = function(org) {
         .then(function (results) {
           let hasCustomExportIncludes = results[0].data;
           }
-        ).catch(function (error) { console.log("Export error: " + error); });
+        ).catch(function (error) { console.log(`Export error: ${error}`); });
 
       isPaperURL = (dateRange + response.data.hits.hits[0]._source.analysis.is_paper.query);
-      let query = "q=" + isPaperURL.replaceAll(" ", "%20"),
+      let query = `q=${isPaperURL.replaceAll(" ", "%20")}`,
           form = new FormData(document.getElementById("download_csv"));
 
       // Get form content — email address input
-      var email = "&" + new URLSearchParams(form).toString();
+      var email = `&${new URLSearchParams(form).toString()}`;
 
       var include;
       // If the org has custom export includes AND there is an orgkey, show these custom includes in the public CSV
@@ -488,7 +488,7 @@ oareport = function(org) {
       xhr.open("GET", query);
       // Display message when server responds
       xhr.onload = function () {
-        document.querySelector("#csv_email_msg").innerHTML = "OA.Report has started building your CSV export at <a href='" + this.response + "' target='_blank' class='underline'>this URL</a>. Please check your email to get the full data once it’s ready.";
+        document.querySelector("#csv_email_msg").innerHTML = `OA.Report has started building your CSV export at <a href='${this.response}' target='_blank' class='underline'>this URL</a>. Please check your email to get the full data once it’s ready.`;
       };
       xhr.send();
 
@@ -508,15 +508,15 @@ oareport = function(org) {
         .then(function (results) {
           hasCustomExportIncludes = results[0].data;
           }
-        ).catch(function (error) { console.log("Export error: " + error); });
+        ).catch(function (error) { console.log(`Export error: ${error}`); });
 
       // Set up export query
       isPaperURL = (dateRange + strategyQuery);
-      let query = "q=" + isPaperURL.replaceAll(" ", "%20"),
-          form = new FormData(document.getElementById("form_" + id));
+      let query = `q=${isPaperURL.replaceAll(" ", "%20")}`,
+          form = new FormData(document.getElementById(`form_${id}`));
 
       // Get form content — email address input
-      var email = "&" + new URLSearchParams(form).toString();
+      var email = `&${new URLSearchParams(form).toString()}`;
 
       // Display export includes if there are any
       var include;
@@ -531,7 +531,7 @@ oareport = function(org) {
       xhr.open("GET", query);
       // Display message when server responds
       xhr.onload = function () {
-        document.querySelector("#msg-" + id).innerHTML = "OA.Report has started building your CSV export at <a href='" + this.response + "' target='_blank' class='underline'>this URL</a>. Please check your email to get the full data once it’s ready.";
+        document.querySelector(`#msg-${id}`).innerHTML = `OA.Report has started building your CSV export at <a href='${this.response}' target='_blank' class='underline'>this URL</a>. Please check your email to get the full data once it’s ready.`;
       };
       xhr.send();
 
@@ -539,7 +539,7 @@ oareport = function(org) {
       return false;
     }
 
-  }).catch(function (error) { console.log("Report ERROR: " + error); });
+  }).catch(function (error) { console.log(`Report ERROR: ${error}`); });
 };
 
 oareport(org);
@@ -568,19 +568,19 @@ twoYearsBtn.textContent       = twoYearsStartDate.getFullYear();
 
 startYearBtn.addEventListener("click", function() {
   replaceDateRange(startYearDate, currentDate);
-  insightsDateRange.textContent = "Since the start of " + startYearDate.getFullYear();
+  insightsDateRange.textContent = `Since the start of ${startYearDate.getFullYear()}`;
   oareport(org);
 });
 
 lastYearBtn.addEventListener("click", function() {
   replaceDateRange(lastYearStartDate, lastYearEndDate);
-  insightsDateRange.textContent = "In " + lastYearStartDate.getFullYear();
+  insightsDateRange.textContent = `In ${lastYearStartDate.getFullYear()}`;
   oareport(org);
 });
 
 twoYearsBtn.addEventListener("click", function() {
   replaceDateRange(twoYearsStartDate, twoYearsEndDate);
-  insightsDateRange.textContent = "In " + twoYearsStartDate.getFullYear();
+  insightsDateRange.textContent = `In ${twoYearsStartDate.getFullYear()}`;
   oareport(org);
 });
 
