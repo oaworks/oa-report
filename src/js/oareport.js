@@ -542,9 +542,10 @@ var startYearBtn              = document.getElementById("start-year"),
     lastYearBtn               = document.getElementById("last-year"),
     twoYearsBtn               = document.getElementById("two-years-ago"),
     allTimeBtn                = document.getElementById("all-time"),
-    insightsDateRange         = document.getElementById("insights_range"),
+    insightsDateRange         = document.getElementById("insights_range");
 
-    twoYearsStartDate         = new Date(new Date().getFullYear()-2, 0, 1),
+// Set dates two years prior to current year
+var twoYearsStartDate         = new Date(new Date().getFullYear()-2, 0, 1),
     twoYearsStartDateReadable = makeDateReadable(twoYearsStartDate),
     twoYearsStartDateQuery    = changeDays(-1, twoYearsStartDate),
     twoYearsStartDateISO      = formatDateToISO(twoYearsStartDate),
@@ -556,7 +557,6 @@ var startYearBtn              = document.getElementById("start-year"),
 
 startYearBtn.textContent      = startYearDate.getFullYear();
 lastYearBtn.textContent       = lastYearStartDate.getFullYear();
-twoYearsBtn.textContent       = twoYearsStartDate.getFullYear();
 
 startYearBtn.addEventListener("click", function() {
   replaceDateRange(startYearDate, currentDate);
@@ -570,14 +570,22 @@ lastYearBtn.addEventListener("click", function() {
   oareport(org);
 });
 
-twoYearsBtn.addEventListener("click", function() {
-  replaceDateRange(twoYearsStartDate, twoYearsEndDate);
-  insightsDateRange.textContent = `In ${twoYearsStartDate.getFullYear()}`;
-  oareport(org);
-});
+// Only paid users can see data from two years ago and all time
+// These buttons won’t be displayed for free users
+if (twoYearsBtn) {
+  twoYearsBtn.textContent = twoYearsStartDate.getFullYear();
+  twoYearsBtn.addEventListener("click", function() {
+    replaceDateRange(twoYearsStartDate, twoYearsEndDate);
+    insightsDateRange.textContent = `In ${twoYearsStartDate.getFullYear()}`;
+    oareport(org);
+  });
+}
 
-allTimeBtn.addEventListener("click", function() {
-  replaceDateRange(new Date(1980, 0, 1), currentDate);
-  insightsDateRange.textContent = "All-time";
-  oareport(org);
-});
+if (allTimeBtn) {
+  allTimeBtn.addEventListener("click", function() {
+    replaceDateRange(new Date(1980, 0, 1), currentDate);
+    insightsDateRange.textContent = "All time";
+    oareport(org);
+  });
+}
+
