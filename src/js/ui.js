@@ -64,3 +64,4 @@ quickDateItems.forEach(function(toggler) {
     e.target.classList.remove("bg-neutral-200", "text-neutral-900");
   });
 });
+

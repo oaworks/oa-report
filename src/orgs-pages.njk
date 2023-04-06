@@ -233,14 +233,20 @@ permalink: "{{ org._source.objectID | slug }}/"
   </div>
 </section>
 
-<section class="col-span-12 grid md:grid-cols-2 gap-6" id="about">
+<section class="col-span-12 grid md:grid-cols-2 gap-12" id="about">
   <div>
     <h2 class="mb-5 text-lg leading-6 font-medium text-neutral-900 uppercase">
       About your report
     </h2>
-    <p>
-      Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. 
+    {% if org._source.paid == true %}
+    <p class="text-xs md:text-base">
+      Lorem ipsum dolor sit amet, placeholder for PAID USERS. Lorem ipsum dolor sit amet, placeholder for PAID USERS. Lorem ipsum dolor sit amet, placeholder for PAID USERS. Lorem ipsum dolor sit amet, placeholder for PAID USERS. Lorem ipsum dolor sit amet, placeholder for PAID USERS. Lorem ipsum dolor sit amet, placeholder for PAID USERS. Lorem ipsum dolor sit amet, placeholder for PAID USERS. Lorem ipsum dolor sit amet, placeholder for PAID USERS. 
     </p>
+    {% else %}
+    <p class="text-xs md:text-base">
+      Lorem ipsum dolor sit amet, placeholder for FREE USERS. Lorem ipsum dolor sit amet, placeholder for FREE USERS. Lorem ipsum dolor sit amet, placeholder for FREE USERS. Lorem ipsum dolor sit amet, placeholder for FREE USERS. Lorem ipsum dolor sit amet, placeholder for FREE USERS. Lorem ipsum dolor sit amet, placeholder for FREE USERS. Lorem ipsum dolor sit amet, placeholder for FREE USERS. Lorem ipsum dolor sit amet, placeholder for FREE USERS. Lorem ipsum dolor sit amet, placeholder for FREE USERS. Lorem ipsum dolor sit amet, placeholder for FREE USERS. 
+    </p>
+    {% endif %}
   </div>
   {% if org._source.paid != true %}
   <div>
