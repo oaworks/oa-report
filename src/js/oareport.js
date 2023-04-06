@@ -19,13 +19,13 @@ getUsersLocale = function() {
 
 // Visually hide an element
 displayNone = function(id) {
-  var elem = document.querySelector(id);
+  var elem = document.getElementById(id);
       elem.style.display = 'none';
 }
 
 // Turn opacity to 100% for an element
 changeOpacity = function(id, opacity = 100) {
-  var elem = document.querySelector(id);
+  var elem = document.getElementById(id);
       elem.classList.remove("opacity-0");
       elem.classList.add(`opacity-${opacity}`);
 }
@@ -69,12 +69,12 @@ replaceDateRange = function(newStart, newEnd) {
 
 /* Get report page elements where data will be inserted */
 // Date range
-var endDateContents                = document.querySelector("#end_date"),
-    startDateContents              = document.querySelector("#start_date");
+var endDateContents                = document.getElementById("end_date"),
+    startDateContents              = document.getElementById("start_date");
 
 // Send CSV data by email form
-var queryHiddenInput               = document.querySelector("#download-form-q"),
-    includeHiddenInput             = document.querySelector("#download-form-include");
+var queryHiddenInput               = document.getElementById("download-form-q"),
+    includeHiddenInput             = document.getElementById("download-form-include");
 
 /* Date display and filtering */
 // Set today’s date and 12 months ago date to display most recent Insights data as default
@@ -108,7 +108,7 @@ let orgKey = "",
 if (hasOrgKey) {
   orgKey = `&orgkey=${Object.values(OAKEYS)}`;
 } else {
-  displayNone("#logout");
+  displayNone("logout");
 }
 
 // Set report base path
@@ -150,13 +150,13 @@ oareport = function(org) {
     getInsight = function(numerator, denominator, denominatorText, info) {
 
       var shown     = response.data.hits.hits[0]._source.analysis[numerator].show_on_web,
-          contentID = `#${numerator}`; // the whole insight’s data card
+          contentID = `${numerator}`; // the whole insight’s data card
 
       if (shown === true) {
         // Select elements to show data
-        var percentageContents = document.querySelector(`#percent_${numerator}`), // % value
-            articlesContents   = document.querySelector(`#articles_${numerator}`), // full-text value
-            infoContents       = document.querySelector(`#info_${numerator}`); // help text value
+        var percentageContents = document.getElementById(`percent_${numerator}`), // % value
+            articlesContents   = document.getElementById(`articles_${numerator}`), // full-text value
+            infoContents       = document.getElementById(`info_${numerator}`); // help text value
 
         // Display help text / info popover
         const instance = tippy(infoContents, {
@@ -255,13 +255,13 @@ oareport = function(org) {
 
     displayStrategy = function(strategy, keys, tableRow) {
       var shown  = response.data.hits.hits[0]._source.strategy[strategy].show_on_web,
-          tabID  = `#item_${strategy}`;
+          tabID  = `item_${strategy}`;
 
       if (shown === true) {
         // Get tab elements
-        var tabCountContents   = document.querySelector(`#count_${strategy}`),
-            tableCountContents = document.querySelector(`#total_${strategy}`),
-            tableBody          = document.querySelector(`#table_${strategy}`).getElementsByTagName('tbody')[0];
+        var tabCountContents   = document.getElementById(`count_${strategy}`),
+            tableCountContents = document.getElementById(`total_${strategy}`),
+            tableBody          = document.getElementById(`table_${strategy}`).getElementsByTagName('tbody')[0];
         
         var countQuery              = countQueryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query,
             listQuery               = queryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query;
@@ -359,7 +359,7 @@ oareport = function(org) {
             // Otherwise, display a message prompting user to log or contact us to access strategies
             else {
               tableBody.innerHTML = `<tr><td class='py-4 pl-4 pr-3 text-base text-center align-top break-words' colspan='3'><p class='font-bold'>Strategies help you take action to make your institution’s research more open.</p> <p>Find out more about them by <a href='mailto:hello@oa.works?subject=OA.Report%20&mdash;%20${decodeURIComponent(org)}' class='underline'>contacting us</a> or <a href='https://about.oa.report/docs/user-accounts' class='underline' title='Information on user accounts'>logging in to your account</a> to access them.</p></td></tr>`;
-              displayNone(`#form_${strategy}`);
+              displayNone(`form_${strategy}`);
             }
           })
           .catch(function (error) { console.log(`${strategy} error: ${error}`); })
@@ -488,7 +488,7 @@ oareport = function(org) {
       xhr.open("GET", query);
       // Display message when server responds
       xhr.onload = function () {
-        document.querySelector("#csv_email_msg").innerHTML = `OA.Report has started building your CSV export at <a href='${this.response}' target='_blank' class='underline'>this URL</a>. Please check your email to get the full data once it’s ready.`;
+        document.getElementById("csv_email_msg").innerHTML = `OA.Report has started building your CSV export at <a href='${this.response}' target='_blank' class='underline'>this URL</a>. Please check your email to get the full data once it’s ready.`;
       };
       xhr.send();
 
@@ -500,9 +500,6 @@ oareport = function(org) {
     getStrategyExportLink = function(id) {
       var hasCustomExportIncludes = (response.data.hits.hits[0]._source.strategy[id].export_includes),
           strategyQuery           = (response.data.hits.hits[0]._source.strategy[id].query);
-
-          console.log(hasCustomExportIncludes);
-          console.log(strategyQuery);
 
       Promise.all([hasCustomExportIncludes])
         .then(function (results) {
@@ -531,7 +528,7 @@ oareport = function(org) {
       xhr.open("GET", query);
       // Display message when server responds
       xhr.onload = function () {
-        document.querySelector(`#msg-${id}`).innerHTML = `OA.Report has started building your CSV export at <a href='${this.response}' target='_blank' class='underline'>this URL</a>. Please check your email to get the full data once it’s ready.`;
+        document.getElementById(`msg-${id}`).innerHTML = `OA.Report has started building your CSV export at <a href='${this.response}' target='_blank' class='underline'>this URL</a>. Please check your email to get the full data once it’s ready.`;
       };
       xhr.send();
 
@@ -546,11 +543,11 @@ oareport(org);
 
 /** Change displayed Insights data based on user input **/
 // Preset "quick date filter" buttons
-var startYearBtn              = document.querySelector("#start-year"),
-    lastYearBtn               = document.querySelector("#last-year"),
-    twoYearsBtn               = document.querySelector("#two-years-ago"),
-    allTimeBtn                = document.querySelector("#all-time"),
-    insightsDateRange         = document.querySelector("#insights_range"),
+var startYearBtn              = document.getElementById("start-year"),
+    lastYearBtn               = document.getElementById("last-year"),
+    twoYearsBtn               = document.getElementById("two-years-ago"),
+    allTimeBtn                = document.getElementById("all-time"),
+    insightsDateRange         = document.getElementById("insights_range"),
 
     twoYearsStartDate         = new Date(new Date().getFullYear()-2, 0, 1),
     twoYearsStartDateReadable = makeDateReadable(twoYearsStartDate),
