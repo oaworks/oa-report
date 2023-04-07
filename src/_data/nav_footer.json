@@ -1,5 +1,9 @@
 [
   {
+    "label": "Status",
+    "url": "https://status.oa.report/"
+  },
+  {
     "label": "Privacy",
     "url": "https://oa.works/policies/privacy/"
   },
