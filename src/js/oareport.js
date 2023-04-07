@@ -5,6 +5,9 @@ const base             = "https://beta.oa.works/report/",
       csvExportBase    = `${baseBg}works.csv?size=all&`,
       articleEmailBase = `${baseBg}email/`;
 
+// Set report base path
+let report = `${base}orgs?q=name:%22${org}%22`;
+
 // Set readable date options
 const readableDateOptions = {
   day: "numeric",
@@ -89,18 +92,31 @@ const currentDate                  = new Date(),
       startYearDateISO             = formatDateToISO(startYearDateQuery),
 
       // Get last year’s start and end date as temporary default (see oaworks/Gates#420)
-      lastYearStartDate         = new Date(new Date().getFullYear()-1, 0, 1),
-      lastYearStartDateReadable = makeDateReadable(lastYearStartDate),
-      lastYearStartDateQuery    = changeDays(-1, lastYearStartDate),
-      lastYearStartDateISO      = formatDateToISO(lastYearStartDate),
+      lastYearStartDate            = new Date(new Date().getFullYear()-1, 0, 1),
+      lastYearStartDateReadable    = makeDateReadable(lastYearStartDate),
+      lastYearStartDateQuery       = changeDays(-1, lastYearStartDate),
+      lastYearStartDateISO         = formatDateToISO(lastYearStartDate),
 
-      lastYearEndDate           = new Date(new Date().getFullYear()-1, 11, 31),
-      lastYearEndDateReadable   = makeDateReadable(lastYearEndDate),
-      lastYearEndDateQuery      = changeDays(+1, lastYearEndDate),
-      lastYearEndDateISO        = formatDateToISO(lastYearEndDate);
+      lastYearEndDate              = new Date(new Date().getFullYear()-1, 11, 31),
+      lastYearEndDateReadable      = makeDateReadable(lastYearEndDate),
+      lastYearEndDateQuery         = changeDays(+1, lastYearEndDate),
+      lastYearEndDateISO           = formatDateToISO(lastYearEndDate),
 
-// Display default date range: since start of the current year
-replaceDateRange(startYearDate, currentDate);
+      // Fixed end date set for free / non-paying users 
+      fixedDate                    = new Date('2023-03-31');
+
+// Display default date range since start of the current year
+function getDateRangeForUserType() {
+  // If paying, end date is up to today
+  if (paid === true) {
+    dateRange = replaceDateRange(startYearDate, currentDate);
+  } else {
+    // Else, if free user, end date is a fixed date set above
+    dateRange = replaceDateRange(startYearDate, fixedDate);
+  };  
+};
+
+getDateRangeForUserType();
 
 // Check if user is authentified
 let orgKey = "",
@@ -110,9 +126,6 @@ if (hasOrgKey) {
 } else {
   displayNone("logout");
 }
-
-// Set report base path
-let report = `${base}orgs?q=name:%22${org}%22`;
 
 // Set default export_includes
 let exportIncludes = "&include=DOI,title,subtitle,publisher,journal,issn,published,published_year,PMCID,volume,issue,authorships.author.display_name,authorships.author.orcid,authorships.institutions.display_name,authorships.institutions.ror,funder.name,funder.award,is_oa,oa_status,journal_oa_type,publisher_license,has_repository_copy,repository_license,repository_version,repository_url,has_oa_locations_embargoed,can_archive,version,concepts.display_name,subject,pmc_has_data_availability_statement,cited_by_count";
@@ -553,7 +566,7 @@ startYearBtn.textContent      = startYearDate.getFullYear();
 lastYearBtn.textContent       = lastYearStartDate.getFullYear();
 
 startYearBtn.addEventListener("click", function() {
-  replaceDateRange(startYearDate, currentDate);
+  getDateRangeForUserType();
   insightsDateRange.textContent = `Since the start of ${startYearDate.getFullYear()}`;
   oareport(org);
 });
