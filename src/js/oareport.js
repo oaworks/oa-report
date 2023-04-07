@@ -368,8 +368,13 @@ oareport = function(org) {
         changeOpacity(tabID);
 
       } else {
-        displayNone(tabID);
-        document.getElementById(strategy).remove();
+        var tabItem = document.getElementById(tabID),
+            tabContent = document.getElementById(strategy);
+
+        if (tabItem || tabContent) {
+          tabItem.remove();
+          tabContent.remove();
+        }
       };
     };
 
