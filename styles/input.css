@@ -3,9 +3,7 @@
 @tailwind utilities;
 
 .app-name {
-  font-family: serif;
-  letter-spacing: -.025em;
-
+  letter-spacing: -.005em;
   background: linear-gradient(to right, hotpink, pink);
   background-size: 200% 200%;
   background-clip: text;
@@ -15,7 +13,7 @@
 }
 
 .app-name__oa {
-  margin-right: .055em;
+  margin-right: .035em;
   letter-spacing: -.025em;
 }
 
