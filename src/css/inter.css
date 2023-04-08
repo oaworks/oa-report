@@ -2,15 +2,14 @@
 /*
 Font families defined by this CSS:
 - "Inter var"              single-axis variable fonts for all modern browsers
+- "Wremena"
 
 Use like this in your CSS:
 
   :root { font-family: 'Inter', sans-serif; }
   @supports (font-variation-settings: normal) {
     :root { font-family: 'Inter var', sans-serif; }
-  }
-
-------------------------- static ------------------------- */
+  } */
 
 @font-face {
   font-family: 'Inter var';
@@ -26,4 +25,25 @@ Use like this in your CSS:
   font-weight: 100 900;
   font-style: italic;
   font-named-instance: 'Italic';
+}
+
+@font-face {
+  font-family: 'Wremena';
+  src: url('../fonts/WremenaLight.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Wremena';
+  src: url('../fonts/WremenaRegular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Wremena';
+  src: url('../fonts/WremenaBold.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
 }

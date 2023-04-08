@@ -10,8 +10,7 @@ module.exports = {
   theme: {
     fontFamily: {
       sans: ['Inter var', 'sans-serif'],
-      // serif: ['WremenaLight', 'serif'],
-      // display: ['WremenaBold', 'serif'],
+      serif: ['Wremena', 'serif'],
     },
     colors: {
       transparent: 'transparent',
