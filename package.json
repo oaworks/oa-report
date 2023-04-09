@@ -25,6 +25,7 @@
     "dotenv": "^16.0.3",
     "feather-icons": "^4.28.0",
     "markdown-it-attrs": "^4.1.3",
-    "sass-loader": "^12.6.0"
+    "sass-loader": "^12.6.0",
+    "tailwindcss-font-inter": "^3.0.1"
   }
 }

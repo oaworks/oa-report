@@ -3,9 +3,7 @@
 @tailwind utilities;
 
 .app-name {
-  font-family: serif;
-  letter-spacing: -.025em;
-
+  letter-spacing: -.005em;
   background: linear-gradient(to right, hotpink, pink);
   background-size: 200% 200%;
   background-clip: text;
@@ -15,7 +13,7 @@
 }
 
 .app-name__oa {
-  margin-right: .055em;
+  margin-right: .035em;
   letter-spacing: -.025em;
 }
 
@@ -47,4 +45,47 @@
   color: #24201e;
   --tw-drop-shadow: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+
+/*
+Font families defined by this CSS:
+- "Inter var"
+- "Wremena"
+*/
+
+@font-face {
+  font-family: 'Inter var';
+  src: url('../fonts/Inter-roman.var.ttf') format('truetype-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-named-instance: 'Regular';
+}
+
+@font-face {
+  font-family: 'Inter var';
+  src: url('../fonts/Inter-italic.var.ttf') format('truetype-variations');
+  font-weight: 100 900;
+  font-style: italic;
+  font-named-instance: 'Italic';
+}
+
+@font-face {
+  font-family: 'Wremena';
+  src: url('../fonts/WremenaLight.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Wremena';
+  src: url('../fonts/WremenaRegular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Wremena';
+  src: url('../fonts/WremenaBold.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
 }
