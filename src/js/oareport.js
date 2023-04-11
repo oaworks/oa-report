@@ -127,8 +127,9 @@ if (hasOrgKey) {
   displayNone("logout");
 }
 
-// Set default export_includes
+// Set default export_includes and sorting order for CSV downloads
 let exportIncludes = "&include=DOI,title,subtitle,publisher,journal,issn,published,published_year,PMCID,volume,issue,authorships.author.display_name,authorships.author.orcid,authorships.institutions.display_name,authorships.institutions.ror,funder.name,funder.award,is_oa,oa_status,journal_oa_type,publisher_license,has_repository_copy,repository_license,repository_version,repository_url,has_oa_locations_embargoed,can_archive,version,concepts.display_name,subject,pmc_has_data_availability_statement,cited_by_count";
+let exportSort = "&sort=published_date:desc"
 
 // Generate report’s UI for any given date range
 oareport = function(org) {
@@ -139,9 +140,6 @@ oareport = function(org) {
 
   // Get organisational data to produce reports
   axios.get(report).then(function (response) {
-    // Get queries for default article counts and strategy action list
-    var hasCustomExportIncludes = (response.data.hits.hits[0]._source.export_includes);
-
     /** Decrypt emails if user has an orgKey **/
     decryptEmail = function(email, doi, mailto) {
       mailto = decodeURI(mailto);
@@ -476,6 +474,9 @@ oareport = function(org) {
       </td>"
     );
 
+    // Check if org has custom export_includes to display in downloaded CSV columns
+    var hasCustomExportIncludes = (response.data.hits.hits[0]._source.export_includes);
+
     /* "Download CSV" form: all articles displayed on page */
     getExportLink = function() {
       Promise.all([hasCustomExportIncludes])
@@ -500,7 +501,7 @@ oareport = function(org) {
       }
 
       // Build full query
-      query = csvExportBase + query + include + email + orgKey;
+      query = csvExportBase + query + include + exportSort + email + orgKey;
 
       var xhr = new XMLHttpRequest();
       xhr.open("GET", query);
@@ -540,7 +541,7 @@ oareport = function(org) {
       }
 
       // Build full query
-      query = csvExportBase + query + include + email + orgKey;
+      query = csvExportBase + query + include + exportSort + email + orgKey;
 
       var xhr = new XMLHttpRequest();
       xhr.open("GET", query);
