@@ -241,21 +241,30 @@ permalink: "{{ org._source.objectID | slug }}/"
       About your report
     </h2>
     {% if org._source.paid == true %}
+    <p class="text-xs md:text-base mb-6">
+      <strong class="text-bold">{{ org._source.name }}</strong>’s custom OA.Report uses <a href="https://about.oa.report/docs/sources" target="_blank" class="underline">all our data sources</a> and expert analysis to provide insights into how much they publish and how open their research is.
+    </p>
     <p class="text-xs md:text-base">
-      Lorem ipsum dolor sit amet, placeholder for PAID USERS. Lorem ipsum dolor sit amet, placeholder for PAID USERS. Lorem ipsum dolor sit amet, placeholder for PAID USERS. Lorem ipsum dolor sit amet, placeholder for PAID USERS. Lorem ipsum dolor sit amet, placeholder for PAID USERS. Lorem ipsum dolor sit amet, placeholder for PAID USERS. Lorem ipsum dolor sit amet, placeholder for PAID USERS. Lorem ipsum dolor sit amet, placeholder for PAID USERS. 
+      <a href="https://about.oa.report/docs/user-accounts" target="_blank" class="underline">Log in</a> to see the full report.
     </p>
     {% else %}
     <p class="text-xs md:text-base">
-      Lorem ipsum dolor sit amet, placeholder for FREE USERS. Lorem ipsum dolor sit amet, placeholder for FREE USERS. Lorem ipsum dolor sit amet, placeholder for FREE USERS. Lorem ipsum dolor sit amet, placeholder for FREE USERS. Lorem ipsum dolor sit amet, placeholder for FREE USERS. Lorem ipsum dolor sit amet, placeholder for FREE USERS. Lorem ipsum dolor sit amet, placeholder for FREE USERS. Lorem ipsum dolor sit amet, placeholder for FREE USERS. Lorem ipsum dolor sit amet, placeholder for FREE USERS. Lorem ipsum dolor sit amet, placeholder for FREE USERS. 
-    </p>
+        <strong class="text-bold">{{ org._source.name }}</strong>’s OA.Report uses <a href="https://about.oa.report/docs/sources#open-sources" target="_blank" class="underline">open data</a> and automated analysis to provide insights into how much they publish and how open their research is.
+      </p>
     {% endif %}
   </div>
   {% if org._source.paid != true %}
-  <div>
+  <div class="text-xs md:text-base">
     <h2 class="mb-5 text-lg leading-6 font-medium text-neutral-900 uppercase">
-      Sign up to access yours
+      Unlock your institution’s research
     </h2>
+    <p class="mb-6">
+      Sign up to access your institution's strategies for free. Consider a <a href="https://about.oa.report/pricing" target="_blank" class="underline">paid plan</a> to help <a href="https://about.oa.report/docs/sources" target="_blank" class="underline">discover all your papers</a> and provide up-to-date, deep insights into the state of open at your institution.
+    </p>
     {% include 'partials/signup-form.njk' %}
+  </div>
+  {% else %}
+  <div>
   </div>
   {% endif %}
 </section>
