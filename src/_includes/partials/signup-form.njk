@@ -1,28 +1,44 @@
-<form data-netlify="true" action="#" name="signup" data-netlify-honeypot>
-  <div class="">
-    <label for="signup-email" class="text-base">Email</label>
-    <div class="mt-1 mb-6 flex">
-      <div class="relative flex items-stretch flex-grow focus-within:z-10">
-        <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
-          {% icon_small "mail" %}
-        </div>
-        <input type="email" name="signup-email" id="signup-email" class="focus:ring-carnation-500 focus:border-carnation-500 block w-full md:w-8/12 lg:w-6/12 rounded-md pl-10 sm:text-sm shadow-md border-0" placeholder="you@example.com" required>
+<form name="signup" method="POST" action="#" data-netlify="true" data-netlify-honeypot="bot-field">
+  <input type="hidden" name="form-name" value="signup" />
+  <label for="signup-page" class="sr-only" hidden>Signed up from this page</label>
+  <input type="hidden" name="signup-page" id="signup-page" value="{{ site.base_url }}/{{ org._source.objectID }}"/>
+  <label for="signup-email" class="text-base">Email</label>
+  <div class="mt-1 mb-3 flex rounded-sm shadow-sm">
+    <div class="relative flex items-stretch flex-grow focus-within:z-10">
+      {# Only display this for report pages, not the homepage #}
+      {% if page.url != "/" %}
+      <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+        {% icon_small "mail" %}
       </div>
-    </div>
-
-    <label for="signup-org" class="text-base">Organization or institution</label>
-    <div class="mt-1 mb-6 flex">
-      <div class="relative flex items-stretch flex-grow focus-within:z-10">
-        <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
-          {% icon_small "users" %}
-        </div>
-        <input type="text" name="signup-org" id="signup-org" class="focus:ring-carnation-500 focus:border-carnation-500 block w-full md:w-8/12 lg:w-6/12 rounded-md pl-10 sm:text-sm shadow-md border-0">
-      </div>
+      {% endif %}
+      <input type="email" name="signup-email" id="signup-email" class="focus:ring-carnation-500 focus:border-carnation-500 block w-full md:w-8/12 lg:w-6/12 rounded-none rounded-l-md pl-10 sm:text-sm shadow-md border-0" placeholder="you@example.com" required/>
+      <button type="submit" class="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-r-md text-white bg-neutral-900 hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-500 focus:border-carnation-500 duration-500 shadow-md border-0">
+        Sign up
+      </button>
     </div>
   </div>
-  <label for="signup-page" hidden>Signed up from this page</label>
-  <input type="hidden" name="signup-page" id="signup-page" value="{{ site.base_url }}/{{ org._source.objectID }}"/>
-  <button type="submit" class="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-md text-white bg-neutral-900 hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-500 focus:border-carnation-500 duration-500 shadow-md border-0">
-    Sign up
-  </button>
 </form>
+<div class="js-success-message" style="display: none;">
+  <p class="text-xs md:text-base">Thanks for signing up! We will be in touch.</p>
+</div>
+
+<script>
+  /* "Sign up" Netlify Form submission success message */
+const form = document.querySelector('form[name="signup"]');
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  const formData = new FormData(form);
+  fetch('/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams(formData).toString(),
+  })
+    .then(() => {
+      form.style.display = 'none';
+      document.querySelector('.js-success-message').style.display = 'block';
+    })
+    .catch(error => {
+      console.error(error);
+    });
+});
+</script>

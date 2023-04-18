@@ -23,7 +23,7 @@ getUsersLocale = function() {
 // Visually hide an element
 displayNone = function(id) {
   var elem = document.getElementById(id);
-      elem.style.display = 'none';
+    if (elem) elem.style.display = 'none';
 }
 
 // Turn opacity to 100% for an element
@@ -118,12 +118,17 @@ function getDateRangeForUserType() {
 
 getDateRangeForUserType();
 
-// Check if user is authentified
+// Check if user is logged in
 let orgKey = "",
     hasOrgKey = Object.keys(OAKEYS).length !== 0;
 if (hasOrgKey) {
+  // logged in
   orgKey = `&orgkey=${Object.values(OAKEYS)}`;
+  displayNone("about-paid-logged-out");
+  displayNone("about-free-logged-out");
+  console.log("test")
 } else {
+  // logged out
   displayNone("logout");
 }
 
