@@ -310,8 +310,13 @@ oareport = function(org) {
                               return (i[key]);
                             }
                           );
-                          var value = suppKey[key];
-                          action[key] = value;
+
+                          if (suppKey == undefined || suppKey == null) {
+                            action[key] = "N/A";
+                          } else {
+                            var value = suppKey[key];
+                            action[key] = value;
+                          }
                           
                           if (key.includes('invoice_date')) action[key] = makeDateReadable(new Date(action[key]));
                           if (key.includes('apc_cost')) action[key] = makeNumberReadable(action[key]);
