@@ -1,9 +1,12 @@
 const base             = "https://api.oa.works/report/",
       baseBg           = "https://bg.api.oa.works/report/",
-      queryBase        = base + "works?size=100&",
-      countQueryBase   = base + "works/count?",
-      csvExportBase    = baseBg + "works.csv?size=all&",
-      articleEmailBase = baseBg + "email/";
+      queryBase        = `${base}works?size=100&`,
+      countQueryBase   = `${base}works/count?`,
+      csvExportBase    = `${baseBg}works.csv?size=all&`,
+      articleEmailBase = `${baseBg}email/`;
+
+// Set report base path
+let report = `${base}orgs?q=name:%22${org}%22`;
 
 // Set readable date options
 const readableDateOptions = {
@@ -19,15 +22,15 @@ getUsersLocale = function() {
 
 // Visually hide an element
 displayNone = function(id) {
-  var elem = document.querySelector(id);
-      elem.style.display = 'none';
+  var elem = document.getElementById(id);
+    if (elem) elem.style.display = 'none';
 }
 
 // Turn opacity to 100% for an element
 changeOpacity = function(id, opacity = 100) {
-  var elem = document.querySelector(id);
+  var elem = document.getElementById(id);
       elem.classList.remove("opacity-0");
-      elem.classList.add("opacity-" + opacity);
+      elem.classList.add(`opacity-${opacity}`);
 }
 
 // Do math with days on a date
@@ -63,18 +66,18 @@ replaceDateRange = function(newStart, newEnd) {
   startDate     = formatDateToISO(startDate);
   endDate       = changeDays(+1, newEnd);
   endDate       = formatDateToISO(endDate);
-  dateRange     = "(published_date:>" + startDate + "%20AND%20published_date:<" + endDate + ")%20AND%20";
+  dateRange     = `(published_date:>${startDate}%20AND%20published_date:<${endDate})%20AND%20`;
   return dateRange;
 };
 
 /* Get report page elements where data will be inserted */
 // Date range
-var endDateContents                = document.querySelector("#end_date"),
-    startDateContents              = document.querySelector("#start_date");
+var endDateContents                = document.getElementById("end_date"),
+    startDateContents              = document.getElementById("start_date");
 
 // Send CSV data by email form
-var queryHiddenInput               = document.querySelector("#download-form-q"),
-    includeHiddenInput             = document.querySelector("#download-form-include");
+var queryHiddenInput               = document.getElementById("download-form-q"),
+    includeHiddenInput             = document.getElementById("download-form-include");
 
 /* Date display and filtering */
 // Set today’s date and 12 months ago date to display most recent Insights data as default
@@ -89,60 +92,73 @@ const currentDate                  = new Date(),
       startYearDateISO             = formatDateToISO(startYearDateQuery),
 
       // Get last year’s start and end date as temporary default (see oaworks/Gates#420)
-      lastYearStartDate         = new Date(new Date().getFullYear()-1, 0, 1),
-      lastYearStartDateReadable = makeDateReadable(lastYearStartDate),
-      lastYearStartDateQuery    = changeDays(-1, lastYearStartDate),
-      lastYearStartDateISO      = formatDateToISO(lastYearStartDate),
+      lastYearStartDate            = new Date(new Date().getFullYear()-1, 0, 1),
+      lastYearStartDateReadable    = makeDateReadable(lastYearStartDate),
+      lastYearStartDateQuery       = changeDays(-1, lastYearStartDate),
+      lastYearStartDateISO         = formatDateToISO(lastYearStartDate),
 
-      lastYearEndDate           = new Date(new Date().getFullYear()-1, 11, 31),
-      lastYearEndDateReadable   = makeDateReadable(lastYearEndDate),
-      lastYearEndDateQuery      = changeDays(+1, lastYearEndDate),
-      lastYearEndDateISO        = formatDateToISO(lastYearEndDate);
+      lastYearEndDate              = new Date(new Date().getFullYear()-1, 11, 31),
+      lastYearEndDateReadable      = makeDateReadable(lastYearEndDate),
+      lastYearEndDateQuery         = changeDays(+1, lastYearEndDate),
+      lastYearEndDateISO           = formatDateToISO(lastYearEndDate),
 
-// Display default date range: since start of the current year
-replaceDateRange(startYearDate, currentDate);
+      // Fixed end date set for free / non-paying users 
+      fixedDate                    = new Date('2023-03-31');
 
-// Check if user is authentified
+// Display default date range since start of the current year
+function getDateRangeForUserType() {
+  // If paying, end date is up to today
+  if (paid === true) {
+    dateRange = replaceDateRange(startYearDate, currentDate);
+  } else {
+    // Else, if free user, end date is a fixed date set above
+    dateRange = replaceDateRange(startYearDate, fixedDate);
+  };  
+};
+
+getDateRangeForUserType();
+
+// Check if user is logged in
 let orgKey = "",
     hasOrgKey = Object.keys(OAKEYS).length !== 0;
 if (hasOrgKey) {
-  orgKey = "&orgkey=" + Object.values(OAKEYS);
+  // logged in
+  orgKey = `&orgkey=${Object.values(OAKEYS)}`;
+  displayNone("about-paid-logged-out");
+  displayNone("about-free-logged-out");
+  console.log("test")
 } else {
-  displayNone("#logout");
+  // logged out
+  displayNone("logout");
 }
 
-// Set report base path
-let report = base + "orgs?q=name:%22" + org + "%22";
-
-// Set default export_includes
-let exportIncludes = "&include=DOI,title,subtitle,publisher,journal,issn,published,published_year,PMCID,volume,issue,authorships.author.display_name,authorships.author.orcid,authorships.institutions.display_name,authorships.institutions.ror,funder.name,funder.award,is_oa,oa_status,journal_oa_type,publisher_license,has_repository_copy,repository_license,repository_version,repository_url,has_oa_locations_embargoed,can_archive,version,concepts.display_name,subject,pmc_has_data_availability_statement,cited_by_count";
+// Set default export_includes and sorting order for CSV downloads
+let exportIncludes = "&include=DOI,title,subtitle,publisher,journal,issn,published_date,published_year,PMCID,volume,issue,authorships.author.display_name,authorships.author.orcid,authorships.institutions.display_name,authorships.institutions.ror,funder.name,funder.award,is_oa,oa_status,journal_oa_type,publisher_license,has_repository_copy,repository_license,repository_version,repository_url,has_oa_locations_embargoed,can_archive,version,concepts.display_name,subject,pmc_has_data_availability_statement,cited_by_count";
+let exportSort = "&sort=published_date:desc"
 
 // Generate report’s UI for any given date range
 oareport = function(org) {
 
   // Set paths for orgindex
-  let queryPrefix                  = queryBase + "q=" + dateRange,
-      countQueryPrefix             = countQueryBase + "q=" + dateRange;
+  let queryPrefix                  = `${queryBase}q=${dateRange}`,
+      countQueryPrefix             = `${countQueryBase}q=${dateRange}`;
 
   // Get organisational data to produce reports
   axios.get(report).then(function (response) {
-    // Get queries for default article counts and strategy action list
-    var hasCustomExportIncludes = (response.data.hits.hits[0]._source.export_includes);
-
     /** Decrypt emails if user has an orgKey **/
     decryptEmail = function(email, doi, mailto) {
       mailto = decodeURI(mailto);
       // if email is not undefined and there is an orgkey, decrypt the author’s email
       if (email !== 'undefined' && hasOrgKey) {
-        axios.get(articleEmailBase + doi  + "?" +  orgKey)
+        axios.get(`${articleEmailBase + doi}?${orgKey}`)
           .then(function (response) {
             let authorEmail = response.data;
             mailto = mailto.replaceAll("{email}", authorEmail);
-            window.open('mailto:' + mailto);
+            window.open(`mailto:${mailto}`);
           }
-        ).catch(function (error) { console.log("decryptEmail error: " + error); })
+        ).catch(function (error) { console.log(`decryptEmail error: ${error}`); })
       } else {
-        window.open('mailto:' + mailto);
+        window.open(`mailto:${mailto}`);
       }
     };
 
@@ -150,13 +166,13 @@ oareport = function(org) {
     getInsight = function(numerator, denominator, denominatorText, info) {
 
       var shown     = response.data.hits.hits[0]._source.analysis[numerator].show_on_web,
-          contentID = "#" + numerator; // the whole insight’s data card
+          contentID = `${numerator}`; // the whole insight’s data card
 
       if (shown === true) {
         // Select elements to show data
-        var percentageContents = document.querySelector("#percent_" + numerator), // % value
-            articlesContents   = document.querySelector("#articles_" + numerator), // full-text value
-            infoContents       = document.querySelector("#info_" + numerator); // help text value
+        var percentageContents = document.getElementById(`percent_${numerator}`), // % value
+            articlesContents   = document.getElementById(`articles_${numerator}`), // full-text value
+            infoContents       = document.getElementById(`info_${numerator}`); // help text value
 
         // Display help text / info popover
         const instance = tippy(infoContents, {
@@ -180,14 +196,14 @@ oareport = function(org) {
                   denominatorCount = results[1].data;
 
               if (denominatorCount) {
-                articlesContents.textContent = makeNumberReadable(numeratorCount) + " of " + makeNumberReadable(denominatorCount) + " " + denominatorText;
-                percentageContents.textContent = Math.round(((numeratorCount/denominatorCount)*100)) + "%";
+                articlesContents.textContent = `${makeNumberReadable(numeratorCount)} of ${makeNumberReadable(denominatorCount)} ${denominatorText}`;
+                percentageContents.textContent = `${Math.round(((numeratorCount / denominatorCount) * 100))}%`;
               } else {
                 articlesContents.textContent = "";
                 percentageContents.textContent = "N/A";
               };
             }
-          ).catch(function (error) { console.log("error: " + error); });
+          ).catch(function (error) { console.log(`error: ${error}`); });
 
         // Display plain number when it’s just a numerator
         } else {
@@ -222,7 +238,7 @@ oareport = function(org) {
       "is_compliant",
       "is_covered_by_policy",
       "articles covered",
-      "<p class='mb-2'>The percentage of articles that are compliant with <a href='" + response.data.hits.hits[0]._source.policy.url + "' target='_blank' rel='noopener' class='underline'>your organization’s Open Access policy</a>.</p> <p>This number is specific to your policy and your requirements.</p>"
+      `<p class='mb-2'>The percentage of articles that are compliant with <a href='${response.data.hits.hits[0]._source.policy.url}' target='_blank' rel='noopener' class='underline'>your organization’s Open Access policy</a>.</p> <p>This number is specific to your policy and your requirements.</p>`
     );
 
     getInsight(
@@ -255,13 +271,13 @@ oareport = function(org) {
 
     displayStrategy = function(strategy, keys, tableRow) {
       var shown  = response.data.hits.hits[0]._source.strategy[strategy].show_on_web,
-          tabID  = "#item_" + strategy;
+          tabID  = `item_${strategy}`;
 
       if (shown === true) {
         // Get tab elements
-        var tabCountContents   = document.querySelector(`#count_${strategy}`),
-            tableCountContents = document.querySelector(`#total_${strategy}`),
-            tableBody          = document.querySelector(`#table_${strategy}`).getElementsByTagName('tbody')[0];
+        var tabCountContents   = document.getElementById(`count_${strategy}`),
+            tableCountContents = document.getElementById(`total_${strategy}`),
+            tableBody          = document.getElementById(`table_${strategy}`).getElementsByTagName('tbody')[0];
         
         var countQuery              = countQueryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query,
             listQuery               = queryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query;
@@ -359,7 +375,7 @@ oareport = function(org) {
             // Otherwise, display a message prompting user to log or contact us to access strategies
             else {
               tableBody.innerHTML = `<tr><td class='py-4 pl-4 pr-3 text-base text-center align-top break-words' colspan='3'><p class='font-bold'>Strategies help you take action to make your institution’s research more open.</p> <p>Find out more about them by <a href='mailto:hello@oa.works?subject=OA.Report%20&mdash;%20${decodeURIComponent(org)}' class='underline'>contacting us</a> or <a href='https://about.oa.report/docs/user-accounts' class='underline' title='Information on user accounts'>logging in to your account</a> to access them.</p></td></tr>`;
-              displayNone(`#form_${strategy}`);
+              displayNone(`form_${strategy}`);
             }
           })
           .catch(function (error) { console.log(`${strategy} error: ${error}`); })
@@ -368,8 +384,13 @@ oareport = function(org) {
         changeOpacity(tabID);
 
       } else {
-        displayNone(tabID);
-        document.getElementById(strategy).remove();
+        var tabItem = document.getElementById(tabID),
+            tabContent = document.getElementById(strategy);
+
+        if (tabItem || tabContent) {
+          tabItem.remove();
+          tabContent.remove();
+        }
       };
     };
 
@@ -458,20 +479,23 @@ oareport = function(org) {
       </td>"
     );
 
+    // Check if org has custom export_includes to display in downloaded CSV columns
+    var hasCustomExportIncludes = (response.data.hits.hits[0]._source.export_includes);
+
     /* "Download CSV" form: all articles displayed on page */
     getExportLink = function() {
       Promise.all([hasCustomExportIncludes])
         .then(function (results) {
           let hasCustomExportIncludes = results[0].data;
           }
-        ).catch(function (error) { console.log("Export error: " + error); });
+        ).catch(function (error) { console.log(`Export error: ${error}`); });
 
       isPaperURL = (dateRange + response.data.hits.hits[0]._source.analysis.is_paper.query);
-      let query = "q=" + isPaperURL.replaceAll(" ", "%20"),
+      let query = `q=${isPaperURL.replaceAll(" ", "%20")}`,
           form = new FormData(document.getElementById("download_csv"));
 
       // Get form content — email address input
-      var email = "&" + new URLSearchParams(form).toString();
+      var email = `&${new URLSearchParams(form).toString()}`;
 
       var include;
       // If the org has custom export includes AND there is an orgkey, show these custom includes in the public CSV
@@ -482,13 +506,13 @@ oareport = function(org) {
       }
 
       // Build full query
-      query = csvExportBase + query + include + email + orgKey;
+      query = csvExportBase + query + include + exportSort + email + orgKey;
 
       var xhr = new XMLHttpRequest();
       xhr.open("GET", query);
       // Display message when server responds
       xhr.onload = function () {
-        document.querySelector("#csv_email_msg").innerHTML = "OA.Report has started building your CSV export at <a href='" + this.response + "' target='_blank' class='underline'>this URL</a>. Please check your email to get the full data once it’s ready.";
+        document.getElementById("csv_email_msg").innerHTML = `OA.Report has started building your CSV export at <a href='${this.response}' target='_blank' class='underline'>this URL</a>. Please check your email to get the full data once it’s ready.`;
       };
       xhr.send();
 
@@ -501,22 +525,19 @@ oareport = function(org) {
       var hasCustomExportIncludes = (response.data.hits.hits[0]._source.strategy[id].export_includes),
           strategyQuery           = (response.data.hits.hits[0]._source.strategy[id].query);
 
-          console.log(hasCustomExportIncludes);
-          console.log(strategyQuery);
-
       Promise.all([hasCustomExportIncludes])
         .then(function (results) {
           hasCustomExportIncludes = results[0].data;
           }
-        ).catch(function (error) { console.log("Export error: " + error); });
+        ).catch(function (error) { console.log(`Export error: ${error}`); });
 
       // Set up export query
       isPaperURL = (dateRange + strategyQuery);
-      let query = "q=" + isPaperURL.replaceAll(" ", "%20"),
-          form = new FormData(document.getElementById("form_" + id));
+      let query = `q=${isPaperURL.replaceAll(" ", "%20")}`,
+          form = new FormData(document.getElementById(`form_${id}`));
 
       // Get form content — email address input
-      var email = "&" + new URLSearchParams(form).toString();
+      var email = `&${new URLSearchParams(form).toString()}`;
 
       // Display export includes if there are any
       var include;
@@ -525,13 +546,13 @@ oareport = function(org) {
       }
 
       // Build full query
-      query = csvExportBase + query + include + email + orgKey;
+      query = csvExportBase + query + include + exportSort + email + orgKey;
 
       var xhr = new XMLHttpRequest();
       xhr.open("GET", query);
       // Display message when server responds
       xhr.onload = function () {
-        document.querySelector("#msg-" + id).innerHTML = "OA.Report has started building your CSV export at <a href='" + this.response + "' target='_blank' class='underline'>this URL</a>. Please check your email to get the full data once it’s ready.";
+        document.getElementById(`msg-${id}`).innerHTML = `OA.Report has started building your CSV export at <a href='${this.response}' target='_blank' class='underline'>this URL</a>. Please check your email to get the full data once it’s ready.`;
       };
       xhr.send();
 
@@ -539,53 +560,61 @@ oareport = function(org) {
       return false;
     }
 
-  }).catch(function (error) { console.log("Report ERROR: " + error); });
+  }).catch(function (error) { console.log(`Report ERROR: ${error}`); });
 };
 
 oareport(org);
 
 /** Change displayed Insights data based on user input **/
 // Preset "quick date filter" buttons
-var startYearBtn              = document.querySelector("#start-year"),
-    lastYearBtn               = document.querySelector("#last-year"),
-    twoYearsBtn               = document.querySelector("#two-years-ago"),
-    allTimeBtn                = document.querySelector("#all-time"),
-    insightsDateRange         = document.querySelector("#insights_range"),
-
-    twoYearsStartDate         = new Date(new Date().getFullYear()-2, 0, 1),
-    twoYearsStartDateReadable = makeDateReadable(twoYearsStartDate),
-    twoYearsStartDateQuery    = changeDays(-1, twoYearsStartDate),
-    twoYearsStartDateISO      = formatDateToISO(twoYearsStartDate),
-
-    twoYearsEndDate           = new Date(new Date().getFullYear()-2, 11, 31),
-    twoYearsEndDateReadable   = makeDateReadable(twoYearsEndDate),
-    twoYearsEndDateQuery      = changeDays(+1, twoYearsEndDate),
-    twoYearsEndDateISO        = formatDateToISO(twoYearsEndDate);
+var startYearBtn              = document.getElementById("start-year"),
+    lastYearBtn               = document.getElementById("last-year"),
+    twoYearsBtn               = document.getElementById("two-years-ago"),
+    allTimeBtn                = document.getElementById("all-time"),
+    insightsDateRange         = document.getElementById("insights_range");
 
 startYearBtn.textContent      = startYearDate.getFullYear();
 lastYearBtn.textContent       = lastYearStartDate.getFullYear();
-twoYearsBtn.textContent       = twoYearsStartDate.getFullYear();
 
 startYearBtn.addEventListener("click", function() {
-  replaceDateRange(startYearDate, currentDate);
-  insightsDateRange.textContent = "Since the start of " + startYearDate.getFullYear();
+  getDateRangeForUserType();
+  insightsDateRange.textContent = `Since the start of ${startYearDate.getFullYear()}`;
   oareport(org);
 });
 
 lastYearBtn.addEventListener("click", function() {
   replaceDateRange(lastYearStartDate, lastYearEndDate);
-  insightsDateRange.textContent = "In " + lastYearStartDate.getFullYear();
+  insightsDateRange.textContent = `In ${lastYearStartDate.getFullYear()}`;
   oareport(org);
 });
 
-twoYearsBtn.addEventListener("click", function() {
-  replaceDateRange(twoYearsStartDate, twoYearsEndDate);
-  insightsDateRange.textContent = "In " + twoYearsStartDate.getFullYear();
-  oareport(org);
-});
+// Only paid users can see data from two years ago and all time
+// These buttons won’t be displayed for free users
+if (twoYearsBtn) {
+  // Set dates two years prior to current year
+  var twoYearsStartDate         = new Date(new Date().getFullYear()-2, 0, 1),
+      twoYearsStartDateReadable = makeDateReadable(twoYearsStartDate),
+      twoYearsStartDateQuery    = changeDays(-1, twoYearsStartDate),
+      twoYearsStartDateISO      = formatDateToISO(twoYearsStartDate),
 
-allTimeBtn.addEventListener("click", function() {
-  replaceDateRange(new Date(1980, 0, 1), currentDate);
-  insightsDateRange.textContent = "All-time";
-  oareport(org);
-});
+      twoYearsEndDate           = new Date(new Date().getFullYear()-2, 11, 31),
+      twoYearsEndDateReadable   = makeDateReadable(twoYearsEndDate),
+      twoYearsEndDateQuery      = changeDays(+1, twoYearsEndDate),
+      twoYearsEndDateISO        = formatDateToISO(twoYearsEndDate);
+
+  twoYearsBtn.textContent = twoYearsStartDate.getFullYear();
+  twoYearsBtn.addEventListener("click", function() {
+    replaceDateRange(twoYearsStartDate, twoYearsEndDate);
+    insightsDateRange.textContent = `In ${twoYearsStartDate.getFullYear()}`;
+    oareport(org);
+  });
+}
+
+if (allTimeBtn) {
+  allTimeBtn.addEventListener("click", function() {
+    replaceDateRange(new Date(1980, 0, 1), currentDate);
+    insightsDateRange.textContent = "All time";
+    oareport(org);
+  });
+}
+
