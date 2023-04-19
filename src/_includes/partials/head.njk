@@ -46,16 +46,20 @@
   <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
   <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif" alt="" referrerpolicy="no-referrer-when-downgrade" /></noscript>
 
-  <script src="/js/oaworksKeys.js"></script>
+  <script src="../js/oaworksKeys.js"></script>
 
   {# For org report pages only #}
   {% if org._source.name %}
   <script>
-  const org = ("{{ org._source.name | urlencode }}"),
-        orgSlug = ("{{ org._source.objectID | slug }}");
+    const org = ("{{ org._source.name | urlencode }}"),
+          orgSlug = ("{{ org._source.objectID | slug }}");
+    {% if org._source.paid %}
+      const paid = true;
+    {% else %}
+      const paid = false;
+    {% endif %}
   </script>
-
-  <script src="/js/axios.min.js"></script>
+  <script src="../js/axios.min.js"></script>
   {% endif %}
 
   {% block extra_head %}{% endblock %}
