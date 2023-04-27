@@ -271,6 +271,7 @@ oareport = function(org) {
 
     displayStrategy = function(strategy, keys, tableRow) {
       var shown  = response.data.hits.hits[0]._source.strategy[strategy].show_on_web,
+          sort   = `&sort=${response.data.hits.hits[0]._source.strategy[strategy].sort}`,
           tabID  = `item_${strategy}`;
 
       if (shown === true) {
@@ -280,7 +281,7 @@ oareport = function(org) {
             tableBody          = document.getElementById(`table_${strategy}`).getElementsByTagName('tbody')[0];
         
         var countQuery              = countQueryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query,
-            listQuery               = queryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query;
+            listQuery               = queryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query + sort;
         
         // Get total action (article) count for this strategy
         axios.get(countQuery)
