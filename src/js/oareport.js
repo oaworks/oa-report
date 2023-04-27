@@ -126,7 +126,6 @@ if (hasOrgKey) {
   orgKey = `&orgkey=${Object.values(OAKEYS)}`;
   displayNone("about-paid-logged-out");
   displayNone("about-free-logged-out");
-  console.log("test")
 } else {
   // logged out
   displayNone("logout");
