@@ -56,16 +56,8 @@
         </section>
 
         <section class="section bg-black">
-          <h2 class="label padding-top">Our users</h2>
-          <div class="row">
-            <div class="col col--4of6">
-              <p class="type-5">
-                {% include 'partials/app-name.njk' %} is in use at {% for user in users %}{% if loop.first != true %}, {% elseif loop.last %} & {% endif %}<a href="{{ user.url }}" target="_blank" rel="noopener" class="border-bottom" title="Go to the {{ user.acronym }} website">{{ user.name }}</a><span class="sr-only">({{ user.acronym }})</span>{% endfor %}.
-              </p>
-            </div>
-          </div>
-      
-          <div class="row row--centered">
+          <h2 class="label padding-top">Our users</h2>      
+          <div class="row row--centered padding-top">
             {% for user in users %}
             {% if user.logo %}
             <div class="col col--1of4">
