@@ -361,7 +361,7 @@ background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox=
 
 /* Grid: to be used for general layout only */
 
-body {
+body main {
 padding: 0 var(--gutter);
 margin: 0 auto;
 max-width: 100%;
@@ -1823,18 +1823,13 @@ background: linear-gradient(to right, var(--secondary-colour), var(--primary-col
 color: var(--black);
 }
 
-.cover {
-position: fixed;
-width: 100%;
-}
-
 .cover__background, .cover__tagline {
 min-height: 100vh;
 }
 
 .content {
-margin: 100vh var(--gutter-negative) 0 var(--gutter-negative);
-padding: var(--gutter) var(--gutter) 0 var(--gutter);
+margin: 0 var(--gutter-negative);
+padding: 0 var(--gutter);
 position: relative;
 overflow-x: hidden;
 }
