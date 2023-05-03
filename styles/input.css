@@ -5,7 +5,7 @@
 .app-name {
   letter-spacing: -.025em;
   font-weight: 700;
-  background: linear-gradient(to right, var(--secondary-colour), var(--primary-colour));
+  background: linear-gradient(to right, #ff6666, #ffc2c2);
   background-size: 200% 200%;
   background-clip: text;
   -webkit-background-clip:text;
