@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Gradient on hover for OA.Report name */
 .app-name {
   letter-spacing: -.025em;
   font-weight: 700;
@@ -11,15 +12,26 @@
   -webkit-background-clip:text;
   color: currentColor;
   transition: all .25s ease-in-out;
-  }
-  
-  .app-name__oa {
+}
+
+.app-name__oa {
   margin-right: .055em;
-  }
-  
-  .app-name:hover {
+}
+
+.app-name:hover {
   color: rgba(0, 0, 0, 0);
-  }
+}
+
+/* Texting highlighting in the style of a marker */
+.highlight {
+  border-radius: 0.8em 0.3em;
+  background-image: linear-gradient(to right, rgba(255, 102, 102, 0.095), rgba(255, 102, 102, 0.5) 4%, rgba(255, 102, 102, 0.25));
+}
+
+.highlight--white {
+  border-radius: 0.8em 0.3em;
+  background-image: linear-gradient(to right, rgba(255,255,255, 0.095), rgba(255,255,255, 0.5) 4%, rgba(255,255,255, 0.25));
+}
 
 /* Custom tooltip styling */
 .tippy-box[data-theme~='tooltip'] {

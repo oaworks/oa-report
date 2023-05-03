@@ -1787,37 +1787,6 @@ html {
 background-color: var(--primary-colour);
 }
 
-.highlight {
-border-radius: 0.8em 0.3em;
-background-image: linear-gradient(to right, rgba(255, 102, 102, 0.095), rgba(255, 102, 102, 0.5) 4%, rgba(255, 102, 102, 0.25));
-}
-
-.highlight--white {
-border-radius: 0.8em 0.3em;
-background-image: linear-gradient(to right, rgba(255,255,255, 0.095), rgba(255,255,255, 0.5) 4%, rgba(255,255,255, 0.25));
-}
-
-.app-name {
-font-family: var(--serif);
-letter-spacing: -.025em;
-font-weight: 700;
-background: linear-gradient(to right, var(--secondary-colour), var(--primary-colour));
-background-size: 200% 200%;
-background-clip: text;
--webkit-background-clip:text;
-color: currentColor;
-transition: all .25s ease-in-out;
-}
-
-.app-name__oa {
-margin-right: .055em;
-letter-spacing: -.025em;
-}
-
-.app-name:hover {
-color: rgba(0, 0, 0, 0);
-}
-
 .bg-gradient {
 background: linear-gradient(to right, var(--secondary-colour), var(--primary-colour));
 color: var(--black);
