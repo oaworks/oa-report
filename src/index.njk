@@ -37,9 +37,9 @@ layout: layouts/base.njk
   </section> #}
   
   <div id="content">      
-    <section class="bg-white">
+    <section class="bg-white py-8 md:py-16">
       <div class="container mx-auto">
-        <div class="grid grid-cols-5 items-center gap-6 md:gap-12 py-8 md:py-16">
+        <div class="grid grid-cols-5 items-center gap-6 md:gap-12">
           <div class="col-span-1 col-start-2">
             <a href="https://www.nature.com/articles/d41586-023-00175-1" target="_blank" rel="noopener" class="block" title="Read the article “Confused by open-access policies? These tools can help”">
               {% include 'svg/nature.svg' %}
@@ -52,22 +52,24 @@ layout: layouts/base.njk
       </div>
     </section>
 
-    {# <section class="section bg-black">
-      <h2 class="label padding-top">Our users</h2>      
-      <div class="row row--centered padding-top">
-        {% for user in users %}
-        {% if user.logo %}
-        <div class="col col--1of4">
-          <a href="{{ user.url }}" target="_blank" rel="noopener" class="block-link margin-bottom-xl" title="Go to the {{ user.acronym }} website">
-            <img src="../{{ user.logo }}" alt="Logo for {{ user.acronym }}"/>
-          </a>
+    <section class="bg-neutral-900 text-white py-8 md:py-16">
+      <div class="container mx-auto">
+        <h2 class="font-bold uppercase">Our users</h2>      
+        <div class="grid grid-cols-4 gap-6 md:gap-12 mt-8">
+          {% for user in users %}
+          {% if user.logo %}
+          <div class="col-span-1">
+            <a href="{{ user.url }}" target="_blank" rel="noopener" class="block" title="Go to the {{ user.acronym }} website">
+              <img src="../{{ user.logo }}" alt="Logo for {{ user.acronym }}"/>
+            </a>
+          </div>
+          {% endif %}
+          {% endfor %}
         </div>
-        {% endif %}
-        {% endfor %}
       </div>
     </section>
   
-    <section class="section bg-white colour-block">
+    {# <section class="section bg-white colour-block">
       <div class="row margin-bottom">
         <div class="col col--3of4">
           <p class="type-3 fw-200">{% include 'partials/app-name.njk' %} translates <span class="highlight--white">policy to practice</span> by helping libraries and funders:</p>
