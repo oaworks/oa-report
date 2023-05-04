@@ -11,7 +11,7 @@ layout: layouts/base.njk
 {% endif %}
 
 <main>      
-  <section class="row cover">
+  {# <section class="row cover">
     <div class="col col--1of2 cover__background">
       <div class="padding-top flex-space-between flex-col">
         <h1 class="sr-only">
@@ -34,23 +34,25 @@ layout: layouts/base.njk
         <p class="type-6 no-margin"><a href="#content">Or scroll down to learn more <div class="type-1">↓</div></a></p>
       </duv>
     </div>
-  </section>
+  </section> #}
   
-  <div class="content" id="content">      
-    <section class="section bg-white">
-      <div class="row row--centered">
-        <div class="col col--2of3 col--group row">
-          <div class="col col--1of4 margin-bottom-sm">
-            <a href="https://www.nature.com/articles/d41586-023-00175-1" target="_blank" rel="noopener" class="block-link" title="Read the article “Confused by open-access policies? These tools can help”">
+  <div id="content">      
+    <section class="bg-white">
+      <div class="container mx-auto">
+        <div class="grid grid-cols-5 items-center gap-6 md:gap-12 py-8 md:py-16">
+          <div class="col-span-1 col-start-2">
+            <a href="https://www.nature.com/articles/d41586-023-00175-1" target="_blank" rel="noopener" class="block" title="Read the article “Confused by open-access policies? These tools can help”">
               {% include 'svg/nature.svg' %}
             </a>
           </div>
-          <p class="col col--3of4 no-margin">As seen in <a href="https://www.nature.com/articles/d41586-023-00175-1" target="_blank" rel="noopener"><span class="highlight">Nature</span>: <br><span class="border-bottom">“Confused by open-access policies? These tools can help”</span></a>.</p>
+          <p class="col-span-2">
+            As seen in <a href="https://www.nature.com/articles/d41586-023-00175-1" target="_blank" rel="noopener"><span class="highlight">Nature</span>: <br><span class="underline underline-offset-4">“Confused by open-access policies? These tools can help”</span></a>.
+          </p>
         </div>
       </div>
     </section>
 
-    <section class="section bg-black">
+    {# <section class="section bg-black">
       <h2 class="label padding-top">Our users</h2>      
       <div class="row row--centered padding-top">
         {% for user in users %}
@@ -135,7 +137,7 @@ layout: layouts/base.njk
           {% include 'partials/signup-form.njk' %}
         </section>
       </div>
-    </div>
-  </div>    
+    </div> #}
+  </div>
 </main>
 
