@@ -5,39 +5,41 @@ layout: layouts/base.njk
 {%- from "system/component.njk" import component -%}
 
 {% if site.banner %}
-<section class="row bg-white bg-gradient flex-center align-center type-6" style="z-index: 5; padding: .5em 0; position: sticky; top: 0;">
+<section class="row bg-white bg-gradient flex-center type-6" style="z-index: 5; padding: .5em 0; position: sticky; top: 0;">
   <p class="no-margin">{{ site.banner | safe }}</p>
 </section>
 {% endif %}
 
 <main>      
-  {# <section class="row cover">
-    <div class="col col--1of2 cover__background">
-      <div class="padding-top flex-space-between flex-col">
+  <section class="grid grid-cols-1 md:grid-cols-2 h-screen text-center">
+    <div class="col-span-1 py-8 md:py-12 bg-neutral-900 text-white flex items-center justify-center">
+      <div class="container px-12 mx-auto">
         <h1 class="sr-only">
           {% include 'partials/app-name.njk' %}
         </h1>
-        <figure class="align-center">
-          <a href="/img/screenshot.png" class="block-link" target="_blank" title="See screenshot in full size"><img src="/img/screenshot.png" alt="A screenshot of the OA.Report user interface showing Open Access insights and a list of proposed strategies to open closed-access content." style="border-radius: var(--space-xxs);"></a>
-          <figcaption class="no-margin type-5 fw-700">{{ site.tagline }}</figcaption>
+        <figure>
+          <a href="/img/screenshot.png" class="block mb-8" target="_blank" title="See screenshot in full size"><img src="/img/screenshot.png" alt="A screenshot of the OA.Report user interface showing Open Access insights and a list of proposed strategies to open closed-access content." style="border-radius: var(--space-xxs);"></a>
+          <figcaption class="text-3xl">{{ site.tagline }}</figcaption>
         </figure>
       </div>
     </div>
-    <div class="col col--1of2 flex-center flex-col bg-white colour-block cover__tagline">
-      <div class="align-center">
-        <p class="margin-bottom align-center type-5">Use {% include 'partials/app-name.njk' %}’s open <span class="highlight">insights</span> and actionable <span class="highlight">strategies</span> to unlock your institution’s research.</p>
-        <div class="margin-bottom-md search-container ">
-          <label for="js-search-box">Find an organization</label>
-          <input type="text" name="js-search-box" id="js-search-box" class="no-margin align-center" placeholder="By name, acronym, or ROR&hellip;" role="combobox" aria-controls="options" aria-expanded="false">
-          <ul id="js-suggestions-list" style="display: none" role="listbox"></ul>
+    <div class="col-span-1 py-8 md:py-12 bg-carnation-100 flex items-center justify-center">
+      <div class="container px-12 mx-auto">
+        <div>
+          <p class="mb-8 text-3xl">Use {% include 'partials/app-name.njk' %}’s open <span class="highlight">insights</span> and actionable <span class="highlight">strategies</span> to unlock your institution’s research.</p>
+          <div class="mb-8 search-container">
+            <label for="js-search-box" class="block mb-4">Find an organization</label>
+            <input type="text" name="js-search-box" id="js-search-box" placeholder="By name, acronym, or ROR&hellip;" role="combobox" aria-controls="options" aria-expanded="false">
+            <ul id="js-suggestions-list" style="display: none" role="listbox"></ul>
+          </div>
+          <p class="text-sm font-medium"><a href="#content">Or scroll down to learn more <div class="block">↓</div></a></p>
         </div>
-        <p class="type-6 no-margin"><a href="#content">Or scroll down to learn more <div class="type-1">↓</div></a></p>
-      </duv>
+      </div>
     </div>
-  </section> #}
+  </section>
   
   <div id="content">      
-    <section class="bg-white py-8 md:py-16">
+    <section class="bg-white py-8 md:py-12">
       <div class="container px-4 mx-auto">
         <div class="grid grid-cols-5 items-center gap-6 md:gap-12">
           <div class="col-span-1 col-start-2">
@@ -52,7 +54,7 @@ layout: layouts/base.njk
       </div>
     </section>
 
-    <section class="bg-neutral-900 text-white py-8 md:py-16">
+    <section class="bg-neutral-900 text-white py-8 md:py-12">
       <div class="container px-4 mx-auto">
         <h2 class="mb-4 md:mb-8 font-bold uppercase text-2xl">Our users</h2>      
         <ul class="grid grid-cols-2 md:grid-cols-4 gap-12">
@@ -70,7 +72,7 @@ layout: layouts/base.njk
       </div>
     </section>
   
-    <section class="bg-white py-8 md:py-16">
+    <section class="bg-white py-8 md:py-12">
       <div class="container px-4 mx-auto">
         <div class="grid grid-cols-3 mb-8">
           <div class="col-span-2">
@@ -113,7 +115,7 @@ layout: layouts/base.njk
           <div class="col-span-3 lg:col-span-1 lg:col-start-2">
             <h2 class="mb-2 md:mb-4 font-bold uppercase text-3xl">Sign up for updates</h2>
             {% include 'partials/signup-form.njk' %}
-          </div>
+          </div>g
         </div>
       </div>
     </section>
