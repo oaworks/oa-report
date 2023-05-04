@@ -4,12 +4,9 @@
   <input type="hidden" name="signup-page" id="signup-page" value="{{ site.base_url }}/{{ org._source.objectID }}"/>
   <label for="signup-email" class="text-base">Email</label>
   <div class="mt-1 mb-3 relative flex items-stretch flex-grow focus-within:z-10">
-      {# Only display this for report pages, not the homepage #}
-      {% if page.url != "/" %}
       <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
         {% icon_small "mail" %}
       </div>
-      {% endif %}
       <input type="email" name="signup-email" id="signup-email" class="focus:ring-carnation-300 focus:border-carnation-500 block w-full pl-10 py-3 sm:text-sm border-1" placeholder="you@example.com" required/>
       <button type="submit" class="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium text-white bg-neutral-900 hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 border-0 whitespace-nowrap">
         Sign up
