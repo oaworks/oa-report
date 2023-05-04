@@ -54,7 +54,7 @@ layout: layouts/base.njk
 
     <section class="bg-neutral-900 text-white py-8 md:py-16">
       <div class="container px-4 mx-auto">
-        <h2 class="mb-4 md:mb-8 font-bold uppercase text-3xl">Our users</h2>      
+        <h2 class="mb-4 md:mb-8 font-bold uppercase text-2xl">Our users</h2>      
         <ul class="grid grid-cols-2 md:grid-cols-4 gap-12">
           {% for user in users %}
           {% if user.logo %}
@@ -81,7 +81,7 @@ layout: layouts/base.njk
         <ol class="grid grid-cols-1 md:grid-cols-3 gap-12">
           {% for feature in features %}
           <li class="col-span-1">
-            <h3 class="pt-4 mb-2 md:mb-4 border-t-2 font-bold uppercase text-3xl">{{ feature.heading }}</h3>
+            <h3 class="pt-4 mb-2 md:mb-4 border-t-2 font-bold uppercase text-2xl">{{ feature.heading }}</h3>
             <p class="mb-4 text-2xl">{{ feature.subheading }}</p>
             <div>
               <div class="mb-2 md:mb-4  bg-neutral-900">{% include feature.img %}</div>
@@ -95,7 +95,7 @@ layout: layouts/base.njk
   
     <section class="pb-8 md:pb-16">
       <div class="container px-4 mx-auto">
-        <h2 class="pt-4 border-t-2 mb-4 md:mb-8 font-bold uppercase text-3xl">Our funders</h2>
+        <h2 class="pt-4 border-t-2 mb-4 md:mb-8 font-bold uppercase text-2xl">Our funders</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 items-center gap-12">
           <div class="col-span-1">
             <p class="text-3xl">Built in partnership with the <a href="https://blog.oa.works/grant-to-bolster-oa-policies-from-bmgf/" target="_blank" rel="noopener" class="underline underline-offset-8 decoration-1">Bill & Melinda Gates Foundation</a> with grant support from the <a href="https://blog.oa.works/grant-from-robert-wood-johnson-foundation/" target="_blank" rel="noopener" class="underline underline-offset-8 decoration-1">Robert Wood Johnson Foundation</a>.</p>
@@ -110,7 +110,7 @@ layout: layouts/base.njk
     <section class="bg-carnation-300 py-20 md:py-32">
       <div class="container px-4 mx-auto">
         <div class="grid grid-cols-3 gap-12">
-          <div class="col-span-1 col-start-2">
+          <div class="col-span-3 lg:col-span-1 lg:col-start-2">
             <h2 class="mb-2 md:mb-4 font-bold uppercase text-3xl">Sign up for updates</h2>
             {% include 'partials/signup-form.njk' %}
           </div>
