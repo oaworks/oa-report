@@ -5,8 +5,8 @@ layout: layouts/base.njk
 {%- from "system/component.njk" import component -%}
 
 {% if site.banner %}
-<section class="row bg-white bg-gradient flex-center type-6" style="z-index: 5; padding: .5em 0; position: sticky; top: 0;">
-  <p class="no-margin">{{ site.banner | safe }}</p>
+<section class="py-4 bg-carnation-400 font-medium text-center text-xs" style="z-index: 5; position: sticky; top: 0;">
+  <p>{{ site.banner | safe }}</p>
 </section>
 {% endif %}
 
@@ -39,7 +39,7 @@ layout: layouts/base.njk
   </section>
   
   <div id="content">      
-    <section class="bg-white py-8 md:py-12">
+    <section class="py-12 md:py-24">
       <div class="container px-4 mx-auto">
         <div class="grid grid-cols-5 items-center gap-6 md:gap-12">
           <div class="col-span-1 col-start-2">
@@ -54,7 +54,7 @@ layout: layouts/base.njk
       </div>
     </section>
 
-    <section class="bg-neutral-900 text-white py-8 md:py-12">
+    <section class="bg-neutral-900 text-white py-12 md:py-24">
       <div class="container px-4 mx-auto">
         <h2 class="mb-4 md:mb-8 font-bold uppercase text-2xl">Our users</h2>      
         <ul class="grid grid-cols-2 md:grid-cols-4 gap-12">
@@ -72,7 +72,7 @@ layout: layouts/base.njk
       </div>
     </section>
   
-    <section class="bg-white py-8 md:py-12">
+    <section class="bg-carnation-100 pt-12 pb-6 md:py-24">
       <div class="container px-4 mx-auto">
         <div class="grid grid-cols-3 mb-8">
           <div class="col-span-2">
@@ -95,7 +95,7 @@ layout: layouts/base.njk
       </div>
     </section>
   
-    <section class="pb-8 md:pb-16">
+    <section class="bg-carnation-100 pb-12 md:pb-24">
       <div class="container px-4 mx-auto">
         <h2 class="pt-4 border-t-2 mb-4 md:mb-8 font-bold uppercase text-2xl">Our funders</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 items-center gap-12">
