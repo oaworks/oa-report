@@ -361,11 +361,11 @@ background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox=
 
 /* Grid: to be used for general layout only */
 
-body main {
+/* body main {
 padding: 0 var(--gutter);
 margin: 0 auto;
 max-width: 100%;
-}
+} */
 
 @media only screen and (min-width: 2560px) {
 body {
