@@ -46,7 +46,7 @@ layout: layouts/base.njk
             </a>
           </div>
           <p class="col-span-2">
-            As seen in <a href="https://www.nature.com/articles/d41586-023-00175-1" target="_blank" rel="noopener"><span class="highlight">Nature</span>: <br><span class="underline underline-offset-4">“Confused by open-access policies? These tools can help”</span></a>.
+            As seen in <a href="https://www.nature.com/articles/d41586-023-00175-1" target="_blank" rel="noopener"><span class="highlight">Nature</span>: <br><span class="underline underline-offset-8 decoration-1">“Confused by open-access policies? These tools can help”</span></a>.
           </p>
         </div>
       </div>
@@ -81,7 +81,7 @@ layout: layouts/base.njk
           {% for feature in features %}
           <li class="col-span-1">
             <h3 class="pt-4 mb-2 md:mb-4 border-t-2 font-bold uppercase text-3xl">{{ feature.heading }}</h3>
-            <p class="mb-8 text-2xl">{{ feature.subheading }}</p>
+            <p class="mb-4 text-2xl">{{ feature.subheading }}</p>
             <div>
               <div class="mb-2 md:mb-4  bg-neutral-900">{% include feature.img %}</div>
               <p>{{ feature.p }}</p>
@@ -92,19 +92,21 @@ layout: layouts/base.njk
       </div>
     </section>
   
-    {# <div class="row row--centered bg-black" id="funders-newsletter">
-      <div class="col">
-        <section class="section">
-          <h2 class="label">Our funders</h2>
-          <p class="type-5">Built in partnership with the <a href="https://blog.oa.works/grant-to-bolster-oa-policies-from-bmgf/" target="_blank" rel="noopener" class="border-bottom text-black">Bill & Melinda Gates Foundation</a> with grant support from the <a href="https://blog.oa.works/grant-from-robert-wood-johnson-foundation/" target="_blank" rel="noopener" class="border-bottom text-black">Robert Wood Johnson Foundation</a>.</p>
-          <div style="margin: 0 25vw;">
-            <a href="https://www.gatesfoundation.org/" target="_blank" rel="noopener" class="block-link" title="Go to the BMGF website">{% include 'svg/bmgf.svg' %}</a>
+    <section class="bg-neutral-900 text-white py-8 md:py-16">
+      <div class="container px-4 mx-auto">
+        <h2 class="mb-4 md:mb-8 font-bold uppercase text-3xl">Our funders</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <div class="col-span-1">
+            <p class="mb-4 md:mb-8 text-3xl">Built in partnership with the <a href="https://blog.oa.works/grant-to-bolster-oa-policies-from-bmgf/" target="_blank" rel="noopener" class="underline underline-offset-8 decoration-1">Bill & Melinda Gates Foundation</a> with grant support from the <a href="https://blog.oa.works/grant-from-robert-wood-johnson-foundation/" target="_blank" rel="noopener" class="underline underline-offset-8 decoration-1">Robert Wood Johnson Foundation</a>.</p>
           </div>
-        </section>
+          <div class="col-span-1">
+            <a href="https://www.gatesfoundation.org/" target="_blank" rel="noopener" class="block" title="Go to the BMGF website">{% include 'svg/bmgf.svg' %}</a>
+          </div>
+        </div>
       </div>
-    </div>
+    </section>
   
-    <div class="row row--centered bg-white colour-block">
+    {# <div class="row row--centered bg-white colour-block">
       <div class="col">
         <section class="section">
           <h2 class="label border-top-thick padding-top fw-700"><span class="type-3">Sign up for updates</span></h2>
