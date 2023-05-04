@@ -67,7 +67,7 @@ permalink: "{{ org._source.objectID | slug }}/"
             <span class="block font-medium text-neutral-900 uppercase">
               Insights on <strong class="font-bold">articles</strong>
               {{ component("tooltip", {
-                msg: "The <em>Insights</em> section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/developers/infrastructure/' target='_blank' class='underline'>infrastructure page</a>."
+                msg: "The <em>Insights</em> section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/developers/infrastructure/' target='_blank' class='underline underline-offset-2 decoration-1'>infrastructure page</a>."
               }) }}
             </span>
           </h2>
@@ -246,15 +246,15 @@ permalink: "{{ org._source.objectID | slug }}/"
           {# PAID USERS #}
           {% if org._source.paid == true %}
           <p class="text-xs md:text-base mb-6">
-            <strong class="text-bold">{{ org._source.name }}</strong>’s custom OA.Report uses <a href="https://about.oa.report/docs/sources" target="_blank" class="underline">all our data sources</a> and expert analysis to provide insights into their publications, impact, and how open their research is.
+            <strong class="text-bold">{{ org._source.name }}</strong>’s custom OA.Report uses <a href="https://about.oa.report/docs/sources" target="_blank" class="underline underline-offset-2 decoration-1">all our data sources</a> and expert analysis to provide insights into their publications, impact, and how open their research is.
           </p>
           <p class="text-xs md:text-base" id="about-paid-logged-out">
-            <a href="https://about.oa.report/docs/user-accounts" target="_blank" class="underline">Log in</a> to see the OA.Report.
+            <a href="https://about.oa.report/docs/user-accounts" target="_blank" class="underline underline-offset-2 decoration-1">Log in</a> to see the OA.Report.
           </p>
           {# FREE USERS #}
           {% else %}
           <p class="text-xs md:text-base">
-              <strong class="text-bold">{{ org._source.name }}</strong>’s OA.Report uses <a href="https://about.oa.report/docs/sources#open-sources" target="_blank" class="underline">open data</a> and automated analysis to provide insights into their publication volume and how open their research is.
+              <strong class="text-bold">{{ org._source.name }}</strong>’s OA.Report uses <a href="https://about.oa.report/docs/sources#open-sources" target="_blank" class="underline underline-offset-2 decoration-1">open data</a> and automated analysis to provide insights into their publication volume and how open their research is.
             </p>
           {% endif %}
         </div>
@@ -265,7 +265,7 @@ permalink: "{{ org._source.objectID | slug }}/"
             Unlock your institution’s research
           </h2>
           <p class="mb-6">
-            Sign up to access your institution's strategies for free. Consider a <a href="https://about.oa.report/pricing" target="_blank" class="underline">paid plan</a> to help <a href="https://about.oa.report/docs/sources" target="_blank" class="underline">discover all your papers</a> and provide up-to-date, deep insights into the state of open at your institution.
+            Sign up to access your institution's strategies for free. Consider a <a href="https://about.oa.report/pricing" target="_blank" class="underline underline-offset-2 decoration-1">paid plan</a> to help <a href="https://about.oa.report/docs/sources" target="_blank" class="underline underline-offset-2 decoration-1">discover all your papers</a> and provide up-to-date, deep insights into the state of open at your institution.
           </p>
           <div class="w-6/12">
             {% include 'partials/signup-form.njk' %}
