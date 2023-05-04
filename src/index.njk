@@ -38,7 +38,7 @@ layout: layouts/base.njk
   
   <div id="content">      
     <section class="bg-white py-8 md:py-16">
-      <div class="container mx-auto">
+      <div class="container px-4 mx-auto">
         <div class="grid grid-cols-5 items-center gap-6 md:gap-12">
           <div class="col-span-1 col-start-2">
             <a href="https://www.nature.com/articles/d41586-023-00175-1" target="_blank" rel="noopener" class="block" title="Read the article “Confused by open-access policies? These tools can help”">
@@ -53,9 +53,9 @@ layout: layouts/base.njk
     </section>
 
     <section class="bg-neutral-900 text-white py-8 md:py-16">
-      <div class="container mx-auto">
-        <h2 class="mb-8 font-bold uppercase text-3xl">Our users</h2>      
-        <div class="grid grid-cols-4 gap-6 md:gap-12">
+      <div class="container px-4 mx-auto">
+        <h2 class="mb-4 md:mb-8 font-bold uppercase text-3xl">Our users</h2>      
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-12">
           {% for user in users %}
           {% if user.logo %}
           <div class="col-span-1">
@@ -70,20 +70,20 @@ layout: layouts/base.njk
     </section>
   
     <section class="bg-white py-8 md:py-16">
-      <div class="container mx-auto">
-        <div class="grid grid-cols-3 gap-6 md:gap-12 mb-8">
+      <div class="container px-4 mx-auto">
+        <div class="grid grid-cols-3 mb-8">
           <div class="col-span-2">
             <p class="text-3xl">{% include 'partials/app-name.njk' %} translates <span class="highlight">policy to practice</span> by helping libraries and funders:</p>
           </div>
         </div>
     
-        <ul class="grid grid-cols-3 gap-6 md:gap-12 mb-8">
+        <ul class="grid grid-cols-1 md:grid-cols-3 gap-12">
           {% for feature in features %}
           <li class="col-span-1">
-            <h3 class="pt-4 mb-4 border-t-2 font-bold uppercase md:text-3xl">{{ feature.heading }}</h3>
-            <p class="mb-8 md:text-2xl">{{ feature.subheading }}</p>
+            <h3 class="pt-4 mb-2 md:mb-4 border-t-2 font-bold uppercase text-3xl">{{ feature.heading }}</h3>
+            <p class="mb-8 text-2xl">{{ feature.subheading }}</p>
             <div>
-              <div class="mb-4 bg-neutral-900">{% include feature.img %}</div>
+              <div class="mb-2 md:mb-4  bg-neutral-900">{% include feature.img %}</div>
               <p>{{ feature.p }}</p>
             </div>
           </li>
