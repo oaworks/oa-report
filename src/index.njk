@@ -27,12 +27,8 @@ layout: layouts/base.njk
       <div class="container px-12 mx-auto">
         <div>
           <p class="mb-8 text-3xl">Use {% include 'partials/app-name.njk' %}’s open <span class="highlight">insights</span> and actionable <span class="highlight">strategies</span> to unlock your institution’s research.</p>
-          <div class="mb-8 search-container">
-            <label for="js-search-box" class="block mb-4">Find an organization</label>
-            <input type="text" name="js-search-box" id="js-search-box" placeholder="By name, acronym, or ROR&hellip;" role="combobox" aria-controls="options" aria-expanded="false">
-            <ul id="js-suggestions-list" style="display: none" role="listbox"></ul>
-          </div>
-          <p class="text-sm font-medium"><a href="#content">Or scroll down to learn more <div class="block">↓</div></a></p>
+          {% include 'partials/search-form.njk' %}
+          <p class="mt-8 text-sm font-medium"><a href="#content">Or scroll down to learn more <div class="block">↓</div></a></p>
         </div>
       </div>
     </div>
