@@ -1,4 +1,4 @@
-<form name="signup" method="POST" action="#" data-netlify="true" data-netlify-honeypot="bot-field">
+<form name="signup" method="POST" action="#" data-netlify="true" data-netlify-honeypot="bot-field" id="newsletter">
   <input type="hidden" name="form-name" value="signup" />
   <label for="signup-page" class="sr-only" hidden>Signed up from this page</label>
   <input type="hidden" name="signup-page" id="signup-page" value="{{ site.base_url }}/{{ org._source.objectID }}"/>
@@ -14,7 +14,7 @@
     </div>
 </form>
 <div class="js-success-message" style="display: none;">
-  <p class="text-xs md:text-base">Thanks for signing up! We will be in touch.</p>
+  <p class="text-xs md:text-base" id="newsletter-msg">Thanks for signing up! We will be in touch.</p>
 </div>
 
 <script>
