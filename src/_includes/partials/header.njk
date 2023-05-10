@@ -5,6 +5,25 @@
         {% include 'partials/app-name.njk' %}
       </a>
     </div>
+    {% if page.url != "/" %}
+    <div class="flex gap-x-12">
+      {% include 'partials/search-form.njk' %}
+    </div>
+    {% endif %}
+    <div class="flex flex-1 justify-end gap-x-12">
+      <a href="#" class="text-sm font-semibold leading-6 text-gray-900">About</a>
+      <a href="#" class="text-sm font-semibold leading-6 text-gray-900">Log in <span aria-hidden="true">&rarr;</span></a>
+    </div>
+  </nav>
+</header>
+{# TODO as part of Gates#465 #}
+{# <header class="bg-white">
+  <nav class="mx-auto flex max-w-10xl items-center justify-between p-6 lg:px-8" aria-label="Global">
+    <div class="flex lg:flex-1">
+      <a href="/" class="-m-1.5 p-1.5">
+        {% include 'partials/app-name.njk' %}
+      </a>
+    </div>
     <div class="flex lg:hidden">
       <button type="button" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700">
         <span class="sr-only">Open main menu</span>
@@ -22,9 +41,9 @@
       <a href="#" class="text-sm font-semibold leading-6 text-gray-900">About</a>
       <a href="#" class="text-sm font-semibold leading-6 text-gray-900">Log in <span aria-hidden="true">&rarr;</span></a>
     </div>
-  </nav>
+  </nav> #}
   <!-- Mobile menu, show/hide based on menu open state. -->
-  <div class="lg:hidden" role="dialog" aria-modal="true">
+  {# <div class="lg:hidden" role="dialog" aria-modal="true">
     <!-- Background backdrop, show/hide based on slide-over state. -->
     <div class="fixed inset-0 z-10"></div>
     <div class="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
@@ -53,4 +72,4 @@
       </div>
     </div>
   </div>
-</header>
+</header> #}
