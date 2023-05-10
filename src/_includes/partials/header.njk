@@ -11,8 +11,10 @@
     </div>
     {% endif %}
     <div class="flex flex-1 justify-end gap-x-12">
-      <a href="#" class="text-sm font-semibold leading-6 text-gray-900">About</a>
-      <a href="#" class="text-sm font-semibold leading-6 text-gray-900">Log in <span aria-hidden="true">&rarr;</span></a>
+      <a href="https://about.oa.report/" class="text-sm font-semibold leading-6 text-gray-900">About</a>
+      {% if page.url != "/" %}
+      <a href="?logout" id="logout" class="text-sm font-semibold leading-6 text-gray-900">Log out <span aria-hidden="true">&rarr;</span></a>
+      {% endif %}
     </div>
   </nav>
 </header>
