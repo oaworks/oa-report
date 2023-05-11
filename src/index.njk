@@ -4,12 +4,6 @@ layout: layouts/base.njk
 
 {%- from "system/component.njk" import component -%}
 
-{% if site.banner %}
-<section class="py-4 bg-carnation-400 font-medium text-center text-xs" style="z-index: 5; position: sticky; top: 0;">
-  <p>{{ site.banner | safe }}</p>
-</section>
-{% endif %}
-
 <main>      
   <section class="grid grid-cols-1 md:grid-cols-2 min-h-screen text-center">
     <div class="col-span-1 py-8 md:py-12 bg-neutral-900 text-white flex items-center justify-center">

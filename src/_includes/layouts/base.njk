@@ -2,6 +2,12 @@
 <html class="no-js scroll-smooth" lang="en">
   {% include 'partials/head.njk' %}
   <body class="flex flex-col h-screen justify-between antialiased text-neutral-900 text-sm font-light md:text-xl">
+    {% if site.banner %}
+    <section class="py-4 bg-carnation-400 font-medium text-center text-xs" style="z-index: 5; position: sticky; top: 0;">
+      <p>{{ site.banner | safe }}</p>
+    </section>
+    {% endif %}
+    <p id="js-alert" class="py-4 bg-neutral-900 text-white font-medium text-center text-xs" style="z-index: 5; position: sticky; top: 0; display: none;"></p>
     {% include 'partials/header.njk' %}
     {% block content %}{% endblock %}
     {{ content | safe }}
