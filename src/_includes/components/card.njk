@@ -12,8 +12,8 @@
     <div class="absolute bg-carnation-500 text-white rounded-md p-6">
       {% icon params.icon %}
     </div>
-    <p class="ml-24 mb-2 text-base font-medium text-neutral-700 truncate">
-      {{ params.title }}
+    <p class="ml-24 mb-2 text-base font-medium text-neutral-700">
+      <span class="truncate">{{ params.title }}</span>
       <sup id="info_{{ params.id }}">{% icon_small "help-circle" %}</sup>
     </p>
   </header>
