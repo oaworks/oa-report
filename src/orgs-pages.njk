@@ -149,16 +149,6 @@ permalink: "{{ org._source.objectID | slug }}/"
         </h2>
 
         <div class="block mb-10">
-          <div class="sm:hidden">
-            <label for="tabs" class="sr-only">Select a tab</label>
-            <select name="tabs" class="block w-full pl-3 pr-10 py-2 text-base border-neutral-300 focus:outline-none focus:ring-carnation-500 focus:border-carnation-500 sm:text-sm js-strategy-select">
-              <option value="email_author_vor" selected>Deposit publisher PDFs</option>
-              <option value="email_author_aam">Deposit accepted manuscripts</option>
-              <option value="apc_followup">Correct publisher errors</option>
-              <option value="unanswered_requests">Escalate unanswered requests</option>
-            </select>
-          </div>
-
           <div class="hidden sm:block">
             <div class="border-b border-neutral-200">
               <ul class="-mb-px flex divide-x divide-neutral-300 border-b border-neutral-300 js-tabs" role="tablist" aria-label="Strategies Tabs">
