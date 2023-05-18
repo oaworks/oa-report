@@ -148,7 +148,7 @@ permalink: "{{ org._source.objectID | slug }}/"
           }) }}
         </h2>
 
-        <nav class="block mb-10">
+        <div class="block mb-10">
           <div class="sm:hidden">
             <label for="tabs" class="sr-only">Select a tab</label>
             <select name="tabs" class="block w-full pl-3 pr-10 py-2 text-base border-neutral-300 focus:outline-none focus:ring-carnation-500 focus:border-carnation-500 sm:text-sm js-strategy-select">
@@ -188,7 +188,7 @@ permalink: "{{ org._source.objectID | slug }}/"
               </ul>
             </div>
           </div>
-        </nav>
+        </div>
 
         <div class="js-tab-content-all">
           {{ component("tab-contents", {
