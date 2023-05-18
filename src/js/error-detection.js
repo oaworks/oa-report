@@ -1,5 +1,5 @@
 window.addEventListener('error', function (event) {
-  if (event.message.includes('404') || event.message.toLowerCase().includes('error')) {
+  if (event.message?.includes('404') || event.message?.toLowerCase().includes('error')) {
     displayErrorHeader();
   }
 }, true);
