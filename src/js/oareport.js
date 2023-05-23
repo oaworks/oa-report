@@ -355,7 +355,7 @@ oareport = function(org) {
                         var newMailto = mailto.replaceAll("\'", "’");
                         newMailto = newMailto.replaceAll("{doi}", (action.doi ? action.doi : "[No DOI found]"));
                         newMailto = newMailto.replaceAll("{author_email_name}", (action.author_email_name ? action.author_email_name : "[No author’s name found]"));
-                        newMailto = newMailto.replaceAll("{title}", (action.title ? action.title : "[No title found]"));
+                        newMailto = newMailto.replaceAll("{title}", (action.title ? action.title.replaceAll("\'", "’") : "[No title found]"));
 
                         // And add it to the action array
                         action["mailto"] = encodeURI(newMailto);
