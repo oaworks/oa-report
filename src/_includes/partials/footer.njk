@@ -42,6 +42,11 @@
     arrow: false,
   });
 </script>
-<script src="/js/oareport.js"></script>
-<script src="/js/ui.js"></script>
+
+{% if page.url != "/" %}
+<script src="../js/oareport.js"></script>
+<script src="../js/ui.js"></script>
+{% endif %}
+<script src="../js/search.js"></script>
+
 {% block extra_footer %}{% endblock %}

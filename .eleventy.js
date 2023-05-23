@@ -1,3 +1,6 @@
+// .env
+require('dotenv').config();
+
 // Markdown
 const markdownIt = require('markdown-it');
 const markdownItAttrs = require('markdown-it-attrs');
@@ -23,6 +26,9 @@ const now = String(Date.now());
 // Configs
 module.exports = function(eleventyConfig) {
   eleventyConfig.setLibrary('md', markdownLib);
+  
+  // Make .env variables to templates 
+  eleventyConfig.addGlobalData('env', process.env);
 
   // Add NJK template tag to access feathericons
   eleventyConfig.addShortcode('icon', iconShortcode);
@@ -39,22 +45,22 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addShortcode('version', function () {
     return now;
   });
-  eleventyConfig.addTransform('htmlmin', function (content, outputPath) {
-    if (
-      process.env.ELEVENTY_PRODUCTION &&
-      outputPath &&
-      outputPath.endsWith('.html')
-    ) {
-      let minified = htmlmin.minify(content, {
-        useShortDoctype: true,
-        removeComments: true,
-        collapseWhitespace: true,
-      });
-      return minified;
-    }
+  // eleventyConfig.addTransform('htmlmin', function (content, outputPath) {
+  //   if (
+  //     process.env.ELEVENTY_PRODUCTION &&
+  //     outputPath &&
+  //     outputPath.endsWith('.html')
+  //   ) {
+  //     let minified = htmlmin.minify(content, {
+  //       useShortDoctype: true,
+  //       removeComments: true,
+  //       collapseWhitespace: true,
+  //     });
+  //     return minified;
+  //   }
 
-    return content;
-  });
+  //   return content;
+  // });
 
   // Enable CORS
   eleventyConfig.setBrowserSyncConfig({
@@ -69,8 +75,9 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy('./src/js/');
   eleventyConfig.addPassthroughCopy('./src/css/');
   eleventyConfig.addPassthroughCopy('./src/img/');
-  eleventyConfig.addPassthroughCopy('./src/media/');
   eleventyConfig.addPassthroughCopy('./src/favicons/');
+  eleventyConfig.addPassthroughCopy("./src/*.xml");
+  eleventyConfig.addPassthroughCopy("./src/*.txt");
 
   eleventyConfig.setLiquidOptions({
     dynamicPartials: true

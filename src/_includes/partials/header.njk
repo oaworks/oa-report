@@ -1,22 +1,75 @@
-<header class="flex justify-between bg-white border-b border-neutral-300 px-4 sm:px-6 md:px-8 pt-6">
-  <h2 class="text-2xl md:text-3xl lg:text-6xl -mb-2.5 md:-mb-3 font-black">
-    <a href="https://oa.report">
-      {% include 'partials/app-name.njk' %}
-    </a>
-  </h2>
-  {# TODO: create static pages + implement search tool #}
-  <nav>
-    <ul class="flex self-center">
-      {% for item in nav_header %}
-      <li class="ml-6"{% if item.id %} id="{{ item.id }}"{% endif %}>
-        <a href="{{ item.url }}" class="text-sm font-medium md:text-base uppercase hover:text-carnation-500 transition duration-300">{{ item.label }}</a>
-      </li>
-      {% endfor %}
-      {# {% if page.url != "/" %}
-      <li>
-        <div id="search"></div>
-      </li>
-      {% endif %} #}
-    </ul>
+<header class="bg-white">
+  <nav class="mx-auto flex max-w-10xl items-center justify-between p-6 lg:px-8" aria-label="Global">
+    <div class="flex lg:flex-1">
+      <a href="/" class="-m-1.5 p-1.5">
+        {% include 'partials/app-name.njk' %}
+      </a>
+    </div>
+    {% if page.url != "/" %}
+      {% include 'partials/search-form.njk' %}
+    {% endif %}
+    <div class="flex flex-1 justify-end gap-x-12">
+      <a href="https://about.oa.report/" class="text-sm font-semibold leading-6 text-gray-900">About</a>
+      {% if page.url != "/" %}
+      <a href="?logout" id="logout" class="text-sm font-semibold leading-6 text-gray-900">Log out <span aria-hidden="true">&rarr;</span></a>
+      {% endif %}
+    </div>
   </nav>
 </header>
+{# TODO as part of Gates#465 #}
+{# <header class="bg-white">
+  <nav class="mx-auto flex max-w-10xl items-center justify-between p-6 lg:px-8" aria-label="Global">
+    <div class="flex lg:flex-1">
+      <a href="/" class="-m-1.5 p-1.5">
+        {% include 'partials/app-name.njk' %}
+      </a>
+    </div>
+    <div class="flex lg:hidden">
+      <button type="button" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700">
+        <span class="sr-only">Open main menu</span>
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+        </svg>
+      </button>
+    </div>
+    {% if page.url != "/" %}
+    <div class="hidden lg:flex lg:gap-x-12">
+      {% include 'partials/search-form.njk' %}
+    </div>
+    {% endif %}
+    <div class="hidden lg:flex lg:flex-1 lg:justify-end lg:gap-x-12">
+      <a href="#" class="text-sm font-semibold leading-6 text-gray-900">About</a>
+      <a href="#" class="text-sm font-semibold leading-6 text-gray-900">Log in <span aria-hidden="true">&rarr;</span></a>
+    </div>
+  </nav> #}
+  <!-- Mobile menu, show/hide based on menu open state. -->
+  {# <div class="lg:hidden" role="dialog" aria-modal="true">
+    <!-- Background backdrop, show/hide based on slide-over state. -->
+    <div class="fixed inset-0 z-10"></div>
+    <div class="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+      <div class="flex items-center justify-between">
+        <a href=/"" class="-m-1.5 p-1.5">
+          {% include 'partials/app-name.njk' %}
+        </a>
+        <button type="button" class="-m-2.5 rounded-md p-2.5 text-gray-700">
+          <span class="sr-only">Close menu</span>
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="mt-6 flow-root">
+        <div class="-my-6 divide-y divide-gray-500/10">
+          {% if page.url != "/" %}
+          <div class="space-y-2 py-6">
+            {% include 'partials/search-form.njk' %}
+          </div>
+          {% endif %}
+          <div class="py-6">
+            <a href="#" class="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Log in</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header> #}

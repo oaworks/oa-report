@@ -1,211 +1,114 @@
-<!doctype html>
-<html class="no-js" lang="en">
-  <head>
-    {% include 'partials/head.njk' %}
-  </head>
+---
+layout: layouts/base.njk
+---
 
-  <body>
-    <!--[if IE]>
-    <p class="browserupgrade">You are using an outdated browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
-    <![endif]-->
+{%- from "system/component.njk" import component -%}
 
-    {% if site.banner %}
-    <section class="row bg-white bg-gradient flex-center align-center type-6" style="z-index: 5; padding: .5em 0; position: sticky; top: 0;">
-      <p class="no-margin">{{ site.banner | safe }}</p>
-    </section>
-    {% endif %}
-
-    <main>
-      <video id="video" autoplay muted loop>
-        <source src="/media/video.mp4" type="video/mp4">
-      </video>
-      
-      <div class="row cover">
-        <div class="col col--1of2 cover__background">
-          <section class="section flex-space-between flex-col">
-            <h1>
-              {% include 'partials/app-name.njk' %}
-            </h1>
-          </section>
-        </div>
-        <div class="col col--1of2 flex-center flex-col bg-white align-center colour-block cover__tagline">
-          <section>
-            <p class="label">{{ site.name }}</p>
-            <h2 class="type-2 font-sans fw-900">{{ site.tagline }}</h2>
-            <div class="flex-center flex-col align-center margin-bottom">
-              <div id="newsletter-inner">
-                <form id="newsletter">
-                  <label for="email">Sign up for updates</label>
-                  <div class="flex">
-                    <input type="email" class="_oaworks_form" name="signup" id="email" placeholder="you@institution.edu" required/>
-                    <button id="submit" type="submit" href="{{ site.base_url }}#newsletter-inner">Sign up</button>
-                  </div>
-                </form>
-              </div>
-            </div>
-            <p class="type-6 no-margin"><a href="#content">Scroll down to learn more <div class="type-1">↓</div></a></p>
-          </section>
+<main>      
+  <section class="grid grid-cols-1 md:grid-cols-2 min-h-screen text-center">
+    <div class="col-span-1 py-8 md:py-12 bg-neutral-900 text-white flex items-center justify-center">
+      <div class="container px-12 mx-auto">
+        <h1 class="sr-only">
+          {% include 'partials/app-name.njk' %}
+        </h1>
+        <figure>
+          <a href="/img/screenshot.png" class="block mb-8" target="_blank" title="See screenshot in full size"><img src="/img/screenshot.png" alt="A screenshot of the OA.Report user interface showing Open Access insights and a list of proposed strategies to open closed-access content." style="border-radius: var(--space-xxs);"></a>
+          <figcaption class="text-3xl">{{ site.tagline }}</figcaption>
+        </figure>
+      </div>
+    </div>
+    <div class="col-span-1 py-8 md:py-12 bg-carnation-100 flex items-center justify-center">
+      <div class="container px-12 mx-auto">
+        <div>
+          <p class="mb-8 text-3xl">Use {% include 'partials/app-name.njk' %}’s open <span class="highlight">insights</span> and actionable <span class="highlight">strategies</span> to unlock your institution’s research.</p>
+          {% include 'partials/search-form.njk' %}
+          <p class="mt-8 text-sm font-medium"><a href="#content">Or scroll down to learn more <div class="block">↓</div></a></p>
         </div>
       </div>
-      
-      <div class="content" id="content">
-        <section class="section bg-white">
-          <div class="row row--centered">
-            <div class="col col--2of3 col--group row">
-              <div class="col col--1of4 margin-bottom-sm">
-                <a href="https://www.nature.com/articles/d41586-023-00175-1" target="_blank" rel="noopener" class="block-link" title="Read the article “Confused by open-access policies? These tools can help”">
-                  {% include 'svg/nature.svg' %}
-                </a>
-              </div>
-              <p class="col col--3of4 no-margin">As seen in <a href="https://www.nature.com/articles/d41586-023-00175-1" target="_blank" rel="noopener"><span class="highlight">Nature</span>: <br><span class="border-bottom">“Confused by open-access policies? These tools can help”</span></a>.</p>
-            </div>
+    </div>
+  </section>
+  
+  <div id="content">      
+    <section class="py-12 md:py-24">
+      <div class="container px-4 mx-auto">
+        <div class="grid grid-cols-5 items-center gap-6 md:gap-12">
+          <div class="col-span-1 col-start-2">
+            <a href="https://www.nature.com/articles/d41586-023-00175-1" target="_blank" rel="noopener" class="block" title="Read the article “Confused by open-access policies? These tools can help”">
+              {% include 'svg/nature.svg' %}
+            </a>
           </div>
-        </section>
-      
-        <section class="section bg-black">
-          <div class="row row--centered">
-            <div class="col col--2of3">
-              <figure class="align-center margin-bottom-md">
-                <figcaption class="no-margin type-4">Use {% include 'partials/app-name.njk' %}’s open <span class="highlight">insights</span> and actionable <span class="highlight">strategies</span> to unlock your institution’s research.</figcaption>
-                <a href="/img/screenshot.png" class="block-link" target="_blank" title="See screenshot in full size"><img src="/img/screenshot.png" alt="A screenshot of the OA.Report user interface showing Open Access insights and a list of proposed strategies to open closed-access content." style="border-radius: var(--space-xxs);"></a>
-              </figure>
-            </div>
-          </div>
-      
-      
-          <h2 class="label border-top padding-top">Our users</h2>
-          <div class="row">
-            <div class="col col--4of6">
-              <p class="type-5">
-                {% include 'partials/app-name.njk' %} is in use at {% for user in users %}{% if forloop.first != true %}, {% elseif forloop.last %} & {% endif %}<a href="{{ user.url }}" target="_blank" rel="noopener" class="border-bottom" title="Go to the {{ user.acronym }} website">{{ user.name }}</a><span class="sr-only">({{ user.acronym }})</span>{% endfor %}.
-              </p>
-            </div>
-          </div>
-      
-          <div class="row row--centered">
-            {% for user in users %}
-            {% if user.logo %}
-            <div class="col col--1of4">
-              <a href="{{ user.url }}" target="_blank" rel="noopener" class="block-link margin-bottom-xl" title="Go to the {{ user.acronym }} website">
-                <img src="../{{ user.logo }}" alt="Logo for {{ user.acronym }}"/>
-              </a>
-            </div>
-            {% endif %}
-            {% endfor %}
-          </div>
-        </section>
-      
-        <section class="section bg-white colour-block">
-          <div class="row">
-            <div class="col col--3of4">
-              <p class="type-3 fw-200">{% include 'partials/app-name.njk' %} translates <span class="highlight--white">policy to practice</span> by helping libraries and funders:</p>
-            </div>
-          </div>
-      
-          <ul class="unstyled-list row row--centered">
-            <li class="col col--1of3 flex-space-between flex-col">
-              <h3 class="label border-top-thick padding-top"><span class="type-3">Discover</span></h3>
-              <p class="type-5 no-margin fw-300">articles covered by their policies</p>
-              <div>
-                <div class="illus">{% include 'svg/system-1.svg' %}</div>
-                <p class="type-6 fw-300">We discover articles and data using open scholarly metadata, targeted text and data mining, and an institution’s internal data sources.</p>
-              </div>
-            </li>
-            <li class="col col--1of3 flex-space-between flex-col">
-              <h3 class="label border-top-thick padding-top"><span class="type-3">Analyze</span></h3>
-              <p class="type-5 no-margin fw-300">if and how articles comply</p>
-              <div>
-                <div class="illus">{% include 'svg/system-2.svg' %}</div>
-                <p class="type-6 fw-300">We transparently analyse those articles against all the terms of the institution’s current policy, or custom criteria, to provide detailed statistics and key insights.</p>
-              </div>
-            </li>
-            <li class="col col--1of3 flex-space-between flex-col">
-              <h3 class="label border-top-thick padding-top"><span class="type-3">Unlock</span></h3>
-              <p class="type-5 no-margin fw-300">individual articles and systemic changes</p>
-              <div>
-                <div class="illus">{% include 'svg/system-3.svg' %}</div>
-                <p class="type-6 fw-300">We help libraries and funders unlock individual articles as they’re published by making outreach a one-click process, and help build evidence for systemic changes.</p>
-              </div>
-            </li>
-          </ul>
-      
-          <h2 class="label border-top-thick padding-top"><span class="type-4">How {% include 'partials/app-name.njk' %} works for you</span></h2>
-          <ol class="unstyled-list row row--centered">
-            <li class="col col--1of3">
-              <div class="type-1 fw-900">1</div>
-              <p class="type-3 fw-300 no-margin">Tell us what institution you’re from.</p>
-            </li>
-            <li class="col col--1of3">
-              <div class="type-1 fw-900">2</div>
-              <p class="type-3 fw-300 no-margin">We’ll provide a custom report.</p>
-            </li>
-            <li class="col col--1of3">
-              <div class="type-1 fw-900">3</div>
-              <p class="type-3 fw-300 no-margin">You use it to make articles more open.</p>
-            </li>
-          </ol>
-        </section>
-      
-        <div class="row row--centered bg-black">
-          <div class="col">
-            <section class="section">
-              <h2 class="label">Our funders</h2>
-              <div class="row">
-                <div class="col col--1of2">
-                  <p class="type-5">Built in partnership with the <a href="https://blog.oa.works/grant-to-bolster-oa-policies-from-bmgf/" target="_blank" rel="noopener" class="border-bottom text-black">Bill & Melinda Gates Foundation</a> with grant support from the <a href="https://blog.oa.works/grant-from-robert-wood-johnson-foundation/" target="_blank" rel="noopener" class="border-bottom text-black">Robert Wood Johnson Foundation</a>.</p>
-                </div>
-                <div class="col col--1of2">
-                  <div style="margin: 0 5rem 2rem 5rem;">
-                    <a href="https://www.gatesfoundation.org/" target="_blank" rel="noopener" class="block-link" title="Go to the BMGF website">{% include 'svg/bmgf.svg' %}</a>
-                  </div>
-                </div>
-              </div>
-            </section>
+          <p class="col-span-2">
+            As seen in <a href="https://www.nature.com/articles/d41586-023-00175-1" target="_blank" rel="noopener"><span class="highlight">Nature</span>: <br><span class="underline underline-offset-4 md:underline-offset-8 decoration-1">“Confused by open-access policies? These tools can help”</span></a>.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-neutral-900 text-white py-12 md:py-24">
+      <div class="container px-4 mx-auto">
+        <h2 class="mb-4 md:mb-8 font-bold uppercase text-2xl">Our users</h2>      
+        <ul class="grid grid-cols-2 md:grid-cols-4 gap-12">
+          {% for user in users %}
+          {% if user.logo %}
+          <li class="col-span-1">
+            <p class="sr-only">{{ user.name }}</p>
+            <a href="{{ user.url }}" target="_blank" rel="noopener" class="block" title="Go to the {{ user.acronym }} website">
+              <img src="../{{ user.logo }}" alt="Logo for {{ user.acronym }}"/>
+            </a>
+          </li>
+          {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+    </section>
+  
+    <section class="bg-carnation-100 pt-12 pb-6 md:py-24">
+      <div class="container px-4 mx-auto">
+        <div class="grid grid-cols-3 mb-8">
+          <div class="col-span-2">
+            <p class="text-3xl">{% include 'partials/app-name.njk' %} translates <span class="highlight">policy to practice</span> by helping libraries and funders:</p>
           </div>
         </div>
-      
-        <div class="row row--centered bg-white colour-block">
-          <div class="col">
-            <section class="section">
-              <h2 class="label border-top-thick padding-top fw-700"><span class="type-1">Q&A</span></h2>
-              {% for q in faq %}
-              <details class="type-5 fw-300">
-                <summary class="border-top fw-900 padding-top margin-bottom">{{ q.q }}</summary>
-                <p>{{ q.a }}</p>
-              </details>
-              {% endfor %}
-            </section>
+    
+        <ol class="grid grid-cols-1 md:grid-cols-3 gap-12">
+          {% for feature in features %}
+          <li class="col-span-1">
+            <h3 class="pt-4 mb-2 md:mb-4 border-t-2 font-bold uppercase text-2xl">{{ feature.heading }}</h3>
+            <p class="mb-4 text-2xl">{{ feature.subheading }}</p>
+            <div>
+              <div class="mb-2 md:mb-4  bg-neutral-900">{% include feature.img %}</div>
+              <p>{{ feature.p }}</p>
+            </div>
+          </li>
+          {% endfor %}
+        </ol>
+      </div>
+    </section>
+  
+    <section class="bg-carnation-100 pb-12 md:pb-24">
+      <div class="container px-4 mx-auto">
+        <h2 class="pt-4 border-t-2 mb-4 md:mb-8 font-bold uppercase text-2xl">Our funders</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 items-center gap-12">
+          <div class="col-span-1">
+            <p class="text-3xl">Built in partnership with the <a href="https://blog.oa.works/grant-to-bolster-oa-policies-from-bmgf/" target="_blank" rel="noopener" class="underline underline-offset-4 md:underline-offset-8 decoration-1">Bill & Melinda Gates Foundation</a> with grant support from the <a href="https://blog.oa.works/grant-from-robert-wood-johnson-foundation/" target="_blank" rel="noopener" class="underline underline-offset-4 md:underline-offset-8 decoration-1">Robert Wood Johnson Foundation</a>.</p>
+          </div>
+          <div class="col-span-1">
+            <a href="https://www.gatesfoundation.org/" target="_blank" rel="noopener" class="block" title="Go to the BMGF website">{% include 'svg/bmgf.svg' %}</a>
           </div>
         </div>
-      
-        <footer class="section bg-black">
-          <div class="row">
-            <div class="col col--1of2">
-              <h2 class="label"><span class="type-6">Developed by</span></h2>
-              <div style="margin: 0 5rem 5rem 0;">
-                <a href="https://oa.works" target="_blank" rel="noopener" class="block-link" title="Go to the OA.Works website">
-                  {% include 'svg/logotype.svg' %}
-                </a>
-              </div>
-            </div>
-            <div class="col col--1of2">
-              <h3 class="label"><span class="type-6">About us</span></h3>
-              <p class="type-5">OA.Works is a non-profit building tools so that open access is easy and equitable.</p>
-              <div class="flex-space-between flex-center">
-                <a href="https://oa.works" target="_blank" rel="noopener" class="button">See our website</a> <a href="mailto:hello@oa.works" class="border-bottom">Contact us</a>
-              </div>
-            </div>
+      </div>
+    </section>
+  
+    <section class="bg-carnation-300 py-20 md:py-32">
+      <div class="container px-4 mx-auto">
+        <div class="grid grid-cols-3 gap-12">
+          <div class="col-span-3 lg:col-span-1 lg:col-start-2">
+            <h2 class="mb-2 md:mb-4 font-bold uppercase text-3xl">Sign up for updates</h2>
+            {% include 'partials/signup-form.njk' %}
           </div>
-        </footer>
-      </div>    
-    </main>
-
-    <noscript><img src="https://sa.oa.works/noscript.gif" alt=""/></noscript>
-    <script async defer src="https://sa.oa.works/latest.js"></script>
-    <script src="/js/jquery-3.6.0.min.js"></script>
-    <script src="/js/newsletter.js"></script>
-    {% block extra_js %}{% endblock %}
-  </body>
-</html>
-
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
 
