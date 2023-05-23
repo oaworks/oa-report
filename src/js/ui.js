@@ -1,21 +1,3 @@
-/* Display tab contents on menu selection (XS + SM viewports) */
-const strategySelect = document.querySelector('.js-strategy-select');
-
-strategySelect.addEventListener("change", function (event) {
-  const selectedTabContents = document.querySelector(`.js-tab-content-all #${event.target.value}`),
-        otherTabContents = document.querySelectorAll(`.js-tab-content:not(#${event.target.value})`);
-
-  // Hide all tab contents that are not selected
-  for (let tabContents of otherTabContents) {
-    tabContents.classList.add("hidden");
-    tabContents.setAttribute("hidden", true);
-  };
-
-  if (event.target.matches(selectedTabContents)) {
-    selectedTabContents.classList.remove("hidden");
-    selectedTabContents.removeAttribute("hidden");
-  };
-});
 /* Display tab contents on UI tab selection (MD + larger viewports) */
 const strategyTabBtns = document.querySelectorAll(".js-tab-btn");
 

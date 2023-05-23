@@ -7,24 +7,24 @@
 }) }}
 #}
 
-<div class="relative bg-white transition ease-in delay-150 opacity-0 py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden" id="{{ params.id }}">
-  <dt>
+<article class="relative bg-white transition ease-in delay-150 opacity-0 py-5 px-4 sm:py-6 sm:px-6 drop-shadow-lg md:rounded-lg overflow-hidden" id="{{ params.id }}">
+  <header>
     <div class="absolute bg-carnation-500 text-white rounded-md p-6">
       {% icon params.icon %}
     </div>
-    <p class="ml-24 mb-2 text-base font-medium text-neutral-500 truncate">
-      {{ params.title }}
+    <p class="ml-24 mb-2 text-base font-medium text-neutral-700">
+      <span class="truncate">{{ params.title }}</span>
       <sup id="info_{{ params.id }}">{% icon_small "help-circle" %}</sup>
     </p>
-  </dt>
-  <dd class="ml-24 flex items-baseline">
-    <p class="text-4xl font-semibold text-neutral-900">
+  </header>
+  <div class="ml-24 items-baseline">
+    <p class="text-5xl font-semibold text-neutral-900">
       <span id="percent_{{ params.id }}">00%</span>
     </p>
     {% if not params.raw_number %}
-    <p class="ml-2 text-sm font-medium text-neutral-600">
+    <p class="mt-2 text-sm font-medium text-neutral-600">
       <span id="articles_{{ params.id }}">000</span>
     </p>
     {% endif %}
-  </dd>
-</div>
+  </div>
+</article>

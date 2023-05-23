@@ -13,16 +13,16 @@ layout: layouts/base.njk
         </h1>
         <figure>
           <a href="/img/screenshot.png" class="block mb-8" target="_blank" title="See screenshot in full size"><img src="/img/screenshot.png" alt="A screenshot of the OA.Report user interface showing Open Access insights and a list of proposed strategies to open closed-access content." style="border-radius: var(--space-xxs);"></a>
-          <figcaption class="text-3xl">{{ site.tagline }}</figcaption>
+          <figcaption class="text-xl md:text-3xl">{{ site.tagline }}</figcaption>
         </figure>
       </div>
     </div>
     <div class="col-span-1 py-8 md:py-12 bg-carnation-100 flex items-center justify-center">
       <div class="container px-12 mx-auto">
         <div>
-          <p class="mb-8 text-3xl">Use {% include 'partials/app-name.njk' %}’s open <span class="highlight">insights</span> and actionable <span class="highlight">strategies</span> to unlock your institution’s research.</p>
+          <p class="mb-8 text-xl md:text-3xl">Use {% include 'partials/app-name.njk' %}’s open <span class="highlight">insights</span> and actionable <span class="highlight">strategies</span> to unlock your institution’s research.</p>
           {% include 'partials/search-form.njk' %}
-          <p class="mt-8 text-sm font-medium"><a href="#content">Or scroll down to learn more <div class="block">↓</div></a></p>
+          <p class="mt-8 text-xs md:text-sm font-medium"><a href="#content">Or scroll down to learn more <div class="block">↓</div></a></p>
         </div>
       </div>
     </div>
@@ -38,7 +38,7 @@ layout: layouts/base.njk
             </a>
           </div>
           <p class="col-span-2">
-            As seen in <a href="https://www.nature.com/articles/d41586-023-00175-1" target="_blank" rel="noopener"><span class="highlight">Nature</span>: <br><span class="underline underline-offset-4 md:underline-offset-8 decoration-1">“Confused by open-access policies? These tools can help”</span></a>.
+            As seen in <a href="https://www.nature.com/articles/d41586-023-00175-1" target="_blank" rel="noopener"><span class="highlight">Nature</span>: <br><span class="underline underline-offset-2 md:underline-offset-8 decoration-1">“Confused by open-access policies? These tools can help”</span></a>.
           </p>
         </div>
       </div>
@@ -46,7 +46,7 @@ layout: layouts/base.njk
 
     <section class="bg-neutral-900 text-white py-12 md:py-24">
       <div class="container px-4 mx-auto">
-        <h2 class="mb-4 md:mb-8 font-bold uppercase text-2xl">Our users</h2>      
+        <h2 class="mb-4 md:mb-8 font-bold uppercase text-xl md:text-2xl">Our users</h2>      
         <ul class="grid grid-cols-2 md:grid-cols-4 gap-12">
           {% for user in users %}
           {% if user.logo %}
@@ -65,16 +65,16 @@ layout: layouts/base.njk
     <section class="bg-carnation-100 pt-12 pb-6 md:py-24">
       <div class="container px-4 mx-auto">
         <div class="grid grid-cols-3 mb-8">
-          <div class="col-span-2">
-            <p class="text-3xl">{% include 'partials/app-name.njk' %} translates <span class="highlight">policy to practice</span> by helping libraries and funders:</p>
+          <div class="col-span-3 md:col-span-2">
+            <p class="text-xl md:text-2xl">{% include 'partials/app-name.njk' %} translates <span class="highlight">policy to practice</span> by helping libraries and funders:</p>
           </div>
         </div>
     
         <ol class="grid grid-cols-1 md:grid-cols-3 gap-12">
           {% for feature in features %}
           <li class="col-span-1">
-            <h3 class="pt-4 mb-2 md:mb-4 border-t-2 font-bold uppercase text-2xl">{{ feature.heading }}</h3>
-            <p class="mb-4 text-2xl">{{ feature.subheading }}</p>
+            <h3 class="pt-4 mb-2 md:mb-4 border-t-2 font-bold uppercase text-xl md:text-2xl">{{ feature.heading }}</h3>
+            <p class="mb-4 text-lg md:text-3xl">{{ feature.subheading }}</p>
             <div>
               <div class="mb-2 md:mb-4  bg-neutral-900">{% include feature.img %}</div>
               <p>{{ feature.p }}</p>
@@ -90,7 +90,7 @@ layout: layouts/base.njk
         <h2 class="pt-4 border-t-2 mb-4 md:mb-8 font-bold uppercase text-2xl">Our funders</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 items-center gap-12">
           <div class="col-span-1">
-            <p class="text-3xl">Built in partnership with the <a href="https://blog.oa.works/grant-to-bolster-oa-policies-from-bmgf/" target="_blank" rel="noopener" class="underline underline-offset-4 md:underline-offset-8 decoration-1">Bill & Melinda Gates Foundation</a> with grant support from the <a href="https://blog.oa.works/grant-from-robert-wood-johnson-foundation/" target="_blank" rel="noopener" class="underline underline-offset-4 md:underline-offset-8 decoration-1">Robert Wood Johnson Foundation</a>.</p>
+            <p class="text-lg md:text-3xl">Built in partnership with the <a href="https://blog.oa.works/grant-to-bolster-oa-policies-from-bmgf/" target="_blank" rel="noopener" class="underline underline-offset-2 md:underline-offset-8 decoration-1">Bill & Melinda Gates Foundation</a> with grant support from the <a href="https://blog.oa.works/grant-from-robert-wood-johnson-foundation/" target="_blank" rel="noopener" class="underline underline-offset-2 md:underline-offset-8 decoration-1">Robert Wood Johnson Foundation</a>.</p>
           </div>
           <div class="col-span-1">
             <a href="https://www.gatesfoundation.org/" target="_blank" rel="noopener" class="block" title="Go to the BMGF website">{% include 'svg/bmgf.svg' %}</a>
@@ -103,7 +103,7 @@ layout: layouts/base.njk
       <div class="container px-4 mx-auto">
         <div class="grid grid-cols-3 gap-12">
           <div class="col-span-3 lg:col-span-1 lg:col-start-2">
-            <h2 class="mb-2 md:mb-4 font-bold uppercase text-3xl">Sign up for updates</h2>
+            <h2 class="mb-2 md:mb-4 font-bold uppercase text-lg md:text-3xl">Sign up for updates</h2>
             {% include 'partials/signup-form.njk' %}
           </div>
         </div>

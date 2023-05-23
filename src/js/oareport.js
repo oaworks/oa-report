@@ -398,16 +398,16 @@ oareport = function(org) {
       "email_author_vor",
       ['published_date', 'title', 'journal', 'author_email_name', 'email', 'doi', 'mailto'],
       "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 text-neutral-500'>${action.published_date}</div>\
+        <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
         <div class='mb-1 font-medium text-neutral-900 hover:text-carnation-500'>\
           <a href='https://doi.org/${action.doi}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
         </div>\
-        <div class='text-neutral-500'>${action.journal}</div>\
+        <div class='text-neutral-600'>${action.journal}</div>\
       </td>\
-      <td class='hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell'>\
+      <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
         <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
       </td>\
-      <td class='hidden px-3 py-4 text-sm text-center text-neutral-500 align-top break-words sm:table-cell'>\
+      <td class='hidden px-3 py-4 text-sm text-center text-neutral-600 align-top break-words sm:table-cell'>\
         <button class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200' onclick='decryptEmail(\"${action.email}\", \"${action.doi}\", \"${action.mailto}\")'>\
           <svg class='h-4 w-4' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-mail inline-block h-4 duration-500'><path d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'></path><polyline points='22,6 12,13 2,6'></polyline></svg>\
         </button>\
@@ -418,16 +418,16 @@ oareport = function(org) {
       "email_author_aam",
       ['published_date', 'title', 'journal', 'author_email_name', 'email', 'doi', 'mailto'],
       "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 text-neutral-500'>${action.published_date}</div>\
+        <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
         <div class='mb-1 font-medium text-neutral-900 hover:text-carnation-500'>\
           <a href='https://doi.org/${action.doi}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
         </div>\
-        <div class='text-neutral-500'>${action.journal}</div>\
+        <div class='text-neutral-600'>${action.journal}</div>\
       </td>\
-      <td class='hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell'>\
+      <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
         <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
       </td>\
-      <td class='hidden px-3 py-4 text-sm text-center text-neutral-500 align-top break-words sm:table-cell'>\
+      <td class='hidden px-3 py-4 text-sm text-center text-neutral-600 align-top break-words sm:table-cell'>\
         <button class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200' onclick='decryptEmail(\"${action.email}\", \"${action.doi}\", \"${action.mailto}\")'>\
           <svg class='h-4 w-4' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-mail inline-block h-4 duration-500'><path d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'></path><polyline points='22,6 12,13 2,6'></polyline></svg>\
         </button>\
@@ -440,21 +440,21 @@ oareport = function(org) {
       "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
         <div class='mb-1 font-medium text-neutral-900'>${action.publisher}</div>\
         <div class='mb-3 text-neutral-900'>${action.journal}</div>\
-        <div class='text-neutral-500'>OA type: <span class='font-medium'>${action.journal_oa_type}</span></div>\
+        <div class='text-neutral-600'>OA type: <span class='font-medium'>${action.journal_oa_type}</span></div>\
       </td>\
       <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 text-neutral-500'>${action.published_date}</div>\
+        <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
         <div class='mb-1 text-neutral-900 hover:text-carnation-500'>\
           <a href='https://doi.org/${action.doi}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
         </div>\
-        <div class='mb-3 text-neutral-500'>${action.doi}</div>\
-        <div class='text-neutral-500'>OA status: <span class='font-medium'>${action.oa_status}<span></div>\
-        <div class='text-neutral-500'>License: <span class='font-medium uppercase'>${action.publisher_license}</span></div>\
+        <div class='mb-3 text-neutral-600'>${action.doi}</div>\
+        <div class='text-neutral-600'>OA status: <span class='font-medium'>${action.oa_status}<span></div>\
+        <div class='text-neutral-600'>License: <span class='font-medium uppercase'>${action.publisher_license}</span></div>\
       </td>\
       <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-3 text-neutral-500'>${action.invoice_date}</div>\
+        <div class='mb-3 text-neutral-600'>${action.invoice_date}</div>\
         <div class='mb-3 text-neutral-900'>${action.invoice_number}</div>\
-        <div class='text-neutral-500 uppercase'>US$${action.apc_cost}</div>\
+        <div class='text-neutral-600 uppercase'>US$${action.apc_cost}</div>\
       </td>"
     );
 
@@ -470,7 +470,7 @@ oareport = function(org) {
         <div class='mb-1 text-neutral-900'>\
           <a href='https://doi.org/${action.doi}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
         </div>\
-        <div class='text-neutral-500'>${action.journal}</div>\
+        <div class='text-neutral-600'>${action.journal}</div>\
       </td>\
       <td class='whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium'>\
         <button class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200' onclick='decryptEmail(\"${action.email}\", \"${action.doi}\", \"${action.mailto}\")'>\

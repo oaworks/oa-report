@@ -5,9 +5,11 @@
         {% include 'partials/app-name.njk' %}
       </a>
     </div>
+    <div {% if page.url != "/" %}class="hidden sm:block sm:w-1/3 md:w-1/2"{% endif %}>
     {% if page.url != "/" %}
       {% include 'partials/search-form.njk' %}
     {% endif %}
+    </div>
     <div class="flex flex-1 justify-end gap-x-12">
       <a href="https://about.oa.report/" class="text-sm font-semibold leading-6 text-gray-900">About</a>
       {% if page.url != "/" %}

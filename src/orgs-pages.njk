@@ -13,7 +13,7 @@ permalink: "{{ org._source.objectID | slug }}/"
   <div class="container mx-auto px-3 lg:px-6">
     <div class="grid grid-cols-2 gap-6 md:gap-12 py-6 xl:py-12">
       <header class="mb-3 col-span-2 md:col-span-1">
-        <h1 class="mb-6 text-2xl sm:text-3xl md:text-4xl font-light">
+        <h1 class="mb-6 text-3xl md:text-5xl font-light">
           {% if org._source.policy.has_policy === true %}Put OA policy into practice at {% else %}Advance OA at {% endif %}
           <br>
           <strong class="font-bold">{{ org._source.name }}</strong>
@@ -63,7 +63,7 @@ permalink: "{{ org._source.objectID | slug }}/"
 
       <section class="col-span-2 grid grid-cols-3 gap-3 top-0 mb-2 pt-2">
         <header class="col-span-3">
-          <h2 class="mb-3 text-lg leading-6">
+          <h2 class="mb-3 text-base md:text-lg leading-6">
             <span class="block font-medium text-neutral-900 uppercase">
               Insights on <strong class="font-bold">articles</strong>
               {{ component("tooltip", {
@@ -141,24 +141,14 @@ permalink: "{{ org._source.objectID | slug }}/"
       </section>
 
       <section class="col-span-2" id="strategies">
-        <h2 class="mb-5 text-lg leading-6 font-medium text-neutral-900 uppercase">
+        <h2 class="mb-5 text-base md:text-lg leading-6 font-medium text-neutral-900 uppercase">
           Strategies
           {{ component("tooltip", {
             msg: "The <em>Strategy</em> section provides actionable steps for making more of your articles Open Access."
           }) }}
         </h2>
 
-        <nav class="block mb-10">
-          <div class="sm:hidden">
-            <label for="tabs" class="sr-only">Select a tab</label>
-            <select name="tabs" class="block w-full pl-3 pr-10 py-2 text-base border-neutral-300 focus:outline-none focus:ring-carnation-500 focus:border-carnation-500 sm:text-sm js-strategy-select">
-              <option value="email_author_vor" selected>Deposit publisher PDFs</option>
-              <option value="email_author_aam">Deposit accepted manuscripts</option>
-              <option value="apc_followup">Correct publisher errors</option>
-              <option value="unanswered_requests">Escalate unanswered requests</option>
-            </select>
-          </div>
-
+        <div class="block mb-10">
           <div class="hidden sm:block">
             <div class="border-b border-neutral-200">
               <ul class="-mb-px flex divide-x divide-neutral-300 border-b border-neutral-300 js-tabs" role="tablist" aria-label="Strategies Tabs">
@@ -188,9 +178,9 @@ permalink: "{{ org._source.objectID | slug }}/"
               </ul>
             </div>
           </div>
-        </nav>
+        </div>
 
-        <div class="js-tab-content-all">
+        <div class="hidden sm:block js-tab-content-all">
           {{ component("tab-contents", {
             id: "email_author_vor",
             heading: "Deposit publisher PDFs",
@@ -236,11 +226,15 @@ permalink: "{{ org._source.objectID | slug }}/"
             hidden: true
           }) }}
         </div>
+
+        <div class="sm:hidden">
+          <p>Strategies aren’t available on mobile yet. Please head to a desktop computer to take action!</p>
+        </div>
       </section>
 
       <section class="col-span-2 grid md:grid-cols-2 gap-12" id="about">
         <div>
-          <h2 class="mb-5 text-lg leading-6 font-medium text-neutral-900 uppercase">
+          <h2 class="mb-5 text-base md:text-lg leading-6 font-medium text-neutral-900 uppercase">
             About this report
           </h2>
           {# PAID USERS #}
@@ -261,7 +255,7 @@ permalink: "{{ org._source.objectID | slug }}/"
         {# FREE USERS #}
         {% if org._source.paid != true %}
         <div class="text-xs md:text-base" id="about-free-logged-out">
-          <h2 class="mb-5 text-lg leading-6 font-medium text-neutral-900 uppercase">
+          <h2 class="mb-5 text-base md:text-lg leading-6 font-medium text-neutral-900 uppercase">
             Unlock your institution’s research
           </h2>
           <p class="mb-6">
