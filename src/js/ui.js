@@ -14,7 +14,7 @@ for (let tabBtn of strategyTabBtns) {
     };
 
     for (let unselectedTabBtn of otherTabBtns) {
-      unselectedTabBtn.classList.remove("border-neutral-900", "text-neutral-900", "font-bold");
+      unselectedTabBtn.classList.remove("border-t-neutral-900", "text-neutral-900", "font-bold");
       unselectedTabBtn.classList.add("hover:text-neutral-700", "hover:border-neutral-300", "font-normal");
       unselectedTabBtn.setAttribute("aria-selected", "false");
       unselectedTabBtn.setAttribute("tabindex", "-1");
@@ -23,7 +23,7 @@ for (let tabBtn of strategyTabBtns) {
     selectedTabContents.classList.remove("hidden");
     selectedTabContents.removeAttribute("hidden");
 
-    tabBtn.classList.add("border-neutral-900", "text-neutral-900", "font-bold");
+    tabBtn.classList.add("border-t-neutral-900", "text-neutral-900", "font-bold");
     tabBtn.classList.remove("hover:text-neutral-700", "hover:border-neutral-300", "font-normal");
     tabBtn.setAttribute("aria-selected", "true");
     tabBtn.setAttribute("tabindex", "0");
