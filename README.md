@@ -13,3 +13,9 @@ Prerequisites:
 5. Direct your web browser to `http://localhost:8080/`
    - The full list of organisations will be found at `http://localhost:8080/orgs`
 6. Always create a branch off `dev` when you make commits
+
+## Running the site using Github Codespaces 
+
+Just click here: 
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/oaworks/oa-report/tree/dev?quickstart=1)
