@@ -1,3 +1,4 @@
+const apiEndpoint = document.body.getAttribute('data-api-endpoint');
 const searchBox = document.getElementById('js-search-box');
 const suggestionsList = document.getElementById('js-suggestions-list');
 let debounceTimeout;
@@ -10,7 +11,7 @@ async function fetchSuggestions(searchTerm) {
     }
 
     try {
-        const url = `https://beta.oa.works/report/orgs/suggest/search/${searchTerm}?include=name,objectID,private`;
+        const url = `https://${apiEndpoint}.oa.works/report/orgs/suggest/search/${searchTerm}?include=name,objectID,private`;
         const response = await fetch(url);
         const data = await response.json();
 

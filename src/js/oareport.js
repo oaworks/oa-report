@@ -1,5 +1,7 @@
-const base             = "https://beta.oa.works/report/",
-      baseBg           = "https://bg.beta.oa.works/report/",
+const apiEndpoint = document.body.getAttribute('data-api-endpoint');
+
+const base             = `https://${apiEndpoint}.oa.works/report/`,
+      baseBg           = `https://bg.${apiEndpoint}.oa.works/report/`,
       queryBase        = `${base}works?size=100&`,
       countQueryBase   = `${base}works/count?`,
       csvExportBase    = `${baseBg}works.csv?size=all&`,
