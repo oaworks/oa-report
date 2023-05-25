@@ -1,5 +1,3 @@
-const apiEndpoint = document.body.getAttribute('data-api-endpoint');
-
 const base             = `https://${apiEndpoint}.oa.works/report/`,
       baseBg           = `https://bg.${apiEndpoint}.oa.works/report/`,
       queryBase        = `${base}works?size=100&`,
