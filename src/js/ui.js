@@ -1,21 +1,3 @@
-/* Display tab contents on menu selection (XS + SM viewports) */
-const strategySelect = document.querySelector('.js-strategy-select');
-
-strategySelect.addEventListener("change", function (event) {
-  const selectedTabContents = document.querySelector(`.js-tab-content-all #${event.target.value}`),
-        otherTabContents = document.querySelectorAll(`.js-tab-content:not(#${event.target.value})`);
-
-  // Hide all tab contents that are not selected
-  for (let tabContents of otherTabContents) {
-    tabContents.classList.add("hidden");
-    tabContents.setAttribute("hidden", true);
-  };
-
-  if (event.target.matches(selectedTabContents)) {
-    selectedTabContents.classList.remove("hidden");
-    selectedTabContents.removeAttribute("hidden");
-  };
-});
 /* Display tab contents on UI tab selection (MD + larger viewports) */
 const strategyTabBtns = document.querySelectorAll(".js-tab-btn");
 
@@ -32,7 +14,7 @@ for (let tabBtn of strategyTabBtns) {
     };
 
     for (let unselectedTabBtn of otherTabBtns) {
-      unselectedTabBtn.classList.remove("border-neutral-900", "text-neutral-900", "font-bold");
+      unselectedTabBtn.classList.remove("border-t-neutral-900", "text-neutral-900", "font-bold");
       unselectedTabBtn.classList.add("hover:text-neutral-700", "hover:border-neutral-300", "font-normal");
       unselectedTabBtn.setAttribute("aria-selected", "false");
       unselectedTabBtn.setAttribute("tabindex", "-1");
@@ -41,7 +23,7 @@ for (let tabBtn of strategyTabBtns) {
     selectedTabContents.classList.remove("hidden");
     selectedTabContents.removeAttribute("hidden");
 
-    tabBtn.classList.add("border-neutral-900", "text-neutral-900", "font-bold");
+    tabBtn.classList.add("border-t-neutral-900", "text-neutral-900", "font-bold");
     tabBtn.classList.remove("hover:text-neutral-700", "hover:border-neutral-300", "font-normal");
     tabBtn.setAttribute("aria-selected", "true");
     tabBtn.setAttribute("tabindex", "0");

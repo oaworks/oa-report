@@ -1,12 +1,16 @@
 <!doctype html>
-<html class="no-js" lang="en">
+<html class="no-js scroll-smooth" lang="en">
   {% include 'partials/head.njk' %}
-  <body class="flex flex-col h-screen justify-between antialiased bg-[#F4F0F0] text-neutral-900 text-sm md:text-xl">
+  <body class="flex flex-col h-screen justify-between antialiased text-neutral-900 leading-normal text-sm md:text-xl" data-api-endpoint="{{ env.ELEVENTY_API_ENDPOINT }}">
+    {% if site.banner %}
+    <section class="py-4 bg-carnation-400 font-medium text-center text-xs" style="z-index: 5; position: sticky; top: 0;">
+      <p>{{ site.banner | safe }}</p>
+    </section>
+    {% endif %}
+    <p id="js-alert" class="py-4 bg-neutral-900 text-white font-medium text-center text-xs" style="z-index: 5; position: sticky; top: 0; display: none;"></p>
     {% include 'partials/header.njk' %}
-    <main class="container mx-auto px-3 lg:px-6">
-      {% block content %}{% endblock %}
-      {{ content | safe }}
-    </main>
+    {% block content %}{% endblock %}
+    {{ content | safe }}
     {% include 'partials/footer.njk' %}
   </body>
 </html>

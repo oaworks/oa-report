@@ -1,5 +1,7 @@
-const base             = "https://api.oa.works/report/",
-      baseBg           = "https://bg.api.oa.works/report/",
+const apiEndpoint = document.body.getAttribute('data-api-endpoint');
+
+const base             = `https://${apiEndpoint}.oa.works/report/`,
+      baseBg           = `https://bg.${apiEndpoint}.oa.works/report/`,
       queryBase        = `${base}works?size=100&`,
       countQueryBase   = `${base}works/count?`,
       csvExportBase    = `${baseBg}works.csv?size=all&`,
@@ -237,14 +239,14 @@ oareport = function(org) {
       "is_compliant",
       "is_covered_by_policy",
       "articles covered",
-      `<p class='mb-2'>The percentage of articles that are compliant with <a href='${response.data.hits.hits[0]._source.policy.url}' target='_blank' rel='noopener' class='underline'>your organization’s Open Access policy</a>.</p> <p>This number is specific to your policy and your requirements.</p>`
+      `<p class='mb-2'>The percentage of articles that are compliant with <a href='${response.data.hits.hits[0]._source.policy.url}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a>.</p> <p>This number is specific to your policy and your requirements.</p>`
     );
 
     getInsight(
       "is_oa",
       "is_paper",
       "articles",
-      "<p>The number of articles that are free and <a href='https://creativecommons.org/licenses/by/4.0/' class='underline' target='_blank' rel='noopener'>CC BY</a> <strong class='bold'>or</strong> <a href='https://creativecommons.org/publicdomain/zero/1.0/' class='underline' target='_blank' rel='noopener'>CC0</a> (in the public domain) on the publisher’s website, a repository or a preprint server.</p>"
+      "<p>The number of articles that are free and <a href='https://creativecommons.org/licenses/by/4.0/' class='underline underline-offset-2 decoration-1' target='_blank' rel='noopener'>CC BY</a> <strong class='bold'>or</strong> <a href='https://creativecommons.org/publicdomain/zero/1.0/' class='underline underline-offset-2 decoration-1' target='_blank' rel='noopener'>CC0</a> (in the public domain) on the publisher’s website, a repository or a preprint server.</p>"
     );
 
     getInsight(
@@ -258,20 +260,20 @@ oareport = function(org) {
       "has_open_data",
       "has_data",
       "articles generating data",
-      "<p class='mb-2'>The percentage of articles that shared any data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener' class='underline'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noopener' class='underline'>CC-BY</a> license.</p> <p class='mb-2'>This figure only measures how many articles shared Open Data if they generated data in the first place. It also only measures if any of the datasets generated were open, not if all of them were open.</p> <p>We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>"
+      "<p class='mb-2'>The percentage of articles that shared any data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>CC-BY</a> license.</p> <p class='mb-2'>This figure only measures how many articles shared Open Data if they generated data in the first place. It also only measures if any of the datasets generated were open, not if all of them were open.</p> <p>We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>"
     );
 
     getInsight(
       "has_open_code",
       "has_code",
       "articles generating code",
-      "<p class='mb-2'>The percentage of articles that shared any code under a permissive open-source licence, such as MIT.</p> <p class='mb-2'>This figure measures how many articles shared Open Code if they generated code in the first place. It also only measures if <strong>any parts</strong> of the code generated are open, not if <strong>all</strong> of it is open.</p> <p> We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>"
+      "<p class='mb-2'>The percentage of articles that shared any code under a permissive open-source licence, such as MIT.</p> <p class='mb-2'>This figure measures how many articles shared Open Code if they generated code in the first place. It also only measures if <strong>any parts</strong> of the code generated are open, not if <strong>all</strong> of it is open.</p> <p> We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>"
     );
 
     displayStrategy = function(strategy, keys, tableRow) {
       var shown  = response.data.hits.hits[0]._source.strategy[strategy].show_on_web,
           sort   = `&sort=${response.data.hits.hits[0]._source.strategy[strategy].sort}`,
-          tabID  = `item_${strategy}`;
+          tabID  = `tab_${strategy}`;
 
       if (shown === true) {
         // Get tab elements
@@ -374,7 +376,7 @@ oareport = function(org) {
 
             // Otherwise, display a message prompting user to log or contact us to access strategies
             else {
-              tableBody.innerHTML = `<tr><td class='py-4 pl-4 pr-3 text-base text-center align-top break-words' colspan='3'><p class='font-bold'>Strategies help you take action to make your institution’s research more open.</p> <p>Find out more about them by <a href='mailto:hello@oa.works?subject=OA.Report%20&mdash;%20${decodeURIComponent(org)}' class='underline'>contacting us</a> or <a href='https://about.oa.report/docs/user-accounts' class='underline' title='Information on user accounts'>logging in to your account</a> to access them.</p></td></tr>`;
+              tableBody.innerHTML = `<tr><td class='py-4 pl-4 pr-3 text-base text-center align-top break-words' colspan='3'><p class='font-bold'>Strategies help you take action to make your institution’s research more open.</p> <p>Find out more about them by <a href='mailto:hello@oa.works?subject=OA.Report%20&mdash;%20${decodeURIComponent(org)}' class='underline underline-offset-2 decoration-1'>contacting us</a> or <a href='https://about.oa.report/docs/user-accounts' class='underline underline-offset-2 decoration-1' title='Information on user accounts'>logging in to your account</a> to access them.</p></td></tr>`;
               displayNone(`form_${strategy}`);
             }
           })
@@ -398,16 +400,16 @@ oareport = function(org) {
       "email_author_vor",
       ['published_date', 'title', 'journal', 'author_email_name', 'email', 'doi', 'mailto'],
       "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 text-neutral-500'>${action.published_date}</div>\
+        <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
         <div class='mb-1 font-medium text-neutral-900 hover:text-carnation-500'>\
           <a href='https://doi.org/${action.doi}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
         </div>\
-        <div class='text-neutral-500'>${action.journal}</div>\
+        <div class='text-neutral-600'>${action.journal}</div>\
       </td>\
-      <td class='hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell'>\
+      <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
         <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
       </td>\
-      <td class='hidden px-3 py-4 text-sm text-center text-neutral-500 align-top break-words sm:table-cell'>\
+      <td class='hidden px-3 py-4 text-sm text-center text-neutral-600 align-top break-words sm:table-cell'>\
         <button class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200' onclick='decryptEmail(\"${action.email}\", \"${action.doi}\", \"${action.mailto}\")'>\
           <svg class='h-4 w-4' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-mail inline-block h-4 duration-500'><path d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'></path><polyline points='22,6 12,13 2,6'></polyline></svg>\
         </button>\
@@ -418,16 +420,16 @@ oareport = function(org) {
       "email_author_aam",
       ['published_date', 'title', 'journal', 'author_email_name', 'email', 'doi', 'mailto'],
       "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 text-neutral-500'>${action.published_date}</div>\
+        <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
         <div class='mb-1 font-medium text-neutral-900 hover:text-carnation-500'>\
           <a href='https://doi.org/${action.doi}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
         </div>\
-        <div class='text-neutral-500'>${action.journal}</div>\
+        <div class='text-neutral-600'>${action.journal}</div>\
       </td>\
-      <td class='hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell'>\
+      <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
         <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
       </td>\
-      <td class='hidden px-3 py-4 text-sm text-center text-neutral-500 align-top break-words sm:table-cell'>\
+      <td class='hidden px-3 py-4 text-sm text-center text-neutral-600 align-top break-words sm:table-cell'>\
         <button class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200' onclick='decryptEmail(\"${action.email}\", \"${action.doi}\", \"${action.mailto}\")'>\
           <svg class='h-4 w-4' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-mail inline-block h-4 duration-500'><path d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'></path><polyline points='22,6 12,13 2,6'></polyline></svg>\
         </button>\
@@ -440,21 +442,21 @@ oareport = function(org) {
       "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
         <div class='mb-1 font-medium text-neutral-900'>${action.publisher}</div>\
         <div class='mb-3 text-neutral-900'>${action.journal}</div>\
-        <div class='text-neutral-500'>OA type: <span class='font-medium'>${action.journal_oa_type}</span></div>\
+        <div class='text-neutral-600'>OA type: <span class='font-medium'>${action.journal_oa_type}</span></div>\
       </td>\
       <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 text-neutral-500'>${action.published_date}</div>\
+        <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
         <div class='mb-1 text-neutral-900 hover:text-carnation-500'>\
           <a href='https://doi.org/${action.doi}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
         </div>\
-        <div class='mb-3 text-neutral-500'>${action.doi}</div>\
-        <div class='text-neutral-500'>OA status: <span class='font-medium'>${action.oa_status}<span></div>\
-        <div class='text-neutral-500'>License: <span class='font-medium uppercase'>${action.publisher_license}</span></div>\
+        <div class='mb-3 text-neutral-600'>${action.doi}</div>\
+        <div class='text-neutral-600'>OA status: <span class='font-medium'>${action.oa_status}<span></div>\
+        <div class='text-neutral-600'>License: <span class='font-medium uppercase'>${action.publisher_license}</span></div>\
       </td>\
       <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-3 text-neutral-500'>${action.invoice_date}</div>\
+        <div class='mb-3 text-neutral-600'>${action.invoice_date}</div>\
         <div class='mb-3 text-neutral-900'>${action.invoice_number}</div>\
-        <div class='text-neutral-500 uppercase'>US$${action.apc_cost}</div>\
+        <div class='text-neutral-600 uppercase'>US$${action.apc_cost}</div>\
       </td>"
     );
 
@@ -470,7 +472,7 @@ oareport = function(org) {
         <div class='mb-1 text-neutral-900'>\
           <a href='https://doi.org/${action.doi}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
         </div>\
-        <div class='text-neutral-500'>${action.journal}</div>\
+        <div class='text-neutral-600'>${action.journal}</div>\
       </td>\
       <td class='whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium'>\
         <button class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200' onclick='decryptEmail(\"${action.email}\", \"${action.doi}\", \"${action.mailto}\")'>\
@@ -512,7 +514,7 @@ oareport = function(org) {
       xhr.open("GET", query);
       // Display message when server responds
       xhr.onload = function () {
-        document.getElementById("csv_email_msg").innerHTML = `OA.Report has started building your CSV export at <a href='${this.response}' target='_blank' class='underline' id='email_export_link'>this URL</a>. Please check your email to get the full data once it’s ready.`;
+        document.getElementById("csv_email_msg").innerHTML = `OA.Report has started building your CSV export at <a href='${this.response}' target='_blank' class='underline underline-offset-2 decoration-1' id='email_export_link'>this URL</a>. Please check your email to get the full data once it’s ready.`;
       };
       xhr.send();
 
@@ -552,7 +554,7 @@ oareport = function(org) {
       xhr.open("GET", query);
       // Display message when server responds
       xhr.onload = function () {
-        document.getElementById(`msg-${id}`).innerHTML = `OA.Report has started building your CSV export at <a href='${this.response}' target='_blank' class='underline'>this URL</a>. Please check your email to get the full data once it’s ready.`;
+        document.getElementById(`msg-${id}`).innerHTML = `OA.Report has started building your CSV export at <a href='${this.response}' target='_blank' class='underline underline-offset-2 decoration-1'>this URL</a>. Please check your email to get the full data once it’s ready.`;
       };
       xhr.send();
 
