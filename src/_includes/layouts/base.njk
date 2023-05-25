@@ -1,7 +1,7 @@
 <!doctype html>
 <html class="no-js" lang="en">
   {% include 'partials/head.njk' %}
-  <body class="flex flex-col h-screen justify-between antialiased bg-[#F4F0F0] text-neutral-900 text-sm md:text-xl">
+  <body class="flex flex-col h-screen justify-between antialiased bg-[#F4F0F0] text-neutral-900 text-sm md:text-xl" data-api-endpoint="{{ env.ELEVENTY_API_ENDPOINT }}">
     {% include 'partials/header.njk' %}
     <main class="container mx-auto px-3 lg:px-6">
       {% block content %}{% endblock %}

@@ -1,4 +1,4 @@
-// .env
+// .env file to be used with environment variables
 require('dotenv').config();
 
 // Markdown
