@@ -377,6 +377,7 @@ oareport = function(org) {
             // Otherwise, display a message prompting user to log or contact us to access strategies
             else {
               tableBody.innerHTML = `<tr><td class='py-4 pl-4 pr-3 text-base text-center align-top break-words' colspan='3'><p class='font-bold'>Strategies help you take action to make your institution’s research more open.</p> <p>Find out more about them by <a href='mailto:hello@oa.works?subject=OA.Report%20&mdash;%20${decodeURIComponent(org)}' class='underline'>contacting us</a> or <a href='https://about.oa.report/docs/user-accounts' class='underline' title='Information on user accounts'>logging in to your account</a> to access them.</p></td></tr>`;
+              tableCountContents.parentNode.remove();
               displayNone(`form_${strategy}`);
             }
           })
