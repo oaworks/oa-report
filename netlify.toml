@@ -1,8 +1,8 @@
 [[plugins]]
   package = "@netlify/plugin-lighthouse"
 
-  # [plugins.inputs.settings]
-  #   preset = "desktop"
+  [plugins.inputs.settings]
+    preset = "desktop"
 
   [plugins.inputs.thresholds]
     performance = 0.8
