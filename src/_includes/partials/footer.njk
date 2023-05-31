@@ -72,32 +72,13 @@
 {# For the search tool #}
 <script src="../js/search.js"></script>
 
-{# Load CSS asynchronously and lazy load it with prefetch #}
+{# Load font file asynchronously and lazy load it with prefetch #}
 <script>
-  function loadCSSAsync(url) {
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = url;
-    document.head.appendChild(link);
-  }
-
-  function prefetchCSS(url) {
-    const link = document.createElement('link');
-    link.rel = 'prefetch';
-    link.href = url;
-    document.head.appendChild(link);
-  }
-
-  // Prefetch the TailwindCSS and Inter font files
-  prefetchCSS('../tailwind.css');
   prefetchCSS('https://rsms.me/inter/inter.css');
 
-  // Wait for the page to finish rendering
   window.addEventListener('load', function() {
-    loadCSSAsync('../tailwind.css');
     loadCSSAsync('https://rsms.me/inter/inter.css');
   });
-
 </script>
 
 {% block extra_footer %}{% endblock %}

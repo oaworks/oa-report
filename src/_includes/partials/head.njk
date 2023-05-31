@@ -41,8 +41,9 @@
   {# Preconnect to the CDN for our sans-serif font #}
   <link rel="preconnect" href="https://rsms.me/">
   
-  {# Detect any console errors and display in UI #}
+  {# Inlined / critical JS #}
   <script>
+    // Detect any console errors and display in UI
     window.addEventListener('error', function (event) {
       if (event.message?.includes('404') || event.message?.toLowerCase().includes('error')) {
         displayErrorHeader();
@@ -54,6 +55,29 @@
       alertMsg.textContent = "An error has occurred. Please try again later.";
       alertMsg.style.display = 'block';
     }
+
+    // CSS performance-improving functions
+    function loadCSSAsync(url) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = url;
+      document.head.appendChild(link);
+    }
+
+    function prefetchCSS(url) {
+      const link = document.createElement('link');
+      link.rel = 'prefetch';
+      link.href = url;
+      document.head.appendChild(link);
+    }
+
+    // Prefetch & async load TailwindCSS
+    prefetchCSS('../tailwind.css');
+
+    // Wait for the page to finish rendering
+    window.addEventListener('load', function() {
+      loadCSSAsync('../tailwind.css');
+    });
   </script>
 
   {# Load UI-related JS for org report pages only #} 
