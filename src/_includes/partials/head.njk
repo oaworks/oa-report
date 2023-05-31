@@ -52,24 +52,6 @@
     }
   </script>
 
-  {% if page.url == "/" %}
-  {# Responsive image handling on homepage only to add width/height attributes for performance #}
-  <script>
-    // Wait for the DOM to be ready
-    document.addEventListener('DOMContentLoaded', () => {
-      const images = document.querySelectorAll('.js-responsive-img');
-      Array.from(images).forEach(image => {
-        image.addEventListener('load', () => {
-          const { width, height } = image.getBoundingClientRect();
-          // Set the width and height attributes
-          image.setAttribute('width', width);
-          image.setAttribute('height', height);
-        });
-      });
-    });
-  </script>
-  {% endif %}
-
   <script defer src="../js/oaworksKeys.js"></script>
 
   {# Load UI-related JS for org report pages only #} 

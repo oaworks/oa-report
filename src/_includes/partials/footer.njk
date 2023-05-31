@@ -13,6 +13,20 @@
   </nav>
 </footer>
 
+{% if page.url == "/" %}
+{# Responsive image handling on homepage only to add width/height attributes for performance #}
+<script>
+  window.onload = function() {
+    const images = document.querySelectorAll('.js-responsive-img');
+    Array.from(images).forEach(image => {
+      const { width, height } = image.getBoundingClientRect();
+      image.setAttribute('width', width);
+      image.setAttribute('height', height);
+    });
+  };
+</script>
+{% endif %}
+
 <script src="../js/popper.min.js"></script>
 <script src="../js/tippy-bundle.umd.min.js"></script>
 <script>
