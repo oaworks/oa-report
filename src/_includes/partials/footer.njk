@@ -60,4 +60,30 @@
 
 <script src="../js/search.js"></script>
 
+{# Load CSS asynchronously and lazy load it with prefetch #}
+<script>
+  function loadCSSAsync(url) {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = url;
+    document.head.appendChild(link);
+  }
+
+  function prefetchCSS(url) {
+    const link = document.createElement('link');
+    link.rel = 'prefetch';
+    link.href = url;
+    document.head.appendChild(link);
+  }
+
+  // Prefetch the Tailwind CSS file
+  prefetchCSS('../tailwind.css');
+
+  // Wait for the page to finish rendering
+  window.addEventListener('load', function() {
+    // Asynchronously load the Tailwind CSS file
+    loadCSSAsync('../tailwind.css');
+  });
+</script>
+
 {% block extra_footer %}{% endblock %}
