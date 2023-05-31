@@ -80,7 +80,7 @@ module.exports = function(eleventyConfig) {
 
   // Add NJK template tag for WebP images (and fallback)
   // Image is included this way: {% webpImg "images/image.jpg", "Alt text here", "Optional custom class here" %}
-  eleventyConfig.addShortcode("webpImg", function(filename, altText, classes = '', loading = false) {
+  eleventyConfig.addShortcode("webpImg", function(filename, altText, width, height, classes = '', loading = false) {
     const webpFilename = filename.replace(/\.[^.]+$/, ".webp");
 
     // Call checkWebPSupport() here to determine WebP support
@@ -95,7 +95,7 @@ module.exports = function(eleventyConfig) {
     if (hasWebPSupport) {
       return `<picture>
                 <source srcset="${webpFilename}" type="image/webp">
-                <img src="${filename}" alt="${altText}" ${imgClasses} ${loadingAttr}>
+                <img src="${filename}" alt="${altText}" width="${width}" height="${height}" ${imgClasses} ${loadingAttr}>
               </picture>`;
     } else {
       return `<img src="${filename}" alt="${altText}" ${imgClasses} ${loadingAttr}>`;

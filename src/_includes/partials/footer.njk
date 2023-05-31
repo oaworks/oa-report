@@ -13,20 +13,6 @@
   </nav>
 </footer>
 
-{% if page.url == "/" %}
-{# Responsive image handling on homepage only to add width/height attributes for performance #}
-<script>
-  window.onload = function() {
-    const images = document.querySelectorAll('.js-responsive-img');
-    Array.from(images).forEach(image => {
-      const { width, height } = image.getBoundingClientRect();
-      image.setAttribute('width', width);
-      image.setAttribute('height', height);
-    });
-  };
-</script>
-{% endif %}
-
 {# Load JS for org report pages only #}
 {% if org._source.name %}
 {# For tooltips #}
