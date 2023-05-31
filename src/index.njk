@@ -53,7 +53,7 @@ layout: layouts/base.njk
           <li class="col-span-1">
             <p class="sr-only">{{ user.name }}</p>
             <a href="{{ user.url }}" target="_blank" rel="noopener" class="block" title="Go to the {{ user.acronym }} website">
-              <img src="../{{ user.logo }}" alt="Logo for {{ user.acronym }}"/>
+              <img src="../{{ user.logo }}" alt="Logo for {{ user.acronym }}" loading="lazy"/>
             </a>
           </li>
           {% endif %}
