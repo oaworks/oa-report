@@ -27,6 +27,9 @@
 </script>
 {% endif %}
 
+{# Load JS for org report pages only #}
+{% if org._source.name %}
+{# For tooltips #}
 <script src="../js/popper.min.js"></script>
 <script src="../js/tippy-bundle.umd.min.js"></script>
 <script>
@@ -64,8 +67,7 @@
   });
 </script>
 
-{# Load JS for org report pages only #}
-{% if org._source.name %}
+{# To get org names/slugs and whether or not they’re paying users #}
 <script>
   const org = ("{{ org._source.name | urlencode }}"),
         orgSlug = ("{{ org._source.objectID | slug }}");
@@ -75,10 +77,13 @@
     const paid = false;
   {% endif %}
 </script>
+
+{# To fetch data from the API and display it in the UI #}
 <script defer src="../js/axios.min.js"></script>
-<script defer async src="../js/oareport.js"></script>
+<script defer src="../js/oareport.js"></script>
 {% endif %}
 
+{# For the search tool #}
 <script src="../js/search.js"></script>
 
 {# Load CSS asynchronously and lazy load it with prefetch #}
