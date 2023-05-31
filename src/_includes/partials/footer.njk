@@ -54,13 +54,10 @@
     const paid = false;
   {% endif %}
 </script>
+<script defer src="../js/axios.min.js"></script>
+<script defer async src="../js/oareport.js"></script>
 {% endif %}
 
 <script src="../js/search.js"></script>
-{% if page.url != "/" %}
-<script defer src="../js/axios.min.js"></script>
-<script defer async src="../js/oareport.js"></script>
-<script defer async src="../js/ui.js"></script>
-{% endif %}
 
 {% block extra_footer %}{% endblock %}
