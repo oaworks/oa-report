@@ -21,39 +21,10 @@ changeOpacity = function(id, opacity = 100) {
       elem.classList.add(`opacity-${opacity}`);
 }
 
-// Change start and end dates — used when switching years using pill nav
-replaceDateRange = function(newStart, newEnd) {
-  startDateContents.textContent = makeDateReadable(newStart);
-  endDateContents.textContent = makeDateReadable(newEnd);
-  startDate     = changeDays(-1, newStart);
-  startDate     = formatDateToISO(startDate);
-  endDate       = changeDays(+1, newEnd);
-  endDate       = formatDateToISO(endDate);
-  dateRange     = `(published_date:>${startDate}%20AND%20published_date:<${endDate})%20AND%20`;
-  return dateRange;
-};
-
 /* Get report page elements where data will be inserted */
-// Date range
-var endDateContents                = document.getElementById("end_date"),
-    startDateContents              = document.getElementById("start_date");
-
 // Send CSV data by email form
 var queryHiddenInput               = document.getElementById("download-form-q"),
     includeHiddenInput             = document.getElementById("download-form-include");
-
-// Display default date range since start of the current year
-function getDateRangeForUserType() {
-  // If paying, end date is up to today
-  if (paid === true) {
-    dateRange = replaceDateRange(startYearDate, currentDate);
-  } else {
-    // Else, if free user, end date is a fixed date set above
-    dateRange = replaceDateRange(startYearDate, fixedDate);
-  };  
-};
-
-getDateRangeForUserType();
 
 // Check if user is logged in
 let orgKey = "",
