@@ -43,10 +43,24 @@
   });
 </script>
 
+{# Load JS for org report pages only #}
+{% if org._source.name %}
+<script>
+  const org = ("{{ org._source.name | urlencode }}"),
+        orgSlug = ("{{ org._source.objectID | slug }}");
+  {% if org._source.paid %}
+    const paid = true;
+  {% else %}
+    const paid = false;
+  {% endif %}
+</script>
+{% endif %}
+
 <script src="../js/search.js"></script>
 {% if page.url != "/" %}
-<script src="../js/oareport.js"></script>
-<script src="../js/ui.js"></script>
+<script defer src="../js/axios.min.js"></script>
+<script defer async src="../js/oareport.js"></script>
+<script defer async src="../js/ui.js"></script>
 {% endif %}
 
 {% block extra_footer %}{% endblock %}
