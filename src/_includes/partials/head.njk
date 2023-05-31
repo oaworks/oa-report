@@ -41,16 +41,7 @@
   {# CDN for our sans-serif font #}
   <link rel="preconnect" href="https://rsms.me/">
   <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
-
-  {# Inline font #}
-  <style>
-    :root { font-family: 'Inter', sans-serif; }
-
-    @supports (font-variation-settings: normal) {
-      :root { font-family: 'Inter var', sans-serif; }
-    }
-  </style>
-
+  
   {# Detect any console errors and display in UI #}
   <script>
     window.addEventListener('error', function (event) {
