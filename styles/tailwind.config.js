@@ -9,8 +9,8 @@ module.exports = {
   safelist: [],
   theme: {
     fontFamily: {
-      sans: ['Inter var', 'sans-serif'],
-      serif: ['Wremena', 'serif'],
+      sans: ['Inter var', 'Inter', 'sans-serif'],
+      serif: ['serif'],
     },
     colors: {
       transparent: 'transparent',

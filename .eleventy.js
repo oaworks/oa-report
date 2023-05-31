@@ -71,7 +71,6 @@ module.exports = function(eleventyConfig) {
   });
 
   // Set directories to pass through to the dist folder
-  eleventyConfig.addPassthroughCopy('./src/fonts/');
   eleventyConfig.addPassthroughCopy('./src/js/');
   eleventyConfig.addPassthroughCopy('./src/css/');
   eleventyConfig.addPassthroughCopy('./src/img/');
