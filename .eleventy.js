@@ -1,6 +1,9 @@
 // .env file to be used with environment variables
 require('dotenv').config();
 
+// HTML minifier
+const htmlmin = require("html-minifier");
+
 // Markdown
 const markdownIt = require('markdown-it');
 const markdownItAttrs = require('markdown-it-attrs');
@@ -16,12 +19,7 @@ const feather = require('feather-icons');
 const iconShortcode = (icon) => feather.icons[icon].toSvg({ class: 'inline-block duration-500'});
 const iconShortcodeSmall = (icon) => feather.icons[icon].toSvg({ class: 'inline-block h-4 duration-500'});
 
-// TailwindCSS
-const htmlmin = require('html-minifier');
 const now = String(Date.now());
-
-// CSS minifier
-// const cssmin = require('cssmin');
 
 // Configs
 module.exports = function(eleventyConfig) {
@@ -45,22 +43,20 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addShortcode('version', function () {
     return now;
   });
-  // eleventyConfig.addTransform('htmlmin', function (content, outputPath) {
-  //   if (
-  //     process.env.ELEVENTY_PRODUCTION &&
-  //     outputPath &&
-  //     outputPath.endsWith('.html')
-  //   ) {
-  //     let minified = htmlmin.minify(content, {
-  //       useShortDoctype: true,
-  //       removeComments: true,
-  //       collapseWhitespace: true,
-  //     });
-  //     return minified;
-  //   }
 
-  //   return content;
-  // });
+  // Minify HTML output
+  eleventyConfig.addTransform("htmlmin", function(content) {
+    if( this.page.outputPath && this.page.outputPath.endsWith(".html") ) {
+      let minified = htmlmin.minify(content, {
+        useShortDoctype: true,
+        removeComments: true,
+        collapseWhitespace: true
+      });
+      return minified;
+    }
+
+    return content;
+  });
 
   // Enable CORS
   eleventyConfig.setBrowserSyncConfig({
