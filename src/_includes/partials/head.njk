@@ -33,9 +33,14 @@
   <meta name="twitter:description" content="{{ site.description }}">
   <meta name="twitter:image" content="{{ site.base_url }}/img/twitter_meta.png">
   <meta name="twitter:image:alt" content="The OA.Report wordmark is shown alongside three small illustrations. Those illustrations include a simplified table displaying the status of paper, checkboxes, and a button that says unlock.">
+
   {# SimpleAnalytics tracking code #}
   <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
   <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif" alt="" referrerpolicy="no-referrer-when-downgrade" /></noscript>
+
+  {# CDN for our sans-serif font #}
+  <link rel="preconnect" href="https://rsms.me/">
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 
   {# Detect any console errors and display in UI #}
   <script>
