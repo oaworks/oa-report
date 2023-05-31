@@ -87,7 +87,14 @@ oareport = function(org) {
           interactive: true,
           placement: 'top',
           appendTo: document.body,
-        }).setContent(info);
+        });
+
+        // Set tooltip content
+        instance.setContent(info);
+
+        // Access tooltip instance and its ID; use it for aria-controls attribute
+        const tooltipID = instance.popper.id;
+        infoContents.setAttribute('aria-controls', tooltipID);
 
         // Get numerator’s count query
         num = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.analysis[numerator].query);
