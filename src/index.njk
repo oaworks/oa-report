@@ -12,7 +12,7 @@ layout: layouts/base.njk
           {% include 'partials/app-name.njk' %}
         </h1>
         <figure>
-          <a href="/img/screenshot.png" class="block mb-8" target="_blank" title="See screenshot in full size"><img src="/img/screenshot.png" alt="A screenshot of the OA.Report user interface showing Open Access insights and a list of proposed strategies to open closed-access content." style="border-radius: var(--space-xxs);"></a>
+          <a href="/img/screenshot.png" class="block mb-8" target="_blank" title="See screenshot in full size"><img src="/img/screenshot.png" alt="A screenshot of the OA.Report user interface showing Open Access insights and a list of proposed strategies to open closed-access content." style="border-radius: var(--space-xxs);" class="js-responsive-img"></a>
           <figcaption class="text-xl md:text-3xl">{{ site.tagline }}</figcaption>
         </figure>
       </div>
@@ -53,7 +53,7 @@ layout: layouts/base.njk
           <li class="col-span-1">
             <p class="sr-only">{{ user.name }}</p>
             <a href="{{ user.url }}" target="_blank" rel="noopener" class="block" title="Go to the {{ user.acronym }} website">
-              <img src="../{{ user.logo }}" alt="Logo for {{ user.acronym }}" loading="lazy"/>
+              <img src="../{{ user.logo }}" alt="Logo for {{ user.acronym }}" loading="lazy" class="js-responsive-img"/>
             </a>
           </li>
           {% endif %}
