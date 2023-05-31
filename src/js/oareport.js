@@ -8,18 +8,6 @@ const base             = `https://${apiEndpoint}.oa.works/report/`,
 // Set report base path
 let report = `${base}orgs?q=name:%22${org}%22`;
 
-// Set readable date options
-const readableDateOptions = {
-  day: "numeric",
-  month: "long",
-  year: "numeric"
-};
-
-// Detect browser’s locale to display human-readable numbers
-getUsersLocale = function() {
-  return navigator.languages && navigator.languages.length ? navigator.languages[0] : navigator.language;
-};
-
 // Visually hide an element
 displayNone = function(id) {
   var elem = document.getElementById(id);
@@ -33,32 +21,7 @@ changeOpacity = function(id, opacity = 100) {
       elem.classList.add(`opacity-${opacity}`);
 }
 
-// Do math with days on a date
-changeDays = function(numOfDays, date) {
-  const dateCopy = new Date(date.getTime());
-  dateCopy.setDate(dateCopy.getDate() + numOfDays);
-  return dateCopy;
-};
-
-// Make dates readable for display in the UI
-makeDateReadable = function(date) {
-  date = date.toLocaleString(getUsersLocale(), readableDateOptions);
-  return date;
-};
-
-// Make numbers readable
-makeNumberReadable = function(number) {
-  number = number.toLocaleString(getUsersLocale());
-  return number;
-};
-
-// Format dates into ISO format — used in ElasticSearch query
-formatDateToISO = function(date) {
-  date = date.toISOString().substring(0, 10);
-  return date;
-};
-
-// Change start and end dates
+// Change start and end dates — used when switching years using pill nav
 replaceDateRange = function(newStart, newEnd) {
   startDateContents.textContent = makeDateReadable(newStart);
   endDateContents.textContent = makeDateReadable(newEnd);
@@ -78,32 +41,6 @@ var endDateContents                = document.getElementById("end_date"),
 // Send CSV data by email form
 var queryHiddenInput               = document.getElementById("download-form-q"),
     includeHiddenInput             = document.getElementById("download-form-include");
-
-/* Date display and filtering */
-// Set today’s date and 12 months ago date to display most recent Insights data as default
-const currentDate                  = new Date(),
-      currentDateReadable          = makeDateReadable(currentDate),
-      currentDateQuery             = changeDays(+1, currentDate), // add 1 day for ElasticSearch (greater than but not equal)
-      currentDateISO               = formatDateToISO(currentDateQuery),
-
-      startYearDate                = new Date(new Date().getFullYear(), 0, 1),
-      startYearDateReadable        = makeDateReadable(startYearDate),
-      startYearDateQuery           = changeDays(-1, startYearDate),
-      startYearDateISO             = formatDateToISO(startYearDateQuery),
-
-      // Get last year’s start and end date as temporary default (see oaworks/Gates#420)
-      lastYearStartDate            = new Date(new Date().getFullYear()-1, 0, 1),
-      lastYearStartDateReadable    = makeDateReadable(lastYearStartDate),
-      lastYearStartDateQuery       = changeDays(-1, lastYearStartDate),
-      lastYearStartDateISO         = formatDateToISO(lastYearStartDate),
-
-      lastYearEndDate              = new Date(new Date().getFullYear()-1, 11, 31),
-      lastYearEndDateReadable      = makeDateReadable(lastYearEndDate),
-      lastYearEndDateQuery         = changeDays(+1, lastYearEndDate),
-      lastYearEndDateISO           = formatDateToISO(lastYearEndDate),
-
-      // Fixed end date set for free / non-paying users 
-      fixedDate                    = new Date('2023-03-31');
 
 // Display default date range since start of the current year
 function getDateRangeForUserType() {
@@ -565,57 +502,4 @@ oareport = function(org) {
 };
 
 oareport(org);
-
-/** Change displayed Insights data based on user input **/
-// Preset "quick date filter" buttons
-var startYearBtn              = document.getElementById("start-year"),
-    lastYearBtn               = document.getElementById("last-year"),
-    twoYearsBtn               = document.getElementById("two-years-ago"),
-    allTimeBtn                = document.getElementById("all-time"),
-    insightsDateRange         = document.getElementById("insights_range");
-
-startYearBtn.textContent      = startYearDate.getFullYear();
-lastYearBtn.textContent       = lastYearStartDate.getFullYear();
-
-startYearBtn.addEventListener("click", function() {
-  getDateRangeForUserType();
-  insightsDateRange.textContent = `Since the start of ${startYearDate.getFullYear()}`;
-  oareport(org);
-});
-
-lastYearBtn.addEventListener("click", function() {
-  replaceDateRange(lastYearStartDate, lastYearEndDate);
-  insightsDateRange.textContent = `In ${lastYearStartDate.getFullYear()}`;
-  oareport(org);
-});
-
-// Only paid users can see data from two years ago and all time
-// These buttons won’t be displayed for free users
-if (twoYearsBtn) {
-  // Set dates two years prior to current year
-  var twoYearsStartDate         = new Date(new Date().getFullYear()-2, 0, 1),
-      twoYearsStartDateReadable = makeDateReadable(twoYearsStartDate),
-      twoYearsStartDateQuery    = changeDays(-1, twoYearsStartDate),
-      twoYearsStartDateISO      = formatDateToISO(twoYearsStartDate),
-
-      twoYearsEndDate           = new Date(new Date().getFullYear()-2, 11, 31),
-      twoYearsEndDateReadable   = makeDateReadable(twoYearsEndDate),
-      twoYearsEndDateQuery      = changeDays(+1, twoYearsEndDate),
-      twoYearsEndDateISO        = formatDateToISO(twoYearsEndDate);
-
-  twoYearsBtn.textContent = twoYearsStartDate.getFullYear();
-  twoYearsBtn.addEventListener("click", function() {
-    replaceDateRange(twoYearsStartDate, twoYearsEndDate);
-    insightsDateRange.textContent = `In ${twoYearsStartDate.getFullYear()}`;
-    oareport(org);
-  });
-}
-
-if (allTimeBtn) {
-  allTimeBtn.addEventListener("click", function() {
-    replaceDateRange(new Date(1980, 0, 1), currentDate);
-    insightsDateRange.textContent = "All time";
-    oareport(org);
-  });
-}
 
