@@ -102,14 +102,16 @@
     document.head.appendChild(link);
   }
 
-  // Prefetch the Tailwind CSS file
+  // Prefetch the TailwindCSS and Inter font files
   prefetchCSS('../tailwind.css');
+  prefetchCSS('https://rsms.me/inter/inter.css');
 
   // Wait for the page to finish rendering
   window.addEventListener('load', function() {
-    // Asynchronously load the Tailwind CSS file
     loadCSSAsync('../tailwind.css');
+    loadCSSAsync('https://rsms.me/inter/inter.css');
   });
+
 </script>
 
 {% block extra_footer %}{% endblock %}
