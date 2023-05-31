@@ -51,20 +51,6 @@ replaceDateRange = function(newStart, newEnd) {
   return dateRange;
 }
 
-/* Responsive image handling to add width/height attributes for performance */
-// Wait for the DOM to be ready
-document.addEventListener('DOMContentLoaded', () => {
-  const images = document.querySelectorAll('.js-responsive-img');
-  Array.from(images).forEach(image => {
-    image.addEventListener('load', () => {
-      const { width, height } = image.getBoundingClientRect();
-      // Set the width and height attributes
-      image.setAttribute('width', width);
-      image.setAttribute('height', height);
-    });
-  });
-});
-
 /* Date display and filtering */
 // Utility function to simplify date creation
 function createDate(year, month, day) {
