@@ -9,267 +9,267 @@ permalink: "{{ org._source.objectID | slug }}/"
 
 {%- from "system/component.njk" import component -%}
 
-<div class="grid grid-cols-2 gap-6 md:gap-12 py-6 xl:py-12">
-  <header class="mb-3 col-span-2 md:col-span-1">
-    <h1 class="mb-6 text-2xl sm:text-3xl md:text-4xl font-light">
-      {% if org._source.policy.has_policy === true %}Put OA policy into practice at {% else %}Advance OA at {% endif %}
-      <br>
-      <strong class="font-bold">{{ org._source.name }}</strong>
-    </h1>
+<main class="bg-carnation-100">
+  <div class="container mx-auto px-3 lg:px-6">
+    <div class="grid grid-cols-2 gap-6 md:gap-12 py-6 xl:py-12">
+      <header class="mb-3 col-span-2 md:col-span-1">
+        <h1 class="mb-6 text-3xl md:text-5xl font-light">
+          {% if org._source.policy.has_policy === true %}Put OA policy into practice at {% else %}Advance OA at {% endif %}
+          <br>
+          <strong class="font-bold">{{ org._source.name }}</strong>
+        </h1>
 
-    <h2 class="mb-1 sr-only" id="insights_range">
-      Since the start of 2023
-    </h2>
-    <p class="sr-only">Quick date filters</p>
-    <ul>
-      <li class="mr-1 inline-block">
-        {{ component("pill", {
-          id: "start-year",
-          txt: "",
-          class: "bg-neutral-900 text-white"
-        }) }}
-      </li>
-      <li class="mr-1 inline-block">
-        {{ component("pill", {
-          id: "last-year",
-          txt: "",
-          class: "bg-neutral-200 text-neutral-900"
-        }) }}
-      </li>
-      {% if org._source.paid == true %}
-      <li class="mr-1 inline-block">
-        {{ component("pill", {
-          id: "two-years-ago",
-          txt: "",
-          class: "bg-neutral-200 text-neutral-900"
-        }) }}
-      </li>
-      <li class="mr-1 inline-block">
-        {{ component("pill", {
-          id: "all-time",
-          txt: "All time",
-          class: "bg-neutral-200 text-neutral-900"
-        }) }}
-      </li>
-      {% endif %}
-    </ul>
-  </header>
+        <h2 class="mb-1 sr-only" id="insights_range">
+          Since the start of 2023
+        </h2>
+        <p class="sr-only">Quick date filters</p>
+        <ul>
+          <li class="mr-1 inline-block">
+            {{ component("pill", {
+              id: "start-year",
+              txt: "",
+              class: "bg-neutral-900 text-white"
+            }) }}
+          </li>
+          <li class="mr-1 inline-block">
+            {{ component("pill", {
+              id: "last-year",
+              txt: "",
+              class: "bg-neutral-200 text-neutral-900"
+            }) }}
+          </li>
+          {% if org._source.paid == true %}
+          <li class="mr-1 inline-block">
+            {{ component("pill", {
+              id: "two-years-ago",
+              txt: "",
+              class: "bg-neutral-200 text-neutral-900"
+            }) }}
+          </li>
+          <li class="mr-1 inline-block">
+            {{ component("pill", {
+              id: "all-time",
+              txt: "All time",
+              class: "bg-neutral-200 text-neutral-900"
+            }) }}
+          </li>
+          {% endif %}
+        </ul>
+      </header>
 
-  <section class="col-span-2 md:col-span-1 md:text-right">
-    {% include 'partials/email-download-form.njk' %}
-  </section>
-
-  <section class="col-span-2 grid grid-cols-3 gap-3 top-0 mb-2 pt-2 bg-[#F4F0F0]">
-    <header class="col-span-3">
-      <h2 class="mb-3 text-lg leading-6">
-        <span class="block font-medium text-neutral-900 uppercase">
-          Insights on <strong class="font-bold">articles</strong>
-          {{ component("tooltip", {
-            msg: "The <em>Insights</em> section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/developers/infrastructure/' target='_blank' class='underline'>infrastructure page</a>."
-          }) }}
-        </span>
-      </h2>
-    </header>
-
-    <div class="col-span-3 gap-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-      {{ component("card", {
-        id: "is_paper",
-        title: "Total published",
-        icon: "file-text",
-        raw_number: true
-      }) }}
-
-      {{ component("card", {
-        id: "is_free_to_read",
-        title: "Free-to-read",
-        icon: "gift"
-      }) }}
-
-      {{ component("card", {
-        id: "is_compliant",
-        title: "Policy-compliant",
-        icon: "check-circle"
-      }) }}
-
-      {{ component("card", {
-        id: "is_oa",
-        title: "Open Access",
-        icon: "unlock"
-      }) }}
-
-      {{ component("card", {
-        id: "has_data_availability_statement",
-        title: "Have data availability statements",
-        icon: "search"
-      }) }}
-
-      {{ component("card", {
-        id: "has_open_data",
-        title: "With Open Data",
-        icon: "database"
-      }) }}
-
-      {{ component("card", {
-        id: "has_open_code",
-        title: "With Open Code",
-        icon: "code"
-      }) }}
-
-    {# TODO: Filter by date #}
-    {# <div class="col-span-12 mb-6 grid grid-cols-12 gap-3 lg:gap-6">
-      <section>
-        <h2 class="sr-only">Filter by date</h2>
-        <form onsubmit="changeDateRange()" method="get" id="change_date_range">
-          <div class="flex items-end mb-3">
-            <fieldset class="mr-6">
-              <label for="report-start-date" class="mb-2 block text-base text-neutral-800">From</label>
-              <input type="date" min="2021-01-01" name="report-start-date" id="report_start_date" class="focus:ring-carnation-500 focus:border-carnation-500 block w-full sm:text-sm shadow-md rounded-md border-0" required>
-            </fieldset>
-            <fieldset class="mr-6">
-              <label for="report-end-date" class="mb-2 block text-base text-neutral-800">To</label>
-              <input type="date" min="2021-01-01" name="report-start-date" id="report_end_date" class="focus:ring-carnation-500 focus:border-carnation-500 block w-full sm:text-sm shadow-md rounded-md border-0" required>
-            </fieldset>
-            <button type="submit" class="block px-4 py-2 text-sm font-medium rounded-md text-white bg-neutral-900 hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-500 focus:border-carnation-500 duration-500 shadow-md border-0 h-fit whitespace-nowrap">
-              Filter by dates
-            </button>
-          </div>
-        </form>
+      <section class="col-span-2 md:col-span-1 md:text-right">
+        {% include 'partials/email-download-form.njk' %}
       </section>
-    </div> #}
-  </section>
 
-  <section class="col-span-2" id="strategies">
-    <h2 class="mb-5 text-lg leading-6 font-medium text-neutral-900 uppercase">
-      Strategies
-      {{ component("tooltip", {
-        msg: "The <em>Strategy</em> section provides actionable steps for making more of your articles Open Access."
-      }) }}
-    </h2>
+      <section class="col-span-2 grid grid-cols-3 gap-3 top-0 mb-2 pt-2">
+        <header class="col-span-3">
+          <h2 class="mb-3 text-base md:text-lg leading-6">
+            <span class="block font-medium text-neutral-900 uppercase">
+              Insights on <strong class="font-bold">articles</strong>
+              {{ component("tooltip", {
+                msg: "The <em>Insights</em> section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/developers/infrastructure/' target='_blank' class='underline underline-offset-2 decoration-1'>infrastructure page</a>."
+              }) }}
+            </span>
+          </h2>
+        </header>
 
-    <nav class="block mb-10">
-      <div class="sm:hidden">
-        <label for="tabs" class="sr-only">Select a tab</label>
-        <select name="tabs" class="block w-full pl-3 pr-10 py-2 text-base border-neutral-300 focus:outline-none focus:ring-carnation-500 focus:border-carnation-500 sm:text-sm rounded-md js-strategy-select">
-          <option value="email_author_vor" selected>Deposit publisher PDFs</option>
-          <option value="email_author_aam">Deposit accepted manuscripts</option>
-          <option value="apc_followup">Correct publisher errors</option>
-          <option value="unanswered_requests">Escalate unanswered requests</option>
-        </select>
-      </div>
+        <div class="col-span-3 gap-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          {{ component("card", {
+            id: "is_paper",
+            title: "Total published",
+            icon: "file-text",
+            raw_number: true
+          }) }}
 
-      <div class="hidden sm:block">
-        <div class="border-b border-neutral-200">
-          <ul class="-mb-px flex divide-x divide-neutral-300 border-b border-neutral-300 js-tabs" role="tablist" aria-label="Strategies Tabs">
-            {{ component("tab-item", {
-              id: "email_author_vor",
-              txt: "Deposit publisher PDFs",
-              first: true
-            }) }}
+          {{ component("card", {
+            id: "is_free_to_read",
+            title: "Free-to-read",
+            icon: "gift"
+          }) }}
 
-            {{ component("tab-item", {
-              id: "email_author_aam",
-              txt: "Deposit accepted manuscripts",
-              first: false
-            }) }}
+          {{ component("card", {
+            id: "is_compliant",
+            title: "Policy-compliant",
+            icon: "check-circle"
+          }) }}
 
-            {{ component("tab-item", {
-              id: "apc_followup",
-              txt: "Correct publisher errors",
-              first: false
-            }) }}
+          {{ component("card", {
+            id: "is_oa",
+            title: "Open Access",
+            icon: "unlock"
+          }) }}
 
-            {{ component("tab-item", {
-              id: "unanswered_requests",
-              txt: "Escalate unanswered requests",
-              first: false
-            }) }}
-          </ul>
+          {{ component("card", {
+            id: "has_data_availability_statement",
+            title: "Have data availability statements",
+            icon: "search"
+          }) }}
+
+          {{ component("card", {
+            id: "has_open_data",
+            title: "With Open Data",
+            icon: "database"
+          }) }}
+
+          {{ component("card", {
+            id: "has_open_code",
+            title: "With Open Code",
+            icon: "code"
+          }) }}
+
+        {# TODO: Filter by date #}
+        {# <div class="col-span-12 mb-6 grid grid-cols-12 gap-3 lg:gap-6">
+          <section>
+            <h2 class="sr-only">Filter by date</h2>
+            <form onsubmit="changeDateRange()" method="get" id="change_date_range">
+              <div class="flex items-end mb-3">
+                <fieldset class="mr-6">
+                  <label for="report-start-date" class="mb-2 block text-base text-neutral-800">From</label>
+                  <input type="date" min="2021-01-01" name="report-start-date" id="report_start_date" class="focus:ring-carnation-500 focus:border-carnation-500 block w-full sm:text-sm shadow-md rounded-md border-0" required>
+                </fieldset>
+                <fieldset class="mr-6">
+                  <label for="report-end-date" class="mb-2 block text-base text-neutral-800">To</label>
+                  <input type="date" min="2021-01-01" name="report-start-date" id="report_end_date" class="focus:ring-carnation-500 focus:border-carnation-500 block w-full sm:text-sm shadow-md rounded-md border-0" required>
+                </fieldset>
+                <button type="submit" class="block px-4 py-2 text-sm font-medium rounded-md text-white bg-neutral-900 hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-500 focus:border-carnation-500 duration-500 shadow-md border-0 h-fit whitespace-nowrap">
+                  Filter by dates
+                </button>
+              </div>
+            </form>
+          </section>
+        </div> #}
+      </section>
+
+      <section class="col-span-2" id="strategies">
+        <h2 class="mb-5 text-base md:text-lg leading-6 font-medium text-neutral-900 uppercase">
+          Strategies
+          {{ component("tooltip", {
+            msg: "The <em>Strategy</em> section provides actionable steps for making more of your articles Open Access."
+          }) }}
+        </h2>
+
+        <div class="block mb-10">
+          <div class="hidden sm:block">
+            <div class="border-b border-neutral-200">
+              <ul class="-mb-px flex divide-x border-b border-b-neutral-300 js-tabs" role="tablist" aria-label="Strategies Tabs">
+                {{ component("tab-item", {
+                  id: "email_author_vor",
+                  txt: "Deposit publisher PDFs",
+                  first: true
+                }) }}
+
+                {{ component("tab-item", {
+                  id: "email_author_aam",
+                  txt: "Deposit accepted manuscripts",
+                  first: false
+                }) }}
+
+                {{ component("tab-item", {
+                  id: "apc_followup",
+                  txt: "Correct publisher errors",
+                  first: false
+                }) }}
+
+                {{ component("tab-item", {
+                  id: "unanswered_requests",
+                  txt: "Escalate unanswered requests",
+                  first: false
+                }) }}
+              </ul>
+            </div>
+          </div>
         </div>
-      </div>
-    </nav>
 
-    <div class="js-tab-content-all">
-      {{ component("tab-contents", {
-        id: "email_author_vor",
-        heading: "Deposit publisher PDFs",
-        desc: "Send emails to authors to request they make their work free to read. In these cases, they can do that by making a <strong>publisher PDF (version of record, VOR)</strong> available in a repository.",
-        table_headings: "<th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-10/12 sm:w-6/12'>Article</th>\
-                        <th scope='col' class='hidden px-3 py-3.5 text-left text-sm font-semibold w-4/12 sm:table-cell'>Corresponding author</th>",
-        draft_btn: true,
-        action_help_txt: true,
-        hidden: false
-      }) }}
+        <div class="hidden sm:block js-tab-content-all">
+          {{ component("tab-contents", {
+            id: "email_author_vor",
+            heading: "Deposit publisher PDFs",
+            desc: "Send emails to authors to request they make their work free to read. In these cases, they can do that by making a <strong>publisher PDF (version of record, VOR)</strong> available in a repository.",
+            table_headings: "<th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-10/12 sm:w-6/12'>Article</th>\
+                            <th scope='col' class='hidden px-3 py-3.5 text-left text-sm font-semibold w-4/12 sm:table-cell'>Corresponding author</th>",
+            draft_btn: true,
+            action_help_txt: true,
+            hidden: false
+          }) }}
 
-      {{ component("tab-contents", {
-        id: "email_author_aam",
-        heading: "Deposit accepted manuscripts",
-        desc: "Send emails to authors to request they make their work free to read. In these cases, they can do that by making an <strong>author accepted manuscript (AAM)</strong> available in a repository.",
-        table_headings: "<th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-10/12 sm:w-6/12'>Article</th>\
-                        <th scope='col' class='hidden px-3 py-3.5 text-left text-sm font-semibold w-4/12 sm:table-cell'>Corresponding author</th>",
-        draft_btn: true,
-        action_help_txt: true,
-        hidden: true
-      }) }}
+          {{ component("tab-contents", {
+            id: "email_author_aam",
+            heading: "Deposit accepted manuscripts",
+            desc: "Send emails to authors to request they make their work free to read. In these cases, they can do that by making an <strong>author accepted manuscript (AAM)</strong> available in a repository.",
+            table_headings: "<th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-10/12 sm:w-6/12'>Article</th>\
+                            <th scope='col' class='hidden px-3 py-3.5 text-left text-sm font-semibold w-4/12 sm:table-cell'>Corresponding author</th>",
+            draft_btn: true,
+            action_help_txt: true,
+            hidden: true
+          }) }}
 
-      {{ component("tab-contents", {
-        id: "apc_followup",
-        heading: "Correct publisher errors",
-        desc: "These are articles where an APC has been paid, but the article isn't compliant with the policy. Use this list to follow up with publishers. If an article is made compliant, and the metadata is updated, it will be removed from this list.",
-        table_headings: "<th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-4/12 sm:w-4/12'>Publisher & journal</th>\
-                        <th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-3/12 sm:w-4/12'>Article</th>\
-                        <th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-5/12 sm:w-4/12'>Invoice</th>",
-        draft_btn: false,
-        action_help_txt: false,
-        hidden: true
-      }) }}
+          {{ component("tab-contents", {
+            id: "apc_followup",
+            heading: "Correct publisher errors",
+            desc: "These are articles where an APC has been paid, but the article isn't compliant with the policy. Use this list to follow up with publishers. If an article is made compliant, and the metadata is updated, it will be removed from this list.",
+            table_headings: "<th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-4/12 sm:w-4/12'>Publisher & journal</th>\
+                            <th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-3/12 sm:w-4/12'>Article</th>\
+                            <th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-5/12 sm:w-4/12'>Invoice</th>",
+            draft_btn: false,
+            action_help_txt: false,
+            hidden: true
+          }) }}
 
-      {{ component("tab-contents", {
-        id: "unanswered_requests",
-        heading: "Escalate unanswered requests",
-        desc: "These articles are not compliant with policy, and their authors haven’t answered multiple requests to comply. Use this list to escalate requests to authors and request they make their work freely available.",
-        table_headings: "<th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-3/12'>Grant</th>\
-                        <th scope='col' class='px-3 py-3.5 text-left text-sm font-semibold w-7/12'>Author & article</th>",
-        draft_btn: true,
-        action_help_txt: false,
-        hidden: true
-      }) }}
+          {{ component("tab-contents", {
+            id: "unanswered_requests",
+            heading: "Escalate unanswered requests",
+            desc: "These articles are not compliant with policy, and their authors haven’t answered multiple requests to comply. Use this list to escalate requests to authors and request they make their work freely available.",
+            table_headings: "<th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-3/12'>Grant</th>\
+                            <th scope='col' class='px-3 py-3.5 text-left text-sm font-semibold w-7/12'>Author & article</th>",
+            draft_btn: true,
+            action_help_txt: false,
+            hidden: true
+          }) }}
+        </div>
+
+        <div class="sm:hidden">
+          <p>Strategies aren’t available on mobile yet. Please head to a desktop computer to take action!</p>
+        </div>
+      </section>
+
+      <section class="col-span-2 grid md:grid-cols-2 gap-12" id="about">
+        <div>
+          <h2 class="mb-5 text-base md:text-lg leading-6 font-medium text-neutral-900 uppercase">
+            About this report
+          </h2>
+          {# PAID USERS #}
+          {% if org._source.paid == true %}
+          <p class="text-xs md:text-base mb-6">
+            <strong class="text-bold">{{ org._source.name }}</strong>’s custom OA.Report uses <a href="https://about.oa.report/docs/sources" target="_blank" class="underline underline-offset-2 decoration-1">all our data sources</a> and expert analysis to provide insights into their publications, impact, and how open their research is.
+          </p>
+          <p class="text-xs md:text-base" id="about-paid-logged-out">
+            <a href="https://about.oa.report/docs/user-accounts" target="_blank" class="underline underline-offset-2 decoration-1">Log in</a> to see the OA.Report.
+          </p>
+          {# FREE USERS #}
+          {% else %}
+          <p class="text-xs md:text-base">
+              <strong class="text-bold">{{ org._source.name }}</strong>’s OA.Report uses <a href="https://about.oa.report/docs/sources#open-sources" target="_blank" class="underline underline-offset-2 decoration-1">open data</a> and automated analysis to provide insights into their publication volume and how open their research is.
+            </p>
+          {% endif %}
+        </div>
+        {# FREE USERS #}
+        {% if org._source.paid != true %}
+        <div class="text-xs md:text-base" id="about-free-logged-out">
+          <h2 class="mb-5 text-base md:text-lg leading-6 font-medium text-neutral-900 uppercase">
+            Unlock your institution’s research
+          </h2>
+          <p class="mb-6">
+            Sign up to access your institution's strategies for free. Consider a <a href="https://about.oa.report/pricing" target="_blank" class="underline underline-offset-2 decoration-1">paid plan</a> to help <a href="https://about.oa.report/docs/sources" target="_blank" class="underline underline-offset-2 decoration-1">discover all your papers</a> and provide up-to-date, deep insights into the state of open at your institution.
+          </p>
+          <div class="w-6/12">
+            {% include 'partials/signup-form.njk' %}
+          </div>
+        </div>
+        {% else %}
+        <div>
+        </div>
+        {% endif %}
+      </section>
     </div>
-  </section>
-
-  <section class="col-span-2 grid md:grid-cols-2 gap-12" id="about">
-    <div>
-      <h2 class="mb-5 text-lg leading-6 font-medium text-neutral-900 uppercase">
-        About this report
-      </h2>
-      {# PAID USERS #}
-      {% if org._source.paid == true %}
-      <p class="text-xs md:text-base mb-6">
-        <strong class="text-bold">{{ org._source.name }}</strong>’s custom OA.Report uses <a href="https://about.oa.report/docs/sources" target="_blank" class="underline">all our data sources</a> and expert analysis to provide insights into their publications, impact, and how open their research is.
-      </p>
-      <p class="text-xs md:text-base" id="about-paid-logged-out">
-        <a href="https://about.oa.report/docs/user-accounts" target="_blank" class="underline">Log in</a> to see the OA.Report.
-      </p>
-      {# FREE USERS #}
-      {% else %}
-      <p class="text-xs md:text-base">
-          <strong class="text-bold">{{ org._source.name }}</strong>’s OA.Report uses <a href="https://about.oa.report/docs/sources#open-sources" target="_blank" class="underline">open data</a> and automated analysis to provide insights into their publication volume and how open their research is.
-        </p>
-      {% endif %}
-    </div>
-    {# FREE USERS #}
-    {% if org._source.paid != true %}
-    <div class="text-xs md:text-base" id="about-free-logged-out">
-      <h2 class="mb-5 text-lg leading-6 font-medium text-neutral-900 uppercase">
-        Unlock your institution’s research
-      </h2>
-      <p class="mb-6">
-        Sign up to access your institution's strategies for free. Consider a <a href="https://about.oa.report/pricing" target="_blank" class="underline">paid plan</a> to help <a href="https://about.oa.report/docs/sources" target="_blank" class="underline">discover all your papers</a> and provide up-to-date, deep insights into the state of open at your institution.
-      </p>
-      {% include 'partials/signup-form.njk' %}
-    </div>
-    {% else %}
-    <div>
-    </div>
-    {% endif %}
-  </section>
-</div>
+  </div>
+</main>

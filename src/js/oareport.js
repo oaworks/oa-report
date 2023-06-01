@@ -1,5 +1,3 @@
-const apiEndpoint = document.body.getAttribute('data-api-endpoint');
-
 const base             = `https://${apiEndpoint}.oa.works/report/`,
       baseBg           = `https://bg.${apiEndpoint}.oa.works/report/`,
       queryBase        = `${base}works?size=100&`,
@@ -9,18 +7,6 @@ const base             = `https://${apiEndpoint}.oa.works/report/`,
 
 // Set report base path
 let report = `${base}orgs?q=name:%22${org}%22`;
-
-// Set readable date options
-const readableDateOptions = {
-  day: "numeric",
-  month: "long",
-  year: "numeric"
-};
-
-// Detect browser’s locale to display human-readable numbers
-getUsersLocale = function() {
-  return navigator.languages && navigator.languages.length ? navigator.languages[0] : navigator.language;
-};
 
 // Visually hide an element
 displayNone = function(id) {
@@ -35,90 +21,10 @@ changeOpacity = function(id, opacity = 100) {
       elem.classList.add(`opacity-${opacity}`);
 }
 
-// Do math with days on a date
-changeDays = function(numOfDays, date) {
-  const dateCopy = new Date(date.getTime());
-  dateCopy.setDate(dateCopy.getDate() + numOfDays);
-  return dateCopy;
-};
-
-// Make dates readable for display in the UI
-makeDateReadable = function(date) {
-  date = date.toLocaleString(getUsersLocale(), readableDateOptions);
-  return date;
-};
-
-// Make numbers readable
-makeNumberReadable = function(number) {
-  number = number.toLocaleString(getUsersLocale());
-  return number;
-};
-
-// Format dates into ISO format — used in ElasticSearch query
-formatDateToISO = function(date) {
-  date = date.toISOString().substring(0, 10);
-  return date;
-};
-
-// Change start and end dates
-replaceDateRange = function(newStart, newEnd) {
-  startDateContents.textContent = makeDateReadable(newStart);
-  endDateContents.textContent = makeDateReadable(newEnd);
-  startDate     = changeDays(-1, newStart);
-  startDate     = formatDateToISO(startDate);
-  endDate       = changeDays(+1, newEnd);
-  endDate       = formatDateToISO(endDate);
-  dateRange     = `(published_date:>${startDate}%20AND%20published_date:<${endDate})%20AND%20`;
-  return dateRange;
-};
-
 /* Get report page elements where data will be inserted */
-// Date range
-var endDateContents                = document.getElementById("end_date"),
-    startDateContents              = document.getElementById("start_date");
-
 // Send CSV data by email form
 var queryHiddenInput               = document.getElementById("download-form-q"),
     includeHiddenInput             = document.getElementById("download-form-include");
-
-/* Date display and filtering */
-// Set today’s date and 12 months ago date to display most recent Insights data as default
-const currentDate                  = new Date(),
-      currentDateReadable          = makeDateReadable(currentDate),
-      currentDateQuery             = changeDays(+1, currentDate), // add 1 day for ElasticSearch (greater than but not equal)
-      currentDateISO               = formatDateToISO(currentDateQuery),
-
-      startYearDate                = new Date(new Date().getFullYear(), 0, 1),
-      startYearDateReadable        = makeDateReadable(startYearDate),
-      startYearDateQuery           = changeDays(-1, startYearDate),
-      startYearDateISO             = formatDateToISO(startYearDateQuery),
-
-      // Get last year’s start and end date as temporary default (see oaworks/Gates#420)
-      lastYearStartDate            = new Date(new Date().getFullYear()-1, 0, 1),
-      lastYearStartDateReadable    = makeDateReadable(lastYearStartDate),
-      lastYearStartDateQuery       = changeDays(-1, lastYearStartDate),
-      lastYearStartDateISO         = formatDateToISO(lastYearStartDate),
-
-      lastYearEndDate              = new Date(new Date().getFullYear()-1, 11, 31),
-      lastYearEndDateReadable      = makeDateReadable(lastYearEndDate),
-      lastYearEndDateQuery         = changeDays(+1, lastYearEndDate),
-      lastYearEndDateISO           = formatDateToISO(lastYearEndDate),
-
-      // Fixed end date set for free / non-paying users 
-      fixedDate                    = new Date('2023-03-31');
-
-// Display default date range since start of the current year
-function getDateRangeForUserType() {
-  // If paying, end date is up to today
-  if (paid === true) {
-    dateRange = replaceDateRange(startYearDate, currentDate);
-  } else {
-    // Else, if free user, end date is a fixed date set above
-    dateRange = replaceDateRange(startYearDate, fixedDate);
-  };  
-};
-
-getDateRangeForUserType();
 
 // Check if user is logged in
 let orgKey = "",
@@ -181,7 +87,14 @@ oareport = function(org) {
           interactive: true,
           placement: 'top',
           appendTo: document.body,
-        }).setContent(info);
+        });
+
+        // Set tooltip content
+        instance.setContent(info);
+
+        // Access tooltip instance and its ID; use it for aria-controls attribute
+        const tooltipID = instance.popper.id;
+        infoContents.setAttribute('aria-controls', tooltipID);
 
         // Get numerator’s count query
         num = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.analysis[numerator].query);
@@ -239,14 +152,14 @@ oareport = function(org) {
       "is_compliant",
       "is_covered_by_policy",
       "articles covered",
-      `<p class='mb-2'>The percentage of articles that are compliant with <a href='${response.data.hits.hits[0]._source.policy.url}' target='_blank' rel='noopener' class='underline'>your organization’s Open Access policy</a>.</p> <p>This number is specific to your policy and your requirements.</p>`
+      `<p class='mb-2'>The percentage of articles that are compliant with <a href='${response.data.hits.hits[0]._source.policy.url}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a>.</p> <p>This number is specific to your policy and your requirements.</p>`
     );
 
     getInsight(
       "is_oa",
       "is_paper",
       "articles",
-      "<p>The number of articles that are free and <a href='https://creativecommons.org/licenses/by/4.0/' class='underline' target='_blank' rel='noopener'>CC BY</a> <strong class='bold'>or</strong> <a href='https://creativecommons.org/publicdomain/zero/1.0/' class='underline' target='_blank' rel='noopener'>CC0</a> (in the public domain) on the publisher’s website, a repository or a preprint server.</p>"
+      "<p>The number of articles that are free and <a href='https://creativecommons.org/licenses/by/4.0/' class='underline underline-offset-2 decoration-1' target='_blank' rel='noopener'>CC BY</a> <strong class='bold'>or</strong> <a href='https://creativecommons.org/publicdomain/zero/1.0/' class='underline underline-offset-2 decoration-1' target='_blank' rel='noopener'>CC0</a> (in the public domain) on the publisher’s website, a repository or a preprint server.</p>"
     );
 
     getInsight(
@@ -260,20 +173,20 @@ oareport = function(org) {
       "has_open_data",
       "has_data",
       "articles generating data",
-      "<p class='mb-2'>The percentage of articles that shared any data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener' class='underline'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noopener' class='underline'>CC-BY</a> license.</p> <p class='mb-2'>This figure only measures how many articles shared Open Data if they generated data in the first place. It also only measures if any of the datasets generated were open, not if all of them were open.</p> <p>We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>"
+      "<p class='mb-2'>The percentage of articles that shared any data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>CC-BY</a> license.</p> <p class='mb-2'>This figure only measures how many articles shared Open Data if they generated data in the first place. It also only measures if any of the datasets generated were open, not if all of them were open.</p> <p>We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>"
     );
 
     getInsight(
       "has_open_code",
       "has_code",
       "articles generating code",
-      "<p class='mb-2'>The percentage of articles that shared any code under a permissive open-source licence, such as MIT.</p> <p class='mb-2'>This figure measures how many articles shared Open Code if they generated code in the first place. It also only measures if <strong>any parts</strong> of the code generated are open, not if <strong>all</strong> of it is open.</p> <p> We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>"
+      "<p class='mb-2'>The percentage of articles that shared any code under a permissive open-source licence, such as MIT.</p> <p class='mb-2'>This figure measures how many articles shared Open Code if they generated code in the first place. It also only measures if <strong>any parts</strong> of the code generated are open, not if <strong>all</strong> of it is open.</p> <p> We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>"
     );
 
     displayStrategy = function(strategy, keys, tableRow) {
       var shown  = response.data.hits.hits[0]._source.strategy[strategy].show_on_web,
           sort   = `&sort=${response.data.hits.hits[0]._source.strategy[strategy].sort}`,
-          tabID  = `item_${strategy}`;
+          tabID  = `tab_${strategy}`;
 
       if (shown === true) {
         // Get tab elements
@@ -376,7 +289,7 @@ oareport = function(org) {
 
             // Otherwise, display a message prompting user to log or contact us to access strategies
             else {
-              tableBody.innerHTML = `<tr><td class='py-4 pl-4 pr-3 text-base text-center align-top break-words' colspan='3'><p class='font-bold'>Strategies help you take action to make your institution’s research more open.</p> <p>Find out more about them by <a href='mailto:hello@oa.works?subject=OA.Report%20&mdash;%20${decodeURIComponent(org)}' class='underline'>contacting us</a> or <a href='https://about.oa.report/docs/user-accounts' class='underline' title='Information on user accounts'>logging in to your account</a> to access them.</p></td></tr>`;
+              tableBody.innerHTML = `<tr><td class='py-4 pl-4 pr-3 text-base text-center align-top break-words' colspan='3'><p class='font-bold'>Strategies help you take action to make your institution’s research more open.</p> <p>Find out more about them by <a href='mailto:hello@oa.works?subject=OA.Report%20&mdash;%20${decodeURIComponent(org)}' class='underline underline-offset-2 decoration-1'>contacting us</a> or <a href='https://about.oa.report/docs/user-accounts' class='underline underline-offset-2 decoration-1' title='Information on user accounts'>logging in to your account</a> to access them.</p></td></tr>`;
               tableCountContents.parentNode.remove();
               displayNone(`form_${strategy}`);
             }
@@ -401,16 +314,16 @@ oareport = function(org) {
       "email_author_vor",
       ['published_date', 'title', 'journal', 'author_email_name', 'email', 'doi', 'mailto'],
       "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 text-neutral-500'>${action.published_date}</div>\
+        <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
         <div class='mb-1 font-medium text-neutral-900 hover:text-carnation-500'>\
           <a href='https://doi.org/${action.doi}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
         </div>\
-        <div class='text-neutral-500'>${action.journal}</div>\
+        <div class='text-neutral-600'>${action.journal}</div>\
       </td>\
-      <td class='hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell'>\
+      <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
         <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
       </td>\
-      <td class='hidden px-3 py-4 text-sm text-center text-neutral-500 align-top break-words sm:table-cell'>\
+      <td class='hidden px-3 py-4 text-sm text-center text-neutral-600 align-top break-words sm:table-cell'>\
         <button class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200' onclick='decryptEmail(\"${action.email}\", \"${action.doi}\", \"${action.mailto}\")'>\
           <svg class='h-4 w-4' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-mail inline-block h-4 duration-500'><path d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'></path><polyline points='22,6 12,13 2,6'></polyline></svg>\
         </button>\
@@ -421,16 +334,16 @@ oareport = function(org) {
       "email_author_aam",
       ['published_date', 'title', 'journal', 'author_email_name', 'email', 'doi', 'mailto'],
       "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 text-neutral-500'>${action.published_date}</div>\
+        <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
         <div class='mb-1 font-medium text-neutral-900 hover:text-carnation-500'>\
           <a href='https://doi.org/${action.doi}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
         </div>\
-        <div class='text-neutral-500'>${action.journal}</div>\
+        <div class='text-neutral-600'>${action.journal}</div>\
       </td>\
-      <td class='hidden px-3 py-4 text-sm text-neutral-500 align-top break-words sm:table-cell'>\
+      <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
         <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
       </td>\
-      <td class='hidden px-3 py-4 text-sm text-center text-neutral-500 align-top break-words sm:table-cell'>\
+      <td class='hidden px-3 py-4 text-sm text-center text-neutral-600 align-top break-words sm:table-cell'>\
         <button class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200' onclick='decryptEmail(\"${action.email}\", \"${action.doi}\", \"${action.mailto}\")'>\
           <svg class='h-4 w-4' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-mail inline-block h-4 duration-500'><path d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'></path><polyline points='22,6 12,13 2,6'></polyline></svg>\
         </button>\
@@ -443,21 +356,21 @@ oareport = function(org) {
       "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
         <div class='mb-1 font-medium text-neutral-900'>${action.publisher}</div>\
         <div class='mb-3 text-neutral-900'>${action.journal}</div>\
-        <div class='text-neutral-500'>OA type: <span class='font-medium'>${action.journal_oa_type}</span></div>\
+        <div class='text-neutral-600'>OA type: <span class='font-medium'>${action.journal_oa_type}</span></div>\
       </td>\
       <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 text-neutral-500'>${action.published_date}</div>\
+        <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
         <div class='mb-1 text-neutral-900 hover:text-carnation-500'>\
           <a href='https://doi.org/${action.doi}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
         </div>\
-        <div class='mb-3 text-neutral-500'>${action.doi}</div>\
-        <div class='text-neutral-500'>OA status: <span class='font-medium'>${action.oa_status}<span></div>\
-        <div class='text-neutral-500'>License: <span class='font-medium uppercase'>${action.publisher_license}</span></div>\
+        <div class='mb-3 text-neutral-600'>${action.doi}</div>\
+        <div class='text-neutral-600'>OA status: <span class='font-medium'>${action.oa_status}<span></div>\
+        <div class='text-neutral-600'>License: <span class='font-medium uppercase'>${action.publisher_license}</span></div>\
       </td>\
       <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-3 text-neutral-500'>${action.invoice_date}</div>\
+        <div class='mb-3 text-neutral-600'>${action.invoice_date}</div>\
         <div class='mb-3 text-neutral-900'>${action.invoice_number}</div>\
-        <div class='text-neutral-500 uppercase'>US$${action.apc_cost}</div>\
+        <div class='text-neutral-600 uppercase'>US$${action.apc_cost}</div>\
       </td>"
     );
 
@@ -473,7 +386,7 @@ oareport = function(org) {
         <div class='mb-1 text-neutral-900'>\
           <a href='https://doi.org/${action.doi}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
         </div>\
-        <div class='text-neutral-500'>${action.journal}</div>\
+        <div class='text-neutral-600'>${action.journal}</div>\
       </td>\
       <td class='whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium'>\
         <button class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200' onclick='decryptEmail(\"${action.email}\", \"${action.doi}\", \"${action.mailto}\")'>\
@@ -515,7 +428,7 @@ oareport = function(org) {
       xhr.open("GET", query);
       // Display message when server responds
       xhr.onload = function () {
-        document.getElementById("csv_email_msg").innerHTML = `OA.Report has started building your CSV export at <a href='${this.response}' target='_blank' class='underline' id='email_export_link'>this URL</a>. Please check your email to get the full data once it’s ready.`;
+        document.getElementById("csv_email_msg").innerHTML = `OA.Report has started building your CSV export at <a href='${this.response}' target='_blank' class='underline underline-offset-2 decoration-1' id='email_export_link'>this URL</a>. Please check your email to get the full data once it’s ready.`;
       };
       xhr.send();
 
@@ -555,7 +468,7 @@ oareport = function(org) {
       xhr.open("GET", query);
       // Display message when server responds
       xhr.onload = function () {
-        document.getElementById(`msg-${id}`).innerHTML = `OA.Report has started building your CSV export at <a href='${this.response}' target='_blank' class='underline'>this URL</a>. Please check your email to get the full data once it’s ready.`;
+        document.getElementById(`msg-${id}`).innerHTML = `OA.Report has started building your CSV export at <a href='${this.response}' target='_blank' class='underline underline-offset-2 decoration-1'>this URL</a>. Please check your email to get the full data once it’s ready.`;
       };
       xhr.send();
 
@@ -567,57 +480,4 @@ oareport = function(org) {
 };
 
 oareport(org);
-
-/** Change displayed Insights data based on user input **/
-// Preset "quick date filter" buttons
-var startYearBtn              = document.getElementById("start-year"),
-    lastYearBtn               = document.getElementById("last-year"),
-    twoYearsBtn               = document.getElementById("two-years-ago"),
-    allTimeBtn                = document.getElementById("all-time"),
-    insightsDateRange         = document.getElementById("insights_range");
-
-startYearBtn.textContent      = startYearDate.getFullYear();
-lastYearBtn.textContent       = lastYearStartDate.getFullYear();
-
-startYearBtn.addEventListener("click", function() {
-  getDateRangeForUserType();
-  insightsDateRange.textContent = `Since the start of ${startYearDate.getFullYear()}`;
-  oareport(org);
-});
-
-lastYearBtn.addEventListener("click", function() {
-  replaceDateRange(lastYearStartDate, lastYearEndDate);
-  insightsDateRange.textContent = `In ${lastYearStartDate.getFullYear()}`;
-  oareport(org);
-});
-
-// Only paid users can see data from two years ago and all time
-// These buttons won’t be displayed for free users
-if (twoYearsBtn) {
-  // Set dates two years prior to current year
-  var twoYearsStartDate         = new Date(new Date().getFullYear()-2, 0, 1),
-      twoYearsStartDateReadable = makeDateReadable(twoYearsStartDate),
-      twoYearsStartDateQuery    = changeDays(-1, twoYearsStartDate),
-      twoYearsStartDateISO      = formatDateToISO(twoYearsStartDate),
-
-      twoYearsEndDate           = new Date(new Date().getFullYear()-2, 11, 31),
-      twoYearsEndDateReadable   = makeDateReadable(twoYearsEndDate),
-      twoYearsEndDateQuery      = changeDays(+1, twoYearsEndDate),
-      twoYearsEndDateISO        = formatDateToISO(twoYearsEndDate);
-
-  twoYearsBtn.textContent = twoYearsStartDate.getFullYear();
-  twoYearsBtn.addEventListener("click", function() {
-    replaceDateRange(twoYearsStartDate, twoYearsEndDate);
-    insightsDateRange.textContent = `In ${twoYearsStartDate.getFullYear()}`;
-    oareport(org);
-  });
-}
-
-if (allTimeBtn) {
-  allTimeBtn.addEventListener("click", function() {
-    replaceDateRange(new Date(1980, 0, 1), currentDate);
-    insightsDateRange.textContent = "All time";
-    oareport(org);
-  });
-}
 
