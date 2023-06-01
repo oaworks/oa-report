@@ -8,6 +8,15 @@
 
   <meta name="description" content="Insights and strategies for Open Access and OA policies{% if org._source.name %} at {{ org._source.name }}{% endif %}.">
 
+  {# Preconnect to the CDN for our sans-serif font and API endpoints #}
+  <link rel="preconnect" href="https://rsms.me/">
+  <link ref="preconnect" href="https://bg.{{ env.ELEVENTY_API_ENDPOINT }}.oa.works">
+  <link ref="preconnect" href="https://{{ env.ELEVENTY_API_ENDPOINT }}.oa.works">
+
+  {# Load CSS files: font + TailwindCSS #}
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+  <link rel="stylesheet" href="../tailwind.css">
+
   {# Favicons #}
   <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png">
@@ -38,11 +47,6 @@
   <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
   <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif" alt="" referrerpolicy="no-referrer-when-downgrade" /></noscript>
 
-  {# Preconnect to the CDN for our sans-serif font and API endpoints #}
-  <link rel="preconnect" href="https://rsms.me/">
-  <link ref="preconnect" href="https://bg.{{ env.ELEVENTY_API_ENDPOINT }}.oa.works">
-  <link ref="preconnect" href="https://{{ env.ELEVENTY_API_ENDPOINT }}.oa.works">
-  
   {# Detect any console errors and display in UI #}
   <script>
     window.addEventListener('error', function (event) {
