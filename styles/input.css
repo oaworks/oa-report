@@ -59,50 +59,8 @@
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
-/*
-Font families defined by this CSS:
-- "Inter var"
-- "Wremena"
-*/
+:root { font-family: 'Inter', sans-serif; }
 
-@font-face {
-  font-family: 'Inter var';
-  src: url('../fonts/Inter-roman.var.ttf') format('truetype-variations');
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-  font-named-instance: 'Regular';
-}
-
-@font-face {
-  font-family: 'Inter var';
-  src: url('../fonts/Inter-italic.var.ttf') format('truetype-variations');
-  font-weight: 100 900;
-  font-style: italic;
-  font-display: swap;
-  font-named-instance: 'Italic';
-}
-
-@font-face {
-  font-family: 'Wremena';
-  src: url('../fonts/WremenaLight.woff') format('woff');
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Wremena';
-  src: url('../fonts/WremenaRegular.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Wremena';
-  src: url('../fonts/WremenaBold.woff') format('woff');
-  font-weight: bold;
-  font-style: normal;
-  font-display: swap;
+@supports (font-variation-settings: normal) {
+  :root { font-family: 'Inter var', sans-serif; }
 }

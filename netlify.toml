@@ -1,8 +1,11 @@
 [[plugins]]
   package = "@netlify/plugin-lighthouse"
 
+  [plugins.inputs.settings]
+    preset = "desktop"
+
   [plugins.inputs.thresholds]
-    performance = 0.65
+    performance = 0.8
     accessibility = 0.9
 
   # audit the homepage

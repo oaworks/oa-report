@@ -13,6 +13,9 @@
   </nav>
 </footer>
 
+{# Load JS for org report pages only #}
+{% if org._source.name %}
+{# For tooltips #}
 <script src="../js/popper.min.js"></script>
 <script src="../js/tippy-bundle.umd.min.js"></script>
 <script>
@@ -41,12 +44,35 @@
     theme: 'popover',
     arrow: false,
   });
+
+  // Update ARIA attributes for tooltips
+  const tooltips = document.querySelectorAll('.tooltip');
+  tooltips.forEach((tooltip) => {
+    tooltip.setAttribute('role', 'tooltip'); // Set the role attribute
+    tooltip.setAttribute('aria-hidden', 'true'); // Hide the tooltip by default
+  });
 </script>
 
-<script src="../js/search.js"></script>
-{% if page.url != "/" %}
-<script src="../js/oareport.js"></script>
-<script src="../js/ui.js"></script>
+{# To get org names/slugs and whether or not they’re paying users #}
+<script>
+  const org = ("{{ org._source.name | urlencode }}"),
+        orgSlug = ("{{ org._source.objectID | slug }}");
+  {% if org._source.paid %}
+    const paid = true;
+  {% else %}
+    const paid = false;
+  {% endif %}
+</script>
+
+{# To fetch data from the API and display it in the UI #}
+<script defer src="../js/axios.min.js"></script>
+<script defer src="../js/oareport.js"></script>
 {% endif %}
+
+{# For the search tool #}
+<script src="../js/search.js"></script>
+
+{# Load font #}
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 
 {% block extra_footer %}{% endblock %}

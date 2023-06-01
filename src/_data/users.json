@@ -3,24 +3,32 @@
     "name": "the Bill & Melinda Gates Foundation",
     "acronym": "BMGF",
     "logo": "img/users/bmgf.png",
+    "width": 400,
+    "height": 80,
     "url": "https://www.gatesfoundation.org/"
   },
   {
     "name": "Aligning Science Across Parkinson’s",
     "acronym": "ASAP",
     "logo": "img/users/asap.png",
+    "width": 400,
+    "height": 84,
     "url": "https://parkinsonsroadmap.org/"
   },
   {
     "name": "the Templeton World Charity Foundation",
     "acronym": "TWCF",
     "logo": "img/users/twcf.png",
+    "width": 400,
+    "height": 58,
     "url": "https://www.templetonworldcharity.org/"
   },
   {
     "name": "the Howard Hughes Medical Institute",
     "acronym": "HHMI",
     "logo": "img/users/hhmi.png",
+    "width": 400,
+    "height": 67,
     "url": "https://www.hhmi.org/"
   },
   {
