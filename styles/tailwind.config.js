@@ -37,23 +37,4 @@ module.exports = {
       }
     },
   },
-  plugins: [
-    require('@tailwindcss/forms'),
-    require('tailwindcss-font-inter')({
-      importFontFace: true,
-      fontFaceName: 'Inter var',
-      fontFilePath: '../fonts/Inter-roman.var.ttf',
-      fontWeight: [100, 900],
-      fontStyle: 'normal',
-      fontNamedInstance: 'Regular',
-    }),
-    require('tailwindcss-font-inter')({
-      importFontFace: true,
-      fontFaceName: 'Inter var',
-      fontFilePath: '../fonts/Inter-italic.var.ttf',
-      fontWeight: [100, 900],
-      fontStyle: 'italic',
-      fontNamedInstance: 'Italic',
-    }),
-  ],
 }
