@@ -3,7 +3,8 @@
   "features": {},
   "postCreateCommand": "npm install @11ty/eleventy && npm run start",
   "containerEnv": {
-    "ELEVENTY_API_ENDPOINT": "api",
-    "ELEVENTY_BASE_URL": "https://staging.oa.report"
-  },
+    "ELEVENTY_API_ENDPOINT": "beta",
+    "ELEVENTY_BASE_URL": "https://dev.oa.report",
+    "ELEVENTY_NUMBER_REPORTS": 100
+  }
 }
