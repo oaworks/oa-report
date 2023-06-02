@@ -20,14 +20,6 @@ Prerequisites:
 
 ## Running the site using Github Codespaces 
 
-### Dev 
-
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?ref=dev&repo=360205065&skip_quickstart=true&machine=basicLinux32gb&devcontainer_path=.devcontainer%2Fdev%2Fdevcontainer.json&geo=EuropeWest)
-
-### Staging 
-
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?ref=staging&repo=360205065&skip_quickstart=true&machine=basicLinux32gb&devcontainer_path=.devcontainer%2Fstaging%2Fdevcontainer.json&geo=EuropeWest)
-
-### Main 
-
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?ref=main&repo=360205065&skip_quickstart=true&machine=basicLinux32gb&devcontainer_path=.devcontainer%main%2Fdevcontainer.json&geo=EuropeWest)
+| `dev` | `staging` | `main` |
+|---|---|---|
+| [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?ref=dev&repo=360205065&skip_quickstart=true&machine=basicLinux32gb&devcontainer_path=.devcontainer%2Fdev%2Fdevcontainer.json&geo=EuropeWest) | [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?ref=staging&repo=360205065&skip_quickstart=true&machine=basicLinux32gb&devcontainer_path=.devcontainer%2Fstaging%2Fdevcontainer.json&geo=EuropeWest) | [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?ref=main&repo=360205065&skip_quickstart=true&machine=basicLinux32gb&devcontainer_path=.devcontainer%main%2Fdevcontainer.json&geo=EuropeWest) |
