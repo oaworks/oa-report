@@ -26,7 +26,7 @@ Prerequisites:
 
 ### Staging 
 
-[![Open in GitHub Codespaces](https://github.com/codespaces/new?ref=staging&repo=360205065&skip_quickstart=true&machine=basicLinux32gb&devcontainer_path=.devcontainer%2Fstaging%2Fdevcontainer.json&geo=EuropeWest)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?ref=staging&repo=360205065&skip_quickstart=true&machine=basicLinux32gb&devcontainer_path=.devcontainer%2Fstaging%2Fdevcontainer.json&geo=EuropeWest)
 
 ### Main 
 
