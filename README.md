@@ -20,6 +20,14 @@ Prerequisites:
 
 ## Running the site using Github Codespaces 
 
-Just click here: 
+### Dev 
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/oaworks/oa-report/tree/dev?quickstart=1)
+
+### Staging 
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/oaworks/oa-report/tree/staging?quickstart=1)
+
+### Main 
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/oaworks/oa-report/tree/main?quickstart=1)
