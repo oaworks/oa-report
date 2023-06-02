@@ -30,4 +30,4 @@ Prerequisites:
 
 ### Main 
 
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/oaworks/oa-report/tree/main?quickstart=1)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?ref=main&repo=360205065&skip_quickstart=true&machine=basicLinux32gb&devcontainer_path=.devcontainer%main%2Fdevcontainer.json&geo=EuropeWest)
