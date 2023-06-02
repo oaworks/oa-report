@@ -70,11 +70,13 @@ permalink: "{{ org._source.objectID | slug }}/"
       <section class="col-span-2 grid grid-cols-3 gap-3 top-0 mb-2 pt-2">
         <header class="col-span-3">
           <h2 class="mb-3 text-base md:text-lg leading-6">
-            <span class="font-semibold uppercase text-sm md:text-base">
-              Insights on <strong class="font-bold">articles</strong>
-              {{ component("tooltip", {
-                msg: "The <em>Insights</em> section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/developers/infrastructure/' target='_blank' class='underline underline-offset-2 decoration-1'>infrastructure page</a>."
-              }) }}
+            <span class="font-semibold uppercase text-sm md:text-base line-thru">
+              <span class="bg-carnation-100">
+                Insights on <strong class="font-bold">articles</strong>
+                {{ component("tooltip", {
+                  msg: "The <em>Insights</em> section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/developers/infrastructure/' target='_blank' class='underline underline-offset-2 decoration-1'>infrastructure page</a>."
+                }) }}
+              </span>
             </span>
           </h2>
         </header>
@@ -147,11 +149,13 @@ permalink: "{{ org._source.objectID | slug }}/"
       </section>
 
       <section class="col-span-2" id="strategies">
-        <h2 class="mb-5 leading-6 font-semibold uppercase text-sm md:text-base">
-          Strategies
-          {{ component("tooltip", {
-            msg: "The <em>Strategy</em> section provides actionable steps for making more of your articles Open Access."
-          }) }}
+        <h2 class="mb-5 leading-6 font-semibold uppercase text-sm md:text-base line-thru">
+          <span class="bg-carnation-100">
+            Strategies
+            {{ component("tooltip", {
+              msg: "The <em>Strategy</em> section provides actionable steps for making more of your articles Open Access."
+            }) }}
+          </span>
         </h2>
 
         <div class="block mb-10">

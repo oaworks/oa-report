@@ -7,24 +7,26 @@
 }) }}
 #}
 
-<article class="relative bg-white transition ease-in delay-150 opacity-0 py-5 px-4 sm:py-6 sm:px-6 shadow-md overflow-hidden" id="{{ params.id }}">
-  <header>
-    <div class="absolute bg-carnation-500 text-white rounded-md p-6">
-      {% icon params.icon %}
+<article class="flex relative bg-white transition ease-in delay-150 opacity-0 shadow-md overflow-hidden" id="{{ params.id }}">
+  <div class="p-3 md:p-4 bg-carnation-100 text-neutral-800">
+    {% icon params.icon %}
+  </div>
+  <div class="p-3 md:p-4">
+    <header>
+      <p class="mb-2 text-sm md:text-base text-neutral-900">
+        {{ params.title }}
+        <sup id="info_{{ params.id }}" aria-hidden="true">{% icon_small "help-circle" %}</sup>
+      </p>
+    </header>
+    <div class="items-baseline">
+      <p class="text-5xl font-semibold text-neutral-900">
+        <span id="percent_{{ params.id }}">00%</span>
+      </p>
+      {% if not params.raw_number %}
+      <p class="mt-2 text-xs md:text-sm font-medium text-neutral-600">
+        <span id="articles_{{ params.id }}">000</span>
+      </p>
+      {% endif %}
     </div>
-    <p class="ml-24 mb-2 text-sm md:text-base">
-      {{ params.title }}
-      <sup id="info_{{ params.id }}" aria-hidden="true">{% icon_small "help-circle" %}</sup>
-    </p>
-  </header>
-  <div class="ml-24 items-baseline">
-    <p class="text-5xl font-semibold text-neutral-900">
-      <span id="percent_{{ params.id }}">00%</span>
-    </p>
-    {% if not params.raw_number %}
-    <p class="mt-2 text-xs md:text-sm font-medium text-neutral-600">
-      <span id="articles_{{ params.id }}">000</span>
-    </p>
-    {% endif %}
   </div>
 </article>
