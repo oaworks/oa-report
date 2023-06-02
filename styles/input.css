@@ -4,22 +4,9 @@
 
 /* Gradient on hover for OA.Report name */
 .app-name {
-  letter-spacing: -.025em;
-  font-weight: 700;
-  background: linear-gradient(to right, #ff6666, #ffc2c2);
-  background-size: 200% 200%;
-  background-clip: text;
-  -webkit-background-clip:text;
-  color: currentColor;
-  transition: all .25s ease-in-out;
-}
-
-.app-name__oa {
-  margin-right: .055em;
-}
-
-.app-name:hover {
-  color: rgba(0, 0, 0, 0);
+  width: 225px;
+  height: auto;
+  margin: 0 auto;
 }
 
 /* Texting highlighting in the style of a marker */
