@@ -20,6 +20,28 @@
   background-image: linear-gradient(to right, rgba(255,255,255, 0.095), rgba(255,255,255, 0.5) 4%, rgba(255,255,255, 0.25));
 }
 
+/* Line through text */
+.line-thru {
+  display: block;
+  margin-bottom: .15em;
+  position: relative;
+  z-index: 1;
+  color: currentColor;
+}
+
+.line-thru::before {
+  border-top: 1px solid;
+  content: "";
+  margin: 0 auto;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  z-index: -1;
+}
+
 /* Custom tooltip styling */
 .tippy-box[data-theme~='tooltip'] {
   background-color: #24201e;

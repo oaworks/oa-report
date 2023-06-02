@@ -13,10 +13,16 @@ permalink: "{{ org._source.objectID | slug }}/"
   <div class="container mx-auto px-3 lg:px-6">
     <div class="grid grid-cols-2 gap-6 md:gap-12 py-6 xl:py-12">
       <header class="mb-3 col-span-2 md:col-span-1">
-        <h1 class="mb-6 text-3xl md:text-5xl font-light">
-          {% if org._source.policy.has_policy === true %}Put OA policy into practice at {% else %}Advance OA at {% endif %}
-          <br>
-          <strong class="font-bold">{{ org._source.name }}</strong>
+        <h1 class="flex items-center mb-12 font-light">
+          <span class="inline-block mr-6 h-16 w-16 rounded-full bg-carnation-500"></span>
+          <div>
+            <span class="font-semibold uppercase text-sm md:text-base line-thru">
+              <span class="bg-carnation-100 pr-3">
+                {% if org._source.policy.has_policy === true %}Put OA policy into practice at {% else %}Advance OA at {% endif %}
+              </span>
+            </span>
+            <span class="text-2xl md:text-4xl highlight">{{ org._source.name }}</span>
+          </div>
         </h1>
 
         <h2 class="mb-1 sr-only" id="insights_range">
@@ -24,14 +30,14 @@ permalink: "{{ org._source.objectID | slug }}/"
         </h2>
         <p class="sr-only">Quick date filters</p>
         <ul>
-          <li class="mr-1 inline-block">
+          <li class="mr-2 inline-block">
             {{ component("pill", {
               id: "start-year",
               txt: "",
               class: "bg-neutral-900 text-white"
             }) }}
           </li>
-          <li class="mr-1 inline-block">
+          <li class="mr-2 inline-block">
             {{ component("pill", {
               id: "last-year",
               txt: "",
@@ -39,14 +45,14 @@ permalink: "{{ org._source.objectID | slug }}/"
             }) }}
           </li>
           {% if org._source.paid == true %}
-          <li class="mr-1 inline-block">
+          <li class="mr-2 inline-block">
             {{ component("pill", {
               id: "two-years-ago",
               txt: "",
               class: "bg-neutral-200 text-neutral-900"
             }) }}
           </li>
-          <li class="mr-1 inline-block">
+          <li class="inline-block">
             {{ component("pill", {
               id: "all-time",
               txt: "All time",
@@ -64,7 +70,7 @@ permalink: "{{ org._source.objectID | slug }}/"
       <section class="col-span-2 grid grid-cols-3 gap-3 top-0 mb-2 pt-2">
         <header class="col-span-3">
           <h2 class="mb-3 text-base md:text-lg leading-6">
-            <span class="block font-medium text-neutral-900 uppercase">
+            <span class="font-semibold uppercase text-sm md:text-base">
               Insights on <strong class="font-bold">articles</strong>
               {{ component("tooltip", {
                 msg: "The <em>Insights</em> section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/developers/infrastructure/' target='_blank' class='underline underline-offset-2 decoration-1'>infrastructure page</a>."
@@ -141,7 +147,7 @@ permalink: "{{ org._source.objectID | slug }}/"
       </section>
 
       <section class="col-span-2" id="strategies">
-        <h2 class="mb-5 text-base md:text-lg leading-6 font-medium text-neutral-900 uppercase">
+        <h2 class="mb-5 leading-6 font-semibold uppercase text-sm md:text-base">
           Strategies
           {{ component("tooltip", {
             msg: "The <em>Strategy</em> section provides actionable steps for making more of your articles Open Access."
