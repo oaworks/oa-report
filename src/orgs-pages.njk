@@ -66,8 +66,12 @@ permalink: "{{ org._source.objectID | slug }}/"
       <section class="col-span-2 md:col-span-1 md:text-right">
         {% include 'partials/email-download-form.njk' %}
       </section>
+    </div>
+  </div>
 
-      <section class="col-span-2 grid grid-cols-3 gap-3 top-0 mb-2 pt-2">
+  <section class="container mx-auto px-3 lg:px-6">
+    <div class="grid grid-cols-2 gap-6 md:gap-12 py-6 xl:py-12"> 
+      <div class="col-span-2 grid grid-cols-3 gap-3 top-0 mb-2 pt-2">
         <header class="col-span-3">
           <h2 class="mb-3 text-base md:text-lg leading-6">
             <span class="font-semibold uppercase text-sm md:text-base line-thru">
@@ -146,9 +150,13 @@ permalink: "{{ org._source.objectID | slug }}/"
             </form>
           </section>
         </div> #}
-      </section>
+      </div>
+    </div>
+  </section>
 
-      <section class="col-span-2" id="strategies">
+  <section class="container mx-auto px-3 lg:px-6">
+    <div class="grid grid-cols-2 gap-6 md:gap-12 py-6 xl:py-12"> 
+      <div class="col-span-2" id="strategies">
         <h2 class="mb-5 leading-6 font-semibold uppercase text-sm md:text-base line-thru">
           <span class="bg-carnation-100">
             Strategies
@@ -240,9 +248,13 @@ permalink: "{{ org._source.objectID | slug }}/"
         <div class="sm:hidden">
           <p>Strategies aren’t available on mobile yet. Please head to a desktop computer to take action!</p>
         </div>
-      </section>
+      </div>
+    </div>
+  </section>
 
-      <section class="col-span-2 grid md:grid-cols-2 gap-12" id="about">
+  <section class="container mx-auto px-3 lg:px-6">
+    <div class="grid grid-cols-2 gap-6 md:gap-12 py-6 xl:py-12"> 
+      <div class="col-span-2 grid md:grid-cols-2 gap-12" id="about">
         <div>
           <h2 class="mb-5 text-base md:text-lg leading-6 font-medium text-neutral-900 uppercase">
             About this report
@@ -279,7 +291,7 @@ permalink: "{{ org._source.objectID | slug }}/"
         <div>
         </div>
         {% endif %}
-      </section>
+      </div>
     </div>
-  </div>
+  </section>
 </main>
