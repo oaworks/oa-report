@@ -13,7 +13,7 @@ permalink: "{{ org._source.objectID | slug }}/"
   <div class="container mx-auto px-6">
     <div class="grid grid-cols-2 gap-6 md:gap-12 py-3 xl:pb-6 xl:pt-12">
       <header class="mb-3 col-span-2 md:col-span-1">
-        <h1 class="flex items-center mb-12 font-light">
+        <h1 class="flex items-center font-light">
           <span class="inline-block mr-6 h-16 w-16 rounded-full bg-carnation-500"></span>
           <div>
             <span class="font-semibold uppercase text-sm md:text-base line-thru">
@@ -43,14 +43,14 @@ permalink: "{{ org._source.objectID | slug }}/"
             {{ component("pill", {
               id: "start-year",
               txt: "",
-              class: "bg-neutral-900 text-white"
+              class: "border-t-4 border-carnation-500 bg-neutral-900 text-white font-semibold"
             }) }}
           </li>
           <li class="mr-2 inline-block">
             {{ component("pill", {
               id: "last-year",
               txt: "",
-              class: "bg-neutral-200 text-neutral-900"
+              class: "border-t-4 bg-white text-neutral-900"
             }) }}
           </li>
           {% if org._source.paid == true %}
@@ -58,14 +58,14 @@ permalink: "{{ org._source.objectID | slug }}/"
             {{ component("pill", {
               id: "two-years-ago",
               txt: "",
-              class: "bg-neutral-200 text-neutral-900"
+              class: "border-t-4 bg-white text-neutral-900"
             }) }}
           </li>
           <li class="inline-block">
             {{ component("pill", {
               id: "all-time",
               txt: "All time",
-              class: "bg-neutral-200 text-neutral-900"
+              class: "border-t-4 bg-white text-neutral-900"
             }) }}
           </li>
           {% endif %}

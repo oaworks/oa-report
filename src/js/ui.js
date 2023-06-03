@@ -186,19 +186,21 @@ strategyTabBtns.forEach((tabBtn) => {
   tabBtn.addEventListener("click", handleTabBtnClick);
 });
 
-/* Quick selects pills */
+/* Year selects */
 const quickDateItems = document.querySelectorAll(".js-pill");
 
 function handleQuickDateItemClick(event) {
   event.preventDefault();
 
+  // When unselected
   quickDateItems.forEach((item) => {
-    item.classList.remove("bg-neutral-900", "text-white");
-    item.classList.add("bg-neutral-200", "text-neutral-900");
+    item.classList.remove("bg-neutral-900", "text-white", "font-semibold", "border-carnation-500");
+    item.classList.add("bg-white", "text-neutral-900");
   });
 
-  event.target.classList.add("bg-neutral-900", "text-white");
-  event.target.classList.remove("bg-neutral-200", "text-neutral-900");
+  // When selected
+  event.target.classList.add("bg-neutral-900", "text-white", "font-semibold", "border-carnation-500");
+  event.target.classList.remove("bg-white", "text-neutral-900");
 }
 
 quickDateItems.forEach((item) => {
