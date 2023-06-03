@@ -11,7 +11,7 @@ permalink: "{{ org._source.objectID | slug }}/"
 
 <main class="bg-carnation-100">
   <div class="container mx-auto px-6">
-    <div class="grid grid-cols-2 gap-6 md:gap-12 py-6 xl:py-12">
+    <div class="grid grid-cols-2 gap-6 md:gap-12 py-3 xl:pb-6 xl:pt-12">
       <header class="mb-3 col-span-2 md:col-span-1">
         <h1 class="flex items-center mb-12 font-light">
           <span class="inline-block mr-6 h-16 w-16 rounded-full bg-carnation-500"></span>
@@ -25,10 +25,19 @@ permalink: "{{ org._source.objectID | slug }}/"
           </div>
         </h1>
 
-        <h2 class="mb-1 sr-only" id="insights_range">
+        <h2 class="sr-only" id="insights_range">
           Since the start of 2023
         </h2>
-        <p class="sr-only">Quick date filters</p>
+      </header>
+
+      <section class="col-span-2 md:col-span-1 md:text-right">
+        {% include 'partials/email-download-form.njk' %}
+      </section>
+    </div>
+  </div>
+
+  <nav class="container mx-auto px-6">
+    <p class="sr-only">Quick date filters</p>
         <ul>
           <li class="mr-2 inline-block">
             {{ component("pill", {
@@ -61,13 +70,7 @@ permalink: "{{ org._source.objectID | slug }}/"
           </li>
           {% endif %}
         </ul>
-      </header>
-
-      <section class="col-span-2 md:col-span-1 md:text-right">
-        {% include 'partials/email-download-form.njk' %}
-      </section>
-    </div>
-  </div>
+  </nav>
 
   <section class="bg-neutral-900 text-white">
     <div class="container mx-auto px-6">
