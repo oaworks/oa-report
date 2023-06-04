@@ -161,22 +161,25 @@ function handleTabBtnClick(event) {
   const otherTabContents = document.querySelectorAll(`.js-tab-content:not(#${selectedStrategy})`);
   const otherTabBtns = document.querySelectorAll(`.js-tab-btn:not(#tab_${selectedStrategy})`);
 
+
+  // When unselected
   for (let tabContents of otherTabContents) {
     tabContents.classList.add("hidden");
     tabContents.setAttribute("hidden", true);
   }
 
   for (let unselectedTabBtn of otherTabBtns) {
-    unselectedTabBtn.classList.remove("border-t-neutral-900", "text-neutral-900", "font-bold");
+    unselectedTabBtn.classList.remove("bg-carnation-300", "font-semibold");
     unselectedTabBtn.classList.add("hover:text-neutral-700", "hover:border-neutral-300", "font-normal");
     unselectedTabBtn.setAttribute("aria-selected", "false");
     unselectedTabBtn.setAttribute("tabindex", "-1");
   }
 
+  // When selected
   selectedTabContents.classList.remove("hidden");
   selectedTabContents.removeAttribute("hidden");
 
-  tabBtn.classList.add("border-t-neutral-900", "text-neutral-900", "font-bold");
+  tabBtn.classList.add("bg-carnation-300", "font-semibold");
   tabBtn.classList.remove("hover:text-neutral-700", "hover:border-neutral-300", "font-normal");
   tabBtn.setAttribute("aria-selected", "true");
   tabBtn.setAttribute("tabindex", "0");

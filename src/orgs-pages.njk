@@ -14,7 +14,6 @@ permalink: "{{ org._source.objectID | slug }}/"
     <div class="grid grid-cols-2 gap-6 md:gap-12 py-3 xl:pb-6 xl:pt-12">
       <header class="mb-3 col-span-2 md:col-span-1">
         <h1 class="flex items-center font-light">
-          <span class="inline-block mr-6 h-16 w-16 rounded-full bg-carnation-500"></span>
           <div>
             <span class="font-semibold uppercase text-sm md:text-base line-thru">
               <span class="bg-carnation-100 pr-3">
@@ -23,6 +22,7 @@ permalink: "{{ org._source.objectID | slug }}/"
             </span>
             <span class="text-2xl md:text-4xl highlight">{{ org._source.name }}</span>
           </div>
+          <span class="inline-block ml-6 h-14 w-14 rounded-full bg-carnation-500"></span>
         </h1>
 
         <h2 class="sr-only" id="insights_range">
@@ -135,99 +135,95 @@ permalink: "{{ org._source.objectID | slug }}/"
     </div>
   </section>
 
-  <section class="container mx-auto px-6">
-    <div class="grid grid-cols-2 gap-6 md:gap-12 py-6 xl:py-12"> 
-      <div class="col-span-2" id="strategies">
-        <h2 class="mb-5 leading-6 font-semibold uppercase text-sm md:text-base line-thru">
-          <span class="bg-carnation-100">
-            Strategies
-            {{ component("tooltip", {
-              msg: "The <em>Strategy</em> section provides actionable steps for making more of your articles Open Access."
+  <section class="bg-neutral-700 text-white">
+    <div class="container mx-auto px-6">
+      <div class="grid grid-cols-2 gap-6 md:gap-12 py-6 xl:py-12"> 
+        <div class="col-span-2" id="strategies">
+          <h2 class="leading-6 font-semibold uppercase text-sm md:text-base line-thru">
+            <span class="bg-neutral-700">
+              Strategies
+              {{ component("tooltip", {
+                msg: "The <em>Strategy</em> section provides actionable steps for making more of your articles Open Access."
+              }) }}
+            </span>
+          </h2>
+
+          <nav class="hidden sm:block mt-6 mb-10">
+            <ul role="tablist" aria-label="Strategies Tabs">
+              {{ component("tab-item", {
+                id: "email_author_vor",
+                txt: "Deposit publisher PDFs",
+                class: "font-semibold bg-carnation-300",
+                first: true
+              }) }}
+
+              {{ component("tab-item", {
+                id: "email_author_aam",
+                txt: "Deposit accepted manuscripts"
+              }) }}
+
+              {{ component("tab-item", {
+                id: "apc_followup",
+                txt: "Correct publisher errors"
+              }) }}
+
+              {{ component("tab-item", {
+                id: "unanswered_requests",
+                txt: "Escalate unanswered requests"
+              }) }}
+            </ul>
+          </nav>
+
+          <div class="hidden sm:block js-tab-content-all">
+            {{ component("tab-contents", {
+              id: "email_author_vor",
+              heading: "Deposit publisher PDFs",
+              desc: "Send emails to authors to request they make their work free to read. In these cases, they can do that by making a <strong>publisher PDF (version of record, VOR)</strong> available in a repository.",
+              table_headings: "<th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-10/12 sm:w-6/12'>Article</th>\
+                              <th scope='col' class='hidden px-3 py-3.5 text-left text-sm font-semibold w-4/12 sm:table-cell'>Corresponding author</th>",
+              draft_btn: true,
+              action_help_txt: true,
+              hidden: false
             }) }}
-          </span>
-        </h2>
 
-        <div class="block mb-10">
-          <div class="hidden sm:block">
-            <div class="border-b border-neutral-200">
-              <ul class="-mb-px flex divide-x border-b border-b-neutral-300 js-tabs" role="tablist" aria-label="Strategies Tabs">
-                {{ component("tab-item", {
-                  id: "email_author_vor",
-                  txt: "Deposit publisher PDFs",
-                  first: true
-                }) }}
+            {{ component("tab-contents", {
+              id: "email_author_aam",
+              heading: "Deposit accepted manuscripts",
+              desc: "Send emails to authors to request they make their work free to read. In these cases, they can do that by making an <strong>author accepted manuscript (AAM)</strong> available in a repository.",
+              table_headings: "<th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-10/12 sm:w-6/12'>Article</th>\
+                              <th scope='col' class='hidden px-3 py-3.5 text-left text-sm font-semibold w-4/12 sm:table-cell'>Corresponding author</th>",
+              draft_btn: true,
+              action_help_txt: true,
+              hidden: true
+            }) }}
 
-                {{ component("tab-item", {
-                  id: "email_author_aam",
-                  txt: "Deposit accepted manuscripts",
-                  first: false
-                }) }}
+            {{ component("tab-contents", {
+              id: "apc_followup",
+              heading: "Correct publisher errors",
+              desc: "These are articles where an APC has been paid, but the article isn't compliant with the policy. Use this list to follow up with publishers. If an article is made compliant, and the metadata is updated, it will be removed from this list.",
+              table_headings: "<th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-4/12 sm:w-4/12'>Publisher & journal</th>\
+                              <th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-3/12 sm:w-4/12'>Article</th>\
+                              <th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-5/12 sm:w-4/12'>Invoice</th>",
+              draft_btn: false,
+              action_help_txt: false,
+              hidden: true
+            }) }}
 
-                {{ component("tab-item", {
-                  id: "apc_followup",
-                  txt: "Correct publisher errors",
-                  first: false
-                }) }}
-
-                {{ component("tab-item", {
-                  id: "unanswered_requests",
-                  txt: "Escalate unanswered requests",
-                  first: false
-                }) }}
-              </ul>
-            </div>
+            {{ component("tab-contents", {
+              id: "unanswered_requests",
+              heading: "Escalate unanswered requests",
+              desc: "These articles are not compliant with policy, and their authors haven’t answered multiple requests to comply. Use this list to escalate requests to authors and request they make their work freely available.",
+              table_headings: "<th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-3/12'>Grant</th>\
+                              <th scope='col' class='px-3 py-3.5 text-left text-sm font-semibold w-7/12'>Author & article</th>",
+              draft_btn: true,
+              action_help_txt: false,
+              hidden: true
+            }) }}
           </div>
-        </div>
 
-        <div class="hidden sm:block js-tab-content-all">
-          {{ component("tab-contents", {
-            id: "email_author_vor",
-            heading: "Deposit publisher PDFs",
-            desc: "Send emails to authors to request they make their work free to read. In these cases, they can do that by making a <strong>publisher PDF (version of record, VOR)</strong> available in a repository.",
-            table_headings: "<th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-10/12 sm:w-6/12'>Article</th>\
-                            <th scope='col' class='hidden px-3 py-3.5 text-left text-sm font-semibold w-4/12 sm:table-cell'>Corresponding author</th>",
-            draft_btn: true,
-            action_help_txt: true,
-            hidden: false
-          }) }}
-
-          {{ component("tab-contents", {
-            id: "email_author_aam",
-            heading: "Deposit accepted manuscripts",
-            desc: "Send emails to authors to request they make their work free to read. In these cases, they can do that by making an <strong>author accepted manuscript (AAM)</strong> available in a repository.",
-            table_headings: "<th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-10/12 sm:w-6/12'>Article</th>\
-                            <th scope='col' class='hidden px-3 py-3.5 text-left text-sm font-semibold w-4/12 sm:table-cell'>Corresponding author</th>",
-            draft_btn: true,
-            action_help_txt: true,
-            hidden: true
-          }) }}
-
-          {{ component("tab-contents", {
-            id: "apc_followup",
-            heading: "Correct publisher errors",
-            desc: "These are articles where an APC has been paid, but the article isn't compliant with the policy. Use this list to follow up with publishers. If an article is made compliant, and the metadata is updated, it will be removed from this list.",
-            table_headings: "<th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-4/12 sm:w-4/12'>Publisher & journal</th>\
-                            <th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-3/12 sm:w-4/12'>Article</th>\
-                            <th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-5/12 sm:w-4/12'>Invoice</th>",
-            draft_btn: false,
-            action_help_txt: false,
-            hidden: true
-          }) }}
-
-          {{ component("tab-contents", {
-            id: "unanswered_requests",
-            heading: "Escalate unanswered requests",
-            desc: "These articles are not compliant with policy, and their authors haven’t answered multiple requests to comply. Use this list to escalate requests to authors and request they make their work freely available.",
-            table_headings: "<th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-3/12'>Grant</th>\
-                            <th scope='col' class='px-3 py-3.5 text-left text-sm font-semibold w-7/12'>Author & article</th>",
-            draft_btn: true,
-            action_help_txt: false,
-            hidden: true
-          }) }}
-        </div>
-
-        <div class="sm:hidden">
-          <p>Strategies aren’t available on mobile yet. Please head to a desktop computer to take action!</p>
+          <div class="sm:hidden">
+            <p>Strategies aren’t available on mobile yet. Please head to a desktop computer to take action!</p>
+          </div>
         </div>
       </div>
     </div>

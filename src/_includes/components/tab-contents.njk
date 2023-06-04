@@ -15,18 +15,18 @@
       <h3 class="font-semibold text-xl md:text-3xl mb-3 md:mb-6">{{ params.heading }}</h3>
       <p class="text-xs md:text-base mb-3 md:mb-6">{{ params.desc|safe }}</p>
       <form id="form_{{ params.id }}" onsubmit="return getStrategyExportLink('{{ params.id }}')">
-        <h2 class="mb-3 font-medium text-base text-neutral-900">
+        <h2 class="mb-3 font-medium text-base">
           Get data in CSV by email {{ component("tooltip", {
             msg: "Enter your email address to receive a link to a CSV for download. We do not use email addresses for any purpose other than sending you the CSV file containing OA.Report data when you request it."
           }) }}
         </h2>
         <label for="email" class="sr-only">Email address</label>
         <div class="mt-1 mb-3 flex shadow-sm">
-          <div class="relative flex items-stretch flex-grow focus-within:z-10">
+          <div class="relative flex items-stretch flex-grow focus-within:z-10 text-neutral-900">
             <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
               {% icon_small "mail" %}
             </div>
-            <input type="email" name="email" id="email-{{ params.id }}" class="focus:ring-carnation-300 focus:border-carnation-500 block w-full pl-10 sm:text-sm shadow-md border-1 js-csv_email_input" placeholder="you@example.com" required>
+            <input type="email" name="email" id="email-{{ params.id }}" class=" focus:ring-carnation-300 focus:border-carnation-500 block w-full pl-10 sm:text-sm shadow-md border-1 js-csv_email_input" placeholder="you@example.com" required>
           </div>
           <button type="submit" class="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium text-white bg-neutral-900 hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 shadow-md border-0 js-csv_email_button">
             Send CSV
@@ -39,7 +39,7 @@
   <div class="col-span-12 lg:col-span-8 border-t pt-3 sm:pt-0 sm:border-0">
     <div class="grid grid-cols-12 gap-3 lg:gap-6 justify-between">
       <div class="mb-3 col-span-12 md:col-span-6">
-        <p class="mb-1 text-neutral-900 text-lg font-semibold leading-6">
+        <p class="mb-1 text-lg font-semibold leading-6">
           <span id="total_{{ params.id }}">00</span> actions available</span>
           {% if params.action_help_txt %}
           {{ component("tooltip", {
@@ -57,7 +57,7 @@
             {% if params.draft_btn %}<th scope='col' class='text-sm font-semibold py-3.5 pl-3 pr-4 w-2/12'>Open draft {{ component('tooltip', {    msg: 'This will open a preset message in your email client. If you make any changes to the email, it will not be saved here.'  }) }}</th>{% endif %}
           </tr>
         </thead>
-        <tbody class="divide-y divide-neutral-200 bg-white"></tbody>
+        <tbody class="divide-y divide-neutral-200 bg-white text-neutral-900"></tbody>
       </table>
     </div>
   </div>
