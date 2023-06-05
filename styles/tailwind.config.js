@@ -12,6 +12,15 @@ module.exports = {
       sans: ['Inter var', 'Inter', 'sans-serif'],
       serif: ['serif'],
     },
+    letterSpacing: {
+      tightest: '-.075em',
+      tighter: '-.025em',
+      tight: '-.015em',
+      normal: '0',
+      wide: '.015em',
+      wider: '.025em',
+      widest: '.075em',
+    },
     colors: {
       transparent: 'transparent',
       current: 'currentColor',

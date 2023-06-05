@@ -1,4 +1,10 @@
-<label for="js-search-box" class="block text-xl md:text-3xl mb-8">Get your OA.Report today:</label>
+{# Search form component
+{{ component("search-form", {
+  sr_only: true
+}) }}
+#}
+
+<label for="js-search-box" class="{% if params.sr_only %}sr-only{% else %}block text-xl md:text-3xl mb-8{% endif %}">Get your OA.Report today:</label>
 <div class="flex">
   <div class="relative flex items-stretch flex-grow focus-within:z-10">
     <div class="absolute inset-y-0 left-0 flex items-center pointer-events-none">
