@@ -4,22 +4,9 @@
 
 /* Gradient on hover for OA.Report name */
 .app-name {
-  letter-spacing: -.025em;
-  font-weight: 700;
-  background: linear-gradient(to right, #ff6666, #ffc2c2);
-  background-size: 200% 200%;
-  background-clip: text;
-  -webkit-background-clip:text;
-  color: currentColor;
-  transition: all .25s ease-in-out;
-}
-
-.app-name__oa {
-  margin-right: .055em;
-}
-
-.app-name:hover {
-  color: rgba(0, 0, 0, 0);
+  width: 225px;
+  height: auto;
+  margin: 0 auto;
 }
 
 /* Texting highlighting in the style of a marker */
@@ -31,6 +18,28 @@
 .highlight--white {
   border-radius: 0.8em 0.3em;
   background-image: linear-gradient(to right, rgba(255,255,255, 0.095), rgba(255,255,255, 0.5) 4%, rgba(255,255,255, 0.25));
+}
+
+/* Line through text */
+.line-thru {
+  display: block;
+  margin-bottom: .15em;
+  position: relative;
+  z-index: 1;
+  color: currentColor;
+}
+
+.line-thru::before {
+  border-top: 1px solid;
+  content: "";
+  margin: 0 auto;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  z-index: -1;
 }
 
 /* Custom tooltip styling */

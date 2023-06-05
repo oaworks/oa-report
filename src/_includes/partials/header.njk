@@ -1,13 +1,17 @@
-<header class="bg-white">
+{%- from "system/component.njk" import component -%}
+
+<header class="bg-white drop-shadow-md">
   <nav class="mx-auto flex max-w-10xl items-center justify-between p-6 lg:px-8" aria-label="Global">
     <div class="flex lg:flex-1">
-      <a href="/" class="-m-1.5 p-1.5">
+      <a href="/" class="-m-1.5 -mb-4 sm:-mb-8 p-1.5">
         {% include 'partials/app-name.njk' %}
       </a>
     </div>
     <div {% if page.url != "/" %}class="hidden sm:block sm:w-1/3 md:w-1/2"{% endif %}>
     {% if page.url != "/" %}
-      {% include 'partials/search-form.njk' %}
+      {{ component("search-form", {
+        sr_only: true
+      }) }}
     {% endif %}
     </div>
     <div class="flex flex-1 justify-end gap-x-12">
