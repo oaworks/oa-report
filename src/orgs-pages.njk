@@ -73,7 +73,7 @@ permalink: "{{ org._source.objectID | slug }}/"
   </nav>
 
   <section class="bg-neutral-900 text-white">
-    <div class="container mx-auto px-6 py-6 xl:py-12">
+    <div class="mx-auto px-6 py-6 xl:py-12">
       <header class="col-span-3">
         <h2 class="mb-3 text-base md:text-lg leading-6">
           <span class="font-semibold uppercase text-sm md:text-base line-thru">
@@ -87,7 +87,7 @@ permalink: "{{ org._source.objectID | slug }}/"
         </h2>
       </header>
 
-      <div class="col-span-3 gap-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      <div class="col-span-3 gap-6 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4">
         {{ component("card", {
           id: "is_paper",
           title: "Total published",
