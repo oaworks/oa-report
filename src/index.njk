@@ -5,25 +5,27 @@ layout: layouts/base.njk
 {%- from "system/component.njk" import component -%}
 
 <main>      
-  <section class="grid grid-cols-1 md:grid-cols-2 min-h-screen text-center">
-    <div class="col-span-1 py-8 md:py-12 bg-neutral-900 text-white flex items-center justify-center">
+  <section class="grid grid-cols-1 md:grid-cols-3 min-h-screen bg-carnation-100">
+    <div class="col-span-2 flex pt-8">
       <div class="container px-12 mx-auto">
         <h1 class="sr-only">
           {% include 'partials/app-name.njk' %}
         </h1>
         <figure>
-          <a href="/img/screenshot.png" class="block mb-8" target="_blank" title="See screenshot in full size">
+          <p class="mb-8 text-xl md:text-3xl">{{ site.tagline  }}</p>
+          <a href="/img/screenshot.png" class="block mb-8 border-2" target="_blank" title="See screenshot in full size">
             {% webpImg "/img/screenshot.png", "A screenshot of the OA.Report user interface showing Open Access insights and a list of proposed strategies to open closed-access content.", 1440, 1087 %}
           </a>
-          <figcaption class="text-xl md:text-3xl">{{ site.tagline }}</figcaption>
+          <figcaption class="text-base md:text-2xl">{{ site.description }}</figcaption>
         </figure>
       </div>
     </div>
-    <div class="col-span-1 py-8 md:py-12 bg-carnation-100 flex items-center justify-center">
+    <div class="col-span-1 flex text-center items-center justify-center">
       <div class="container px-12 mx-auto">
         <div>
-          <p class="mb-8 text-xl md:text-3xl">Use <span class="font-semibold">OA.Report</span>’s open <span class="highlight">insights</span> and actionable <span class="highlight">strategies</span> to unlock your institution’s research.</p>
-          {% include 'partials/search-form.njk' %}
+          {{ component("search-form", {
+            sr_only: false
+          }) }}
           <p class="mt-8 text-xs md:text-sm font-medium"><a href="#content">Or scroll down to learn more <div class="block">↓</div></a></p>
         </div>
       </div>
