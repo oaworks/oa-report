@@ -13,14 +13,14 @@ permalink: "{{ org._source.objectID | slug }}/"
   <div class="container mx-auto px-6">
     <div class="grid grid-cols-2 gap-6 md:gap-12 py-3 xl:pb-6 xl:pt-12">
       <header class="mb-3 col-span-2 md:col-span-1">
-        <h1 class="flex items-center font-light">
+        <h1 class="flex items-center">
           <div>
             <span class="font-semibold uppercase text-sm md:text-base line-thru">
               <span class="bg-carnation-100 pr-3">
                 {% if org._source.policy.has_policy === true %}Put OA policy into practice at {% else %}Advance OA at {% endif %}
               </span>
             </span>
-            <span class="text-2xl md:text-4xl highlight">{{ org._source.name }}</span>
+            <span class="text-2xl md:text-4xl font-light highlight">{{ org._source.name }}</span>
           </div>
           <span class="ml-6 lg:h-14 lg:w-14 rounded-full bg-carnation-500"></span>
         </h1>
@@ -231,36 +231,36 @@ permalink: "{{ org._source.objectID | slug }}/"
 
   <section class="container mx-auto px-6">
     <div class="grid grid-cols-2 gap-6 md:gap-12 py-6 xl:py-12"> 
-      <div class="col-span-2 grid md:grid-cols-2 gap-12" id="about">
+      <div class="col-span-2 grid md:grid-cols-2 gap-12 text-base md:text-2xl leading-10 font-light" id="about">
         <div>
-          <h2 class="mb-5 text-base md:text-lg leading-6 font-medium text-neutral-900 uppercase">
-            About this report
+          <h2 class=" font-semibold uppercase text-sm md:text-base line-thru">
+            <span class="bg-carnation-100 pr-3">About this report</span>
           </h2>
           {# PAID USERS #}
           {% if org._source.paid == true %}
-          <p class="text-xs md:text-base mb-6">
-            <strong class="text-bold">{{ org._source.name }}</strong>’s custom OA.Report uses <a href="https://about.oa.report/docs/sources" target="_blank" class="underline underline-offset-2 decoration-1">all our data sources</a> and expert analysis to provide insights into their publications, impact, and how open their research is.
+          <p class="my-6">
+            <strong class="text-bold">{{ org._source.name }}</strong>’s custom OA.Report uses <a href="https://about.oa.report/docs/sources" target="_blank" class="underline underline-offset-4 decoration-1">all our data sources</a> and expert analysis to provide insights into their publications, impact, and how open their research is.
           </p>
-          <p class="text-xs md:text-base" id="about-paid-logged-out">
-            <a href="https://about.oa.report/docs/user-accounts" target="_blank" class="underline underline-offset-2 decoration-1">Log in</a> to see the OA.Report.
+          <p class="my-6" id="about-paid-logged-out">
+            <a href="https://about.oa.report/docs/user-accounts" target="_blank" class="underline underline-offset-4 decoration-1">Log in</a> to see the OA.Report.
           </p>
           {# FREE USERS #}
           {% else %}
-          <p class="text-xs md:text-base">
-              <strong class="text-bold">{{ org._source.name }}</strong>’s OA.Report uses <a href="https://about.oa.report/docs/sources#open-sources" target="_blank" class="underline underline-offset-2 decoration-1">open data</a> and automated analysis to provide insights into their publication volume and how open their research is.
-            </p>
+          <p class="my-6">
+            <strong class="text-bold">{{ org._source.name }}</strong>’s OA.Report uses <a href="https://about.oa.report/docs/sources#open-sources" target="_blank" class="underline underline-offset-4 decoration-1">open data</a> and automated analysis to provide insights into their publication volume and how open their research is.
+          </p>
           {% endif %}
         </div>
         {# FREE USERS #}
         {% if org._source.paid != true %}
-        <div class="text-xs md:text-base" id="about-free-logged-out">
-          <h2 class="mb-5 text-base md:text-lg leading-6 font-medium text-neutral-900 uppercase">
-            Unlock your institution’s research
+        <div id="about-free-logged-out">
+          <h2 class="font-semibold uppercase text-sm md:text-base line-thru">
+            <span class="bg-carnation-100 pr-3">Unlock your institution’s research</span>
           </h2>
-          <p class="mb-6">
-            Sign up to access your institution's strategies for free. Consider a <a href="https://about.oa.report/pricing" target="_blank" class="underline underline-offset-2 decoration-1">paid plan</a> to help <a href="https://about.oa.report/docs/sources" target="_blank" class="underline underline-offset-2 decoration-1">discover all your papers</a> and provide up-to-date, deep insights into the state of open at your institution.
+          <p class="my-6">
+            Sign up to access your institution's strategies for free. Consider a <a href="https://about.oa.report/pricing" target="_blank" class="underline underline-offset-4 decoration-1">paid plan</a> to help <a href="https://about.oa.report/docs/sources" target="_blank" class="underline underline-offset-4 decoration-1">discover all your papers</a> and provide up-to-date, deep insights into the state of open at your institution.
           </p>
-          <div class="w-6/12">
+          <div class="my-6 w-6/12">
             {% include 'partials/signup-form.njk' %}
           </div>
         </div>
