@@ -37,39 +37,39 @@ permalink: "{{ org._source.objectID | slug }}/"
   </div>
 
   <nav class="container mx-auto px-6">
-    <p class="sr-only">Quick date filters</p>
-        <ul>
-          <li class="mr-2 inline-block">
-            {{ component("pill", {
-              id: "start-year",
-              txt: "",
-              class: "border-t-4 border-carnation-500 bg-neutral-900 text-white font-semibold"
-            }) }}
-          </li>
-          <li class="mr-2 inline-block">
-            {{ component("pill", {
-              id: "last-year",
-              txt: "",
-              class: "border-t-4 bg-white text-neutral-900"
-            }) }}
-          </li>
-          {% if org._source.paid == true %}
-          <li class="mr-2 inline-block">
-            {{ component("pill", {
-              id: "two-years-ago",
-              txt: "",
-              class: "border-t-4 bg-white text-neutral-900"
-            }) }}
-          </li>
-          <li class="inline-block">
-            {{ component("pill", {
-              id: "all-time",
-              txt: "All time",
-              class: "border-t-4 bg-white text-neutral-900"
-            }) }}
-          </li>
-          {% endif %}
-        </ul>
+    <h2 class="sr-only">See the report by year</h2>
+    <ul>
+      <li class="mr-2 inline-block">
+        {{ component("pill", {
+          id: "start-year",
+          txt: "",
+          class: "border-t-4 border-carnation-500 bg-neutral-900 text-white font-semibold"
+        }) }}
+      </li>
+      <li class="mr-2 inline-block">
+        {{ component("pill", {
+          id: "last-year",
+          txt: "",
+          class: "border-t-4 bg-white text-neutral-900"
+        }) }}
+      </li>
+      {% if org._source.paid == true %}
+      <li class="mr-2 inline-block">
+        {{ component("pill", {
+          id: "two-years-ago",
+          txt: "",
+          class: "border-t-4 bg-white text-neutral-900"
+        }) }}
+      </li>
+      <li class="inline-block">
+        {{ component("pill", {
+          id: "all-time",
+          txt: "All time",
+          class: "border-t-4 bg-white text-neutral-900"
+        }) }}
+      </li>
+      {% endif %}
+    </ul>
   </nav>
 
   <section class="bg-neutral-900 text-white" id="insights">
