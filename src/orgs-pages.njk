@@ -135,7 +135,7 @@ permalink: "{{ org._source.objectID | slug }}/"
     </div>
   </section>
 
-  <section class="bg-neutral-700 text-white" id="strategies">
+  <section class="bg-neutral-700 text-white relative" id="strategies">
     <div class="container mx-auto px-6">
       <div class="grid grid-cols-2 gap-6 md:gap-12 py-6 xl:py-12"> 
         <div class="col-span-2">
@@ -149,6 +149,9 @@ permalink: "{{ org._source.objectID | slug }}/"
           </h2>
 
           <nav class="hidden sm:block mt-6 mb-10">
+            <h3 class="absolute right-0 bottom-0 text-9xl font-black text-white opacity-20">
+              <span class="sr-only">Actions for </span><span id="report-year">2023</span>
+            </h3>
             <ul role="tablist" aria-label="Strategies Tabs">
               {{ component("tab-item", {
                 id: "email_author_vor",

@@ -105,6 +105,7 @@ const lastYearBtn = document.getElementById("last-year");
 const twoYearsBtn = document.getElementById("two-years-ago");
 const allTimeBtn = document.getElementById("all-time");
 const reportDateRange = document.getElementById("report-range");
+const reportYear = document.getElementById("report-year");
 
 startYearBtn.textContent = startYearDate.getFullYear();
 lastYearBtn.textContent = lastYearStartDate.getFullYear();
@@ -120,12 +121,14 @@ getDateRangeForUserType();
 startYearBtn.addEventListener("click", function() {
   getDateRangeForUserType();
   reportDateRange.textContent = `Since the start of ${startYearDate.getFullYear()}`;
+  reportYear.textContent = startYearDate.getFullYear();
   oareport(org);
 });
 
 lastYearBtn.addEventListener("click", function() {
   replaceDateRange(lastYearStartDate, lastYearEndDate);
   reportDateRange.textContent = `In ${lastYearStartDate.getFullYear()}`;
+  reportYear.textContent = lastYearStartDate.getFullYear();
   oareport(org);
 });
 
@@ -139,6 +142,7 @@ if (twoYearsBtn) {
   twoYearsBtn.addEventListener("click", function() {
     replaceDateRange(twoYearsStartDate, twoYearsEndDate);
     reportDateRange.textContent = `In ${twoYearsStartDate.getFullYear()}`;
+    reportYear.textContent = twoYearsStartDate.getFullYear();
     oareport(org);
   });
 }
@@ -147,6 +151,7 @@ if (allTimeBtn) {
   allTimeBtn.addEventListener("click", function() {
     replaceDateRange(createDate(1980, 0, 1), currentDate);
     reportDateRange.textContent = "All time";
+    reportYear.textContent = "All time";
     oareport(org);
   });
 }
