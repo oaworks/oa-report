@@ -160,7 +160,13 @@ if (allTimeBtn) {
 const strategyTabBtns = document.querySelectorAll(".js-tab-btn");
 
 function handleTabBtnClick(event) {
-  const tabBtn = event.target;
+  // If the click event's target is the span inside of <li>, stop the event propagation
+  if (event.target.tagName.toLowerCase() === 'span') {
+    event.stopPropagation();
+    return;
+  }
+
+  const tabBtn = event.currentTarget;
   const selectedStrategy = tabBtn.getAttribute("aria-controls");
   const selectedTabContents = document.querySelector(`.js-tab-content-all #${selectedStrategy}`);
   const otherTabContents = document.querySelectorAll(`.js-tab-content:not(#${selectedStrategy})`);
