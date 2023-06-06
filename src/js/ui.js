@@ -104,7 +104,8 @@ const startYearBtn = document.getElementById("start-year");
 const lastYearBtn = document.getElementById("last-year");
 const twoYearsBtn = document.getElementById("two-years-ago");
 const allTimeBtn = document.getElementById("all-time");
-const insightsDateRange = document.getElementById("insights_range");
+const reportDateRange = document.getElementById("report-range");
+const reportYear = document.getElementById("report-year");
 
 startYearBtn.textContent = startYearDate.getFullYear();
 lastYearBtn.textContent = lastYearStartDate.getFullYear();
@@ -119,13 +120,15 @@ getDateRangeForUserType();
 
 startYearBtn.addEventListener("click", function() {
   getDateRangeForUserType();
-  insightsDateRange.textContent = `Since the start of ${startYearDate.getFullYear()}`;
+  reportDateRange.textContent = `Since the start of ${startYearDate.getFullYear()}`;
+  reportYear.textContent = startYearDate.getFullYear();
   oareport(org);
 });
 
 lastYearBtn.addEventListener("click", function() {
   replaceDateRange(lastYearStartDate, lastYearEndDate);
-  insightsDateRange.textContent = `In ${lastYearStartDate.getFullYear()}`;
+  reportDateRange.textContent = `In ${lastYearStartDate.getFullYear()}`;
+  reportYear.textContent = lastYearStartDate.getFullYear();
   oareport(org);
 });
 
@@ -138,7 +141,8 @@ if (twoYearsBtn) {
   twoYearsBtn.textContent = twoYearsStartDate.getFullYear();
   twoYearsBtn.addEventListener("click", function() {
     replaceDateRange(twoYearsStartDate, twoYearsEndDate);
-    insightsDateRange.textContent = `In ${twoYearsStartDate.getFullYear()}`;
+    reportDateRange.textContent = `In ${twoYearsStartDate.getFullYear()}`;
+    reportYear.textContent = twoYearsStartDate.getFullYear();
     oareport(org);
   });
 }
@@ -146,7 +150,8 @@ if (twoYearsBtn) {
 if (allTimeBtn) {
   allTimeBtn.addEventListener("click", function() {
     replaceDateRange(createDate(1980, 0, 1), currentDate);
-    insightsDateRange.textContent = "All time";
+    reportDateRange.textContent = "All time";
+    reportYear.textContent = "All time";
     oareport(org);
   });
 }
