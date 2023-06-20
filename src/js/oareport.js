@@ -355,7 +355,7 @@ oareport = function(org) {
                         mailto = response.data.hits.hits[0]._source.strategy[strategy].mailto;
 
                         var newMailto = mailto.replaceAll("\'", "’");
-                        newMailto = newMailto.replaceAll("{doi}", (action.doi ? action.doi : "[No DOI found]"));
+                        newMailto = newMailto.replaceAll("{DOI}", (action.DOI ? action.DOI : "[No DOI found]"));
                         newMailto = newMailto.replaceAll("{author_email_name}", (action.author_email_name ? action.author_email_name : "[No author’s name found]"));
                         newMailto = newMailto.replaceAll("{title}", (action.title ? action.title.replaceAll("\'", "’") : "[No title found]"));
 
@@ -399,11 +399,11 @@ oareport = function(org) {
 
     displayStrategy(
       "email_author_vor",
-      ['published_date', 'title', 'journal', 'author_email_name', 'email', 'doi', 'mailto'],
+      ['published_date', 'title', 'journal', 'author_email_name', 'email', 'DOI', 'mailto'],
       "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
         <div class='mb-1 text-neutral-500'>${action.published_date}</div>\
         <div class='mb-1 font-medium text-neutral-900 hover:text-carnation-500'>\
-          <a href='https://doi.org/${action.doi}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
+          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
         </div>\
         <div class='text-neutral-500'>${action.journal}</div>\
       </td>\
@@ -411,7 +411,7 @@ oareport = function(org) {
         <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
       </td>\
       <td class='hidden px-3 py-4 text-sm text-center text-neutral-500 align-top break-words sm:table-cell'>\
-        <button class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200' onclick='decryptEmail(\"${action.email}\", \"${action.doi}\", \"${action.mailto}\")'>\
+        <button class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200' onclick='decryptEmail(\"${action.email}\", \"${action.DOI}\", \"${action.mailto}\")'>\
           <svg class='h-4 w-4' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-mail inline-block h-4 duration-500'><path d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'></path><polyline points='22,6 12,13 2,6'></polyline></svg>\
         </button>\
       </td>"
@@ -419,11 +419,11 @@ oareport = function(org) {
 
     displayStrategy(
       "email_author_aam",
-      ['published_date', 'title', 'journal', 'author_email_name', 'email', 'doi', 'mailto'],
+      ['published_date', 'title', 'journal', 'author_email_name', 'email', 'DOI', 'mailto'],
       "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
         <div class='mb-1 text-neutral-500'>${action.published_date}</div>\
         <div class='mb-1 font-medium text-neutral-900 hover:text-carnation-500'>\
-          <a href='https://doi.org/${action.doi}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
+          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
         </div>\
         <div class='text-neutral-500'>${action.journal}</div>\
       </td>\
@@ -431,7 +431,7 @@ oareport = function(org) {
         <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
       </td>\
       <td class='hidden px-3 py-4 text-sm text-center text-neutral-500 align-top break-words sm:table-cell'>\
-        <button class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200' onclick='decryptEmail(\"${action.email}\", \"${action.doi}\", \"${action.mailto}\")'>\
+        <button class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200' onclick='decryptEmail(\"${action.email}\", \"${action.DOI}\", \"${action.mailto}\")'>\
           <svg class='h-4 w-4' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-mail inline-block h-4 duration-500'><path d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'></path><polyline points='22,6 12,13 2,6'></polyline></svg>\
         </button>\
       </td>"
@@ -439,7 +439,7 @@ oareport = function(org) {
     
     displayStrategy(
       "apc_followup",
-      ['published_date', 'title', 'journal', 'doi', 'publisher', 'publisher_license', 'journal_oa_type', 'oa_status', 'supplements.apc_cost', 'supplements.invoice_number', 'supplements.invoice_date'],
+      ['published_date', 'title', 'journal', 'DOI', 'publisher', 'publisher_license', 'journal_oa_type', 'oa_status', 'supplements.apc_cost', 'supplements.invoice_number', 'supplements.invoice_date'],
       "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
         <div class='mb-1 font-medium text-neutral-900'>${action.publisher}</div>\
         <div class='mb-3 text-neutral-900'>${action.journal}</div>\
@@ -448,9 +448,9 @@ oareport = function(org) {
       <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
         <div class='mb-1 text-neutral-500'>${action.published_date}</div>\
         <div class='mb-1 text-neutral-900 hover:text-carnation-500'>\
-          <a href='https://doi.org/${action.doi}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
+          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
         </div>\
-        <div class='mb-3 text-neutral-500'>${action.doi}</div>\
+        <div class='mb-3 text-neutral-500'>${action.DOI}</div>\
         <div class='text-neutral-500'>OA status: <span class='font-medium'>${action.oa_status}<span></div>\
         <div class='text-neutral-500'>License: <span class='font-medium uppercase'>${action.publisher_license}</span></div>\
       </td>\
@@ -463,7 +463,7 @@ oareport = function(org) {
 
     displayStrategy(
       "unanswered_requests",
-      ['title', 'journal', 'author_email_name', 'email', 'doi', 'supplements.program__bmgf', 'supplements.grantid__bmgf', 'mailto'],
+      ['title', 'journal', 'author_email_name', 'email', 'DOI', 'supplements.program__bmgf', 'supplements.grantid__bmgf', 'mailto'],
       "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
         <div class='mb-1 font-medium text-neutral-900'>${action.program__bmgf}</div>\
         <div class='text-neutral-900'>${action.grantid__bmgf}</div>\
@@ -471,12 +471,12 @@ oareport = function(org) {
       <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
         <div class='mb-1 font-medium text-neutral-900'>${action.author_email_name}</div>\
         <div class='mb-1 text-neutral-900'>\
-          <a href='https://doi.org/${action.doi}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
+          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
         </div>\
         <div class='text-neutral-500'>${action.journal}</div>\
       </td>\
       <td class='whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium'>\
-        <button class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200' onclick='decryptEmail(\"${action.email}\", \"${action.doi}\", \"${action.mailto}\")'>\
+        <button class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200' onclick='decryptEmail(\"${action.email}\", \"${action.DOI}\", \"${action.mailto}\")'>\
           <svg class='h-4 w-4' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-mail inline-block h-4 duration-500'><path d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'></path><polyline points='22,6 12,13 2,6'></polyline></svg>\
         </button>\
       </td>"
