@@ -355,7 +355,7 @@ oareport = function(org) {
                         mailto = response.data.hits.hits[0]._source.strategy[strategy].mailto;
 
                         var newMailto = mailto.replaceAll("\'", "’");
-                        newMailto = newMailto.replaceAll("{DOI}", (action.DOI ? action.DOI : "[No DOI found]"));
+                        newMailto = newMailto.replaceAll("{doi}", (action.DOI ? action.DOI : "[No DOI found]"));
                         newMailto = newMailto.replaceAll("{author_email_name}", (action.author_email_name ? action.author_email_name : "[No author’s name found]"));
                         newMailto = newMailto.replaceAll("{title}", (action.title ? action.title.replaceAll("\'", "’") : "[No title found]"));
 
