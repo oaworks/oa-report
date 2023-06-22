@@ -6,7 +6,7 @@
     <ul class="flex space-x-12 self-center">
       {% for item in nav_footer %}
       <li>
-        <a href="{{ item.url }}" target="_blank" class="text-base md:text-lg hover:text-carnation-500 transition duration-300">{{ item.label }}</a>
+        <a href="{{ item.url }}" {% if item.ext %}target="_blank" {% endif %}class="text-base md:text-lg hover:text-carnation-500 transition duration-300">{{ item.label }}</a>
       </li>
       {% endfor %}
     </ul>
