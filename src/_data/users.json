@@ -27,5 +27,11 @@
     "name": "the Robert Wood Johnson Foundation",
     "acronym": "RWJF",
     "url": "https://www.rwjf.org/"
+  },
+  {
+    "name": "the Michael J. Fox Foundation",
+    "acronym": "MJFF",
+    "logo": "img/users/mjff.png",
+    "url": "https://www.michaeljfox.org/"
   }
 ]
