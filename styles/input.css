@@ -2,13 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Gradient on hover for OA.Report name */
-.app-name {
-  width: 225px;
-  height: auto;
-  margin: 0 auto;
-}
-
 /* Texting highlighting in the style of a marker */
 .highlight {
   border-radius: 0.8em 0.3em;

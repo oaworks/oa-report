@@ -2,8 +2,8 @@
   <a href="https://oa.works" target="_blank" rel="noopener" class="block">
     {% include 'svg/oa-works.svg' %}
   </a>
-  <nav class="flex">
-    <ul class="flex space-x-12 self-center">
+  <nav class="mt-8 md:mt-0 md:flex">
+    <ul class="md:flex md:space-x-12 md:justify-center md:self-center text-center">
       {% for item in nav_footer %}
       <li>
         <a href="{{ item.url }}" {% if item.ext %}target="_blank" {% endif %}class="text-base md:text-lg hover:text-carnation-500 transition duration-300">{{ item.label }}</a>
