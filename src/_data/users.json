@@ -43,5 +43,13 @@
     "width": 400,
     "height": 61,
     "url": "https://www.michaeljfox.org/"
+  },
+  {
+    "name": "Wellcome",
+    "acronym": "Wellcome",
+    "logo": "img/users/wellcome.png",
+    "width": 75,
+    "height": 75,
+    "url": "https://wellcome.org/"
   }
 ]
