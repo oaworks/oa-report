@@ -87,7 +87,7 @@
             {% if user.logo %}
             <div class="col col--1of3">
               <a href="{{ user.url }}" target="_blank" rel="noopener" class="block-link margin-bottom-xl" title="Go to the {{ user.acronym }} website">
-                <img src="../{{ user.logo }}" alt="Logo for {{ user.acronym }}"/>
+                <img src="../{{ user.logo }}" alt="Logo for {{ user.acronym }}" style="margin: auto; max-height: 75px; width: auto;"/>
               </a>
             </div>
             {% endif %}
