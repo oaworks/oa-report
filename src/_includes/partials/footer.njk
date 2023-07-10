@@ -1,18 +1,21 @@
 <footer class="bg-neutral-900 text-white md:flex md:justify-between p-8 md:px-8">
   <a href="https://oa.works" target="_blank" rel="noopener" class="block">
-    {% include 'partials/oa-works.svg' %}
+    {% include 'svg/oa-works.svg' %}
   </a>
-  <nav class="flex">
-    <ul class="flex space-x-12 self-center">
+  <nav class="mt-8 md:mt-0 md:flex">
+    <ul class="md:flex md:space-x-12 md:justify-center md:self-center text-center">
       {% for item in nav_footer %}
       <li>
-        <a href="{{ item.url }}" target="_blank" class="text-base md:text-lg hover:text-carnation-500 transition duration-300">{{ item.label }}</a>
+        <a href="{{ item.url }}" {% if item.ext %}target="_blank" {% endif %}class="text-base md:text-lg hover:text-carnation-500 transition duration-300">{{ item.label }}</a>
       </li>
       {% endfor %}
     </ul>
   </nav>
 </footer>
 
+{# Load JS for org report pages only #}
+{% if org._source.name %}
+{# For tooltips #}
 <script src="../js/popper.min.js"></script>
 <script src="../js/tippy-bundle.umd.min.js"></script>
 <script>
@@ -41,7 +44,35 @@
     theme: 'popover',
     arrow: false,
   });
+
+  // Update ARIA attributes for tooltips
+  const tooltips = document.querySelectorAll('.tooltip');
+  tooltips.forEach((tooltip) => {
+    tooltip.setAttribute('role', 'tooltip'); // Set the role attribute
+    tooltip.setAttribute('aria-hidden', 'true'); // Hide the tooltip by default
+  });
 </script>
-<script src="/js/oareport.js"></script>
-<script src="/js/ui.js"></script>
+
+{# To get org names/slugs and whether or not they’re paying users #}
+<script>
+  const org = ("{{ org._source.name | urlencode }}"),
+        orgSlug = ("{{ org._source.objectID | slug }}");
+  {% if org._source.paid %}
+    const paid = true;
+  {% else %}
+    const paid = false;
+  {% endif %}
+</script>
+
+{# To fetch data from the API and display it in the UI #}
+<script defer src="../js/axios.min.js"></script>
+<script defer src="../js/oareport.js"></script>
+{% endif %}
+
+{# For the search tool #}
+<script src="../js/search.js"></script>
+
+{# Load font #}
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+
 {% block extra_footer %}{% endblock %}

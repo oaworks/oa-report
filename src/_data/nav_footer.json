@@ -1,14 +1,22 @@
 [
   {
     "label": "Status",
-    "url": "https://status.oa.report/"
+    "url": "https://status.oa.report/",
+    "ext": true
   },
   {
     "label": "Privacy",
-    "url": "https://oa.works/policies/privacy/"
+    "url": "https://oa.works/policies/privacy/",
+    "ext": true
   },
   {
     "label": "Terms of Service",
-    "url": "https://oa.works/policies/terms/"
+    "url": "https://oa.works/policies/terms/",
+    "ext": true
+  },
+  {
+    "label": "Accessibility",
+    "url": "https://about.oa.report/help/accessibility-statement/",
+    "ext": true
   }
 ]

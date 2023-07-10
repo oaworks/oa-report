@@ -1,0 +1,10 @@
+{
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "features": {},
+  "postCreateCommand": "npm install @11ty/eleventy && npm run start",
+  "containerEnv": {
+    "ELEVENTY_API_ENDPOINT": "beta",
+    "ELEVENTY_BASE_URL": "https://dev.oa.report",
+    "ELEVENTY_NUMBER_REPORTS": "20"
+  }
+}

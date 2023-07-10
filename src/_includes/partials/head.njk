@@ -5,23 +5,21 @@
   <meta name="robots" content="noindex">
   {% endif %}
   <title>{% if org._source.name %}{{ org._source.name }}{% if org._source.acronyms %} ({{ org._source.acronyms }}){% endif %} — {% endif %}OA.Report</title>
-  {# <link rel="preload" href="/assets/fonts/WremenaRegular.woff" as="font" crossorigin>
-  <link rel="preload" href="/assets/fonts/WremenaBold.woff" as="font" crossorigin> #}
-  {# <link rel="preload" href="/assets/fonts/Inter.woff2" as="font" crossorigin> #}
-  {% if page.url == "/" %}
-  <link rel="stylesheet" href="../css/home.css">
-  {% else %}
-  <link rel="stylesheet" href="../tailwind.css"/>
-  {% endif %}
 
   <meta name="description" content="Insights and strategies for Open Access and OA policies{% if org._source.name %} at {{ org._source.name }}{% endif %}.">
+
+  {# Preconnect to the CDN for our sans-serif font #}
+  <link rel="preconnect" href="https://rsms.me/">
+
+  {# Load TailwindCSS #}
+  <link rel="stylesheet" href="../tailwind.css">
 
   {# Favicons #}
   <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png">
-  <link rel="mask-icon" href="/favicons/safari-pinned-tab.svg" color="#FFC0CB">
-  <meta name="msapplication-TileColor" content="#FFC0CB">
+  <link rel="mask-icon" href="/favicons/safari-pinned-tab.svg" color="#ff6666">
+  <meta name="msapplication-TileColor" content="#ff6666">
   <meta name="theme-color" content="#25201E">
 
   {# OpenGraph #}
@@ -46,21 +44,30 @@
   <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
   <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif" alt="" referrerpolicy="no-referrer-when-downgrade" /></noscript>
 
-  <script src="../js/oaworksKeys.js"></script>
-
-  {# For org report pages only #}
-  {% if org._source.name %}
+  {# Detect any console errors and display in UI #}
   <script>
-    const org = ("{{ org._source.name | urlencode }}"),
-          orgSlug = ("{{ org._source.objectID | slug }}");
-    {% if org._source.paid %}
-      const paid = true;
-    {% else %}
-      const paid = false;
-    {% endif %}
+    window.addEventListener('error', function (event) {
+      if (event.message?.includes('404') || event.message?.toLowerCase().includes('error')) {
+        displayErrorHeader();
+      }
+    }, true);
+
+    function displayErrorHeader() {
+      const alertMsg = document.getElementById("js-alert");
+      alertMsg.textContent = "An error has occurred. Please try again later.";
+      alertMsg.style.display = 'block';
+    }
   </script>
-  <script src="../js/axios.min.js"></script>
+
+  {# Load UI-related JS for org report pages only #} 
+  {% if org._source.name %}
+  <script defer src="../js/oaworksKeys.js"></script>
+  <script defer src="../js/ui.js"></script>
   {% endif %}
+
+  {# Preconnect to the API endpoint #}
+  <link ref="preconnect" href="https://bg.{{ env.ELEVENTY_API_ENDPOINT }}.oa.works">
+  <link ref="preconnect" href="https://{{ env.ELEVENTY_API_ENDPOINT }}.oa.works">
 
   {% block extra_head %}{% endblock %}
 </head>

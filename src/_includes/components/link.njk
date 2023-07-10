@@ -1,0 +1,9 @@
+{# Link component
+{{ component("link", {
+  url: "",
+  txt: "",
+  ext: true
+}) }}
+#}
+
+<a href="{{ params.url }}" {% if params.ext %}target="_blank" {% endif %}class="underline underline-offset-2 decoration-1">{{ params.txt }}</a>
