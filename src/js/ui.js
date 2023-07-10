@@ -97,7 +97,7 @@ const lastYearEndDateQuery = changeDays(1, lastYearEndDate);
 const lastYearEndDateISO = formatDateToISO(lastYearEndDate);
 
 // Fixed end date set for free/non-paying users
-const fixedDate = createDate(2023, 2, 31);
+const fixedDate = createDate(2023, 6, 30);
 
 // Preset "quick date filter" buttons
 const startYearBtn = document.getElementById("start-year");
