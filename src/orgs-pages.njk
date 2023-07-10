@@ -46,6 +46,7 @@ permalink: "{{ org._source.objectID | slug }}/"
           class: "border-t-4 border-carnation-500 bg-neutral-900 text-white font-semibold"
         }) }}
       </li>
+      {% if org._source.paid == true %}
       <li class="mr-2 inline-block">
         {{ component("pill", {
           id: "last-year",
@@ -53,7 +54,6 @@ permalink: "{{ org._source.objectID | slug }}/"
           class: "border-t-4 bg-white text-neutral-900"
         }) }}
       </li>
-      {% if org._source.paid == true %}
       <li class="mr-2 inline-block">
         {{ component("pill", {
           id: "two-years-ago",

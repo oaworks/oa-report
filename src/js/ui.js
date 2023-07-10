@@ -108,7 +108,6 @@ const reportDateRange = document.getElementById("report-range");
 const reportYear = document.getElementById("report-year");
 
 startYearBtn.textContent = startYearDate.getFullYear();
-lastYearBtn.textContent = lastYearStartDate.getFullYear();
 
 // Display default date range since start of the current year
 function getDateRangeForUserType() {
@@ -125,15 +124,18 @@ startYearBtn.addEventListener("click", function() {
   oareport(org);
 });
 
-lastYearBtn.addEventListener("click", function() {
-  replaceDateRange(lastYearStartDate, lastYearEndDate);
-  reportDateRange.textContent = `In ${lastYearStartDate.getFullYear()}`;
-  reportYear.textContent = lastYearStartDate.getFullYear();
-  oareport(org);
-});
-
 // Only paid users can see data from two years ago and all time
 // These buttons won’t be displayed for free users
+if (twoYearsBtn) {
+  lastYearBtn.textContent = lastYearStartDate.getFullYear();
+  lastYearBtn.addEventListener("click", function() {
+    replaceDateRange(lastYearStartDate, lastYearEndDate);
+    reportDateRange.textContent = `In ${lastYearStartDate.getFullYear()}`;
+    reportYear.textContent = lastYearStartDate.getFullYear();
+    oareport(org);
+  });
+}
+
 if (twoYearsBtn) {
   const twoYearsStartDate = createDate(currentDate.getFullYear() - 2, 0, 1);
   const twoYearsEndDate = createDate(currentDate.getFullYear() - 2, 11, 31);
