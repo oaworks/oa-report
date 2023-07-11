@@ -103,7 +103,7 @@ permalink: "{{ org._source.objectID | slug }}/"
 
         {{ component("card", {
           id: "is_compliant",
-          title: "Policy-compliant",
+          title: "OA policy-compliant",
           icon: "check-circle"
         }) }}
 
@@ -115,7 +115,7 @@ permalink: "{{ org._source.objectID | slug }}/"
 
         {{ component("card", {
           id: "has_data_availability_statement",
-          title: "Have data availability statements",
+          title: "With data availability statements",
           icon: "search"
         }) }}
 
@@ -242,7 +242,7 @@ permalink: "{{ org._source.objectID | slug }}/"
           {# PAID USERS #}
           {% if org._source.paid == true %}
           <p class="my-6">
-            <strong class="text-bold">{{ org._source.name }}</strong>’s custom OA.Report uses <a href="https://about.oa.report/docs/sources" target="_blank" class="underline underline-offset-4 decoration-1">all our data sources</a> and expert analysis to provide insights into their publications, impact, and how open their research is.
+            <strong class="text-bold">{{ org._source.name }}</strong>’s custom OA.Report uses <a href="https://about.oa.report/docs/sources" target="_blank" class="underline underline-offset-4 decoration-1">all our data sources</a> and state-of-the-art analysis to provide insights into their publications, impact, and how open their research is.
           </p>
           <p class="my-6" id="about-paid-logged-out">
             <a href="https://about.oa.report/docs/user-accounts" target="_blank" class="underline underline-offset-4 decoration-1">Log in</a> to see the OA.Report.
