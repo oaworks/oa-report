@@ -25,7 +25,7 @@ async function fetchSuggestions(searchTerm) {
         .join('');
       suggestionsList.style.display = 'block';
     } else {
-      suggestionsList.innerHTML = '<li class="relative cursor-default border-b select-none p-3 text-neutral-900">No results! If you think there should be, <a href="mailto:hello@oa.works&subject=OA.Report — I can’t find my organization" class="underline underline-offset-2 decoration-1">get in touch</a>.</li>';
+      suggestionsList.innerHTML = '<li class="relative cursor-default border-b select-none p-3 text-neutral-900"><p>No results found! <a href="mailto:hello@oa.works&subject=OA.Report — I can’t find my organization" class="underline underline-offset-2 decoration-1">Contact us</a> if you can’t find your organization.</p><br><p>Looking for your university library? Join our <a href="https://blog.oa.works/join-the-oa-report-for-libraries-pilot-to-simplify-compliance-checking-for-your-institutional-funders-oa-policies/" target="_blank" rel="noopener" class="underline underline-offset-2 decoration-1">OA.Report for libraries pilot</a>!</p></li>';
       suggestionsList.style.display = 'block';
     }
   } catch (error) {
