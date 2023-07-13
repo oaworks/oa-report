@@ -42,15 +42,14 @@ searchBox.addEventListener('input', (event) => {
   }, 200);
 });
 
-document.addEventListener('click', (event) => {
-  if (event.target !== searchBox) {
+suggestionsList.addEventListener('click', (event) => {
+  const clickedElement = event.target.closest('a');
+  
+  if (clickedElement) {
+    event.preventDefault();
+    searchBox.value = clickedElement.innerText;
     suggestionsList.innerHTML = '';
     suggestionsList.style.display = 'none';
-  }
-
-  if (event.target.tagName.toLowerCase() === 'a') {
-    searchBox.value = event.target.innerText;
-    suggestionsList.innerHTML = '';
-    suggestionsList.style.display = 'none';
+    window.location.href = clickedElement.href; // Navigate to the org’s report page
   }
 });
