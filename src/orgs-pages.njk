@@ -43,30 +43,48 @@ permalink: "{{ org._source.objectID | slug }}/"
         {{ component("pill", {
           id: "start-year",
           txt: "",
-          class: "border-t-4 border-carnation-500 bg-neutral-900 text-white font-semibold"
+          selected: true
         }) }}
       </li>
       {% if org._source.paid == true %}
       <li class="mr-2 inline-block">
         {{ component("pill", {
           id: "last-year",
-          txt: "",
-          class: "border-t-4 bg-white text-neutral-900"
+          txt: ""
         }) }}
       </li>
       <li class="mr-2 inline-block">
         {{ component("pill", {
           id: "two-years-ago",
-          txt: "",
-          class: "border-t-4 bg-white text-neutral-900"
+          txt: ""
         }) }}
       </li>
       <li class="inline-block">
         {{ component("pill", {
           id: "all-time",
-          txt: "All time",
-          class: "border-t-4 bg-white text-neutral-900"
+          txt: "All time"
         }) }}
+      </li>
+      {% else %}
+      <li class="mr-2 inline-block">
+        <span class="inline-flex items-center px-4 py-2 md:px-6 md:py-4 border-t-4 text-base md:text-lg bg-white text-neutral-900 opacity-50">
+          2022
+        </span>
+      </li>
+      <li class="mr-2 inline-block">
+        <span class="inline-flex items-center px-4 py-2 md:px-6 md:py-4 border-t-4 text-base md:text-lg bg-white text-neutral-900 opacity-50">
+          2021
+        </span>
+      </li>
+      <li class="mr-2 inline-block">
+        <span class="inline-flex items-center px-4 py-2 md:px-6 md:py-4 border-t-4 text-base md:text-lg bg-white text-neutral-900 opacity-50">
+          All time
+        </span>
+      </li>
+      <li class="inline-block">
+        {{ component("tooltip", {
+          msg: "<strong>Discover previous years’ reports</strong><br> Want access to older OA.Reports or all-time data? Email us at <a href='mailto:hello@oa.works?subject=OA.Report%20&mdash;%20{{ org._source.name }}' class='underline underline-offset-2 decoration-1'>hello@oa.works</a> to upgrade. Uncover valuable insights beyond the current year."}) 
+        }}
       </li>
       {% endif %}
     </ul>
