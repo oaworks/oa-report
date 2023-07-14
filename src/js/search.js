@@ -20,12 +20,12 @@ async function fetchSuggestions(searchTerm) {
     if (Array.isArray(filteredData) && filteredData.some(item => item.hasOwnProperty('name'))) {
       suggestionsList.innerHTML = filteredData
         .map(
-          result => `<li class="relative cursor-default border-b select-none text-neutral-700 hover:font-semibold hover:text-white hover:bg-neutral-900"><a href="/${result.objectID}"><span class="p-3 block truncate">${result.name}</span></a></li>`
+          result => `<li class="relative cursor-default border-b select-none"><a href="/${result.objectID}" class="block text-neutral-700 hover:font-semibold hover:text-white hover:bg-neutral-900"><span class="p-3 block truncate">${result.name}</span></a></li>`
         )
         .join('');
       suggestionsList.style.display = 'block';
     } else {
-      suggestionsList.innerHTML = '<li class="relative cursor-default border-b select-none p-3 text-neutral-900"><p>No results found! <a href="mailto:hello@oa.works&subject=OA.Report — I can’t find my organization" class="underline underline-offset-2 decoration-1">Contact us</a> if you can’t find your organization.</p><br><p>Looking for your university library? Join our <a href="https://blog.oa.works/join-the-oa-report-for-libraries-pilot-to-simplify-compliance-checking-for-your-institutional-funders-oa-policies/" target="_blank" rel="noopener" class="underline underline-offset-2 decoration-1">OA.Report for libraries pilot</a>!</p></li>';
+      suggestionsList.innerHTML = '<li class="relative cursor-default border-b select-none p-3 text-neutral-900"><p>No results found! <a href="mailto:hello@oa.works&subject=OA.Report — I can’t find my organization" class="underline underline-offset-2 decoration-1">Contact us</a> if you can’t find your organization.</p><br><p><span class="font-semibold">Looking for your university?</span><br> Join our <a href="https://blog.oa.works/join-the-oa-report-for-libraries-pilot-to-simplify-compliance-checking-for-your-institutional-funders-oa-policies/" target="_blank" rel="noopener" class="underline underline-offset-2 decoration-1">OA.Report for libraries pilot</a>!</p></li>';
       suggestionsList.style.display = 'block';
     }
   } catch (error) {
@@ -99,12 +99,14 @@ function navigateResults(direction) {
 
 function updateActiveItem() {
   Array.from(results).forEach((result, index) => {
+    const link = result.querySelector('a');
+
     if (index === activeIndex) {
-      result.classList.add('bg-neutral-900', 'text-white', 'font-semibold');
+      link.classList.add('bg-neutral-900', 'text-white', 'font-semibold');
       result.scrollIntoView({ block: 'nearest' });
-      searchBox.value = result.querySelector('span').innerText;
+      searchBox.value = link.querySelector('span').innerText;
     } else {
-      result.classList.remove('bg-neutral-900', 'text-white', 'font-semibold');
+      link.classList.remove('bg-neutral-900', 'text-white', 'font-semibold');
     }
   });
 }
