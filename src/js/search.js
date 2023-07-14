@@ -68,9 +68,22 @@ searchBox.addEventListener('keydown', (event) => {
   } else if (event.key === 'Enter') {
     event.preventDefault(); // Prevent form submission or other default behavior
     selectItem();
+  } else if (event.key === 'Escape') {
+    closeSuggestions();
   }
 });
 
+searchBox.addEventListener('focus', () => {
+  if (suggestionsList.innerHTML.trim() !== '') {
+    suggestionsList.style.display = 'block';
+    searchBox.setAttribute('aria-expanded', 'true');
+    updateActiveItem();
+  }
+});
+
+searchBox.addEventListener('blur', () => {
+  setTimeout(closeSuggestions, 200); // Delay closing the suggestions to handle clicks on suggestions
+});
 
 function navigateResults(direction) {
   const maxIndex = results.length - 1;
@@ -103,4 +116,10 @@ function selectItem() {
     const url = link.getAttribute('href');
     window.location.href = url;
   }
+}
+
+function closeSuggestions() {
+  suggestionsList.innerHTML = '';
+  suggestionsList.style.display = 'none';
+  searchBox.setAttribute('aria-expanded', 'false');
 }
