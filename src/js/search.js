@@ -3,6 +3,12 @@ const searchBox = document.getElementById('js-search-box');
 const suggestionsList = document.getElementById('js-suggestions-list');
 let debounceTimeout;
 
+function closeSuggestions() {
+  suggestionsList.innerHTML = '';
+  suggestionsList.style.display = 'none';
+  searchBox.setAttribute('aria-expanded', 'false');
+}
+
 async function fetchSuggestions(searchTerm) {
   if (!searchTerm.trim()) {
     suggestionsList.innerHTML = '';
@@ -24,9 +30,11 @@ async function fetchSuggestions(searchTerm) {
         )
         .join('');
       suggestionsList.style.display = 'block';
+      searchBox.setAttribute('aria-expanded', 'true');
     } else {
-      suggestionsList.innerHTML = '<li class="relative cursor-default border-b select-none p-3 text-neutral-900"><p>No results found! <a href="mailto:hello@oa.works&subject=OA.Report — I can’t find my organization" class="underline underline-offset-2 decoration-1">Contact us</a> if you can’t find your organization.</p><br><p><span class="font-semibold">Looking for your university?</span><br> Join our <a href="https://blog.oa.works/join-the-oa-report-for-libraries-pilot-to-simplify-compliance-checking-for-your-institutional-funders-oa-policies/" target="_blank" rel="noopener" class="underline underline-offset-2 decoration-1">OA.Report for libraries pilot</a>!</p></li>';
+      suggestionsList.innerHTML = '<li class="relative cursor-default border-b select-none p-3 text-neutral-900 js-no-results"><p>No results found! <a href="mailto:hello@oa.works&subject=OA.Report — I can’t find my organization" target="_blank" class="underline underline-offset-2 decoration-1 js-no-results-link">Contact us</a> if you can’t find your organization.</p><br><p><span class="font-semibold">Looking for your university?</span><br> Join our <a href="https://blog.oa.works/join-the-oa-report-for-libraries-pilot-to-simplify-compliance-checking-for-your-institutional-funders-oa-policies/" target="_blank" rel="noopener" class="underline underline-offset-2 decoration-1 js-no-results-link">OA.Report for libraries pilot</a>!</p></li>';
       suggestionsList.style.display = 'block';
+      searchBox.setAttribute('aria-expanded', 'true');
     }
   } catch (error) {
     console.error('Error fetching suggestions:', error);
@@ -45,7 +53,7 @@ searchBox.addEventListener('input', (event) => {
 suggestionsList.addEventListener('click', (event) => {
   const clickedElement = event.target.closest('a');
   
-  if (clickedElement) {
+  if (clickedElement && !clickedElement.classList.contains('js-no-results-link')) {
     event.preventDefault();
     searchBox.value = clickedElement.innerText;
     suggestionsList.innerHTML = '';
@@ -101,7 +109,7 @@ function updateActiveItem() {
   Array.from(results).forEach((result, index) => {
     const link = result.querySelector('a');
 
-    if (index === activeIndex) {
+    if (index === activeIndex && !result.classList.contains('js-no-results')) {
       link.classList.add('bg-neutral-900', 'text-white', 'font-semibold');
       result.scrollIntoView({ block: 'nearest' });
       searchBox.value = link.querySelector('span').innerText;
@@ -118,10 +126,4 @@ function selectItem() {
     const url = link.getAttribute('href');
     window.location.href = url;
   }
-}
-
-function closeSuggestions() {
-  suggestionsList.innerHTML = '';
-  suggestionsList.style.display = 'none';
-  searchBox.setAttribute('aria-expanded', 'false');
 }
