@@ -8,8 +8,14 @@
 #}
 
 <article class="flex relative bg-white transition ease-in delay-150 opacity-0 overflow-hidden" id="{{ params.id }}">
-  <div class="p-3 md:p-4 bg-carnation-100 text-neutral-700">
-    {% icon params.icon %}
+  <div class="bg-carnation-100 text-neutral-700 hover:bg-carnation-500 hover:text-white">
+    <a href="{{ params.sheets_link }}"
+       target="_blank"
+       rel="noopener"
+       class="block h-full w-full p-3 md:p-4"
+    >
+      {% icon params.icon %}
+    </a>
   </div>
   <div class="p-3 md:p-4">
     <header>
