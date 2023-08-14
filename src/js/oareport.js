@@ -53,6 +53,14 @@ oareport = function(org) {
   // Get organisational data to produce reports
   axios.get(report).then(function (response) {
     /** Decrypt emails if user has an orgKey **/
+    window.handleDecryptEmailClick = function(buttonElement) {
+      const email = buttonElement.getAttribute('data-email');
+      const doi = buttonElement.getAttribute('data-doi');
+      const mailto = buttonElement.getAttribute('data-mailto');
+  
+      decryptEmail(email, doi, mailto);
+    }
+
     window.decryptEmail = function(email, doi, mailto) {
       mailto = decodeURI(mailto);
       
@@ -332,7 +340,12 @@ oareport = function(org) {
         <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
       </td>\
       <td class='hidden px-3 py-4 text-sm text-center text-neutral-600 align-top break-words sm:table-cell'>\
-        <button class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200' onclick='decryptEmail(\"${action.email}\", \"${action.DOI}\", \"${action.mailto}\")'>\
+        <button \
+          class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
+          data-email='${action.email}'\
+          data-doi='${action.DOI}'\
+          data-mailto='${action.mailto}'\
+          onclick='handleDecryptEmailClick(this)'>\
           <svg class='h-4 w-4' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-mail inline-block h-4 duration-500'><path d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'></path><polyline points='22,6 12,13 2,6'></polyline></svg>\
         </button>\
       </td>"
@@ -352,7 +365,12 @@ oareport = function(org) {
         <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
       </td>\
       <td class='hidden px-3 py-4 text-sm text-center text-neutral-600 align-top break-words sm:table-cell'>\
-        <button class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200' onclick='decryptEmail(\"${action.email}\", \"${action.DOI}\", \"${action.mailto}\")'>\
+        <button \
+          class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
+          data-email='${action.email}'\
+          data-doi='${action.DOI}'\
+          data-mailto='${action.mailto}'\
+          onclick='handleDecryptEmailClick(this)'>\
           <svg class='h-4 w-4' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-mail inline-block h-4 duration-500'><path d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'></path><polyline points='22,6 12,13 2,6'></polyline></svg>\
         </button>\
       </td>"
@@ -397,7 +415,12 @@ oareport = function(org) {
         <div class='text-neutral-600'>${action.journal}</div>\
       </td>\
       <td class='whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium'>\
-        <button class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200' onclick='decryptEmail(\"${action.email}\", \"${action.DOI}\", \"${action.mailto}\")'>\
+        <button \
+          class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
+          data-email='${action.email}'\
+          data-doi='${action.DOI}'\
+          data-mailto='${action.mailto}'\
+          onclick='handleDecryptEmailClick(this)'>\
           <svg class='h-4 w-4' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-mail inline-block h-4 duration-500'><path d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'></path><polyline points='22,6 12,13 2,6'></polyline></svg>\
         </button>\
       </td>"
