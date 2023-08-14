@@ -53,21 +53,29 @@ oareport = function(org) {
   // Get organisational data to produce reports
   axios.get(report).then(function (response) {
     /** Decrypt emails if user has an orgKey **/
-    decryptEmail = function(email, doi, mailto) {
+    window.decryptEmail = function(email, doi, mailto) {
       mailto = decodeURI(mailto);
-      // if email is not undefined and there is an orgkey, decrypt the author’s email
-      if (email !== 'undefined' && hasOrgKey) {
-        axios.get(`${articleEmailBase + doi}?${orgKey}`)
-          .then(function (response) {
-            let authorEmail = response.data;
-            mailto = mailto.replaceAll("{email}", authorEmail);
-            window.open(`mailto:${mailto}`);
-          }
-        ).catch(function (error) { console.log(`decryptEmail error: ${error}`); })
-      } else {
-        window.open(`mailto:${mailto}`);
+      
+      function openEmailClientWithFallback() {
+          window.open(`mailto:${mailto}`);
       }
-    };
+  
+      // if email is not undefined and there is an orgkey, try to decrypt the author’s email
+      if (email !== 'undefined' && hasOrgKey) {
+          axios.get(`${articleEmailBase + doi}?${orgKey}`)
+              .then(function (response) {
+                  let authorEmail = response.data;
+                  mailto = mailto.replaceAll("{email}", authorEmail);
+                  window.open(`mailto:${mailto}`);
+              })
+              .catch(function (error) { 
+                  // On error, use the fallback
+                  openEmailClientWithFallback();
+              });
+      } else {
+          openEmailClientWithFallback();
+      }
+  };
 
     /** Get Insights data and display it **/
     getInsight = function(numerator, denominator, denominatorText, info) {
