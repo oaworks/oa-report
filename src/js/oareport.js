@@ -6,7 +6,7 @@ const base             = `https://${apiEndpoint}.oa.works/report/`,
       articleEmailBase = `${baseBg}email/`;
 
 // Set report base path
-let report = `${base}orgs?q=name:%22${org}%22`;
+let report = `${base}orgs?q=objectID:%22${org}%22`;
 
 // Visually hide an element
 displayNone = function(id) {
