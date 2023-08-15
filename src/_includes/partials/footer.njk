@@ -55,7 +55,7 @@
 
 {# To get org names/slugs and whether or not they’re paying users #}
 <script>
-  const org = ("{{ org._source.name | urlencode }}").replace(/&#39;/g, "'"),
+  const org = ("{{ org._source.name | urlencode }}").replace(/&#39;/g, "%27"),
         orgSlug = ("{{ org._source.objectID | slug }}");
   {% if org._source.paid %}
     const paid = true;
