@@ -507,8 +507,12 @@ oareport = function(org) {
       return false;
     }
 
-  }).catch(function (error) { console.log(`Report ERROR: ${error}`); });
+  }).catch(error => {
+    console.log(`Report ERROR: ${error}`);
+    displayErrorHeader();
+  })
 };
 
 oareport(org);
+
 
