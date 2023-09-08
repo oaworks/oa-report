@@ -226,15 +226,13 @@ quickDateItems.forEach((item) => {
 /* Modal windows */
 class Modal {
   constructor(titleSelector, contentSelector) {
-    this.modal = this.createModalElement();
-    document.body.appendChild(this.modal);
-
+    this.modal = document.querySelector('#dynamic-modal');
     this.closeModalBtn = this.modal.querySelector('.close-modal-btn');
     this.modalTitle = this.modal.querySelector('.modal-title');
     this.modalContent = this.modal.querySelector('.modal-content');
 
-    this.titleElement = document.querySelector(titleSelector);
-    this.contentElement = document.querySelector(contentSelector);
+    this.titleSelector = titleSelector;
+    this.contentSelector = contentSelector;
 
     this.closeModalBtn.addEventListener('click', () => this.close());
     window.addEventListener('keydown', (e) => {
@@ -244,36 +242,20 @@ class Modal {
     });
   }
 
-  createModalElement() {
-    const modal = document.createElement('div');
-    modal.classList.add('fixed', 'inset-0', 'flex', 'items-center', 'justify-center', 'p-4', 'bg-neutral-900', 'bg-opacity-50', 'hidden', 'transition-opacity', 'duration-300', 'z-50');
-    modal.setAttribute('aria-hidden', 'true');
-    modal.setAttribute('tabindex', '-1');
-    modal.setAttribute('role', 'dialog');
-    modal.setAttribute('aria-modal', 'true');
-
-    modal.innerHTML = `
-      <div class="bg-carnation-100 text-neutral-900 p-6 shadow-lg md:w-8/12" role="document">
-        <div class="flex justify-between items-start">
-          <h2 class="modal-title text-2xl font-semibold"></h2>
-          <button class="close-modal-btn text-gray-400 hover:text-gray-800">
-            <span class="sr-only">Close modal</span>
-            &times;
-          </button>
-        </div>
-        <div class="modal-content mt-4"></div>
-      </div>
-    `;
-    return modal;
-  }
-
   open() {
-    this.modalTitle.innerHTML = this.titleElement.innerHTML;
-    this.modalContent.innerHTML = this.contentElement.innerHTML;
-    this.modal.classList.remove('hidden');
-    this.modal.setAttribute('aria-hidden', 'false');
-    document.body.classList.add('overflow-hidden');
-    this.closeModalBtn.focus();
+    const titleElement = document.querySelector(this.titleSelector);
+    const contentElement = document.querySelector(this.contentSelector);
+
+    if (titleElement && contentElement) {
+      this.modalTitle.textContent = titleElement.textContent;
+      this.modalContent.innerHTML = contentElement.innerHTML;
+      this.modal.classList.remove('hidden');
+      this.modal.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('overflow-hidden');
+      this.closeModalBtn.focus();
+    } else {
+      console.error('Title or content element not found.');
+    }
   }
 
   close() {
@@ -313,3 +295,5 @@ if (openModalBtn && csvSelect) {
 } else {
   console.error('Modal button or select element not found.');
 }
+
+

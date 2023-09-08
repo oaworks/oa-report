@@ -171,7 +171,7 @@ permalink: "{{ org._source.objectID | slug }}/"
           </h2>
         </header>
       <div class="flex">
-        <label for="additional-export-select" class="block text-sm font-medium text-gray-700 sr-only">Select an export type</label>
+        <label for="additional-export-select" class="block text-sm font-medium text-neutral-900 sr-only">Select an export type</label>
         <select id="additional-export-select" class="block p-3 sm:text-sm border-r text-neutral-900 bg-white focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 whitespace-nowrap">
           <option disabled selected value="">Select an export type</option>
           <option value="finance" data-title-selector="#financeModalTitle" data-content-selector="#financeModalContent">Finance</option>
@@ -184,6 +184,20 @@ permalink: "{{ org._source.objectID | slug }}/"
         </button>
       </div>
 
+      <div id="dynamic-modal" class="fixed inset-0 flex items-center justify-center p-4 bg-neutral-900 bg-opacity-50 hidden transition-opacity duration-300 z-50" aria-hidden="true" tabindex="-1" role="dialog" aria-modal="true">
+        <div class="bg-carnation-100 text-neutral-900 p-6 shadow-lg md:w-8/12" role="document">
+          <div class="flex justify-between items-start">
+            <h2 class="modal-title text-2xl font-semibold"></h2>
+            <button class="close-modal-btn text-2xl font-semibold text-neutral-700 hover:text-neutral-900">
+              <span class="sr-only">Close modal</span>
+              &times;
+            </button>
+          </div>
+          <div class="modal-content mt-4"></div>
+        </div>
+      </div>
+
+
       <div id="financeModalTitle" class="hidden">Export: Finance</div>
       <div id="financeModalContent" class="hidden">
         <div class="overflow-x-auto">
@@ -192,6 +206,9 @@ permalink: "{{ org._source.objectID | slug }}/"
           </h3> #}
           <p class="mb-3 text-base">
             This table is a preview of the first five rows from your CSV export file. 
+          </p>
+          <p class="mb-3 text-base">
+            The full file contains <strong class="text-bold">2,992 records</strong>. Use the "Send CSV" form to get the entire data.
           </p>
           <table class="mb-3 min-w-full border bg-white border-neutral-300">
             <thead class="border-b border-neutral-300">
@@ -283,9 +300,6 @@ permalink: "{{ org._source.objectID | slug }}/"
               </tr>
             </tbody>
           </table>
-          <p class="mb-3 text-base">
-            The full file contains <strong class="text-bold">2,992 records</strong>. Use the "Send CSV" form to get the entire data.
-          </p>
           {# <button class="items-center space-x-2 px-4 py-2 text-sm font-medium text-white bg-neutral-900 hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 border-0 whitespace-nowrap">Download CSV</button> #}
           {% include 'partials/email-download-form.njk' %}
         </div>
@@ -296,6 +310,9 @@ permalink: "{{ org._source.objectID | slug }}/"
         <div class="overflow-x-auto">
           <p class="mb-3 text-base">
             This table is a preview of the first five rows from your CSV export file. 
+          </p>
+          <p class="mb-3 text-base">
+            The full file contains <strong class="text-bold">51 records</strong>. Use the "Send CSV" form to get the entire data.
           </p>
           <table class="mb-3 min-w-full border bg-white border-neutral-300">
             <thead class="border-b border-neutral-300">
@@ -351,9 +368,6 @@ permalink: "{{ org._source.objectID | slug }}/"
               </tr>
             </tbody>
           </table>
-          <p class="mb-3 text-base">
-            The full file contains <strong class="text-bold">51 records</strong>. Use the "Send CSV" form to get the entire data.
-          </p>
           <button class="items-center space-x-2 px-4 py-2 text-sm font-medium text-white bg-neutral-900 hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 border-0 whitespace-nowrap">Download CSV</button>
         </div>
       </div>
