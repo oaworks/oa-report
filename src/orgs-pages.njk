@@ -156,12 +156,33 @@ permalink: "{{ org._source.objectID | slug }}/"
 
     </div>
 
-    <div class="">
-      <button id="openModalBtn" class="items-center space-x-2 px-4 py-2 text-sm font-medium text-neutral-900 bg-white hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 border-0 whitespace-nowrap">CSV exports</button>
+    <header class="col-span-3">
+        <h2 class="mb-3 text-base md:text-lg leading-6">
+          <span class="font-semibold uppercase text-sm md:text-base line-thru">
+            <span class="bg-neutral-900">
+              Additional data exports
+              {{ component("tooltip", {
+                msg: "Lorem ipsum dolor sit amet."
+              }) }}
+            </span>
+          </span>
+        </h2>
+      </header>
+
+    <div class="flex items-center space-x-2">
+      <select id="csvSelect" class="px-4 py-2 text-sm font-medium text-neutral-900 bg-white border-0 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 whitespace-nowrap">
+        <option value="finance" data-title-selector="#financeModalTitle" data-content-selector="#financeModalContent">Finance</option>
+        <option value="invoicesWithoutDOIs" data-title-selector="#invoicesWithoutDOIsModalTitle" data-content-selector="#invoicesWithoutDOIsModalContent">Invoices without DOIs</option>
+      </select>
+      
+      <button id="openModalBtn" class="px-4 py-2 text-sm font-medium text-neutral-900 bg-white hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 border-0 whitespace-nowrap">
+        Preview export
+      </button>
     </div>
 
-    <div id="modalTitle" class="hidden">Export: Finance</div>
-    <div id="modalContent" class="hidden">
+
+    <div id="financeModalTitle" class="hidden">Export: Finance</div>
+    <div id="financeModalContent" class="hidden">
       <div class="overflow-x-auto">
         <h3 class="mb-3 text-lg font-medium">
           Data preview
@@ -266,6 +287,76 @@ permalink: "{{ org._source.objectID | slug }}/"
       </div>
     </div>
 
+    <div id="invoicesWithoutDOIsModalTitle" class="hidden">Export: Invoices without DOIs</div>
+    <div id="invoicesWithoutDOIsModalContent" class="hidden">
+      <div class="overflow-x-auto">
+        <h3 class="mb-3 text-lg font-medium">
+          Data preview
+        </h3>
+        <p class="mb-3 text-base">
+          This table is a preview of the first five rows from your CSV export file. 
+        </p>
+        <p class="mb-3 text-base">
+          The full file contains <strong class="text-bold">51 records</strong>. Use the "Download CSV" button below to get the entire data.
+        </p>
+        <table class="mb-3 min-w-full border border-neutral-300">
+          <thead class="border-b border-neutral-300">
+            <tr>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">invoice_number</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">cost</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">grant_id</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">invoice_date</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">invoice_year</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">invoice_type</th>
+            </tr>
+          </thead>
+          <tbody class="text-xs">
+            <tr>
+              <td class="p-3 whitespace-nowrap">TROP52660</td>
+              <td class="p-3 whitespace-nowrap">2500</td>
+              <td class="p-3 whitespace-nowrap">INV010498, INV010498</td>
+              <td class="p-3 whitespace-nowrap">4/13/2021</td>
+              <td class="p-3 whitespace-nowrap">2021</td>
+              <td class="p-3 whitespace-nowrap">Individual article (no DOI)</td>
+            </tr>
+            <tr>
+              <td class="p-3 whitespace-nowrap">2329-955X-9</td>
+              <td class="p-3 whitespace-nowrap">1080</td>
+              <td class="p-3 whitespace-nowrap">OPP1082413</td>
+              <td class="p-3 whitespace-nowrap">8/17/2021</td>
+              <td class="p-3 whitespace-nowrap">2021</td>
+              <td class="p-3 whitespace-nowrap">Individual article (no DOI)</td>
+            </tr>
+            <tr>
+              <td class="p-3 whitespace-nowrap">6106508658</td>
+              <td class="p-3 whitespace-nowrap">18480</td>
+              <td class="p-3 whitespace-nowrap">INV-007594</td>
+              <td class="p-3 whitespace-nowrap">9/10/2021</td>
+              <td class="p-3 whitespace-nowrap">2021</td>
+              <td class="p-3 whitespace-nowrap">Supplement</td>
+            </tr>
+            <tr>
+              <td class="p-3 whitespace-nowrap">E14677570</td>
+              <td class="p-3 whitespace-nowrap">40520</td>
+              <td class="p-3 whitespace-nowrap">INV-028977</td>
+              <td class="p-3 whitespace-nowrap">9/24/2021</td>
+              <td class="p-3 whitespace-nowrap">2021</td>
+              <td class="p-3 whitespace-nowrap">Supplement</td>
+            </tr>
+            <tr>
+              <td class="p-3 whitespace-nowrap">E14410033</td>
+              <td class="p-3 whitespace-nowrap">20000</td>
+              <td class="p-3 whitespace-nowrap">OPP1179059</td>
+              <td class="p-3 whitespace-nowrap">10/15/2021</td>
+              <td class="p-3 whitespace-nowrap">2021</td>
+              <td class="p-3 whitespace-nowrap">Supplement</td>
+            </tr>
+          </tbody>
+        </table>
+        <button class="items-center space-x-2 px-4 py-2 text-sm font-medium text-white bg-neutral-900 hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 border-0 whitespace-nowrap">Download CSV</button>
+      </div>
+    </div>
+
     <script>
       class Modal {
         constructor(titleSelector, contentSelector) {
@@ -326,12 +417,22 @@ permalink: "{{ org._source.objectID | slug }}/"
         }
       }
 
-      const myModal = new Modal('#modalTitle', '#modalContent');
+      let currentModal = null;
 
       document.querySelector('#openModalBtn').addEventListener('click', () => {
-        myModal.open();
+        if(currentModal) {
+          currentModal.close();
+        }
+        
+        const selectedOption = document.querySelector('#csvSelect option:checked');
+        const titleSelector = selectedOption.getAttribute('data-title-selector');
+        const contentSelector = selectedOption.getAttribute('data-content-selector');
+        
+        currentModal = new Modal(titleSelector, contentSelector);
+        currentModal.open();
       });
     </script>
+
   </section>
   
   <section class="bg-neutral-700 text-white relative" id="strategies">
