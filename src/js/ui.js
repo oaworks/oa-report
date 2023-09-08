@@ -222,3 +222,94 @@ function handleQuickDateItemClick(event) {
 quickDateItems.forEach((item) => {
   item.addEventListener("click", handleQuickDateItemClick);
 });
+
+/* Modal windows */
+class Modal {
+  constructor(titleSelector, contentSelector) {
+    this.modal = this.createModalElement();
+    document.body.appendChild(this.modal);
+
+    this.closeModalBtn = this.modal.querySelector('.close-modal-btn');
+    this.modalTitle = this.modal.querySelector('.modal-title');
+    this.modalContent = this.modal.querySelector('.modal-content');
+
+    this.titleElement = document.querySelector(titleSelector);
+    this.contentElement = document.querySelector(contentSelector);
+
+    this.closeModalBtn.addEventListener('click', () => this.close());
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !this.modal.classList.contains('hidden')) {
+        this.close();
+      }
+    });
+  }
+
+  createModalElement() {
+    const modal = document.createElement('div');
+    modal.classList.add('fixed', 'inset-0', 'flex', 'items-center', 'justify-center', 'p-4', 'bg-neutral-900', 'bg-opacity-50', 'hidden', 'transition-opacity', 'duration-300', 'z-50');
+    modal.setAttribute('aria-hidden', 'true');
+    modal.setAttribute('tabindex', '-1');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+
+    modal.innerHTML = `
+      <div class="bg-white text-neutral-900 p-6 shadow-lg w-10/12" role="document">
+        <div class="flex justify-between items-start">
+          <h2 class="modal-title text-2xl font-semibold"></h2>
+          <button class="close-modal-btn text-gray-400 hover:text-gray-800">
+            <span class="sr-only">Close modal</span>
+            &times;
+          </button>
+        </div>
+        <div class="modal-content mt-4"></div>
+      </div>
+    `;
+    return modal;
+  }
+
+  open() {
+    this.modalTitle.innerHTML = this.titleElement.innerHTML;
+    this.modalContent.innerHTML = this.contentElement.innerHTML;
+    this.modal.classList.remove('hidden');
+    this.modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('overflow-hidden');
+    this.closeModalBtn.focus();
+  }
+
+  close() {
+    this.modal.classList.add('hidden');
+    this.modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('overflow-hidden');
+  }
+}
+
+let currentModal = null;
+
+const openModalBtn = document.querySelector('#openModalBtn');
+const csvSelect = document.querySelector('#csvSelect');
+
+if (openModalBtn && csvSelect) {
+  openModalBtn.addEventListener('click', () => {
+    if(currentModal) {
+      currentModal.close();
+    }
+
+    const selectedOption = csvSelect.querySelector('option:checked');
+
+    if (selectedOption) {
+      const titleSelector = selectedOption.getAttribute('data-title-selector');
+      const contentSelector = selectedOption.getAttribute('data-content-selector');
+
+      if (titleSelector && contentSelector) {
+        currentModal = new Modal(titleSelector, contentSelector);
+        currentModal.open();
+      } else {
+        console.error('Data attributes for title and content selectors not found.');
+      }
+    } else {
+      console.error('No option is selected.');
+    }
+  });
+} else {
+  console.error('Modal button or select element not found.');
+}
