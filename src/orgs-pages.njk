@@ -170,11 +170,14 @@ permalink: "{{ org._source.objectID | slug }}/"
             </span>
           </h2>
         </header>
-      <div class="flex items-center space-x-2">
-        <select id="csvSelect" class="px-4 py-2 text-sm font-medium text-neutral-900 bg-white border-0 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 whitespace-nowrap">
+      <div class="flex">
+        <label for="additional-export-select" class="block text-sm font-medium text-gray-700 sr-only">Select an export type</label>
+        <select id="additional-export-select" class="block p-3 sm:text-sm border-r text-neutral-900 bg-white focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 whitespace-nowrap">
+          <option disabled selected value="">Select an export type</option>
           <option value="finance" data-title-selector="#financeModalTitle" data-content-selector="#financeModalContent">Finance</option>
           <option value="invoicesWithoutDOIs" data-title-selector="#invoicesWithoutDOIsModalTitle" data-content-selector="#invoicesWithoutDOIsModalContent">Invoices without DOIs</option>
         </select>
+
         
         <button id="openModalBtn" class="px-4 py-2 text-sm font-medium text-neutral-900 bg-white hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 border-0 whitespace-nowrap">
           Preview export

@@ -286,7 +286,7 @@ class Modal {
 let currentModal = null;
 
 const openModalBtn = document.querySelector('#openModalBtn');
-const csvSelect = document.querySelector('#csvSelect');
+const csvSelect = document.querySelector('#additional-export-select');
 
 if (openModalBtn && csvSelect) {
   openModalBtn.addEventListener('click', () => {
