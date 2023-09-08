@@ -1,11 +1,12 @@
 {# Download in CSV #}
-<form class="lg:w-1/2 md:float-right" id="download_csv" onsubmit="return getExportLink()">
-  <h2 class="mb-3 text-xs md:text-sm">
-    <div class="mb-1 uppercase font-semibold">Get data in CSV by email {{ component("tooltip", {
+<form class="lg:w-1/2" id="download_csv" onsubmit="return getExportLink()">
+  <h2 class="mb-3">
+    {# <div class="mb-1 uppercase font-semibold">Get data in CSV by email {{ component("tooltip", {
       msg: "Enter your email address to receive a link to a CSV for download. <strong>We do not save email addresses or use them for any purpose</strong> other than sending you the CSV file containing OA.Report data when you request it."
     }) }}
-    </div>
-    <span>For <span id="start_date"></span> — <span id="end_date"></span></span>
+    </div> #}
+    <div class="text-lg font-medium">Send CSV</div> 
+    <span class="text-base">For <span id="start_date"></span> — <span id="end_date"></span></span>
   </h2>
   <label for="email" class="sr-only">Email address</label>
   <div class="mt-1 mb-3 flex shadow-md">

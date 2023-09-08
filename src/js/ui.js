@@ -253,7 +253,7 @@ class Modal {
     modal.setAttribute('aria-modal', 'true');
 
     modal.innerHTML = `
-      <div class="bg-white text-neutral-900 p-6 shadow-lg w-10/12" role="document">
+      <div class="bg-carnation-100 text-neutral-900 p-6 shadow-lg md:w-8/12" role="document">
         <div class="flex justify-between items-start">
           <h2 class="modal-title text-2xl font-semibold"></h2>
           <button class="close-modal-btn text-gray-400 hover:text-gray-800">
