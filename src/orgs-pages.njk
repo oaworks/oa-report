@@ -177,26 +177,11 @@ permalink: "{{ org._source.objectID | slug }}/"
           <option value="finance" data-title-selector="#financeModalTitle" data-content-selector="#financeModalContent">Finance</option>
           <option value="invoicesWithoutDOIs" data-title-selector="#invoicesWithoutDOIsModalTitle" data-content-selector="#invoicesWithoutDOIsModalContent">Invoices without DOIs</option>
         </select>
-
         
         <button id="openModalBtn" class="px-4 py-2 text-sm font-medium text-neutral-900 bg-white hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 border-0 whitespace-nowrap">
           Preview export
         </button>
       </div>
-
-      <div id="dynamic-modal" class="fixed inset-0 flex items-center justify-center p-4 bg-neutral-900 bg-opacity-50 hidden transition-opacity duration-300 z-50" aria-hidden="true" tabindex="-1" role="dialog" aria-modal="true">
-        <div class="bg-carnation-100 text-neutral-900 p-6 shadow-lg md:w-8/12" role="document">
-          <div class="flex justify-between items-start">
-            <h2 class="modal-title text-2xl font-semibold"></h2>
-            <button class="close-modal-btn text-2xl font-semibold text-neutral-700 hover:text-neutral-900">
-              <span class="sr-only">Close modal</span>
-              &times;
-            </button>
-          </div>
-          <div class="modal-content mt-4"></div>
-        </div>
-      </div>
-
 
       <div id="financeModalTitle" class="hidden">Export: Finance</div>
       <div id="financeModalContent" class="hidden">
@@ -514,4 +499,17 @@ permalink: "{{ org._source.objectID | slug }}/"
       </div>
     </div>
   </section>
+
+  <div id="dynamic-modal" class="fixed inset-0 flex items-center justify-center p-4 bg-neutral-900 bg-opacity-50 hidden transition-opacity duration-300 z-50" aria-hidden="true" tabindex="-1" role="dialog" aria-modal="true">
+    <div class="bg-carnation-100 text-neutral-900 p-6 shadow-lg md:w-8/12" role="document">
+      <div class="flex justify-between items-start">
+        <h2 class="modal-title text-2xl font-semibold"></h2>
+        <button class="close-modal-btn text-2xl font-semibold text-neutral-700 hover:text-neutral-900">
+          <span class="sr-only">Close modal</span>
+          &times;
+        </button>
+      </div>
+      <div class="modal-content mt-4"></div>
+    </div>
+  </div>
 </main>

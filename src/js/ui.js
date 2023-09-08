@@ -240,6 +240,13 @@ class Modal {
         this.close();
       }
     });
+
+    // Adding event listener to close the modal on outside click
+    this.modal.addEventListener('click', (e) => {
+      if (e.target === this.modal) {
+        this.close();
+      }
+    });
   }
 
   open() {
