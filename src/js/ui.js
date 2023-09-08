@@ -274,7 +274,7 @@ class Modal {
 
 let currentModal = null;
 
-const openModalBtn = document.querySelector('#openModalBtn');
+const openModalBtn = document.querySelector('#open_modal_btn');
 const csvSelect = document.querySelector('#additional-export-select');
 
 if (openModalBtn && csvSelect) {
