@@ -37,6 +37,7 @@ if (hasOrgKey) {
 } else {
   // logged out
   displayNone("logout");
+  displayNone("additional-exports");
 }
 
 // Set default export_includes and sorting order for CSV downloads
