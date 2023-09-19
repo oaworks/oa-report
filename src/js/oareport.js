@@ -200,6 +200,35 @@ oareport = function(org) {
       "<p class='mb-2'>The percentage of articles that shared any code under a permissive open-source licence, such as MIT.</p> <p class='mb-2'>This figure measures how many articles shared Open Code if they generated code in the first place. It also only measures if <strong>any parts</strong> of the code generated are open, not if <strong>all</strong> of it is open.</p> <p> We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>"
     );
 
+    /* Preview CSV exports */
+    displayCSVHeaders = function() {
+      axios.get('https://bg.beta.oa.works/report/orgs?q=objectID:gates&includes=exports')
+      .then(response => {
+        // Check if the response contains the necessary data
+        if(response.data && response.data.hits && response.data.hits.hits.length > 0) {
+          const exportsArray = response.data.hits.hits[0]._source.exports;
+          // Loop through the exports array and extract the includes value for each item
+          exportsArray.forEach((item, index) => {
+            if (item.includes) {
+              // Split the includes value into an array of strings
+              const includesArray = item.includes.split(',');
+              console.log(`Item ${index} includes:`, includesArray);
+            } else {
+              console.log(`Item ${index} does not have an includes field`);
+            }
+          });
+        } else {
+          console.log('No data found');
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching data in displayCSVHeaders: ', error);
+      });
+    }
+
+    displayCSVHeaders();
+
+    /* Get Strategy data and display it  */
     displayStrategy = function(strategy, keys, tableRow) {
       var shown  = response.data.hits.hits[0]._source.strategy[strategy].show_on_web,
           sort   = `&sort=${response.data.hits.hits[0]._source.strategy[strategy].sort}`,
