@@ -7,19 +7,19 @@
 
 <div id="modal_title_{{ params.id }}" class="hidden">Export: {{ params.title }}</div>
 <div id="modal_content_{{ params.id }}" class="hidden">
+  {# <h3 class="mb-3 text-lg font-medium">
+    Data preview
+  </h3> #}
+  <p class="mb-3 text-base">
+    This table is a preview of the first five rows from your CSV export file. 
+  </p>
+  <p class="mb-3 text-base">
+    The full file contains <strong class="text-bold" id="">2,992 records</strong>. Use the "Send CSV" form to get the entire data.
+  </p>
   <div class="overflow-x-auto">
-    {# <h3 class="mb-3 text-lg font-medium">
-      Data preview
-    </h3> #}
-    <p class="mb-3 text-base">
-      This table is a preview of the first five rows from your CSV export file. 
-    </p>
-    <p class="mb-3 text-base">
-      The full file contains <strong class="text-bold" id="">2,992 records</strong>. Use the "Send CSV" form to get the entire data.
-    </p>
     <table class="mb-3 min-w-full border bg-white border-neutral-300">
       <thead class="border-b border-neutral-300">
-        <tr>
+        <tr id="modal_headings_{{ params.id }}">
           <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">DOI</th>
           <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">grantid__bmgf</th>
           <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">publisher_simple</th>
@@ -107,7 +107,7 @@
         </tr>
       </tbody>
     </table>
-    {# <button class="items-center space-x-2 px-4 py-2 text-sm font-medium text-white bg-neutral-900 hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 border-0 whitespace-nowrap">Download CSV</button> #}
-    {% include 'partials/email-download-form.njk' %}
   </div>
+  {# <button class="items-center space-x-2 px-4 py-2 text-sm font-medium text-white bg-neutral-900 hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 border-0 whitespace-nowrap">Download CSV</button> #}
+  {% include 'partials/email-download-form.njk' %}
 </div>
