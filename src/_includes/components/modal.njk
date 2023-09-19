@@ -1,0 +1,16 @@
+{# Modal component
+{{ component("modal", {
+  id: "",
+  title: "",
+  export: false
+}) }}
+#}
+
+<div id="modal_title_{{ params.id }}" class="hidden">Export: {{ params.title }}</div>
+<div id="modal_content_{{ params.id }}" class="hidden">
+  {% if params.export %}
+    {% include 'partials/export-table.njk' %}
+  {% else %}
+    {{ params.content|safe }}
+  {% endif %}
+</div>

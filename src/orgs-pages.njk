@@ -177,6 +177,7 @@ permalink: "{{ org._source.objectID | slug }}/"
           <option value="all_articles" data-title-selector="#modal_title_all_articles" data-content-selector="#modal_content_all_articles">All articles</option>
           <option value="finance" data-title-selector="#modal_title_finance" data-content-selector="#modal_content_finance">Finance</option>
           <option value="invoices_without_dois" data-title-selector="#modal_title_invoices_without_dois" data-content-selector="#modal_content_invoices_without_dois">Invoices without DOIs</option>
+          <option value="test" data-title-selector="#modal_title_test" data-content-selector="#modal_content_test">TEST</option>
         </select>
         
         <button id="open_modal_btn" class="px-4 py-2 text-sm font-medium text-neutral-900 bg-white hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 border-0 whitespace-nowrap">
@@ -184,19 +185,28 @@ permalink: "{{ org._source.objectID | slug }}/"
         </button>
       </div>
 
-      {{ component("modal-export", {
+      {{ component("modal", {
         id: "all_articles",
-        title: "All articles"
+        title: "All articles",
+        export: true
       }) }}
 
-      {{ component("modal-export", {
+      {{ component("modal", {
         id: "finance",
-        title: "Finance"
+        title: "Finance",
+        export: true
       }) }}
 
-      {{ component("modal-export", {
+      {{ component("modal", {
         id: "invoices_without_dois",
-        title: "Invoices without DOIs"
+        title: "Invoices without DOIs",
+        export: true
+      }) }}
+
+      {{ component("modal", {
+        id: "test",
+        title: "TEST",
+        content: "<p class='mb-3 text-lg font-medium'>Test content</p>"
       }) }}
 
       {# <div id="invoicesWithoutDOIsModalTitle" class="hidden">Export: Invoices without DOIs</div>
