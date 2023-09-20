@@ -417,7 +417,7 @@ permalink: "{{ org._source.objectID | slug }}/"
   </section>
 
   <div id="dynamic-modal" class="fixed inset-0 flex items-center justify-center p-4 bg-neutral-900 bg-opacity-50 hidden transition-opacity duration-300 z-50" aria-hidden="true" tabindex="-1" role="dialog" aria-modal="true">
-    <div class="bg-carnation-100 text-neutral-900 p-6 shadow-lg md:w-8/12" role="document">
+    <div class="bg-carnation-100 text-neutral-900 p-6 shadow-lg md:w-8/12 overflow-y-auto max-h-[80vh] min-h-0" role="document">
       <div class="flex justify-between items-start">
         <h2 class="modal-title text-2xl font-semibold"></h2>
         <button class="close-modal-btn text-2xl font-semibold text-neutral-700 hover:text-neutral-900">
