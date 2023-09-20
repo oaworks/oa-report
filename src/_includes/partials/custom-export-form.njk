@@ -2,7 +2,7 @@
   <div class="flex flex-col sm:flex-row space-y-6 sm:space-y-0 sm:space-x-6">
     <div class="flex flex-col w-full sm:w-1/2">
       <label for="group_by" class="mb-3 font-semibold uppercase">Group by</label>
-      <select id="group_by" name="group_by" class="w-full p-3 focus:outline-none focus:ring-2 focus:ring-carnation-500">
+      <select id="group_by" name="group_by" class="w-full p-3 focus:outline-none focus:ring-2 focus:ring-carnation-500 shadow-md">
         <option value="year_published">Year published</option>
         <option value="grant">Grant</option>
         <option value="author">Author</option>
@@ -27,7 +27,7 @@
     
     <div class="flex flex-col w-full sm:w-1/2">
       <label for="filter_by" class="mb-3 font-semibold uppercase">Filter by</label>
-      <select id="filter_by" name="filter_by" class="w-full p-3 focus:outline-none focus:ring-2 focus:ring-carnation-500">
+      <select id="filter_by" name="filter_by" class="w-full p-3 focus:outline-none focus:ring-2 focus:ring-carnation-500 shadow-md">
         <option value="articles">Articles</option>
         <option value="original_research_articles">Original research articles</option>
         <option value="preprints">Preprints</option>
@@ -43,7 +43,7 @@
   <div class="flex flex-col sm:flex-row space-y-6 sm:space-y-0 sm:space-x-6">
     <div class="flex flex-col w-full sm:w-1/3">
       <label for="date_type" class="mb-3 font-semibold uppercase">Date</label>
-      <select id="date_type" name="date_type" class="w-full p-3 focus:outline-none focus:ring-2 focus:ring-carnation-500">
+      <select id="date_type" name="date_type" class="w-full p-3 focus:outline-none focus:ring-2 focus:ring-carnation-500 shadow-md">
         <option value="published_year">Published year</option>
         <option value="invoice_year">Invoice year</option>
         <option value="request_sent">Request sent</option>
@@ -52,27 +52,46 @@
 
     <div class="flex flex-col w-full sm:w-1/3">
       <label for="date_from" class="mb-3 font-semibold uppercase">From</label>
-      <input type="date" id="date_from" name="date_from" value="1960-01-01" pattern="\d{4}-\d{2}-\d{2}" class="w-full p-3 focus:outline-none focus:ring-2 focus:ring-carnation-500">
+      <input type="date" id="date_from" name="date_from" value="1960-01-01" pattern="\d{4}-\d{2}-\d{2}" class="w-full p-3 focus:outline-none focus:ring-2 focus:ring-carnation-500 shadow-md">
     </div>
     
     <div class="flex flex-col w-full sm:w-1/3">
       <label for="date_to" class="mb-3 font-semibold uppercase">To</label>
-      <input type="date" id="date_to" name="date_to" value="2023-01-01" pattern="\d{4}-\d{2}-\d{2}" class="w-full p-3 focus:outline-none focus:ring-2 focus:ring-carnation-500">
+      <input type="date" id="date_to" name="date_to" value="2023-01-01" pattern="\d{4}-\d{2}-\d{2}" class="w-full p-3 focus:outline-none focus:ring-2 focus:ring-carnation-500 shadow-md">
     </div>
   </div>
 
   <div class="flex flex-col sm:flex-row space-y-6 sm:space-y-0 sm:space-x-6">
     <div class="flex flex-col w-full sm:w-1/2">
       <label for="show_percentages" class="mb-3 font-semibold uppercase">Show percentages </label>
-      <input type="checkbox" id="show_percentages" name="show_percentages" value="1" class="form-checkbox h-6 w-6 text-carnation-500 border-neutral-900 focus:ring-2 focus:ring-carnation-500">
+      <input type="checkbox" id="show_percentages" name="show_percentages" value="1" class="form-checkbox h-6 w-6 text-carnation-500 border-neutral-900 focus:ring-2 focus:ring-carnation-500 shadow-md">
     </div>
 
     <div class="flex flex-col w-full sm:w-1/2">
       <label for="show_total_records" class="mb-3 font-semibold uppercase">Show total records</label>
-      <input type="checkbox" id="show_total_records" name="show_total_records" value="1" class="form-checkbox h-6 w-6 text-carnation-500 border-neutral-900 focus:ring-2 focus:ring-carnation-500">
+      <input type="checkbox" id="show_total_records" name="show_total_records" value="1" class="form-checkbox h-6 w-6 text-carnation-500 border-neutral-900 focus:ring-2 focus:ring-carnation-500 shadow-md">
     </div>
   </div>
 
-  <button type="submit" class="p-3 text-sm font-medium uppercase text-white bg-neutral-900 hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 shadow-md border-0">Submit</button>
+  {# Temp static form #}
+  <div class="flex flex-col sm:flex-row space-y-6 sm:space-y-0 sm:space-x-6">
+    <div class="flex flex-col w-full sm:w-1/2">
+      <label for="custom_export_email" class="mb-3 font-semibold uppercase">
+        Email address
+      </label>
+      <div class="flex shadow-md">
+        <div class="relative flex items-stretch flex-grow focus-within:z-10">
+          <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+            {% icon_small "mail" %}
+          </div>
+          <input type="email" name="custom_export_email" id="custom_export_email" class="focus:ring-carnation-300 focus:border-carnation-500 block w-full pl-10 py-3 sm:text-sm border-1" placeholder="you@example.com" required>
+        </div>
+        <button type="submit" class="--ml-px relative inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium text-white bg-neutral-900 hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 border-0 whitespace-nowrap">
+          Send CSV
+        </button>
+      </div>
+    </div>
+  </div>
+  {# <button type="submit" class="p-3 text-sm font-medium uppercase text-white bg-neutral-900 hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 shadow-md border-0">Submit</button> #}
 
 </form>
