@@ -63,18 +63,16 @@
 
   <div class="flex flex-col sm:flex-row space-y-6 sm:space-y-0 sm:space-x-6">
     <div class="flex flex-col w-full sm:w-1/2">
-      <label for="show_percentages" class="font-semibold uppercase text-sm md:text-base">Show percentages
-        <input type="checkbox" id="show_percentages" name="show_percentages" value="1" class="focus:ring-2 focus:ring-carnation-500">
-      </label>
+      <label for="show_percentages" class="mb-3 font-semibold uppercase text-sm md:text-base">Show percentages </label>
+      <input type="checkbox" id="show_percentages" name="show_percentages" value="1" class="form-checkbox h-6 w-6 text-carnation-500 border-neutral-900 focus:ring-2 focus:ring-carnation-500">
     </div>
 
     <div class="flex flex-col w-full sm:w-1/2">
-      <label for="show_total_records_in_csv" class="font-semibold uppercase text-sm md:text-base">Show total records in CSV
-        <input type="checkbox" id="show_total_records_in_csv" name="show_total_records_in_csv" value="1" class="focus:ring-2 focus:ring-carnation-500">
-      </label>
+      <label for="show_total_records" class="mb-3 font-semibold uppercase text-sm md:text-base">Show total records</label>
+      <input type="checkbox" id="show_total_records" name="show_total_records" value="1" class="form-checkbox h-6 w-6 text-carnation-500 border-neutral-900 focus:ring-2 focus:ring-carnation-500">
     </div>
   </div>
 
-  <button type="submit" class="w-full py-2">Submit</button>
+  <button type="submit" class="p-3 text-sm font-medium uppercase text-white bg-neutral-900 hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 shadow-md border-0">Submit</button>
 
 </form>
