@@ -201,20 +201,34 @@ oareport = function(org) {
     );
 
     /* Preview CSV exports */
-    displayCSVHeaders = function() {
-      axios.get('https://bg.beta.oa.works/report/orgs?q=objectID:gates&includes=exports')
+    getExportTypes = function() {
+      axios.get(`https://bg.beta.oa.works/report/orgs?q=objectID:${org}&includes=exports`)
       .then(response => {
-        // Check if the response contains the necessary data
+
+        // Check if the response contains the necessary data to display an export type
         if(response.data && response.data.hits && response.data.hits.hits.length > 0) {
+
           const exportsArray = response.data.hits.hits[0]._source.exports;
-          // Loop through the exports array and extract the includes value for each item
+          
+          // Loop through the exports array
           exportsArray.forEach((item, index) => {
+            // Get all export types’ data for display in the UI
+            var exportName = item.name,
+                id = item.id;
+
+            // Generate options for the CSV Export select element
+            displayCSVExportOptions(id, exportName);
+
+            // Generate modals for each export type 
+            displayCSVExportModals();
+
+            // If present, extract the includes value for each item
             if (item.includes) {
               // Split the includes value into an array of strings
               const includesArray = item.includes.split(',');
-              console.log(`Item ${index} includes:`, includesArray);
+              console.log(`Export type "${item.name}" includes ${includesArray.length} headers:`, includesArray);
             } else {
-              console.log(`Item ${index} does not have an includes field`);
+              console.log(`Export type "${item.name}" does not have an includes field`);
             }
           });
         } else {
@@ -226,7 +240,24 @@ oareport = function(org) {
       });
     }
 
-    displayCSVHeaders();
+    getExportTypes();
+
+    displayCSVExportOptions = function(id, exportName) {
+      // Get the select element for CSV export options
+      const selectElement = document.getElementById('additional-export-select');
+
+      // Get the reference option ('Select an export type' disabled label) after which we want to inject new options
+      const referenceOption = selectElement.querySelector('option');
+
+      // Generate the option as an HTML string
+      const option = `<option value="${id}" data-title-selector="#modal_title_${id}" data-content-selector="#modal_content_${id}">${exportName}</option>`;
+      // Insert the options after the reference option
+      referenceOption.insertAdjacentHTML('afterend', option);
+    }
+
+    displayCSVExportModals = function(id, exportName) {
+
+    }
 
     /* Get Strategy data and display it  */
     displayStrategy = function(strategy, keys, tableRow) {

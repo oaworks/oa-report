@@ -174,9 +174,6 @@ permalink: "{{ org._source.objectID | slug }}/"
         <label for="additional-export-select" class="block text-sm font-medium text-neutral-900 sr-only">Select an export type</label>
         <select id="additional-export-select" class="block p-3 sm:text-sm border-r text-neutral-900 bg-white focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 whitespace-nowrap">
           <option disabled selected value="">Select an export type</option>
-          <option value="all_articles" data-title-selector="#modal_title_all_articles" data-content-selector="#modal_content_all_articles">All articles</option>
-          <option value="finance" data-title-selector="#modal_title_finance" data-content-selector="#modal_content_finance">Finance</option>
-          <option value="invoices_without_dois" data-title-selector="#modal_title_invoices_without_dois" data-content-selector="#modal_content_invoices_without_dois">Invoices without DOIs</option>
           <option value="test" data-title-selector="#modal_title_test" data-content-selector="#modal_content_test">TEST</option>
         </select>
         
@@ -192,13 +189,13 @@ permalink: "{{ org._source.objectID | slug }}/"
       }) }}
 
       {{ component("modal", {
-        id: "finance",
+        id: "bmgf_finance",
         title: "Finance",
         export: true
       }) }}
 
       {{ component("modal", {
-        id: "invoices_without_dois",
+        id: "invoice_without_doi",
         title: "Invoices without DOIs",
         export: true
       }) }}
@@ -206,7 +203,7 @@ permalink: "{{ org._source.objectID | slug }}/"
       {{ component("modal", {
         id: "test",
         title: "TEST",
-        content: "<p class='mb-3 text-lg font-medium'>Test content</p>"
+        content: "<p class='text-lg font-medium'>Test content</p>"
       }) }}
 
       {# <div id="invoicesWithoutDOIsModalTitle" class="hidden">Export: Invoices without DOIs</div>
