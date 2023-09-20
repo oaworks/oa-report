@@ -214,7 +214,8 @@ oareport = function(org) {
           exportsArray.forEach((item, index) => {
             // Get all export types’ data for display in the UI
             var exportName = item.name,
-                id = item.id;
+                id = item.id,
+                includes = item.includes;
 
             // Generate options for the CSV Export select element
             displayCSVExportOptions(id, exportName);
@@ -222,13 +223,16 @@ oareport = function(org) {
             // Generate modals for each export type 
             displayCSVExportModals(id, exportName);
 
-            // If present, extract the includes value for each item
-            if (item.includes) {
-              // Split the includes value into an array of strings
-              const includesArray = item.includes.split(',');
-              console.log(`Export type "${item.name}" includes ${includesArray.length} headers:`, includesArray);
+            // If present, extract the includes value for each export type and display them in a table
+            if (includes) {
+              // Split the includes value into an array of strings & get the count
+              const includesArray = includes.split(','),
+                    headersCount = includesArray.length;
+
+              createCSVExportTableSkeleton(id, 99999, headersCount);
+              convertIncludesToTableHeaders(includesArray, id, exportName);
             } else {
-              console.log(`Export type "${item.name}" does not have an includes field`);
+              console.log(`Export type "${exportName}" does not have any includes`);
             }
           });
         } else {
@@ -261,6 +265,55 @@ oareport = function(org) {
       // and insert it in their container
       const modalTitleAndContent = `<div id="modal_title_${id}" class="hidden">Export: ${exportName}</div><div id="modal_content_${id}" class="hidden">TEST</div>`;
       modalExportsElement.innerHTML += modalTitleAndContent;
+    }
+
+    createCSVExportTableSkeleton = function (id, recordCount, headersCount) {
+      const tableSkeletonHTML = `
+        <p class="mb-3 text-base">
+          This table is a preview of the first five rows from your CSV export file. 
+        </p>
+        <p class="mb-3 text-base">
+          The full file contains <strong class="text-bold">${recordCount} records</strong> and <strong class="text-bold">${headersCount} headers</strong>. Use the "Send CSV" form to get the entire data.
+        </p>
+        <div class="overflow-x-auto">
+          <table class="mb-3 min-w-full border bg-white border-neutral-300 text-xs">
+            <thead class="border-b border-neutral-300">
+              <tr id="export_table_headings_${id}"></tr>
+            </thead>
+            <tbody id="export_table_body_${id}">
+              <tr>
+                <td class="p-2 whitespace-nowrap">10.1017/s1368980023001593</td>
+                <td class="p-2 whitespace-nowrap"> </td>
+                <td class="p-2 whitespace-nowrap"> </td>
+                <td class="p-2 whitespace-nowrap">Public Health Nutrition</td>
+                <td class="p-2 whitespace-nowrap">closed</td>
+                <td class="p-2 whitespace-nowrap">2023-08-02</td>
+                <td class="p-2 whitespace-nowrap"> </td>
+                <td class="p-2 whitespace-nowrap"> </td>
+                <td class="p-2 whitespace-nowrap">2880</td>
+                <td class="p-2 whitespace-nowrap">APC600439481</td>
+                <td class="p-2 whitespace-nowrap">2023-08-01</td>
+                <td class="p-2 whitespace-nowrap">2023</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      const modalContentDiv = document.querySelector(`#modal_content_${id}`);
+      modalContentDiv.innerHTML = tableSkeletonHTML;
+    }
+
+    convertIncludesToTableHeaders = function(includesArray, id, exportName) {
+      // Generate the export’s headers as an HTML string
+      const thElements = includesArray.map(item => `
+        <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider">
+          ${item}
+        </th>
+      `).join('');
+
+      // Add them to their corresponding table 
+      document.getElementById(`export_table_headings_${id}`).innerHTML = thElements;
     }
 
     /* Get Strategy data and display it  */
