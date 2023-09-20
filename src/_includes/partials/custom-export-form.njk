@@ -1,74 +1,78 @@
 <form class="space-y-6">
-  <div class="flex flex-col">
-    <label for="group_by" class="mb-3 font-semibold uppercase text-sm md:text-base">Group by</label>
-    <select id="group_by" name="group_by" class="w-full p-3 focus:ring-2 focus:ring-carnation-500">
-      <option value="year_published">Year published</option>
-      <option value="grant">Grant</option>
-      <option value="author">Author</option>
-      <option value="publisher">Publisher</option>
-      <option value="subject">Subject</option>
-      <option value="oa_status">OA status</option>
-      <option value="program">Program</option>
-      <option value="institution">Institution</option>
-      <option value="country">Country</option>
-      <option value="journal">Journal</option>
-      <option value="journal_oa_type">Journal OA type</option>
-      <option value="co_funder">Co-funder</option>
-      <option value="publisher_license">Publisher license</option>
-      <option value="preprint_license">Preprint license</option>
-      <option value="repository_license">Repository license</option>
-      <option value="dataset_license">Dataset license</option>
-      <option value="software_license">Software license</option>
-      <option value="dataset_publisher">Dataset publisher</option>
-      <option value="software_publisher">Software publisher</option>
-    </select>
-  </div>
-  
-  <div class="flex flex-col">
-    <label for="filter_by" class="mb-3 font-semibold uppercase text-sm md:text-base">Filter by</label>
-    <select id="filter_by" name="filter_by" class="w-full p-3 focus:ring-2 focus:ring-carnation-500">
-      <option value="articles">Articles</option>
-      <option value="original_research_articles">Original research articles</option>
-      <option value="preprints">Preprints</option>
-      <option value="articles_with_apcs">Articles with APCs</option>
-      <option value="articles_covered_by_policy">Articles covered by policy</option>
-      <option value="funded_articles">Funded articles</option>
-      <option value="authored_articles">Authored articles</option>
-      <option value="none">None</option>
-    </select>
+  <div class="flex flex-col sm:flex-row space-y-6 sm:space-y-0 sm:space-x-6">
+    <div class="flex flex-col w-full sm:w-1/2">
+      <label for="group_by" class="mb-3 font-semibold uppercase text-sm md:text-base">Group by</label>
+      <select id="group_by" name="group_by" class="w-full p-3 focus:outline-none focus:ring-2 focus:ring-carnation-500">
+        <option value="year_published">Year published</option>
+        <option value="grant">Grant</option>
+        <option value="author">Author</option>
+        <option value="publisher">Publisher</option>
+        <option value="subject">Subject</option>
+        <option value="oa_status">OA status</option>
+        <option value="program">Program</option>
+        <option value="institution">Institution</option>
+        <option value="country">Country</option>
+        <option value="journal">Journal</option>
+        <option value="journal_oa_type">Journal OA type</option>
+        <option value="co_funder">Co-funder</option>
+        <option value="publisher_license">Publisher license</option>
+        <option value="preprint_license">Preprint license</option>
+        <option value="repository_license">Repository license</option>
+        <option value="dataset_license">Dataset license</option>
+        <option value="software_license">Software license</option>
+        <option value="dataset_publisher">Dataset publisher</option>
+        <option value="software_publisher">Software publisher</option>
+      </select>
+    </div>
+    
+    <div class="flex flex-col w-full sm:w-1/2">
+      <label for="filter_by" class="mb-3 font-semibold uppercase text-sm md:text-base">Filter by</label>
+      <select id="filter_by" name="filter_by" class="w-full p-3 focus:outline-none focus:ring-2 focus:ring-carnation-500">
+        <option value="articles">Articles</option>
+        <option value="original_research_articles">Original research articles</option>
+        <option value="preprints">Preprints</option>
+        <option value="articles_with_apcs">Articles with APCs</option>
+        <option value="articles_covered_by_policy">Articles covered by policy</option>
+        <option value="funded_articles">Funded articles</option>
+        <option value="authored_articles">Authored articles</option>
+        <option value="none">None</option>
+      </select>
+    </div>
   </div>
 
-  <div class="flex flex-col">
-    <label for="date_type" class="mb-3 font-semibold uppercase text-sm md:text-base">Date type</label>
-    <select id="date_type" name="date_type" class="w-full p-3 focus:ring-2 focus:ring-carnation-500">
-      <option value="published_year">Published year</option>
-      <option value="invoice_year">Invoice year</option>
-      <option value="request_sent">Request sent</option>
-    </select>
+  <div class="flex flex-col sm:flex-row space-y-6 sm:space-y-0 sm:space-x-6">
+    <div class="flex flex-col w-full sm:w-1/3">
+      <label for="date_type" class="mb-3 font-semibold uppercase text-sm md:text-base">Date</label>
+      <select id="date_type" name="date_type" class="w-full p-3 focus:outline-none focus:ring-2 focus:ring-carnation-500">
+        <option value="published_year">Published year</option>
+        <option value="invoice_year">Invoice year</option>
+        <option value="request_sent">Request sent</option>
+      </select>
+    </div>
+
+    <div class="flex flex-col w-full sm:w-1/3">
+      <label for="date_from" class="mb-3 font-semibold uppercase text-sm md:text-base">From</label>
+      <input type="date" id="date_from" name="date_from" value="1960-01-01" pattern="\d{4}-\d{2}-\d{2}" class="w-full p-3 focus:outline-none focus:ring-2 focus:ring-carnation-500">
+    </div>
+    
+    <div class="flex flex-col w-full sm:w-1/3">
+      <label for="date_to" class="mb-3 font-semibold uppercase text-sm md:text-base">To</label>
+      <input type="date" id="date_to" name="date_to" value="2023-01-01" pattern="\d{4}-\d{2}-\d{2}" class="w-full p-3 focus:outline-none focus:ring-2 focus:ring-carnation-500">
+    </div>
   </div>
 
   <div class="flex flex-col sm:flex-row space-y-6 sm:space-y-0 sm:space-x-6">
     <div class="flex flex-col w-full sm:w-1/2">
-      <label for="date_from" class="mb-3 font-semibold uppercase text-sm md:text-base">From</label>
-      <input type="date" id="date_from" name="date_from" value="1960-01-01" pattern="\d{4}-\d{2}-\d{2}" class="w-full p-3 focus:ring-2 focus:ring-carnation-500">
+      <label for="show_percentages" class="font-semibold uppercase text-sm md:text-base">Show percentages
+        <input type="checkbox" id="show_percentages" name="show_percentages" value="1" class="focus:ring-2 focus:ring-carnation-500">
+      </label>
     </div>
-    
+
     <div class="flex flex-col w-full sm:w-1/2">
-      <label for="date_to" class="mb-3 font-semibold uppercase text-sm md:text-base">To</label>
-      <input type="date" id="date_to" name="date_to" value="2023-01-01" pattern="\d{4}-\d{2}-\d{2}" class="w-full p-3 focus:ring-2 focus:ring-carnation-500">
+      <label for="show_total_records_in_csv" class="font-semibold uppercase text-sm md:text-base">Show total records in CSV
+        <input type="checkbox" id="show_total_records_in_csv" name="show_total_records_in_csv" value="1" class="focus:ring-2 focus:ring-carnation-500">
+      </label>
     </div>
-  </div>
-
-  <div class="flex flex-col">
-    <label for="show_percentages" class="font-semibold uppercase text-sm md:text-base">Show percentages
-      <input type="checkbox" id="show_percentages" name="show_percentages" value="1" class="focus:ring-2 focus:ring-carnation-500">
-    </label>
-  </div>
-
-  <div class="flex flex-col">
-    <label for="show_total_records_in_csv" class="font-semibold uppercase text-sm md:text-base">Show total records in CSV
-      <input type="checkbox" id="show_total_records_in_csv" name="show_total_records_in_csv" value="1" class="focus:ring-2 focus:ring-carnation-500">
-    </label>
   </div>
 
   <button type="submit" class="w-full py-2">Submit</button>
