@@ -220,7 +220,7 @@ oareport = function(org) {
             displayCSVExportOptions(id, exportName);
 
             // Generate modals for each export type 
-            displayCSVExportModals();
+            displayCSVExportModals(id, exportName);
 
             // If present, extract the includes value for each item
             if (item.includes) {
@@ -236,27 +236,31 @@ oareport = function(org) {
         }
       })
       .catch(error => {
-        console.error('Error fetching data in displayCSVHeaders: ', error);
+        console.error('Error fetching data in getExportTypes: ', error);
       });
     }
 
     getExportTypes();
 
     displayCSVExportOptions = function(id, exportName) {
-      // Get the select element for CSV export options
-      const selectElement = document.getElementById('additional-export-select');
+      // Get the select menu for CSV export options & get the reference option ('Select an export type')
+      // after which we want to inject new options 
+      const selectElement = document.getElementById('additional-export-select'),
+            refOption = selectElement.querySelector('option');
 
-      // Get the reference option ('Select an export type' disabled label) after which we want to inject new options
-      const referenceOption = selectElement.querySelector('option');
-
-      // Generate the option as an HTML string
+      // Generate the option as an HTML string & insert it after the reference option
       const option = `<option value="${id}" data-title-selector="#modal_title_${id}" data-content-selector="#modal_content_${id}">${exportName}</option>`;
-      // Insert the options after the reference option
-      referenceOption.insertAdjacentHTML('afterend', option);
+      refOption.insertAdjacentHTML('afterend', option);
     }
 
     displayCSVExportModals = function(id, exportName) {
+      // Get the <div> element that will hold all export modals’ HTML
+      const modalExportsElement = document.getElementById('export_modals');
 
+      // Generate the modals’ titles & contents as an HTML string 
+      // and insert it in their container
+      const modalTitleAndContent = `<div id="modal_title_${id}" class="hidden">Export: ${exportName}</div><div id="modal_content_${id}" class="hidden">TEST</div>`;
+      modalExportsElement.innerHTML += modalTitleAndContent;
     }
 
     /* Get Strategy data and display it  */

@@ -182,7 +182,7 @@ permalink: "{{ org._source.objectID | slug }}/"
         </button>
       </div>
 
-      {{ component("modal", {
+      {# {{ component("modal", {
         id: "all_articles",
         title: "All articles",
         export: true
@@ -198,7 +198,7 @@ permalink: "{{ org._source.objectID | slug }}/"
         id: "invoice_without_doi",
         title: "Invoices without DOIs",
         export: true
-      }) }}
+      }) }} #}
 
       {{ component("modal", {
         id: "custom_export",
@@ -428,4 +428,9 @@ permalink: "{{ org._source.objectID | slug }}/"
       <div class="modal-content mt-4"></div>
     </div>
   </div>
+
+  {# Container for all export modals’ HTML content #}
+  <div id="export_modals"></div>
+  
+  {% include 'partials/email-download-form.njk' %}
 </main>
