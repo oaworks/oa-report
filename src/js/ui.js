@@ -252,10 +252,35 @@ class Modal {
   open() {
     const titleElement = document.querySelector(this.titleSelector);
     const contentElement = document.querySelector(this.contentSelector);
-
+  
     if (titleElement && contentElement) {
       this.modalTitle.textContent = titleElement.textContent;
-      this.modalContent.innerHTML = contentElement.innerHTML;
+  
+      // Clear the current modal content
+      this.modalContent.innerHTML = '';
+  
+      // Clone the content element and append it to the modal content
+      const clonedContent = contentElement.cloneNode(true);
+      clonedContent.classList.remove('hidden');
+      
+      // Update the `for` attribute of labels and `id` of inputs to maintain association
+      // This is necessary to ensure that form inputs are still focussed visually 
+      // when selecting their corresponding labels (for a11y)
+      const labels = clonedContent.querySelectorAll('label');
+      labels.forEach((label) => {
+        const htmlFor = label.getAttribute('for');
+        if (htmlFor) {
+          const input = clonedContent.querySelector(`#${htmlFor}`);
+          if (input) {
+            const newID = `cloned-${htmlFor}`;
+            label.setAttribute('for', newID);
+            input.id = newID;
+          }
+        }
+      });
+  
+      this.modalContent.append(clonedContent);
+  
       this.modal.classList.remove('hidden');
       this.modal.setAttribute('aria-hidden', 'false');
       document.body.classList.add('overflow-hidden');
@@ -263,7 +288,7 @@ class Modal {
     } else {
       console.error('Title or content element not found.');
     }
-  }
+  }  
 
   close() {
     this.modal.classList.add('hidden');
