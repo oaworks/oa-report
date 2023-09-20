@@ -174,7 +174,7 @@ permalink: "{{ org._source.objectID | slug }}/"
         <label for="additional-export-select" class="block text-sm font-medium text-neutral-900 sr-only">Select an export type</label>
         <select id="additional-export-select" class="block p-3 sm:text-sm border-r text-neutral-900 bg-white focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 whitespace-nowrap">
           <option disabled selected value="">Select an export type</option>
-          <option value="test" data-title-selector="#modal_title_test" data-content-selector="#modal_content_test">TEST</option>
+          <option value="custom_export" data-title-selector="#modal_title_custom_export" data-content-selector="#modal_content_custom_export">Create your own</option>
         </select>
         
         <button id="open_modal_btn" class="px-4 py-2 text-sm font-medium text-neutral-900 bg-white hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 border-0 whitespace-nowrap">
@@ -201,9 +201,8 @@ permalink: "{{ org._source.objectID | slug }}/"
       }) }}
 
       {{ component("modal", {
-        id: "test",
-        title: "TEST",
-        content: "<p class='text-lg font-medium'>Test content</p>"
+        id: "custom_export",
+        title: "Create your own"
       }) }}
 
       {# <div id="invoicesWithoutDOIsModalTitle" class="hidden">Export: Invoices without DOIs</div>

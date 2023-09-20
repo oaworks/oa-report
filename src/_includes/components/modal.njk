@@ -11,6 +11,7 @@
   {% if params.export %}
     {% include 'partials/export-table.njk' %}
   {% else %}
-    {{ params.content|safe }}
+    {# {{ params.content|safe }} #}
+    {% include 'partials/custom-export-form.njk' %}
   {% endif %}
 </div>
