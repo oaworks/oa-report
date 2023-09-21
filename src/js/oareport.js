@@ -249,7 +249,7 @@ oareport = function(org) {
     displayCSVExportOptions = function(id, exportName) {
       // Get the reference button ('Create your own') before which we will insert all the other options
       const refButton = document.getElementById('export_custom_export');
-    
+  
       if (!refButton) {
           console.error("Reference button not found.");
           return;
@@ -261,14 +261,19 @@ oareport = function(org) {
       newButton.setAttribute('data-title', `#modal_title_${id}`);
       newButton.setAttribute('data-content', `#modal_content_${id}`);
       newButton.classList.add(
-          'inline-flex', 'px-4', 'py-2', 'rounded-full', 'bg-white', 
-          'text-xs', 'md:text-sm', 'text-neutral-900', 'transition', 'duration-300', 
+          'inline-flex', 'px-4', 'py-2', 'rounded-full', 'bg-white',
+          'text-xs', 'md:text-sm', 'text-neutral-900', 'transition', 'duration-300',
           'ease-in-out', 'hover:cursor-pointer', 'js_export_pill'
       );
       newButton.textContent = exportName;
   
-      // Insert the new button before the reference button
-      refButton.parentNode.insertBefore(newButton, refButton);
+      // Check if the button is 'all_articles'
+      if (id === "all_articles") {
+          refButton.parentNode.insertBefore(newButton, refButton.parentNode.firstChild);
+      } else {
+          // Insert the new button before the reference button
+          refButton.parentNode.insertBefore(newButton, refButton);
+      }
   
       // Attach the event listener for the new button so that it opens the modals on click
       newButton.addEventListener('click', function() {
@@ -286,7 +291,7 @@ oareport = function(org) {
               console.error('Data attributes for title and content selectors not found.');
           }
       });
-  }  
+    }
 
     displayCSVExportModals = function(id, exportName) {
       // Get the <div> element that will hold all export modals’ HTML
