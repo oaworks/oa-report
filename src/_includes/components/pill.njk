@@ -6,7 +6,7 @@
 #}
 
 <button 
-  class="inline-flex px-4 py-2 rounded-full bg-white text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:cursor-pointer {% if params.highlight %}bg-carnation-300 {% endif %}js_export_pill" 
+  class="inline-flex px-4 py-2 rounded-full bg-white text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out {% if params.highlight %}bg-carnation-300 hover:bg-carnation-500 {% endif %}js_export_pill" 
   data-title="#modal_title_{{ params.id }}" 
   data-content="#modal_content_{{ params.id }}"
   id="export_{{ params.id }}">

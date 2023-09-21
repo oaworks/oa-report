@@ -263,7 +263,7 @@ oareport = function(org) {
       newButton.classList.add(
           'inline-flex', 'px-4', 'py-2', 'rounded-full', 'bg-white',
           'text-xs', 'md:text-sm', 'text-neutral-900', 'transition', 'duration-300',
-          'ease-in-out', 'hover:cursor-pointer', 'js_export_pill'
+          'ease-in-out', 'hover:bg-carnation-500', 'js_export_pill'
       );
       newButton.textContent = exportName;
   
