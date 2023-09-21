@@ -203,7 +203,7 @@ strategyTabBtns.forEach((tabBtn) => {
 });
 
 /* Year selects */
-const quickDateItems = document.querySelectorAll(".js-pill");
+const quickDateItems = document.querySelectorAll(".js_year_select");
 
 function handleQuickDateItemClick(event) {
   event.preventDefault();
