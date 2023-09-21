@@ -24,17 +24,7 @@
       </p>
       {% if not params.raw_number %}
       <p class="mt-2 text-xs md:text-sm font-medium text-neutral-600">
-        <span id="articles_{{ params.id }}">000</span>
-      </p>
-      {% endif %}
-      {% if params.sheets_link %}
-      <p class="mt-6 text-xs md:text-sm text-right text-neutral-600">
-        <a href="{{ params.sheets_link }}"
-           target="_blank"
-           rel="noopener"
-        >
-          <span class="underline underline-offset-2 decoration-1">More details</span> <sup>{% icon_small "external-link" %}</sup>
-        </a>
+        <span id="articles_{{ params.id }}">articles</span>
       </p>
       {% endif %}
     </div>
