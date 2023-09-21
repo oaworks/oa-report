@@ -338,7 +338,7 @@ oareport = function(org) {
     displayStrategy = function(strategy, keys, tableRow) {
       var shown  = response.data.hits.hits[0]._source.strategy[strategy].show_on_web,
           sort   = `&sort=${response.data.hits.hits[0]._source.strategy[strategy].sort}`,
-          tabID  = `tab_${strategy}`;
+          tabID  = `strategy_${strategy}`;
 
       if (shown === true) {
         // Get tab elements

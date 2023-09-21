@@ -158,8 +158,8 @@ if (allTimeBtn) {
   });
 }
 
-/* Display tab contents on UI tab selection (MD + larger viewports) */
-const strategyTabBtns = document.querySelectorAll(".js-tab-btn");
+/* Display strategy contents strategy button selection (MD + larger viewports) */
+const strategyTabBtns = document.querySelectorAll(".js_strategy_btn");
 
 function handleTabBtnClick(event) {
   // If the click event's target is the span inside of <li>, stop the event propagation
@@ -170,9 +170,9 @@ function handleTabBtnClick(event) {
 
   const tabBtn = event.currentTarget;
   const selectedStrategy = tabBtn.getAttribute("aria-controls");
-  const selectedTabContents = document.querySelector(`.js-tab-content-all #${selectedStrategy}`);
-  const otherTabContents = document.querySelectorAll(`.js-tab-content:not(#${selectedStrategy})`);
-  const otherTabBtns = document.querySelectorAll(`.js-tab-btn:not(#tab_${selectedStrategy})`);
+  const selectedTabContents = document.querySelector(`.js_strategies #${selectedStrategy}`);
+  const otherTabContents = document.querySelectorAll(`.js_strategy:not(#${selectedStrategy})`);
+  const otherTabBtns = document.querySelectorAll(`.js_strategy_btn:not(#strategy_${selectedStrategy})`);
 
 
   // When unselected
