@@ -157,7 +157,7 @@ permalink: "{{ org._source.objectID | slug }}/"
     </div>
 
     {% if org._source.paid == true %}
-    <div id="additional-exports">
+    <div id="additional_exports">
       <header class="col-span-3">
           <h2 class="mb-3 text-base md:text-lg leading-6">
             <span class="font-semibold uppercase text-sm md:text-base line-thru">
@@ -170,8 +170,8 @@ permalink: "{{ org._source.objectID | slug }}/"
             </span>
           </h2>
         </header>
-      <div class="flex">
-        <label for="additional-export-select" class="block text-sm font-medium text-neutral-900 sr-only">Select an export type</label>
+      <div class="flex space-x-2" id="export_options">
+        {# <label for="additional-export-select" class="block text-sm font-medium text-neutral-900 sr-only">Select an export type</label>
         <select id="additional-export-select" class="block p-3 sm:text-sm border-r text-neutral-900 bg-white focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 whitespace-nowrap">
           <option disabled selected value="">Select an export type</option>
           <option value="custom_export" data-title-selector="#modal_title_custom_export" data-content-selector="#modal_content_custom_export">Create your own</option>
@@ -179,7 +179,13 @@ permalink: "{{ org._source.objectID | slug }}/"
         
         <button id="open_modal_btn" class="px-4 py-2 text-sm font-medium text-neutral-900 bg-white hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 border-0 whitespace-nowrap">
           Preview export
-        </button>
+        </button> #}
+
+        {{ component("pill", {
+          id: "custom_export",
+          txt: "Create your own",
+          highlight: true
+        }) }}
       </div>
     </div>
     {% endif %}

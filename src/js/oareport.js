@@ -37,7 +37,7 @@ if (hasOrgKey) {
 } else {
   // logged out
   displayNone("logout");
-  //displayNone("additional-exports");
+  //displayNone("additional_exports");
 }
 
 // Set default export_includes and sorting order for CSV downloads
@@ -247,15 +247,46 @@ oareport = function(org) {
     getExportTypes();
 
     displayCSVExportOptions = function(id, exportName) {
-      // Get the select menu for CSV export options & get the reference option ('Select an export type')
-      // after which we want to inject new options 
-      const selectElement = document.getElementById('additional-export-select'),
-            refOption = selectElement.querySelector('option');
-
-      // Generate the option as an HTML string & insert it after the reference option
-      const option = `<option value="${id}" data-title-selector="#modal_title_${id}" data-content-selector="#modal_content_${id}">${exportName}</option>`;
-      refOption.insertAdjacentHTML('afterend', option);
-    }
+      // Get the reference button ('Create your own') before which we will insert all the other options
+      const refButton = document.getElementById('export_custom_export');
+    
+      if (!refButton) {
+          console.error("Reference button not found.");
+          return;
+      }
+  
+      // Create a new button element
+      const newButton = document.createElement('button');
+      newButton.id = `export_${id}`;
+      newButton.setAttribute('data-title', `#modal_title_${id}`);
+      newButton.setAttribute('data-content', `#modal_content_${id}`);
+      newButton.classList.add(
+          'inline-flex', 'px-4', 'py-2', 'rounded-full', 'bg-white', 
+          'text-xs', 'md:text-sm', 'text-neutral-900', 'transition', 'duration-300', 
+          'ease-in-out', 'hover:cursor-pointer', 'js_export_pill'
+      );
+      newButton.textContent = exportName;
+  
+      // Insert the new button before the reference button
+      refButton.parentNode.insertBefore(newButton, refButton);
+  
+      // Attach the event listener for the new button so that it opens the modals on click
+      newButton.addEventListener('click', function() {
+          if (currentModal) {
+              currentModal.close();
+          }
+  
+          const titleSelector = newButton.getAttribute('data-title');
+          const contentSelector = newButton.getAttribute('data-content');
+  
+          if (titleSelector && contentSelector) {
+              currentModal = new Modal(titleSelector, contentSelector);
+              currentModal.open();
+          } else {
+              console.error('Data attributes for title and content selectors not found.');
+          }
+      });
+  }  
 
     displayCSVExportModals = function(id, exportName) {
       // Get the <div> element that will hold all export modals’ HTML

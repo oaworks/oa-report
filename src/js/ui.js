@@ -299,33 +299,26 @@ class Modal {
 
 let currentModal = null;
 
-const openModalBtn = document.querySelector('#open_modal_btn');
-const csvSelect = document.querySelector('#additional-export-select');
+// Fetch all pill buttons
+const modalPills = document.querySelectorAll('.js_export_pill');
 
-if (openModalBtn && csvSelect) {
-  openModalBtn.addEventListener('click', () => {
-    if(currentModal) {
-      currentModal.close();
-    }
+modalPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+        if (currentModal) {
+            currentModal.close();
+        }
 
-    const selectedOption = csvSelect.querySelector('option:checked');
+        const titleSelector = pill.getAttribute('data-title');
+        const contentSelector = pill.getAttribute('data-content');
 
-    if (selectedOption) {
-      const titleSelector = selectedOption.getAttribute('data-title-selector');
-      const contentSelector = selectedOption.getAttribute('data-content-selector');
+        if (titleSelector && contentSelector) {
+            currentModal = new Modal(titleSelector, contentSelector);
+            currentModal.open();
+        } else {
+            console.error('Data attributes for title and content selectors not found.');
+        }
+    });
+});
 
-      if (titleSelector && contentSelector) {
-        currentModal = new Modal(titleSelector, contentSelector);
-        currentModal.open();
-      } else {
-        console.error('Data attributes for title and content selectors not found.');
-      }
-    } else {
-      console.error('No option is selected.');
-    }
-  });
-} else {
-  console.error('Modal button or select element not found.');
-}
 
 
