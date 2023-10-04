@@ -251,7 +251,7 @@ oareport = function(org) {
       });
     }
 
-    getExportTypes();
+    // getExportTypes();
 
     displayCSVExportOptions = function(id, exportName) {
       // Get the reference button ('Create your own') before which we will insert all the other options

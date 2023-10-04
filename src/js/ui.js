@@ -41,8 +41,8 @@ formatDateToISO = function(date) {
 
 // Change start and end dates — used when switching years using pill nav
 replaceDateRange = function(newStart, newEnd) {
-  startDateContents.textContent = makeDateReadable(newStart);
-  endDateContents.textContent = makeDateReadable(newEnd);
+  // startDateContents.textContent = makeDateReadable(newStart);
+  // endDateContents.textContent = makeDateReadable(newEnd);
   startDate     = changeDays(-1, newStart);
   startDate     = formatDateToISO(startDate);
   endDate       = changeDays(+1, newEnd);
