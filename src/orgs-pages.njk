@@ -311,12 +311,12 @@ permalink: "{{ org._source.objectID | slug }}/"
   
   {# ACTIONS #}
   <section class="bg-neutral-700 text-white relative" id="strategies">
-    <div class="container mx-auto px-6">
+    <div class="mx-auto px-6">
       <div class="grid grid-cols-2 gap-6 md:gap-12 py-6 xl:py-12"> 
         <div class="col-span-2">
           <h2 class="leading-6 font-semibold uppercase text-sm md:text-base line-thru">
             <span class="bg-neutral-700">
-              Strategies
+              Actions
               {{ component("tooltip", {
                 msg: "The <em>Strategy</em> section provides actionable steps for making more of your articles Open Access."
               }) }}
@@ -327,7 +327,7 @@ permalink: "{{ org._source.objectID | slug }}/"
             <h3 class="absolute right-0 bottom-0 text-9xl font-black text-white opacity-20">
               <span class="sr-only">Actions for </span><span id="report-year">2023</span>
             </h3>
-            <ul role="tablist" aria-label="Strategies Tabs">
+            <ul role="tablist" aria-label="Actions Tabs">
               {{ component("strategy-pill", {
                 id: "email_author_vor",
                 txt: "Deposit publisher PDFs",
@@ -400,7 +400,7 @@ permalink: "{{ org._source.objectID | slug }}/"
           </div>
 
           <div class="sm:hidden text-base mt-6">
-            <p>Strategies aren’t available on mobile yet. Please head to a desktop computer to take action!</p>
+            <p>Actions aren’t available on mobile yet. Please head to a desktop computer to take action!</p>
           </div>
         </div>
       </div>
@@ -437,7 +437,7 @@ permalink: "{{ org._source.objectID | slug }}/"
             <span class="bg-carnation-100 pr-3">Unlock your institution’s research</span>
           </h2>
           <p class="my-6">
-            Sign up to access your institution's strategies for free. Consider a <a href="https://about.oa.report/pricing" target="_blank" class="underline underline-offset-4 decoration-1">paid plan</a> to help <a href="https://about.oa.report/docs/sources" target="_blank" class="underline underline-offset-4 decoration-1">discover all your papers</a> and provide up-to-date, deep insights into the state of open at your institution.
+            Sign up to access your institution's Actions for free. Consider a <a href="https://about.oa.report/pricing" target="_blank" class="underline underline-offset-4 decoration-1">paid plan</a> to help <a href="https://about.oa.report/docs/sources" target="_blank" class="underline underline-offset-4 decoration-1">discover all your papers</a> and provide up-to-date, deep insights into the state of open at your institution.
           </p>
           <div class="my-6 w-6/12">
             {% include 'partials/signup-form.njk' %}
