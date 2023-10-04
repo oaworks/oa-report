@@ -37,7 +37,7 @@ if (hasOrgKey) {
 } else {
   // logged out
   displayNone("logout");
-  //displayNone("additional_exports");
+  //displayNone("explore");
 }
 
 // Set default export_includes and sorting order for CSV downloads
@@ -202,6 +202,13 @@ oareport = function(org) {
 
     /* Preview CSV exports */
     getExportTypes = function() {
+      // Get container for all export options and clear them 
+      // const exportOptions = document.getElementById('export_options');
+      // exportOptions.innerHTML = '';
+
+      // Clear the export options every time before fetching new data
+      
+
       axios.get(`https://bg.beta.oa.works/report/orgs?q=objectID:${org}&includes=exports`)
       .then(response => {
 
@@ -221,7 +228,7 @@ oareport = function(org) {
             displayCSVExportOptions(id, exportName);
 
             // Generate modals for each export type 
-            displayCSVExportModals(id, exportName);
+            // displayCSVExportModals(id, exportName);
 
             // If present, extract the includes value for each export type and display them in a table
             if (includes) {
@@ -229,7 +236,7 @@ oareport = function(org) {
               const includesArray = includes.split(','),
                     headersCount = includesArray.length;
 
-              createCSVExportTableSkeleton(id, 99999, headersCount);
+              // createCSVExportTableSkeleton(id, 99999, headersCount);
               convertIncludesToTableHeaders(includesArray, id, exportName);
             } else {
               console.log(`Export type "${exportName}" does not have any includes`);
@@ -312,7 +319,7 @@ oareport = function(org) {
           The full file contains <strong class="text-bold">${recordCount} records</strong> and <strong class="text-bold">${headersCount} headers</strong>. Use the "Send CSV" form to get the entire data.
         </p>
         <div class="mb-6 overflow-x-auto">
-          <table class="mb-3 min-w-full border bg-white border-neutral-300 text-xs">
+          <table class="mb-3 min-w-full border bg-white border-neutral-300 text-neutral-900 text-xs">
             <thead class="border-b border-neutral-300">
               <tr id="export_table_headings_${id}"></tr>
             </thead>
@@ -335,27 +342,12 @@ oareport = function(org) {
           </table>
         </div>
         <div class="flex flex-col sm:flex-row space-y-6 sm:space-y-0 sm:space-x-6 text-sm">
-          <div class="flex flex-col w-full sm:w-1/2">
-            <label for="custom_export_email_${id}" class="mb-3 font-semibold uppercase">
-              Email address
-            </label>
-            <div class="flex shadow-md">
-              <div class="relative flex items-stretch flex-grow focus-within:z-10">
-                <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail inline-block h-4 duration-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                </div>
-                <input type="email" name="custom_export_email_${id}" id="custom_export_email_${id}" class="focus:ring-carnation-300 focus:border-carnation-500 block w-full pl-10 py-3 sm:text-sm border-1" placeholder="you@example.com" required>
-              </div>
-              <button type="submit" class="--ml-px relative inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium text-white bg-neutral-900 hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 border-0 whitespace-nowrap">
-                Send CSV
-              </button>
-            </div>
-          </div>
+          <button class="items-center space-x-2 px-4 py-2 text-sm font-medium text-white bg-neutral-900 hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 border-0 whitespace-nowrap">Download CSV</button>
         </div>
       `;
 
-      const modalContentDiv = document.querySelector(`#modal_content_${id}`);
-      modalContentDiv.innerHTML = tableSkeletonHTML;
+      const tableContainer = document.getElementById('export_table');
+      tableContainer.innerHTML = tableSkeletonHTML;
     }
 
     convertIncludesToTableHeaders = function(includesArray, id, exportName) {

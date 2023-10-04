@@ -86,6 +86,7 @@ permalink: "{{ org._source.objectID | slug }}/"
     </ul>
   </nav>
 
+  {# INSIGHTS #}
   <section class="bg-neutral-900 text-white" id="insights">
     <div class="mx-auto px-6 py-6 xl:py-12">
       <header class="col-span-3">
@@ -146,13 +147,16 @@ permalink: "{{ org._source.objectID | slug }}/"
 
 
     </div>
+  </section>
 
-    {% if org._source.paid == true %}
-    <div id="additional_exports">
+  {# EXPLORE #}
+  {% if org._source.paid == true %}
+  <section class="bg-neutral-800 text-white" id="explore">
+    <div class="mx-auto px-6 py-6 xl:py-12">
       <header class="col-span-3">
           <h2 class="mb-3 text-base md:text-lg leading-6">
             <span class="font-semibold uppercase text-sm md:text-base line-thru">
-              <span class="bg-neutral-900">
+              <span class="bg-neutral-800">
                 CSV data exports
                 {{ component("tooltip", {
                   msg: "Lorem ipsum dolor sit amet."
@@ -161,17 +165,96 @@ permalink: "{{ org._source.objectID | slug }}/"
             </span>
           </h2>
         </header>
-      <div class="flex space-x-2" id="export_options">
+      <div class="flex space-x-2 mb-8" id="export_options">
         {{ component("pill", {
-          id: "custom_export",
-          txt: "Create your own",
+          id: "all_articles",
+          txt: "All articles",
+          highlight: true
+        }) }}
+        {{ component("pill", {
+          id: "articles_with_apcs",
+          txt: "Articles with APCs",
+          highlight: true
+        }) }}
+        {{ component("pill", {
+          id: "spend_by_invoice_year",
+          txt: "Spend by invoice year",
           highlight: true
         }) }}
       </div>
+
+      <div class="overflow-x-auto" id="export_table">
+        <table class="mb-3 min-w-full border bg-white border-neutral-300 text-neutral-900">
+          <thead class="border-b border-neutral-300">
+            <tr id="modal_headings_{{ params.id }}">
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">DOI</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">is_compliant__bmgf</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">grantid__bmgf</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">title</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">publisher</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">journal</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">issn</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">published_date</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">published_year</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">PMCID</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">authorships.institutions.display_name</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">funder.name</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">is_oa</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">oa_status</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">journal_oa_type</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">publisher_license_best</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">has_repository_copy</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">repository_license_best</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">repository_version</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">repository_url</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">is_approved_repository__bmgf</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">is_preprint</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">can_archive</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">version</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">concepts.display_name</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">subject</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">program__bmgf</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">has_data_availability_statement</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">cited_by_count</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">author_email_name</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">email</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">invoice_date</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">invoice_number</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">apc_cost</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">oasupport.status</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">sheets</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">is_new__bmgf</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">dev.data.has_shared_data</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">dev.data.has_open_data</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">dev.data.doi</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">dev.data.url</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">dev.data.accession</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">dev.data.location</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">dev.data.licence</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">dev.data.evidence</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">dev.code.has_made_code</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">dev.code.has_shared_code</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">dev.code.has_open_code</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">dev.code.doi</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">dev.code.url</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">dev.code.accession</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">dev.code.location</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">dev.code.licence</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">dev.code.evidence</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">is_original_research</th>
+              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">data_availability_statement_category</th>
+            </tr>
+          </thead>
+          <tbody class="text-xs">
+            {% include 'partials/temp-default-tbody.njk' %}
+          </tbody>
+        </table>
+      </div>
     </div>
-    {% endif %}
   </section>
+  {% endif %}
   
+  {# ACTIONS #}
   <section class="bg-neutral-700 text-white relative" id="strategies">
     <div class="container mx-auto px-6">
       <div class="grid grid-cols-2 gap-6 md:gap-12 py-6 xl:py-12"> 
@@ -269,6 +352,7 @@ permalink: "{{ org._source.objectID | slug }}/"
     </div>
   </section>
 
+  {# ABOUT #}
   <section class="container mx-auto px-6">
     <div class="grid grid-cols-2 gap-6 md:gap-12 py-6 xl:py-12"> 
       <div class="col-span-2 grid md:grid-cols-2 gap-12 text-base md:text-2xl md:leading-8 md:font-light" id="about">
