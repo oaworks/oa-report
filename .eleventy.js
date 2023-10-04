@@ -71,6 +71,7 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy('./src/css/');
   eleventyConfig.addPassthroughCopy('./src/img/');
   eleventyConfig.addPassthroughCopy('./src/favicons/');
+  eleventyConfig.addPassthroughCopy('./src/temp/');
   eleventyConfig.addPassthroughCopy("./src/*.xml");
   eleventyConfig.addPassthroughCopy("./src/*.txt");
 

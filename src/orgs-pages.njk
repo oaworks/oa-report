@@ -174,17 +174,62 @@ permalink: "{{ org._source.objectID | slug }}/"
         {{ component("pill", {
           id: "articles_with_apcs",
           txt: "Articles with APCs",
-          highlight: true
+          highlight: false
         }) }}
         {{ component("pill", {
           id: "spend_by_invoice_year",
           txt: "Spend by invoice year",
-          highlight: true
+          highlight: false
         }) }}
       </div>
 
-      <div class="overflow-x-auto" id="export_table">
-        <table class="mb-3 min-w-full border bg-white border-neutral-300 text-neutral-900">
+      <form class="mb-8 text-sm flex space-x-4">
+        <div class="">
+          <label for="filter_by" class="mb-3 font-semibold uppercase sr-only">Filter by</label>
+          <select id="filter_by" name="filter_by" class="w-full py-2 bg-transparent border-b focus:outline-none focus:ring-2 focus:ring-carnation-500">
+            <option value="articles">Articles</option>
+            <option value="original_research_articles">Original research articles</option>
+            <option value="preprints">Preprints</option>
+            <option value="articles_with_apcs">Articles with APCs</option>
+            <option value="articles_covered_by_policy">Articles covered by policy</option>
+            <option value="funded_articles">Funded articles</option>
+            <option value="authored_articles">Authored articles</option>
+            <option value="none">None</option>
+          </select>
+        </div>
+        <div class="flex items-center font-semibold uppercase">grouped by</div>
+        <div class="">
+          <label for="group_by" class="mb-3 font-semibold uppercase sr-only">Group by</label>
+          <select id="group_by" name="group_by" class="w-full py-2 bg-transparent border-b focus:outline-none focus:ring-2 focus:ring-carnation-500">
+            <option value="none">[none]</option>
+            <option value="year_published">Year published</option>
+            <option value="grant">Grant</option>
+            <option value="author">Author</option>
+            <option value="publisher">Publisher</option>
+            <option value="subject">Subject</option>
+            <option value="oa_status">OA status</option>
+            <option value="program">Program</option>
+            <option value="institution">Institution</option>
+            <option value="country">Country</option>
+            <option value="journal">Journal</option>
+            <option value="journal_oa_type">Journal OA type</option>
+            <option value="co_funder">Co-funder</option>
+            <option value="publisher_license">Publisher license</option>
+            <option value="preprint_license">Preprint license</option>
+            <option value="repository_license">Repository license</option>
+            <option value="dataset_license">Dataset license</option>
+            <option value="software_license">Software license</option>
+            <option value="dataset_publisher">Dataset publisher</option>
+            <option value="software_publisher">Software publisher</option>
+          </select>
+        </div>
+      </form>
+
+      <h3 class="font-semibold text-xl md:text-3xl mb-3 md:mb-6" id="export_title" aria-live="polite">
+        Showing first <strong>10</strong> of <strong>2,702</strong> records for <strong>2023</strong>
+      </h3>
+      <div class="mb-4 overflow-x-auto" id="export_table">
+        <table class="mb-3 min-w-full table-fixed border bg-white border-neutral-300 text-neutral-900">
           <thead class="border-b border-neutral-300">
             <tr id="modal_headings_{{ params.id }}">
               <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider">DOI</th>
@@ -250,6 +295,13 @@ permalink: "{{ org._source.objectID | slug }}/"
           </tbody>
         </table>
       </div>
+      <a href="/temp/bmgf_all-articles_from_2023-01-01-to-2023-10-04_at_2023-09-27.csv" 
+        download 
+        role="button" 
+        aria-label="Download full data as CSV"
+        class="items-center space-x-2 px-4 py-2 text-base font-medium uppercase text-neutral-900 bg-carnation-500 hover:bg-carnation-300  hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 border-0 whitespace-nowrap inline-block">
+          Download full data (CSV)
+      </a>
     </div>
   </section>
   {% endif %}
