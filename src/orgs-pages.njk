@@ -172,7 +172,7 @@ permalink: "{{ org._source.objectID | slug }}/"
           filter_by: "articles",
           group_by: "none",
           title: "Showing first <strong>10</strong> of <strong>2,702</strong> records for <strong>2023</strong>",
-          csv: "bmgf_all-articles_from_2023-01-01-to-2023-10-04_on_2023-09-27",
+          csv: "/temp/bmgf_all-articles_from_2023-01-01-to-2023-10-04_on_2023-09-27.csv",
           highlight: true
         }) }}
         {{ component("pill", {
@@ -181,11 +181,12 @@ permalink: "{{ org._source.objectID | slug }}/"
           filter_by: "articles_with_apcs",
           group_by: "none",
           title: "Showing first <strong>10</strong> of <strong>1,027</strong> records for <strong>2023</strong>",
-          csv: "bmgf_articles-with-apcs_from_2023-01-01-to-2023-10-04_on_2023-09-27",
+          csv: "/temp/bmgf_articles-with-apcs_from_2023-01-01-to-2023-10-04_on_2023-09-27.csv",
           highlight: false
         }) }}
       </div>
 
+      {# TEMP CRAPPY NON-A11Y PROTOTYPING MARKUP #}
       <form class="mb-8 text-sm flex space-x-4 justify-center" id="explore_form">
         <div class="flex items-center font-semibold uppercase">I want to see</div>
         <div class="">
@@ -481,14 +482,41 @@ permalink: "{{ org._source.objectID | slug }}/"
   </div>
 </main>
 
-{#  #}
+{# TEMP CRAPPY PROTOTYPING SCRIPT #}
 <script>
   document.addEventListener("DOMContentLoaded", function() {
-    // Get all buttons with the specified class
+    // Get references to elements
     var buttons = document.querySelectorAll('.js_export_pill');
     var form = document.getElementById('explore_form');
     var exportLink = document.getElementById('export_link');
-    
+    var filterBySelect = document.getElementById('filter_by');
+    var groupBySelect = document.getElementById('group_by');
+    var exportTitle = document.getElementById('export_title');
+    var exportPreviewBtn = document.getElementById('export_preview_btn');
+
+    // For each export pill button
+    buttons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            // First, remove the active class from all buttons
+            buttons.forEach(function(btn) {
+                btn.classList.remove('bg-carnation-300');
+            });
+
+            // Then, add the active class to the clicked button
+            button.classList.add('bg-carnation-300');
+
+            // Change select options in the form based on button's data attributes
+            document.getElementById('filter_by').value = button.getAttribute('data-filter-by');
+            document.getElementById('group_by').value = button.getAttribute('data-group-by');
+
+            // Change the h3 title based on button's data-title
+            document.getElementById('export_title').innerHTML = button.getAttribute('data-title');
+
+            // Activate the export link with the button's data-csv value
+            activateExportLink(button.getAttribute('data-csv'));
+        });
+    });
+
     // Function to deactivate the export link
     function deactivateExportLink() {
         exportLink.removeAttribute('href');
@@ -512,26 +540,20 @@ permalink: "{{ org._source.objectID | slug }}/"
         deactivateExportLink();
     });
 
-    buttons.forEach(function(button) {
-        button.addEventListener('click', function() {
-            // First, remove the active class from all buttons
-            buttons.forEach(function(btn) {
-                btn.classList.remove('bg-carnation-300');
-            });
+    // Listen for form submission if user selected filter by articles grouped by grants
+    exportPreviewBtn.addEventListener('click', function(e) {
+        e.preventDefault(); // prevent default form submission
 
-            // Then, add the active class to the clicked button
-            button.classList.add('bg-carnation-300');
+        if (filterBySelect.value === 'articles' && groupBySelect.value === 'grant') {
+            // Change the export title
+            exportTitle.innerHTML = 'Showing first <strong>10</strong> of <strong>20</strong> records for <strong>2023</strong>';
 
-            // Change select options in the form based on button's data attributes
-            document.getElementById('filter_by').value = button.getAttribute('data-filter-by');
-            document.getElementById('group_by').value = button.getAttribute('data-group-by');
-
-            // Change the h3 title based on button's data-title
-            document.getElementById('export_title').innerHTML = button.getAttribute('data-title');
-
-            // Activate the export link with the button's data-csv value
-            activateExportLink(button.getAttribute('data-csv'));
-        });
+            // Activate the export link with the new href value
+            activateExportLink('/temp/bmgf_articles_grant_from_2023-01-01-to-2023-10-04_on_2023-09-27.csv');
+        } else {
+            deactivateExportLink();
+        }
     });
   });
 </script>
+
