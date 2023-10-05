@@ -227,6 +227,9 @@ permalink: "{{ org._source.objectID | slug }}/"
             <option value="software_publisher">Software publisher</option>
           </select>
         </div>
+        <button type="submit" class="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium border bg-transparent hover:bg-white hover:text-neutral-900 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 border-0" id="export_preview_btn">
+          Preview data
+        </button>
       </form>
 
       <h3 class="font-semibold text-xl md:text-3xl mb-3 md:mb-6 text-center" id="export_title" aria-live="polite">
@@ -483,6 +486,31 @@ permalink: "{{ org._source.objectID | slug }}/"
   document.addEventListener("DOMContentLoaded", function() {
     // Get all buttons with the specified class
     var buttons = document.querySelectorAll('.js_export_pill');
+    var form = document.getElementById('explore_form');
+    var exportLink = document.getElementById('export_link');
+    
+    // Function to deactivate the export link
+    function deactivateExportLink() {
+        exportLink.removeAttribute('href');
+        exportLink.classList.add('bg-neutral-300', 'cursor-not-allowed');
+        exportLink.classList.remove('bg-carnation-500', 'hover:bg-carnation-300', 'hover:border-carnation-500');
+    }
+
+    // Function to activate the export link with a given href
+    function activateExportLink(hrefValue) {
+        exportLink.href = hrefValue;
+        exportLink.classList.remove('bg-neutral-300', 'cursor-not-allowed');
+        exportLink.classList.add('bg-carnation-500', 'hover:bg-carnation-300', 'hover:border-carnation-500');
+    }
+
+    // Listen for form changes
+    form.addEventListener('input', function() {
+        // Deactivate buttons and the export link
+        buttons.forEach(function(btn) {
+            btn.classList.remove('bg-carnation-300');
+        });
+        deactivateExportLink();
+    });
 
     buttons.forEach(function(button) {
         button.addEventListener('click', function() {
@@ -494,20 +522,15 @@ permalink: "{{ org._source.objectID | slug }}/"
             // Then, add the active class to the clicked button
             button.classList.add('bg-carnation-300');
 
-            // 1. Change select options in the form based on button's data attributes
-            var filterBySelect = document.getElementById('filter_by');
-            filterBySelect.value = button.getAttribute('data-filter-by');
+            // Change select options in the form based on button's data attributes
+            document.getElementById('filter_by').value = button.getAttribute('data-filter-by');
+            document.getElementById('group_by').value = button.getAttribute('data-group-by');
 
-            var groupBySelect = document.getElementById('group_by');
-            groupBySelect.value = button.getAttribute('data-group-by');
+            // Change the h3 title based on button's data-title
+            document.getElementById('export_title').innerHTML = button.getAttribute('data-title');
 
-            // 2. Change the h3 title based on button's data-title
-            var exportTitle = document.getElementById('export_title');
-            exportTitle.innerHTML = button.getAttribute('data-title');
-
-            // 3. Change the link's href based on button's data-csv
-            var exportLink = document.getElementById('export_link');
-            exportLink.href = button.getAttribute('data-csv');
+            // Activate the export link with the button's data-csv value
+            activateExportLink(button.getAttribute('data-csv'));
         });
     });
   });
