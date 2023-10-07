@@ -165,7 +165,7 @@ permalink: "{{ org._source.objectID | slug }}/"
             </span>
           </h2>
         </header>
-      <div class="flex space-x-2 mb-8 justify-center" id="export_options">
+      <div class="flex space-x-2 mb-8" id="export_options">
         {{ component("pill", {
           id: "all_articles",
           txt: "All articles",
@@ -187,7 +187,7 @@ permalink: "{{ org._source.objectID | slug }}/"
       </div>
 
       {# TEMP CRAPPY NON-A11Y PROTOTYPING MARKUP #}
-      <form class="mb-8 text-sm flex space-x-4 justify-center" id="explore_form">
+      <form class="mb-8 text-base flex space-x-4" id="explore_form">
         <div class="flex items-center font-semibold uppercase">See</div>
         <div class="">
           <label for="filter_by" class="mb-3 font-semibold uppercase sr-only">Filter by</label>
@@ -233,69 +233,69 @@ permalink: "{{ org._source.objectID | slug }}/"
         </button>
       </form>
 
-      <h3 class="font-semibold text-xl md:text-3xl mb-3 md:mb-6 text-center" id="export_title" aria-live="polite">
+      <h3 class="text-base font-semibold uppercase mb-3" id="export_title" aria-live="polite">
         Showing first <strong>10</strong> of <strong>2,702</strong> records for <strong>2023</strong>
       </h3>
       <div class="mb-4 overflow-x-auto border border-neutral-200" id="export_table">
         <table class="border-collapse w-full table-fixed">
-          <thead>
+          <thead class="border-b border-neutral-200">
             <tr>
-              <th scope="col" class="sticky left-0 bg-neutral-700 p-3 text-left text-xs font-medium uppercase tracking-wider w-60">DOI</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">is_compliant__bmgf</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">grantid__bmgf</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">title</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">publisher</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">journal</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">issn</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">published_date</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">published_year</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">PMCID</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">authorships.institutions.display_name</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">funder.name</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">is_oa</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">oa_status</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">journal_oa_type</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">publisher_license_best</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">has_repository_copy</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">repository_license_best</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">repository_version</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">repository_url</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">is_approved_repository__bmgf</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">is_preprint</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">can_archive</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">version</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">concepts.display_name</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">subject</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">program__bmgf</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">has_data_availability_statement</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">cited_by_count</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">author_email_name</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">email</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">invoice_date</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">invoice_number</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">apc_cost</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">oasupport.status</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">sheets</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">is_new__bmgf</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">dev.data.has_shared_data</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">dev.data.has_open_data</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">dev.data.doi</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">dev.data.url</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">dev.data.accession</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">dev.data.location</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">dev.data.licence</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">dev.data.evidence</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">dev.code.has_made_code</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">dev.code.has_shared_code</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">dev.code.has_open_code</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">dev.code.doi</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">dev.code.url</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">dev.code.accession</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">dev.code.location</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">dev.code.licence</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">dev.code.evidence</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">is_original_research</th>
-              <th scope="col" class="p-3 text-left text-xs font-medium uppercase tracking-wider w-60">data_availability_statement_category</th>
+              <th scope="col" class="sticky left-0 bg-neutral-700 p-2 text-left text-xs font-medium uppercase tracking-wider w-60">DOI</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">is_compliant__bmgf</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">grantid__bmgf</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">title</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">publisher</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">journal</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">issn</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">published_date</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">published_year</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">PMCID</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">authorships.institutions.display_name</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">funder.name</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">is_oa</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">oa_status</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">journal_oa_type</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">publisher_license_best</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">has_repository_copy</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">repository_license_best</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">repository_version</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">repository_url</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">is_approved_repository__bmgf</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">is_preprint</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">can_archive</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">version</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">concepts.display_name</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">subject</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">program__bmgf</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">has_data_availability_statement</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">cited_by_count</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">author_email_name</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">email</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">invoice_date</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">invoice_number</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">apc_cost</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">oasupport.status</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">sheets</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">is_new__bmgf</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">dev.data.has_shared_data</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">dev.data.has_open_data</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">dev.data.doi</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">dev.data.url</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">dev.data.accession</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">dev.data.location</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">dev.data.licence</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">dev.data.evidence</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">dev.code.has_made_code</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">dev.code.has_shared_code</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">dev.code.has_open_code</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">dev.code.doi</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">dev.code.url</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">dev.code.accession</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">dev.code.location</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">dev.code.licence</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">dev.code.evidence</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">is_original_research</th>
+              <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">data_availability_statement_category</th>
             </tr>
           </thead>
           <tbody class="text-xs">
@@ -303,7 +303,7 @@ permalink: "{{ org._source.objectID | slug }}/"
           </tbody>
         </table>
       </div>
-      <div class="text-center">
+      <div class="text-right">
         <a href="/temp/bmgf_all-articles_from_2023-01-01-to-2023-10-04_on_2023-09-27.csv" 
           download 
           role="button" 
