@@ -10,7 +10,7 @@ permalink: "{{ org._source.objectID | slug }}/"
 {%- from "system/component.njk" import component -%}
 
 <main class="bg-carnation-100">
-  <div class="container mx-auto px-6">
+  <div class="px-6">
     <div class="grid grid-cols-2 gap-6 md:gap-12 py-3 xl:pb-6 xl:pt-12">
       <header class="mb-3 col-span-2 md:col-span-2">
         <h1 class="flex items-center">
@@ -32,7 +32,7 @@ permalink: "{{ org._source.objectID | slug }}/"
     </div>
   </div>
 
-  <nav class="container mx-auto px-6">
+  <nav class="px-6">
     <h2 class="sr-only">See the report by year</h2>
     <ul>
       <li class="mr-2 inline-block">
@@ -88,7 +88,7 @@ permalink: "{{ org._source.objectID | slug }}/"
 
   {# INSIGHTS #}
   <section class="bg-neutral-900 text-white" id="insights">
-    <div class="mx-auto px-6 py-6 xl:py-12">
+    <div class="px-6 py-6 xl:py-12">
       <header class="col-span-3">
         <h2 class="mb-3 text-base md:text-lg leading-6">
           <span class="font-semibold uppercase text-sm md:text-base line-thru">
@@ -152,7 +152,7 @@ permalink: "{{ org._source.objectID | slug }}/"
   {# EXPLORE #}
   {% if org._source.paid == true %}
   <section class="bg-neutral-800 text-white" id="explore">
-    <div class="mx-auto px-6 py-6 xl:py-12">
+    <div class="px-6 py-6 xl:py-12">
       <header class="col-span-3">
           <h2 class="mb-3 text-base md:text-lg leading-6">
             <span class="font-semibold uppercase text-sm md:text-base line-thru">
@@ -319,7 +319,7 @@ permalink: "{{ org._source.objectID | slug }}/"
   
   {# ACTIONS #}
   <section class="bg-neutral-700 text-white relative" id="strategies">
-    <div class="mx-auto px-6">
+    <div class="px-6">
       <div class="grid grid-cols-2 gap-6 md:gap-12 py-6 xl:py-12"> 
         <div class="col-span-2">
           <h2 class="leading-6 font-semibold uppercase text-sm md:text-base line-thru">
@@ -416,7 +416,7 @@ permalink: "{{ org._source.objectID | slug }}/"
   </section>
 
   {# ABOUT #}
-  <section class="container mx-auto px-6">
+  <section class="px-6">
     <div class="grid grid-cols-2 gap-6 md:gap-12 py-6 xl:py-12"> 
       <div class="col-span-2 grid md:grid-cols-2 gap-12 text-base md:text-2xl md:leading-8 md:font-light" id="about">
         <div>
