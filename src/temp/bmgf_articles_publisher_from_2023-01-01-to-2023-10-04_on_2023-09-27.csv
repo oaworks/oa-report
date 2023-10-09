@@ -1,21 +1,21 @@
-publisher,articles_published,is_compliant_articles,is_free_to_read,is_oa,has_repository_version,has_approved_repository_version,has_preprint_version,has_data_availability_statement,has_no_data_availability_statement,total_apcs_paid,has_apc,average_apcs_paid,median_apcs_paid,has_grantid
-Elsevier BV,6941,0,91.3,59.8,76.4,0,3.7,17.4,60.6,9986518,41.7,2502.89,2660.879928,0
-Springer Science and Business Media LLC,5610,0,95.5,88.2,90.6,0,11.9,75.1,19.6,5341183,33.2,2010.99,2220,0
-Public Library of Science (PLoS),2719,0,100,99.8,95.6,0,9.9,99,0,2830578,48.6,1884.54,1750,0
-Wiley,2633,0,83,59.5,69.4,0,3.2,18,51,2320250,29.1,1644.4,1753.85,0
-Oxford University Press (OUP),2087,0,96.1,68.2,86.9,0,5.8,13.2,76.9,2429642,33.3,2451.71,3000,0
-Frontiers Media SA,1102,0,100,99.9,85.5,0,4.6,66.2,30.7,1903968,65.5,2459.91,2950,0
-MDPI AG,1068,0,100,100,83.3,0,4.9,53,40.3,1214955,58.9,1673.49,1910.333333,0
-BMJ,1015,0,98.6,79.4,90.9,0,2.8,37.4,58.7,1642434,53.9,2619.51,2400,0
-Informa UK Limited,888,0,81.5,58.4,59,0,1.2,12.5,58.6,543522,25.2,1430.32,1235,0
-American Society for Microbiology,622,0,99.4,62.4,95.5,0,11.1,5.6,92.8,324061,17.7,1917.52,2500,0
-American Chemical Society (ACS),603,0,85.2,64.3,79.3,0,6.3,8.5,70.1,820040,47.3,2135.52,3000,0
-F1000 Research Ltd,592,0,100,100,75.7,0,7.8,97.1,0,390074,64.5,781.71,1000,0
-Ovid Technologies (Wolters Kluwer Health),374,0,93.3,35.6,88,0,2.9,1.3,86.9,450747,28.3,4024.53,4100,0
-American Association for the Advancement of Science (AAAS),356,0,93,50,87.6,0,13.8,13.5,72.2,122899,8.7,1159.42,0,0
-SAGE Publications,323,0,72.1,45.8,56,0,1.9,2.2,63.8,126385,17,1128.44,0,0
-American Society of Tropical Medicine and Hygiene,298,0,100,84.9,96.3,0,2.3,0.7,98.3,520518,62.4,2768.71,2500,0
-Proceedings of the National Academy of Sciences,271,0,100,42.8,97,0,12.9,34.7,64.2,209010,17.7,2824.46,3840,0
-Cambridge University Press (CUP),221,0,96.8,73.3,71,0,3.2,6.8,72.9,304831,47.5,2627.85,2968.5,0
-International Global Health Society,154,0,100,100,98.7,0,0,2.6,96.1,105909,57.1,989.8,728,0
-"eLife Sciences Publications, Ltd",138,0,100,99.3,96.4,0,48.6,76.1,21.7,91410,25.4,1692.78,2500,0
+key,articles_published.doc_count,is_compliant_articles_percentage.value,is_free_to_read_percentage.value,is_oa_percentage.value,has_repository_version_percentage.value,has_approved_repository_version_percentage.value,has_preprint_version_percentage.value,has_data_availability_statement_percentage.value,has_no_data_availability_statement_percentage.value,total_apcs_paid.value,has_apc_percentage.value,average_apcs_paid_rounded.value,median_apcs_paid_raw.values.50.0,has_grantid_percentage.value
+Elsevier BV,543,0,91.5,69.1,71.8,0,4.8,50.8,36.3,938660,46.8,3695.51,3475,0.00%
+Springer Science and Business Media LLC,419,0,94.7,91.2,82.6,0,17.9,81.1,12.2,598175,36.5,3909.64,2970,0.00%
+Frontiers Media SA,217,0,100,99.5,78.3,0,4.1,71.9,16.1,468100,79.7,2705.78,3230,0.00%
+Public Library of Science (PLoS),201,0,100,98.5,86.6,0,18.4,92.5,0,187380,41.3,2257.59,2100,0.00%
+Wiley,190,0,84.7,77.9,38.4,0,3.7,35.8,25.8,83550,14.2,3094.44,3400,0.00%
+MDPI AG,164,0,100,100,78,0,3,69.5,20.7,160620,47,2085.97,2160,0.00%
+Oxford University Press (OUP),99,0,87.9,58.6,69.7,0,8.1,27.3,58.6,14100,5.1,2820,2660,0.00%
+BMJ,91,0,100,83.5,85.7,0,1.1,69.2,23.1,147170,51.6,3131.28,2800,0.00%
+Informa UK Limited,74,0,91.9,81.1,47.3,0,2.7,18.9,58.1,16450,18.9,1175,740,0.00%
+F1000 Research Ltd,54,0,100,100,42.6,0,5.6,96.3,0,32270,53.7,1112.76,1150,0.00%
+American Chemical Society (ACS),49,0,89.8,87.8,69.4,0,10.2,26.5,59.2,93440,63.3,3014.19,3000,0.00%
+American Society for Microbiology,38,0,94.7,92.1,78.9,0,15.8,13.2,68.4,18280,13.2,3656,4270,0.00%
+SAGE Publications,30,0,70,43.3,36.7,0,0,0,56.7,1200,3.3,1200,1200,0.00%
+American Society of Tropical Medicine and Hygiene,27,0,100,100,81.5,0,7.4,3.7,85.2,50170,63,2951.18,2670,0.00%
+Cambridge University Press (CUP),17,0,100,94.1,29.4,0,11.8,11.8,35.3,20080,41.2,2868.57,2880,0.00%
+International Society of Global Health,16,0,93.8,87.5,62.5,0,6.3,6.3,93.8,38070,81.3,2928.46,3280,0.00%
+American Association for the Advancement of Science (AAAS),12,0,100,66.7,100,0,16.7,41.7,50,11620,25,3873.33,4050,0.00%
+"Johns Hopkins School Bloomberg School of Public Health, Center for Communication Programs",11,0,100,100,72.7,0,0,0,100,0,0,,,0.00%
+Proceedings of the National Academy of Sciences,11,0,100,54.5,90.9,0,18.2,72.7,9.1,0,0,,,0.00%
+American Society for Clinical Investigation,10,0,100,100,100,0,0,10,90,10600,20,5300,5300,0.00%
