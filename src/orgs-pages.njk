@@ -449,6 +449,8 @@ permalink: "{{ org._source.objectID | slug }}/"
     var exportPreviewBtn = document.getElementById('export_preview_btn');
     var exportTableHead = document.getElementById('export_table_head');
     var exportTableBody = document.getElementById('export_table_body');
+    var exportAllArticlesBtn = document.getElementById('export_all_articles');
+    var exportFinancesBtn = document.getElementById('export_articles_with_apcs');
 
     // For each export pill button
     buttons.forEach(function(button) {
@@ -495,31 +497,31 @@ permalink: "{{ org._source.objectID | slug }}/"
         });
         deactivateExportLink();
     });
-
-    // Listen for form submission if user selected filter by articles grouped by grants
+   
     exportPreviewBtn.addEventListener('click', function(e) {
       e.preventDefault(); // prevent default form submission
 
+      // Listen for form submission if user selected filter by articles grouped by grants
       if (filterBySelect.value === 'articles' && groupBySelect.value === 'grant') {
         exportTitle.innerHTML = 'Showing first <strong>10</strong> of <strong>20</strong> records for <strong>2023</strong>';
 
         exportTableHead.innerHTML = `
           <tr>
-            <th scope="col" class="sticky left-0 bg-neutral-700 p-2 text-left text-xs font-medium uppercase tracking-wider w-60">grant</th>
-            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">articles_published</th>
-            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">is_compliant_articles</th>
-            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">is_free_to_read</th>
-            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">is_oa</th>
-            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">has_repository_version</th>
-            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">has_approved_repository_version</th>
-            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">has_preprint_version</th>
-            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">has_data_availability_statement</th>
-            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">has_no_data_availability_statement</th>
-            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">total_apcs_paid</th>
-            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">has_apc</th>
-            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">average_apcs_paid</th>
-            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">median_apcs_paid</th>
-            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">has_grantid</th>
+            <th scope="col" class="sticky left-0 bg-neutral-700 p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">grant</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">articles_published</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">is_compliant_articles</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">is_free_to_read</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">is_oa</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">has_repository_version</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">has_approved_repository_version</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">has_preprint_version</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">has_data_availability_statement</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">has_no_data_availability_statement</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">total_apcs_paid</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">has_apc</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">average_apcs_paid</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">median_apcs_paid</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">has_grantid</th>
           </tr>
         `;
 
@@ -698,26 +700,27 @@ permalink: "{{ org._source.objectID | slug }}/"
 
         activateExportLink('/temp/bmgf_articles_grant_from_2023-01-01-to-2023-10-04_on_2023-09-27.csv');
 
+      // Listen for form submission if user selected filter by articles grouped by publishers
       } else if (filterBySelect.value === 'articles' && groupBySelect.value === 'publisher') {
         exportTitle.innerHTML = 'Showing first <strong>10</strong> of <strong>20</strong> records for <strong>2023</strong>';
 
         exportTableHead.innerHTML = `
           <tr>
-            <th scope="col" class="sticky left-0 bg-neutral-700 p-2 text-left text-xs font-medium uppercase tracking-wider w-60">publisher</th>
-            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">articles_published</th>
-            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">is_compliant_articles</th>
-            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">is_free_to_read</th>
-            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">is_oa</th>
-            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">has_repository_version</th>
-            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">has_approved_repository_version</th>
-            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">has_preprint_version</th>
-            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">has_data_availability_statement</th>
-            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">has_no_data_availability_statement</th>
-            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">total_apcs_paid</th>
-            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">has_apc</th>
-            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">average_apcs_paid</th>
-            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">median_apcs_paid</th>
-            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60">has_grantid</th>
+            <th scope="col" class="sticky left-0 bg-neutral-700 p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">publisher</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">articles_published</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">is_compliant_articles</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">is_free_to_read</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">is_oa</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">has_repository_version</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">has_approved_repository_version</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">has_preprint_version</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">has_data_availability_statement</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">has_no_data_availability_statement</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">total_apcs_paid</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">has_apc</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">average_apcs_paid</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">median_apcs_paid</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">has_grantid</th>
           </tr>
         `;
 
@@ -895,9 +898,1671 @@ permalink: "{{ org._source.objectID | slug }}/"
         `;
 
         activateExportLink('/temp/bmgf_articles_publisher_from_2023-01-01-to-2023-10-04_on_2023-09-27.csv');
+
+      // Listen for form submission if user selected filter by all articles 
+      } else if (filterBySelect.value === 'articles' && groupBySelect.value === 'none') {
+        exportTitle.innerHTML = 'Showing first <strong>10</strong> of <strong>2,702</strong> records for <strong>2023</strong>';
+
+        exportTableHead.innerHTML = `
+          <tr>
+            <th scope="col" class="sticky left-0 bg-neutral-700 p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">DOI</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">is_compliant__bmgf</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">grantid__bmgf</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">title</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">publisher</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">journal</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">issn</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">published_date</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">published_year</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">PMCID</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">authorships.institutions.display_name</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">funder.name</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">is_oa</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">oa_status</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">journal_oa_type</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">publisher_license_best</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">has_repository_copy</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">repository_license_best</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">repository_version</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">repository_url</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">is_approved_repository__bmgf</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">is_preprint</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">can_archive</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">version</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">concepts.display_name</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">subject</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">program__bmgf</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">has_data_availability_statement</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">cited_by_count</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">author_email_name</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">email</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">invoice_date</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">invoice_number</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">apc_cost</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">oasupport.status</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">sheets</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">is_new__bmgf</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.data.has_shared_data</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.data.has_open_data</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.data.doi</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.data.url</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.data.accession</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.data.location</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.data.licence</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.data.evidence</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.code.has_made_code</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.code.has_shared_code</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.code.has_open_code</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.code.doi</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.code.url</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.code.accession</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.code.location</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.code.licence</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.code.evidence</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">is_original_research</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">data_availability_statement_category</th>
+          </tr>
+        `; 
+
+        exportTableBody.innerHTML = `
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 whitespace-nowrap truncate">10.1016/j.xpro.2023.102563</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">A protocol for measuring the sexual receptivity of female Drosophila</td>
+            <td class="p-2 whitespace-nowrap truncate">Elsevier BV</td>
+            <td class="p-2 whitespace-nowrap truncate">STAR Protocols</td>
+            <td class="p-2 whitespace-nowrap truncate">2666-1667</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-12-01</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate">PMC10507193</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">hybrid</td>
+            <td class="p-2 whitespace-nowrap truncate">gold</td>
+            <td class="p-2 whitespace-nowrap truncate">cc-by-nc-nd</td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">publishedVersion</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">custom_keys__bmgf;is_new__bmgf;pmc__bmgf;preprints_oa_locations__bmgf</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 whitespace-nowrap truncate">10.1016/j.ebiom.2023.104777</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">Predictive models of long COVID</td>
+            <td class="p-2 whitespace-nowrap truncate">Elsevier BV</td>
+            <td class="p-2 whitespace-nowrap truncate">eBioMedicine</td>
+            <td class="p-2 whitespace-nowrap truncate">2352-3964</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-10-01</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate">PMC10494314</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">closed</td>
+            <td class="p-2 whitespace-nowrap truncate">gold</td>
+            <td class="p-2 whitespace-nowrap truncate">cc-by</td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">publishedVersion</td>
+            <td class="p-2 whitespace-nowrap truncate">Medicine;Coronavirus disease 2019 (COVID-19);Logistic regression;Generalizability theory;Random forest;Internal medicine;Cohort;Diagnosis code;Incidence (geometry);Disease;Artificial intelligence;Statistics;Infectious disease (medical specialty);Population;Computer science;Environmental health;Physics;Mathematics;Optics</td>
+            <td class="p-2 whitespace-nowrap truncate">General Biochemistry, Genetics and Molecular Biology;General Medicine</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate">0</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">custom_keys__bmgf;is_compliant__bmgf;is_new__bmgf;pmc__bmgf;preprints_oa_locations__bmgf;publication_type__bmgf</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 whitespace-nowrap truncate">10.1016/j.eclinm.2023.102140</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">Immunogenicity and safety of SARS-CoV-2 recombinant protein nanoparticle vaccine GBP510 adjuvanted with AS03: interim results of a randomised, active-controlled, observer-blinded, phase 3 trial</td>
+            <td class="p-2 whitespace-nowrap truncate">Elsevier BV</td>
+            <td class="p-2 whitespace-nowrap truncate">eClinicalMedicine</td>
+            <td class="p-2 whitespace-nowrap truncate">2589-5370</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-10-01</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate">PMC10498190</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">gold</td>
+            <td class="p-2 whitespace-nowrap truncate">cc-by-nc-nd</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">publishedVersion</td>
+            <td class="p-2 whitespace-nowrap truncate">Medicine;Immunogenicity;Cohort;Interim analysis;Vaccination;Internal medicine;Seroconversion;Randomized controlled trial;Immunology;Antibody</td>
+            <td class="p-2 whitespace-nowrap truncate">General Medicine</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate">0</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">custom_keys__bmgf;is_new__bmgf;pmc__bmgf;preprints_oa_locations__bmgf;publication_type__bmgf</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 whitespace-nowrap truncate">10.1016/s2214-109x(23)00383-2</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">Potential cost-effectiveness of community availability of tenofovir, lamivudine, and dolutegravir for HIV prevention and treatment in east, central, southern, and west Africa: a modelling analysis</td>
+            <td class="p-2 whitespace-nowrap truncate">Elsevier BV</td>
+            <td class="p-2 whitespace-nowrap truncate">The Lancet Global Health</td>
+            <td class="p-2 whitespace-nowrap truncate">2214-109X</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-10-01</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">closed</td>
+            <td class="p-2 whitespace-nowrap truncate">gold</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">publishedVersion</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">custom_keys__bmgf;is_new__bmgf;name_epmc__bmgf;preprints_oa_locations__bmgf</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 whitespace-nowrap truncate">10.1016/j.eclinm.2023.102151</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">Immune persistence of an inactivated poliovirus vaccine derived from the Sabin strain: a 10-year follow-up of a phase 3 study</td>
+            <td class="p-2 whitespace-nowrap truncate">Elsevier BV</td>
+            <td class="p-2 whitespace-nowrap truncate">eClinicalMedicine</td>
+            <td class="p-2 whitespace-nowrap truncate">2589-5370</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-10-01</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate">PMC10514427</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">hybrid</td>
+            <td class="p-2 whitespace-nowrap truncate">gold</td>
+            <td class="p-2 whitespace-nowrap truncate">cc-by-nc-nd</td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">publishedVersion</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">custom_keys__bmgf;is_new__bmgf;pmc__bmgf;preprints_oa_locations__bmgf</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 whitespace-nowrap truncate">10.1186/s40249-023-01135-7</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">Assessing food security performance from the One Health concept: an evaluation tool based on the Global One Health Index</td>
+            <td class="p-2 whitespace-nowrap truncate">Springer Science and Business Media LLC</td>
+            <td class="p-2 whitespace-nowrap truncate">Infectious Diseases of Poverty</td>
+            <td class="p-2 whitespace-nowrap truncate">2049-9957</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-22</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate">PMC10514978</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">gold</td>
+            <td class="p-2 whitespace-nowrap truncate">gold</td>
+            <td class="p-2 whitespace-nowrap truncate">cc-by</td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">publishedVersion</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">custom_keys__bmgf;is_compliant__bmgf;is_new__bmgf;name_epmc__bmgf;preprints_oa_locations__bmgf</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 whitespace-nowrap truncate">10.7554/elife.85023</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">Diverse evolutionary pathways challenge the use of collateral sensitivity as a strategy to suppress resistance</td>
+            <td class="p-2 whitespace-nowrap truncate">eLife Sciences Publications, Ltd</td>
+            <td class="p-2 whitespace-nowrap truncate">eLife</td>
+            <td class="p-2 whitespace-nowrap truncate">2050-084X</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-22</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">gold</td>
+            <td class="p-2 whitespace-nowrap truncate">gold</td>
+            <td class="p-2 whitespace-nowrap truncate">cc-by</td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">publishedVersion</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">custom_keys__bmgf;is_compliant__bmgf;is_new__bmgf;name_epmc__bmgf;preprints_oa_locations__bmgf</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 whitespace-nowrap truncate">10.1111/nph.19273</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">Parallel tuning of semi‐dwarfism via differential splicing of <i>Brachytic1</i> in commercial maize and smallholder sorghum</td>
+            <td class="p-2 whitespace-nowrap truncate">Wiley</td>
+            <td class="p-2 whitespace-nowrap truncate">New Phytologist</td>
+            <td class="p-2 whitespace-nowrap truncate">0028-646X;1469-8137</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-22</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">bronze</td>
+            <td class="p-2 whitespace-nowrap truncate">hybrid</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">acceptedVersion</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">custom_keys__bmgf;is_new__bmgf;name_epmc__bmgf;preprints_oa_locations__bmgf</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 whitespace-nowrap truncate">10.3389/fpubh.2023.1147180</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">Prevalence and risk factors associated with the occurrence of Campylobacter sp. in children aged 6–24 months in peri-urban Nairobi, Kenya</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-22</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">University of Nairobi;International Livestock Research Institute;University of Copenhagen;London School of Hygiene & Tropical Medicine</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">closed</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">Campylobacter;Hygiene;Campylobacter jejuni;Diarrhea;Environmental health;Sanitation;Medicine;Malnutrition;Diarrheal disease;Veterinary medicine;Biology;Internal medicine;Bacteria;Genetics;Pathology</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">0</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-08</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-1008788-1</td>
+            <td class="p-2 whitespace-nowrap truncate">3230</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">custom_keys__bmgf;finance_v3__bmgf;is_new__bmgf;preprints_oa_locations__bmgf;publication_type__bmgf</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 whitespace-nowrap truncate">10.1007/s41109-023-00595-y</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">Overcoming vaccine hesitancy by multiplex social network targeting: an analysis of targeting algorithms and implications</td>
+            <td class="p-2 whitespace-nowrap truncate">Springer Science and Business Media LLC</td>
+            <td class="p-2 whitespace-nowrap truncate">Applied Network Science</td>
+            <td class="p-2 whitespace-nowrap truncate">2364-8228</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-21</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate">PMC10514145</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">gold</td>
+            <td class="p-2 whitespace-nowrap truncate">gold</td>
+            <td class="p-2 whitespace-nowrap truncate">cc-by</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">cc-by</td>
+            <td class="p-2 whitespace-nowrap truncate">submittedVersion</td>
+            <td class="p-2 whitespace-nowrap truncate">https://www.researchsquare.com/article/rs-2608863/latest.pdf</td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">publishedVersion</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">custom_keys__bmgf;is_compliant__bmgf;is_new__bmgf;pmc__bmgf;preprints_oa_locations__bmgf</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+        `;
+
+        activateExportLink('/temp/bmgf_all-articles_from_2023-01-01-to-2023-10-04_on_2023-09-27.csv');
+      
+      // Listen for form submission if user selected filter by all articles with APCs
+      } else if (filterBySelect.value === 'articles_with_apcs' && groupBySelect.value === 'none') {  
+        exportTitle.innerHTML = `Showing first <strong>10</strong> of <strong>1,027</strong> records for <strong>2023</strong>`;
+
+        exportTableHead.innerHTML = `
+          <tr>
+            <th scope="col" class="sticky left-0 bg-neutral-700 p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">DOI</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">grantid__bmgf</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">publisher_simple</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">journal</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">journal_oa_type</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">published_date</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">oa_status</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">publisher_license_best</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">apc_cost</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">invoice_number</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">invoice_date</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">invoice_year</th>
+          </tr>
+        `; 
+
+        exportTableBody.innerHTML = `
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">10.3389/fpubh.2023.1147180</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">closed</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-22</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">3230</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-1008788-1</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-08</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">10.1136/bmj-2022-072249</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">closed</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-21</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">6800</td>
+            <td class="p-2 whitespace-nowrap truncate">APC600447950</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-04</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">10.1038/s41591-023-02551-w</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">closed</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-21</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">11690</td>
+            <td class="p-2 whitespace-nowrap truncate">1452513097</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-13</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">10.1128/mbio.01887-23</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">closed</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-20</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">4270</td>
+            <td class="p-2 whitespace-nowrap truncate">APC600441996</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-08-11</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">10.3389/fimmu.2023.1220130</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">closed</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-20</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">3230</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-1008788-1</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-08</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">10.3389/fvets.2023.1168649</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">closed</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-19</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">3230</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-1008788-1</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-08</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">10.3389/fsoc.2023.1254595</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">closed</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-19</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">770</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-1008788-1</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-08</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">10.1038/s41598-023-42425-2</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">springer/nature/bmc</td>
+            <td class="p-2 whitespace-nowrap truncate">Scientific Reports</td>
+            <td class="p-2 whitespace-nowrap truncate">gold</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-16</td>
+            <td class="p-2 whitespace-nowrap truncate">gold</td>
+            <td class="p-2 whitespace-nowrap truncate">cc-by</td>
+            <td class="p-2 whitespace-nowrap truncate">1350</td>
+            <td class="p-2 whitespace-nowrap truncate">2939206000</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-20</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">10.1099/mgen.0.001094</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">closed</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-15</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">3170</td>
+            <td class="p-2 whitespace-nowrap truncate">APC600449722</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-08</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">10.3389/fphar.2023.1088670</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">closed</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-14</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">3230</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-1008788-1</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-08</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+        
+        `;
+
+        activateExportLink('/temp/bmgf_articles-with-apcs_from_2023-01-01-to-2023-10-04_on_2023-09-27.csv');
       } else {
           deactivateExportLink();
       }
+    });
+
+    // Listen for button click of "all articles" preset
+    exportAllArticlesBtn.addEventListener('click', function() {
+        filterBySelect.value = 'articles';
+        groupBySelect.value = 'none';
+
+        exportTitle.innerHTML = `Showing first <strong>10</strong> of <strong>2,702</strong> records for <strong>2023</strong>`;
+
+        exportTableHead.innerHTML = `
+          <tr>
+            <th scope="col" class="sticky left-0 bg-neutral-700 p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">DOI</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">is_compliant__bmgf</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">grantid__bmgf</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">title</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">publisher</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">journal</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">issn</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">published_date</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">published_year</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">PMCID</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">authorships.institutions.display_name</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">funder.name</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">is_oa</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">oa_status</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">journal_oa_type</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">publisher_license_best</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">has_repository_copy</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">repository_license_best</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">repository_version</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">repository_url</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">is_approved_repository__bmgf</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">is_preprint</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">can_archive</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">version</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">concepts.display_name</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">subject</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">program__bmgf</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">has_data_availability_statement</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">cited_by_count</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">author_email_name</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">email</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">invoice_date</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">invoice_number</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">apc_cost</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">oasupport.status</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">sheets</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">is_new__bmgf</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.data.has_shared_data</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.data.has_open_data</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.data.doi</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.data.url</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.data.accession</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.data.location</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.data.licence</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.data.evidence</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.code.has_made_code</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.code.has_shared_code</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.code.has_open_code</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.code.doi</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.code.url</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.code.accession</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.code.location</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.code.licence</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">dev.code.evidence</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">is_original_research</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">data_availability_statement_category</th>
+          </tr>
+        `; 
+
+        exportTableBody.innerHTML = `
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 whitespace-nowrap truncate">10.1016/j.xpro.2023.102563</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">A protocol for measuring the sexual receptivity of female Drosophila</td>
+            <td class="p-2 whitespace-nowrap truncate">Elsevier BV</td>
+            <td class="p-2 whitespace-nowrap truncate">STAR Protocols</td>
+            <td class="p-2 whitespace-nowrap truncate">2666-1667</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-12-01</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate">PMC10507193</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">hybrid</td>
+            <td class="p-2 whitespace-nowrap truncate">gold</td>
+            <td class="p-2 whitespace-nowrap truncate">cc-by-nc-nd</td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">publishedVersion</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">custom_keys__bmgf;is_new__bmgf;pmc__bmgf;preprints_oa_locations__bmgf</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 whitespace-nowrap truncate">10.1016/j.ebiom.2023.104777</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">Predictive models of long COVID</td>
+            <td class="p-2 whitespace-nowrap truncate">Elsevier BV</td>
+            <td class="p-2 whitespace-nowrap truncate">eBioMedicine</td>
+            <td class="p-2 whitespace-nowrap truncate">2352-3964</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-10-01</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate">PMC10494314</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">closed</td>
+            <td class="p-2 whitespace-nowrap truncate">gold</td>
+            <td class="p-2 whitespace-nowrap truncate">cc-by</td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">publishedVersion</td>
+            <td class="p-2 whitespace-nowrap truncate">Medicine;Coronavirus disease 2019 (COVID-19);Logistic regression;Generalizability theory;Random forest;Internal medicine;Cohort;Diagnosis code;Incidence (geometry);Disease;Artificial intelligence;Statistics;Infectious disease (medical specialty);Population;Computer science;Environmental health;Physics;Mathematics;Optics</td>
+            <td class="p-2 whitespace-nowrap truncate">General Biochemistry, Genetics and Molecular Biology;General Medicine</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate">0</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">custom_keys__bmgf;is_compliant__bmgf;is_new__bmgf;pmc__bmgf;preprints_oa_locations__bmgf;publication_type__bmgf</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 whitespace-nowrap truncate">10.1016/j.eclinm.2023.102140</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">Immunogenicity and safety of SARS-CoV-2 recombinant protein nanoparticle vaccine GBP510 adjuvanted with AS03: interim results of a randomised, active-controlled, observer-blinded, phase 3 trial</td>
+            <td class="p-2 whitespace-nowrap truncate">Elsevier BV</td>
+            <td class="p-2 whitespace-nowrap truncate">eClinicalMedicine</td>
+            <td class="p-2 whitespace-nowrap truncate">2589-5370</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-10-01</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate">PMC10498190</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">gold</td>
+            <td class="p-2 whitespace-nowrap truncate">cc-by-nc-nd</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">publishedVersion</td>
+            <td class="p-2 whitespace-nowrap truncate">Medicine;Immunogenicity;Cohort;Interim analysis;Vaccination;Internal medicine;Seroconversion;Randomized controlled trial;Immunology;Antibody</td>
+            <td class="p-2 whitespace-nowrap truncate">General Medicine</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate">0</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">custom_keys__bmgf;is_new__bmgf;pmc__bmgf;preprints_oa_locations__bmgf;publication_type__bmgf</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 whitespace-nowrap truncate">10.1016/s2214-109x(23)00383-2</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">Potential cost-effectiveness of community availability of tenofovir, lamivudine, and dolutegravir for HIV prevention and treatment in east, central, southern, and west Africa: a modelling analysis</td>
+            <td class="p-2 whitespace-nowrap truncate">Elsevier BV</td>
+            <td class="p-2 whitespace-nowrap truncate">The Lancet Global Health</td>
+            <td class="p-2 whitespace-nowrap truncate">2214-109X</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-10-01</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">closed</td>
+            <td class="p-2 whitespace-nowrap truncate">gold</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">publishedVersion</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">custom_keys__bmgf;is_new__bmgf;name_epmc__bmgf;preprints_oa_locations__bmgf</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 whitespace-nowrap truncate">10.1016/j.eclinm.2023.102151</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">Immune persistence of an inactivated poliovirus vaccine derived from the Sabin strain: a 10-year follow-up of a phase 3 study</td>
+            <td class="p-2 whitespace-nowrap truncate">Elsevier BV</td>
+            <td class="p-2 whitespace-nowrap truncate">eClinicalMedicine</td>
+            <td class="p-2 whitespace-nowrap truncate">2589-5370</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-10-01</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate">PMC10514427</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">hybrid</td>
+            <td class="p-2 whitespace-nowrap truncate">gold</td>
+            <td class="p-2 whitespace-nowrap truncate">cc-by-nc-nd</td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">publishedVersion</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">custom_keys__bmgf;is_new__bmgf;pmc__bmgf;preprints_oa_locations__bmgf</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 whitespace-nowrap truncate">10.1186/s40249-023-01135-7</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">Assessing food security performance from the One Health concept: an evaluation tool based on the Global One Health Index</td>
+            <td class="p-2 whitespace-nowrap truncate">Springer Science and Business Media LLC</td>
+            <td class="p-2 whitespace-nowrap truncate">Infectious Diseases of Poverty</td>
+            <td class="p-2 whitespace-nowrap truncate">2049-9957</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-22</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate">PMC10514978</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">gold</td>
+            <td class="p-2 whitespace-nowrap truncate">gold</td>
+            <td class="p-2 whitespace-nowrap truncate">cc-by</td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">publishedVersion</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">custom_keys__bmgf;is_compliant__bmgf;is_new__bmgf;name_epmc__bmgf;preprints_oa_locations__bmgf</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 whitespace-nowrap truncate">10.7554/elife.85023</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">Diverse evolutionary pathways challenge the use of collateral sensitivity as a strategy to suppress resistance</td>
+            <td class="p-2 whitespace-nowrap truncate">eLife Sciences Publications, Ltd</td>
+            <td class="p-2 whitespace-nowrap truncate">eLife</td>
+            <td class="p-2 whitespace-nowrap truncate">2050-084X</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-22</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">gold</td>
+            <td class="p-2 whitespace-nowrap truncate">gold</td>
+            <td class="p-2 whitespace-nowrap truncate">cc-by</td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">publishedVersion</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">custom_keys__bmgf;is_compliant__bmgf;is_new__bmgf;name_epmc__bmgf;preprints_oa_locations__bmgf</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 whitespace-nowrap truncate">10.1111/nph.19273</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">Parallel tuning of semi‐dwarfism via differential splicing of <i>Brachytic1</i> in commercial maize and smallholder sorghum</td>
+            <td class="p-2 whitespace-nowrap truncate">Wiley</td>
+            <td class="p-2 whitespace-nowrap truncate">New Phytologist</td>
+            <td class="p-2 whitespace-nowrap truncate">0028-646X;1469-8137</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-22</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">bronze</td>
+            <td class="p-2 whitespace-nowrap truncate">hybrid</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">acceptedVersion</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">custom_keys__bmgf;is_new__bmgf;name_epmc__bmgf;preprints_oa_locations__bmgf</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 whitespace-nowrap truncate">10.3389/fpubh.2023.1147180</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">Prevalence and risk factors associated with the occurrence of Campylobacter sp. in children aged 6–24 months in peri-urban Nairobi, Kenya</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-22</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">University of Nairobi;International Livestock Research Institute;University of Copenhagen;London School of Hygiene & Tropical Medicine</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">closed</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">Campylobacter;Hygiene;Campylobacter jejuni;Diarrhea;Environmental health;Sanitation;Medicine;Malnutrition;Diarrheal disease;Veterinary medicine;Biology;Internal medicine;Bacteria;Genetics;Pathology</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">0</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-08</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-1008788-1</td>
+            <td class="p-2 whitespace-nowrap truncate">3230</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">custom_keys__bmgf;finance_v3__bmgf;is_new__bmgf;preprints_oa_locations__bmgf;publication_type__bmgf</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 whitespace-nowrap truncate">10.1007/s41109-023-00595-y</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">Overcoming vaccine hesitancy by multiplex social network targeting: an analysis of targeting algorithms and implications</td>
+            <td class="p-2 whitespace-nowrap truncate">Springer Science and Business Media LLC</td>
+            <td class="p-2 whitespace-nowrap truncate">Applied Network Science</td>
+            <td class="p-2 whitespace-nowrap truncate">2364-8228</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-21</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate">PMC10514145</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">gold</td>
+            <td class="p-2 whitespace-nowrap truncate">gold</td>
+            <td class="p-2 whitespace-nowrap truncate">cc-by</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">cc-by</td>
+            <td class="p-2 whitespace-nowrap truncate">submittedVersion</td>
+            <td class="p-2 whitespace-nowrap truncate">https://www.researchsquare.com/article/rs-2608863/latest.pdf</td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate">publishedVersion</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">FALSE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">custom_keys__bmgf;is_compliant__bmgf;is_new__bmgf;pmc__bmgf;preprints_oa_locations__bmgf</td>
+            <td class="p-2 whitespace-nowrap truncate">TRUE</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+        `;
+
+        activateExportLink('/temp/bmgf_all-articles_from_2023-01-01-to-2023-10-04_on_2023-09-27.csv');
+    });
+
+    // Listen for button click of "finance preset
+    exportFinancesBtn.addEventListener('click', function() {
+        filterBySelect.value = 'articles_with_apcs';
+        groupBySelect.value = 'none';
+
+        exportTitle.innerHTML = `Showing first <strong>10</strong> of <strong>1,027</strong> records for <strong>2023</strong>`;
+
+        exportTableHead.innerHTML = `
+          <tr>
+            <th scope="col" class="sticky left-0 bg-neutral-700 p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">DOI</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">grantid__bmgf</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">publisher_simple</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">journal</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">journal_oa_type</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">published_date</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">oa_status</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">publisher_license_best</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">apc_cost</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">invoice_number</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">invoice_date</th>
+            <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">invoice_year</th>
+          </tr>
+        `; 
+
+        exportTableBody.innerHTML = `
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">10.3389/fpubh.2023.1147180</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">closed</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-22</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">3230</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-1008788-1</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-08</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">10.1136/bmj-2022-072249</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">closed</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-21</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">6800</td>
+            <td class="p-2 whitespace-nowrap truncate">APC600447950</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-04</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">10.1038/s41591-023-02551-w</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">closed</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-21</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">11690</td>
+            <td class="p-2 whitespace-nowrap truncate">1452513097</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-13</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">10.1128/mbio.01887-23</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">closed</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-20</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">4270</td>
+            <td class="p-2 whitespace-nowrap truncate">APC600441996</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-08-11</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">10.3389/fimmu.2023.1220130</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">closed</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-20</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">3230</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-1008788-1</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-08</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">10.3389/fvets.2023.1168649</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">closed</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-19</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">3230</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-1008788-1</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-08</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">10.3389/fsoc.2023.1254595</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">closed</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-19</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">770</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-1008788-1</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-08</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">10.1038/s41598-023-42425-2</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">springer/nature/bmc</td>
+            <td class="p-2 whitespace-nowrap truncate">Scientific Reports</td>
+            <td class="p-2 whitespace-nowrap truncate">gold</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-16</td>
+            <td class="p-2 whitespace-nowrap truncate">gold</td>
+            <td class="p-2 whitespace-nowrap truncate">cc-by</td>
+            <td class="p-2 whitespace-nowrap truncate">1350</td>
+            <td class="p-2 whitespace-nowrap truncate">2939206000</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-20</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">10.1099/mgen.0.001094</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">closed</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-15</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">3170</td>
+            <td class="p-2 whitespace-nowrap truncate">APC600449722</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-08</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+          <tr>
+            <td class="sticky left-0 bg-neutral-700 p-2 text-left text-xs font-medium uppercase tracking-wider w-60 truncate">10.3389/fphar.2023.1088670</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">closed</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-14</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+            <td class="p-2 whitespace-nowrap truncate">3230</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-1008788-1</td>
+            <td class="p-2 whitespace-nowrap truncate">2023-09-08</td>
+            <td class="p-2 whitespace-nowrap truncate">2023</td>
+            <td class="p-2 whitespace-nowrap truncate"></td>
+          </tr>
+        
+        `;
+
+        activateExportLink('/temp/bmgf_articles-with-apcs_from_2023-01-01-to-2023-10-04_on_2023-09-27.csv');
     });
   });
 </script>
