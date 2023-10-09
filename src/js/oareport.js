@@ -353,7 +353,7 @@ oareport = function(org) {
     convertIncludesToTableHeaders = function(includesArray, id, exportName) {
       // Generate the export’s headers as an HTML string
       const thElements = includesArray.map(item => `
-        <th scope="col" class="p-2 text-left text-xs font-medium uppercase tracking-wider">
+        <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider">
           ${item}
         </th>
       `).join('');
