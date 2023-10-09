@@ -238,11 +238,11 @@ permalink: "{{ org._source.objectID | slug }}/"
           First <strong>10</strong> of <strong>2,702</strong> records for <strong>2023</strong>
         </h3>
         <div></div>
-        <nav class="col-span-1">
+        <nav class="col-span-1 justify-self-end w-auto">
           <label for="show_as" class="mb-3 font-semibold uppercase sr-only">Show as</label>
-          <select id="show_as" name="filter_by" class="w-full py-2 bg-transparent border-b lowercase focus:outline-none focus:ring-2 focus:ring-carnation-500">
-            <option value="percentages">Percentages</option>
+          <select id="show_as" name="filter_by" class="w-full py-2 bg-transparent border-b text-sm lowercase focus:outline-none focus:ring-2 focus:ring-carnation-500">
             <option value="raw_numbers">Raw numbers</option>
+            <option value="percentages">Percentages</option>
             <option value="custom_fields">[Custom fields]</option>
           </select>
         </nav>
