@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", function() {
   var groupBySelect = document.getElementById('group_by');
   var exportTitle = document.getElementById('export_title');
   var exportPreviewBtn = document.getElementById('export_preview_btn');
+  var exportTable = document.getElementById('export_table');
   var exportTableHead = document.getElementById('export_table_head');
   var exportTableBody = document.getElementById('export_table_body');
   var exportAllArticlesBtn = document.getElementById('export_all_articles');
@@ -31,18 +32,58 @@ document.addEventListener("DOMContentLoaded", function() {
       activateExportLink(button.getAttribute('data-csv'));
     });
   });
+
   // Function to deactivate the export link
   function deactivateExportLink() {
     exportLink.removeAttribute('href');
     exportLink.classList.add('bg-neutral-300', 'cursor-not-allowed');
     exportLink.classList.remove('bg-carnation-500', 'hover:bg-carnation-300', 'hover:border-carnation-500');
   }
+
   // Function to activate the export link with a given href
   function activateExportLink(hrefValue) {
     exportLink.href = hrefValue;
     exportLink.classList.remove('bg-neutral-300', 'cursor-not-allowed');
     exportLink.classList.add('bg-carnation-500', 'hover:bg-carnation-300', 'hover:border-carnation-500');
   }
+
+  // Function to toggle data-display style
+  function toggleData(dataKey) {
+    const toggleButton = document.getElementById('toggle');
+    const toggleBg = toggleButton.querySelector('span.bg-carnation-500, span.bg-neutral-200');
+    const toggleDot = toggleButton.querySelector('span.translate-x-100, span.translate-x-5');
+  
+    toggleButton.addEventListener('click', function() {
+      const ariaChecked = toggleButton.getAttribute('aria-checked') === 'true';
+      const targetData = tableData[dataKey];
+      
+      if (!targetData) {
+        console.error(`Data for key "${dataKey}" not found!`);
+        return;
+      }
+  
+      if (ariaChecked) {
+        exportTableHead.innerHTML = targetData.raw.head;
+        exportTableBody.innerHTML = targetData.raw.body;
+  
+        toggleButton.setAttribute('aria-checked', 'false');
+        toggleBg.classList.remove('bg-carnation-500');
+        toggleBg.classList.add('bg-neutral-200');
+        toggleDot.classList.remove('translate-x-100');
+        toggleDot.classList.add('translate-x-5');
+      } else {
+        exportTableHead.innerHTML = targetData.pretty.head;
+        exportTableBody.innerHTML = targetData.pretty.body;
+  
+        toggleButton.setAttribute('aria-checked', 'true');
+        toggleBg.classList.remove('bg-neutral-200');
+        toggleBg.classList.add('bg-carnation-500');
+        toggleDot.classList.remove('translate-x-5');
+        toggleDot.classList.add('translate-x-100');
+      }
+    });
+  }
+  
   // Listen for form changes
   form.addEventListener('input', function() {
     // Deactivate buttons and the export link
@@ -53,20 +94,31 @@ document.addEventListener("DOMContentLoaded", function() {
   });
   exportPreviewBtn.addEventListener('click', function(e) {
     e.preventDefault(); // prevent default form submission
+
     // Listen for form submission if user selected filter by articles grouped by grants
     if (filterBySelect.value === 'articles' && groupBySelect.value === 'grant') {
       exportTitle.innerHTML = tableData.articles_grant.number;
       exportTableHead.innerHTML = tableData.articles_grant.pretty.head;
       exportTableBody.innerHTML = tableData.articles_grant.pretty.body;
       activateExportLink(tableData.articles_grant.link);
+      exportTable.classList.add('block');
+      exportTable.classList.remove('hidden');
+      toggleData('articles_grant');
+
       // Listen for form submission if user selected filter by articles grouped by publishers
     } else if (filterBySelect.value === 'articles' && groupBySelect.value === 'publisher') {
       exportTitle.innerHTML = tableData.articles_publisher.number;
       exportTableHead.innerHTML = tableData.articles_publisher.pretty.head;
       exportTableBody.innerHTML = tableData.articles_publisher.pretty.body;
       activateExportLink(tableData.articles_grant.link);
+      exportTable.classList.add('block');
+      exportTable.classList.remove('hidden');
+      toggleData('articles_publisher');
     } else {
       deactivateExportLink();
     }
   });
+  
+
+  
 });

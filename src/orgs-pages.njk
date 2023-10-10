@@ -191,11 +191,11 @@ permalink: "{{ org._source.objectID | slug }}/"
       </div> #}
 
       {# TEMP CRAPPY NON-A11Y PROTOTYPING MARKUP #}
-      <form class="mb-12 text-lg flex space-x-4 justify-center rounded-md bg-carnation-300 text-neutral-900 p-10" id="explore_form">
+      <form class="text-lg flex space-x-4 justify-center p-12" id="explore_form">
         <div class="flex items-center font-semibold uppercase">See</div>
         <div class="">
           <label for="filter_by" class="mb-3 font-semibold uppercase sr-only">Filter by</label>
-          <select id="filter_by" name="filter_by" class="w-full py-2 bg-transparent border-b lowercase text-center focus:outline-none focus:ring-2 focus:ring-carnation-500">
+          <select id="filter_by" name="filter_by" class="w-full p-2 bg-transparent border lowercase text-center focus:outline-none focus:ring-2 focus:ring-carnation-500">
             <option value="articles">Articles</option>
             <option value="original_research_articles">Original research articles</option>
             <option value="preprints">Preprints</option>
@@ -209,7 +209,7 @@ permalink: "{{ org._source.objectID | slug }}/"
         <div class="flex items-center font-semibold uppercase">grouped by</div>
         <div class="">
           <label for="group_by" class="mb-3 font-semibold uppercase sr-only">Group by</label>
-          <select id="group_by" name="group_by" class="w-full py-2 bg-transparent border-b lowercase text-center focus:outline-none focus:ring-2 focus:ring-carnation-500">
+          <select id="group_by" name="group_by" class="w-full p-2 bg-transparent border lowercase text-center focus:outline-none focus:ring-2 focus:ring-carnation-500">
             <option>[Select a grouping]</option>
             <option value="year_published">Year published</option>
             <option value="grant">Grant</option>
@@ -237,40 +237,54 @@ permalink: "{{ org._source.objectID | slug }}/"
         </button>
       </form>
 
-      <div class="mb-4 gap-6 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4">
-        <h3 class="col-span-2 text-xl font-semibold uppercase" aria-live="polite">
-          Showing first <strong>10</strong> of <strong id="export_title">2,702</strong> records for <strong>2023</strong>
-        </h3> 
-        <div></div>
-        <nav class="col-span-1 justify-self-end w-auto">
-          <label for="show_as" class="mb-3 font-semibold uppercase sr-only">Show as</label>
-          <select id="show_as" name="filter_by" class="w-full py-2 bg-transparent border-b text-sm lowercase focus:outline-none focus:ring-2 focus:ring-carnation-500">
-            <option value="percentages">Pretty</option>
-            <option value="raw_numbers">Raw</option>
-          </select>
-        </nav>
-      </div>
-      <div class="mb-4 overflow-x-auto border border-neutral-200" id="export_table">
-        <table class="border-collapse w-full table-fixed">
-          <thead class="border-b border-neutral-200">
-            <tr class="text-left text-xs font-medium uppercase tracking-wider" id="export_table_head">
-              {% include 'partials/temp-default-thead.njk' %}
-            </tr>
-          </thead>
-          <tbody class="text-sm" id="export_table_body">
-            {% include 'partials/temp-default-tbody.njk' %}
-          </tbody>
-        </table>
-      </div>
-      <div class="text-right">
-        <a href="/temp/bmgf_all-articles_from_2023-01-01-to-2023-10-04_on_2023-09-27.csv" 
-          download 
-          role="button" 
-          aria-label="Download full data as CSV"
-          id="export_link"
-          class="items-center space-x-2 px-4 py-2 text-base font-medium uppercase text-neutral-900 bg-carnation-500 hover:bg-carnation-300  hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 border-0 whitespace-nowrap inline-block">
-            Download full data (CSV)
-        </a>
+      <div class="hidden" id="export_table">
+        <div class="my-4 gap-6 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 items-end">
+          <h3 class="col-span-2 text-xl font-semibold uppercase" aria-live="polite">
+            Showing first <strong>10</strong> of <strong id="export_title">2,702</strong> records for <strong>2023</strong>
+            {{ component("tooltip", {
+              msg: "This table is a preview of all the records for your query. To see the full data set in CSV format, use the <em>Download full data (CSV)</em> button."
+            }) }} 
+          </h3> 
+          <div></div>
+          <nav class="col-span-1 justify-self-end w-auto">
+            {# <label for="show_as" class="mb-3 text-xs font-semibold uppercase">Number display style</label>
+            <select id="show_as" name="filter_by" class="w-full p-2 bg-transparent border text-sm lowercase focus:outline-none focus:ring-2 focus:ring-carnation-500">
+              <option value="percentages">Pretty</option>
+              <option value="raw_numbers">Raw</option>
+            </select> #}
+            
+            <div class="flex flex-col items-center">
+              <label for="toggle" class="mb-3 text-xs font-semibold uppercase">Number display style</label>
+              <button id="toggle" type="button" class="group relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-carnation-500 focus:ring-offset-2" role="switch" aria-checked="true">
+                <span aria-hidden="true" class="pointer-events-none absolute h-full w-full rounded-md"></span>
+                <span aria-hidden="true" class="bg-carnation-500 pointer-events-none absolute mx-auto h-4 w-9 rounded-full transition-colors duration-200 ease-in-out"></span>
+                <span aria-hidden="true" class="translate-x-100 pointer-events-none absolute left-0 inline-block h-5 w-5 transform rounded-full border border-neutral-500 bg-neutral-800 shadow ring-0 transition-transform duration-200 ease-in-out"></span>
+              </button>
+            </div>
+          </nav>
+        </div>
+        <div class="mb-4 overflow-x-auto border border-neutral-200">
+          <table class="border-collapse w-full table-fixed">
+            <thead class="border-b border-neutral-200">
+              <tr class="text-left text-xs font-medium uppercase tracking-wider" id="export_table_head">
+                {% include 'partials/temp-default-thead.njk' %}
+              </tr>
+            </thead>
+            <tbody class="text-sm" id="export_table_body">
+              {% include 'partials/temp-default-tbody.njk' %}
+            </tbody>
+          </table>
+        </div>
+        <div class="text-right">
+          <a href="/temp/bmgf_all-articles_from_2023-01-01-to-2023-10-04_on_2023-09-27.csv" 
+            download 
+            role="button" 
+            aria-label="Download full data as CSV"
+            id="export_link"
+            class="items-center space-x-2 px-4 py-2 text-base font-medium uppercase text-neutral-900 bg-carnation-500 hover:bg-carnation-300  hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 border-0 whitespace-nowrap inline-block">
+              Download full data (CSV)
+          </a>
+        </div>
       </div>
     </div>
   </section>
