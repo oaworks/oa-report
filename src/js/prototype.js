@@ -48,12 +48,34 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
   // Function to toggle data-display style
-  function toggleData(dataKey) {
+  let currentToggleHandler = null;  // To keep track of the current event handler
+
+  function resetToggle() {
     const toggleButton = document.getElementById('toggle');
     const toggleBg = toggleButton.querySelector('span.bg-carnation-500, span.bg-neutral-200');
     const toggleDot = toggleButton.querySelector('span.translate-x-100, span.translate-x-5');
-  
-    toggleButton.addEventListener('click', function() {
+    
+    // Detach the current event listener, if any
+    if (currentToggleHandler) {
+      toggleButton.removeEventListener('click', currentToggleHandler);
+    }
+    
+    // Set to default "pretty" state
+    toggleButton.setAttribute('aria-checked', 'true');
+    toggleBg.classList.remove('bg-neutral-200');
+    toggleBg.classList.add('bg-carnation-500');
+    toggleDot.classList.remove('translate-x-5');
+    toggleDot.classList.add('translate-x-100');
+  }
+
+  function toggleData(dataKey) {
+    resetToggle();  // Reset the toggle first
+
+    const toggleButton = document.getElementById('toggle');
+    const toggleBg = toggleButton.querySelector('span.bg-carnation-500, span.bg-neutral-200');
+    const toggleDot = toggleButton.querySelector('span.translate-x-100, span.translate-x-5');
+
+    currentToggleHandler = function() {
       const ariaChecked = toggleButton.getAttribute('aria-checked') === 'true';
       const targetData = tableData[dataKey];
       
@@ -61,11 +83,11 @@ document.addEventListener("DOMContentLoaded", function() {
         console.error(`Data for key "${dataKey}" not found!`);
         return;
       }
-  
+
       if (ariaChecked) {
         exportTableHead.innerHTML = targetData.raw.head;
         exportTableBody.innerHTML = targetData.raw.body;
-  
+
         toggleButton.setAttribute('aria-checked', 'false');
         toggleBg.classList.remove('bg-carnation-500');
         toggleBg.classList.add('bg-neutral-200');
@@ -74,14 +96,17 @@ document.addEventListener("DOMContentLoaded", function() {
       } else {
         exportTableHead.innerHTML = targetData.pretty.head;
         exportTableBody.innerHTML = targetData.pretty.body;
-  
+
         toggleButton.setAttribute('aria-checked', 'true');
         toggleBg.classList.remove('bg-neutral-200');
         toggleBg.classList.add('bg-carnation-500');
         toggleDot.classList.remove('translate-x-5');
         toggleDot.classList.add('translate-x-100');
       }
-    });
+    };
+
+    // Attach the event handler
+    toggleButton.addEventListener('click', currentToggleHandler);
   }
   
   // Listen for form changes
