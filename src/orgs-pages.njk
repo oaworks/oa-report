@@ -206,7 +206,7 @@ permalink: "{{ org._source.objectID | slug }}/"
         <div class="">
           <label for="group_by" class="mb-3 font-semibold uppercase sr-only">Group by</label>
           <select id="group_by" name="group_by" class="w-full py-2 bg-transparent border-b lowercase text-center focus:outline-none focus:ring-2 focus:ring-carnation-500">
-            <option value="none">[none]</option>
+            <option>[Select a grouping]</option>
             <option value="year_published">Year published</option>
             <option value="grant">Grant</option>
             <option value="author">Author</option>
@@ -236,14 +236,13 @@ permalink: "{{ org._source.objectID | slug }}/"
       <div class="mb-4 gap-6 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4">
         <h3 class="col-span-2 text-base font-semibold uppercase" id="export_title" aria-live="polite">
           First <strong>10</strong> of <strong>2,702</strong> records for <strong>2023</strong>
-        </h3>
+        </h3> 
         <div></div>
         <nav class="col-span-1 justify-self-end w-auto">
           <label for="show_as" class="mb-3 font-semibold uppercase sr-only">Show as</label>
           <select id="show_as" name="filter_by" class="w-full py-2 bg-transparent border-b text-sm lowercase focus:outline-none focus:ring-2 focus:ring-carnation-500">
-            <option value="raw_numbers">Raw numbers</option>
-            <option value="percentages">Percentages</option>
-            <option value="custom_fields">[Custom fields]</option>
+            <option value="raw_numbers">Raw</option>
+            <option value="percentages">Pretty</option>
           </select>
         </nav>
       </div>
