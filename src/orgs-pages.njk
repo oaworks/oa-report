@@ -243,7 +243,7 @@ permalink: "{{ org._source.objectID | slug }}/"
 
       <div class="hidden" id="export_table">
         <div class="my-4 gap-6 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 items-end">
-          <h3 class="col-span-2 text-xl font-semibold uppercase" aria-live="polite">
+          <h3 class="col-span-2 text-xxl font-semibold uppercase" aria-live="polite">
             Showing first <strong>10</strong> of <strong id="export_title">2,702</strong> records for <strong id="export_year">2023</strong>
             {{ component("tooltip", {
               msg: "This table is a preview of all the records for your query. To see the full data set in CSV format, use the <em>Download full data (CSV)</em> button."
@@ -266,7 +266,7 @@ permalink: "{{ org._source.objectID | slug }}/"
                       <span aria-hidden="true" class="bg-carnation-500 pointer-events-none absolute mx-auto h-4 w-9 rounded-full transition-colors duration-200 ease-in-out"></span>
                       <span aria-hidden="true" class="translate-x-100 pointer-events-none absolute left-0 inline-block h-5 w-5 transform rounded-full border border-neutral-500 bg-neutral-800 shadow ring-0 transition-transform duration-200 ease-in-out"></span>
                   </button>
-                  <span class="ml-2 text-xs">Raw</span> <!-- Label on the right -->
+                  <span class="ml-2 text-xs">Raw</span>
               </div>
           </div>
 
@@ -284,15 +284,20 @@ permalink: "{{ org._source.objectID | slug }}/"
             </tbody>
           </table>
         </div>
-        <div class="text-right">
-          <a href="/temp/bmgf_all-articles_from_2023-01-01-to-2023-10-04_on_2023-09-27.csv" 
-            download 
-            role="button" 
-            aria-label="Download full data as CSV"
-            id="export_link"
-            class="items-center space-x-2 px-4 py-2 text-base font-medium uppercase text-neutral-900 bg-carnation-500 hover:bg-carnation-300  hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 border-0 whitespace-nowrap inline-block">
-              Download full data (CSV)
-          </a>
+        <div class="flex justify-between">
+          <div class="text-xxl font-semibold uppercase">
+            Scroll table to see more data →
+          </div>
+          <div class="text-right">
+            <a href="/temp/bmgf_all-articles_from_2023-01-01-to-2023-10-04_on_2023-09-27.csv" 
+              download 
+              role="button" 
+              aria-label="Download full data as CSV"
+              id="export_link"
+              class="items-center space-x-2 px-4 py-2 text-base font-medium uppercase text-neutral-900 bg-carnation-500 hover:bg-carnation-300  hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 border-0 whitespace-nowrap inline-block">
+                Download full data (CSV)
+            </a>
+          </div>
         </div>
       </div>
 
