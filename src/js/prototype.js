@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", function() {
   var filterBySelect = document.getElementById('filter_by');
   var groupBySelect = document.getElementById('group_by');
   var exportTitle = document.getElementById('export_title');
+  var exportYear = document.getElementById('export_year');
   var exportPreviewBtn = document.getElementById('export_preview_btn');
   var exportTable = document.getElementById('export_table');
   var exportTableHead = document.getElementById('export_table_head');
@@ -87,6 +88,7 @@ document.addEventListener("DOMContentLoaded", function() {
       if (ariaChecked) {
         exportTableHead.innerHTML = targetData.raw.head;
         exportTableBody.innerHTML = targetData.raw.body;
+        activateExportLink(targetData.raw.link);
 
         toggleButton.setAttribute('aria-checked', 'false');
         toggleBg.classList.remove('bg-carnation-500');
@@ -96,6 +98,7 @@ document.addEventListener("DOMContentLoaded", function() {
       } else {
         exportTableHead.innerHTML = targetData.pretty.head;
         exportTableBody.innerHTML = targetData.pretty.body;
+        activateExportLink(targetData.pretty.link);
 
         toggleButton.setAttribute('aria-checked', 'true');
         toggleBg.classList.remove('bg-neutral-200');
@@ -124,9 +127,10 @@ document.addEventListener("DOMContentLoaded", function() {
     // Listen for form submission if user selected filter by articles grouped by grants
     if (filterBySelect.value === 'articles' && groupBySelect.value === 'grant') {
       exportTitle.innerHTML = tableData.articles_grant.number;
+      exportYear.innerHTML = tableData.articles_grant.year;
       exportTableHead.innerHTML = tableData.articles_grant.pretty.head;
       exportTableBody.innerHTML = tableData.articles_grant.pretty.body;
-      activateExportLink(tableData.articles_grant.link);
+      activateExportLink(tableData.articles_grant.pretty.link);
       exportTable.classList.add('block');
       exportTable.classList.remove('hidden');
       toggleData('articles_grant');
@@ -134,9 +138,10 @@ document.addEventListener("DOMContentLoaded", function() {
       // Listen for form submission if user selected filter by articles grouped by publishers
     } else if (filterBySelect.value === 'articles' && groupBySelect.value === 'publisher') {
       exportTitle.innerHTML = tableData.articles_publisher.number;
+      exportYear.innerHTML = tableData.articles_publisher.year;
       exportTableHead.innerHTML = tableData.articles_publisher.pretty.head;
       exportTableBody.innerHTML = tableData.articles_publisher.pretty.body;
-      activateExportLink(tableData.articles_grant.link);
+      activateExportLink(tableData.articles_publisher.pretty.link);
       exportTable.classList.add('block');
       exportTable.classList.remove('hidden');
       toggleData('articles_publisher');

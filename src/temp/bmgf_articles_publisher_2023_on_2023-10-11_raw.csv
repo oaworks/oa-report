@@ -1,0 +1,86 @@
+key,articles_published.doc_count,is_compliant_articles.doc_count,is_free_to_read.doc_count,is_oa.doc_count,has_repository_version.doc_count,has_approved_repository_version.doc_count,has_preprint_version.doc_count,has_data_availability_statement.doc_count,has_no_data_availability_statement.doc_count,total_apcs_paid.value,has_apc.doc_count,average_apcs_paid_rounded.value,median_apcs_paid_raw.values.50.0,has_grantid.doc_count
+Elsevier BV,543,365,497,375,390,256,26,276,197,938660,254,3695.51,3475,252
+Springer Science and Business Media LLC,419,377,397,382,346,196,75,340,51,598175,153,3909.64,2970,264
+Frontiers Media SA,217,210,217,216,170,103,9,156,35,468100,173,2705.78,3230,114
+Public Library of Science (PLoS),201,195,201,198,174,89,37,186,0,187380,83,2257.59,2100,130
+Wiley,190,143,161,148,73,32,7,68,49,83550,27,3094.44,3400,100
+MDPI AG,164,163,164,164,128,71,5,114,34,160620,77,2085.97,2160,107
+Oxford University Press (OUP),99,57,87,58,69,27,8,27,58,14100,5,2820,2660,56
+BMJ,91,71,91,76,78,44,1,63,21,147170,47,3131.28,2800,63
+Informa UK Limited,74,56,68,60,35,18,2,14,43,16450,14,1175,740,38
+F1000 Research Ltd,54,54,54,54,23,10,3,52,0,32270,29,1112.76,1150,44
+American Chemical Society (ACS),49,43,44,43,34,19,5,13,29,93440,31,3014.19,3000,41
+American Society for Microbiology,38,31,36,35,30,10,6,5,26,18280,5,3656,4270,26
+SAGE Publications,30,11,21,13,11,5,0,0,17,1200,1,1200,1200,17
+American Society of Tropical Medicine and Hygiene,27,27,27,27,22,16,2,1,23,50170,17,2951.18,2670,17
+Cambridge University Press (CUP),17,16,17,16,5,1,2,2,6,20080,7,2868.57,2880,14
+International Society of Global Health,16,12,15,14,10,6,1,1,15,38070,13,2928.46,3280,12
+American Association for the Advancement of Science (AAAS),12,6,12,8,12,2,2,5,6,11620,3,3873.33,4050,3
+"Johns Hopkins School Bloomberg School of Public Health, Center for Communication Programs",11,11,11,11,8,6,0,0,11,0,0,,,0
+Proceedings of the National Academy of Sciences,11,6,11,6,10,5,2,8,1,0,0,,,7
+American Society for Clinical Investigation,10,10,10,10,10,6,0,1,9,10600,2,5300,5300,7
+JMIR Publications Inc.,10,10,10,10,10,8,0,5,5,10540,4,2635,2680,4
+"eLife Sciences Publications, Ltd",10,9,10,9,10,6,9,9,0,17000,6,2833.33,3000,9
+Royal Society of Chemistry (RSC),9,3,7,3,5,5,1,3,5,2470,1,2470,2470,8
+Massachusetts Medical Society,7,0,7,1,4,2,0,0,5,0,0,,,5
+Ovid Technologies (Wolters Kluwer Health),7,6,7,5,7,5,2,2,5,9680,4,2420,1950,4
+American Medical Association (AMA),6,6,6,6,6,4,0,1,5,18000,6,3000,3000,6
+International Union Against Tuberculosis and Lung Disease,6,6,6,6,6,5,0,0,6,0,0,,,0
+Institute of Electrical and Electronics Engineers (IEEE),5,2,3,2,2,1,2,1,2,0,0,,,3
+Microbiology Society,5,4,5,5,2,1,2,0,2,3170,1,3170,3170,4
+Scientific Societies,5,1,4,1,2,0,2,0,2,1370,1,1370,1370,3
+American Psychological Association (APA),4,1,1,1,0,0,0,0,2,0,0,,,1
+Centers for Disease Control and Prevention (CDC),4,1,4,2,2,1,0,0,4,0,0,,,0
+IOP Publishing,4,4,4,4,0,0,0,2,0,3160,2,1580,1580,3
+Future Medicine Ltd,3,0,1,1,1,0,0,1,0,0,0,,,3
+PeerJ,3,3,3,3,3,1,0,3,0,1500,1,1500,1500,3
+The Royal Society,3,2,2,2,0,0,0,3,0,0,0,,,3
+ACM,2,0,1,0,0,0,0,0,0,0,0,,,0
+Academy of Science of South Africa,2,2,2,2,0,0,0,0,1,0,0,,,2
+American Astronomical Society,2,2,2,2,2,0,2,0,2,0,0,,,1
+American Diabetes Association,2,0,2,0,2,1,0,0,2,0,0,,,1
+American Physical Society (APS),2,1,2,1,2,0,2,0,0,0,0,,,0
+American Society of Hematology,2,0,2,0,1,0,0,0,2,0,0,,,0
+American Thoracic Society,2,0,2,0,2,2,0,0,2,0,0,,,0
+Cold Spring Harbor Laboratory,2,0,2,1,2,0,0,0,0,0,0,,,0
+Fortune Journals,2,0,1,0,1,0,0,0,2,4080,2,2040,2040,2
+Inishmore Laser Scientific Publishing Ltd,2,1,2,2,0,0,0,1,0,2700,2,1350,1350,2
+Life Cycle,2,0,2,0,0,0,0,0,2,0,0,,,0
+AIP Publishing,1,0,1,1,0,0,0,1,0,0,0,,,1
+AOSIS,1,1,1,1,1,1,0,1,0,0,0,,,0
+Academic Journals,1,1,1,1,0,0,0,0,1,600,1,600,600,1
+"African Journal of Food, Agriculture, Nutrition and Development",1,0,1,0,0,0,0,0,0,300,1,300,300,1
+American Educational Research Association (AERA),1,0,0,0,0,0,0,0,1,0,0,,,0
+American Geophysical Union (AGU),1,1,1,1,0,0,0,0,0,0,0,,,1
+American Physiological Society,1,0,1,0,1,0,0,1,0,0,0,,,0
+Annual Reviews,1,1,1,1,1,1,0,0,1,0,0,,,0
+Bentham Science Publishers Ltd.,1,0,0,0,0,0,0,0,0,0,0,,,0
+Centers for Disease Control MMWR Office,1,0,1,0,0,0,0,0,1,0,0,,,0
+Chinese Center for Disease Control and Prevention,1,1,1,1,1,1,0,0,1,0,0,,,0
+"Computers, Materials and Continua (Tech Science Press)",1,1,1,1,1,0,1,0,0,1260,1,1260,1260,0
+Copernicus GmbH,1,1,1,1,1,0,0,1,0,0,0,,,1
+EMBO,1,1,1,1,1,0,1,1,0,0,0,,,1
+Enviro Research Publishers,1,0,1,0,0,0,0,0,0,350,1,350,350,0
+Georg Thieme Verlag KG,1,1,1,1,1,0,0,0,1,0,0,,,0
+Health Affairs (Project Hope),1,0,0,0,0,0,0,0,1,0,0,,,0
+Hindawi Limited,1,1,1,1,1,1,0,1,0,0,0,,,0
+Hipatia Press,1,0,1,1,0,0,0,0,0,470,1,470,470,0
+IWA Publishing,1,0,1,0,0,0,0,1,0,0,0,,,1
+Mary Ann Liebert Inc,1,0,0,0,0,0,0,0,0,0,0,,,0
+PAGEPress Publications,1,0,1,0,1,0,0,0,1,0,0,,,0
+Portland Press Ltd.,1,1,1,1,1,1,0,0,1,0,0,,,0
+Research Square Platform LLC,1,0,1,1,1,0,0,0,0,0,0,,,0
+SPIE-Intl Soc Optical Eng,1,1,1,1,1,1,0,0,1,0,0,,,0
+Scientific Scholar,1,0,1,0,1,0,0,0,1,0,0,,,0
+Society for Applied Anthropology,1,0,0,0,0,0,0,0,0,0,0,,,0
+Society for Industrial & Applied Mathematics (SIAM),1,0,1,0,1,0,1,0,1,0,0,,,0
+Statistica Sinica (Institute of Statistical Science),1,0,1,0,1,0,1,0,1,0,0,,,0
+Swansea University,1,1,1,1,0,0,0,0,1,0,0,,,0
+Termedia Sp. z.o.o.,1,0,1,0,0,0,0,0,1,0,0,,,0
+The Company of Biologists,1,1,1,1,1,1,0,1,0,0,0,,,1
+The Econometric Society,1,0,1,0,1,0,0,0,0,0,0,,,0
+"Ubiquity Press, Ltd.",1,1,1,1,1,1,0,0,1,1370,1,1370,1370,1
+UiT The Arctic University of Norway,1,0,1,0,0,0,0,0,1,0,0,,,0
+Wageningen Academic Publishers,1,1,1,1,0,0,0,0,1,2110,1,2110,2110,1
+Walter de Gruyter GmbH,1,0,0,0,0,0,0,0,1,0,0,,,0
+World Scientific Pub Co Pte Ltd,1,0,0,0,0,0,0,0,0,0,0,,,0

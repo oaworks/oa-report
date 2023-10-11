@@ -1,0 +1,86 @@
+key,articles_published.doc_count,is_compliant_articles_percentage.value,is_free_to_read_percentage.value,is_oa_percentage.value,has_repository_version_percentage.value,has_approved_repository_version_percentage.value,has_preprint_version_percentage.value,has_data_availability_statement_percentage.value,has_no_data_availability_statement_percentage.value,total_apcs_paid.value,has_apc_percentage.value,average_apcs_paid_rounded.value,median_apcs_paid_raw.values.50.0,has_grantid_percentage.value
+Elsevier BV,543,67.2,91.5,69.1,71.8,47.1,4.8,50.8,36.3,938660,46.8,3695.51,3475,4640.00%
+Springer Science and Business Media LLC,419,90,94.7,91.2,82.6,46.8,17.9,81.1,12.2,598175,36.5,3909.64,2970,6300.00%
+Frontiers Media SA,217,96.8,100,99.5,78.3,47.5,4.1,71.9,16.1,468100,79.7,2705.78,3230,5250.00%
+Public Library of Science (PLoS),201,97,100,98.5,86.6,44.3,18.4,92.5,0,187380,41.3,2257.59,2100,6470.00%
+Wiley,190,75.3,84.7,77.9,38.4,16.8,3.7,35.8,25.8,83550,14.2,3094.44,3400,5260.00%
+MDPI AG,164,99.4,100,100,78,43.3,3,69.5,20.7,160620,47,2085.97,2160,6520.00%
+Oxford University Press (OUP),99,57.6,87.9,58.6,69.7,27.3,8.1,27.3,58.6,14100,5.1,2820,2660,5660.00%
+BMJ,91,78,100,83.5,85.7,48.4,1.1,69.2,23.1,147170,51.6,3131.28,2800,6920.00%
+Informa UK Limited,74,75.7,91.9,81.1,47.3,24.3,2.7,18.9,58.1,16450,18.9,1175,740,5140.00%
+F1000 Research Ltd,54,100,100,100,42.6,18.5,5.6,96.3,0,32270,53.7,1112.76,1150,8150.00%
+American Chemical Society (ACS),49,87.8,89.8,87.8,69.4,38.8,10.2,26.5,59.2,93440,63.3,3014.19,3000,8370.00%
+American Society for Microbiology,38,81.6,94.7,92.1,78.9,26.3,15.8,13.2,68.4,18280,13.2,3656,4270,6840.00%
+SAGE Publications,30,36.7,70,43.3,36.7,16.7,0,0,56.7,1200,3.3,1200,1200,5670.00%
+American Society of Tropical Medicine and Hygiene,27,100,100,100,81.5,59.3,7.4,3.7,85.2,50170,63,2951.18,2670,6300.00%
+Cambridge University Press (CUP),17,94.1,100,94.1,29.4,5.9,11.8,11.8,35.3,20080,41.2,2868.57,2880,8240.00%
+International Society of Global Health,16,75,93.8,87.5,62.5,37.5,6.3,6.3,93.8,38070,81.3,2928.46,3280,7500.00%
+American Association for the Advancement of Science (AAAS),12,50,100,66.7,100,16.7,16.7,41.7,50,11620,25,3873.33,4050,2500.00%
+"Johns Hopkins School Bloomberg School of Public Health, Center for Communication Programs",11,100,100,100,72.7,54.5,0,0,100,0,0,,,0.00%
+Proceedings of the National Academy of Sciences,11,54.5,100,54.5,90.9,45.5,18.2,72.7,9.1,0,0,,,6360.00%
+American Society for Clinical Investigation,10,100,100,100,100,60,0,10,90,10600,20,5300,5300,7000.00%
+JMIR Publications Inc.,10,100,100,100,100,80,0,50,50,10540,40,2635,2680,4000.00%
+"eLife Sciences Publications, Ltd",10,90,100,90,100,60,90,90,0,17000,60,2833.33,3000,9000.00%
+Royal Society of Chemistry (RSC),9,33.3,77.8,33.3,55.6,55.6,11.1,33.3,55.6,2470,11.1,2470,2470,8890.00%
+Massachusetts Medical Society,7,0,100,14.3,57.1,28.6,0,0,71.4,0,0,,,7140.00%
+Ovid Technologies (Wolters Kluwer Health),7,85.7,100,71.4,100,71.4,28.6,28.6,71.4,9680,57.1,2420,1950,5710.00%
+American Medical Association (AMA),6,100,100,100,100,66.7,0,16.7,83.3,18000,100,3000,3000,10000.00%
+International Union Against Tuberculosis and Lung Disease,6,100,100,100,100,83.3,0,0,100,0,0,,,0.00%
+Institute of Electrical and Electronics Engineers (IEEE),5,40,60,40,40,20,40,20,40,0,0,,,6000.00%
+Microbiology Society,5,80,100,100,40,20,40,0,40,3170,20,3170,3170,8000.00%
+Scientific Societies,5,20,80,20,40,0,40,0,40,1370,20,1370,1370,6000.00%
+American Psychological Association (APA),4,25,25,25,0,0,0,0,50,0,0,,,2500.00%
+Centers for Disease Control and Prevention (CDC),4,25,100,50,50,25,0,0,100,0,0,,,0.00%
+IOP Publishing,4,100,100,100,0,0,0,50,0,3160,50,1580,1580,7500.00%
+Future Medicine Ltd,3,0,33.3,33.3,33.3,0,0,33.3,0,0,0,,,10000.00%
+PeerJ,3,100,100,100,100,33.3,0,100,0,1500,33.3,1500,1500,10000.00%
+The Royal Society,3,66.7,66.7,66.7,0,0,0,100,0,0,0,,,10000.00%
+ACM,2,0,50,0,0,0,0,0,0,0,0,,,0.00%
+Academy of Science of South Africa,2,100,100,100,0,0,0,0,50,0,0,,,10000.00%
+American Astronomical Society,2,100,100,100,100,0,100,0,100,0,0,,,5000.00%
+American Diabetes Association,2,0,100,0,100,50,0,0,100,0,0,,,5000.00%
+American Physical Society (APS),2,50,100,50,100,0,100,0,0,0,0,,,0.00%
+American Society of Hematology,2,0,100,0,50,0,0,0,100,0,0,,,0.00%
+American Thoracic Society,2,0,100,0,100,100,0,0,100,0,0,,,0.00%
+Cold Spring Harbor Laboratory,2,0,100,50,100,0,0,0,0,0,0,,,0.00%
+Fortune Journals,2,0,50,0,50,0,0,0,100,4080,100,2040,2040,10000.00%
+Inishmore Laser Scientific Publishing Ltd,2,50,100,100,0,0,0,50,0,2700,100,1350,1350,10000.00%
+Life Cycle,2,0,100,0,0,0,0,0,100,0,0,,,0.00%
+AIP Publishing,1,0,100,100,0,0,0,100,0,0,0,,,10000.00%
+AOSIS,1,100,100,100,100,100,0,100,0,0,0,,,0.00%
+Academic Journals,1,100,100,100,0,0,0,0,100,600,100,600,600,10000.00%
+"African Journal of Food, Agriculture, Nutrition and Development",1,0,100,0,0,0,0,0,0,300,100,300,300,10000.00%
+American Educational Research Association (AERA),1,0,0,0,0,0,0,0,100,0,0,,,0.00%
+American Geophysical Union (AGU),1,100,100,100,0,0,0,0,0,0,0,,,10000.00%
+American Physiological Society,1,0,100,0,100,0,0,100,0,0,0,,,0.00%
+Annual Reviews,1,100,100,100,100,100,0,0,100,0,0,,,0.00%
+Bentham Science Publishers Ltd.,1,0,0,0,0,0,0,0,0,0,0,,,0.00%
+Centers for Disease Control MMWR Office,1,0,100,0,0,0,0,0,100,0,0,,,0.00%
+Chinese Center for Disease Control and Prevention,1,100,100,100,100,100,0,0,100,0,0,,,0.00%
+"Computers, Materials and Continua (Tech Science Press)",1,100,100,100,100,0,100,0,0,1260,100,1260,1260,0.00%
+Copernicus GmbH,1,100,100,100,100,0,0,100,0,0,0,,,10000.00%
+EMBO,1,100,100,100,100,0,100,100,0,0,0,,,10000.00%
+Enviro Research Publishers,1,0,100,0,0,0,0,0,0,350,100,350,350,0.00%
+Georg Thieme Verlag KG,1,100,100,100,100,0,0,0,100,0,0,,,0.00%
+Health Affairs (Project Hope),1,0,0,0,0,0,0,0,100,0,0,,,0.00%
+Hindawi Limited,1,100,100,100,100,100,0,100,0,0,0,,,0.00%
+Hipatia Press,1,0,100,100,0,0,0,0,0,470,100,470,470,0.00%
+IWA Publishing,1,0,100,0,0,0,0,100,0,0,0,,,10000.00%
+Mary Ann Liebert Inc,1,0,0,0,0,0,0,0,0,0,0,,,0.00%
+PAGEPress Publications,1,0,100,0,100,0,0,0,100,0,0,,,0.00%
+Portland Press Ltd.,1,100,100,100,100,100,0,0,100,0,0,,,0.00%
+Research Square Platform LLC,1,0,100,100,100,0,0,0,0,0,0,,,0.00%
+SPIE-Intl Soc Optical Eng,1,100,100,100,100,100,0,0,100,0,0,,,0.00%
+Scientific Scholar,1,0,100,0,100,0,0,0,100,0,0,,,0.00%
+Society for Applied Anthropology,1,0,0,0,0,0,0,0,0,0,0,,,0.00%
+Society for Industrial & Applied Mathematics (SIAM),1,0,100,0,100,0,100,0,100,0,0,,,0.00%
+Statistica Sinica (Institute of Statistical Science),1,0,100,0,100,0,100,0,100,0,0,,,0.00%
+Swansea University,1,100,100,100,0,0,0,0,100,0,0,,,0.00%
+Termedia Sp. z.o.o.,1,0,100,0,0,0,0,0,100,0,0,,,0.00%
+The Company of Biologists,1,100,100,100,100,100,0,100,0,0,0,,,10000.00%
+The Econometric Society,1,0,100,0,100,0,0,0,0,0,0,,,0.00%
+"Ubiquity Press, Ltd.",1,100,100,100,100,100,0,0,100,1370,100,1370,1370,10000.00%
+UiT The Arctic University of Norway,1,0,100,0,0,0,0,0,100,0,0,,,0.00%
+Wageningen Academic Publishers,1,100,100,100,0,0,0,0,100,2110,100,2110,2110,10000.00%
+Walter de Gruyter GmbH,1,0,0,0,0,0,0,0,100,0,0,,,0.00%
+World Scientific Pub Co Pte Ltd,1,0,0,0,0,0,0,0,0,0,0,,,0.00%
