@@ -400,8 +400,8 @@ permalink: "{{ org._source.objectID | slug }}/"
             </tbody>
             <tfoot class="border-t border-neutral-200">
               <tr>
-                <td colspan="100" class="text-sm p-2 bg-neutral-700">
-                  <button class="inline sticky left-2 w-100">See more records</button>
+                <td colspan="100" class="p-2 bg-neutral-600 hover:bg-neutral-400 focus:outline-none focus:ring-1 focus:ring-carnation-300 duration-500 text-sm cursor-pointer" id="js_see_more_records">
+                  <span class="inline sticky left-2 w-100">See more records</span>
                 </td>
               </tr>
             </tfoot>
@@ -414,7 +414,7 @@ permalink: "{{ org._source.objectID | slug }}/"
               role="button" 
               aria-label="Download full data as CSV"
               id="export_link"
-              class="items-center space-x-2 px-4 py-2 text-base font-medium uppercase text-neutral-900 bg-carnation-500 hover:bg-carnation-300  hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 border-0 whitespace-nowrap inline-block">
+              class="items-center space-x-2 px-4 py-2 text-base font-medium uppercase border border-neutral-100 text-neutral-100 bg-neutral-800 hover:bg-neutral-100 hover:text-neutral-900 focus:outline-none focus:ring-1 focus:ring-carnation-400 duration-500 whitespace-nowrap inline-block">
                 Download all <span id="export_type_name">data</span> (CSV)
             </a>
           </div>

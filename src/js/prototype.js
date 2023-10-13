@@ -67,14 +67,14 @@ document.addEventListener("DOMContentLoaded", function() {
   function deactivateExportLink() {
     exportLink.removeAttribute('href');
     exportLink.classList.add('bg-neutral-300', 'cursor-not-allowed');
-    exportLink.classList.remove('bg-carnation-500', 'hover:bg-carnation-300', 'hover:border-carnation-500');
+    // exportLink.classList.remove('bg-carnation-500', 'hover:bg-carnation-300', 'hover:border-carnation-500');
   }
 
   // Function to activate the export link with a given href
   function activateExportLink(hrefValue) {
     exportLink.href = hrefValue;
     exportLink.classList.remove('bg-neutral-300', 'cursor-not-allowed');
-    exportLink.classList.add('bg-carnation-500', 'hover:bg-carnation-300', 'hover:border-carnation-500');
+    // exportLink.classList.add('bg-carnation-500', 'hover:bg-carnation-300', 'hover:border-carnation-500');
   }
 
   // Function to toggle data-display style
