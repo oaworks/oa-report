@@ -271,12 +271,11 @@ permalink: "{{ org._source.objectID | slug }}/"
             txt: "Finance",
             count: '1,027'
         })}}
-        {{ component("pill", {
-            id: "see_more",
-            txt: "See more",
-            highlight: true,
-            count: '+'
-        })}}
+        
+        <button class="items-center inline-flex p-2 pl-4 mr-4 mb-4 px-3 rounded-full bg-white font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500 js_export_pill bg-carnation-300" id="export_see_more">
+          <span id="see_more_text">See more</span>
+          <span id="count_see_more" class="bg-neutral-800 text-white ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block">+</span>
+        </button>
 
         <div class="hidden" id="more_exports">
           {{ component("pill", {

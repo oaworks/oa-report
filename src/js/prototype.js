@@ -1080,7 +1080,7 @@ document.addEventListener("DOMContentLoaded", function() {
       if (pillContainer.classList.contains('hidden')) {
         pillContainer.classList.remove('hidden');
         seeMoreTxt.textContent = "See fewer";
-        seeMoreCount.textContent = "—";
+        seeMoreCount.textContent = "–";
       } else {
         pillContainer.classList.add('hidden');
         seeMoreTxt.textContent = "See more";
