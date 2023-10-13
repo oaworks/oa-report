@@ -1,28 +1,56 @@
 // TEMP CRAPPY PROTOTYPING SCRIPT
 document.addEventListener("DOMContentLoaded", function() {
   // Select section tab 
+  // Function to show a specific section
+  function showSection(sectionId) {
+    const sections = document.querySelectorAll('.js_section');
+    sections.forEach(section => {
+        if (section.id === sectionId) {
+            section.classList.remove('hidden');
+        } else {
+            section.classList.add('hidden');
+        }
+    });
+  }
+
+  // Function to handle tab highlighting
+  function highlightTab(sectionId) {
+    const sectionTabs = document.querySelectorAll('.js_section_tab');
+    sectionTabs.forEach(tab => {
+        if (tab.getAttribute('data-section') === sectionId) {
+            // Add the 'bg-neutral-900' and 'text-white' classes to the selected tab
+            tab.classList.add('bg-neutral-900', 'font-semibold', 'text-white');
+        } else {
+            // Remove the classes from other tabs
+            tab.classList.remove('bg-neutral-900', 'font-semibold', 'text-white');
+        }
+    });
+  }
+
+  // Function to handle anchor links
+  function handleAnchorLink() {
+    const hash = window.location.hash;
+    if (hash) {
+        const sectionId = hash.slice(1); // Remove the '#' character
+        showSection(sectionId);
+        highlightTab(sectionId);
+    }
+  }
+
+  // Handle anchor links on page load
+  window.addEventListener('load', handleAnchorLink);
+
+  // Select section tab 
   const sectionTabs = document.querySelectorAll('.js_section_tab');
-  const sections = document.querySelectorAll('.js_section');
-
   sectionTabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-          // Hide all sections
-          sections.forEach(section => {
-              section.classList.add('hidden');
-          });
+    tab.addEventListener('click', () => {
+        const sectionId = tab.getAttribute('data-section');
+        showSection(sectionId);
+        highlightTab(sectionId);
 
-          // Remove the 'bg-neutral-800' and 'text-white' classes from all tabs
-          sectionTabs.forEach(t => {
-              t.classList.remove('bg-neutral-900', 'font-semibold', 'text-white');
-          });
-
-          // Show the selected section
-          const sectionId = tab.getAttribute('data-section');
-          document.getElementById(sectionId).classList.remove('hidden');
-
-          // Add 'bg-neutral-800' and 'text-white' classes to the selected tab
-          tab.classList.add('bg-neutral-900', 'font-semibold', 'text-white');
-      });
+        // Update the URL with the section ID
+        history.pushState(null, null, `#${sectionId}`);
+    });
   });
 
     
