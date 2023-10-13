@@ -1088,5 +1088,33 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     });
 
-  
+  // Allow highlighting of table rows
+  const tableBody = document.getElementById('export_table_body');
+  const tableRows = tableBody.querySelectorAll('tr'); 
+
+  tableBody.addEventListener('click', (event) => {
+    const target = event.target;
+
+    if (target.tagName === 'TD') {
+      const row = target.parentElement; // Get the parent <tr> element
+      const tdsToHighlight = Array.from(row.querySelectorAll('td')).slice(2); // Exclude the first two <td> elements
+
+      // Remove highlighting from all rows
+      tableRows.forEach((r) => {
+        r.classList.remove('bg-neutral-300', 'hover:bg-neutral-200', 'text-neutral-900');
+      });
+
+      // Toggle highlighting for the selected <td> elements
+      tdsToHighlight.forEach((td) => {
+        td.classList.toggle('bg-neutral-300');
+        td.classList.toggle('hover:bg-neutral-200');
+        td.classList.toggle('text-neutral-900');
+      });
+    }
+  });
+
+
+
+
+
 });
