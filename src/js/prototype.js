@@ -5,17 +5,26 @@ document.addEventListener("DOMContentLoaded", function() {
   const sections = document.querySelectorAll('.js_section');
 
   sectionTabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      // Hide all sections
-      sections.forEach(section => {
-          section.classList.add('hidden');
-      });
+      tab.addEventListener('click', () => {
+          // Hide all sections
+          sections.forEach(section => {
+              section.classList.add('hidden');
+          });
 
-      // Show the selected section
-      const sectionId = tab.getAttribute('data-section');
-      document.getElementById(sectionId).classList.remove('hidden');
-    });
+          // Remove the 'bg-neutral-800' and 'text-white' classes from all tabs
+          sectionTabs.forEach(t => {
+              t.classList.remove('bg-neutral-900', 'font-semibold', 'text-white');
+          });
+
+          // Show the selected section
+          const sectionId = tab.getAttribute('data-section');
+          document.getElementById(sectionId).classList.remove('hidden');
+
+          // Add 'bg-neutral-800' and 'text-white' classes to the selected tab
+          tab.classList.add('bg-neutral-900', 'font-semibold', 'text-white');
+      });
   });
+
     
   // Get references to elements
   var buttons = document.querySelectorAll('.js_export_pill');

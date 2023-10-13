@@ -36,10 +36,10 @@ permalink: "{{ org._source.objectID | slug }}/"
     </div>
   </div>
 
-  <nav class="px-6 sticky top-0 bg-carnation-100 z-10">
+  <nav class="sticky top-0 bg-white z-10">
     <h2 class="sr-only">See the report by year</h2>
-    <ul>
-      <li class="mr-2 inline-block">
+    <ul class="border-b border-neutral-100">
+      <li class="inline-block">
         {{ component("year-select", {
           id: "start-year",
           txt: "",
@@ -47,13 +47,13 @@ permalink: "{{ org._source.objectID | slug }}/"
         }) }}
       </li>
       {% if org._source.paid == true %}
-      <li class="mr-2 inline-block">
+      <li class="inline-block">
         {{ component("year-select", {
           id: "last-year",
           txt: ""
         }) }}
       </li>
-      <li class="mr-2 inline-block">
+      <li class="inline-block">
         {{ component("year-select", {
           id: "two-years-ago",
           txt: ""
@@ -66,17 +66,17 @@ permalink: "{{ org._source.objectID | slug }}/"
         }) }}
       </li>
       {% else %}
-      <li class="mr-2 inline-block">
+      <li class="inline-block">
         <span class="inline-flex items-center px-4 py-2 md:px-6 md:py-4 border-t-4 text-base md:text-lg bg-white text-neutral-900 opacity-50">
           2022
         </span>
       </li>
-      <li class="mr-2 inline-block">
+      <li class="inline-block">
         <span class="inline-flex items-center px-4 py-2 md:px-6 md:py-4 border-t-4 text-base md:text-lg bg-white text-neutral-900 opacity-50">
           2021
         </span>
       </li>
-      <li class="mr-2 inline-block">
+      <li class="inline-block">
         <span class="inline-flex items-center px-4 py-2 md:px-6 md:py-4 border-t-4 text-base md:text-lg bg-white text-neutral-900 opacity-50">
           All time
         </span>
@@ -90,21 +90,21 @@ permalink: "{{ org._source.objectID | slug }}/"
     </ul>
 
     <ul>
-      <li class="mr-2 inline-block">
+      <li class="inline-block">
         {{ component("section-select", {
           id: "insights",
           txt: "Insights on articles",
           selected: true
         }) }}
       </li>
-      <li class="mr-2 inline-block">
+      <li class="inline-block">
         {{ component("section-select", {
           id: "explore",
           txt: "Data exploration",
           selected: false
         }) }}
       </li>
-      <li class="mr-2 inline-block">
+      <li class="inline-block">
         {{ component("section-select", {
           id: "strategies",
           txt: "Actions",
