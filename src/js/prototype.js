@@ -34,11 +34,14 @@ document.addEventListener("DOMContentLoaded", function() {
   var groupBySelect = document.getElementById('group_by');
   var exportTitle = document.getElementById('export_title');
   var exportYear = document.getElementById('export_year');
+  var exportTypeName = document.getElementById('export_type_name');
   var exportPreviewBtn = document.getElementById('export_preview_btn');
   var exportTable = document.getElementById('export_table');
   var exportTableHead = document.getElementById('export_table_head');
   var exportTableBody = document.getElementById('export_table_body');
   var exportAllArticlesBtn = document.getElementById('export_all_articles');
+  var exportGrantsBtn = document.getElementById('export_grant');
+  var exportPublishersBtn = document.getElementById('export_publisher');
   var exportFinancesBtn = document.getElementById('export_articles_with_apcs');
   
   // For each export pill button
@@ -139,41 +142,67 @@ document.addEventListener("DOMContentLoaded", function() {
   }
   
   // Listen for form changes
-  form.addEventListener('input', function() {
-    // Deactivate buttons and the export link
-    buttons.forEach(function(btn) {
-      btn.classList.remove('bg-carnation-300');
-    });
-    deactivateExportLink();
+  // form.addEventListener('input', function() {
+  //   // Deactivate buttons and the export link
+  //   buttons.forEach(function(btn) {
+  //     btn.classList.remove('bg-carnation-300');
+  //   });
+  //   deactivateExportLink();
+  // });
+
+  // exportPreviewBtn.addEventListener('click', function(e) {
+  //   e.preventDefault(); // prevent default form submission
+
+  //   // Listen for form submission if user selected filter by articles grouped by grants
+  //   if (filterBySelect.value === 'articles' && groupBySelect.value === 'grant') {
+  //     exportTitle.innerHTML = tableData.articles_grant.number;
+  //     exportYear.innerHTML = tableData.articles_grant.year;
+  //     exportTableHead.innerHTML = tableData.articles_grant.pretty.head;
+  //     exportTableBody.innerHTML = tableData.articles_grant.pretty.body;
+  //     activateExportLink(tableData.articles_grant.pretty.link);
+  //     exportTable.classList.add('block');
+  //     exportTable.classList.remove('hidden');
+  //     toggleData('articles_grant');
+
+  //     // Listen for form submission if user selected filter by articles grouped by publishers
+  //   } else if (filterBySelect.value === 'articles' && groupBySelect.value === 'publisher') {
+  //     exportTitle.innerHTML = tableData.articles_publisher.number;
+  //     exportYear.innerHTML = tableData.articles_publisher.year;
+  //     exportTableHead.innerHTML = tableData.articles_publisher.pretty.head;
+  //     exportTableBody.innerHTML = tableData.articles_publisher.pretty.body;
+  //     activateExportLink(tableData.articles_publisher.pretty.link);
+  //     exportTable.classList.add('block');
+  //     exportTable.classList.remove('hidden');
+  //     toggleData('articles_publisher');
+  //   } else {
+  //     deactivateExportLink();
+  //   }
+  // });
+
+  // Listen for form submission if user selected filter by articles grouped by grants
+  exportGrantsBtn.addEventListener('click', function() {
+    exportTitle.innerHTML = tableData.articles_grant.number;
+    exportYear.innerHTML = tableData.articles_grant.year;
+    exportTableHead.innerHTML = tableData.articles_grant.pretty.head;
+    exportTableBody.innerHTML = tableData.articles_grant.pretty.body;
+    activateExportLink(tableData.articles_grant.pretty.link);
+    exportTable.classList.add('block');
+    exportTable.classList.remove('hidden');
+    exportTypeName.innerText = 'grants';
+    toggleData('articles_grant');
   });
 
-  exportPreviewBtn.addEventListener('click', function(e) {
-    e.preventDefault(); // prevent default form submission
-
-    // Listen for form submission if user selected filter by articles grouped by grants
-    if (filterBySelect.value === 'articles' && groupBySelect.value === 'grant') {
-      exportTitle.innerHTML = tableData.articles_grant.number;
-      exportYear.innerHTML = tableData.articles_grant.year;
-      exportTableHead.innerHTML = tableData.articles_grant.pretty.head;
-      exportTableBody.innerHTML = tableData.articles_grant.pretty.body;
-      activateExportLink(tableData.articles_grant.pretty.link);
-      exportTable.classList.add('block');
-      exportTable.classList.remove('hidden');
-      toggleData('articles_grant');
-
-      // Listen for form submission if user selected filter by articles grouped by publishers
-    } else if (filterBySelect.value === 'articles' && groupBySelect.value === 'publisher') {
-      exportTitle.innerHTML = tableData.articles_publisher.number;
-      exportYear.innerHTML = tableData.articles_publisher.year;
-      exportTableHead.innerHTML = tableData.articles_publisher.pretty.head;
-      exportTableBody.innerHTML = tableData.articles_publisher.pretty.body;
-      activateExportLink(tableData.articles_publisher.pretty.link);
-      exportTable.classList.add('block');
-      exportTable.classList.remove('hidden');
-      toggleData('articles_publisher');
-    } else {
-      deactivateExportLink();
-    }
+    // Listen for form submission if user selected filter by articles grouped by publishers
+    exportPublishersBtn.addEventListener('click', function() {
+    exportTitle.innerHTML = tableData.articles_publisher.number;
+    exportYear.innerHTML = tableData.articles_publisher.year;
+    exportTableHead.innerHTML = tableData.articles_publisher.pretty.head;
+    exportTableBody.innerHTML = tableData.articles_publisher.pretty.body;
+    activateExportLink(tableData.articles_publisher.pretty.link);
+    exportTable.classList.add('block');
+    exportTable.classList.remove('hidden');
+    exportTypeName.innerText = 'publishers';
+    toggleData('articles_publisher');
   });
   
   // Listen for button click of "all articles" preset
@@ -829,189 +858,203 @@ document.addEventListener("DOMContentLoaded", function() {
     `;
   });
 
-  // // Listen for button click of "finance" preset
-  // exportFinancesBtn.addEventListener('click', function() {
-  //   filterBySelect.value = 'articles_with_apcs';
-  //   groupBySelect.value = 'none';
+  // Listen for button click of "finance" preset
+  exportFinancesBtn.addEventListener('click', function() {
+    filterBySelect.value = 'articles_with_apcs';
+    groupBySelect.value = 'none';
 
-  //   exportTable.classList.add('block');
-  //   exportTable.classList.remove('hidden');
+    exportTable.classList.add('block');
+    exportTable.classList.remove('hidden');
 
-  //   exportTitle.innerHTML = `1,027`;
+    exportTitle.innerHTML = `1,027`;
 
-  //   // exportTableHead.innerHTML = `
-  //   //   <tr>
-  //   //     <th scope="col" class="sticky left-0 bg-neutral-700 p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">DOI</th>
-  //   //     <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">grantid__bmgf</th>
-  //   //     <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">publisher_simple</th>
-  //   //     <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">journal</th>
-  //   //     <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">journal_oa_type</th>
-  //   //     <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">published_date</th>
-  //   //     <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">oa_status</th>
-  //   //     <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">publisher_license_best</th>
-  //   //     <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">apc_cost</th>
-  //   //     <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">invoice_number</th>
-  //   //     <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">invoice_date</th>
-  //   //     <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">invoice_year</th>
-  //   //   </tr>
-  //   // `; 
+    // exportTableHead.innerHTML = `
+    //   <tr>
+    //     <th scope="col" class="sticky left-0 bg-neutral-700 p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">DOI</th>
+    //     <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">grantid__bmgf</th>
+    //     <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">publisher_simple</th>
+    //     <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">journal</th>
+    //     <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">journal_oa_type</th>
+    //     <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">published_date</th>
+    //     <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">oa_status</th>
+    //     <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">publisher_license_best</th>
+    //     <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">apc_cost</th>
+    //     <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">invoice_number</th>
+    //     <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">invoice_date</th>
+    //     <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">invoice_year</th>
+    //   </tr>
+    // `; 
 
-  //   // exportTableBody.innerHTML = `
-  //   //   <tr>
-  //   //     <td class="sticky left-0 bg-neutral-700 p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">10.3389/fpubh.2023.1147180</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">closed</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023-09-22</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">3230</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023-1008788-1</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023-09-08</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //   </tr>
-  //   //   <tr>
-  //   //     <td class="sticky left-0 bg-neutral-700 p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">10.1136/bmj-2022-072249</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">closed</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023-09-21</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">6800</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">APC600447950</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023-09-04</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //   </tr>
-  //   //   <tr>
-  //   //     <td class="sticky left-0 bg-neutral-700 p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">10.1038/s41591-023-02551-w</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">closed</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023-09-21</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">11690</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">1452513097</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023-09-13</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //   </tr>
-  //   //   <tr>
-  //   //     <td class="sticky left-0 bg-neutral-700 p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">10.1128/mbio.01887-23</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">closed</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023-09-20</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">4270</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">APC600441996</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023-08-11</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //   </tr>
-  //   //   <tr>
-  //   //     <td class="sticky left-0 bg-neutral-700 p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">10.3389/fimmu.2023.1220130</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">closed</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023-09-20</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">3230</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023-1008788-1</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023-09-08</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //   </tr>
-  //   //   <tr>
-  //   //     <td class="sticky left-0 bg-neutral-700 p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">10.3389/fvets.2023.1168649</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">closed</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023-09-19</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">3230</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023-1008788-1</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023-09-08</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //   </tr>
-  //   //   <tr>
-  //   //     <td class="sticky left-0 bg-neutral-700 p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">10.3389/fsoc.2023.1254595</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">closed</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023-09-19</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">770</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023-1008788-1</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023-09-08</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //   </tr>
-  //   //   <tr>
-  //   //     <td class="sticky left-0 bg-neutral-700 p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">10.1038/s41598-023-42425-2</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">springer/nature/bmc</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">Scientific Reports</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">gold</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023-09-16</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">gold</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">cc-by</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">1350</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2939206000</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023-09-20</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //   </tr>
-  //   //   <tr>
-  //   //     <td class="sticky left-0 bg-neutral-700 p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">10.1099/mgen.0.001094</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">closed</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023-09-15</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">3170</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">APC600449722</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023-09-08</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //   </tr>
-  //   //   <tr>
-  //   //     <td class="sticky left-0 bg-neutral-700 p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">10.3389/fphar.2023.1088670</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">closed</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023-09-14</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">3230</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023-1008788-1</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023-09-08</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate">2023</td>
-  //   //     <td class="p-2 whitespace-nowrap truncate"></td>
-  //   //   </tr>
+    // exportTableBody.innerHTML = `
+    //   <tr>
+    //     <td class="sticky left-0 bg-neutral-700 p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">10.3389/fpubh.2023.1147180</td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate">closed</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023-09-22</td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate">3230</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023-1008788-1</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023-09-08</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023</td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //   </tr>
+    //   <tr>
+    //     <td class="sticky left-0 bg-neutral-700 p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">10.1136/bmj-2022-072249</td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate">closed</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023-09-21</td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate">6800</td>
+    //     <td class="p-2 whitespace-nowrap truncate">APC600447950</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023-09-04</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023</td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //   </tr>
+    //   <tr>
+    //     <td class="sticky left-0 bg-neutral-700 p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">10.1038/s41591-023-02551-w</td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate">closed</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023-09-21</td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate">11690</td>
+    //     <td class="p-2 whitespace-nowrap truncate">1452513097</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023-09-13</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023</td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //   </tr>
+    //   <tr>
+    //     <td class="sticky left-0 bg-neutral-700 p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">10.1128/mbio.01887-23</td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate">closed</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023-09-20</td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate">4270</td>
+    //     <td class="p-2 whitespace-nowrap truncate">APC600441996</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023-08-11</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023</td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //   </tr>
+    //   <tr>
+    //     <td class="sticky left-0 bg-neutral-700 p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">10.3389/fimmu.2023.1220130</td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate">closed</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023-09-20</td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate">3230</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023-1008788-1</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023-09-08</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023</td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //   </tr>
+    //   <tr>
+    //     <td class="sticky left-0 bg-neutral-700 p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">10.3389/fvets.2023.1168649</td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate">closed</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023-09-19</td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate">3230</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023-1008788-1</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023-09-08</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023</td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //   </tr>
+    //   <tr>
+    //     <td class="sticky left-0 bg-neutral-700 p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">10.3389/fsoc.2023.1254595</td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate">closed</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023-09-19</td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate">770</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023-1008788-1</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023-09-08</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023</td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //   </tr>
+    //   <tr>
+    //     <td class="sticky left-0 bg-neutral-700 p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">10.1038/s41598-023-42425-2</td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate">springer/nature/bmc</td>
+    //     <td class="p-2 whitespace-nowrap truncate">Scientific Reports</td>
+    //     <td class="p-2 whitespace-nowrap truncate">gold</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023-09-16</td>
+    //     <td class="p-2 whitespace-nowrap truncate">gold</td>
+    //     <td class="p-2 whitespace-nowrap truncate">cc-by</td>
+    //     <td class="p-2 whitespace-nowrap truncate">1350</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2939206000</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023-09-20</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023</td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //   </tr>
+    //   <tr>
+    //     <td class="sticky left-0 bg-neutral-700 p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">10.1099/mgen.0.001094</td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate">closed</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023-09-15</td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate">3170</td>
+    //     <td class="p-2 whitespace-nowrap truncate">APC600449722</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023-09-08</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023</td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //   </tr>
+    //   <tr>
+    //     <td class="sticky left-0 bg-neutral-700 p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">10.3389/fphar.2023.1088670</td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate">closed</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023-09-14</td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //     <td class="p-2 whitespace-nowrap truncate">3230</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023-1008788-1</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023-09-08</td>
+    //     <td class="p-2 whitespace-nowrap truncate">2023</td>
+    //     <td class="p-2 whitespace-nowrap truncate"></td>
+    //   </tr>
   
-  //   // `;
-  //   // activateExportLink('/temp/bmgf_articles-with-apcs_from_2023-01-01-to-2023-10-04_on_2023-09-27.csv');
-  // });
+    // `;
+    // activateExportLink('/temp/bmgf_articles-with-apcs_from_2023-01-01-to-2023-10-04_on_2023-09-27.csv');
+  });
   
+
+  // See more exports btn
+  const pillContainer = document.getElementById("more_exports");
+    const seeMoreButton = document.getElementById("export_see_more");
+  
+    seeMoreButton.addEventListener("click", function() {
+      if (pillContainer.classList.contains('hidden')) {
+        pillContainer.classList.remove('hidden');
+        seeMoreButton.textContent = "See fewer";
+      } else {
+        pillContainer.classList.add('hidden');
+        seeMoreButton.textContent = "See more";
+      }
+    });
 
   
 });

@@ -300,25 +300,25 @@ class Modal {
 let currentModal = null;
 
 // Fetch all pill buttons
-const modalPills = document.querySelectorAll('.js_export_pill');
+// const modalPills = document.querySelectorAll('.js_export_pill');
 
-modalPills.forEach(pill => {
-    pill.addEventListener('click', () => {
-        if (currentModal) {
-            currentModal.close();
-        }
+// modalPills.forEach(pill => {
+//     pill.addEventListener('click', () => {
+//         if (currentModal) {
+//             currentModal.close();
+//         }
 
-        const titleSelector = pill.getAttribute('data-title');
-        const contentSelector = pill.getAttribute('data-content');
+//         const titleSelector = pill.getAttribute('data-title');
+//         const contentSelector = pill.getAttribute('data-content');
 
-        if (titleSelector && contentSelector) {
-            currentModal = new Modal(titleSelector, contentSelector);
-            currentModal.open();
-        } else {
-            console.error('Data attributes for title and content selectors not found.');
-        }
-    });
-});
+//         if (titleSelector && contentSelector) {
+//             currentModal = new Modal(titleSelector, contentSelector);
+//             currentModal.open();
+//         } else {
+//             console.error('Data attributes for title and content selectors not found.');
+//         }
+//     });
+// });
 
 
 

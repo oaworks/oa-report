@@ -194,7 +194,7 @@ permalink: "{{ org._source.objectID | slug }}/"
       </header>
 
       {# TEMP CRAPPY NON-A11Y PROTOTYPING MARKUP #}
-      <form class="text-lg flex space-x-4 justify-center p-12" id="explore_form">
+      {# <form class="text-lg flex space-x-4 justify-center p-12" id="explore_form">
         <div class="flex items-center font-semibold uppercase">See</div>
         <div class="">
           <label for="filter_by" class="mb-3 font-semibold uppercase sr-only">Filter by</label>
@@ -209,60 +209,153 @@ permalink: "{{ org._source.objectID | slug }}/"
             <option value="none">Everything</option>
           </select>
         </div>
-        <div class="flex items-center font-semibold uppercase">grouped by</div>
+        <div class="flex items-center font-semibold uppercase">See</div>
         <div class="">
-          <label for="group_by" class="mb-3 font-semibold uppercase sr-only">Group by</label>
+          <label for="group_by" class="mb-3 font-semibold uppercase sr-only">See</label>
           <select id="group_by" name="group_by" class="w-full p-2 bg-transparent border lowercase text-center focus:outline-none focus:ring-2 focus:ring-carnation-500">
-            <option>[Select a grouping]</option>
-            <option value="year_published">Year published</option>
-            <option value="grant">Grant</option>
-            <option value="author">Author</option>
-            <option value="publisher">Publisher</option>
-            <option value="subject">Subject</option>
-            <option value="oa_status">OA status</option>
-            <option value="program">Program</option>
-            <option value="institution">Institution</option>
-            <option value="country">Country</option>
-            <option value="journal">Journal</option>
-            <option value="journal_oa_type">Journal OA type</option>
-            <option value="co_funder">Co-funder</option>
-            <option value="publisher_license">Publisher license</option>
-            <option value="preprint_license">Preprint license</option>
-            <option value="repository_license">Repository license</option>
-            <option value="dataset_license">Dataset license</option>
-            <option value="software_license">Software license</option>
-            <option value="dataset_publisher">Dataset publisher</option>
-            <option value="software_publisher">Software publisher</option>
+            <option value="all_articles">All articles</option>
+            <option value="year_published">Years published</option>
+            <option value="grant">Grants</option>
+            <option value="author">Authors</option>
+            <option value="publisher">Publishers</option>
+            <option value="subject">Subjects</option>
+            <option value="oa_status">OA statuses</option>
+            <option value="program">Programs</option>
+            <option value="institution">Institutions</option>
+            <option value="country">Countries</option>
+            <option value="journal">Journals</option>
+            <option value="journal_oa_type">Journal OA types</option>
+            <option value="co_funder">Co-funders</option>
+            <option value="publisher_license">Publisher licenses</option>
+            <option value="preprint_license">Preprint licenses</option>
+            <option value="repository_license">Repository licenses</option>
+            <option value="dataset_license">Dataset licenses</option>
+            <option value="software_license">Software licenses</option>
+            <option value="dataset_publisher">Dataset publishers</option>
+            <option value="software_publisher">Software publishers</option>
           </select>
         </div>
         <button type="submit" class="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium border bg-transparent hover:bg-neutral-900 hover:text-white hover:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 border-0" id="export_preview_btn">
           Preview data
         </button>
-      </form>
+      </form> #}
 
-      <div class="mb-4 flex space-x-2 items-center justify-center" id="export_options">
-        <span class="mr-1 col-span-2 text-xs font-semibold uppercase">Or see preset datasets in CSV: </span>
+      <div class="mb-4 flex flex-wrap space-x-2 items-center" id="export_options">
         {{ component("pill", {
-            id: "all_articles",
-            txt: "All articles",
-            filter_by: "articles",
-            group_by: "none",
-            title: "Showing first <strong>10</strong> of <strong>2,702</strong> records for <strong>2023</strong>",
-            csv: "/temp/bmgf_all-articles_from_2023-01-01-to-2023-10-04_on_2023-09-27.csv",
-            highlight: false
-          }) 
-        }}
-
+          id: "all_articles",
+          txt: "All articles",
+          count: '2,702'
+        })}}
+        {{ component("pill", {
+          id: "year_published",
+          txt: "Years published",
+          count: '135'
+        })}}
+        {{ component("pill", {
+          id: "grant",
+          txt: "Grants",
+          count: '848'
+        })}}
+        {{ component("pill", {
+          id: "author",
+          txt: "Authors",
+          count: '502'
+        })}}
+        {{ component("pill", {
+          id: "publisher",
+          txt: "Publishers",
+          count: '85'
+        })}}
+        {{ component("pill", {
+          id: "journal",
+          txt: "Journals",
+          count: '59'
+        })}}
+        {{ component("pill", {
+          id: "program",
+          txt: "Programs",
+          count: '21'
+        })}}
         {{ component("pill", {
             id: "articles_with_apcs",
             txt: "Finance",
-            filter_by: "articles_with_apcs",
-            group_by: "none",
-            title: "Showing first <strong>10</strong> of <strong>1,027</strong> records for <strong>2023</strong>",
-            csv: "/temp/bmgf_articles-with-apcs_from_2023-01-01-to-2023-10-04_on_2023-09-27.csv",
-            highlight: false
-          }) 
-        }}
+            count: '1,027'
+        })}}
+        {{ component("pill", {
+            id: "see_more",
+            txt: "See more",
+            highlight: true,
+            count: '+'
+        })}}
+
+        <div class="hidden" id="more_exports">
+          {{ component("pill", {
+            id: "subject",
+            txt: "Subjects",
+            count: '9999'
+          })}}
+          {{ component("pill", {
+            id: "oa_status",
+            txt: "OA statuses",
+            count: '9999'
+          })}}
+          {{ component("pill", {
+            id: "institution",
+            txt: "Institutions",
+            count: '9999'
+          })}}
+          {{ component("pill", {
+            id: "country",
+            txt: "Countries",
+            count: '9999'
+          })}}
+          {{ component("pill", {
+            id: "journal_oa_type",
+            txt: "Journal OA types",
+            count: '9999'
+          })}}
+          {{ component("pill", {
+            id: "co_funder",
+            txt: "Co-funders",
+            count: '9999'
+          })}}
+          {{ component("pill", {
+            id: "publisher_license",
+            txt: "Publisher licenses",
+            count: '9999'
+          })}}
+          {{ component("pill", {
+            id: "preprint_license",
+            txt: "Preprint licenses",
+            count: '9999'
+          })}}
+          {{ component("pill", {
+            id: "repository_license",
+            txt: "Repository licenses",
+            count: '9999'
+          })}}
+          {{ component("pill", {
+            id: "dataset_license",
+            txt: "Dataset licenses",
+            count: '9999'
+          })}}
+          {{ component("pill", {
+            id: "software_license",
+            txt: "Software licenses",
+            count: '9999'
+          })}}
+          {{ component("pill", {
+            id: "dataset_publisher",
+            txt: "Dataset publishers",
+            count: '9999'
+          })}}
+          {{ component("pill", {
+            id: "software_publisher",
+            txt: "Software publishers",
+            count: '9999'
+          })}}
+        </div>
+        
       </div>
 
       <div class="hidden" id="export_table">
@@ -303,6 +396,7 @@ permalink: "{{ org._source.objectID | slug }}/"
               </tr>
             </thead>
             <tbody class="text-sm" id="export_table_body">
+              
             </tbody>
             <tfoot class="border-t border-neutral-200">
               <tr>
@@ -314,9 +408,6 @@ permalink: "{{ org._source.objectID | slug }}/"
           </table>
         </div>
         <div class="flex justify-between">
-          <div class="text-xxl font-semibold uppercase">
-            Scroll table to see more data →
-          </div>
           <div class="text-right">
             <a href="/temp/bmgf_all-articles_from_2023-01-01-to-2023-10-04_on_2023-09-27.csv" 
               download 
@@ -324,8 +415,11 @@ permalink: "{{ org._source.objectID | slug }}/"
               aria-label="Download full data as CSV"
               id="export_link"
               class="items-center space-x-2 px-4 py-2 text-base font-medium uppercase text-neutral-900 bg-carnation-500 hover:bg-carnation-300  hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 border-0 whitespace-nowrap inline-block">
-                Download full data (CSV)
+                Download all <span id="export_type_name">data</span> (CSV)
             </a>
+          </div>
+          <div class="text-xxl font-semibold uppercase">
+            Scroll table to see more →
           </div>
         </div>
       </div>
