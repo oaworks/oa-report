@@ -89,33 +89,33 @@ permalink: "{{ org._source.objectID | slug }}/"
       {% endif %}
     </ul>
 
-    {# <ul>
+    <ul>
       <li class="mr-2 inline-block">
-        {{ component("year-select", {
-          id: "",
+        {{ component("section-select", {
+          id: "insights",
           txt: "Insights on articles",
           selected: true
         }) }}
       </li>
       <li class="mr-2 inline-block">
-        {{ component("year-select", {
-          id: "",
+        {{ component("section-select", {
+          id: "explore",
           txt: "Data exploration",
           selected: false
         }) }}
       </li>
       <li class="mr-2 inline-block">
-        {{ component("year-select", {
-          id: "",
+        {{ component("section-select", {
+          id: "strategies",
           txt: "Actions",
           selected: false
         }) }}
       </li>
-    </ul> #}
+    </ul>
   </nav>
 
   {# INSIGHTS #}
-  <section class="bg-neutral-900 text-white" id="insights">
+  <section class="bg-neutral-900 text-white js_section" id="insights">
     <div class="p-6">
       <header class="col-span-3">
         <h2 class="mb-3 text-base md:text-lg leading-6">
@@ -173,13 +173,12 @@ permalink: "{{ org._source.objectID | slug }}/"
           icon: "code"
         }) }}
 
-
     </div>
   </section>
 
   {# EXPLORE #}
   {% if org._source.paid == true %}
-  <section class="bg-neutral-800 text-white" id="explore">
+  <section class="bg-neutral-800 text-white js_section hidden" id="explore">
     <div class="p-6">
       <header class="col-span-3">
         <h2 class="mb-3 text-base md:text-lg leading-6">
@@ -337,7 +336,7 @@ permalink: "{{ org._source.objectID | slug }}/"
   {% endif %}
   
   {# ACTIONS #}
-  <section class="bg-neutral-700 text-white relative" id="strategies">
+  <section class="bg-neutral-700 text-white js_section hidden relative" id="strategies">
     <div class="px-6">
       <div class="grid grid-cols-2 gap-6 md:gap-12 py-6 xl:py-12"> 
         <div class="col-span-2">

@@ -1,5 +1,22 @@
 // TEMP CRAPPY PROTOTYPING SCRIPT
 document.addEventListener("DOMContentLoaded", function() {
+  // Select section tab 
+  const sectionTabs = document.querySelectorAll('.js_section_tab');
+  const sections = document.querySelectorAll('.js_section');
+
+  sectionTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      // Hide all sections
+      sections.forEach(section => {
+          section.classList.add('hidden');
+      });
+
+      // Show the selected section
+      const sectionId = tab.getAttribute('data-section');
+      document.getElementById(sectionId).classList.remove('hidden');
+    });
+  });
+    
   // Get references to elements
   var buttons = document.querySelectorAll('.js_export_pill');
   var form = document.getElementById('explore_form');
@@ -985,6 +1002,7 @@ document.addEventListener("DOMContentLoaded", function() {
   //   // `;
   //   // activateExportLink('/temp/bmgf_articles-with-apcs_from_2023-01-01-to-2023-10-04_on_2023-09-27.csv');
   // });
+  
 
   
 });
