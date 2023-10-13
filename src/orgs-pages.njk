@@ -240,26 +240,16 @@ permalink: "{{ org._source.objectID | slug }}/"
         </button>
       </form> #}
 
-      <div class="mb-4 flex flex-wrap space-x-2 items-center" id="export_options">
+      <div class="mb-4 flex flex-wrap space-r-4 items-center" id="export_options">
         {{ component("pill", {
           id: "all_articles",
           txt: "All articles",
           count: '2,702'
         })}}
         {{ component("pill", {
-          id: "year_published",
-          txt: "Years published",
-          count: '135'
-        })}}
-        {{ component("pill", {
           id: "grant",
           txt: "Grants",
           count: '848'
-        })}}
-        {{ component("pill", {
-          id: "author",
-          txt: "Authors",
-          count: '502'
         })}}
         {{ component("pill", {
           id: "publisher",
@@ -289,6 +279,16 @@ permalink: "{{ org._source.objectID | slug }}/"
         })}}
 
         <div class="hidden" id="more_exports">
+          {{ component("pill", {
+            id: "year_published",
+            txt: "Years published",
+            count: '135'
+          })}}
+          {{ component("pill", {
+            id: "author",
+            txt: "Authors",
+            count: '502'
+          })}}
           {{ component("pill", {
             id: "subject",
             txt: "Subjects",

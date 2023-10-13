@@ -6,11 +6,13 @@
 #}
 
 <button
-  class="items-center inline-flex p-2 pl-4 mr-2 mb-2 px-3 rounded-full bg-white font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500 {% if params.highlight %}bg-carnation-300 {% endif %}js_export_pill" 
+  class="items-center inline-flex p-2 pl-4 mr-4 mb-4 px-3 rounded-full bg-white font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500 {% if params.highlight %}bg-carnation-300 {% endif %}js_export_pill" 
   data-title="{{ params.title }}" 
   data-csv="{{ params.csv }}"
   id="export_{{ params.id }}">
+  <span id="{{ params.id }}_text">
     {{ params.txt }}
+  </span>
   <span id="count_{{ params.id }}" class="bg-neutral-800 text-white ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block">
     {{ params.count }}
   </span>

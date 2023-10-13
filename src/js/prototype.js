@@ -1044,15 +1044,19 @@ document.addEventListener("DOMContentLoaded", function() {
 
   // See more exports btn
   const pillContainer = document.getElementById("more_exports");
-    const seeMoreButton = document.getElementById("export_see_more");
+  const seeMoreButton = document.getElementById("export_see_more");
+  const seeMoreTxt = document.getElementById("see_more_text");
+  const seeMoreCount = document.getElementById("count_see_more");
   
     seeMoreButton.addEventListener("click", function() {
       if (pillContainer.classList.contains('hidden')) {
         pillContainer.classList.remove('hidden');
-        seeMoreButton.textContent = "See fewer";
+        seeMoreTxt.textContent = "See fewer";
+        seeMoreCount.textContent = "—";
       } else {
         pillContainer.classList.add('hidden');
-        seeMoreButton.textContent = "See more";
+        seeMoreTxt.textContent = "See more";
+        seeMoreCount.textContent = "+";
       }
     });
 
