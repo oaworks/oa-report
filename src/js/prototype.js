@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", function() {
   var exportLink = document.getElementById('export_link');
   var filterBySelect = document.getElementById('filter_by');
   var groupBySelect = document.getElementById('group_by');
+  var exportRecordsShown = document.getElementById('export_records_shown');
   var exportTitle = document.getElementById('export_title');
   var exportYear = document.getElementById('export_year');
   var exportTypeName = document.getElementById('export_type_name');
@@ -174,6 +175,7 @@ document.addEventListener("DOMContentLoaded", function() {
     var table = document.querySelector(".js_export_table");
     table.id = "table_grant";
 
+    exportRecordsShown.innerHTML = 10;
     exportTitle.innerHTML = tableData.articles_grant.number;
     exportYear.innerHTML = tableData.articles_grant.year;
     exportTableHead.innerHTML = tableData.articles_grant.pretty.head;
@@ -190,6 +192,7 @@ document.addEventListener("DOMContentLoaded", function() {
     var table = document.querySelector(".js_export_table");
     table.id = "table_publisher";
 
+    exportRecordsShown.innerHTML = 10;
     exportTitle.innerHTML = tableData.articles_publisher.number;
     exportYear.innerHTML = tableData.articles_publisher.year;
     exportTableHead.innerHTML = tableData.articles_publisher.pretty.head;
@@ -202,6 +205,11 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 
   document.querySelector('#js_see_more_records').addEventListener('click', function() {
+    // Increment records shown value by 10
+    let currentValue = parseInt(exportRecordsShown.innerText, 10);
+    currentValue += 10;
+    exportRecordsShown.innerText = currentValue;
+
     if (document.getElementById('table_grant')) {
       var htmlContent = tableData.articles_grant.pretty.body_more;
       exportTableBody.insertAdjacentHTML('beforeend', htmlContent);
