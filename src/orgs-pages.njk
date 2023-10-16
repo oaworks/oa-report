@@ -94,7 +94,7 @@ permalink: "{{ org._source.objectID | slug }}/"
         {{ component("section-select", {
           id: "insights",
           txt: "Insights on articles",
-          selected: true
+          selected: false
         }) }}
       </li>
       <li class="inline-block">
@@ -115,7 +115,7 @@ permalink: "{{ org._source.objectID | slug }}/"
   </nav>
 
   {# INSIGHTS #}
-  <section class="bg-neutral-900 text-white js_section" id="insights">
+  <section class="bg-neutral-900 text-white scroll-mt-32 js_section" id="insights">
     <div class="p-6">
       <header class="col-span-3">
         <h2 class="mb-3 text-base md:text-lg leading-6">
@@ -178,7 +178,7 @@ permalink: "{{ org._source.objectID | slug }}/"
 
   {# EXPLORE #}
   {% if org._source.paid == true %}
-  <section class="bg-neutral-800 text-white js_section hidden" id="explore">
+  <section class="bg-neutral-800 text-white scroll-mt-32 js_section" id="explore">
     <div class="p-6">
       <header class="col-span-3">
         <h2 class="mb-3 text-base md:text-lg leading-6">
@@ -440,7 +440,7 @@ permalink: "{{ org._source.objectID | slug }}/"
   {% endif %}
   
   {# ACTIONS #}
-  <section class="bg-neutral-700 text-white js_section hidden relative" id="strategies">
+  <section class="bg-neutral-700 text-white scroll-mt-32 js_section relative" id="strategies">
     <div class="px-6">
       <div class="grid grid-cols-2 gap-6 md:gap-12 py-6 xl:py-12"> 
         <div class="col-span-2">
