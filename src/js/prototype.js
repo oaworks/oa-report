@@ -1101,13 +1101,13 @@ document.addEventListener("DOMContentLoaded", function() {
 
       // Remove highlighting from all rows
       tableRows.forEach((r) => {
-        r.classList.remove('bg-neutral-300', 'hover:bg-neutral-200', 'text-neutral-900');
+        r.classList.remove('bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900');
       });
 
       // Toggle highlighting for the selected <td> elements
       tdsToHighlight.forEach((td) => {
-        td.classList.toggle('bg-neutral-300');
-        td.classList.toggle('hover:bg-neutral-200');
+        td.classList.toggle('bg-neutral-200');
+        td.classList.toggle('hover:bg-neutral-100');
         td.classList.toggle('text-neutral-900');
       });
     }
