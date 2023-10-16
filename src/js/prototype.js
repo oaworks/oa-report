@@ -1,5 +1,24 @@
 // TEMP CRAPPY PROTOTYPING SCRIPT
 document.addEventListener("DOMContentLoaded", function() {
+  // Get references to elements
+  var buttons = document.querySelectorAll('.js_export_pill');
+  var form = document.getElementById('explore_form');
+  var exportLink = document.getElementById('export_link');
+  var filterBySelect = document.getElementById('filter_by');
+  var groupBySelect = document.getElementById('group_by');
+  var exportTitle = document.getElementById('export_title');
+  var exportYear = document.getElementById('export_year');
+  var exportTypeName = document.getElementById('export_type_name');
+  var exportPreviewBtn = document.getElementById('export_preview_btn');
+  var exportTable = document.getElementById('export_table');
+  var exportTableHead = document.getElementById('export_table_head');
+  var exportTableBody = document.getElementById('export_table_body');
+  var exportAllArticlesBtn = document.getElementById('export_all_articles');
+  var exportGrantsBtn = document.getElementById('export_grant');
+  var exportPublishersBtn = document.getElementById('export_publisher');
+  var exportFinancesBtn = document.getElementById('export_articles_with_apcs');
+  var seeMoreRecordsBtn = document.getElementById('js_see_more_records');
+
   // Select section tab 
   // Function to show a specific section
   function showSection(sectionId) {
@@ -52,25 +71,6 @@ document.addEventListener("DOMContentLoaded", function() {
         history.pushState(null, null, `#${sectionId}`);
     });
   });
-
-    
-  // Get references to elements
-  var buttons = document.querySelectorAll('.js_export_pill');
-  var form = document.getElementById('explore_form');
-  var exportLink = document.getElementById('export_link');
-  var filterBySelect = document.getElementById('filter_by');
-  var groupBySelect = document.getElementById('group_by');
-  var exportTitle = document.getElementById('export_title');
-  var exportYear = document.getElementById('export_year');
-  var exportTypeName = document.getElementById('export_type_name');
-  var exportPreviewBtn = document.getElementById('export_preview_btn');
-  var exportTable = document.getElementById('export_table');
-  var exportTableHead = document.getElementById('export_table_head');
-  var exportTableBody = document.getElementById('export_table_body');
-  var exportAllArticlesBtn = document.getElementById('export_all_articles');
-  var exportGrantsBtn = document.getElementById('export_grant');
-  var exportPublishersBtn = document.getElementById('export_publisher');
-  var exportFinancesBtn = document.getElementById('export_articles_with_apcs');
   
   // For each export pill button
   buttons.forEach(function(button) {
@@ -168,47 +168,12 @@ document.addEventListener("DOMContentLoaded", function() {
     // Attach the event handler
     toggleButton.addEventListener('click', currentToggleHandler);
   }
-  
-  // Listen for form changes
-  // form.addEventListener('input', function() {
-  //   // Deactivate buttons and the export link
-  //   buttons.forEach(function(btn) {
-  //     btn.classList.remove('bg-carnation-300');
-  //   });
-  //   deactivateExportLink();
-  // });
-
-  // exportPreviewBtn.addEventListener('click', function(e) {
-  //   e.preventDefault(); // prevent default form submission
-
-  //   // Listen for form submission if user selected filter by articles grouped by grants
-  //   if (filterBySelect.value === 'articles' && groupBySelect.value === 'grant') {
-  //     exportTitle.innerHTML = tableData.articles_grant.number;
-  //     exportYear.innerHTML = tableData.articles_grant.year;
-  //     exportTableHead.innerHTML = tableData.articles_grant.pretty.head;
-  //     exportTableBody.innerHTML = tableData.articles_grant.pretty.body;
-  //     activateExportLink(tableData.articles_grant.pretty.link);
-  //     exportTable.classList.add('block');
-  //     exportTable.classList.remove('hidden');
-  //     toggleData('articles_grant');
-
-  //     // Listen for form submission if user selected filter by articles grouped by publishers
-  //   } else if (filterBySelect.value === 'articles' && groupBySelect.value === 'publisher') {
-  //     exportTitle.innerHTML = tableData.articles_publisher.number;
-  //     exportYear.innerHTML = tableData.articles_publisher.year;
-  //     exportTableHead.innerHTML = tableData.articles_publisher.pretty.head;
-  //     exportTableBody.innerHTML = tableData.articles_publisher.pretty.body;
-  //     activateExportLink(tableData.articles_publisher.pretty.link);
-  //     exportTable.classList.add('block');
-  //     exportTable.classList.remove('hidden');
-  //     toggleData('articles_publisher');
-  //   } else {
-  //     deactivateExportLink();
-  //   }
-  // });
 
   // Listen for form submission if user selected filter by articles grouped by grants
   exportGrantsBtn.addEventListener('click', function() {
+    var table = document.querySelector(".js_export_table");
+    table.id = "table_grant";
+
     exportTitle.innerHTML = tableData.articles_grant.number;
     exportYear.innerHTML = tableData.articles_grant.year;
     exportTableHead.innerHTML = tableData.articles_grant.pretty.head;
@@ -220,8 +185,11 @@ document.addEventListener("DOMContentLoaded", function() {
     toggleData('articles_grant');
   });
 
-    // Listen for form submission if user selected filter by articles grouped by publishers
-    exportPublishersBtn.addEventListener('click', function() {
+  // Listen for form submission if user selected filter by articles grouped by publishers
+  exportPublishersBtn.addEventListener('click', function() {
+    var table = document.querySelector(".js_export_table");
+    table.id = "table_publisher";
+
     exportTitle.innerHTML = tableData.articles_publisher.number;
     exportYear.innerHTML = tableData.articles_publisher.year;
     exportTableHead.innerHTML = tableData.articles_publisher.pretty.head;
@@ -231,6 +199,17 @@ document.addEventListener("DOMContentLoaded", function() {
     exportTable.classList.remove('hidden');
     exportTypeName.innerText = 'publishers';
     toggleData('articles_publisher');
+  });
+
+  document.querySelector('#js_see_more_records').addEventListener('click', function() {
+    if (document.getElementById('table_grant')) {
+      var htmlContent = tableData.articles_grant.pretty.body_more;
+      exportTableBody.insertAdjacentHTML('beforeend', htmlContent);
+    }
+    else if (document.getElementById('table_publisher')) {
+      var htmlContent = tableData.articles_publisher.pretty.body_more;
+      exportTableBody.insertAdjacentHTML('beforeend', htmlContent);
+    }
   });
   
   // Listen for button click of "all articles" preset

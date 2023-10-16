@@ -360,7 +360,7 @@ permalink: "{{ org._source.objectID | slug }}/"
       <div id="export_table">
         <div class="my-4 gap-6 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 items-end">
           <h3 class="col-span-2 text-xxl font-semibold uppercase" aria-live="polite">
-            Previewing first <strong>10</strong> of <strong id="export_title">2,702</strong> records for <strong id="export_year">2023</strong>
+            Previewing first <strong>0</strong> of <strong id="export_title">0</strong> records for <strong id="export_year">2023</strong>
             {{ component("tooltip", {
               msg: "This table is a preview of all the records for your query. To see the full data set in CSV format, use the <em>Download full data (CSV)</em> button."
             }) }} 
@@ -389,7 +389,7 @@ permalink: "{{ org._source.objectID | slug }}/"
           </nav>
         </div>
         <div class="mb-4 overflow-x-auto border border-neutral-200">
-          <table class="border-collapse w-full table-fixed">
+          <table class="border-collapse w-full table-fixed js_export_table">
             <thead class="border-b border-neutral-200">
               <tr class="text-left text-xs font-medium uppercase tracking-wider" id="export_table_head">
                 {% include 'partials/temp-default-thead.njk' %}
