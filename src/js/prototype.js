@@ -19,59 +19,6 @@ document.addEventListener("DOMContentLoaded", function() {
   var exportPublishersBtn = document.getElementById('export_publisher');
   var exportFinancesBtn = document.getElementById('export_articles_with_apcs');
   var seeMoreRecordsBtn = document.getElementById('js_see_more_records');
-
-  // Select section tab 
-  // Function to show a specific section
-  // function showSection(sectionId) {
-  //   const sections = document.querySelectorAll('.js_section');
-  //   sections.forEach(section => {
-  //       if (section.id === sectionId) {
-  //           section.classList.remove('hidden');
-  //       } else {
-  //           section.classList.add('hidden');
-  //       }
-  //   });
-  // }
-
-  // // Function to handle tab highlighting
-  // function highlightTab(sectionId) {
-  //   const sectionTabs = document.querySelectorAll('.js_section_tab');
-  //   sectionTabs.forEach(tab => {
-  //       if (tab.getAttribute('data-section') === sectionId) {
-  //           // Add the 'bg-neutral-900' and 'text-white' classes to the selected tab
-  //           tab.classList.add('bg-neutral-900', 'font-semibold', 'text-white');
-  //       } else {
-  //           // Remove the classes from other tabs
-  //           tab.classList.remove('bg-neutral-900', 'font-semibold', 'text-white');
-  //       }
-  //   });
-  // }
-
-  // Function to handle anchor links
-  // function handleAnchorLink() {
-  //   const hash = window.location.hash;
-  //   if (hash) {
-  //       const sectionId = hash.slice(1); // Remove the '#' character
-  //       showSection(sectionId);
-  //       highlightTab(sectionId);
-  //   }
-  // }
-
-  // Handle anchor links on page load
-  // window.addEventListener('load', handleAnchorLink);
-
-  // // Select section tab 
-  // const sectionTabs = document.querySelectorAll('.js_section_tab');
-  // sectionTabs.forEach(tab => {
-  //   tab.addEventListener('click', () => {
-  //       const sectionId = tab.getAttribute('data-section');
-  //       showSection(sectionId);
-  //       highlightTab(sectionId);
-
-  //       // Update the URL with the section ID
-  //       history.pushState(null, null, `#${sectionId}`);
-  //   });
-  // });
   
   // For each export pill button
   buttons.forEach(function(button) {
