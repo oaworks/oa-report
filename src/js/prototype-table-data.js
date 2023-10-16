@@ -25,10 +25,10 @@ const tableData = {
         <tr>
           <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             OPP1144
-          </td>
-          <td class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 whitespace-nowrap truncate">
+          </th>
+          <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             510
-          </td>
+          </th>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">66.5%</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">90%</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">66.9%</td>
@@ -46,10 +46,10 @@ const tableData = {
         <tr>
           <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             OPP1152504
-          </td>
-          <td class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 whitespace-nowrap truncate">
+          </th>
+          <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             154
-          </td>
+          </th>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">99.4%</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">99.4%</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">99.4%</td>
@@ -67,10 +67,10 @@ const tableData = {
         <tr>
           <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             OPP1134248
-          </td>
-          <td class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 whitespace-nowrap truncate">
+          </th>
+          <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             130
-          </td>
+          </th>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">97.7%</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">97.7%</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">97.7%</td>
@@ -88,10 +88,10 @@ const tableData = {
         <tr>
           <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             INV-008166
-          </td>
-          <td class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 whitespace-nowrap truncate">
+          </th>
+          <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             120
-          </td>
+          </th>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">99.2%</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">100%</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">99.2%</td>
@@ -109,10 +109,10 @@ const tableData = {
         <tr>
           <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             INTERNAL
-          </td>
-          <td class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 whitespace-nowrap truncate">
+          </th>
+          <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             108
-          </td>
+          </th>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">94.4%</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">98.1%</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">94.4%</td>
@@ -130,10 +130,10 @@ const tableData = {
         <tr>
           <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             OPP1113682
-          </td>
-          <td class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 whitespace-nowrap truncate">
+          </th>
+          <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             106
-          </td>
+          </th>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">63.2%</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">99.1%</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">63.2%</td>
@@ -151,10 +151,10 @@ const tableData = {
         <tr>
           <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             OPP1114827
-          </td>
-          <td class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 whitespace-nowrap truncate">
+          </th>
+          <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             95
-          </td>
+          </th>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">97.9%</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">97.9%</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">97.9%</td>
@@ -172,10 +172,10 @@ const tableData = {
         <tr>
           <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             INV-009934
-          </td>
-          <td class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 whitespace-nowrap truncate">
+          </th>
+          <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             91
-          </td>
+          </th>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">97.8%</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">97.8%</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">97.8%</td>
@@ -193,10 +193,10 @@ const tableData = {
         <tr>
           <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             OPP1053230
-          </td>
-          <td class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 whitespace-nowrap truncate">
+          </th>
+          <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             86
-          </td>
+          </th>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">100%</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">100%</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">100%</td>
@@ -214,10 +214,10 @@ const tableData = {
         <tr>
           <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             INV-003439
-          </td>
-          <td class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 whitespace-nowrap truncate">
+          </th>
+          <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             81
-          </td>
+          </th>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">96.3%</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">97.5%</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">96.3%</td>
@@ -403,8 +403,8 @@ const tableData = {
         <tr>
           <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             OPP1144
-          </td>
-          <td class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 whitespace-nowrap truncate">510</td>
+          </th>
+          <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">510</th>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">339</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">459</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">341</td>
@@ -423,8 +423,8 @@ const tableData = {
         <tr>
           <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             OPP1152504
-          </td>
-          <td class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 whitespace-nowrap truncate">154</td>
+          </th>
+          <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">154</th>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">153</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">153</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">153</td>
@@ -443,8 +443,8 @@ const tableData = {
         <tr>
           <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             OPP1134248
-          </td>
-          <td class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 whitespace-nowrap truncate">130</td>
+          </th>
+          <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">130</th>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">127</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">127</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">127</td>
@@ -463,8 +463,8 @@ const tableData = {
         <tr>
           <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             INV-008166
-          </td>
-          <td class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 whitespace-nowrap truncate">120</td>
+          </th>
+          <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">120</th>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">119</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">120</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">119</td>
@@ -483,8 +483,8 @@ const tableData = {
         <tr>
           <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             INTERNAL
-          </td>
-          <td class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 whitespace-nowrap truncate">108</td>
+          </th>
+          <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">108</th>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">102</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">106</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">102</td>
@@ -503,8 +503,8 @@ const tableData = {
         <tr>
           <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             OPP1113682
-          </td>
-          <td class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 whitespace-nowrap truncate">106</td>
+          </th>
+          <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">106</th>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">67</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">105</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">67</td>
@@ -523,8 +523,8 @@ const tableData = {
         <tr>
           <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             OPP1114827
-          </td>
-          <td class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 whitespace-nowrap truncate">95</td>
+          </th>
+          <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">95</th>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">93</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">93</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">93</td>
@@ -543,8 +543,8 @@ const tableData = {
         <tr>
           <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             INV-009934
-          </td>
-          <td class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 whitespace-nowrap truncate">91</td>
+          </th>
+          <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">91</th>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">89</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">89</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">89</td>
@@ -563,8 +563,8 @@ const tableData = {
         <tr>
           <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             OPP1053230
-          </td>
-          <td class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 whitespace-nowrap truncate">86</td>
+          </th>
+          <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">86</th>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">86</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">86</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">86</td>
@@ -583,8 +583,8 @@ const tableData = {
         <tr>
           <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             INV-003439
-          </td>
-          <td class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 whitespace-nowrap truncate">81</td>
+          </th>
+          <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">81</th>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">78</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">79</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">78</td>
@@ -626,8 +626,8 @@ const tableData = {
       `,
       body: `
         <tr>
-          <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">Elsevier BV</td>
-          <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">543</td>
+          <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">Elsevier BV</th>
+          <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">543</th>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">67.2%</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">91.5%</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">69.1%</td>
@@ -643,7 +643,7 @@ const tableData = {
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">46.4%</td>
         </tr>
         <tr>
-          <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">Springer Science and Business Media LLC</td>
+          <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">Springer Science and Business Media LLC</th>
           <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">419</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">90%</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">94.7%</td>
@@ -660,7 +660,7 @@ const tableData = {
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">63%</td>
         </tr>
         <tr>
-          <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">Frontiers Media SA</td>
+          <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">Frontiers Media SA</th>
           <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">217</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">96.8%</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">100%</td>
@@ -677,7 +677,7 @@ const tableData = {
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">52.5%</td>
         </tr>
         <tr>
-          <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">Public Library of Science (PLoS)</td>
+          <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">Public Library of Science (PLoS)</th>
           <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">201</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">97%</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">100%</td>
@@ -694,7 +694,7 @@ const tableData = {
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">64.7%</td>
         </tr>
         <tr>
-          <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">Wiley</td>
+          <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">Wiley</th>
           <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">190</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">75.3%</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">84.7%</td>
@@ -711,7 +711,7 @@ const tableData = {
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">52.6%</td>
         </tr>
         <tr>
-          <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">MDPI AG</td>
+          <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">MDPI AG</th>
           <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">164</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">99.4%</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">100%</td>
@@ -728,7 +728,7 @@ const tableData = {
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">65.2%</td>
         </tr>
         <tr>
-          <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">Oxford University Press (OUP)</td>
+          <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">Oxford University Press (OUP)</th>
           <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">99</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">57.6%</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">87.9%</td>
@@ -745,7 +745,7 @@ const tableData = {
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">56.6%</td>
         </tr>
         <tr>
-          <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">BMJ</td>
+          <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">BMJ</th>
           <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">91</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">78%</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">100%</td>
@@ -762,7 +762,7 @@ const tableData = {
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">69.2%</td>
         </tr>
         <tr>
-          <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">Informa UK Limited</td>
+          <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">Informa UK Limited</th>
           <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">74</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">75.7%</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">91.9%</td>
@@ -779,7 +779,7 @@ const tableData = {
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">51.4%</td>
         </tr>
         <tr>
-          <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">F1000 Research Ltd</td>
+          <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">F1000 Research Ltd</th>
           <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">54</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">100%</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">100%</td>
@@ -992,10 +992,10 @@ const tableData = {
         <tr>
           <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             Elsevier BV
-          </td>
-          <td class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 whitespace-nowrap truncate">
+          </th>
+          <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             543
-          </td>
+          </th>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">365</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">497</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">375</td>
@@ -1014,10 +1014,10 @@ const tableData = {
         <tr>
           <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             Springer Science and Business Media LLC
-          </td>
-          <td class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 whitespace-nowrap truncate">
+          </th>
+          <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             419
-          </td>
+          </th>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">377</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">397</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">382</td>
@@ -1036,10 +1036,10 @@ const tableData = {
         <tr>
           <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             Frontiers Media SA
-          </td>
-          <td class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 whitespace-nowrap truncate">
+          </th>
+          <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             217
-          </td>
+          </th>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">210</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">217</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">216</td>
@@ -1058,10 +1058,10 @@ const tableData = {
         <tr>
           <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             Public Library of Science (PLoS)
-          </td>
-          <td class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 whitespace-nowrap truncate">
+          </th>
+          <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             201
-          </td>
+          </th>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">195</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">201</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">198</td>
@@ -1080,10 +1080,10 @@ const tableData = {
         <tr>
           <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             Wiley
-          </td>
-          <td class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 whitespace-nowrap truncate">
+          </th>
+          <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             190
-          </td>
+          </th>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">143</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">161</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">148</td>
@@ -1102,10 +1102,10 @@ const tableData = {
         <tr>
           <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             MDPI AG
-          </td>
-          <td class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 whitespace-nowrap truncate">
+          </th>
+          <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             164
-          </td>
+          </th>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">163</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">164</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">164</td>
@@ -1124,10 +1124,10 @@ const tableData = {
         <tr>
           <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             Oxford University Press (OUP)
-          </td>
-          <td class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 whitespace-nowrap truncate">
+          </th>
+          <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             99
-          </td>
+          </th>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">57</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">87</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">58</td>
@@ -1146,10 +1146,10 @@ const tableData = {
         <tr>
           <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             BMJ
-          </td>
-          <td class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 whitespace-nowrap truncate">
+          </th>
+          <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             91
-          </td>
+          </th>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">71</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">91</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">76</td>
@@ -1168,10 +1168,10 @@ const tableData = {
         <tr>
           <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             Informa UK Limited
-          </td>
-          <td class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 whitespace-nowrap truncate">
+          </th>
+          <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             74
-          </td>
+          </th>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">56</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">68</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">60</td>
@@ -1190,10 +1190,10 @@ const tableData = {
         <tr>
           <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             F1000 Research Ltd
-          </td>
-          <td class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 whitespace-nowrap truncate">
+          </th>
+          <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">
             54
-          </td>
+          </th>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">54</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">54</td>
           <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">54</td>
