@@ -1860,7 +1860,7 @@ const tableData = {
     }
   },
   articles_with_apcs_only: {
-    number: 20,
+    number: "1,027",
     link: '/temp/bmgf_articles-with-apcs_from_2023-01-01-to-2023-10-04_on_2023-09-27.csv',
     pretty: {
       head: `
@@ -1870,8 +1870,172 @@ const tableData = {
     },
     raw: {
       head: `
+        <tr>
+          <th scope="col" class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">DOI</th>
+          <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">grantid__bmgf</th>
+          <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">publisher_simple</th>
+          <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">journal</th>
+          <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">journal_oa_type</th>
+          <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">published_date</th>
+          <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">oa_status</th>
+          <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">publisher_license_best</th>
+          <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">apc_cost</th>
+          <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">invoice_number</th>
+          <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">invoice_date</th>
+          <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">invoice_year</th>
+        </tr>
       `,
       body: `
+        <tr>
+          <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.3389/fpubh.2023.1147180</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">closed</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-22</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">3230</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-1008788-1</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-08</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+        </tr>
+        <tr>
+          <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.1136/bmj-2022-072249</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">closed</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-21</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">6800</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">APC600447950</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-04</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+        </tr>
+        <tr>
+          <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.1038/s41591-023-02551-w</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">closed</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-21</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">11690</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">1452513097</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-13</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+        </tr>
+        <tr>
+          <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.1128/mbio.01887-23</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">closed</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-20</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">4270</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">APC600441996</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-08-11</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+        </tr>
+        <tr>
+          <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.3389/fimmu.2023.1220130</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">closed</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-20</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">3230</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-1008788-1</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-08</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+        </tr>
+        <tr>
+          <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.3389/fvets.2023.1168649</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">closed</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-19</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">3230</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-1008788-1</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-08</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+        </tr>
+        <tr>
+          <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.3389/fsoc.2023.1254595</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">closed</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-19</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">770</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-1008788-1</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-08</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+        </tr>
+        <tr>
+          <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.1038/s41598-023-42425-2</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">springer/nature/bmc</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">Scientific Reports</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">gold</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-16</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">gold</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">cc-by</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">1350</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2939206000</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-20</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+        </tr>
+        <tr>
+          <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.1099/mgen.0.001094</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">closed</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-15</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">3170</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">APC600449722</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-08</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+        </tr>
+        <tr>
+          <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.3389/fphar.2023.1088670</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">closed</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-14</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">3230</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-1008788-1</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-08</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+        </tr>
       `
     }
   }

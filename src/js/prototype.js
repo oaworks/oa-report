@@ -154,7 +154,7 @@ document.addEventListener("DOMContentLoaded", function() {
   // Listen for button click of "all articles" 
   exportAllArticlesBtn.addEventListener('click', function() {
     var table = document.querySelector(".js_export_table");
-    table.id = "table_publisher";
+    table.id = "table_article";
 
     exportRecordsShown.innerHTML = 10;
     exportTitle.innerHTML = tableData.articles.number;
@@ -169,182 +169,18 @@ document.addEventListener("DOMContentLoaded", function() {
 
   // Listen for button click of "finance" 
   exportFinancesBtn.addEventListener('click', function() {
+    var table = document.querySelector(".js_export_table");
+    table.id = "table_finance";
+
+    exportRecordsShown.innerHTML = 10;
+    exportTitle.innerHTML = tableData.articles_with_apcs_only.number;
+    exportYear.innerHTML = tableData.articles_with_apcs_only.year;
+    exportTableHead.innerHTML = tableData.articles_with_apcs_only.raw.head;
+    exportTableBody.innerHTML = tableData.articles_with_apcs_only.raw.body;
+    activateExportLink(tableData.articles_with_apcs_only.raw.link);
     exportTable.classList.add('block');
     exportTable.classList.remove('hidden');
-
-    exportTitle.innerHTML = `1,027`;
-
-    // exportTableHead.innerHTML = `
-    //   <tr>
-    //     <th scope="col" class="sticky left-0 bg-neutral-700 p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">DOI</th>
-    //     <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">grantid__bmgf</th>
-    //     <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">publisher_simple</th>
-    //     <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">journal</th>
-    //     <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">journal_oa_type</th>
-    //     <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">published_date</th>
-    //     <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">oa_status</th>
-    //     <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">publisher_license_best</th>
-    //     <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">apc_cost</th>
-    //     <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">invoice_number</th>
-    //     <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">invoice_date</th>
-    //     <th scope="col" class="p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">invoice_year</th>
-    //   </tr>
-    // `; 
-
-    // exportTableBody.innerHTML = `
-    //   <tr>
-    //     <td class="sticky left-0 bg-neutral-700 p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">10.3389/fpubh.2023.1147180</td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate">closed</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023-09-22</td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate">3230</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023-1008788-1</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023-09-08</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023</td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //   </tr>
-    //   <tr>
-    //     <td class="sticky left-0 bg-neutral-700 p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">10.1136/bmj-2022-072249</td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate">closed</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023-09-21</td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate">6800</td>
-    //     <td class="p-2 whitespace-nowrap truncate">APC600447950</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023-09-04</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023</td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //   </tr>
-    //   <tr>
-    //     <td class="sticky left-0 bg-neutral-700 p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">10.1038/s41591-023-02551-w</td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate">closed</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023-09-21</td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate">11690</td>
-    //     <td class="p-2 whitespace-nowrap truncate">1452513097</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023-09-13</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023</td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //   </tr>
-    //   <tr>
-    //     <td class="sticky left-0 bg-neutral-700 p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">10.1128/mbio.01887-23</td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate">closed</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023-09-20</td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate">4270</td>
-    //     <td class="p-2 whitespace-nowrap truncate">APC600441996</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023-08-11</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023</td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //   </tr>
-    //   <tr>
-    //     <td class="sticky left-0 bg-neutral-700 p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">10.3389/fimmu.2023.1220130</td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate">closed</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023-09-20</td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate">3230</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023-1008788-1</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023-09-08</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023</td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //   </tr>
-    //   <tr>
-    //     <td class="sticky left-0 bg-neutral-700 p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">10.3389/fvets.2023.1168649</td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate">closed</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023-09-19</td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate">3230</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023-1008788-1</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023-09-08</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023</td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //   </tr>
-    //   <tr>
-    //     <td class="sticky left-0 bg-neutral-700 p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">10.3389/fsoc.2023.1254595</td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate">closed</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023-09-19</td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate">770</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023-1008788-1</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023-09-08</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023</td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //   </tr>
-    //   <tr>
-    //     <td class="sticky left-0 bg-neutral-700 p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">10.1038/s41598-023-42425-2</td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate">springer/nature/bmc</td>
-    //     <td class="p-2 whitespace-nowrap truncate">Scientific Reports</td>
-    //     <td class="p-2 whitespace-nowrap truncate">gold</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023-09-16</td>
-    //     <td class="p-2 whitespace-nowrap truncate">gold</td>
-    //     <td class="p-2 whitespace-nowrap truncate">cc-by</td>
-    //     <td class="p-2 whitespace-nowrap truncate">1350</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2939206000</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023-09-20</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023</td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //   </tr>
-    //   <tr>
-    //     <td class="sticky left-0 bg-neutral-700 p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">10.1099/mgen.0.001094</td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate">closed</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023-09-15</td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate">3170</td>
-    //     <td class="p-2 whitespace-nowrap truncate">APC600449722</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023-09-08</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023</td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //   </tr>
-    //   <tr>
-    //     <td class="sticky left-0 bg-neutral-700 p-2 text-left text-sm font-medium uppercase tracking-wider w-60 truncate">10.3389/fphar.2023.1088670</td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate">closed</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023-09-14</td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //     <td class="p-2 whitespace-nowrap truncate">3230</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023-1008788-1</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023-09-08</td>
-    //     <td class="p-2 whitespace-nowrap truncate">2023</td>
-    //     <td class="p-2 whitespace-nowrap truncate"></td>
-    //   </tr>
-  
-    // `;
-    // activateExportLink('/temp/bmgf_articles-with-apcs_from_2023-01-01-to-2023-10-04_on_2023-09-27.csv');
+    exportTypeName.innerText = 'articles';
   });
 
   // Display more records in table 
