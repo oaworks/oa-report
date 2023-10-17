@@ -1,4 +1,652 @@
 const tableData = {
+  articles: {
+    number: '2,702',
+    year: '2023',
+    raw: {
+      link: "/temp/bmgf_all-articles_from_2023-01-01-to-2023-10-04_on_2023-09-27.csv",
+      head: `
+        <th scope="col" class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">DOI</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">is_compliant__bmgf</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">grantid__bmgf</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">title</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">publisher</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">journal</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">issn</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">published_date</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">published_year</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">PMCID</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">authorships.institutions.display_name</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">funder.name</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">is_oa</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">oa_status</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">journal_oa_type</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">publisher_license_best</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">has_repository_copy</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">repository_license_best</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">repository_version</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">repository_url</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">is_approved_repository__bmgf</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">is_preprint</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">can_archive</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">version</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">concepts.display_name</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">subject</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">program__bmgf</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">has_data_availability_statement</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">cited_by_count</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">author_email_name</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">email</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">invoice_date</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">invoice_number</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">apc_cost</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">oasupport.status</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">sheets</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">is_new__bmgf</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.data.has_shared_data</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.data.has_open_data</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.data.doi</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.data.url</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.data.accession</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.data.location</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.data.licence</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.data.evidence</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.code.has_made_code</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.code.has_shared_code</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.code.has_open_code</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.code.doi</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.code.url</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.code.accession</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.code.location</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.code.licence</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.code.evidence</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">is_original_research</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">data_availability_statement_category</th>
+      `,
+      body: `
+        <tr>
+          <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.1016/j.xpro.2023.102563</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">A protocol for measuring the sexual receptivity of female Drosophila</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">Elsevier BV</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">STAR Protocols</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2666-1667</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-12-01</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">PMC10507193</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">hybrid</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">gold</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">cc-by-nc-nd</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">publishedVersion</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">custom_keys__bmgf;is_new__bmgf;pmc__bmgf;preprints_oa_locations__bmgf</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+        </tr>
+        <tr>
+          <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.1016/j.ebiom.2023.104777</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">Predictive models of long COVID</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">Elsevier BV</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">eBioMedicine</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2352-3964</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-10-01</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">PMC10494314</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">closed</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">gold</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">cc-by</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">publishedVersion</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">Medicine;Coronavirus disease 2019 (COVID-19);Logistic regression;Generalizability theory;Random forest;Internal medicine;Cohort;Diagnosis code;Incidence (geometry);Disease;Artificial intelligence;Statistics;Infectious disease (medical specialty);Population;Computer science;Environmental health;Physics;Mathematics;Optics</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">General Biochemistry, Genetics and Molecular Biology;General Medicine</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">0</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">custom_keys__bmgf;is_compliant__bmgf;is_new__bmgf;pmc__bmgf;preprints_oa_locations__bmgf;publication_type__bmgf</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+        </tr>
+        <tr>
+          <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.1016/j.eclinm.2023.102140</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">Immunogenicity and safety of SARS-CoV-2 recombinant protein nanoparticle vaccine GBP510 adjuvanted with AS03: interim results of a randomised, active-controlled, observer-blinded, phase 3 trial</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">Elsevier BV</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">eClinicalMedicine</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2589-5370</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-10-01</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">PMC10498190</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">gold</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">cc-by-nc-nd</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">publishedVersion</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">Medicine;Immunogenicity;Cohort;Interim analysis;Vaccination;Internal medicine;Seroconversion;Randomized controlled trial;Immunology;Antibody</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">General Medicine</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">0</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">custom_keys__bmgf;is_new__bmgf;pmc__bmgf;preprints_oa_locations__bmgf;publication_type__bmgf</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+        </tr>
+        <tr>
+          <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.1016/s2214-109x(23)00383-2</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">Potential cost-effectiveness of community availability of tenofovir, lamivudine, and dolutegravir for HIV prevention and treatment in east, central, southern, and west Africa: a modelling analysis</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">Elsevier BV</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">The Lancet Global Health</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2214-109X</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-10-01</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">closed</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">gold</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">publishedVersion</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">custom_keys__bmgf;is_new__bmgf;name_epmc__bmgf;preprints_oa_locations__bmgf</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+        </tr>
+        <tr>
+          <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.1016/j.eclinm.2023.102151</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">Immune persistence of an inactivated poliovirus vaccine derived from the Sabin strain: a 10-year follow-up of a phase 3 study</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">Elsevier BV</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">eClinicalMedicine</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2589-5370</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-10-01</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">PMC10514427</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">hybrid</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">gold</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">cc-by-nc-nd</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">publishedVersion</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">custom_keys__bmgf;is_new__bmgf;pmc__bmgf;preprints_oa_locations__bmgf</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+        </tr>
+        <tr>
+          <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.1186/s40249-023-01135-7</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">Assessing food security performance from the One Health concept: an evaluation tool based on the Global One Health Index</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">Springer Science and Business Media LLC</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">Infectious Diseases of Poverty</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2049-9957</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-22</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">PMC10514978</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">gold</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">gold</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">cc-by</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">publishedVersion</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">custom_keys__bmgf;is_compliant__bmgf;is_new__bmgf;name_epmc__bmgf;preprints_oa_locations__bmgf</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+        </tr>
+        <tr>
+          <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.7554/elife.85023</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">Diverse evolutionary pathways challenge the use of collateral sensitivity as a strategy to suppress resistance</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">eLife Sciences Publications, Ltd</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">eLife</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2050-084X</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-22</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">gold</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">gold</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">cc-by</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">publishedVersion</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">custom_keys__bmgf;is_compliant__bmgf;is_new__bmgf;name_epmc__bmgf;preprints_oa_locations__bmgf</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+        </tr>
+        <tr>
+          <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.1111/nph.19273</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">Parallel tuning of semi‐dwarfism via differential splicing of <i>Brachytic1</i> in commercial maize and smallholder sorghum</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">Wiley</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">New Phytologist</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">0028-646X;1469-8137</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-22</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">bronze</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">hybrid</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">acceptedVersion</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">custom_keys__bmgf;is_new__bmgf;name_epmc__bmgf;preprints_oa_locations__bmgf</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+        </tr>
+        <tr>
+          <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.3389/fpubh.2023.1147180</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">Prevalence and risk factors associated with the occurrence of Campylobacter sp. in children aged 6–24 months in peri-urban Nairobi, Kenya</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-22</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">University of Nairobi;International Livestock Research Institute;University of Copenhagen;London School of Hygiene & Tropical Medicine</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">closed</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">Campylobacter;Hygiene;Campylobacter jejuni;Diarrhea;Environmental health;Sanitation;Medicine;Malnutrition;Diarrheal disease;Veterinary medicine;Biology;Internal medicine;Bacteria;Genetics;Pathology</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">0</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-08</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-1008788-1</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">3230</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">custom_keys__bmgf;finance_v3__bmgf;is_new__bmgf;preprints_oa_locations__bmgf;publication_type__bmgf</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+        </tr>
+        <tr>
+          <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.1007/s41109-023-00595-y</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">Overcoming vaccine hesitancy by multiplex social network targeting: an analysis of targeting algorithms and implications</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">Springer Science and Business Media LLC</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">Applied Network Science</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2364-8228</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-21</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">PMC10514145</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">gold</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">gold</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">cc-by</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">cc-by</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">submittedVersion</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">https://www.researchsquare.com/article/rs-2608863/latest.pdf</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">publishedVersion</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">custom_keys__bmgf;is_compliant__bmgf;is_new__bmgf;pmc__bmgf;preprints_oa_locations__bmgf</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+        </tr>
+
+      `
+    }
+  },
   articles_grant: {
     number: 848,
     year: 'All time',
