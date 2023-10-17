@@ -1031,7 +1031,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     if (target.tagName === 'TD') {
       const row = target.parentElement; // Get the parent <tr> element
-      const tdsToHighlight = Array.from(row.querySelectorAll('td')).slice(2); // Exclude the first two <td> elements
+      const tdsToHighlight = Array.from(row.querySelectorAll('td')); // Exclude the first two <td> elements
 
       // Remove highlighting from all rows
       tableRows.forEach((r) => {
