@@ -9,7 +9,6 @@ document.addEventListener("DOMContentLoaded", function() {
   var exportRecordsShown = document.getElementById('export_records_shown');
   var exportTitle = document.getElementById('export_title');
   var exportYear = document.getElementById('export_year');
-  var exportTypeName = document.getElementById('export_type_name');
   var exportPreviewBtn = document.getElementById('export_preview_btn');
   var exportTable = document.getElementById('export_table');
   var exportTableHead = document.getElementById('export_table_head');
@@ -19,6 +18,11 @@ document.addEventListener("DOMContentLoaded", function() {
   var exportPublishersBtn = document.getElementById('export_publisher');
   var exportFinancesBtn = document.getElementById('export_articles_with_apcs');
   var seeMoreRecordsBtn = document.querySelector('#js_see_more_records');
+
+  // Function to replace all instances of a text 
+  function replaceText(className, parameter) {
+    document.querySelectorAll(className).forEach(element => element.textContent = parameter);
+  }  
   
   // For each export pill button
   buttons.forEach(function(button) {
@@ -130,8 +134,9 @@ document.addEventListener("DOMContentLoaded", function() {
     activateExportLink(tableData.articles_grant.pretty.link);
     exportTable.classList.add('block');
     exportTable.classList.remove('hidden');
-    exportTypeName.innerText = 'grants';
     toggleData('articles_grant');
+
+    replaceText('.js_export_type', 'grants');
   });
 
   // Listen for button click of "publishers"
@@ -147,8 +152,9 @@ document.addEventListener("DOMContentLoaded", function() {
     activateExportLink(tableData.articles_publisher.pretty.link);
     exportTable.classList.add('block');
     exportTable.classList.remove('hidden');
-    exportTypeName.innerText = 'publishers';
     toggleData('articles_publisher');
+
+    replaceText('.js_export_type', 'publishers');
   });
   
   // Listen for button click of "all articles" 
@@ -164,7 +170,8 @@ document.addEventListener("DOMContentLoaded", function() {
     activateExportLink(tableData.articles.raw.link);
     exportTable.classList.add('block');
     exportTable.classList.remove('hidden');
-    exportTypeName.innerText = 'articles';
+
+    replaceText('.js_export_type', 'articles');
   });
 
   // Listen for button click of "finance" 
@@ -180,7 +187,8 @@ document.addEventListener("DOMContentLoaded", function() {
     activateExportLink(tableData.articles_with_apcs_only.raw.link);
     exportTable.classList.add('block');
     exportTable.classList.remove('hidden');
-    exportTypeName.innerText = 'articles';
+
+    replaceText('.js_export_type', 'articles with paid APCs');
   });
 
   // Display more records in table 

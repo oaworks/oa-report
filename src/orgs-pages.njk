@@ -357,20 +357,14 @@ permalink: "{{ org._source.objectID | slug }}/"
 
       <div id="export_table">
         <div class="my-4 gap-6 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 items-end">
-          <h3 class="col-span-2 text-xxl font-semibold uppercase" aria-live="polite">
-            Previewing first <strong id="export_records_shown">0</strong> of <strong id="export_title">0</strong> records for <strong id="export_year">2023</strong>
+          <h3 class="col-span-2 text-3xl" aria-live="polite">
+            Previewing first <strong id="export_records_shown">0</strong> of <strong id="export_title">0</strong> <span class="js_export_type">records</span> for <strong id="export_year">2023</strong>
             {{ component("tooltip", {
               msg: "This table is a preview of all the records for your query. To see the full data set in CSV format, use the <em>Download full data (CSV)</em> button."
             }) }} 
           </h3> 
           <div></div>
-          <nav class="col-span-1 justify-self-end w-auto">
-            {# <label for="show_as" class="mb-3 text-xs font-semibold uppercase">Number display style</label>
-            <select id="show_as" name="filter_by" class="w-full p-2 bg-transparent border text-sm lowercase focus:outline-none focus:ring-2 focus:ring-carnation-500">
-              <option value="percentages">Pretty</option>
-              <option value="raw_numbers">Raw</option>
-            </select> #}
-            
+          <nav class="col-span-1 justify-self-end w-auto">            
             <div class="flex flex-col items-center">
               <label for="toggle" class="mb-3 text-xs font-semibold uppercase">Data display style</label>
               <div class="flex items-center">
@@ -433,7 +427,7 @@ permalink: "{{ org._source.objectID | slug }}/"
               aria-label="Download full data as CSV"
               id="export_link"
               class="items-center space-x-2 px-4 py-2 text-base font-medium uppercase border border-neutral-100 text-neutral-100 bg-neutral-800 hover:bg-neutral-100 hover:text-neutral-900 focus:outline-none focus:ring-1 focus:ring-carnation-400 duration-500 whitespace-nowrap inline-block">
-                Download all <span id="export_type_name">data</span> (CSV)
+                Download all <span class="js_export_type">data</span> (CSV)
             </a>
           </div>
         </div>

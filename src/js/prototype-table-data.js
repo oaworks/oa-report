@@ -1861,6 +1861,7 @@ const tableData = {
   },
   articles_with_apcs_only: {
     number: "1,027",
+    year: "2023",
     link: '/temp/bmgf_articles-with-apcs_from_2023-01-01-to-2023-10-04_on_2023-09-27.csv',
     pretty: {
       head: `
