@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function() {
   var exportGrantsBtn = document.getElementById('export_grant');
   var exportPublishersBtn = document.getElementById('export_publisher');
   var exportFinancesBtn = document.getElementById('export_articles_with_apcs');
-  var seeMoreRecordsBtn = document.getElementById('js_see_more_records');
+  var seeMoreRecordsBtn = document.querySelector('#js_see_more_records');
   
   // For each export pill button
   buttons.forEach(function(button) {
@@ -151,19 +151,36 @@ document.addEventListener("DOMContentLoaded", function() {
     toggleData('articles_publisher');
   });
 
-  document.querySelector('#js_see_more_records').addEventListener('click', function() {
+  // Display more records in table 
+  seeMoreRecordsBtn.addEventListener('click', function() {
     // Increment records shown value by 10
     let currentValue = parseInt(exportRecordsShown.innerText, 10);
     currentValue += 10;
     exportRecordsShown.innerText = currentValue;
 
+    // For grants 
     if (document.getElementById('table_grant')) {
       var htmlContent = tableData.articles_grant.pretty.body_more;
       exportTableBody.insertAdjacentHTML('beforeend', htmlContent);
+
+      // at 50 records, prompt to download full data 
+      if (currentValue === 50) {
+        var seeMoreRecordsBtnContent = seeMoreRecordsBtn.querySelector('div');
+        
+        seeMoreRecordsBtnContent.innerHTML = `Maximum reached — <a href="${tableData.articles_grant.pretty.link}">download the CSV</a> to see the full data`;
+      }
     }
+    // For publishers
     else if (document.getElementById('table_publisher')) {
       var htmlContent = tableData.articles_publisher.pretty.body_more;
       exportTableBody.insertAdjacentHTML('beforeend', htmlContent);
+      
+      // at 50 records, prompt to download full data 
+      if (currentValue === 50) {
+        var seeMoreRecordsBtnContent = seeMoreRecordsBtn.querySelector('div');
+  
+        seeMoreRecordsBtnContent.innerHTML = `Maximum reached — <a href="${tableData.articles_publisher.pretty.link}">download the CSV</a> to see the full data`;
+      }
     }
   });
   
@@ -1002,7 +1019,6 @@ document.addEventListener("DOMContentLoaded", function() {
     // `;
     // activateExportLink('/temp/bmgf_articles-with-apcs_from_2023-01-01-to-2023-10-04_on_2023-09-27.csv');
   });
-  
 
   // See more exports btn
   const pillContainer = document.getElementById("more_exports");
@@ -1047,8 +1063,40 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   });
 
+  // Function to scroll the table to the right on click of the arrow button
+  const tableContainer = document.querySelector('.js_export_table_container');
+  const scrollRightBtn = document.getElementById('js_scroll_table_btn');
+  
+  scrollRightBtn.addEventListener('click', () => {
+    const scrollAmount = 200; 
+    const currentScroll = tableContainer.scrollLeft;
+    const maxScroll = tableContainer.scrollWidth - tableContainer.clientWidth;
 
+    const targetScroll = currentScroll + scrollAmount;
+    
+    if (targetScroll >= maxScroll) {
+      // If reaching the end, hide the scrollRightBtn
+      scrollRightBtn.style.display = 'none';
+    } else {
+      // Otherwise, scroll smoothly to the right
+      tableContainer.scrollTo({
+        left: targetScroll,
+        behavior: 'smooth'
+      });
+    }
+  });
 
+  // Add a scroll event listener to check and show/hide the scrollRightBtn
+  tableContainer.addEventListener('scroll', () => {
+    const currentScroll = tableContainer.scrollLeft;
+    const maxScroll = tableContainer.scrollWidth - tableContainer.clientWidth;
+
+    if (currentScroll >= maxScroll) {
+      scrollRightBtn.style.display = 'none';
+    } else {
+      scrollRightBtn.style.display = 'block';
+    }
+  });
 
 
 });
