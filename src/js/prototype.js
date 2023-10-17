@@ -126,14 +126,15 @@ document.addEventListener("DOMContentLoaded", function() {
     var table = document.querySelector(".js_export_table");
     table.id = "table_grant";
 
+    // Ensure articles are selected
+    document.querySelector('#filter_by option[value="articles"]').selected = true;
+
     exportRecordsShown.innerHTML = 10;
     exportTitle.innerHTML = tableData.articles_grant.number;
     exportYear.innerHTML = tableData.articles_grant.year;
     exportTableHead.innerHTML = tableData.articles_grant.pretty.head;
     exportTableBody.innerHTML = tableData.articles_grant.pretty.body;
     activateExportLink(tableData.articles_grant.pretty.link);
-    exportTable.classList.add('block');
-    exportTable.classList.remove('hidden');
     toggleData('articles_grant');
 
     replaceText('.js_export_type', 'grants');
@@ -144,14 +145,15 @@ document.addEventListener("DOMContentLoaded", function() {
     var table = document.querySelector(".js_export_table");
     table.id = "table_publisher";
 
+    // Ensure articles are selected
+    document.querySelector('#filter_by option[value="articles"]').selected = true;
+
     exportRecordsShown.innerHTML = 10;
     exportTitle.innerHTML = tableData.articles_publisher.number;
     exportYear.innerHTML = tableData.articles_publisher.year;
     exportTableHead.innerHTML = tableData.articles_publisher.pretty.head;
     exportTableBody.innerHTML = tableData.articles_publisher.pretty.body;
     activateExportLink(tableData.articles_publisher.pretty.link);
-    exportTable.classList.add('block');
-    exportTable.classList.remove('hidden');
     toggleData('articles_publisher');
 
     replaceText('.js_export_type', 'publishers');
@@ -162,14 +164,15 @@ document.addEventListener("DOMContentLoaded", function() {
     var table = document.querySelector(".js_export_table");
     table.id = "table_article";
 
+    // Ensure articles are selected
+    document.querySelector('#filter_by option[value="articles"]').selected = true;
+
     exportRecordsShown.innerHTML = 10;
     exportTitle.innerHTML = tableData.articles.number;
     exportYear.innerHTML = tableData.articles.year;
     exportTableHead.innerHTML = tableData.articles.raw.head;
     exportTableBody.innerHTML = tableData.articles.raw.body;
     activateExportLink(tableData.articles.raw.link);
-    exportTable.classList.add('block');
-    exportTable.classList.remove('hidden');
 
     replaceText('.js_export_type', 'articles');
   });
@@ -179,14 +182,15 @@ document.addEventListener("DOMContentLoaded", function() {
     var table = document.querySelector(".js_export_table");
     table.id = "table_finance";
 
+    // Ensure articles are selected
+    document.querySelector('#filter_by option[value="articles"]').selected = true;
+
     exportRecordsShown.innerHTML = 10;
     exportTitle.innerHTML = tableData.articles_with_apcs_only.number;
     exportYear.innerHTML = tableData.articles_with_apcs_only.year;
     exportTableHead.innerHTML = tableData.articles_with_apcs_only.raw.head;
     exportTableBody.innerHTML = tableData.articles_with_apcs_only.raw.body;
     activateExportLink(tableData.articles_with_apcs_only.raw.link);
-    exportTable.classList.add('block');
-    exportTable.classList.remove('hidden');
 
     replaceText('.js_export_type', 'articles with paid APCs');
   });

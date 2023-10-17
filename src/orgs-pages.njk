@@ -363,7 +363,7 @@ permalink: "{{ org._source.objectID | slug }}/"
           }) }} 
         </h3> 
         <div class="my-4 gap-6 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 items-end">
-          <div class="col-span-1 w-auto">
+          <form class="col-span-1 w-auto">
             <label for="filter_by" class="mb-3 text-xs font-semibold uppercase">Filter by</label>
             <select id="filter_by" name="filter_by" class="w-full p-1 bg-transparent border text-xs focus:outline-none focus:ring-2 focus:ring-carnation-500">
               <option value="articles" selected>Articles</option>
@@ -374,7 +374,7 @@ permalink: "{{ org._source.objectID | slug }}/"
               <option value="funded_articles">Funded by this organization</option>
               <option value="authored_articles">Authored by this organization</option>
             </select>
-          </div>
+          </form>
           <div class="col-span-1"></div><div class="col-span-1"></div>
           <nav class="col-span-1 justify-self-end w-auto">            
             <div class="flex flex-col items-center">
