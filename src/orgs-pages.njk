@@ -363,19 +363,42 @@ permalink: "{{ org._source.objectID | slug }}/"
           }) }} 
         </h3> 
         <div class="my-4 gap-6 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 items-end">
-          <form class="col-span-1 w-auto">
-            <label for="filter_by" class="mb-3 text-xs font-semibold uppercase">Filter by</label>
-            <select id="filter_by" name="filter_by" class="w-full p-1 bg-transparent border text-xs focus:outline-none focus:ring-2 focus:ring-carnation-500">
-              <option value="articles" selected>Articles</option>
-              <option value="preprints">Preprints</option>
-              <option value="original_research_articles">Peer-reviewed</option>
-              <option value="articles_with_apcs">With APCs</option>
-              <option value="articles_covered_by_policy">Covered by policy</option>
-              <option value="funded_articles">Funded by this organization</option>
-              <option value="authored_articles">Authored by this organization</option>
-            </select>
+          <form class="col-span-2 w-auto">
+            <fieldset>
+              <legend class="mb-3 text-xs font-semibold uppercase">Filter by</legend>
+              <div class="flex flex-wrap items-center">
+                {{ component("radio-filter", {
+                  id: "articles",
+                  txt: "Articles"
+                }) }}
+                {{ component("radio-filter", {
+                  id: "preprints",
+                  txt: "Preprints"
+                }) }}
+                {{ component("radio-filter", {
+                  id: "original_research_articles",
+                  txt: "Peer-reviewed"
+                }) }}
+                {{ component("radio-filter", {
+                  id: "articles_with_apcs",
+                  txt: "With APCs"
+                }) }}
+                {{ component("radio-filter", {
+                  id: "articles_covered_by_policy",
+                  txt: "Covered by policy"
+                }) }}
+                {{ component("radio-filter", {
+                  id: "funded_articles",
+                  txt: "Funded"
+                }) }}
+                {{ component("radio-filter", {
+                  id: "authored_articles",
+                  txt: "Staff-authored"
+                }) }}
+              </div>
+            </fieldset>
           </form>
-          <div class="col-span-1"></div><div class="col-span-1"></div>
+          <div class="col-span-1"></div>
           <nav class="col-span-1 justify-self-end w-auto">            
             <div class="flex flex-col items-center">
               <label for="toggle" class="mb-3 text-xs font-semibold uppercase">Data display style</label>
