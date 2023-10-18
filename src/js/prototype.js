@@ -202,31 +202,33 @@ document.addEventListener("DOMContentLoaded", function() {
     currentValue += 10;
     exportRecordsShown.innerText = currentValue;
 
-    // For grants 
-    if (document.getElementById('table_grant')) {
-      var htmlContent = tableData.articles_grant.pretty.body_more;
+    if (currentValue >= 50) {
+      seeMoreRecordsBtn.querySelector('div').textContent = 'Maximum reached: Download the CSV to see the full data';
+      
+      // Disable the button and change the cursor style
+      seeMoreRecordsBtn.style.pointerEvents = 'none';
+      seeMoreRecordsBtn.removeEventListener('click', this);
+    } else {
+      // Determine the HTML content based on the table type
+      let htmlContent = '';
+      if (document.getElementById('table_grant')) {
+        htmlContent = tableData.articles_grant.pretty.body_more;
+      } else if (document.getElementById('table_publisher')) {
+        htmlContent = tableData.articles_publisher.pretty.body_more;
+      }
+
+      // Add the HTML content to the table body
       exportTableBody.insertAdjacentHTML('beforeend', htmlContent);
 
-      // at 50 records, prompt to download full data 
-      if (currentValue === 50) {
-        var seeMoreRecordsBtnContent = seeMoreRecordsBtn.querySelector('div');
-        
-        seeMoreRecordsBtnContent.innerHTML = `Maximum reached — <a href="${tableData.articles_grant.pretty.link}">download the CSV</a> to see the full data`;
-      }
-    }
-    // For publishers
-    else if (document.getElementById('table_publisher')) {
-      var htmlContent = tableData.articles_publisher.pretty.body_more;
-      exportTableBody.insertAdjacentHTML('beforeend', htmlContent);
-      
-      // at 50 records, prompt to download full data 
-      if (currentValue === 50) {
-        var seeMoreRecordsBtnContent = seeMoreRecordsBtn.querySelector('div');
-  
-        seeMoreRecordsBtnContent.innerHTML = `Maximum reached — <a href="${tableData.articles_publisher.pretty.link}">download the CSV</a> to see the full data`;
+      // const lastRow = exportTableBody.querySelector('tr:last-child');
+
+      // Scroll the last row into view
+      if (seeMoreRecordsBtn) {
+        seeMoreRecordsBtn.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
       }
     }
   });
+
 
   // See more exports btn
   const pillContainer = document.getElementById("more_exports");
