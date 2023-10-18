@@ -220,15 +220,12 @@ document.addEventListener("DOMContentLoaded", function() {
       // Add the HTML content to the table body
       exportTableBody.insertAdjacentHTML('beforeend', htmlContent);
 
-      // const lastRow = exportTableBody.querySelector('tr:last-child');
-
       // Scroll the last row into view
-      if (seeMoreRecordsBtn) {
-        seeMoreRecordsBtn.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+      if (exportTable) {
+        exportTable.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
       }
     }
   });
-
 
   // See more exports btn
   const pillContainer = document.getElementById("more_exports");
