@@ -36,10 +36,10 @@ permalink: "{{ org._source.objectID | slug }}/"
     </div>
   </div>
 
-  <nav class="sticky top-0 bg-white z-10">
+  <nav class="sticky top-0 z-10">
     <h2 class="sr-only">See the report by year</h2>
-    <ul class="border-b border-neutral-100">
-      <li class="inline-block">
+    <ul>
+      <li class="inline-block mr-3">
         {{ component("year-select", {
           id: "start-year",
           txt: "",
@@ -47,19 +47,19 @@ permalink: "{{ org._source.objectID | slug }}/"
         }) }}
       </li>
       {% if org._source.paid == true %}
-      <li class="inline-block">
+      <li class="inline-block mr-3">
         {{ component("year-select", {
           id: "last-year",
           txt: ""
         }) }}
       </li>
-      <li class="inline-block">
+      <li class="inline-block mr-3">
         {{ component("year-select", {
           id: "two-years-ago",
           txt: ""
         }) }}
       </li>
-      <li class="inline-block">
+      <li class="inline-block mr-3">
         {{ component("year-select", {
           id: "all-time",
           txt: "All time"
@@ -89,7 +89,7 @@ permalink: "{{ org._source.objectID | slug }}/"
       {% endif %}
     </ul>
 
-    <ul>
+    {# <ul>
       <li class="inline-block">
         {{ component("section-select", {
           id: "insights",
@@ -108,7 +108,7 @@ permalink: "{{ org._source.objectID | slug }}/"
           txt: "Actions"
         }) }}
       </li>
-    </ul>
+    </ul> #}
   </nav>
 
   {# INSIGHTS #}
@@ -368,8 +368,8 @@ permalink: "{{ org._source.objectID | slug }}/"
               <legend class="mb-3 text-xs font-semibold uppercase">Filter by</legend>
               <div class="flex flex-wrap items-center">
                 {{ component("radio-filter", {
-                  id: "articles",
-                  txt: "Articles"
+                  id: "all_articles",
+                  txt: "All articles"
                 }) }}
                 {{ component("radio-filter", {
                   id: "preprints",
