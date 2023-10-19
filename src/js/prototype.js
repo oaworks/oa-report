@@ -154,6 +154,48 @@ document.addEventListener("DOMContentLoaded", function() {
 
     replaceText('.js_export_type', 'publishers');
   });
+
+  const exportPublishersAllArticlesBtn = document.getElementById('filter_all_articles');
+
+  exportPublishersAllArticlesBtn.addEventListener('click', function() {
+    var table = document.querySelector(".js_export_table");
+    table.id = "table_publisher";
+
+    // Ensure articles are selected
+    document.querySelector('#filter_by option[value="articles"]').selected = true;
+
+    exportRecordsShown.innerHTML = 10;
+    exportTitle.innerHTML = tableData.articles_publisher.number;
+    exportYear.innerHTML = tableData.articles_publisher.year;
+    exportTableHead.innerHTML = tableData.articles_publisher.pretty.head;
+    exportTableBody.innerHTML = tableData.articles_publisher.pretty.body;
+    activateExportLink(tableData.articles_publisher.pretty.link);
+    toggleData('articles_publisher');
+
+    replaceText('.js_export_type', 'publishers');
+  });
+
+  // Listen for radio button selection  of "publishers => preprints OR publishers => authored"
+  const filterBtnIds = ['filter_preprints', 'filter_authored_articles'];
+
+  filterBtnIds.forEach(id => {
+    const btn = document.getElementById(id);
+
+    btn.addEventListener('click', function() {
+      var table = document.querySelector(".js_export_table");
+      table.id = "table_publisher";
+
+      exportRecordsShown.innerHTML = 10;
+      exportTitle.innerHTML = tableData.articles_publisher_subset.number;
+      exportYear.innerHTML = tableData.articles_publisher_subset.year;
+      exportTableHead.innerHTML = tableData.articles_publisher_subset.pretty.head;
+      exportTableBody.innerHTML = tableData.articles_publisher_subset.pretty.body;
+      activateExportLink(tableData.articles_publisher_subset.pretty.link);
+      toggleData('articles_publisher_subset');
+
+      replaceText('.js_export_type', 'publishers');
+    });
+  });
   
   // Listen for button click of "all articles" 
   const exportAllArticlesBtn = document.getElementById('export_all_articles');

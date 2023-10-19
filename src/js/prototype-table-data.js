@@ -1859,6 +1859,202 @@ const tableData = {
       `
     }
   },
+  articles_publisher_subset: {
+    number: 63,
+    year: '2023',
+    pretty: {
+      link: "/temp/bmgf_articles_publisher_2023_on_2023-10-11_pretty.csv",
+      head: `
+        <th scope="col" class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">publisher</th>
+        <th scope="col" class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 w-60 truncate">articles published</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">compliant articles</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">free-to-read articles</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">open access articles</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">repository version</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">approved repository version</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">preprint version</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">data availability statement</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">no data availability statement</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">total APCs paid</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">with APCs</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">average APCs paid</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">median APCs paid</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">with grant ID</th>
+      `,
+      body: `
+      <tr>
+        <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">Elsevier BV</th>
+        <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">264</th>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">65.9%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">89.3%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">67.8%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">70.2%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">45.6%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">4.3%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">49.4%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">34.7%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">$932,580</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">44.9%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">$3,680.47</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">$3,460</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">45.2%</td>
+      </tr>
+      <tr>
+        <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">Springer Science and Business Media LLC</th>
+        <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">201</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">88.7%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">93.3%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">89.6%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">80.9%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">45.4%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">16.5%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">79.6%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">11.4%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">$596,150</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">35.2%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">$3,895.50</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">$2,950</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">61.8%</td>
+      </tr>
+      <tr>
+        <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">Public Library of Science (PLoS)</th>
+        <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">120</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">95.5%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">98.8%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">98.7%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">76.9%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">46.2%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">3.8%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">70.6%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">15.4%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">$465,980</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">78.3%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">$2,695.50</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">$3,210</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">51.3%</td>
+      </tr>
+      <tr>
+        <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">Wiley</th>
+        <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">117</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">96.3%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">99.5%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">97.8%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">85.9%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">43.7%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">17.9%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">91.8%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">0%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">$186,950</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">40.8%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">$2,250.70</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">$2,090</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">64.1%</td>
+      </tr>
+      <tr>
+        <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">Frontiers Media SA</th>
+        <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">95</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">74.7%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">84%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">77.3%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">37.8%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">16.5%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">3.5%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">35.3%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">25.5%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">$83,320</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">14%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">$3,090.20</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">$3,380</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">52.2%</td>
+      </tr>
+      <tr>
+        <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">Oxford University Press (OUP)</th>
+        <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">63</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">99.1%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">99.7%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">99.8%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">77.5%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">42.9%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">2.9%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">68.8%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">20.3%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">$160,300</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">46.7%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">$2,082.20</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">$2,150</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">64.8%</td>
+      </tr>
+      <tr>
+        <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">Wiley</th>
+        <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">13</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">57.2%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">87.4%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">58.2%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">69.2%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">27%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">7.9%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">27%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">58.3%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">$14,060</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">5%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">$2,815.50</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">$2,650</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">56.3%</td>
+      </tr>
+      <tr>
+        <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">F1000 Research Ltd</th>
+        <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">8</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">77.2%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">99.8%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">82.5%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">84.7%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">47.9%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">1%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">68.5%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">22.5%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">$146,950</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">51.1%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">$3,120.28</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">$2,790</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">68.7%</td>
+      </tr>
+      <tr>
+        <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">BMJ</th>
+        <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">4</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">75.2%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">91.4%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">80.6%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">46.8%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">23.8%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">2.6%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">18.4%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">57.6%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">$16,420</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">18.5%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">$1,170</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">$735</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">51.1%</td>
+      </tr>
+      <tr>
+        <th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">American Chemical Society (ACS)</th>
+        <th class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">3</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">99.8%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">99.8%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">99.8%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">42.1%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">18.2%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">5.5%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">96%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">0%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">$32,250</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">53.2%</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">$1,110.76</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">$1,145</td>
+        <td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600">81.2%</td>
+      </tr>
+      `
+    }
+  },
   articles_with_apcs_only: {
     number: "1,027",
     year: "2023",
