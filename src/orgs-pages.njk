@@ -369,7 +369,8 @@ permalink: "{{ org._source.objectID | slug }}/"
               <div class="flex flex-wrap items-center">
                 {{ component("radio-filter", {
                   id: "all_articles",
-                  txt: "All articles"
+                  txt: "All articles",
+                  selected: true
                 }) }}
                 {{ component("radio-filter", {
                   id: "preprints",
