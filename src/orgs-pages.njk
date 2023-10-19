@@ -36,10 +36,10 @@ permalink: "{{ org._source.objectID | slug }}/"
     </div>
   </div>
 
-  <nav>
+  <nav class="sticky top-0 pt-6 z-10 bg-carnation-100" id="top_nav">
     <h2 class="sr-only">See the report by year</h2>
     <ul class="mx-6">
-      <li class="inline-block mr-3">
+      <li class="inline-block mr-3 lg:mr-6">
         {{ component("year-select", {
           id: "start-year",
           txt: "",
@@ -47,19 +47,19 @@ permalink: "{{ org._source.objectID | slug }}/"
         }) }}
       </li>
       {% if org._source.paid == true %}
-      <li class="inline-block mr-3">
+      <li class="inline-block mr-3 lg:mr-6">
         {{ component("year-select", {
           id: "last-year",
           txt: ""
         }) }}
       </li>
-      <li class="inline-block mr-3">
+      <li class="inline-block mr-3 lg:mr-6">
         {{ component("year-select", {
           id: "two-years-ago",
           txt: ""
         }) }}
       </li>
-      <li class="inline-block mr-3">
+      <li class="inline-block mr-3 lg:mr-6">
         {{ component("year-select", {
           id: "all-time",
           txt: "All time"
