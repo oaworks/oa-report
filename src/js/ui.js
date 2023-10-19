@@ -210,12 +210,12 @@ function handleQuickDateItemClick(event) {
 
   // When unselected
   quickDateItems.forEach((item) => {
-    item.classList.remove("bg-neutral-900", "text-white", "font-semibold", "border-carnation-500");
+    item.classList.remove("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
     item.classList.add("bg-white", "text-neutral-900");
   });
 
   // When selected
-  event.target.classList.add("bg-neutral-900", "text-white", "font-semibold", "border-carnation-500");
+  event.target.classList.add("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
   event.target.classList.remove("bg-white", "text-neutral-900");
 }
 
