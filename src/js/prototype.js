@@ -1,127 +1,121 @@
 // TEMP CRAPPY PROTOTYPING SCRIPT
-document.addEventListener("DOMContentLoaded", function() {
-  // Get references to elements
-  var buttons = document.querySelectorAll('.js_export_pill');
-  var form = document.getElementById('explore_form');
-  var exportLink = document.getElementById('export_link');
-  var filterBySelect = document.getElementById('filter_by');
-  var groupBySelect = document.getElementById('group_by');
-  var exportRecordsShown = document.getElementById('export_records_shown');
-  var exportTitle = document.getElementById('export_title');
-  var exportYear = document.getElementById('export_year');
-  var exportPreviewBtn = document.getElementById('export_preview_btn');
-  var exportTable = document.getElementById('export_table');
-  var exportTableHead = document.getElementById('export_table_head');
-  var exportTableBody = document.getElementById('export_table_body');
-  var exportAllArticlesBtn = document.getElementById('export_all_articles');
-  var exportGrantsBtn = document.getElementById('export_grant');
-  var exportPublishersBtn = document.getElementById('export_publisher');
-  var exportFinancesBtn = document.getElementById('export_articles_with_apcs');
-  var seeMoreRecordsBtn = document.querySelector('#js_see_more_records');
 
-  // Function to replace all instances of a text 
-  function replaceText(className, parameter) {
-    document.querySelectorAll(className).forEach(element => element.textContent = parameter);
-  }  
+// ==============================
+// Utility functions
+// ==============================
+
+/**
+ * Replace all instances of a text
+ * 
+ * @param {string} className - The class name indicating a string where we will be replacing all instances
+ *  @param {string} parameter - The content we are replacing instances found with 
+ */
+
+function replaceText(className, parameter) {
+  document.querySelectorAll(className).forEach(element => element.textContent = parameter);
+}
+
+
+// ==============================
+// Main functionality
+// ==============================
+
+// Toggle data-display style
+let currentToggleHandler = null;  // To keep track of the current event handler
+
+function resetToggle() {
+  const toggleButton = document.getElementById('toggle');
+  const toggleBg = toggleButton.querySelector('span.bg-carnation-500, span.bg-neutral-200');
+  const toggleDot = toggleButton.querySelector('span.translate-x-100, span.translate-x-5');
   
-  // For each export pill button
-  buttons.forEach(function(button) {
-    button.addEventListener('click', function() {
-      // First, remove the active class from all buttons
-      buttons.forEach(function(btn) {
-        btn.classList.remove('bg-carnation-300');
-      });
-      // Then, add the active class to the clicked button
-      button.classList.add('bg-carnation-300');
-      // Change select options in the form based on button's data attributes
-      document.getElementById('filter_by').value = button.getAttribute('data-filter-by');
-      document.getElementById('group_by').value = button.getAttribute('data-group-by');
-      // Change the h3 title based on button's data-title
-      document.getElementById('export_title').innerHTML = button.getAttribute('data-title');
-      // Activate the export link with the button's data-csv value
-      activateExportLink(button.getAttribute('data-csv'));
-    });
-  });
+  // Detach the current event listener, if any
+  if (currentToggleHandler) {
+    toggleButton.removeEventListener('click', currentToggleHandler);
+  }
+  
+  // Set to default "pretty" state
+  toggleButton.setAttribute('aria-checked', 'true');
+  toggleBg.classList.remove('bg-neutral-200');
+  toggleBg.classList.add('bg-carnation-500');
+  toggleDot.classList.remove('translate-x-5');
+  toggleDot.classList.add('translate-x-100');
+}
 
-  // Function to deactivate the export link
+function toggleData(dataKey) {
+  resetToggle();  // Reset the toggle first
+
+  const toggleButton = document.getElementById('toggle');
+  const toggleBg = toggleButton.querySelector('span.bg-carnation-500, span.bg-neutral-200');
+  const toggleDot = toggleButton.querySelector('span.translate-x-100, span.translate-x-5');
+
+  currentToggleHandler = function() {
+    const ariaChecked = toggleButton.getAttribute('aria-checked') === 'true';
+    const targetData = tableData[dataKey];
+    
+    if (!targetData) {
+      console.error(`Data for key "${dataKey}" not found!`);
+      return;
+    }
+
+    if (ariaChecked) {
+      exportTableHead.innerHTML = targetData.raw.head;
+      exportTableBody.innerHTML = targetData.raw.body;
+      activateExportLink(targetData.raw.link);
+
+      toggleButton.setAttribute('aria-checked', 'false');
+      toggleBg.classList.remove('bg-carnation-500');
+      toggleBg.classList.add('bg-neutral-200');
+      toggleDot.classList.remove('translate-x-100');
+      toggleDot.classList.add('translate-x-5');
+    } else {
+      exportTableHead.innerHTML = targetData.pretty.head;
+      exportTableBody.innerHTML = targetData.pretty.body;
+      activateExportLink(targetData.pretty.link);
+
+      toggleButton.setAttribute('aria-checked', 'true');
+      toggleBg.classList.remove('bg-neutral-200');
+      toggleBg.classList.add('bg-carnation-500');
+      toggleDot.classList.remove('translate-x-5');
+      toggleDot.classList.add('translate-x-100');
+    }
+  };
+
+  // Attach the event handler
+  toggleButton.addEventListener('click', currentToggleHandler);
+}
+
+// ==============================
+// Event listeners
+// ==============================
+
+document.addEventListener("DOMContentLoaded", function() {
+
+  // Get references
+  const exportRecordsShown = document.getElementById('export_records_shown');
+  const exportTitle = document.getElementById('export_title');
+  const exportYear = document.getElementById('export_year');
+  const exportTable = document.getElementById('export_table');
+  const exportTableHead = document.getElementById('export_table_head');
+  const exportTableBody = document.getElementById('export_table_body');
+
+  const exportLink = document.getElementById('export_link'); 
+
+  // Activate / deactivate the data export link with a given href
+  function activateExportLink(hrefValue) {
+    exportLink.href = hrefValue;
+    exportLink.classList.remove('bg-neutral-300', 'cursor-not-allowed');
+    // exportLink.classList.add('bg-carnation-500', 'hover:bg-carnation-300', 'hover:border-carnation-500');
+  }
+  
   function deactivateExportLink() {
     exportLink.removeAttribute('href');
     exportLink.classList.add('bg-neutral-300', 'cursor-not-allowed');
     // exportLink.classList.remove('bg-carnation-500', 'hover:bg-carnation-300', 'hover:border-carnation-500');
   }
 
-  // Function to activate the export link with a given href
-  function activateExportLink(hrefValue) {
-    exportLink.href = hrefValue;
-    exportLink.classList.remove('bg-neutral-300', 'cursor-not-allowed');
-    // exportLink.classList.add('bg-carnation-500', 'hover:bg-carnation-300', 'hover:border-carnation-500');
-  }
-
-  // Function to toggle data-display style
-  let currentToggleHandler = null;  // To keep track of the current event handler
-
-  function resetToggle() {
-    const toggleButton = document.getElementById('toggle');
-    const toggleBg = toggleButton.querySelector('span.bg-carnation-500, span.bg-neutral-200');
-    const toggleDot = toggleButton.querySelector('span.translate-x-100, span.translate-x-5');
-    
-    // Detach the current event listener, if any
-    if (currentToggleHandler) {
-      toggleButton.removeEventListener('click', currentToggleHandler);
-    }
-    
-    // Set to default "pretty" state
-    toggleButton.setAttribute('aria-checked', 'true');
-    toggleBg.classList.remove('bg-neutral-200');
-    toggleBg.classList.add('bg-carnation-500');
-    toggleDot.classList.remove('translate-x-5');
-    toggleDot.classList.add('translate-x-100');
-  }
-
-  function toggleData(dataKey) {
-    resetToggle();  // Reset the toggle first
-
-    const toggleButton = document.getElementById('toggle');
-    const toggleBg = toggleButton.querySelector('span.bg-carnation-500, span.bg-neutral-200');
-    const toggleDot = toggleButton.querySelector('span.translate-x-100, span.translate-x-5');
-
-    currentToggleHandler = function() {
-      const ariaChecked = toggleButton.getAttribute('aria-checked') === 'true';
-      const targetData = tableData[dataKey];
-      
-      if (!targetData) {
-        console.error(`Data for key "${dataKey}" not found!`);
-        return;
-      }
-
-      if (ariaChecked) {
-        exportTableHead.innerHTML = targetData.raw.head;
-        exportTableBody.innerHTML = targetData.raw.body;
-        activateExportLink(targetData.raw.link);
-
-        toggleButton.setAttribute('aria-checked', 'false');
-        toggleBg.classList.remove('bg-carnation-500');
-        toggleBg.classList.add('bg-neutral-200');
-        toggleDot.classList.remove('translate-x-100');
-        toggleDot.classList.add('translate-x-5');
-      } else {
-        exportTableHead.innerHTML = targetData.pretty.head;
-        exportTableBody.innerHTML = targetData.pretty.body;
-        activateExportLink(targetData.pretty.link);
-
-        toggleButton.setAttribute('aria-checked', 'true');
-        toggleBg.classList.remove('bg-neutral-200');
-        toggleBg.classList.add('bg-carnation-500');
-        toggleDot.classList.remove('translate-x-5');
-        toggleDot.classList.add('translate-x-100');
-      }
-    };
-
-    // Attach the event handler
-    toggleButton.addEventListener('click', currentToggleHandler);
-  }
-
   // Listen button click of "grants"
+  const exportGrantsBtn = document.getElementById('export_grant');
+
   exportGrantsBtn.addEventListener('click', function() {
     var table = document.querySelector(".js_export_table");
     table.id = "table_grant";
@@ -141,6 +135,8 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 
   // Listen for button click of "publishers"
+  const exportPublishersBtn = document.getElementById('export_publisher');
+
   exportPublishersBtn.addEventListener('click', function() {
     var table = document.querySelector(".js_export_table");
     table.id = "table_publisher";
@@ -160,6 +156,8 @@ document.addEventListener("DOMContentLoaded", function() {
   });
   
   // Listen for button click of "all articles" 
+  const exportAllArticlesBtn = document.getElementById('export_all_articles');
+
   exportAllArticlesBtn.addEventListener('click', function() {
     var table = document.querySelector(".js_export_table");
     table.id = "table_article";
@@ -178,6 +176,8 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 
   // Listen for button click of "finance" 
+  const exportFinancesBtn = document.getElementById('export_articles_with_apcs');
+
   exportFinancesBtn.addEventListener('click', function() {
     var table = document.querySelector(".js_export_table");
     table.id = "table_finance";
@@ -196,6 +196,8 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 
   // Display more records in table 
+  const seeMoreRecordsBtn = document.querySelector('#js_see_more_records');
+
   seeMoreRecordsBtn.addEventListener('click', function() {
     // Increment records shown value by 10
     let currentValue = parseInt(exportRecordsShown.innerText, 10);
