@@ -15,75 +15,6 @@ function replaceText(className, parameter) {
   document.querySelectorAll(className).forEach(element => element.textContent = parameter);
 }
 
-
-// ==============================
-// Main functionality
-// ==============================
-
-// Toggle data-display style
-let currentToggleHandler = null;  // To keep track of the current event handler
-
-function resetToggle() {
-  const toggleButton = document.getElementById('toggle');
-  const toggleBg = toggleButton.querySelector('span.bg-carnation-500, span.bg-neutral-200');
-  const toggleDot = toggleButton.querySelector('span.translate-x-100, span.translate-x-5');
-  
-  // Detach the current event listener, if any
-  if (currentToggleHandler) {
-    toggleButton.removeEventListener('click', currentToggleHandler);
-  }
-  
-  // Set to default "pretty" state
-  toggleButton.setAttribute('aria-checked', 'true');
-  toggleBg.classList.remove('bg-neutral-200');
-  toggleBg.classList.add('bg-carnation-500');
-  toggleDot.classList.remove('translate-x-5');
-  toggleDot.classList.add('translate-x-100');
-}
-
-function toggleData(dataKey) {
-  resetToggle();  // Reset the toggle first
-
-  const toggleButton = document.getElementById('toggle');
-  const toggleBg = toggleButton.querySelector('span.bg-carnation-500, span.bg-neutral-200');
-  const toggleDot = toggleButton.querySelector('span.translate-x-100, span.translate-x-5');
-
-  currentToggleHandler = function() {
-    const ariaChecked = toggleButton.getAttribute('aria-checked') === 'true';
-    const targetData = tableData[dataKey];
-    
-    if (!targetData) {
-      console.error(`Data for key "${dataKey}" not found!`);
-      return;
-    }
-
-    if (ariaChecked) {
-      exportTableHead.innerHTML = targetData.raw.head;
-      exportTableBody.innerHTML = targetData.raw.body;
-      activateExportLink(targetData.raw.link);
-
-      toggleButton.setAttribute('aria-checked', 'false');
-      toggleBg.classList.remove('bg-carnation-500');
-      toggleBg.classList.add('bg-neutral-200');
-      toggleDot.classList.remove('translate-x-100');
-      toggleDot.classList.add('translate-x-5');
-    } else {
-      exportTableHead.innerHTML = targetData.pretty.head;
-      exportTableBody.innerHTML = targetData.pretty.body;
-      activateExportLink(targetData.pretty.link);
-
-      toggleButton.setAttribute('aria-checked', 'true');
-      toggleBg.classList.remove('bg-neutral-200');
-      toggleBg.classList.add('bg-carnation-500');
-      toggleDot.classList.remove('translate-x-5');
-      toggleDot.classList.add('translate-x-100');
-    }
-  };
-
-  // Attach the event handler
-  toggleButton.addEventListener('click', currentToggleHandler);
-}
-
 // ==============================
 // Event listeners
 // ==============================
@@ -112,6 +43,71 @@ document.addEventListener("DOMContentLoaded", function() {
     exportLink.classList.add('bg-neutral-300', 'cursor-not-allowed');
     // exportLink.classList.remove('bg-carnation-500', 'hover:bg-carnation-300', 'hover:border-carnation-500');
   }
+
+  // Toggle data-display style
+  let currentToggleHandler = null;  // To keep track of the current event handler
+
+  function resetToggle() {
+    const toggleButton = document.getElementById('toggle');
+    const toggleBg = toggleButton.querySelector('span.bg-carnation-500, span.bg-neutral-200');
+    const toggleDot = toggleButton.querySelector('span.translate-x-100, span.translate-x-5');
+    
+    // Detach the current event listener, if any
+    if (currentToggleHandler) {
+      toggleButton.removeEventListener('click', currentToggleHandler);
+    }
+    
+    // Set to default "pretty" state
+    toggleButton.setAttribute('aria-checked', 'true');
+    toggleBg.classList.remove('bg-neutral-200');
+    toggleBg.classList.add('bg-carnation-500');
+    toggleDot.classList.remove('translate-x-5');
+    toggleDot.classList.add('translate-x-100');
+  }
+
+  function toggleData(dataKey) {
+    resetToggle();  // Reset the toggle first
+
+    const toggleButton = document.getElementById('toggle');
+    const toggleBg = toggleButton.querySelector('span.bg-carnation-500, span.bg-neutral-200');
+    const toggleDot = toggleButton.querySelector('span.translate-x-100, span.translate-x-5');
+
+    currentToggleHandler = function() {
+      const ariaChecked = toggleButton.getAttribute('aria-checked') === 'true';
+      const targetData = tableData[dataKey];
+      
+      if (!targetData) {
+        console.error(`Data for key "${dataKey}" not found!`);
+        return;
+      }
+
+      if (ariaChecked) {
+        exportTableHead.innerHTML = targetData.raw.head;
+        exportTableBody.innerHTML = targetData.raw.body;
+        activateExportLink(targetData.raw.link);
+
+        toggleButton.setAttribute('aria-checked', 'false');
+        toggleBg.classList.remove('bg-carnation-500');
+        toggleBg.classList.add('bg-neutral-200');
+        toggleDot.classList.remove('translate-x-100');
+        toggleDot.classList.add('translate-x-5');
+      } else {
+        exportTableHead.innerHTML = targetData.pretty.head;
+        exportTableBody.innerHTML = targetData.pretty.body;
+        activateExportLink(targetData.pretty.link);
+
+        toggleButton.setAttribute('aria-checked', 'true');
+        toggleBg.classList.remove('bg-neutral-200');
+        toggleBg.classList.add('bg-carnation-500');
+        toggleDot.classList.remove('translate-x-5');
+        toggleDot.classList.add('translate-x-100');
+      }
+    };
+
+    // Attach the event handler
+    toggleButton.addEventListener('click', currentToggleHandler);
+  }
+
 
   // Listen button click of "grants"
   const exportGrantsBtn = document.getElementById('export_grant');
