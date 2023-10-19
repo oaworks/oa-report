@@ -121,90 +121,59 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   });
 
-  // Listen button click of "grants"
-  const exportGrantsBtn = document.getElementById('export_grant');
-
-  exportGrantsBtn.addEventListener('click', function() {
+  function handleButtonClick(button, tableId, tableDataProperty, replaceTextValue) {
     var table = document.querySelector(".js_export_table");
-    table.id = "table_grant";
-
+    table.id = tableId;
+  
     // Ensure articles are selected
     document.querySelector('#filter_by option[value="articles"]').selected = true;
-
+  
     exportRecordsShown.innerHTML = 10;
-    exportTitle.innerHTML = tableData.articles_grant.number;
-    exportYear.innerHTML = tableData.articles_grant.year;
-    exportTableHead.innerHTML = tableData.articles_grant.pretty.head;
-    exportTableBody.innerHTML = tableData.articles_grant.pretty.body;
-    activateExportLink(tableData.articles_grant.pretty.link);
-    toggleData('articles_grant');
+    exportTitle.innerHTML = tableData[tableDataProperty].number;
+    exportYear.innerHTML = tableData[tableDataProperty].year;
+    exportTableHead.innerHTML = tableData[tableDataProperty].pretty.head;
+    exportTableBody.innerHTML = tableData[tableDataProperty].pretty.body;
+    activateExportLink(tableData[tableDataProperty].pretty.link);
+  
+    replaceText('.js_export_type', replaceTextValue);
+  }
+  
+  const exportButtons = [
+    { elementId: 'export_grant', tableId: 'table_grant', tableDataProperty: 'articles_grant', replaceTextValue: 'grants' },
+    { elementId: 'export_publisher', tableId: 'table_publisher', tableDataProperty: 'articles_publisher', replaceTextValue: 'publishers' },
+    { elementId: 'filter_all_articles', tableId: 'table_publisher', tableDataProperty: 'articles_publisher', replaceTextValue: 'publishers' },
+    { elementId: 'filter_preprints', tableId: 'table_publisher', tableDataProperty: 'articles_publisher_subset', replaceTextValue: 'publishers' },
+    { elementId: 'filter_authored_articles', tableId: 'table_publisher', tableDataProperty: 'articles_publisher_subset', replaceTextValue: 'publishers' },
+    { elementId: 'export_all_articles', tableId: 'table_article', tableDataProperty: 'articles', replaceTextValue: 'articles' },
+    { elementId: 'export_articles_with_apcs', tableId: 'table_finance', tableDataProperty: 'articles_with_apcs_only', replaceTextValue: 'articles with paid APCs' }
+  ];
 
-    replaceText('.js_export_type', 'grants');
-  });
-
-  // Listen for button click of "publishers"
-  const exportPublishersBtn = document.getElementById('export_publisher');
-
-  exportPublishersBtn.addEventListener('click', function() {
-    var table = document.querySelector(".js_export_table");
-    table.id = "table_publisher";
-
-    // Ensure articles are selected
-    document.querySelector('#filter_by option[value="articles"]').selected = true;
-
-    exportRecordsShown.innerHTML = 10;
-    exportTitle.innerHTML = tableData.articles_publisher.number;
-    exportYear.innerHTML = tableData.articles_publisher.year;
-    exportTableHead.innerHTML = tableData.articles_publisher.pretty.head;
-    exportTableBody.innerHTML = tableData.articles_publisher.pretty.body;
-    activateExportLink(tableData.articles_publisher.pretty.link);
-    toggleData('articles_publisher');
-
-    replaceText('.js_export_type', 'publishers');
-  });
-
-  const exportPublishersAllArticlesBtn = document.getElementById('filter_all_articles');
-
-  exportPublishersAllArticlesBtn.addEventListener('click', function() {
-    var table = document.querySelector(".js_export_table");
-    table.id = "table_publisher";
-
-    // Ensure articles are selected
-    document.querySelector('#filter_by option[value="articles"]').selected = true;
-
-    exportRecordsShown.innerHTML = 10;
-    exportTitle.innerHTML = tableData.articles_publisher.number;
-    exportYear.innerHTML = tableData.articles_publisher.year;
-    exportTableHead.innerHTML = tableData.articles_publisher.pretty.head;
-    exportTableBody.innerHTML = tableData.articles_publisher.pretty.body;
-    activateExportLink(tableData.articles_publisher.pretty.link);
-    toggleData('articles_publisher');
-
-    replaceText('.js_export_type', 'publishers');
-  });
-
-  // Listen for radio button selection  of "publishers => preprints OR publishers => authored"
-  const filterBtnIds = ['filter_preprints', 'filter_authored_articles'];
-
-  filterBtnIds.forEach(id => {
-    const btn = document.getElementById(id);
-
-    btn.addEventListener('click', function() {
-      var table = document.querySelector(".js_export_table");
-      table.id = "table_publisher";
-
-      exportRecordsShown.innerHTML = 10;
-      exportTitle.innerHTML = tableData.articles_publisher_subset.number;
-      exportYear.innerHTML = tableData.articles_publisher_subset.year;
-      exportTableHead.innerHTML = tableData.articles_publisher_subset.pretty.head;
-      exportTableBody.innerHTML = tableData.articles_publisher_subset.pretty.body;
-      activateExportLink(tableData.articles_publisher_subset.pretty.link);
-      toggleData('articles_publisher_subset');
-
-      replaceText('.js_export_type', 'publishers');
+  exportButtons.forEach(btn => {
+    const buttonElement = document.getElementById(btn.elementId);
+  
+    buttonElement.addEventListener('click', function(event) {
+      // Add highlighting to the selected export button
+      this.classList.add("bg-carnation-500");
+  
+      // Remove the class from all other buttons
+      exportButtons.forEach(innerBtn => {
+        if (innerBtn.elementId !== btn.elementId) {
+          document.getElementById(innerBtn.elementId).classList.remove("bg-carnation-500");
+        }
+      });
+  
+      handleButtonClick(this, btn.tableId, btn.tableDataProperty, btn.replaceTextValue);
+  
+      event.stopPropagation(); // Prevent the document click event to be triggered immediately after button click
     });
   });
-  
+
+  document.addEventListener('click', function() {
+    buttons.forEach(btn => {
+      document.getElementById(btn.elementId).classList.remove("bg-carnation-500");
+    });
+  });
+
   // Listen for button click of "all articles" 
   const exportAllArticlesBtn = document.getElementById('export_all_articles');
 
