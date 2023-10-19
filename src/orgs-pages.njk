@@ -192,52 +192,6 @@ permalink: "{{ org._source.objectID | slug }}/"
       </header>
 
       {# TEMP CRAPPY NON-A11Y PROTOTYPING MARKUP #}
-      {# <form class="text-lg flex space-x-4 justify-center p-12" id="explore_form">
-        <div class="flex items-center font-semibold uppercase">See</div>
-        <div class="">
-          <label for="filter_by" class="mb-3 font-semibold uppercase sr-only">Filter by</label>
-          <select id="filter_by" name="filter_by" class="w-full p-2 bg-transparent border lowercase text-center focus:outline-none focus:ring-2 focus:ring-carnation-500">
-            <option value="articles">Articles</option>
-            <option value="original_research_articles">Original research articles</option>
-            <option value="preprints">Preprints</option>
-            <option value="articles_with_apcs">Articles with APCs</option>
-            <option value="articles_covered_by_policy">Articles covered by policy</option>
-            <option value="funded_articles">Funded articles</option>
-            <option value="authored_articles">Authored articles</option>
-            <option value="none">Everything</option>
-          </select>
-        </div>
-        <div class="flex items-center font-semibold uppercase">See</div>
-        <div class="">
-          <label for="group_by" class="mb-3 font-semibold uppercase sr-only">See</label>
-          <select id="group_by" name="group_by" class="w-full p-2 bg-transparent border lowercase text-center focus:outline-none focus:ring-2 focus:ring-carnation-500">
-            <option value="all_articles">All articles</option>
-            <option value="year_published">Years published</option>
-            <option value="grant">Grants</option>
-            <option value="author">Authors</option>
-            <option value="publisher">Publishers</option>
-            <option value="subject">Subjects</option>
-            <option value="oa_status">OA statuses</option>
-            <option value="program">Programs</option>
-            <option value="institution">Institutions</option>
-            <option value="country">Countries</option>
-            <option value="journal">Journals</option>
-            <option value="journal_oa_type">Journal OA types</option>
-            <option value="co_funder">Co-funders</option>
-            <option value="publisher_license">Publisher licenses</option>
-            <option value="preprint_license">Preprint licenses</option>
-            <option value="repository_license">Repository licenses</option>
-            <option value="dataset_license">Dataset licenses</option>
-            <option value="software_license">Software licenses</option>
-            <option value="dataset_publisher">Dataset publishers</option>
-            <option value="software_publisher">Software publishers</option>
-          </select>
-        </div>
-        <button type="submit" class="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium border bg-transparent hover:bg-neutral-900 hover:text-white hover:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 border-0" id="export_preview_btn">
-          Preview data
-        </button>
-      </form> #}
-
       <div class="mb-4 flex flex-wrap space-r-4 items-center" id="export_options">
         {{ component("pill", {
           id: "all_articles",
