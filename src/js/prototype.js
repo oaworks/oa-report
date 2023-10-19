@@ -169,7 +169,7 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 
   document.addEventListener('click', function() {
-    buttons.forEach(btn => {
+    exportButtons.forEach(btn => {
       document.getElementById(btn.elementId).classList.remove("bg-carnation-500");
     });
   });
