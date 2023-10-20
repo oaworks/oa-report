@@ -273,20 +273,24 @@ document.addEventListener("DOMContentLoaded", function() {
   tableBody.addEventListener('click', (event) => {
     const target = event.target;
 
-    if (target.tagName === 'TD') {
+    if (target.tagName === 'TD' || target.tagName === 'TH') {
       const row = target.parentElement; // Get the parent <tr> element
-      const tdsToHighlight = Array.from(row.querySelectorAll('td')); // Exclude the first two <td> elements
+      const cellsToHighlight = Array.from(row.querySelectorAll('td, th')); // Include both <td> and <th> elements
 
       // Remove highlighting from all rows
       tableRows.forEach((r) => {
-        r.classList.remove('bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900');
+        r.classList.remove('bg-neutral-200', 'bg-neutral-300', 'hover:bg-neutral-100', 'text-neutral-900');
       });
 
-      // Toggle highlighting for the selected <td> elements
-      tdsToHighlight.forEach((td) => {
-        td.classList.toggle('bg-neutral-200');
-        td.classList.toggle('hover:bg-neutral-100');
-        td.classList.toggle('text-neutral-900');
+      // Toggle highlighting for the selected <td> and <th> elements
+      cellsToHighlight.forEach((cell) => {
+        if (cell.tagName === 'TD') {
+          cell.classList.toggle('bg-neutral-200');
+        } else if (cell.tagName === 'TH') {
+          cell.classList.toggle('bg-neutral-300');
+        }
+        cell.classList.toggle('hover:bg-neutral-100');
+        cell.classList.toggle('text-neutral-900');
       });
     }
   });
