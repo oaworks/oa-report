@@ -7,20 +7,18 @@
 }) }}
 #}
 
-<article class="flex relative bg-white transition ease-in delay-150 opacity-0 overflow-hidden" id="{{ params.id }}">
-  <div class="p-3 md:p-4 bg-carnation-100 text-neutral-700">
-    {% icon params.icon %}
-  </div>
-  <div class="p-3 md:p-4 grow">
-    <header>
-      <h3 class="mb-2 text-sm md:text-base text-neutral-900">
+<article class="flex grow basis-0	relative bg-white transition ease-in delay-150 opacity-0 overflow-hidden" id="{{ params.id }}">
+  <div class="grow flex flex-col h-full justify-between">
+    <header class="p-3 mb-6 min-h-24 bg-carnation-100 text-neutral-900">
+      <h3 class="mb-2 text-xs md:text-sm">
+        {% icon_small params.icon %}
         {{ params.title }}
-        <sup tabindex="0" id="info_{{ params.id }}" aria-hidden="true">{% icon_small "help-circle" %}</sup>
       </h3>
     </header>
-    <div class="items-baseline">
+    <div class="p-3">
       <p class="text-5xl font-black text-neutral-900">
         <span id="percent_{{ params.id }}">00%</span>
+        <sup tabindex="0" id="info_{{ params.id }}" role="tooltip" aria-hidden="true">{% icon_small "help-circle" %}</sup>
       </p>
       {% if not params.raw_number %}
       <p class="mt-2 text-xs md:text-sm font-medium text-neutral-600">
