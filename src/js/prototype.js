@@ -143,33 +143,35 @@ document.addEventListener("DOMContentLoaded", function() {
   }
   
   const exportButtons = [
-    { elementId: 'export_grant', tableId: 'table_grant', tableDataProperty: 'articles_grant', replaceTextValue: 'grants' },
-    { elementId: 'export_publisher', tableId: 'table_publisher', tableDataProperty: 'articles_publisher', replaceTextValue: 'publishers' },
-    { elementId: 'filter_all_articles', tableId: 'table_publisher', tableDataProperty: 'articles_publisher', replaceTextValue: 'publishers' },
+    { elementId: 'export_grant', tableId: 'table_grant', tableDataProperty: 'articles_grant', replaceTextValue: 'grants', year: 'all-time' },
+    { elementId: 'export_publisher', tableId: 'table_publisher', tableDataProperty: 'articles_publisher', replaceTextValue: 'publishers', year: 'start-year' },
+    { elementId: 'filter_all_articles', tableId: 'table_publisher', tableDataProperty: 'articles_publisher', replaceTextValue: 'publishers', year: 'start-year' },
     { elementId: 'filter_preprints', tableId: 'table_publisher', tableDataProperty: 'articles_publisher_subset', replaceTextValue: 'publishers' },
     { elementId: 'filter_authored_articles', tableId: 'table_publisher', tableDataProperty: 'articles_publisher_subset', replaceTextValue: 'publishers' }
   ];
-
+  
   exportButtons.forEach(btn => {
     const buttonElement = document.getElementById(btn.elementId);
-  
-    buttonElement.addEventListener('click', function(event) {
-      // Add highlighting to the selected export button
-      this.classList.add("bg-carnation-500");
-  
-      // Remove the class from all other buttons
-      exportButtons.forEach(innerBtn => {        
-        if (innerBtn.elementId !== btn.elementId) {
-          document.getElementById(innerBtn.elementId).classList.remove("bg-carnation-500");
-        }
-      });
-  
-      handleButtonClick(this, btn.tableId, btn.tableDataProperty, btn.replaceTextValue);
-  
-      event.stopPropagation(); // Prevent the document click event to be triggered immediately after button click    
-    });
-  });
+    var yearBtn = document.getElementById(btn.year);
 
+    buttonElement.addEventListener('click', function(event) {
+      if (yearBtn.getAttribute('aria-pressed') === 'true' ) { // Check if corresponding year is active       
+        // Add highlighting to the selected export button
+        this.classList.add("bg-carnation-500");
+
+        // Remove the class from all other buttons
+        exportButtons.forEach(innerBtn => {        
+          if (innerBtn.elementId !== btn.elementId) {
+            document.getElementById(innerBtn.elementId).classList.remove("bg-carnation-500");
+          }
+        });
+
+        handleButtonClick(this, btn.tableId, btn.tableDataProperty, btn.replaceTextValue);
+
+        event.stopPropagation(); // Prevent the document click event from being triggered immediately after button click    
+      }
+    });
+  });  
 
   // Listen for button click of "all articles" 
   const exportAllArticlesBtn = document.getElementById('export_all_articles');
