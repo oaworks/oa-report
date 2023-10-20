@@ -130,7 +130,7 @@ oareport = function(org) {
                 articlesContents.textContent = `${makeNumberReadable(numeratorCount)} of ${makeNumberReadable(denominatorCount)} ${denominatorText}`;
                 percentageContents.textContent = `${Math.round(((numeratorCount / denominatorCount) * 100))}%`;
               } else {
-                articlesContents.textContent = "";
+                articlesContents.innerHTML = `<span class="invisible" aria-hidden="true">---</span>`;
                 percentageContents.textContent = "N/A";
               };
             }

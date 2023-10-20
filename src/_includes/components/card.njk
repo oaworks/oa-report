@@ -7,7 +7,7 @@
 }) }}
 #}
 
-<article class="flex grow basis-0	relative bg-white transition ease-in delay-150 opacity-0 overflow-hidden" id="{{ params.id }}">
+{# <article class="flex grow basis-0	relative bg-white transition ease-in delay-150 opacity-0 overflow-hidden" id="{{ params.id }}">
   <div class="grow flex flex-col h-full justify-between">
     <header class="p-3 mb-6 min-h-24 bg-carnation-100 text-neutral-900">
       <h3 class="mb-2 text-xs md:text-sm">
@@ -27,4 +27,31 @@
       {% endif %}
     </div>
   </div>
+</article> #}
+
+<article class="flex flex-col bg-white h-full" id="{{ params.id }}">
+  {# Header #}
+  <header class="p-3 h-28 overflow-hidden bg-carnation-100 text-neutral-900 flex items-center justify-between">
+    <h3 class="text-xs md:text-sm">
+      <div class="mb-3 -ml-1">
+        {% icon_small params.icon %}
+      </div>
+      {{ params.title }}
+    </h3>
+  </header>
+  {# Body #}
+  <div class="pt-8 px-3 flex flex-col justify-center flex-grow text-neutral-900">
+    <p class="text-4xl font-black">
+      <span id="percent_{{ params.id }}">00%</span>
+      <sup tabindex="0" id="info_{{ params.id }}" role="tooltip" aria-hidden="true">
+        {% icon_small "help-circle" %}
+      </sup>
+    </p>
+  </div>
+  {# Footer #}
+  <footer class="p-3">
+    <p class="text-xs font-medium text-neutral-600">
+      <span id="articles_{{ params.id }}">articles</span>
+    </p>
+  </footer>
 </article>

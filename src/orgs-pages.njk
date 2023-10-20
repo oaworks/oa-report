@@ -107,7 +107,7 @@ permalink: "{{ org._source.objectID | slug }}/"
       </header>
 
       {# <div class="col-span-3 gap-6 grid grid-cols-2 lg:grid-cols-8"> #}
-      <div class="space-x-6 flex">
+      <div class="grid gap-6 grid-cols-1 md:grid-cols-4 lg:grid-cols-none lg:grid-flow-col xl:auto-cols-fr">
         {{ component("card", {
           id: "is_paper",
           title: "Total published",
