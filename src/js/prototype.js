@@ -115,9 +115,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Add 'transition-pb-6' class when the nav is at the top of the viewport
     if (rect.top <= 0) {
+      nav.classList.add("shadow-lg");
       nav.classList.add("transition-pb-6");
       nav.classList.remove("transition-pb-0");
     } else {
+      nav.classList.remove("shadow-lg");
       nav.classList.remove("transition-pb-6");
       nav.classList.add("transition-pb-0");
     }
