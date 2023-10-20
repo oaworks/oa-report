@@ -66,3 +66,12 @@
 @supports (font-variation-settings: normal) {
   :root { font-family: 'Inter var', sans-serif; }
 }
+
+.transition-pb-0 {
+  padding-bottom: 0;
+  transition: padding-bottom 0.3s ease;
+}
+.transition-pb-6 {
+  padding-bottom: 1.5rem; 
+  transition: padding-bottom 0.3s ease;
+}
