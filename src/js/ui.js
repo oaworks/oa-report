@@ -212,11 +212,13 @@ function handleQuickDateItemClick(event) {
   quickDateItems.forEach((item) => {
     item.classList.remove("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
     item.classList.add("bg-white", "text-neutral-900");
+    item.setAttribute("aria-pressed", false);
   });
 
   // When selected
   event.target.classList.add("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
   event.target.classList.remove("bg-white", "text-neutral-900");
+  event.target.setAttribute("aria-pressed", true);
 }
 
 quickDateItems.forEach((item) => {
@@ -298,27 +300,3 @@ class Modal {
 }
 
 let currentModal = null;
-
-// Fetch all pill buttons
-// const modalPills = document.querySelectorAll('.js_export_pill');
-
-// modalPills.forEach(pill => {
-//     pill.addEventListener('click', () => {
-//         if (currentModal) {
-//             currentModal.close();
-//         }
-
-//         const titleSelector = pill.getAttribute('data-title');
-//         const contentSelector = pill.getAttribute('data-content');
-
-//         if (titleSelector && contentSelector) {
-//             currentModal = new Modal(titleSelector, contentSelector);
-//             currentModal.open();
-//         } else {
-//             console.error('Data attributes for title and content selectors not found.');
-//         }
-//     });
-// });
-
-
-
