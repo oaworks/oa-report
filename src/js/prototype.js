@@ -145,9 +145,7 @@ document.addEventListener("DOMContentLoaded", function() {
     { elementId: 'export_publisher', tableId: 'table_publisher', tableDataProperty: 'articles_publisher', replaceTextValue: 'publishers' },
     { elementId: 'filter_all_articles', tableId: 'table_publisher', tableDataProperty: 'articles_publisher', replaceTextValue: 'publishers' },
     { elementId: 'filter_preprints', tableId: 'table_publisher', tableDataProperty: 'articles_publisher_subset', replaceTextValue: 'publishers' },
-    { elementId: 'filter_authored_articles', tableId: 'table_publisher', tableDataProperty: 'articles_publisher_subset', replaceTextValue: 'publishers' },
-    { elementId: 'export_all_articles', tableId: 'table_article', tableDataProperty: 'articles', replaceTextValue: 'articles' },
-    { elementId: 'export_articles_with_apcs', tableId: 'table_finance', tableDataProperty: 'articles_with_apcs_only', replaceTextValue: 'articles with paid APCs' }
+    { elementId: 'filter_authored_articles', tableId: 'table_publisher', tableDataProperty: 'articles_publisher_subset', replaceTextValue: 'publishers' }
   ];
 
   exportButtons.forEach(btn => {
