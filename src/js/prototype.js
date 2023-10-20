@@ -158,7 +158,7 @@ document.addEventListener("DOMContentLoaded", function() {
       this.classList.add("bg-carnation-500");
   
       // Remove the class from all other buttons
-      exportButtons.forEach(innerBtn => {
+      exportButtons.forEach(innerBtn => {        
         if (innerBtn.elementId !== btn.elementId) {
           document.getElementById(innerBtn.elementId).classList.remove("bg-carnation-500");
         }
@@ -166,15 +166,10 @@ document.addEventListener("DOMContentLoaded", function() {
   
       handleButtonClick(this, btn.tableId, btn.tableDataProperty, btn.replaceTextValue);
   
-      event.stopPropagation(); // Prevent the document click event to be triggered immediately after button click
+      event.stopPropagation(); // Prevent the document click event to be triggered immediately after button click    
     });
   });
 
-  document.addEventListener('click', function() {
-    exportButtons.forEach(btn => {
-      document.getElementById(btn.elementId).classList.remove("bg-carnation-500");
-    });
-  });
 
   // Listen for button click of "all articles" 
   const exportAllArticlesBtn = document.getElementById('export_all_articles');
