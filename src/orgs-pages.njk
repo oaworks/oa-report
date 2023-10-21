@@ -163,40 +163,97 @@ permalink: "{{ org._source.objectID | slug }}/"
       const insightsBar = document.querySelector('#insights_bar');
       const insightsSubset = document.querySelector('#insights_subset');
       const insightsSuperset = document.querySelector('#insights_superset');
-      const yearButton = document.querySelector('#start-year');
+      const yearButton2023 = document.querySelector('#start-year');
+      const allTimeButton = document.querySelector('#all-time');
 
-      function isYear2023() {
-        return yearButton.getAttribute('aria-pressed') === "true" && yearButton.textContent.trim() === "2023";
+      function getCurrentYear() {
+          if (yearButton2023.getAttribute('aria-pressed') === "true" && yearButton2023.textContent.trim() === "2023") {
+              return '2023';
+          } else if (allTimeButton.getAttribute('aria-pressed') === "true" && allTimeButton.textContent.trim() === "All time") {
+              return 'AllTime';
+          } else {
+              return null;
+          }
       }
 
       function resetBars() {
-        insightsSubset.style.width = '0%';
-        insightsSuperset.style.width = '0%';
-        insightsBar.classList.remove('striped-bg', 'bg-neutral-400');
+          insightsSubset.style.width = '0%';
+          insightsSuperset.style.width = '0%';
+          insightsBar.classList.remove('striped-bg', 'bg-neutral-400');
       }
 
       function handleMouseEnter(event, subsetWidth, supersetWidth) {
-        if (!isYear2023()) return;
-        insightsSubset.style.width = subsetWidth;
-        insightsSuperset.style.width = supersetWidth;
-        insightsBar.classList.add('striped-bg', 'bg-neutral-400');
+          const currentYear = getCurrentYear();
+          if (!currentYear) return;
+
+          insightsSubset.style.width = subsetWidth[currentYear];
+          insightsSuperset.style.width = supersetWidth[currentYear];
+          insightsBar.classList.add('striped-bg', 'bg-neutral-400');
       }
 
       const events = [
-        { el: '#is_paper > header', subset: '0%', superset: '100%' },
-        { el: '#is_free_to_read > header', subset: '93%', superset: '100%' },
-        { el: '#has_open_data > header', subset: '1.31%', superset: '11.58%' },
-        { el: '#is_compliant > header', subset: '80.16%', superset: '100%' },
-        { el: '#is_oa > header', subset: '80.16%', superset: '100%' },
-        { el: '#has_data_availability_statement > header', subset: '71.35%', superset: '85.26%' },
-        { el: '#has_open_code > header', subset: '0.033%', superset: '0.57%' }
+        { 
+          el: '#is_paper > header', 
+          subset2023: '0%', 
+          superset2023: '100%', 
+          subsetAllTime: '0%', 
+          supersetAllTime: '100%' 
+        },
+        { 
+          el: '#is_free_to_read > header', 
+          subset2023: '93%', 
+          superset2023: '100%', 
+          subsetAllTime: '93.32%', 
+          supersetAllTime: '100%' 
+        },
+        { 
+          el: '#has_open_data > header', 
+          subset2023: '1.31%', 
+          superset2023: '11.58%', 
+          subsetAllTime: '29.84%', 
+          supersetAllTime: '27.84%' 
+        },
+        { 
+          el: '#is_compliant > header', 
+          subset2023: '80.16%', 
+          superset2023: '100%', 
+          subsetAllTime: '72.91%', 
+          supersetAllTime: '100%' 
+        },
+        { 
+          el: '#is_oa > header', 
+          subset2023: '80.16%', 
+          superset2023: '100%', 
+          subsetAllTime: '72.91%', 
+          supersetAllTime: '100%' 
+        },
+        { 
+          el: '#has_data_availability_statement > header', 
+          subset2023: '71.35%', 
+          superset2023: '85.26%', 
+          subsetAllTime: '46.13%', 
+          supersetAllTime: '85.87%' 
+        },
+        { 
+          el: '#has_open_code > header', 
+          subset2023: '0.033%', 
+          superset2023: '0.57%', 
+          subsetAllTime: '6.04%', 
+          supersetAllTime: '12.25%' 
+        }
       ];
 
       events.forEach(event => {
         const header = document.querySelector(event.el);
-        header.addEventListener('mouseenter', e => handleMouseEnter(e, event.subset, event.superset));
+        header.addEventListener('mouseenter', e => handleMouseEnter(e, {
+            2023: event.subset2023,
+            AllTime: event.subsetAllTime
+        }, {
+            2023: event.superset2023,
+            AllTime: event.supersetAllTime
+        }));
         header.addEventListener('mouseleave', resetBars);
-      });
+     });
     });
   </script>
 
