@@ -5,643 +5,643 @@ const tableData = {
     raw: {
       link: "/temp/bmgf_all-articles_from_2023-01-01-to-2023-10-04_on_2023-09-27.csv",
       head: `
-        <th scope="col" class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">DOI</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">is_compliant__bmgf</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">grantid__bmgf</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">title</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">publisher</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">journal</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">issn</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">published_date</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">published_year</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">PMCID</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">authorships.institutions.display_name</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">funder.name</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">is_oa</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">oa_status</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">journal_oa_type</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">publisher_license_best</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">has_repository_copy</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">repository_license_best</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">repository_version</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">repository_url</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">is_approved_repository__bmgf</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">is_preprint</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">can_archive</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">version</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">concepts.display_name</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">subject</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">program__bmgf</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">has_data_availability_statement</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">cited_by_count</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">author_email_name</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">email</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">invoice_date</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">invoice_number</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">apc_cost</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">oasupport.status</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">sheets</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">is_new__bmgf</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.data.has_shared_data</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.data.has_open_data</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.data.doi</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.data.url</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.data.accession</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.data.location</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.data.licence</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.data.evidence</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.code.has_made_code</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.code.has_shared_code</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.code.has_open_code</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.code.doi</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.code.url</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.code.accession</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.code.location</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.code.licence</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">dev.code.evidence</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">is_original_research</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">data_availability_statement_category</th>
+        <th scope="col" class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 align-bottom">DOI</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">is_compliant__bmgf</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">grantid__bmgf</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">title</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">publisher</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">journal</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">issn</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">published_date</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">published_year</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">PMCID</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">authorships.institutions.display_name</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">funder.name</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">is_oa</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">oa_status</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">journal_oa_type</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">publisher_license_best</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">has_repository_copy</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">repository_license_best</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">repository_version</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">repository_url</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">is_approved_repository__bmgf</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">is_preprint</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">can_archive</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">version</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">concepts.display_name</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">subject</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">program__bmgf</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">has_data_availability_statement</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">cited_by_count</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">author_email_name</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">email</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">invoice_date</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">invoice_number</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">apc_cost</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">oasupport.status</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">sheets</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">is_new__bmgf</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">dev.data.has_shared_data</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">dev.data.has_open_data</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">dev.data.doi</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">dev.data.url</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">dev.data.accession</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">dev.data.location</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">dev.data.licence</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">dev.data.evidence</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">dev.code.has_made_code</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">dev.code.has_shared_code</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">dev.code.has_open_code</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">dev.code.doi</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">dev.code.url</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">dev.code.accession</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">dev.code.location</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">dev.code.licence</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">dev.code.evidence</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">is_original_research</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">data_availability_statement_category</th>
       `,
       body: `
         <tr>
           <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.1016/j.xpro.2023.102563</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">A protocol for measuring the sexual receptivity of female Drosophila</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">Elsevier BV</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">STAR Protocols</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2666-1667</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-12-01</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">PMC10507193</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">hybrid</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">gold</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">cc-by-nc-nd</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">publishedVersion</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">custom_keys__bmgf;is_new__bmgf;pmc__bmgf;preprints_oa_locations__bmgf</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">A protocol for measuring the sexual receptivity of female Drosophila</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">Elsevier BV</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">STAR Protocols</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2666-1667</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-12-01</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">PMC10507193</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">hybrid</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">gold</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">cc-by-nc-nd</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">publishedVersion</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">custom_keys__bmgf;is_new__bmgf;pmc__bmgf;preprints_oa_locations__bmgf</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
         </tr>
         <tr>
           <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.1016/j.ebiom.2023.104777</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">Predictive models of long COVID</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">Elsevier BV</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">eBioMedicine</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2352-3964</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-10-01</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">PMC10494314</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">closed</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">gold</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">cc-by</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">publishedVersion</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">Medicine;Coronavirus disease 2019 (COVID-19);Logistic regression;Generalizability theory;Random forest;Internal medicine;Cohort;Diagnosis code;Incidence (geometry);Disease;Artificial intelligence;Statistics;Infectious disease (medical specialty);Population;Computer science;Environmental health;Physics;Mathematics;Optics</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">General Biochemistry, Genetics and Molecular Biology;General Medicine</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">0</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">custom_keys__bmgf;is_compliant__bmgf;is_new__bmgf;pmc__bmgf;preprints_oa_locations__bmgf;publication_type__bmgf</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">Predictive models of long COVID</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">Elsevier BV</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">eBioMedicine</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2352-3964</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-10-01</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">PMC10494314</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">closed</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">gold</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">cc-by</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">publishedVersion</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">Medicine;Coronavirus disease 2019 (COVID-19);Logistic regression;Generalizability theory;Random forest;Internal medicine;Cohort;Diagnosis code;Incidence (geometry);Disease;Artificial intelligence;Statistics;Infectious disease (medical specialty);Population;Computer science;Environmental health;Physics;Mathematics;Optics</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">General Biochemistry, Genetics and Molecular Biology;General Medicine</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">0</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">custom_keys__bmgf;is_compliant__bmgf;is_new__bmgf;pmc__bmgf;preprints_oa_locations__bmgf;publication_type__bmgf</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
         </tr>
         <tr>
           <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.1016/j.eclinm.2023.102140</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">Immunogenicity and safety of SARS-CoV-2 recombinant protein nanoparticle vaccine GBP510 adjuvanted with AS03: interim results of a randomised, active-controlled, observer-blinded, phase 3 trial</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">Elsevier BV</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">eClinicalMedicine</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2589-5370</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-10-01</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">PMC10498190</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">gold</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">cc-by-nc-nd</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">publishedVersion</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">Medicine;Immunogenicity;Cohort;Interim analysis;Vaccination;Internal medicine;Seroconversion;Randomized controlled trial;Immunology;Antibody</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">General Medicine</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">0</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">custom_keys__bmgf;is_new__bmgf;pmc__bmgf;preprints_oa_locations__bmgf;publication_type__bmgf</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">Immunogenicity and safety of SARS-CoV-2 recombinant protein nanoparticle vaccine GBP510 adjuvanted with AS03: interim results of a randomised, active-controlled, observer-blinded, phase 3 trial</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">Elsevier BV</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">eClinicalMedicine</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2589-5370</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-10-01</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">PMC10498190</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">gold</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">cc-by-nc-nd</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">publishedVersion</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">Medicine;Immunogenicity;Cohort;Interim analysis;Vaccination;Internal medicine;Seroconversion;Randomized controlled trial;Immunology;Antibody</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">General Medicine</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">0</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">custom_keys__bmgf;is_new__bmgf;pmc__bmgf;preprints_oa_locations__bmgf;publication_type__bmgf</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
         </tr>
         <tr>
           <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.1016/s2214-109x(23)00383-2</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">Potential cost-effectiveness of community availability of tenofovir, lamivudine, and dolutegravir for HIV prevention and treatment in east, central, southern, and west Africa: a modelling analysis</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">Elsevier BV</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">The Lancet Global Health</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2214-109X</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-10-01</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">closed</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">gold</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">publishedVersion</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">custom_keys__bmgf;is_new__bmgf;name_epmc__bmgf;preprints_oa_locations__bmgf</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">Potential cost-effectiveness of community availability of tenofovir, lamivudine, and dolutegravir for HIV prevention and treatment in east, central, southern, and west Africa: a modelling analysis</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">Elsevier BV</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">The Lancet Global Health</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2214-109X</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-10-01</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">closed</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">gold</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">publishedVersion</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">custom_keys__bmgf;is_new__bmgf;name_epmc__bmgf;preprints_oa_locations__bmgf</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
         </tr>
         <tr>
           <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.1016/j.eclinm.2023.102151</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">Immune persistence of an inactivated poliovirus vaccine derived from the Sabin strain: a 10-year follow-up of a phase 3 study</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">Elsevier BV</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">eClinicalMedicine</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2589-5370</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-10-01</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">PMC10514427</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">hybrid</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">gold</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">cc-by-nc-nd</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">publishedVersion</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">custom_keys__bmgf;is_new__bmgf;pmc__bmgf;preprints_oa_locations__bmgf</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">Immune persistence of an inactivated poliovirus vaccine derived from the Sabin strain: a 10-year follow-up of a phase 3 study</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">Elsevier BV</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">eClinicalMedicine</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2589-5370</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-10-01</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">PMC10514427</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">hybrid</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">gold</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">cc-by-nc-nd</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">publishedVersion</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">custom_keys__bmgf;is_new__bmgf;pmc__bmgf;preprints_oa_locations__bmgf</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
         </tr>
         <tr>
           <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.1186/s40249-023-01135-7</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">Assessing food security performance from the One Health concept: an evaluation tool based on the Global One Health Index</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">Springer Science and Business Media LLC</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">Infectious Diseases of Poverty</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2049-9957</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-22</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">PMC10514978</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">gold</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">gold</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">cc-by</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">publishedVersion</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">custom_keys__bmgf;is_compliant__bmgf;is_new__bmgf;name_epmc__bmgf;preprints_oa_locations__bmgf</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">Assessing food security performance from the One Health concept: an evaluation tool based on the Global One Health Index</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">Springer Science and Business Media LLC</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">Infectious Diseases of Poverty</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2049-9957</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-09-22</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">PMC10514978</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">gold</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">gold</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">cc-by</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">publishedVersion</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">custom_keys__bmgf;is_compliant__bmgf;is_new__bmgf;name_epmc__bmgf;preprints_oa_locations__bmgf</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
         </tr>
         <tr>
           <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.7554/elife.85023</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">Diverse evolutionary pathways challenge the use of collateral sensitivity as a strategy to suppress resistance</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">eLife Sciences Publications, Ltd</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">eLife</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2050-084X</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-22</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">gold</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">gold</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">cc-by</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">publishedVersion</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">custom_keys__bmgf;is_compliant__bmgf;is_new__bmgf;name_epmc__bmgf;preprints_oa_locations__bmgf</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">Diverse evolutionary pathways challenge the use of collateral sensitivity as a strategy to suppress resistance</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">eLife Sciences Publications, Ltd</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">eLife</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2050-084X</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-09-22</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">gold</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">gold</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">cc-by</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">publishedVersion</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">custom_keys__bmgf;is_compliant__bmgf;is_new__bmgf;name_epmc__bmgf;preprints_oa_locations__bmgf</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
         </tr>
         <tr>
           <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.1111/nph.19273</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">Parallel tuning of semi‐dwarfism via differential splicing of <i>Brachytic1</i> in commercial maize and smallholder sorghum</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">Wiley</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">New Phytologist</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">0028-646X;1469-8137</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-22</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">bronze</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">hybrid</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">acceptedVersion</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">custom_keys__bmgf;is_new__bmgf;name_epmc__bmgf;preprints_oa_locations__bmgf</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">Parallel tuning of semi‐dwarfism via differential splicing of <i>Brachytic1</i> in commercial maize and smallholder sorghum</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">Wiley</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">New Phytologist</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">0028-646X;1469-8137</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-09-22</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">bronze</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">hybrid</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">acceptedVersion</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">custom_keys__bmgf;is_new__bmgf;name_epmc__bmgf;preprints_oa_locations__bmgf</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
         </tr>
         <tr>
           <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.3389/fpubh.2023.1147180</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">Prevalence and risk factors associated with the occurrence of Campylobacter sp. in children aged 6–24 months in peri-urban Nairobi, Kenya</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-22</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">University of Nairobi;International Livestock Research Institute;University of Copenhagen;London School of Hygiene & Tropical Medicine</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">closed</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">Campylobacter;Hygiene;Campylobacter jejuni;Diarrhea;Environmental health;Sanitation;Medicine;Malnutrition;Diarrheal disease;Veterinary medicine;Biology;Internal medicine;Bacteria;Genetics;Pathology</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">0</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-08</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-1008788-1</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">3230</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">custom_keys__bmgf;finance_v3__bmgf;is_new__bmgf;preprints_oa_locations__bmgf;publication_type__bmgf</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">Prevalence and risk factors associated with the occurrence of Campylobacter sp. in children aged 6–24 months in peri-urban Nairobi, Kenya</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-09-22</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">University of Nairobi;International Livestock Research Institute;University of Copenhagen;London School of Hygiene & Tropical Medicine</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">closed</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">Campylobacter;Hygiene;Campylobacter jejuni;Diarrhea;Environmental health;Sanitation;Medicine;Malnutrition;Diarrheal disease;Veterinary medicine;Biology;Internal medicine;Bacteria;Genetics;Pathology</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">0</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-09-08</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-1008788-1</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">3230</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">custom_keys__bmgf;finance_v3__bmgf;is_new__bmgf;preprints_oa_locations__bmgf;publication_type__bmgf</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
         </tr>
         <tr>
           <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.1007/s41109-023-00595-y</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">Overcoming vaccine hesitancy by multiplex social network targeting: an analysis of targeting algorithms and implications</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">Springer Science and Business Media LLC</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">Applied Network Science</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2364-8228</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-21</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">PMC10514145</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">gold</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">gold</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">cc-by</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">cc-by</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">submittedVersion</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">https://www.researchsquare.com/article/rs-2608863/latest.pdf</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">publishedVersion</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">FALSE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">custom_keys__bmgf;is_compliant__bmgf;is_new__bmgf;pmc__bmgf;preprints_oa_locations__bmgf</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">TRUE</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">Overcoming vaccine hesitancy by multiplex social network targeting: an analysis of targeting algorithms and implications</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">Springer Science and Business Media LLC</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">Applied Network Science</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2364-8228</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-09-21</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">PMC10514145</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">gold</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">gold</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">cc-by</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">cc-by</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">submittedVersion</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">https://www.researchsquare.com/article/rs-2608863/latest.pdf</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">publishedVersion</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">FALSE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">custom_keys__bmgf;is_compliant__bmgf;is_new__bmgf;pmc__bmgf;preprints_oa_locations__bmgf</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">TRUE</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
         </tr>
 
       `
@@ -653,21 +653,21 @@ const tableData = {
     pretty: {
       link: "/temp/bmgf_articles_grant_alltime_on_2023-10-11_pretty.csv",
       head: `  
-        <th scope="col" class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">grant</th>
-        <th scope="col" class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 w-60 truncate">articles published</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">compliant articles</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">free-to-read articles</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">open access articles</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">repository version</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">approved repository version</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">preprint version</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">data availability statement</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">no data availability statement</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">total APCs paid</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">with APCs</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">average APCs paid</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">median APCs paid</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">with grant ID</th>
+        <th scope="col" class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60">grant</th>
+        <th scope="col" class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 w-32 align-bottom">articles published</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">compliant articles</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">free-to-read articles</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">open access articles</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">repository version</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">approved repository version</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">preprint version</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">data availability statement</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">no data availability statement</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">total APCs paid</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">with APCs</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">average APCs paid</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">median APCs paid</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">with grant ID</th>
       `,
       body: `
         <tr>
@@ -1031,21 +1031,21 @@ const tableData = {
     raw: {
       link: "/temp/bmgf_articles_grant_alltime_on_2023-10-11_raw.csv",
       head: `
-        <th scope="col" class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">grant</th>
-        <th scope="col" class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 w-60 truncate">articles_published</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">is_compliant_articles</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">is_free_to_read</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">is_oa</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">has_repository_version</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">has_approved_repository_version</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">has_preprint_version</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">has_data_availability_statement</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">has_no_data_availability_statement</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">total_apcs_paid</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">has_apc</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">average_apcs_paid</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">median_apcs_paid</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">has_grantid</th>
+        <th scope="col" class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 align-bottom">grant</th>
+        <th scope="col" class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 w-32 align-bottom">articles_published</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">is_compliant_articles</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">is_free_to_read</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">is_oa</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">has_repository_version</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">has_approved_repository_version</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">has_preprint_version</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">has_data_availability_statement</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">has_no_data_availability_statement</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">total_apcs_paid</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">has_apc</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">average_apcs_paid</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">median_apcs_paid</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">has_grantid</th>
       `,
       body: `
         <tr>
@@ -1256,21 +1256,21 @@ const tableData = {
     pretty: {
       link: "/temp/bmgf_articles_publisher_2023_on_2023-10-11_pretty.csv",
       head: `
-        <th scope="col" class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">publisher</th>
-        <th scope="col" class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 w-60 truncate">articles published</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">compliant articles</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">free-to-read articles</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">open access articles</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">repository version</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">approved repository version</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">preprint version</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">data availability statement</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">no data availability statement</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">total APCs paid</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">with APCs</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">average APCs paid</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">median APCs paid</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">with grant ID</th>
+        <th scope="col" class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 align-bottom">publisher</th>
+        <th scope="col" class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 w-32 align-bottom">articles published</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">compliant articles</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">free-to-read articles</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">open access articles</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">repository version</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">approved repository version</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">preprint version</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">data availability statement</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">no data availability statement</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">total APCs paid</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">with APCs</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">average APCs paid</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">median APCs paid</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">with grant ID</th>
       `,
       body: `
         <tr>
@@ -1620,21 +1620,21 @@ const tableData = {
     raw: {
       link: "/temp/bmgf_articles_publisher_2023_on_2023-10-11_raw.csv",
       head: `
-        <th scope="col" class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">publisher</th>
-        <th scope="col" class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 w-60 truncate">articles_published</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">is_compliant_articles</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">is_free_to_read</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">is_oa</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">has_repository_version</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">has_approved_repository_version</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">has_preprint_version</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">has_data_availability_statement</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">has_no_data_availability_statement</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">total_apcs_paid</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">has_apc</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">average_apcs_paid</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">median_apcs_paid</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">has_grantid</th>
+        <th scope="col" class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 align-bottom">publisher</th>
+        <th scope="col" class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 w-32 align-bottom">articles_published</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">is_compliant_articles</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">is_free_to_read</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">is_oa</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">has_repository_version</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">has_approved_repository_version</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">has_preprint_version</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">has_data_availability_statement</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">has_no_data_availability_statement</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">total_apcs_paid</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">has_apc</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">average_apcs_paid</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">median_apcs_paid</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">has_grantid</th>
       `,
       body: `
         <tr>
@@ -1865,21 +1865,21 @@ const tableData = {
     pretty: {
       link: "/temp/bmgf_articles_publisher_2023_on_2023-10-11_pretty.csv",
       head: `
-        <th scope="col" class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">publisher</th>
-        <th scope="col" class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 w-60 truncate">articles published</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">compliant articles</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">free-to-read articles</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">open access articles</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">repository version</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">approved repository version</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">preprint version</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">data availability statement</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">no data availability statement</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">total APCs paid</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">with APCs</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">average APCs paid</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">median APCs paid</th>
-        <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">with grant ID</th>
+        <th scope="col" class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 align-bottom">publisher</th>
+        <th scope="col" class="border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 w-32 align-bottom">articles published</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">compliant articles</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">free-to-read articles</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">open access articles</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">repository version</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">approved repository version</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">preprint version</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">data availability statement</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">no data availability statement</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">total APCs paid</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">with APCs</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">average APCs paid</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">median APCs paid</th>
+        <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">with grant ID</th>
       `,
       body: `
       <tr>
@@ -2068,170 +2068,170 @@ const tableData = {
     raw: {
       head: `
         <tr>
-          <th scope="col" class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">DOI</th>
-          <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">grantid__bmgf</th>
-          <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">publisher_simple</th>
-          <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">journal</th>
-          <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">journal_oa_type</th>
-          <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">published_date</th>
-          <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">oa_status</th>
-          <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">publisher_license_best</th>
-          <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">apc_cost</th>
-          <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">invoice_number</th>
-          <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">invoice_date</th>
-          <th scope="col" class="border-b border-neutral-500 p-2 w-60 truncate">invoice_year</th>
+          <th scope="col" class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 align-bottom">DOI</th>
+          <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">grantid__bmgf</th>
+          <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">publisher_simple</th>
+          <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">journal</th>
+          <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">journal_oa_type</th>
+          <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">published_date</th>
+          <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">oa_status</th>
+          <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">publisher_license_best</th>
+          <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">apc_cost</th>
+          <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">invoice_number</th>
+          <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">invoice_date</th>
+          <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">invoice_year</th>
         </tr>
       `,
       body: `
         <tr>
           <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.3389/fpubh.2023.1147180</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">closed</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-22</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">3230</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-1008788-1</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-08</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">closed</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-09-22</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">3230</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-1008788-1</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-09-08</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
         </tr>
         <tr>
           <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.1136/bmj-2022-072249</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">closed</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-21</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">6800</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">APC600447950</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-04</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">closed</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-09-21</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">6800</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">APC600447950</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-09-04</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
         </tr>
         <tr>
           <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.1038/s41591-023-02551-w</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">closed</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-21</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">11690</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">1452513097</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-13</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">closed</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-09-21</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">11690</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">1452513097</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-09-13</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
         </tr>
         <tr>
           <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.1128/mbio.01887-23</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">closed</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-20</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">4270</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">APC600441996</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-08-11</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">closed</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-09-20</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">4270</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">APC600441996</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-08-11</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
         </tr>
         <tr>
           <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.3389/fimmu.2023.1220130</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">closed</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-20</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">3230</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-1008788-1</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-08</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">closed</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-09-20</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">3230</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-1008788-1</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-09-08</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
         </tr>
         <tr>
           <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.3389/fvets.2023.1168649</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">closed</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-19</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">3230</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-1008788-1</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-08</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">closed</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-09-19</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">3230</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-1008788-1</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-09-08</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
         </tr>
         <tr>
           <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.3389/fsoc.2023.1254595</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">closed</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-19</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">770</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-1008788-1</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-08</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">closed</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-09-19</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">770</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-1008788-1</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-09-08</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
         </tr>
         <tr>
           <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.1038/s41598-023-42425-2</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">springer/nature/bmc</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">Scientific Reports</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">gold</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-16</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">gold</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">cc-by</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">1350</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2939206000</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-20</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">springer/nature/bmc</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">Scientific Reports</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">gold</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-09-16</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">gold</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">cc-by</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">1350</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2939206000</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-09-20</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
         </tr>
         <tr>
           <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.1099/mgen.0.001094</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">closed</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-15</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">3170</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">APC600449722</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-08</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">closed</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-09-15</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">3170</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">APC600449722</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-09-08</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
         </tr>
         <tr>
           <td class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate">10.3389/fphar.2023.1088670</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">closed</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-14</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">3230</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-1008788-1</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023-09-08</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate">2023</td>
-          <td class="border-b border-neutral-500 p-2 w-60 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">closed</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-09-14</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">3230</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-1008788-1</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023-09-08</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate">2023</td>
+          <td class="border-b border-neutral-500 p-2 w-32 truncate"></td>
         </tr>
       `
     }
