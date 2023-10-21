@@ -106,7 +106,6 @@ permalink: "{{ org._source.objectID | slug }}/"
         </h2>
       </header>
 
-      {# <div class="col-span-3 gap-6 grid grid-cols-2 lg:grid-cols-8"> #}
       <div class="grid gap-6 grid-cols-2 md:grid-cols-4 lg:grid-cols-none lg:grid-flow-col xl:auto-cols-fr">
         {{ component("card", {
           id: "is_paper",
@@ -149,9 +148,88 @@ permalink: "{{ org._source.objectID | slug }}/"
           title: "With Open Code",
           icon: "code"
         }) }}
+      </div>
 
+      <div class="mt-6 col-span-3 bg-carnation-100 h-10 relative transition-all duration-1000" id="insights_bar">
+        <div class="bg-carnation-300 h-10 text-neutral-800 text-sm font-semibold uppercase transition-all duration-1000 absolute top-0 left-0" style="width: 0%;" id="insights_superset"></div>
+        <div class="bg-carnation-500 h-10 text-sm font-semibold uppercase transition-all duration-1000 absolute top-0 left-0" style="width: 0%;" id="insights_subset"></div>
+      </div>
     </div>
   </section>
+
+  {# temp prototyping for vis #}
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const insightsBar = document.querySelector('#insights_bar');
+    const insightsSubset = document.querySelector('#insights_subset');
+    const insightsSuperset = document.querySelector('#insights_superset');
+
+    function resetBars() {
+      insightsSubset.style.width = '0%';
+      insightsSuperset.style.width = '0%';
+      insightsBar.classList.remove('striped-bg', 'bg-neutral-400');
+    }
+
+    // For #is_paper
+    const headerIsPaper = document.querySelector('#is_paper > header');
+    headerIsPaper.addEventListener('mouseenter', function() {
+        insightsSuperset.style.width = '100%';
+    });
+    headerIsPaper.addEventListener('mouseleave', resetBars);
+
+    // For #is_free_to_read
+    const headerFreeToRead = document.querySelector('#is_free_to_read > header');
+    headerFreeToRead.addEventListener('mouseenter', function() {
+        insightsSubset.style.width = '93%';
+        insightsSuperset.style.width = '100%';
+    });
+    headerFreeToRead.addEventListener('mouseleave', resetBars);
+
+
+    // For #has_open_data
+    const headerOpenData = document.querySelector('#has_open_data > header');
+    headerOpenData.addEventListener('mouseenter', function() {
+        insightsSubset.style.width = '1.31%';
+        insightsSuperset.style.width = '11.58%';
+        insightsBar.classList.add('striped-bg', 'bg-neutral-400');
+    });
+    headerOpenData.addEventListener('mouseleave', resetBars);
+
+    // For #is_compliant
+    const headerIsCompliant = document.querySelector('#is_compliant > header');
+    headerIsCompliant.addEventListener('mouseenter', function() {
+        insightsSubset.style.width = '80.16%';
+        insightsSuperset.style.width = '100%';
+    });
+    headerIsCompliant.addEventListener('mouseleave', resetBars);
+
+    // For #is_oa
+    const headerIsOA = document.querySelector('#is_oa > header');
+    headerIsOA.addEventListener('mouseenter', function() {
+        insightsSubset.style.width = '80.16%';
+        insightsSuperset.style.width = '100%';
+    });
+    headerIsOA.addEventListener('mouseleave', resetBars);
+
+    // For #has_data_availability_statement
+    const headerHasDataAvailability = document.querySelector('#has_data_availability_statement > header');
+    headerHasDataAvailability.addEventListener('mouseenter', function() {
+        insightsSubset.style.width = '71.35%';
+        insightsSuperset.style.width = '85.26%';
+        insightsBar.classList.add('striped-bg', 'bg-neutral-400');
+    });
+    headerHasDataAvailability.addEventListener('mouseleave', resetBars);
+
+    // For #has_open_code
+    const headerHasOpenCode = document.querySelector('#has_open_code > header');
+    headerHasOpenCode.addEventListener('mouseenter', function() {
+        insightsSubset.style.width = '0.033%';
+        insightsSuperset.style.width = '0.57%';
+        insightsBar.classList.add('striped-bg', 'bg-neutral-400');
+    });
+    headerHasOpenCode.addEventListener('mouseleave', resetBars);
+  });
+  </script>
 
   {# EXPLORE #}
   {% if org._source.paid == true %}

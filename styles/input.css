@@ -75,3 +75,14 @@
   padding-bottom: 1.5rem; 
   transition: padding-bottom 0.3s ease;
 }
+
+.striped-bg {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(36, 32, 30, .5),
+    rgba(36, 32, 30, .5) 3px,
+    rgba(255, 255, 255, 0) 3px,
+    rgba(255, 255, 255, 0) 6px
+  );
+}
+
