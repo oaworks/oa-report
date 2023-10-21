@@ -160,75 +160,44 @@ permalink: "{{ org._source.objectID | slug }}/"
   {# temp prototyping for vis #}
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-    const insightsBar = document.querySelector('#insights_bar');
-    const insightsSubset = document.querySelector('#insights_subset');
-    const insightsSuperset = document.querySelector('#insights_superset');
+      const insightsBar = document.querySelector('#insights_bar');
+      const insightsSubset = document.querySelector('#insights_subset');
+      const insightsSuperset = document.querySelector('#insights_superset');
+      const yearButton = document.querySelector('#start-year');
 
-    function resetBars() {
-      insightsSubset.style.width = '0%';
-      insightsSuperset.style.width = '0%';
-      insightsBar.classList.remove('striped-bg', 'bg-neutral-400');
-    }
+      function isYear2023() {
+        return yearButton.getAttribute('aria-pressed') === "true" && yearButton.textContent.trim() === "2023";
+      }
 
-    // For #is_paper
-    const headerIsPaper = document.querySelector('#is_paper > header');
-    headerIsPaper.addEventListener('mouseenter', function() {
-        insightsSuperset.style.width = '100%';
-    });
-    headerIsPaper.addEventListener('mouseleave', resetBars);
+      function resetBars() {
+        insightsSubset.style.width = '0%';
+        insightsSuperset.style.width = '0%';
+        insightsBar.classList.remove('striped-bg', 'bg-neutral-400');
+      }
 
-    // For #is_free_to_read
-    const headerFreeToRead = document.querySelector('#is_free_to_read > header');
-    headerFreeToRead.addEventListener('mouseenter', function() {
-        insightsSubset.style.width = '93%';
-        insightsSuperset.style.width = '100%';
-    });
-    headerFreeToRead.addEventListener('mouseleave', resetBars);
-
-
-    // For #has_open_data
-    const headerOpenData = document.querySelector('#has_open_data > header');
-    headerOpenData.addEventListener('mouseenter', function() {
-        insightsSubset.style.width = '1.31%';
-        insightsSuperset.style.width = '11.58%';
+      function handleMouseEnter(event, subsetWidth, supersetWidth) {
+        if (!isYear2023()) return;
+        insightsSubset.style.width = subsetWidth;
+        insightsSuperset.style.width = supersetWidth;
         insightsBar.classList.add('striped-bg', 'bg-neutral-400');
-    });
-    headerOpenData.addEventListener('mouseleave', resetBars);
+      }
 
-    // For #is_compliant
-    const headerIsCompliant = document.querySelector('#is_compliant > header');
-    headerIsCompliant.addEventListener('mouseenter', function() {
-        insightsSubset.style.width = '80.16%';
-        insightsSuperset.style.width = '100%';
-    });
-    headerIsCompliant.addEventListener('mouseleave', resetBars);
+      const events = [
+        { el: '#is_paper > header', subset: '0%', superset: '100%' },
+        { el: '#is_free_to_read > header', subset: '93%', superset: '100%' },
+        { el: '#has_open_data > header', subset: '1.31%', superset: '11.58%' },
+        { el: '#is_compliant > header', subset: '80.16%', superset: '100%' },
+        { el: '#is_oa > header', subset: '80.16%', superset: '100%' },
+        { el: '#has_data_availability_statement > header', subset: '71.35%', superset: '85.26%' },
+        { el: '#has_open_code > header', subset: '0.033%', superset: '0.57%' }
+      ];
 
-    // For #is_oa
-    const headerIsOA = document.querySelector('#is_oa > header');
-    headerIsOA.addEventListener('mouseenter', function() {
-        insightsSubset.style.width = '80.16%';
-        insightsSuperset.style.width = '100%';
+      events.forEach(event => {
+        const header = document.querySelector(event.el);
+        header.addEventListener('mouseenter', e => handleMouseEnter(e, event.subset, event.superset));
+        header.addEventListener('mouseleave', resetBars);
+      });
     });
-    headerIsOA.addEventListener('mouseleave', resetBars);
-
-    // For #has_data_availability_statement
-    const headerHasDataAvailability = document.querySelector('#has_data_availability_statement > header');
-    headerHasDataAvailability.addEventListener('mouseenter', function() {
-        insightsSubset.style.width = '71.35%';
-        insightsSuperset.style.width = '85.26%';
-        insightsBar.classList.add('striped-bg', 'bg-neutral-400');
-    });
-    headerHasDataAvailability.addEventListener('mouseleave', resetBars);
-
-    // For #has_open_code
-    const headerHasOpenCode = document.querySelector('#has_open_code > header');
-    headerHasOpenCode.addEventListener('mouseenter', function() {
-        insightsSubset.style.width = '0.033%';
-        insightsSuperset.style.width = '0.57%';
-        insightsBar.classList.add('striped-bg', 'bg-neutral-400');
-    });
-    headerHasOpenCode.addEventListener('mouseleave', resetBars);
-  });
   </script>
 
   {# EXPLORE #}
