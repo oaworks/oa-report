@@ -31,11 +31,11 @@
 
 <article class="flex flex-col bg-white h-full" id="{{ params.id }}">
   {# Header #}
-  <header class="p-3 md:h-28 overflow-hidden bg-carnation-100 text-neutral-900 flex items-end justify-between">
+  <header class="p-3 md:h-28 overflow-hidden bg-carnation-100 text-neutral-900 flex flex-col justify-between">
+    <div class="mb-3 -ml-1">
+      {% icon_small params.icon %}
+    </div>
     <h3 class="text-xs md:text-sm">
-      <div class="mb-3 -ml-1">
-        {% icon_small params.icon %}
-      </div>
       {{ params.title }}
     </h3>
   </header>
