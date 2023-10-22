@@ -165,6 +165,7 @@ permalink: "{{ org._source.objectID | slug }}/"
       const insightsSuperset = document.querySelector('#insights_superset');
       const yearButton2023 = document.querySelector('#start-year');
       const allTimeButton = document.querySelector('#all-time');
+      let clickedHeader = null;
 
       function getCurrentYear() {
           if (yearButton2023.getAttribute('aria-pressed') === "true" && yearButton2023.textContent.trim() === "2023") {
@@ -182,13 +183,29 @@ permalink: "{{ org._source.objectID | slug }}/"
           insightsBar.classList.remove('striped-bg', 'bg-neutral-400');
       }
 
-      function handleMouseEnter(event, subsetWidth, supersetWidth) {
+      function clearActiveStyles() {
+          if (clickedHeader) {
+              clickedHeader.parentElement.classList.remove('outline', 'outline-offset-2', 'outline-2', 'outline-carnation-300');
+              clickedHeader = null;
+          }
+      }
+
+      function handleInteraction(event, subsetWidth, supersetWidth, makeActive) {
           const currentYear = getCurrentYear();
           if (!currentYear) return;
 
           insightsSubset.style.width = subsetWidth[currentYear];
           insightsSuperset.style.width = supersetWidth[currentYear];
           insightsBar.classList.add('striped-bg', 'bg-neutral-400');
+
+          const parentCard = event.currentTarget.parentElement;
+          if (makeActive) {
+              clearActiveStyles();
+              parentCard.classList.add('outline', 'outline-offset-2', 'outline-2', 'outline-carnation-300');
+              clickedHeader = event.currentTarget;
+          } else {
+              parentCard.classList.remove('outline', 'outline-offset-2', 'outline-2', 'outline-carnation-300');
+          }
       }
 
       const events = [
@@ -201,62 +218,135 @@ permalink: "{{ org._source.objectID | slug }}/"
         },
         { 
             el: '#is_free_to_read > header', 
-            subset2023: '93%', 
+            subset2023: '85%', 
             superset2023: '100%', 
-            subsetAllTime: '93.32%', 
+            subsetAllTime: '92.62%', 
             supersetAllTime: '100%'
         },
         { 
             el: '#is_compliant > header', 
-            subset2023: '80.16%', 
-            superset2023: '100%', 
-            subsetAllTime: '72.91%', 
-            supersetAllTime: '100%'
+            subset2023: '47.5%', 
+            superset2023: '92.5%', 
+            subsetAllTime: '60.79%', 
+            supersetAllTime: '94.66%'
         },
         { 
             el: '#is_oa > header', 
-            subset2023: '80.16%', 
+            subset2023: '42.5%', 
             superset2023: '100%', 
-            subsetAllTime: '72.91%', 
+            subsetAllTime: '52.97%', 
             supersetAllTime: '100%'
         },
         { 
             el: '#has_data_availability_statement > header', 
-            subset2023: '71.35%', 
-            superset2023: '85.26%', 
-            subsetAllTime: '46.13%', 
-            supersetAllTime: '85.87%'
+            subset2023: '52.5%', 
+            superset2023: '95%', 
+            subsetAllTime: '52.06%', 
+            supersetAllTime: '96.03%'
         },
         { 
             el: '#has_open_data > header', 
-            subset2023: '1.31%', 
-            superset2023: '11.58%', 
-            subsetAllTime: '8.31%', 
-            supersetAllTime: '27.84%'
+            subset2023: '0%', 
+            superset2023: '0%', 
+            subsetAllTime: '1.67%', 
+            supersetAllTime: '13.18%'
         },
         { 
             el: '#has_open_code > header', 
-            subset2023: '0.033%', 
-            superset2023: '0.57%', 
-            subsetAllTime: '6.04%', 
-            supersetAllTime: '12.25%'
+            subset2023: '0%', 
+            superset2023: '0%', 
+            subsetAllTime: '0.23%', 
+            supersetAllTime: '9.91%'
         }
       ];
 
-
       events.forEach(event => {
-        const header = document.querySelector(event.el);
-        header.addEventListener('mouseenter', e => handleMouseEnter(e, {
-            2023: event.subset2023,
-            AllTime: event.subsetAllTime
-        }, {
-            2023: event.superset2023,
-            AllTime: event.supersetAllTime
-        }));
-        header.addEventListener('mouseleave', resetBars);
-     });
+          const header = document.querySelector(event.el);
+          
+          header.addEventListener('mouseenter', e => handleInteraction(e, {
+              2023: event.subset2023,
+              AllTime: event.subsetAllTime
+          }, {
+              2023: event.superset2023,
+              AllTime: event.supersetAllTime
+          }, false)); // Inactive on mouse enter
+
+          header.addEventListener('mouseleave', e => {
+              if (clickedHeader !== e.currentTarget) { // Only reset if it's not the clicked one
+                  resetBars();
+              }
+          });
+
+          header.addEventListener('click', e => {
+              e.stopPropagation(); // Prevents the click event from being propagated up to the document
+              handleInteraction(e, {
+                  2023: event.subset2023,
+                  AllTime: event.subsetAllTime
+              }, {
+                  2023: event.superset2023,
+                  AllTime: event.supersetAllTime
+              }, true); // Active on click
+          });
+      });
+
+      // Reset everything when clicked outside
+      document.addEventListener('click', () => {
+          clearActiveStyles();
+          resetBars();
+      });
     });
   </script>
+  {# const eventsBMGF = [
+    { 
+        el: '#is_paper > header', 
+        subset2023: '0%', 
+        superset2023: '100%', 
+        subsetAllTime: '0%', 
+        supersetAllTime: '100%'
+    },
+    { 
+        el: '#is_free_to_read > header', 
+        subset2023: '93%', 
+        superset2023: '100%', 
+        subsetAllTime: '93.32%', 
+        supersetAllTime: '100%'
+    },
+    { 
+        el: '#is_compliant > header', 
+        subset2023: '80.16%', 
+        superset2023: '100%', 
+        subsetAllTime: '72.91%', 
+        supersetAllTime: '100%'
+    },
+    { 
+        el: '#is_oa > header', 
+        subset2023: '80.16%', 
+        superset2023: '100%', 
+        subsetAllTime: '72.91%', 
+        supersetAllTime: '100%'
+    },
+    { 
+        el: '#has_data_availability_statement > header', 
+        subset2023: '71.35%', 
+        superset2023: '85.26%', 
+        subsetAllTime: '46.13%', 
+        supersetAllTime: '85.87%'
+    },
+    { 
+        el: '#has_open_data > header', 
+        subset2023: '1.31%', 
+        superset2023: '11.58%', 
+        subsetAllTime: '8.31%', 
+        supersetAllTime: '27.84%'
+    },
+    { 
+        el: '#has_open_code > header', 
+        subset2023: '0.033%', 
+        superset2023: '0.57%', 
+        subsetAllTime: '6.04%', 
+        supersetAllTime: '12.25%'
+    }
+  ]; #}
 
   {# EXPLORE #}
   {% if org._source.paid == true %}
