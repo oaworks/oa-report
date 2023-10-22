@@ -170,13 +170,13 @@ permalink: "{{ org._source.objectID | slug }}/"
       let clickedHeader = null;
 
       function getCurrentYear() {
-          if (yearButton2023.getAttribute('aria-pressed') === "true" && yearButton2023.textContent.trim() === "2023") {
-              return '2023';
-          } else if (allTimeButton.getAttribute('aria-pressed') === "true" && allTimeButton.textContent.trim() === "All time") {
-              return 'AllTime';
-          } else {
-              return null;
-          }
+        if (yearButton2023.getAttribute('aria-pressed') === "true" && yearButton2023.textContent.trim() === "2023") {
+            return '2023';
+        } else if (allTimeButton.getAttribute('aria-pressed') === "true" && allTimeButton.textContent.trim() === "All time") {
+            return 'allTime';
+        } else {
+            return null;
+        }
       }
 
       function resetBars() {
@@ -192,104 +192,124 @@ permalink: "{{ org._source.objectID | slug }}/"
           }
       }
 
-      function handleInteraction(event, subsetWidth, supersetWidth, makeActive) {
-          const currentYear = getCurrentYear();
-          if (!currentYear) return;
+      function handleInteraction(event, eventData, makeActive) {
+        const currentYear = getCurrentYear();
+        if (!currentYear) return;
 
-          insightsSubset.style.width = subsetWidth[currentYear];
-          insightsSuperset.style.width = supersetWidth[currentYear];
-          insightsBar.classList.add('striped-bg', 'bg-neutral-400');
+        const subsetWidth = eventData[currentYear].subset;
+        const supersetWidth = eventData[currentYear].superset;
 
-          const parentCard = event.currentTarget.parentElement;
-          if (makeActive) {
-              clearActiveStyles();
-              parentCard.classList.add('outline', 'outline-offset-2', 'outline-2', 'outline-carnation-300');
-              clickedHeader = event.currentTarget;
-          } else {
-              parentCard.classList.remove('outline', 'outline-offset-2', 'outline-2', 'outline-carnation-300');
-          }
-      }
+        insightsSubset.style.width = subsetWidth;
+        insightsSuperset.style.width = supersetWidth;
+        insightsBar.classList.add('striped-bg', 'bg-neutral-400');
+
+        const parentCard = event.currentTarget.parentElement;
+        if (makeActive) {
+            clearActiveStyles();
+            parentCard.classList.add('outline', 'outline-offset-2', 'outline-2', 'outline-carnation-300');
+            clickedHeader = event.currentTarget;
+        } else {
+            parentCard.classList.remove('outline', 'outline-offset-2', 'outline-2', 'outline-carnation-300');
+        }
+    }
 
       const events = [
         { 
             el: '#is_paper > header', 
-            subset2023: '0%', 
-            superset2023: '100%', 
-            subsetAllTime: '0%', 
-            supersetAllTime: '100%'
+            2023: {
+                subset: '0%',
+                superset: '100%'
+            },
+            allTime: {
+                subset: '0%',
+                superset: '100%'
+            }
         },
         { 
             el: '#is_free_to_read > header', 
-            subset2023: '85%', 
-            superset2023: '100%', 
-            subsetAllTime: '92.62%', 
-            supersetAllTime: '100%'
+            2023: {
+                subset: '85%',
+                superset: '100%'
+            },
+            allTime: {
+                subset: '92.62%',
+                superset: '100%'
+            }
         },
         { 
             el: '#is_compliant > header', 
-            subset2023: '47.5%', 
-            superset2023: '92.5%', 
-            subsetAllTime: '60.79%', 
-            supersetAllTime: '94.66%'
+            2023: {
+                subset: '47.5%',
+                superset: '92.5%'
+            },
+            allTime: {
+                subset: '60.79%',
+                superset: '94.66%'
+            }
         },
         { 
             el: '#is_oa > header', 
-            subset2023: '42.5%', 
-            superset2023: '100%', 
-            subsetAllTime: '52.97%', 
-            supersetAllTime: '100%'
+            2023: {
+                subset: '42.5%',
+                superset: '100%'
+            },
+            allTime: {
+                subset: '52.97%',
+                superset: '100%'
+            }
         },
         { 
             el: '#has_data_availability_statement > header', 
-            subset2023: '52.5%', 
-            superset2023: '95%', 
-            subsetAllTime: '52.06%', 
-            supersetAllTime: '96.03%'
+            2023: {
+                subset: '52.5%',
+                superset: '95%'
+            },
+            allTime: {
+                subset: '52.06%',
+                superset: '96.03%'
+            }
         },
         { 
             el: '#has_open_data > header', 
-            subset2023: '0%', 
-            superset2023: '0%', 
-            subsetAllTime: '1.67%', 
-            supersetAllTime: '13.18%'
+            2023: {
+                subset: '0%',
+                superset: '0%'
+            },
+            allTime: {
+                subset: '1.67%',
+                superset: '13.18%'
+            }
         },
         { 
             el: '#has_open_code > header', 
-            subset2023: '0%', 
-            superset2023: '0%', 
-            subsetAllTime: '0.23%', 
-            supersetAllTime: '9.91%'
+            2023: {
+                subset: '0%',
+                superset: '0%'
+            },
+            allTime: {
+                subset: '0.23%',
+                superset: '9.91%'
+            }
         }
       ];
 
+
       events.forEach(event => {
-          const header = document.querySelector(event.el);
-          
-          header.addEventListener('mouseenter', e => handleInteraction(e, {
-              2023: event.subset2023,
-              AllTime: event.subsetAllTime
-          }, {
-              2023: event.superset2023,
-              AllTime: event.supersetAllTime
-          }, false)); // Inactive on mouse enter
+        const header = document.querySelector(event.el);
+        
+        header.addEventListener('mouseenter', e => handleInteraction(e, event, false)); // Inactive on mouse enter
 
-          header.addEventListener('mouseleave', e => {
-              if (clickedHeader !== e.currentTarget) { // Only reset if it's not the clicked one
-                  resetBars();
-              }
-          });
+        header.addEventListener('mouseleave', e => {
+            if (clickedHeader !== e.currentTarget) { // Only reset if it's not the clicked one
+                resetBars();
+            }
+        });
 
-          header.addEventListener('click', e => {
-              e.stopPropagation(); // Prevents the click event from being propagated up to the document
-              handleInteraction(e, {
-                  2023: event.subset2023,
-                  AllTime: event.subsetAllTime
-              }, {
-                  2023: event.superset2023,
-                  AllTime: event.supersetAllTime
-              }, true); // Active on click
-          });
-      });
+        header.addEventListener('click', e => {
+            e.stopPropagation();
+            handleInteraction(e, event, true); // Active on click
+        });
+    });
 
       // Reset everything when clicked outside
       document.addEventListener('click', () => {
