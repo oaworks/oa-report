@@ -71,9 +71,17 @@
   padding-bottom: 0;
   transition: padding-bottom 0.3s ease;
 }
-.transition-pb-6 {
-  padding-bottom: 1.5rem; 
+
+.transition-pb-3 {
+  padding-bottom: .75rem; 
   transition: padding-bottom 0.3s ease;
+}
+
+@media (min-width: 768px) {
+  .md\:transition-pb-6 {
+    padding-bottom: 1.5rem; 
+    transition: padding-bottom 0.3s ease;
+  }
 }
 
 .striped-bg {

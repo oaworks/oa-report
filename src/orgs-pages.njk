@@ -36,9 +36,9 @@ permalink: "{{ org._source.objectID | slug }}/"
     </div>
   </div>
 
-  <nav class="sticky top-0 pt-6 z-10 bg-carnation-100 transition-pb-0" id="top_nav">
+  <nav class="sticky top-0 pt-3 md:pt-6 z-10 bg-carnation-100 transition-pb-0" id="top_nav">
     <h2 class="sr-only">See the report by year</h2>
-    <ul class="mx-6">
+    <ul class="mx-3 md:mx-6">
       <li class="inline-block mr-3 lg:mr-6">
         {{ component("year-select", {
           id: "start-year",
