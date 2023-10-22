@@ -19,9 +19,9 @@ function replaceText(className, parameter) {
 // Event listeners
 // ==============================
 
-if (document.getElementById('explore')) {
-  document.addEventListener("DOMContentLoaded", function() {
 
+document.addEventListener("DOMContentLoaded", function() {
+  if (document.getElementById('explore')) {
     // Get references
     const exportRecordsShown = document.getElementById('export_records_shown');
     const exportTitle = document.getElementById('export_title');
@@ -332,6 +332,5 @@ if (document.getElementById('explore')) {
         scrollRightBtn.style.display = 'block';
       }
     });
-
-  });
-}
+  }
+});
