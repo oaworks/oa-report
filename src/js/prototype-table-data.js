@@ -653,7 +653,7 @@ const tableData = {
     pretty: {
       link: "/temp/bmgf_articles_grant_alltime_on_2023-10-11_pretty.csv",
       head: `  
-        <th scope="col" class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60">grant</th>
+        <th scope="col" class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-32 md:w-60 align-bottom">grant</th>
         <th scope="col" class="border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-700 p-2 w-24 md:w-32 align-bottom">articles published</th>
         <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">compliant articles</th>
         <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">free-to-read articles</th>
@@ -1032,7 +1032,7 @@ const tableData = {
       link: "/temp/bmgf_articles_grant_alltime_on_2023-10-11_raw.csv",
       head: `
         <th scope="col" class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-32 md:w-60 align-bottom">grant</th>
-        <th scope="col" class="border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-700 p-2 w-24 md:w-32 align-bottom">articles_published</th>
+        <th scope="col" class="border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-700 p-2 w-24 md:w-32 align-bottom break-words">articles_published</th>
         <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">is_compliant_articles</th>
         <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">is_free_to_read</th>
         <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">is_oa</th>
@@ -1621,7 +1621,7 @@ const tableData = {
       link: "/temp/bmgf_articles_publisher_2023_on_2023-10-11_raw.csv",
       head: `
         <th scope="col" class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-32 md:w-60 align-bottom">publisher</th>
-        <th scope="col" class="border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-700 p-2 w-24 md:w-32 align-bottom">articles_published</th>
+        <th scope="col" class="border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-700 p-2 w-24 md:w-32 align-bottom break-words">articles_published</th>
         <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">is_compliant_articles</th>
         <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">is_free_to_read</th>
         <th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words">is_oa</th>

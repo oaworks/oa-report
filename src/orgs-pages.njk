@@ -413,7 +413,7 @@ permalink: "{{ org._source.objectID | slug }}/"
       </header>
 
       {# TEMP CRAPPY NON-A11Y PROTOTYPING MARKUP #}
-      <div class="mb-4 flex flex-wrap space-r-4 items-center" id="export_options">
+      <div class="mb-6 flex flex-wrap space-r-4 items-center" id="export_options">
         {{ component("pill", {
           id: "all_articles",
           txt: "Articles",
@@ -531,7 +531,7 @@ permalink: "{{ org._source.objectID | slug }}/"
       </div>
 
       <div id="export_table">
-        <h3 class="mb-12 text-3xl" aria-live="polite">
+        <h3 class="mb-12 text-4xl" aria-live="polite">
           Previewing first <strong id="export_records_shown">0</strong> of <strong id="export_title">0</strong> <span class="js_export_type">records</span> for <strong id="export_year">2023</strong>
           {{ component("tooltip", {
             msg: "This table is a preview of all the records for your query. To see the full data set in CSV format, use the <em>Download full data (CSV)</em> button."
