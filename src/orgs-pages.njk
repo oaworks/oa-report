@@ -14,8 +14,8 @@ permalink: "{{ org._source.objectID | slug }}/"
 {%- from "system/component.njk" import component -%}
 
 <main class="bg-carnation-100">
-  <div class="px-6">
-    <div class="grid grid-cols-2 gap-6 md:gap-12 py-3 xl:pb-6 xl:pt-12">
+  <div class="px-3 md:px-6">
+    <div class="grid grid-cols-2 gap-3 sm:gap-6 md:gap-12 py-3 xl:pb-6 xl:pt-12">
       <header class="mb-3 col-span-2 md:col-span-2">
         <h1 class="flex items-center">
           <div>
@@ -67,17 +67,17 @@ permalink: "{{ org._source.objectID | slug }}/"
       </li>
       {% else %}
       <li class="inline-block">
-        <span class="inline-flex items-center px-4 py-2 md:px-6 md:py-4 border-t-4 text-base md:text-lg bg-white text-neutral-900 opacity-50">
+        <span class="inline-flex items-center px-3 py-2 md:px-6 md:py-4 border-t-4 text-base md:text-lg bg-white text-neutral-900 opacity-50">
           2022
         </span>
       </li>
       <li class="inline-block">
-        <span class="inline-flex items-center px-4 py-2 md:px-6 md:py-4 border-t-4 text-base md:text-lg bg-white text-neutral-900 opacity-50">
+        <span class="inline-flex items-center px-3 py-2 md:px-6 md:py-4 border-t-4 text-base md:text-lg bg-white text-neutral-900 opacity-50">
           2021
         </span>
       </li>
       <li class="inline-block">
-        <span class="inline-flex items-center px-4 py-2 md:px-6 md:py-4 border-t-4 text-base md:text-lg bg-white text-neutral-900 opacity-50">
+        <span class="inline-flex items-center px-3 py-2 md:px-6 md:py-4 border-t-4 text-base md:text-lg bg-white text-neutral-900 opacity-50">
           All time
         </span>
       </li>
@@ -92,7 +92,7 @@ permalink: "{{ org._source.objectID | slug }}/"
 
   {# INSIGHTS #}
   <section class="bg-neutral-900 text-white scroll-mt-32 js_section" id="insights">
-    <div class="p-6">
+    <div class="p-3 md:p-6">
       <header class="col-span-3">
         <h2 class="mb-3 text-base md:text-lg leading-6">
           <span class="font-semibold uppercase text-sm md:text-base line-thru">
@@ -106,7 +106,7 @@ permalink: "{{ org._source.objectID | slug }}/"
         </h2>
       </header>
 
-      <div class="grid gap-6 grid-cols-2 md:grid-cols-4 lg:grid-cols-none lg:grid-flow-col xl:auto-cols-fr">
+      <div class="grid gap-3 md:gap-6 grid-cols-2 md:grid-cols-4 lg:grid-cols-none lg:grid-flow-col xl:auto-cols-fr">
         {{ component("card", {
           id: "is_paper",
           title: "Total published",
@@ -152,9 +152,9 @@ permalink: "{{ org._source.objectID | slug }}/"
 
       <div class="sticky bottom-6 md:static mt-6 col-span-3">
         <div class="bg-carnation-100 h-10 relative transition-all duration-1000" id="insights_bar">
-          <span class="absolute inset-0 flex items-center justify-center text-neutral-800 text-sm font-semibold uppercase z-10 p-1" id="insights_text">Click on an Insight to visualise it</span>
-          <div class="bg-carnation-300 h-10 text-neutral-800 text-sm font-semibold uppercase transition-all duration-1000 absolute top-0 left-0" style="width: 0%;" id="insights_superset"></div>
-          <div class="bg-carnation-500 h-10 text-sm font-semibold uppercase transition-all duration-1000 absolute top-0 left-0" style="width: 0%;" id="insights_subset"></div>
+          <span class="absolute inset-0 flex items-center justify-center text-neutral-800 text-xs md:text-sm font-semibold uppercase z-10 p-1" id="insights_text">Click on an Insight to visualise it</span>
+          <div class="bg-carnation-300 h-10 transition-all duration-1000 absolute top-0 left-0" style="width: 0%;" id="insights_superset"></div>
+          <div class="bg-carnation-500 h-10 transition-all duration-1000 absolute top-0 left-0" style="width: 0%;" id="insights_subset"></div>
         </div>
       </div>
     </div>
@@ -397,7 +397,7 @@ permalink: "{{ org._source.objectID | slug }}/"
   {# EXPLORE #}
   {% if org._source.paid == true %}
   <section class="bg-neutral-800 text-white scroll-mt-32 js_section" id="explore">
-    <div class="p-6">
+    <div class="p-3 md:p-6">
       
       <header class="col-span-3">
         <h2 class="mb-3 text-base md:text-lg leading-6">
@@ -537,7 +537,7 @@ permalink: "{{ org._source.objectID | slug }}/"
             msg: "This table is a preview of all the records for your query. To see the full data set in CSV format, use the <em>Download full data (CSV)</em> button."
           }) }} 
         </h3> 
-        <div class="my-4 gap-6 grid grid-cols-1 md:grid-cols-2">
+        <div class="my-4 gap-3 md:gap-6 grid grid-cols-1 md:grid-cols-2">
           <form class="col-span-1 w-auto">
             <fieldset>
               <legend class="mb-3 text-xs font-semibold uppercase">Filter by</legend>
@@ -648,8 +648,8 @@ permalink: "{{ org._source.objectID | slug }}/"
   
   {# ACTIONS #}
   <section class="bg-neutral-700 text-white scroll-mt-32 js_section relative" id="strategies">
-    <div class="px-6">
-      <div class="grid grid-cols-2 gap-6 md:gap-12 py-6 xl:py-12"> 
+    <div class="px-3 md:px-6">
+      <div class="grid grid-cols-2 gap-3 sm:gap-6 md:gap-12 py-6 xl:py-12"> 
         <div class="col-span-2">
           <h2 class="leading-6 font-semibold uppercase text-sm md:text-base line-thru">
             <span class="bg-neutral-700">
@@ -746,8 +746,8 @@ permalink: "{{ org._source.objectID | slug }}/"
   </section>
 
   {# ABOUT #}
-  <section class="px-6">
-    <div class="grid grid-cols-2 gap-6 md:gap-12 py-6 xl:py-12"> 
+  <section class="px-3 md:px-6">
+    <div class="grid grid-cols-2 gap-3 sm:gap-6 md:gap-12 py-6 xl:py-12"> 
       <div class="col-span-2 grid md:grid-cols-2 gap-12 text-base md:text-2xl md:leading-8 md:font-light" id="about">
         <div>
           <h2 class=" font-semibold uppercase text-sm md:text-base line-thru">
@@ -792,7 +792,7 @@ permalink: "{{ org._source.objectID | slug }}/"
   </section>
 
   <div id="dynamic-modal" class="fixed inset-0 flex items-center justify-center p-4 bg-neutral-900 bg-opacity-50 hidden transition-opacity duration-300 z-50" aria-hidden="true" tabindex="-1" role="dialog" aria-modal="true">
-    <div class="bg-carnation-100 text-neutral-900 p-6 shadow-lg md:w-8/12 overflow-y-auto max-h-[80vh] min-h-0" role="document">
+    <div class="bg-carnation-100 text-neutral-900 p-3 md:p-6 shadow-lg md:w-8/12 overflow-y-auto max-h-[80vh] min-h-0" role="document">
       <div class="flex justify-between items-start">
         <h2 class="modal-title text-2xl font-semibold"></h2>
         <button class="close-modal-btn text-2xl font-semibold text-neutral-700 hover:text-neutral-900">
