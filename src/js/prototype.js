@@ -160,6 +160,7 @@ document.addEventListener("DOMContentLoaded", function() {
       if (yearBtn.getAttribute('aria-pressed') === 'true' ) { // Check if corresponding year is active       
         // Add highlighting to the selected export button
         this.classList.add("bg-carnation-500");
+        toggleData(btn.tableDataProperty);
 
         // Remove the class from all other buttons
         exportButtons.forEach(innerBtn => {        
