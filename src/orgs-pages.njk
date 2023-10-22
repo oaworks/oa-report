@@ -150,9 +150,11 @@ permalink: "{{ org._source.objectID | slug }}/"
         }) }}
       </div>
 
-      <div class="mt-6 col-span-3 bg-carnation-100 h-10 relative transition-all duration-1000" id="insights_bar">
-        <div class="bg-carnation-300 h-10 text-neutral-800 text-sm font-semibold uppercase transition-all duration-1000 absolute top-0 left-0" style="width: 0%;" id="insights_superset"></div>
-        <div class="bg-carnation-500 h-10 text-sm font-semibold uppercase transition-all duration-1000 absolute top-0 left-0" style="width: 0%;" id="insights_subset"></div>
+      <div class="sticky bottom-6 md:static mt-6 col-span-3">
+        <div class="bg-carnation-100 h-10 relative transition-all duration-1000" id="insights_bar">
+          <div class="bg-carnation-300 h-10 text-neutral-800 text-sm font-semibold uppercase transition-all duration-1000 absolute top-0 left-0" style="width: 0%;" id="insights_superset"></div>
+          <div class="bg-carnation-500 h-10 text-sm font-semibold uppercase transition-all duration-1000 absolute top-0 left-0" style="width: 0%;" id="insights_subset"></div>
+        </div>
       </div>
     </div>
   </section>
