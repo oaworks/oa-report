@@ -1,31 +1,10 @@
 /* Display publisher list from api-requests.js  */
-// Using Fetch 
-// async function fetchData() {
-//   try {
-//     const response = await fetch('https://bg.api.oa.works/report/works', {
-//       method: 'POST',
-//       headers: {
-//         'Content-Type': 'application/json'
-//       },
-//       body: JSON.stringify(postData)
-//     });
-
-//     if (!response.ok) {
-//       throw new Error('Network response was not ok');
-//     }
-
-//     const data = await response.json();
-//     displayPublishers(data);
-//   } catch (error) {
-//     console.error('There was a problem with the fetch operation:', error.message);
-//   }
-// }
-
 // Fetch data function using Axios
 async function fetchData(postData, listId) {
   try {
     const response = await axios.post('https://bg.api.oa.works/report/works', postData);
     displayData(response.data, listId);
+    console.log(response);
   } catch (error) {
     console.error('There was a problem with the request: ', error.message);
   }
@@ -44,24 +23,45 @@ function displayData(data, listId) {
   }
 }
 
-// Generate POSTs
-const publisherDataAlltime = createPostData("Bill & Melinda Gates Foundation", "publisher", 1960);
-const publisherData2023 = createPostData("Bill & Melinda Gates Foundation", "publisher", 2023);
-const grantDataAlltime = createPostData("Bill & Melinda Gates Foundation", "supplements.grantid__bmgf", 1960);
-const grantData2023 = createPostData("Bill & Melinda Gates Foundation", "supplements.grantid__bmgf", 2023);
-
-// Fetch data for ublishers and Grants, both all time and 2023. 
-fetchData(publisherDataAlltime, 'publisher-list-all-time');
-fetchData(publisherData2023, 'publisher-list-2023');
-fetchData(grantDataAlltime, 'grant-list-all-time');
-fetchData(grantData2023, 'grant-list-2023');
-
 // Allow any input from user for testing: 
-const customApiInput = document.getElementById('any-input');
+function fetchDataForForm(formId, orgSelectId, groupbySelectId, startYearInputId, endYearInputId, codeId, listId) {
+  const form = document.getElementById(formId);
+  const orgSelect = document.getElementById(orgSelectId);
+  const groupbySelect = document.getElementById(groupbySelectId);
+  const startYearInput = document.getElementById(startYearInputId);
+  const endYearInput = document.getElementById(endYearInputId);
+  const codeElement = document.getElementById(codeId);
 
-customApiInput.addEventListener('input', function() {
-    document.getElementById('any-list').innerHTML = ''; // reset the list
-    const inputValue = customApiInput.value;
-    const postData = createPostData("Bill & Melinda Gates Foundation", inputValue, 2023);
-    fetchData(postData, 'any-list');
-});
+  form.addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    // Clear the list
+    document.getElementById(listId).innerHTML = '';
+
+    const org = orgSelect.value;
+    const groupByValue = groupbySelect.value;
+    const startYearValue = startYearInput.value || 1960;
+    const endYearValue = endYearInput.value || 2023;
+
+    const postData = createPostData(org, groupByValue, startYearValue, endYearValue);
+    fetchData(postData, listId);
+
+    // Update <code> snippet 
+    let currentContent = codeElement.textContent;
+    const replacements = {
+        "org": org,
+        "groupByValue": groupByValue,
+        "startYearValue": startYearValue,
+        "endYearValue": endYearValue
+    };
+    for (let word in replacements) {
+        let regex = new RegExp(word, "g");
+        currentContent = currentContent.replace(regex, replacements[word]);
+    }
+    codeElement.textContent = currentContent;
+  });
+}
+
+// Setup event listeners for both forms
+fetchDataForForm('custom-api-form-1', 'org-select-1', 'groupby-select-1', 'start-year-input-1', 'end-year-input-1', 'code-1', 'any-list-1');
+fetchDataForForm('custom-api-form-2', 'org-select-2', 'groupby-select-2', 'start-year-input-2', 'end-year-input-2', 'code-2', 'any-list-2');

@@ -1,5 +1,5 @@
 // Dynamically configure POST data 
-function createPostData(orgName, key, startYear) {
+function createPostData(orgName, key, startYear, endYear) {
   return {
     "query": {
       "bool": {
@@ -37,7 +37,7 @@ function createPostData(orgName, key, startYear) {
             "range": {
               "published_year": {
                 "gte": startYear,
-                "lte": 2023
+                "lte": endYear
               }
             }
           }

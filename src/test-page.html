@@ -6,55 +6,103 @@
   <title>Report</title>
 </head>
 <body>
-  <h1>API Requests</h1>
+  <header style="text-align: center">
+    <h1>API Requests</h1>
 
-  <h2>Input any key to see a list from BMGF’s data in 2023</h2>
+    <h2>Compare two lists from BMGF or test data</h2>
+  </header>
 
-  <input type="text" id="any-input"/>
-  <ol id="any-list"></ol>
+  <div style="display: flex; justify-content: space-between; padding: 0 15vw;">
+    <div>
+      <pre>
+        <code id="code-1">
+          const postData = createPostData(
+            org
+            groupByValue, 
+            startYearValue,
+            endYearValue
+          );
+        </code>
+      </pre>
 
-  <hr>
+      <form id="custom-api-form-1">
+        <label for="org-select-1">Org</label>
+        <select id="org-select-1">
+          <option value="your institution">your institution (test)</option>
+          <option value="Bill & Melinda Gates Foundation">Bill & Melinda Gates Foundatio</option>
+        </select>
+        <br>
+        <label for="groupby-select-1">Group by</label>
+        <select id="groupby-select-1">
+          <option value="supplements.grantid__bmgf">supplements.grantid__bmgf</option>
+          <option value="authorships.author.orcid">authorships.author.orcid</option>
+          <option value="publisher">publisher</option>
+          <option value="concepts.display_name">concepts.display_name</option>
+          <option value="oa_status">oa_status</option>
+          <option value="supplements.program__bmgf">supplements.program__bmgf</option>
+          <option value="authorships.institutions.display_name">authorships.institutions.display_name</option>
+          <option value="authorships.institutions.country_code">authorships.institutions.country_code</option>
+          <option value="journal">journal</option>
+          <option value="funder.name">funder.name</option>
+          <option value="publisher_license">publisher_license</option>
+        </select>
+        <br>
+        <label for="start-year-input-1">Start year</label>
+        <input type="number" id="start-year-input-1" placeholder="Enter year" min="1900" max="2099" step="1" value="1960"/>
+        <br>
+        <label for="end-year-input-1">End year</label>
+        <input type="number" id="end-year-input-1" placeholder="Enter year" min="1900" max="2099" step="1" value="2023"/>
+        <br>
+        <button type="submit">Fetch data</button>
+      </form>
+      <ol id="any-list-1"></ol>
+    </div>
 
-  <h2>Publishers — All time</h2>
-  <pre>
-    <code>
-      const publisherDataAlltime = createPostData("Bill & Melinda Gates Foundation", "publisher", 1960);
-      fetchData(publisherDataAlltime, 'publisher-list-all-time');
-    </code>
-  </pre>
-  <ol id="publisher-list-all-time"></ol>
-  <hr>
+    <div>
+      <pre>
+        <code id="code-2">
+          const postData = createPostData(
+            org, 
+            groupByValue, 
+            startYearValue,
+            endYearValue
+          );
+        </code>
+      </pre>
 
-  <h2>Publishers — 2023</h2>
-  <pre>
-    <code>
-      const publisherData2023 = createPostData("Bill & Melinda Gates Foundation", "publisher", 2023);
-      fetchData(publisherData2023, 'publisher-list-2023');
-    </code>
-  </pre>
-  <ol id="publisher-list-2023"></ol>
-
-  <hr>
-
-  <h2>Grants — All time</h2>
-  <pre>
-    <code>
-      const grantDataAlltime = createPostData("Bill & Melinda Gates Foundation", "publisher", 1960);
-      fetchData(grantDataAlltime, 'grant-list-all-time');
-    </code>
-  </pre>
-  <ol id="grant-list-all-time"></ol>
-
-  <hr>
-
-  <h2>Grants — 2023</h2>
-  <pre>
-    <code>
-      const grantData2023 = createPostData("Bill & Melinda Gates Foundation", "publisher", 1960);
-      fetchData(grantData2023, 'grant-list-2023');
-    </code>
-  </pre>
-  <ol id="grant-list-2023"></ol>
+      <form id="custom-api-form-2">
+        <label for="org-select-2">Org</label>
+        <select id="org-select-2">
+          <option value="your institution">your institution (test)</option>
+          <option value="Bill & Melinda Gates Foundation">Bill & Melinda Gates Foundatio</option>
+        </select>
+        <br>
+        <label for="groupby-select-2">Group by</label>
+        <select id="groupby-select-2">
+          <option value="supplements.grantid__bmgf">supplements.grantid__bmgf</option>
+          <option value="authorships.author.orcid">authorships.author.orcid</option>
+          <option value="publisher">publisher</option>
+          <option value="concepts.display_name">concepts.display_name</option>
+          <option value="oa_status">oa_status</option>
+          <option value="supplements.program__bmgf">supplements.program__bmgf</option>
+          <option value="authorships.institutions.display_name">authorships.institutions.display_name</option>
+          <option value="authorships.institutions.country_code">authorships.institutions.country_code</option>
+          <option value="journal">journal</option>
+          <option value="funder.name">funder.name</option>
+          <option value="publisher_license">publisher_license</option>
+        </select>
+        <br>
+        <label for="start-year-input-2">Start year</label>
+        <input type="number" id="start-year-input-2" placeholder="Enter year" min="1900" max="2099" step="1" value="1960"/>
+        <br>
+        <label for="end-year-input-2">End year</label>
+        <input type="number" id="end-year-input-2" placeholder="Enter year" min="1900" max="2099" step="1" value="2023"/>
+        <br>
+        <button type="submit">Fetch data</button>
+      </form>
+      <ol id="any-list-2"></ol>
+    </div>
+  </div>
 
   <script src="../js/axios.min.js"></script>
   <script src="../js/api-requests.js"></script>
