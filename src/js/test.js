@@ -21,12 +21,6 @@
 //   }
 // }
 
-// Generate POSTs
-const publisherDataAlltime = createPostData("Bill & Melinda Gates Foundation", "publisher", 1960);
-const publisherData2023 = createPostData("Bill & Melinda Gates Foundation", "publisher", 2023);
-const grantDataAlltime = createPostData("Bill & Melinda Gates Foundation", "supplements.grantid__bmgf", 1960);
-const grantData2023 = createPostData("Bill & Melinda Gates Foundation", "supplements.grantid__bmgf", 2023);
-
 // Fetch data function using Axios
 async function fetchData(postData, listId) {
   try {
@@ -49,6 +43,12 @@ function displayData(data, listId) {
     });
   }
 }
+
+// Generate POSTs
+const publisherDataAlltime = createPostData("Bill & Melinda Gates Foundation", "publisher", 1960);
+const publisherData2023 = createPostData("Bill & Melinda Gates Foundation", "publisher", 2023);
+const grantDataAlltime = createPostData("Bill & Melinda Gates Foundation", "supplements.grantid__bmgf", 1960);
+const grantData2023 = createPostData("Bill & Melinda Gates Foundation", "supplements.grantid__bmgf", 2023);
 
 // Fetch data for ublishers and Grants, both all time and 2023. 
 fetchData(publisherDataAlltime, 'publisher-list-all-time');
