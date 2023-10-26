@@ -4,7 +4,7 @@ async function fetchData(postData, listId) {
   try {
     const response = await axios.post('https://bg.api.oa.works/report/works', postData);
     displayData(response.data, listId);
-    console.log(response);
+    console.log(response.data.aggregations.key.buckets);
   } catch (error) {
     console.error('There was a problem with the request: ', error.message);
   }
