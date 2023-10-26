@@ -55,3 +55,13 @@ fetchData(publisherDataAlltime, 'publisher-list-all-time');
 fetchData(publisherData2023, 'publisher-list-2023');
 fetchData(grantDataAlltime, 'grant-list-all-time');
 fetchData(grantData2023, 'grant-list-2023');
+
+// Allow any input from user for testing: 
+const customApiInput = document.getElementById('any-input');
+
+customApiInput.addEventListener('input', function() {
+    document.getElementById('any-list').innerHTML = ''; // reset the list
+    const inputValue = customApiInput.value;
+    const postData = createPostData("Bill & Melinda Gates Foundation", inputValue, 2023);
+    fetchData(postData, 'any-list');
+});
