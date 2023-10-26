@@ -17,7 +17,7 @@ function displayData(data, listId) {
   if (data.aggregations && data.aggregations.key && data.aggregations.key.buckets) {
     data.aggregations.key.buckets.forEach(bucket => {
       const li = document.createElement('li');
-      li.textContent = bucket.key;
+      li.textContent = `${bucket.key}, ${bucket.doc_count} articles`;
       ol.appendChild(li);
     });
   }
