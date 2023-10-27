@@ -339,6 +339,9 @@ function enableTableScroll() {
 function setupButtonListeners(container, groupByKeyNames) {
   const exportTable = document.getElementById('export_table');
 
+  enableRowHighlighting();
+  enableTableScroll();
+
   container.addEventListener('click', function(event) {
     if (event.target.closest('button')) {
       const clickedButton = event.target.closest('button');
