@@ -78,8 +78,7 @@ const groupByHeaderNames = {
   "total_apcs_paid": { pretty: "Total APCs paid", key: "value" },
   "average_apcs_paid_raw": { pretty: "Average APCs paid", key: "value" },
   "median_apcs_paid_raw": { pretty: "Median APCs paid", key: "values['50.0']" },
-  "has_grantid": { pretty: "With grant ID", key: "doc_count" },
-  "total_citations": { pretty: "Total citations", key: "value" }
+  "has_grantid": { pretty: "With grant ID", key: "doc_count" }
 }
 
 // Example usage:
@@ -223,7 +222,8 @@ async function displayTableBody(groupByKeyName) {
           } else {
             cell.className = "border-b border-neutral-500 p-2 whitespace-nowrap truncate text-right hover:bg-neutral-600";
           }
-          cell.textContent = bucketValue || '0';
+          articlesPublishedValue = Number(bucket["articles_published"].doc_count);
+          cell.textContent = formatValueBasedOnKey(headerKey, bucketValue, articlesPublishedValue) || '0'; // Prettify table values as default
           row.appendChild(cell);
           columnCounter++; // Increment the counter
         });
@@ -243,8 +243,8 @@ async function displayTableBody(groupByKeyName) {
   }
 }
 
-// Format values based on the type of key set in groupByHeaderNames
-function formatValueBasedOnKey(key, value) {
+// Format values ("pretty" data display) based on key types set in groupByHeaderNames
+function formatValueBasedOnKey(key, value, articlesPublished) {
   const header = groupByHeaderNames[key];
   if (!header) return value; // Return original value if the key doesn't exist
 
@@ -253,7 +253,7 @@ function formatValueBasedOnKey(key, value) {
   }
 
   if (header.key === "doc_count") {
-    return (value * 100).toFixed(2) + "%"; // Convert the value to a percentage
+    return ((value / articlesPublished) * 100).toFixed(0) + "%"; // Convert to fraction of total articles published, then to percentage
   }
 
   if (["value", "values['50.0']"].includes(header.key)) {
