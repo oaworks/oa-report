@@ -352,39 +352,8 @@ permalink: "{{ org._source.objectID | slug }}/"
       </header>
 
       {# TEMP CRAPPY NON-A11Y PROTOTYPING MARKUP #}
-      <div class="mb-6 flex flex-wrap space-r-4 items-center" id="export_options">
-        {{ component("pill", {
-          id: "all_articles",
-          txt: "Articles",
-          count: '2,702'
-        })}}
-        {{ component("pill", {
-          id: "grant",
-          txt: "Grants",
-          count: '848'
-        })}}
-        {{ component("pill", {
-          id: "publisher",
-          txt: "Publishers",
-          count: '85'
-        })}}
-        {{ component("pill", {
-          id: "journal",
-          txt: "Journals",
-          count: '59'
-        })}}
-        {{ component("pill", {
-          id: "program",
-          txt: "Programs",
-          count: '21'
-        })}}
-        {{ component("pill", {
-            id: "articles_with_apcs",
-            txt: "Finance",
-            count: '1,027'
-        })}}
-        
-        <button class="items-center inline-flex p-2 pl-4 mr-4 mb-4 px-3 rounded-full bg-white font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500 js_export_pill bg-carnation-300" id="export_see_more">
+      <div class="mb-6 flex flex-wrap space-r-4 items-center" id="groupby_buttons">        
+        {# <button class="items-center inline-flex p-2 pl-4 mr-4 mb-4 px-3 rounded-full bg-white font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500 js_export_pill bg-carnation-300" id="export_see_more">
           <span id="see_more_text">See more</span>
           <span id="count_see_more" class="bg-neutral-800 text-white ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block">+</span>
         </button>
@@ -465,8 +434,7 @@ permalink: "{{ org._source.objectID | slug }}/"
             txt: "Software publishers",
             count: '9999'
           })}}
-        </div>
-        
+        </div> #}
       </div>
 
       <div id="export_table">

@@ -2,17 +2,61 @@
 
 // Map 'group by' keys to human-readable names
 const groupByKeyNames = {
-  "supplements.grantid__bmgf": { singular: "Grant", plural: "Grants" },
-  "authorships.author.orcid": { singular: "Author", plural: "Authors" },
-  "publisher": { singular: "Publisher", plural: "Publishers" },
-  "concepts.display_name": { singular: "Concept", plural: "Concepts" },
-  "oa_status": { singular: "Open Access status", plural: "Open Access statuses" },
-  "supplements.program__bmgf": { singular: "Program", plural: "Programs" },
-  "authorships.institutions.display_name": { singular: "Institution", plural: "Institutions" },
-  "authorships.institutions.country_code": { singular: "Country", plural: "Countries" },
-  "journal": { singular: "Journal", plural: "Journals" },
-  "funder.name": { singular: "Co-funder", plural: "Co-funders" },
-  "publisher_license": { singular: "Publisher license", plural: "Publisher licenses" }
+  "supplements.grantid__bmgf": { 
+    id: "grant",
+    singular: "Grant", 
+    plural: "Grants" 
+  },
+  "authorships.author.orcid": { 
+    id: "author",
+    singular: "Author", 
+    plural: "Authors" 
+  },
+  "publisher": { 
+    id: "publisher",
+    singular: "Publisher", 
+    plural: "Publishers" 
+  },
+  "concepts.display_name": { 
+    id: "concept",
+    singular: "Concept", 
+    plural: "Concepts" 
+  },
+  "oa_status": { 
+    id: "oa_status",
+    singular: "Open Access status", 
+    plural: "Open Access statuses" 
+  },
+  "supplements.program__bmgf": { 
+    id: "program",
+    singular: "Program", 
+    plural: "Programs" 
+  },
+  "authorships.institutions.display_name": { 
+    id: "institution",
+    singular: "Institution", 
+    plural: "Institutions" 
+  },
+  "authorships.institutions.country_code": { 
+    id: "country",
+    singular: "Country", 
+    plural: "Countries" 
+  },
+  "journal": { 
+    id: "journal",
+    singular: "Journal", 
+    plural: "Journals" 
+  },
+  "funder.name": { 
+    id: "funder",
+    singular: "Co-funder", 
+    plural: "Co-funders" 
+  },
+  "publisher_license": { 
+    id: "publisher_license",
+    singular: "Publisher license", 
+    plural: "Publisher licenses" 
+  }
 };
 
 // Example usage:
@@ -41,8 +85,35 @@ const groupByHeaderNames = {
 // Example usage:
 // console.log(groupByHeaderNames["is_oa"]);  // Outputs: "Open Access articles"
 
+
 // Get references to table elements
 const exportTable = document.getElementById('export_table');
+
+// Create a button for each "group by" type
+function createGroupByBtn(key, groupByKeyNames) {
+  const button = document.createElement('button');
+  button.className = "items-center inline-flex p-2 pl-4 mr-4 mb-4 px-3 rounded-full bg-white font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500";
+  button.id = groupByKeyNames[key].id + "_button";
+  
+  const groupbyBtn = document.createElement('span');
+  groupbyBtn.textContent = groupByKeyNames[key].plural;
+  button.appendChild(groupbyBtn);
+
+  const nbRecords = document.createElement('span');
+  nbRecords.className = "bg-neutral-800 text-white ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block";
+  nbRecords.textContent = "999";
+  button.appendChild(nbRecords);
+
+  return button;
+}
+
+// Append "group by" buttons to a container
+function appendButtonsToContainer(container, groupByKeyNames) {
+  for (const key in groupByKeyNames) {
+      const button = createGroupByBtn(key, groupByKeyNames);
+      container.appendChild(button);
+  }
+}
 
 // Fetch data function using Axios
 async function fetchData(postData) {
@@ -169,6 +240,11 @@ function formatValueBasedOnKey(key, value) {
   return value; // Return original value if no conditions match
 }
 
+// Example usage:
+// const valueToFormat = 5000;
+// const formattedValue = formatValueBasedOnKey("total_apcs_paid", valueToFormat);
+// console.log(formattedValue); // Outputs something like "$5,000.00" depending on the user locale
+
 // Enable row highlighting on table click
 function enableRowHighlighting() {
   const tableBody = document.getElementById('export_table_body');
@@ -238,11 +314,13 @@ function enableTableScroll() {
 
 // Generate the data table — main event listener
 document.addEventListener("DOMContentLoaded", function() {
-  displayTableHead("publisher");
-  displayTableBody("publisher");
-
   if (document.getElementById('explore')) { 
-    enableRowHighlighting();
-    enableTableScroll();
+      const groupbyBtns = document.getElementById('groupby_buttons'); 
+      appendButtonsToContainer(groupbyBtns, groupByKeyNames);
   }
 });
+
+// displayTableHead("publisher");
+// displayTableBody("publisher");
+// enableRowHighlighting();
+// enableTableScroll();
