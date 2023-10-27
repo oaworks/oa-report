@@ -332,57 +332,6 @@ permalink: "{{ org._source.objectID | slug }}/"
       });
     });
   </script>
-  {# const eventsBMGF = [
-    { 
-        el: '#is_paper > header', 
-        subset2023: '0%', 
-        superset2023: '100%', 
-        subsetAllTime: '0%', 
-        supersetAllTime: '100%'
-    },
-    { 
-        el: '#is_free_to_read > header', 
-        subset2023: '93%', 
-        superset2023: '100%', 
-        subsetAllTime: '93.32%', 
-        supersetAllTime: '100%'
-    },
-    { 
-        el: '#is_compliant > header', 
-        subset2023: '80.16%', 
-        superset2023: '100%', 
-        subsetAllTime: '72.91%', 
-        supersetAllTime: '100%'
-    },
-    { 
-        el: '#is_oa > header', 
-        subset2023: '80.16%', 
-        superset2023: '100%', 
-        subsetAllTime: '72.91%', 
-        supersetAllTime: '100%'
-    },
-    { 
-        el: '#has_data_availability_statement > header', 
-        subset2023: '71.35%', 
-        superset2023: '85.26%', 
-        subsetAllTime: '46.13%', 
-        supersetAllTime: '85.87%'
-    },
-    { 
-        el: '#has_open_data > header', 
-        subset2023: '1.31%', 
-        superset2023: '11.58%', 
-        subsetAllTime: '8.31%', 
-        supersetAllTime: '27.84%'
-    },
-    { 
-        el: '#has_open_code > header', 
-        subset2023: '0.033%', 
-        superset2023: '0.57%', 
-        subsetAllTime: '6.04%', 
-        supersetAllTime: '12.25%'
-    }
-  ]; #}
 
   {# EXPLORE #}
   {% if org._source.paid == true %}
