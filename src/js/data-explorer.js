@@ -141,7 +141,8 @@ async function displayTableBody(groupByKeyName) {
     exportTableBody.appendChild(fragment);
   }
 
-  const postData = createPostData("your institution", groupByKeyName, 1960, 2023);
+  const postData = createPostData(orgName, groupByKeyName, startYear, endYear);
+  console.log(orgName);
   const responseData = await fetchData(postData);  // Capture the response data
   
   if (responseData) {  // Ensure that data exists before passing it to displayData
