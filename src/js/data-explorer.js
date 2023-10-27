@@ -33,7 +33,7 @@ const groupByHeaderNames = {
   "has_apc": { pretty: "With APCs", key: "doc_count" },
   "total_apcs_paid": { pretty: "Total APCs paid", key: "value" },
   "average_apcs_paid_raw": { pretty: "Average APCs paid", key: "value" },
-  "median_apcs_paid_raw": { pretty: "Median APCs paid", key: "values[50.0]" },
+  "median_apcs_paid_raw": { pretty: "Median APCs paid", key: "values['50.0']" },
   "has_grantid": { pretty: "With grant ID", key: "doc_count" },
   "total_citations": { pretty: "Total citations", key: "value" }
 }
@@ -106,18 +106,20 @@ async function displayTableBody(groupByKeyName) {
           let valueKey = groupByHeaderNames[headerKey].key;
           let bucketValue;
     
-          if (valueKey.includes(".")) {
-            let keys = valueKey.split(".");
-            bucketValue = bucket[headerKey];
-            for (let key of keys) {
-              if (bucketValue) {
-                bucketValue = bucketValue[key];
-              } else {
-                break;
+          if (headerKey === "median_apcs_paid_raw") {
+            bucketValue = bucket[headerKey].values["50.0"]; // Exception for median due to special formatting
+          } else if (valueKey.includes(".")) {
+              let keys = valueKey.split(".");
+              bucketValue = bucket[headerKey];
+              for (let key of keys) {
+                  if (bucketValue) {
+                      bucketValue = bucketValue[key];
+                  } else {
+                      break;
+                  }
               }
-            }
           } else {
-            bucketValue = bucket[headerKey] ? bucket[headerKey][valueKey] : '';
+              bucketValue = bucket[headerKey] ? bucket[headerKey][valueKey] : '0';
           }
     
           let cell = (columnCounter === 1) ? document.createElement('th') : document.createElement('td');
@@ -127,7 +129,7 @@ async function displayTableBody(groupByKeyName) {
           } else {
             cell.className = "border-b border-neutral-500 p-2 whitespace-nowrap truncate text-right hover:bg-neutral-600";
           }
-          cell.textContent = bucketValue || '';
+          cell.textContent = bucketValue || '0';
           row.appendChild(cell);
           columnCounter++; // Increment the counter
         });
