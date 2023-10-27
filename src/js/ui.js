@@ -25,8 +25,11 @@ function changeDays(days, date) {
   return adjustedDate;
 }
 
-// Helper to format a number into human readable form
-function makeNumberReadable(number) {
+// Helper to format a number into human readable form or currency format
+function makeNumberReadable(number, isCurrency = false) {
+  if (isCurrency) {
+    return new Intl.NumberFormat(userLocale, { style: 'currency', currency: 'USD' }).format(number);
+  }
   return number.toLocaleString(userLocale);
 }
 

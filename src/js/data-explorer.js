@@ -149,6 +149,26 @@ async function displayTableBody(groupByKeyName) {
   }
 }
 
+// Format values based on the type of key set in groupByHeaderNames
+function formatValueBasedOnKey(key, value) {
+  const header = groupByHeaderNames[key];
+  if (!header) return value; // Return original value if the key doesn't exist
+
+  if (key === "articles_published") {
+    return makeNumberReadable(value); // Only total number of articles shows the full number at all times
+  }
+
+  if (header.key === "doc_count") {
+    return (value * 100).toFixed(2) + "%"; // Convert the value to a percentage
+  }
+
+  if (["value", "values['50.0']"].includes(header.key)) {
+    return makeNumberReadable(value, true); // Format as currency
+  }
+
+  return value; // Return original value if no conditions match
+}
+
 // Enable row highlighting on table click
 function enableRowHighlighting() {
   const tableBody = document.getElementById('export_table_body');
