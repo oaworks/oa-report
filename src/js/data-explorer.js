@@ -144,7 +144,7 @@ async function fetchData(postData) {
 }
 
 // Display headers in the table’s <thead>
-async function displayTableHead(groupByKeyName) {
+async function displayTableHead(groupByKeyName, displayMode = "pretty") {
   const exportTableHead = document.getElementById('export_table_head');
   let tableHeadersHTML = '';
   
@@ -152,15 +152,17 @@ async function displayTableHead(groupByKeyName) {
   if (groupByKeyNames[groupByKeyName]) {
     tableHeadersHTML += `<th scope="col" class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-32 md:w-60 align-bottom">${groupByKeyNames[groupByKeyName].plural}</th>`;
   }
-
-  const headersArray = Object.values(groupByHeaderNames);
+  
+  const headersArray = Object.keys(groupByHeaderNames);
 
   for (let i = 0; i < headersArray.length; i++) {
-    const headerName = headersArray[i];
+    const headerValue = headersArray[i];
+    const displayHeader = displayMode === "raw" ? headerValue : (groupByHeaderNames[headerValue] && groupByHeaderNames[headerValue].pretty);
+
     if (i === 0) { // Styling the second sticky header
-      tableHeadersHTML += `<th scope="col" class="border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-700 p-2 w-24 md:w-32 align-bottom break-words">${headerName.pretty}</th>`;
+      tableHeadersHTML += `<th scope="col" class="border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-700 p-2 w-24 md:w-32 align-bottom break-words">${displayHeader}</th>`;
     } else {
-      tableHeadersHTML += `<th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words text-right">${headerName.pretty}</th>`;
+      tableHeadersHTML += `<th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words text-right">${displayHeader}</th>`;
     }
   }
 
@@ -168,7 +170,7 @@ async function displayTableHead(groupByKeyName) {
 }
 
 // Display body of data table for any given group-by 
-async function displayTableBody(groupByKeyName) {
+async function displayTableBody(groupByKeyName, displayMode = "pretty") {
   const exportTableBody = document.getElementById('export_table_body');
 
   // Clear body content / rows to let new ones populate the table 
@@ -222,8 +224,11 @@ async function displayTableBody(groupByKeyName) {
           } else {
             cell.className = "border-b border-neutral-500 p-2 whitespace-nowrap truncate text-right hover:bg-neutral-600";
           }
-          articlesPublishedValue = Number(bucket["articles_published"].doc_count);
-          cell.textContent = formatValueBasedOnKey(headerKey, bucketValue, articlesPublishedValue) || '0'; // Prettify table values as default
+
+          let articlesPublishedValue = Number(bucket["articles_published"].doc_count);
+
+          cell.textContent = displayMode === "raw" ? bucketValue : formatValueBasedOnKey(headerKey, bucketValue, articlesPublishedValue) || '0'; 
+          
           row.appendChild(cell);
           columnCounter++; // Increment the counter
         });
@@ -262,11 +267,47 @@ function formatValueBasedOnKey(key, value, articlesPublished) {
 
   return value; // Return original value if no conditions match
 }
-
 // Example usage:
 // const valueToFormat = 5000;
 // const formattedValue = formatValueBasedOnKey("total_apcs_paid", valueToFormat);
 // console.log(formattedValue); // Outputs something like "$5,000.00" depending on the user locale
+
+// Toggle data display style between "raw" and "pretty"
+let currentToggleHandler = null;
+
+function resetToggle() {
+  const toggleButton = document.getElementById('toggle-data-view');
+  toggleButton.setAttribute('aria-checked', 'true');
+  toggleButton.querySelector('span.bg-carnation-500, span.bg-neutral-200').classList.replace('bg-neutral-200', 'bg-carnation-500');
+  toggleButton.querySelector('span.translate-x-100, span.translate-x-5').classList.replace('translate-x-5', 'translate-x-100');
+
+}
+
+function toggleData(groupByKeyName) {
+  resetToggle();
+  const toggleButton = document.getElementById('toggle-data-view');
+
+  // Ensure the initial state is set correctly
+  if (toggleButton.getAttribute('aria-checked') === null) {
+    toggleButton.setAttribute('aria-checked', 'false');
+  }
+
+  currentToggleHandler = function() {
+    const ariaChecked = toggleButton.getAttribute('aria-checked') === 'true';
+    const displayMode = ariaChecked ? "raw" : "pretty"; // This has been switched
+
+    displayTableHead(groupByKeyName, displayMode);
+    displayTableBody(groupByKeyName, displayMode);
+
+    toggleButton.setAttribute('aria-checked', displayMode === "raw" ? 'true' : 'false');
+    
+    toggleButton.querySelector('span.bg-carnation-500, span.bg-neutral-200').classList.toggle('bg-neutral-200');
+    toggleButton.querySelector('span.translate-x-100, span.translate-x-5').classList.toggle('translate-x-5');
+  };
+
+  toggleButton.addEventListener('click', currentToggleHandler);
+}
+
 
 // Enable row highlighting on table click
 function enableRowHighlighting() {
@@ -352,6 +393,7 @@ function setupButtonListeners(container, groupByKeyNames) {
       if (key) {
         displayTableHead(key);
         displayTableBody(key);
+        toggleData(key);
       }
     }
   });
