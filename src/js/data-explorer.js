@@ -85,9 +85,16 @@ const groupByHeaderNames = {
 // Example usage:
 // console.log(groupByHeaderNames["is_oa"]);  // Outputs: "Open Access articles"
 
-
-// Get references to table elements
-const exportTable = document.getElementById('export_table');
+// Get corresponding key from button id
+function getKeyFromButtonId(buttonId, groupByKeyNames) {
+  const buttonIdPrefix = buttonId.replace('_button', '');
+  for (const key in groupByKeyNames) {
+    if (groupByKeyNames[key].id === buttonIdPrefix) {
+      return key;
+    }
+  }
+  return null;
+}
 
 // Create a button for each "group by" type
 function createGroupByBtn(key, groupByKeyNames) {
@@ -107,11 +114,22 @@ function createGroupByBtn(key, groupByKeyNames) {
   return button;
 }
 
+// Set a button as active and deactivate other buttons
+function toggleActiveButton(activeButton, container) {
+  // Loop through all buttons and remove the active class
+  container.querySelectorAll('button').forEach(button => {
+    button.classList.remove('bg-carnation-500');
+  });
+
+  // Set the clicked button as active
+  activeButton.classList.add('bg-carnation-500');
+}
+
 // Append "group by" buttons to a container
 function appendButtonsToContainer(container, groupByKeyNames) {
   for (const key in groupByKeyNames) {
-      const button = createGroupByBtn(key, groupByKeyNames);
-      container.appendChild(button);
+    const button = createGroupByBtn(key, groupByKeyNames);
+    container.appendChild(button);
   }
 }
 
@@ -154,6 +172,11 @@ async function displayTableHead(groupByKeyName) {
 async function displayTableBody(groupByKeyName) {
   const exportTableBody = document.getElementById('export_table_body');
 
+  // Clear body content / rows to let new ones populate the table 
+  while (exportTableBody.firstChild) {
+    exportTableBody.removeChild(exportTableBody.firstChild);
+  }
+
   function displayData(data) {
     let fragment = document.createDocumentFragment();
 
@@ -180,17 +203,17 @@ async function displayTableBody(groupByKeyName) {
           if (headerKey === "median_apcs_paid_raw") {
             bucketValue = bucket[headerKey].values["50.0"]; // Exception for median due to special formatting
           } else if (valueKey.includes(".")) {
-              let keys = valueKey.split(".");
-              bucketValue = bucket[headerKey];
-              for (let key of keys) {
-                  if (bucketValue) {
-                      bucketValue = bucketValue[key];
-                  } else {
-                      break;
-                  }
+            let keys = valueKey.split(".");
+            bucketValue = bucket[headerKey];
+            for (let key of keys) {
+              if (bucketValue) {
+                bucketValue = bucketValue[key];
+              } else {
+                break;
               }
+            }
           } else {
-              bucketValue = bucket[headerKey] ? bucket[headerKey][valueKey] : '0';
+            bucketValue = bucket[headerKey] ? bucket[headerKey][valueKey] : '0';
           }
     
           let cell = (columnCounter === 1) ? document.createElement('th') : document.createElement('td');
@@ -312,15 +335,30 @@ function enableTableScroll() {
   });
 }
 
+// Setup event listeners for the buttons
+function setupButtonListeners(container, groupByKeyNames) {
+  const exportTable = document.getElementById('export_table');
+
+  container.addEventListener('click', function(event) {
+    if (event.target.closest('button')) {
+      const clickedButton = event.target.closest('button');
+      toggleActiveButton(clickedButton, container);
+
+      // Call the table display functions using the id of the clicked button
+      const key = getKeyFromButtonId(clickedButton.id, groupByKeyNames);
+      if (key) {
+        displayTableHead(key);
+        displayTableBody(key);
+      }
+    }
+  });
+}
+
 // Generate the data table — main event listener
 document.addEventListener("DOMContentLoaded", function() {
   if (document.getElementById('explore')) { 
-      const groupbyBtns = document.getElementById('groupby_buttons'); 
-      appendButtonsToContainer(groupbyBtns, groupByKeyNames);
+    const groupbyBtns = document.getElementById('groupby_buttons');
+    appendButtonsToContainer(groupbyBtns, groupByKeyNames);
+    setupButtonListeners(groupbyBtns, groupByKeyNames);
   }
 });
-
-// displayTableHead("publisher");
-// displayTableBody("publisher");
-// enableRowHighlighting();
-// enableTableScroll();
