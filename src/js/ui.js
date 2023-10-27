@@ -97,6 +97,9 @@ function getDateRangeForUserType() {
 
 getDateRangeForUserType();
 
+/* Year button selection */
+const yearButtons = document.querySelectorAll(".js_year_select");
+
 // Bind report’s year select to generate report for that time range
 function bindYearButton(button, startDate, endDate, reportText) {
   if (!button) return;
@@ -109,6 +112,27 @@ function bindYearButton(button, startDate, endDate, reportText) {
     oareport(org);
   });
 }
+
+// Update year buttons when clicked or active/selected
+function updateButtonStyling(event) {
+  event.preventDefault();
+
+  // When unselected
+  yearButtons.forEach((button) => {
+    button.classList.remove("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
+    button.classList.add("bg-white", "text-neutral-900");
+    button.setAttribute("aria-pressed", false);
+  });
+
+  // When selected
+  event.target.classList.add("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
+  event.target.classList.remove("bg-white", "text-neutral-900");
+  event.target.setAttribute("aria-pressed", true);
+}
+
+yearButtons.forEach((button) => {
+  button.addEventListener("click", updateButtonStyling);
+});
 
 bindYearButton(startYearBtn, startYearDate, paid ? currentDate : fixedDate);
 bindYearButton(lastYearBtn, lastYearStartDate, lastYearEndDate);
@@ -157,29 +181,6 @@ function handleTabBtnClick(event) {
 
 strategyTabBtns.forEach((tabBtn) => {
   tabBtn.addEventListener("click", handleTabBtnClick);
-});
-
-/* Year selects */
-const quickDateItems = document.querySelectorAll(".js_year_select");
-
-function handleQuickDateItemClick(event) {
-  event.preventDefault();
-
-  // When unselected
-  quickDateItems.forEach((item) => {
-    item.classList.remove("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
-    item.classList.add("bg-white", "text-neutral-900");
-    item.setAttribute("aria-pressed", false);
-  });
-
-  // When selected
-  event.target.classList.add("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
-  event.target.classList.remove("bg-white", "text-neutral-900");
-  event.target.setAttribute("aria-pressed", true);
-}
-
-quickDateItems.forEach((item) => {
-  item.addEventListener("click", handleQuickDateItemClick);
 });
 
 /* Modal windows */
