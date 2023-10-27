@@ -1,44 +1,4 @@
 /* Display publisher list from api-requests.js  */
-// Map 'group by' keys to human-readable names
-const groupByKeyNames = {
-  "supplements.grantid__bmgf": { singular: "Grant", plural: "Grants" },
-  "authorships.author.orcid": { singular: "Author", plural: "Authors" },
-  "publisher": { singular: "Publisher", plural: "Publishers" },
-  "concepts.display_name": { singular: "Concept", plural: "Concepts" },
-  "oa_status": { singular: "Open Access status", plural: "Open Access statuses" },
-  "supplements.program__bmgf": { singular: "Program", plural: "Programs" },
-  "authorships.institutions.display_name": { singular: "Institution", plural: "Institutions" },
-  "authorships.institutions.country_code": { singular: "Country", plural: "Countries" },
-  "journal": { singular: "Journal", plural: "Journals" },
-  "funder.name": { singular: "Co-funder", plural: "Co-funders" },
-  "publisher_license": { singular: "Publisher license", plural: "Publisher licenses" }
-};
-
-// Example usage:
-// console.log(groupByKeyNames["supplements.grantid__bmgf"].singular);  // Outputs: "Grant"
-// console.log(groupByKeyNames["supplements.grantid__bmgf"].plural);    // Outputs: "Grants"
-
-// Map 'group by' headers to human-readable names
-const groupByHeaderNames = {
-  "articles_published": "Articles published",
-  "is_compliant_articles": "Compliant articles",
-  "is_free_to_read": "Free-to-read articles",
-  "is_oa": "Open Access articles",
-  "has_repository_version": "Repository version",
-  "has_approved_repository_version": "Approved repository version",
-  "has_preprint_version": "Preprint version",
-  "has_data_availability_statement": "Data availability statement",
-  "has_no_data_availability_statement": "No data availability statement",
-  "has_apc": "With APCs",
-  "total_apcs_paid ": "Total APCs paid",
-  "average_apcs_paid_raw": "Average APCs paid",
-  "median_apcs_paid_raw ": "Median APCs paid",
-  "has_grantid": "With grant ID",
-  "total_citations": "Total citations"
-}
-
-// Example usage:
-// console.log(groupByHeaderNames["is_oa"]);  // Outputs: "Open Access articles"
 
 // Fetch data function using Axios
 async function fetchData(postData, listId) {
