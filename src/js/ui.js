@@ -1,83 +1,63 @@
-// Set readable date options
 const readableDateOptions = {
   day: "numeric",
   month: "long",
   year: "numeric"
+};
+
+// Fetch UI elements for date range
+const endDateContents = document.getElementById("end_date"),
+      startDateContents = document.getElementById("start_date");
+
+// Detect the user's locale
+const userLocale = navigator.languages && navigator.languages.length 
+                   ? navigator.languages[0] 
+                   : navigator.language;
+
+// Helper to format a date into human readable form
+function makeDateReadable(date) {
+  return date.toLocaleDateString(userLocale, readableDateOptions);
 }
 
-// Find date range elements where data will be inserted
-var endDateContents                = document.getElementById("end_date"),
-    startDateContents              = document.getElementById("start_date");
-
-// Detect browser’s locale to display human-readable numbers
-getUsersLocale = function() {
-  return navigator.languages && navigator.languages.length ? navigator.languages[0] : navigator.language;
+// Helper to adjust the date by a given number of days
+function changeDays(days, date) {
+  const adjustedDate = new Date(date);
+  adjustedDate.setDate(adjustedDate.getDate() + days);
+  return adjustedDate;
 }
 
-// Make dates readable for display in the UI
-makeDateReadable = function(date) {
-  date = date.toLocaleString(getUsersLocale(), readableDateOptions);
-  return date;
+// Helper to format a number into human readable form
+function makeNumberReadable(number) {
+  return number.toLocaleString(userLocale);
 }
 
-// Do math with days on a date
-changeDays = function(numOfDays, date) {
-  const dateCopy = new Date(date.getTime());
-  dateCopy.setDate(dateCopy.getDate() + numOfDays);
-  return dateCopy;
-}
-
-// Make numbers readable
-makeNumberReadable = function(number) {
-  number = number.toLocaleString(getUsersLocale());
-  return number;
-}
-
-// Format dates into ISO format — used in ElasticSearch query
-formatDateToISO = function(date) {
-  date = date.toISOString().substring(0, 10);
-  return date;
-}
-
-// Change start and end dates — used when switching years using pill nav
-replaceDateRange = function(newStart, newEnd) {
-  startYear     = new Date(newStart).getFullYear();
-  endYear       = new Date(newEnd).getFullYear();
-  startDate     = changeDays(-1, newStart);
-  startDate     = formatDateToISO(startDate);
-  endDate       = changeDays(+1, newEnd);
-  endDate       = formatDateToISO(endDate);
-  dateRange     = `(published_date:>${startDate}%20AND%20published_date:<${endDate})%20AND%20`;
-  return dateRange;
-}
-
-/* Date display and filtering */
-// Utility function to simplify date creation
-function createDate(year, month, day) {
-  return new Date(year, month, day);
-}
-
-// Utility function to format date to ISO string
+// Helper to format date into ISO format (for ElasticSearch queries)
 function formatDateToISO(date) {
   return date.toISOString().split('T')[0];
 }
 
-// Utility function to change days in a date
-function changeDays(days, date) {
-  const result = new Date(date);
-  result.setDate(result.getDate() + days);
-  return result;
+// Define external variables
+let dateRange, startYear, endYear;
+
+// Helper to adjust start and end dates (used for yearly navigation)
+function replaceDateRange(newStart, newEnd) {
+  startYear = newStart.getFullYear();
+  endYear = newEnd.getFullYear();
+  const startDateISO = formatDateToISO(changeDays(-1, newStart));
+  const endDateISO = formatDateToISO(changeDays(1, newEnd));
+  dateRange = `(published_date:>${startDateISO}%20AND%20published_date:<${endDateISO})%20AND%20`;
+  
+  return dateRange;
 }
 
-// Utility function to make date readable
-function makeDateReadable(date) {
-  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+// Create a date utility
+function createDate(year, month, day) {
+  return new Date(year, month, day);
 }
 
-// Set today’s date and 12 months ago date to display most recent Insights data as default
+// Set today's date and a date from 12 months ago for default data display
 const currentDate = new Date();
 const currentDateReadable = makeDateReadable(currentDate);
-const currentDateQuery = changeDays(1, currentDate); // add 1 day for ElasticSearch (greater than but not equal)
+const currentDateQuery = changeDays(1, currentDate); 
 const currentDateISO = formatDateToISO(currentDateQuery);
 
 const startYearDate = createDate(currentDate.getFullYear(), 0, 1);
@@ -85,16 +65,16 @@ const startYearDateReadable = makeDateReadable(startYearDate);
 const startYearDateQuery = changeDays(-1, startYearDate);
 const startYearDateISO = formatDateToISO(startYearDateQuery);
 
-// Get last year’s start and end date as temporary default
+// Get start and end dates for the last year as defaults
 const lastYearStartDate = createDate(currentDate.getFullYear() - 1, 0, 1);
 const lastYearStartDateReadable = makeDateReadable(lastYearStartDate);
 const lastYearStartDateQuery = changeDays(-1, lastYearStartDate);
-const lastYearStartDateISO = formatDateToISO(lastYearStartDate);
+const lastYearStartDateISO = formatDateToISO(lastYearStartDateQuery);
 
 const lastYearEndDate = createDate(currentDate.getFullYear() - 1, 11, 31);
 const lastYearEndDateReadable = makeDateReadable(lastYearEndDate);
 const lastYearEndDateQuery = changeDays(1, lastYearEndDate);
-const lastYearEndDateISO = formatDateToISO(lastYearEndDate);
+const lastYearEndDateISO = formatDateToISO(lastYearEndDateQuery);
 
 // Fixed end date set for free/non-paying users
 const fixedDate = createDate(2023, 5, 30);
@@ -117,46 +97,23 @@ function getDateRangeForUserType() {
 
 getDateRangeForUserType();
 
-startYearBtn.addEventListener("click", function() {
-  getDateRangeForUserType();
-  reportDateRange.textContent = `Since the start of ${startYearDate.getFullYear()}`;
-  reportYear.textContent = startYearDate.getFullYear();
-  oareport(org);
-});
+// Bind report’s year select to generate report for that time range
+function bindYearButton(button, startDate, endDate, reportText) {
+  if (!button) return;
 
-// Only paid users can see data from two years ago and all time
-// These buttons won’t be displayed for free users
-if (twoYearsBtn) {
-  lastYearBtn.textContent = lastYearStartDate.getFullYear();
-  lastYearBtn.addEventListener("click", function() {
-    replaceDateRange(lastYearStartDate, lastYearEndDate);
-    reportDateRange.textContent = `In ${lastYearStartDate.getFullYear()}`;
-    reportYear.textContent = lastYearStartDate.getFullYear();
+  button.textContent = reportText || startDate.getFullYear();
+  button.addEventListener("click", function() {
+    replaceDateRange(startDate, endDate);
+    reportDateRange.textContent = reportText || `In ${startDate.getFullYear()}`;
+    reportYear.textContent = reportText || startDate.getFullYear();
     oareport(org);
   });
 }
 
-if (twoYearsBtn) {
-  const twoYearsStartDate = createDate(currentDate.getFullYear() - 2, 0, 1);
-  const twoYearsEndDate = createDate(currentDate.getFullYear() - 2, 11, 31);
-
-  twoYearsBtn.textContent = twoYearsStartDate.getFullYear();
-  twoYearsBtn.addEventListener("click", function() {
-    replaceDateRange(twoYearsStartDate, twoYearsEndDate);
-    reportDateRange.textContent = `In ${twoYearsStartDate.getFullYear()}`;
-    reportYear.textContent = twoYearsStartDate.getFullYear();
-    oareport(org);
-  });
-}
-
-if (allTimeBtn) {
-  allTimeBtn.addEventListener("click", function() {
-    replaceDateRange(createDate(1980, 0, 1), currentDate);
-    reportDateRange.textContent = "All time";
-    reportYear.textContent = "All time";
-    oareport(org);
-  });
-}
+bindYearButton(startYearBtn, startYearDate, paid ? currentDate : fixedDate);
+bindYearButton(lastYearBtn, lastYearStartDate, lastYearEndDate);
+bindYearButton(twoYearsBtn, new Date(currentDate.getFullYear() - 2, 0, 1), new Date(currentDate.getFullYear() - 2, 11, 31));
+bindYearButton(allTimeBtn, new Date(1980, 0, 1), currentDate, "All time");
 
 /* Display strategy contents strategy button selection (MD + larger viewports) */
 const strategyTabBtns = document.querySelectorAll(".js_strategy_btn");

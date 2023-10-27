@@ -56,7 +56,7 @@ async function fetchData(postData) {
 }
 
 // Display headers in the table’s <thead>
-function displayTableHead(groupByKeyName) {
+async function displayTableHead(groupByKeyName) {
   const exportTableHead = document.getElementById('export_table_head');
   let tableHeadersHTML = '';
   
