@@ -257,80 +257,17 @@ document.addEventListener("DOMContentLoaded", function() {
     const seeMoreTxt = document.getElementById("see_more_text");
     const seeMoreCount = document.getElementById("count_see_more");
     
-      seeMoreButton.addEventListener("click", function() {
-        if (pillContainer.classList.contains('hidden')) {
-          pillContainer.classList.remove('hidden');
-          seeMoreTxt.textContent = "See fewer";
-          seeMoreCount.textContent = "–";
-        } else {
-          pillContainer.classList.add('hidden');
-          seeMoreTxt.textContent = "See more";
-          seeMoreCount.textContent = "+";
-        }
-      });
-
-    // Allow highlighting of table rows
-    const tableBody = document.getElementById('export_table_body');
-    const tableRows = tableBody.querySelectorAll('tr'); 
-
-    tableBody.addEventListener('click', (event) => {
-      const target = event.target;
-
-      if (target.tagName === 'TD' || target.tagName === 'TH') {
-        const row = target.parentElement; // Get the parent <tr> element
-        const cellsToHighlight = Array.from(row.querySelectorAll('td, th')); // Include both <td> and <th> elements
-
-        // Remove highlighting from all rows
-        tableRows.forEach((r) => {
-          r.classList.remove('bg-neutral-200', 'bg-neutral-300', 'hover:bg-neutral-100', 'text-neutral-900');
-        });
-
-        // Toggle highlighting for the selected <td> and <th> elements
-        cellsToHighlight.forEach((cell) => {
-          if (cell.tagName === 'TD') {
-            cell.classList.toggle('bg-neutral-200');
-          } else if (cell.tagName === 'TH') {
-            cell.classList.toggle('bg-neutral-300');
-          }
-          cell.classList.toggle('hover:bg-neutral-100');
-          cell.classList.toggle('text-neutral-900');
-        });
+    seeMoreButton.addEventListener("click", function() {
+      if (pillContainer.classList.contains('hidden')) {
+        pillContainer.classList.remove('hidden');
+        seeMoreTxt.textContent = "See fewer";
+        seeMoreCount.textContent = "–";
+      } else {
+        pillContainer.classList.add('hidden');
+        seeMoreTxt.textContent = "See more";
+        seeMoreCount.textContent = "+";
       }
     });
-
-    // Function to scroll the table to the right on click of the arrow button
-    const tableContainer = document.querySelector('.js_export_table_container');
-    const scrollRightBtn = document.getElementById('js_scroll_table_btn');
     
-    scrollRightBtn.addEventListener('click', () => {
-      const scrollAmount = 200; 
-      const currentScroll = tableContainer.scrollLeft;
-      const maxScroll = tableContainer.scrollWidth - tableContainer.clientWidth;
-
-      const targetScroll = currentScroll + scrollAmount;
-      
-      if (targetScroll >= maxScroll) {
-        // If reaching the end, hide the scrollRightBtn
-        scrollRightBtn.style.display = 'none';
-      } else {
-        // Otherwise, scroll smoothly to the right
-        tableContainer.scrollTo({
-          left: targetScroll,
-          behavior: 'smooth'
-        });
-      }
-    });
-
-    // Add a scroll event listener to check and show/hide the scrollRightBtn
-    tableContainer.addEventListener('scroll', () => {
-      const currentScroll = tableContainer.scrollLeft;
-      const maxScroll = tableContainer.scrollWidth - tableContainer.clientWidth;
-
-      if (currentScroll >= maxScroll) {
-        scrollRightBtn.style.display = 'none';
-      } else {
-        scrollRightBtn.style.display = 'block';
-      }
-    });
   }
 });
