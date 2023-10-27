@@ -31,9 +31,9 @@ const groupByHeaderNames = {
   "has_data_availability_statement": { pretty: "Data availability statement", key: "doc_count" },
   "has_no_data_availability_statement": { pretty: "No data availability statement", key: "doc_count" },
   "has_apc": { pretty: "With APCs", key: "doc_count" },
-  "total_apcs_paid ": { pretty: "Total APCs paid", key: "value" },
+  "total_apcs_paid": { pretty: "Total APCs paid", key: "value" },
   "average_apcs_paid_raw": { pretty: "Average APCs paid", key: "value" },
-  "median_apcs_paid_raw ": { pretty: "Median APCs paid", key: "values.50.0" },
+  "median_apcs_paid_raw": { pretty: "Median APCs paid", key: "values[50.0]" },
   "has_grantid": { pretty: "With grant ID", key: "doc_count" },
   "total_citations": { pretty: "Total citations", key: "value" }
 }
@@ -84,15 +84,18 @@ async function displayTableBody(groupByKeyName) {
   const exportTableBody = document.getElementById('export_table_body');
 
   function displayData(data) {
-    let tableRowsHTML = '';
+    let fragment = document.createDocumentFragment();
 
     if (data.aggregations && data.aggregations.key && data.aggregations.key.buckets) {
       data.aggregations.key.buckets.forEach(bucket => {
-        let rowHTML = '<tr>';
+        let row = document.createElement('tr');
         
         // Add the first column based on the provided groupByKeyName & style it
         if (groupByKeyNames[groupByKeyName]) {
-          rowHTML += `<th class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left md:whitespace-nowrap md:truncate">${bucket.key || ''}</th>`;
+          let cell = document.createElement('th');
+          cell.className = "border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left md:whitespace-nowrap md:truncate";
+          cell.textContent = bucket.key || '';
+          row.appendChild(cell);
         }
     
         // Counter to keep track of the current column
@@ -117,23 +120,25 @@ async function displayTableBody(groupByKeyName) {
             bucketValue = bucket[headerKey] ? bucket[headerKey][valueKey] : '';
           }
     
-          if (columnCounter === 1) { // Sticky styling for second column
-            rowHTML += `<th class="border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate">${bucketValue || ''}</th>`;
+          let cell = (columnCounter === 1) ? document.createElement('th') : document.createElement('td');
+          
+          if (columnCounter === 1) {
+            cell.className = "border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate";
           } else {
-            rowHTML += `<td class="border-b border-neutral-500 p-2 whitespace-nowrap truncate text-right hover:bg-neutral-600">${bucketValue || ''}</td>`;
+            cell.className = "border-b border-neutral-500 p-2 whitespace-nowrap truncate text-right hover:bg-neutral-600";
           }
-    
+          cell.textContent = bucketValue || '';
+          row.appendChild(cell);
           columnCounter++; // Increment the counter
         });
         
-        rowHTML += '</tr>';
-        tableRowsHTML += rowHTML;
+        fragment.appendChild(row);
       });
     }
 
-    exportTableBody.innerHTML = tableRowsHTML;
+    exportTableBody.appendChild(fragment);
   }
-  
+
   const postData = createPostData("your institution", groupByKeyName, 1960, 2023);
   const responseData = await fetchData(postData);  // Capture the response data
   
