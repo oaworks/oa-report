@@ -7,11 +7,6 @@ const groupByKeyNames = {
     singular: "Grant", 
     plural: "Grants" 
   },
-  "authorships.author.orcid": { 
-    id: "author",
-    singular: "Author", 
-    plural: "Authors" 
-  },
   "publisher": { 
     id: "publisher",
     singular: "Publisher", 
@@ -56,6 +51,11 @@ const groupByKeyNames = {
     id: "publisher_license",
     singular: "Publisher license", 
     plural: "Publisher licenses" 
+  },
+  "authorships.author.orcid": { 
+    id: "author",
+    singular: "Author", 
+    plural: "Authors" 
   }
 };
 
@@ -169,14 +169,19 @@ async function displayTableHead(groupByKeyName, displayMode = "pretty") {
   exportTableHead.innerHTML = tableHeadersHTML;
 }
 
+// Clear table body content / rows to let new ones populate the table 
+function clearTableData() {
+  const exportTableBody = document.getElementById('export_table_body');
+  while (exportTableBody.firstChild) {
+    exportTableBody.removeChild(exportTableBody.firstChild);
+  }
+}
+
 // Display body of data table for any given group-by 
 async function displayTableBody(groupByKeyName, displayMode = "pretty") {
   const exportTableBody = document.getElementById('export_table_body');
 
-  // Clear body content / rows to let new ones populate the table 
-  while (exportTableBody.firstChild) {
-    exportTableBody.removeChild(exportTableBody.firstChild);
-  }
+  clearTableData();
 
   function displayData(data) {
     let fragment = document.createDocumentFragment();
@@ -287,27 +292,41 @@ function toggleData(groupByKeyName) {
   resetToggle();
   const toggleButton = document.getElementById('toggle-data-view');
 
-  // Ensure the initial state is set correctly
-  if (toggleButton.getAttribute('aria-checked') === null) {
-    toggleButton.setAttribute('aria-checked', 'false');
+  if (toggleButton) { 
+    // Remove any previous event listeners attached to the btn to avoid unexpected behaviour
+    if (currentToggleHandler) {
+      toggleButton.removeEventListener('click', currentToggleHandler);
+    }
+  
+    // Ensure the initial state is set correctly
+    if (toggleButton.getAttribute('aria-checked') === null) {
+      toggleButton.setAttribute('aria-checked', 'true'); // By default, you want 'true' for "pretty"
+    }
+
+    currentToggleHandler = function(event) {
+      event.stopPropagation();
+
+      // 1. Check the current state
+      const ariaChecked = toggleButton.getAttribute('aria-checked') === 'true';
+
+      // 2. Switch the button state
+      toggleButton.setAttribute('aria-checked', !ariaChecked ? 'true' : 'false');
+
+      // 3. Determine the display mode based on the NEW state
+      const displayMode = !ariaChecked ? "pretty" : "raw"; 
+
+      // 4. Display the data based on the new display mode
+      displayTableHead(groupByKeyName, displayMode);
+      displayTableBody(groupByKeyName, displayMode);
+      
+      // 5. Update visual appearance of the button
+      toggleButton.querySelector('span.bg-carnation-500, span.bg-neutral-200').classList.toggle('bg-neutral-200');
+      toggleButton.querySelector('span.translate-x-100, span.translate-x-5').classList.toggle('translate-x-5');
+    };
+
+    toggleButton.addEventListener('click', currentToggleHandler);
   }
-
-  currentToggleHandler = function() {
-    const ariaChecked = toggleButton.getAttribute('aria-checked') === 'true';
-    const displayMode = ariaChecked ? "raw" : "pretty"; // This has been switched
-
-    displayTableHead(groupByKeyName, displayMode);
-    displayTableBody(groupByKeyName, displayMode);
-
-    toggleButton.setAttribute('aria-checked', displayMode === "raw" ? 'true' : 'false');
-    
-    toggleButton.querySelector('span.bg-carnation-500, span.bg-neutral-200').classList.toggle('bg-neutral-200');
-    toggleButton.querySelector('span.translate-x-100, span.translate-x-5').classList.toggle('translate-x-5');
-  };
-
-  toggleButton.addEventListener('click', currentToggleHandler);
 }
-
 
 // Enable row highlighting on table click
 function enableRowHighlighting() {
@@ -385,6 +404,8 @@ function setupButtonListeners(container, groupByKeyNames) {
 
   container.addEventListener('click', function(event) {
     if (event.target.closest('button')) {
+      // Clear any old state/data here
+
       const clickedButton = event.target.closest('button');
       toggleActiveButton(clickedButton, container);
 
@@ -393,6 +414,8 @@ function setupButtonListeners(container, groupByKeyNames) {
       if (key) {
         displayTableHead(key);
         displayTableBody(key);
+
+        // Reset and reinitialize the toggle functionality
         toggleData(key);
       }
     }
