@@ -229,7 +229,7 @@ function appendRowToFragment(data, fragment, groupByKeyName, displayMode, groupB
       Object.keys(groupByHeaderNames).forEach(headerKey => {
         const valueKey = groupByHeaderNames[headerKey].key;
         const bucketValue = getBucketValue(bucket, headerKey, valueKey);
-        const className = columnCounter === 1 ? dataTableClasses.firstCol : dataTableClasses.otherCols;
+        const className = columnCounter === 1 ? dataTableClasses.secondCol : dataTableClasses.otherCols;
         const cellType = columnCounter === 1 ? 'th' : 'td';
         const articlesPublishedValue = Number(bucket["articles_published"].doc_count);
         const cellContent = displayMode === "raw" 
