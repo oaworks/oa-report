@@ -60,6 +60,7 @@ const groupByKeyNames = {
 };
 
 // Example usage:
+// console.log(groupByKeyNames["supplements.grantid__bmgf"].id);  // Outputs: "grant"
 // console.log(groupByKeyNames["supplements.grantid__bmgf"].singular);  // Outputs: "Grant"
 // console.log(groupByKeyNames["supplements.grantid__bmgf"].plural);    // Outputs: "Grants"
 
@@ -80,9 +81,10 @@ const groupByHeaderNames = {
   "median_apcs_paid_raw": { pretty: "Median APCs paid", key: "values['50.0']" },
   "has_grantid": { pretty: "With grant ID", key: "doc_count" }
 }
-
 // Example usage:
 // console.log(groupByHeaderNames["is_oa"]);  // Outputs: "Open Access articles"
+// console.log(groupByHeaderNames["is_oa"].pretty);  // Outputs: "Open Access articles"
+// console.log(groupByHeaderNames["is_oa"].key);  // Outputs: "doc_count"
 
 // Get corresponding key from button id
 function getKeyFromButtonId(buttonId, groupByKeyNames) {
@@ -136,10 +138,10 @@ function appendButtonsToContainer(container, groupByKeyNames) {
 async function fetchData(postData) {
   try {
     const response = await axios.post('https://bg.api.oa.works/report/works', postData);
-    return response.data;  // Return the data here
+    return response.data; 
   } catch (error) {
     console.error('There was a problem with the request: ', error.message);
-    return null;  // Return null in case of an error
+    return null; 
   }
 }
 
@@ -148,7 +150,7 @@ async function displayTableHead(groupByKeyName, displayMode = "pretty") {
   const exportTableHead = document.getElementById('export_table_head');
   let tableHeadersHTML = '';
   
-  // Extract the first column based on the provided groupByKeyName and display in a specific style
+  // Extract the first column based on the provided groupByKeyName and style the first sticky header
   if (groupByKeyNames[groupByKeyName]) {
     tableHeadersHTML += `<th scope="col" class="border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-32 md:w-60 align-bottom">${groupByKeyNames[groupByKeyName].plural}</th>`;
   }
@@ -159,7 +161,7 @@ async function displayTableHead(groupByKeyName, displayMode = "pretty") {
     const headerValue = headersArray[i];
     const displayHeader = displayMode === "raw" ? headerValue : (groupByHeaderNames[headerValue] && groupByHeaderNames[headerValue].pretty);
 
-    if (i === 0) { // Styling the second sticky header
+    if (i === 0) { // Style the second sticky header
       tableHeadersHTML += `<th scope="col" class="border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-700 p-2 w-24 md:w-32 align-bottom break-words">${displayHeader}</th>`;
     } else {
       tableHeadersHTML += `<th scope="col" class="border-b border-neutral-500 p-2 w-32 align-bottom break-words text-right">${displayHeader}</th>`;
@@ -178,78 +180,83 @@ function clearTableData() {
 }
 
 // Display body of data table for any given group-by 
-async function displayTableBody(groupByKeyName, displayMode = "pretty") {
-  const exportTableBody = document.getElementById('export_table_body');
+function createCell(type, className, content) {
+  const cell = document.createElement(type);
+  cell.className = className;
+  cell.textContent = content;
+  return cell;
+}
 
-  clearTableData();
+function getBucketValue(bucket, headerKey, valueKey) {
+  let bucketValue;
 
-  function displayData(data) {
-    let fragment = document.createDocumentFragment();
-
-    if (data.aggregations && data.aggregations.key && data.aggregations.key.buckets) {
-      data.aggregations.key.buckets.forEach(bucket => {
-        let row = document.createElement('tr');
-        
-        // Add the first column based on the provided groupByKeyName & style it
-        if (groupByKeyNames[groupByKeyName]) {
-          let cell = document.createElement('th');
-          cell.className = "border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left md:whitespace-nowrap md:truncate";
-          cell.textContent = bucket.key || '';
-          row.appendChild(cell);
-        }
-    
-        // Counter to keep track of the current column
-        let columnCounter = 1;
-    
-        // Add other columns based on groupByHeaderNames
-        Object.keys(groupByHeaderNames).forEach(headerKey => {
-          let valueKey = groupByHeaderNames[headerKey].key;
-          let bucketValue;
-    
-          if (headerKey === "median_apcs_paid_raw") {
-            bucketValue = bucket[headerKey].values["50.0"]; // Exception for median due to special formatting
-          } else if (valueKey.includes(".")) {
-            let keys = valueKey.split(".");
-            bucketValue = bucket[headerKey];
-            for (let key of keys) {
-              if (bucketValue) {
-                bucketValue = bucketValue[key];
-              } else {
-                break;
-              }
-            }
-          } else {
-            bucketValue = bucket[headerKey] ? bucket[headerKey][valueKey] : '0';
-          }
-    
-          let cell = (columnCounter === 1) ? document.createElement('th') : document.createElement('td');
-          
-          if (columnCounter === 1) {
-            cell.className = "border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate";
-          } else {
-            cell.className = "border-b border-neutral-500 p-2 whitespace-nowrap truncate text-right hover:bg-neutral-600";
-          }
-
-          let articlesPublishedValue = Number(bucket["articles_published"].doc_count);
-
-          cell.textContent = displayMode === "raw" ? bucketValue : formatValueBasedOnKey(headerKey, bucketValue, articlesPublishedValue) || '0'; 
-          
-          row.appendChild(cell);
-          columnCounter++; // Increment the counter
-        });
-        
-        fragment.appendChild(row);
-      });
+  if (headerKey === "median_apcs_paid_raw") {
+    bucketValue = bucket[headerKey].values["50.0"];
+  } else if (valueKey.includes(".")) {
+    let keys = valueKey.split(".");
+    bucketValue = bucket[headerKey];
+    for (let key of keys) {
+      if (bucketValue) {
+        bucketValue = bucketValue[key];
+      } else {
+        break;
+      }
     }
-
-    exportTableBody.appendChild(fragment);
+  } else {
+    bucketValue = bucket[headerKey] ? bucket[headerKey][valueKey] : '0';
   }
 
+  return bucketValue;
+}
+
+const dataTableClasses = {
+  firstCol: "border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left md:whitespace-nowrap md:truncate",
+  secondCol: "border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate",
+  otherCols: "border-b border-neutral-500 p-2 whitespace-nowrap truncate text-right hover:bg-neutral-600"
+};
+
+function appendRowToFragment(data, fragment, groupByKeyName, displayMode, groupByHeaderNames) {
+  if (data.aggregations && data.aggregations.key && data.aggregations.key.buckets) {
+    data.aggregations.key.buckets.forEach(bucket => {
+      let row = document.createElement('tr');
+
+      if (groupByKeyNames[groupByKeyName]) {
+        const cell = createCell('th', dataTableClasses.firstCol, bucket.key || '');
+        row.appendChild(cell);
+      }
+
+      let columnCounter = 1;
+      Object.keys(groupByHeaderNames).forEach(headerKey => {
+        const valueKey = groupByHeaderNames[headerKey].key;
+        const bucketValue = getBucketValue(bucket, headerKey, valueKey);
+        const className = columnCounter === 1 ? dataTableClasses.firstCol : dataTableClasses.otherCols;
+        const cellType = columnCounter === 1 ? 'th' : 'td';
+        const articlesPublishedValue = Number(bucket["articles_published"].doc_count);
+        const cellContent = displayMode === "raw" 
+                            ? bucketValue 
+                            : formatValueBasedOnKey(headerKey, bucketValue, articlesPublishedValue) || '0';
+
+        const cell = createCell(cellType, className, cellContent);
+        row.appendChild(cell);
+        columnCounter++;
+      });
+
+      fragment.appendChild(row);
+    });
+  }
+}
+
+async function displayTableBody(groupByKeyName, displayMode = "pretty") {
+  const exportTableBody = document.getElementById('export_table_body');
+  clearTableData();
+
   const postData = createPostData(orgName, groupByKeyName, startYear, endYear);
-  const responseData = await fetchData(postData);  // Capture the response data
+  const responseData = await fetchData(postData);
   
-  if (responseData) {  // Ensure that data exists before passing it to displayData
-    displayData(responseData);
+  if (responseData) {
+    const fragment = document.createDocumentFragment();
+    appendRowToFragment(responseData, fragment, groupByKeyName, displayMode, groupByHeaderNames);
+    exportTableBody.appendChild(fragment);
   }
 }
 
@@ -272,10 +279,6 @@ function formatValueBasedOnKey(key, value, articlesPublished) {
 
   return value; // Return original value if no conditions match
 }
-// Example usage:
-// const valueToFormat = 5000;
-// const formattedValue = formatValueBasedOnKey("total_apcs_paid", valueToFormat);
-// console.log(formattedValue); // Outputs something like "$5,000.00" depending on the user locale
 
 // Toggle data display style between "raw" and "pretty"
 let currentToggleHandler = null;
@@ -285,7 +288,6 @@ function resetToggle() {
   toggleButton.setAttribute('aria-checked', 'true');
   toggleButton.querySelector('span.bg-carnation-500, span.bg-neutral-200').classList.replace('bg-neutral-200', 'bg-carnation-500');
   toggleButton.querySelector('span.translate-x-100, span.translate-x-5').classList.replace('translate-x-5', 'translate-x-100');
-
 }
 
 function toggleData(groupByKeyName) {
