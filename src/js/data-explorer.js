@@ -1,6 +1,6 @@
 /** Data explorer — display data from api-requests.js **/
 
-// Map 'group by' keys to human-readable names
+// Map "group by" keys to human-readable names
 const groupByKeyNames = {
   "supplements.grantid__bmgf": { 
     id: "grant",
@@ -64,7 +64,7 @@ const groupByKeyNames = {
 // console.log(groupByKeyNames["supplements.grantid__bmgf"].singular);  // Outputs: "Grant"
 // console.log(groupByKeyNames["supplements.grantid__bmgf"].plural);    // Outputs: "Grants"
 
-// Map 'group by' headers to human-readable names and to get
+// Map "group by" headers to human-readable names and to get
 const groupByHeaderNames = {
   "articles_published": { pretty: "Articles published", key: "doc_count" },
   "is_compliant_articles": { pretty: "Compliant articles", key: "doc_count" },
@@ -88,7 +88,7 @@ const groupByHeaderNames = {
 
 // Get corresponding key from button id
 function getKeyFromButtonId(buttonId, groupByKeyNames) {
-  const buttonIdPrefix = buttonId.replace('_button', '');
+  const buttonIdPrefix = buttonId.replace("_button", "");
   for (const key in groupByKeyNames) {
     if (groupByKeyNames[key].id === buttonIdPrefix) {
       return key;
@@ -99,15 +99,15 @@ function getKeyFromButtonId(buttonId, groupByKeyNames) {
 
 // Create a button for each "group by" type
 function createGroupByBtn(key, groupByKeyNames) {
-  const button = document.createElement('button');
+  const button = document.createElement("button");
   button.className = "items-center inline-flex p-2 pl-4 mr-4 mb-4 px-3 rounded-full bg-white font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500";
   button.id = groupByKeyNames[key].id + "_button";
   
-  const groupbyBtn = document.createElement('span');
+  const groupbyBtn = document.createElement("span");
   groupbyBtn.textContent = groupByKeyNames[key].plural;
   button.appendChild(groupbyBtn);
 
-  const nbRecords = document.createElement('span');
+  const nbRecords = document.createElement("span");
   nbRecords.className = "bg-neutral-800 text-white ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block";
   nbRecords.textContent = "999";
   button.appendChild(nbRecords);
@@ -118,12 +118,12 @@ function createGroupByBtn(key, groupByKeyNames) {
 // Set a button as active and deactivate other buttons
 function toggleActiveButton(activeButton, container) {
   // Loop through all buttons and remove the active class
-  container.querySelectorAll('button').forEach(button => {
-    button.classList.remove('bg-carnation-500');
+  container.querySelectorAll("button").forEach(button => {
+    button.classList.remove("bg-carnation-500");
   });
 
   // Set the clicked button as active
-  activeButton.classList.add('bg-carnation-500');
+  activeButton.classList.add("bg-carnation-500");
 }
 
 // Append "group by" buttons to a container
@@ -137,18 +137,18 @@ function appendButtonsToContainer(container, groupByKeyNames) {
 // Fetch data function using Axios
 async function fetchData(postData) {
   try {
-    const response = await axios.post('https://bg.api.oa.works/report/works', postData);
+    const response = await axios.post("https://bg.api.oa.works/report/works", postData);
     return response.data; 
   } catch (error) {
-    console.error('There was a problem with the request: ', error.message);
+    console.error("There was a problem with the request: ", error.message);
     return null; 
   }
 }
 
 // Display headers in the table’s <thead>
 async function displayTableHead(groupByKeyName, displayMode = "pretty") {
-  const exportTableHead = document.getElementById('export_table_head');
-  let tableHeadersHTML = '';
+  const exportTableHead = document.getElementById("export_table_head");
+  let tableHeadersHTML = "";
   
   // Extract the first column based on the provided groupByKeyName and style the first sticky header
   if (groupByKeyNames[groupByKeyName]) {
@@ -173,7 +173,7 @@ async function displayTableHead(groupByKeyName, displayMode = "pretty") {
 
 // Clear table body content / rows to let new ones populate the table 
 function clearTableData() {
-  const exportTableBody = document.getElementById('export_table_body');
+  const exportTableBody = document.getElementById("export_table_body");
   while (exportTableBody.firstChild) {
     exportTableBody.removeChild(exportTableBody.firstChild);
   }
@@ -203,7 +203,7 @@ function getBucketValue(bucket, headerKey, valueKey) {
       }
     }
   } else {
-    bucketValue = bucket[headerKey] ? bucket[headerKey][valueKey] : '0';
+    bucketValue = bucket[headerKey] ? bucket[headerKey][valueKey] : "0";
   }
 
   return bucketValue;
@@ -218,10 +218,10 @@ const dataTableClasses = {
 function appendRowToFragment(data, fragment, groupByKeyName, displayMode, groupByHeaderNames) {
   if (data.aggregations && data.aggregations.key && data.aggregations.key.buckets) {
     data.aggregations.key.buckets.forEach(bucket => {
-      let row = document.createElement('tr');
+      let row = document.createElement("tr");
 
       if (groupByKeyNames[groupByKeyName]) {
-        const cell = createCell('th', dataTableClasses.firstCol, bucket.key || '');
+        const cell = createCell("th", dataTableClasses.firstCol, bucket.key || "");
         row.appendChild(cell);
       }
 
@@ -230,11 +230,11 @@ function appendRowToFragment(data, fragment, groupByKeyName, displayMode, groupB
         const valueKey = groupByHeaderNames[headerKey].key;
         const bucketValue = getBucketValue(bucket, headerKey, valueKey);
         const className = columnCounter === 1 ? dataTableClasses.secondCol : dataTableClasses.otherCols;
-        const cellType = columnCounter === 1 ? 'th' : 'td';
+        const cellType = columnCounter === 1 ? "th" : "td";
         const articlesPublishedValue = Number(bucket["articles_published"].doc_count);
         const cellContent = displayMode === "raw" 
                             ? bucketValue 
-                            : formatValueBasedOnKey(headerKey, bucketValue, articlesPublishedValue) || '0';
+                            : formatValueBasedOnKey(headerKey, bucketValue, articlesPublishedValue) || "0";
 
         const cell = createCell(cellType, className, cellContent);
         row.appendChild(cell);
@@ -247,7 +247,7 @@ function appendRowToFragment(data, fragment, groupByKeyName, displayMode, groupB
 }
 
 async function displayTableBody(groupByKeyName, displayMode = "pretty") {
-  const exportTableBody = document.getElementById('export_table_body');
+  const exportTableBody = document.getElementById("export_table_body");
   clearTableData();
 
   const postData = createPostData(orgName, groupByKeyName, startYear, endYear);
@@ -263,7 +263,7 @@ async function displayTableBody(groupByKeyName, displayMode = "pretty") {
 // Format values ("pretty" data display) based on key types set in groupByHeaderNames
 function formatValueBasedOnKey(key, value, articlesPublished) {
   const header = groupByHeaderNames[key];
-  if (!header) return value; // Return original value if the key doesn't exist
+  if (!header) return value; // Return original value if the key doesn"t exist
 
   if (key === "articles_published") {
     return makeNumberReadable(value); // Only total number of articles shows the full number at all times
@@ -284,35 +284,35 @@ function formatValueBasedOnKey(key, value, articlesPublished) {
 let currentToggleHandler = null;
 
 function resetToggle() {
-  const toggleButton = document.getElementById('toggle-data-view');
-  toggleButton.setAttribute('aria-checked', 'true');
-  toggleButton.querySelector('span.bg-carnation-500, span.bg-neutral-200').classList.replace('bg-neutral-200', 'bg-carnation-500');
-  toggleButton.querySelector('span.translate-x-100, span.translate-x-5').classList.replace('translate-x-5', 'translate-x-100');
+  const toggleButton = document.getElementById("toggle-data-view");
+  toggleButton.setAttribute("aria-checked", "true");
+  toggleButton.querySelector("span.bg-carnation-500, span.bg-neutral-200").classList.replace("bg-neutral-200", "bg-carnation-500");
+  toggleButton.querySelector("span.translate-x-100, span.translate-x-5").classList.replace("translate-x-5", "translate-x-100");
 }
 
 function toggleData(groupByKeyName) {
   resetToggle();
-  const toggleButton = document.getElementById('toggle-data-view');
+  const toggleButton = document.getElementById("toggle-data-view");
 
   if (toggleButton) { 
     // Remove any previous event listeners attached to the btn to avoid unexpected behaviour
     if (currentToggleHandler) {
-      toggleButton.removeEventListener('click', currentToggleHandler);
+      toggleButton.removeEventListener("click", currentToggleHandler);
     }
   
     // Ensure the initial state is set correctly
-    if (toggleButton.getAttribute('aria-checked') === null) {
-      toggleButton.setAttribute('aria-checked', 'true'); // By default, you want 'true' for "pretty"
+    if (toggleButton.getAttribute("aria-checked") === null) {
+      toggleButton.setAttribute("aria-checked", "true"); // By default, you want "true" for "pretty"
     }
 
     currentToggleHandler = function(event) {
       event.stopPropagation();
 
       // 1. Check the current state
-      const ariaChecked = toggleButton.getAttribute('aria-checked') === 'true';
+      const ariaChecked = toggleButton.getAttribute("aria-checked") === "true";
 
       // 2. Switch the button state
-      toggleButton.setAttribute('aria-checked', !ariaChecked ? 'true' : 'false');
+      toggleButton.setAttribute("aria-checked", !ariaChecked ? "true" : "false");
 
       // 3. Determine the display mode based on the NEW state
       const displayMode = !ariaChecked ? "pretty" : "raw"; 
@@ -322,40 +322,40 @@ function toggleData(groupByKeyName) {
       displayTableBody(groupByKeyName, displayMode);
       
       // 5. Update visual appearance of the button
-      toggleButton.querySelector('span.bg-carnation-500, span.bg-neutral-200').classList.toggle('bg-neutral-200');
-      toggleButton.querySelector('span.translate-x-100, span.translate-x-5').classList.toggle('translate-x-5');
+      toggleButton.querySelector("span.bg-carnation-500, span.bg-neutral-200").classList.toggle("bg-neutral-200");
+      toggleButton.querySelector("span.translate-x-100, span.translate-x-5").classList.toggle("translate-x-5");
     };
 
-    toggleButton.addEventListener('click', currentToggleHandler);
+    toggleButton.addEventListener("click", currentToggleHandler);
   }
 }
 
 // Enable row highlighting on table click
 function enableRowHighlighting() {
-  const tableBody = document.getElementById('export_table_body');
-  const tableRows = tableBody.querySelectorAll('tr'); 
+  const tableBody = document.getElementById("export_table_body");
+  const tableRows = tableBody.querySelectorAll("tr"); 
 
-  tableBody.addEventListener('click', (event) => {
+  tableBody.addEventListener("click", (event) => {
     const target = event.target;
 
-    if (target.tagName === 'TD' || target.tagName === 'TH') {
+    if (target.tagName === "TD" || target.tagName === "TH") {
       const row = target.parentElement; // Get the parent <tr> element
-      const cellsToHighlight = Array.from(row.querySelectorAll('td, th')); 
+      const cellsToHighlight = Array.from(row.querySelectorAll("td, th")); 
 
       // Remove highlighting from all rows
       tableRows.forEach((r) => {
-        r.classList.remove('bg-neutral-200', 'bg-neutral-300', 'hover:bg-neutral-100', 'text-neutral-900');
+        r.classList.remove("bg-neutral-200", "bg-neutral-300", "hover:bg-neutral-100", "text-neutral-900");
       });
 
       // Toggle highlighting for the selected <td> and <th> elements
       cellsToHighlight.forEach((cell) => {
-        if (cell.tagName === 'TD') {
-          cell.classList.toggle('bg-neutral-200');
-        } else if (cell.tagName === 'TH') {
-          cell.classList.toggle('bg-neutral-300');
+        if (cell.tagName === "TD") {
+          cell.classList.toggle("bg-neutral-200");
+        } else if (cell.tagName === "TH") {
+          cell.classList.toggle("bg-neutral-300");
         }
-        cell.classList.toggle('hover:bg-neutral-100');
-        cell.classList.toggle('text-neutral-900');
+        cell.classList.toggle("hover:bg-neutral-100");
+        cell.classList.toggle("text-neutral-900");
       });
     }
   });
@@ -363,10 +363,10 @@ function enableRowHighlighting() {
 
 // Enable the table to scroll to the right
 function enableTableScroll() {
-  const tableContainer = document.querySelector('.js_export_table_container');
-  const scrollRightBtn = document.getElementById('js_scroll_table_btn');
+  const tableContainer = document.querySelector(".js_export_table_container");
+  const scrollRightBtn = document.getElementById("js_scroll_table_btn");
 
-  scrollRightBtn.addEventListener('click', () => {
+  scrollRightBtn.addEventListener("click", () => {
     const scrollAmount = 200; 
     const currentScroll = tableContainer.scrollLeft;
     const maxScroll = tableContainer.scrollWidth - tableContainer.clientWidth;
@@ -375,40 +375,40 @@ function enableTableScroll() {
 
     if (targetScroll >= maxScroll) {
       // If reaching the end, hide the scrollRightBtn
-      scrollRightBtn.style.display = 'none';
+      scrollRightBtn.style.display = "none";
     } else {
       // Otherwise, scroll smoothly to the right
       tableContainer.scrollTo({
         left: targetScroll,
-        behavior: 'smooth'
+        behavior: "smooth"
       });
     }
   });
 
-  tableContainer.addEventListener('scroll', () => {
+  tableContainer.addEventListener("scroll", () => {
     const currentScroll = tableContainer.scrollLeft;
     const maxScroll = tableContainer.scrollWidth - tableContainer.clientWidth;
 
     if (currentScroll >= maxScroll) {
-      scrollRightBtn.style.display = 'none';
+      scrollRightBtn.style.display = "none";
     } else {
-      scrollRightBtn.style.display = 'block';
+      scrollRightBtn.style.display = "block";
     }
   });
 }
 
 // Setup event listeners for the buttons
 function setupButtonListeners(container, groupByKeyNames) {
-  const exportTable = document.getElementById('export_table');
+  const exportTable = document.getElementById("export_table");
 
   enableRowHighlighting();
   enableTableScroll();
 
-  container.addEventListener('click', function(event) {
-    if (event.target.closest('button')) {
+  container.addEventListener("click", function(event) {
+    if (event.target.closest("button")) {
       // Clear any old state/data here
 
-      const clickedButton = event.target.closest('button');
+      const clickedButton = event.target.closest("button");
       toggleActiveButton(clickedButton, container);
 
       // Call the table display functions using the id of the clicked button
@@ -426,8 +426,8 @@ function setupButtonListeners(container, groupByKeyNames) {
 
 // Generate the data table — main event listener
 document.addEventListener("DOMContentLoaded", function() {
-  if (document.getElementById('explore')) { 
-    const groupbyBtns = document.getElementById('groupby_buttons');
+  if (document.getElementById("explore")) { 
+    const groupbyBtns = document.getElementById("groupby_buttons");
     appendButtonsToContainer(groupbyBtns, groupByKeyNames);
     setupButtonListeners(groupbyBtns, groupByKeyNames);
   }
