@@ -100,24 +100,28 @@ permalink: "{{ org._source.objectID | slug }}/"
         {{ component("card", {
           id: "is_paper",
           title: "Total published",
+          subtitle: "Article count",
           icon: "file-text"
         }) }}
 
         {{ component("card", {
           id: "is_free_to_read",
           title: "Free-to-read",
+          subtitle: "Incl. temporarily accessible articles",
           icon: "gift"
         }) }}
 
         {{ component("card", {
           id: "is_compliant",
           title: "OA policy-compliant",
+          subtitle: "Specific to your policy",
           icon: "check-circle"
         }) }}
 
         {{ component("card", {
           id: "is_oa",
           title: "Open Access",
+          "subtitle": "Free and CC BY or public domain",
           icon: "unlock"
         }) }}
 

@@ -36,7 +36,8 @@
       {% icon_small params.icon %}
     </div>
     <h3 class="text-xs md:text-sm">
-      {{ params.title }}
+      <span class="font-medium">{{ params.title }}</span>
+      {% if params.subtitle %}<br><span class="text-neutral-600">{{ params.subtitle }}</span>{% endif %}
     </h3>
   </header>
   {# Body #}
