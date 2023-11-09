@@ -7,31 +7,13 @@
 }) }}
 #}
 
-{# <article class="flex grow basis-0	relative bg-white transition ease-in delay-150 opacity-0 overflow-hidden" id="{{ params.id }}">
-  <div class="grow flex flex-col h-full justify-between">
-    <header class="p-3 mb-6 min-h-24 bg-carnation-100 text-neutral-900">
-      <h3 class="mb-2 text-xs md:text-sm">
-        {% icon_small params.icon %}
-        {{ params.title }}
-      </h3>
-    </header>
-    <div class="p-3">
-      <p class="text-5xl font-black text-neutral-900">
-        <span id="percent_{{ params.id }}">00%</span>
-        <sup tabindex="0" id="info_{{ params.id }}" role="tooltip" aria-hidden="true">{% icon_small "help-circle" %}</sup>
-      </p>
-      {% if not params.raw_number %}
-      <p class="mt-2 text-xs md:text-sm font-medium text-neutral-600">
-        <span id="articles_{{ params.id }}">articles</span>
-      </p>
-      {% endif %}
-    </div>
-  </div>
-</article> #}
-
-<article class="flex flex-col h-full bg-white hover:outline hover:outline-offset-2 hover:outline-2 hover:outline-carnation-300" id="{{ params.id }}">
+{# TODO: uncomment when vis bar is enabled
+<article class="flex flex-col h-full bg-white hover:outline hover:outline-offset-2 hover:outline-2 hover:outline-carnation-300" id="{{ params.id }}"> #}
+<article class="flex flex-col h-full bg-white" id="{{ params.id }}">
   {# Header #}
-  <header class="p-3 md:h-28 overflow-hidden bg-carnation-100 text-neutral-900 flex flex-col justify-between hover:cursor-pointer">
+  {# TODO: uncomment when vis bar is enabled
+  <header class="p-3 md:h-28 overflow-hidden bg-carnation-100 text-neutral-900 flex flex-col justify-between hover:cursor-pointer"> #}
+  <header class="p-3 md:h-28 overflow-hidden bg-carnation-100 text-neutral-900 flex flex-col justify-between">
     <div class="mb-3 -ml-1">
       {% icon_small params.icon %}
     </div>
