@@ -431,6 +431,6 @@ document.addEventListener("DOMContentLoaded", function() {
   if (document.getElementById("explore")) { 
     const groupbyBtns = document.getElementById("groupby_buttons");
     appendButtonsToContainer(groupbyBtns, groupByKeyNames);
-    setupButtonListeners(groupbyBtns, groupByKeyNames);
+    // setupButtonListeners(groupbyBtns, groupByKeyNames);
   }
 });
