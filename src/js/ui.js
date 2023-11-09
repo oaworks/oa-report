@@ -13,6 +13,21 @@ const userLocale = navigator.languages && navigator.languages.length
                    ? navigator.languages[0] 
                    : navigator.language;
 
+// ==============================
+// Utility functions
+// ==============================
+
+/**
+ * Replace all instances of a text
+ * 
+ * @param {string} className - The class name indicating a string where we will be replacing all instances
+ *  @param {string} parameter - The content we are replacing instances found with 
+ */
+
+function replaceText(className, parameter) {
+  document.querySelectorAll(className).forEach(element => element.textContent = parameter);
+}
+
 // Helper to format a date into human readable form
 function makeDateReadable(date) {
   return date.toLocaleDateString(userLocale, readableDateOptions);
@@ -100,8 +115,27 @@ function getDateRangeForUserType() {
 
 getDateRangeForUserType();
 
-/* Year button selection */
+/* Year selection */
 const yearButtons = document.querySelectorAll(".js_year_select");
+
+// Sticky year header — add padding when the year is at the top
+document.addEventListener("scroll", function() {
+  const nav = document.querySelector("#top_nav");
+  const rect = nav.getBoundingClientRect();
+
+  // Add 'transition-pb-6' class when the nav is at the top of the viewport
+  if (rect.top <= 0) {
+    nav.classList.add("shadow-lg");
+    nav.classList.add("transition-pb-3");
+    nav.classList.add("md:transition-pb-6");
+    nav.classList.remove("transition-pb-0");
+  } else {
+    nav.classList.remove("shadow-lg");
+    nav.classList.remove("transition-pb-3");
+    nav.classList.remove("md:transition-pb-6");
+    nav.classList.add("transition-pb-0");
+  }
+});
 
 // Bind report’s year select to generate report for that time range
 function bindYearButton(button, startDate, endDate, reportText) {
@@ -122,7 +156,6 @@ function updateButtonStyling(event) {
 
   // TODO: Make the data explorer work with the date range
   // TEMP clear table
-  console.log("click");
   document.getElementById("export_table").classList.add("hidden");
 
   // When unselected

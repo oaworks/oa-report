@@ -406,9 +406,9 @@ function setupButtonListeners(container, groupByKeyNames) {
   enableTableScroll();
 
   container.addEventListener("click", function(event) {
+
     if (event.target.closest("button")) {
       // Clear any old state/data here
-
       const clickedButton = event.target.closest("button");
       toggleActiveButton(clickedButton, container);
       exportTable.classList.remove("hidden");
@@ -431,6 +431,6 @@ document.addEventListener("DOMContentLoaded", function() {
   if (document.getElementById("explore")) { 
     const groupbyBtns = document.getElementById("groupby_buttons");
     appendButtonsToContainer(groupbyBtns, groupByKeyNames);
-    // setupButtonListeners(groupbyBtns, groupByKeyNames);
+    setupButtonListeners(groupbyBtns, groupByKeyNames);
   }
 });
