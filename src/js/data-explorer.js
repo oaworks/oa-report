@@ -100,17 +100,18 @@ function getKeyFromButtonId(buttonId, groupByKeyNames) {
 // Create a button for each "group by" type
 function createGroupByBtn(key, groupByKeyNames) {
   const button = document.createElement("button");
-  button.className = "items-center inline-flex p-2 pl-4 mr-4 mb-4 px-3 rounded-full bg-white font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500";
+  button.className = "items-center inline-flex p-2 px-4 mr-4 mb-4 px-3 rounded-full bg-carnation-100 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500";
   button.id = groupByKeyNames[key].id + "_button";
   
   const groupbyBtn = document.createElement("span");
   groupbyBtn.textContent = groupByKeyNames[key].plural;
   button.appendChild(groupbyBtn);
 
-  const nbRecords = document.createElement("span");
-  nbRecords.className = "bg-neutral-800 text-white ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block";
-  nbRecords.textContent = "999";
-  button.appendChild(nbRecords);
+  // TODO: Get total numbers here 
+  // const nbRecords = document.createElement("span");
+  // nbRecords.className = "bg-neutral-800 text-white ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block";
+  // nbRecords.textContent = "999";
+  // button.appendChild(nbRecords);
 
   return button;
 }
