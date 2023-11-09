@@ -13,34 +13,56 @@ const userLocale = navigator.languages && navigator.languages.length
                    ? navigator.languages[0] 
                    : navigator.language;
 
+// Define external variables used for managing the date range and yearly navigation
+let dateRange, startYear, endYear;
+
 // ==============================
-// Utility functions
+// Utility/helper functions
 // ==============================
 
 /**
- * Replace all instances of a text
+ * Replace all instances of a text found in elements with a given class name.
  * 
- * @param {string} className - The class name indicating a string where we will be replacing all instances
- *  @param {string} parameter - The content we are replacing instances found with 
+ * @param {string} className - The class name indicating the elements whose text will be replaced.
+ * @param {string} parameter - The content we are replacing instances found with.
  */
 
 function replaceText(className, parameter) {
   document.querySelectorAll(className).forEach(element => element.textContent = parameter);
 }
 
-// Helper to format a date into human readable form
+/**
+ * Format a date object into a human-readable string using the user’s locale.
+ * 
+ * @param {Date} date - The date object to format.
+ * @returns {string} The localised date string.
+ */
 function makeDateReadable(date) {
   return date.toLocaleDateString(userLocale, readableDateOptions);
 }
 
-// Helper to adjust the date by a given number of days
+/**
+ * Adjusts the provided date by a specified number of days.
+ * It can handle both positive and negative values for the `days` parameter.
+ * 
+ * @param {number} days - The number of days to add to the date (negative values will subtract days).
+ * @param {Date} date - The initial date to be adjusted.
+ * @returns {Date} The new Date object adjusted by the specified number of days.
+ */
 function changeDays(days, date) {
   const adjustedDate = new Date(date);
   adjustedDate.setDate(adjustedDate.getDate() + days);
   return adjustedDate;
 }
 
-// Helper to format a number into human readable form or currency format
+/**
+ * Formats a number into a human-readable string or a currency format using the user’s locale.
+ * If `isCurrency` is true, the number is formatted in the currency style using US dollars. 
+ *
+ * @param {number} number - The number to be formatted.
+ * @param {boolean} [isCurrency=false] - Flag indicating whether to format the number as currency.
+ * @returns {string} The formatted number as a string.
+ */
 function makeNumberReadable(number, isCurrency = false) {
   if (isCurrency) {
     return new Intl.NumberFormat(userLocale, { style: 'currency', currency: 'USD' }).format(number);
@@ -48,15 +70,28 @@ function makeNumberReadable(number, isCurrency = false) {
   return number.toLocaleString(userLocale);
 }
 
-// Helper to format date into ISO format (for ElasticSearch queries)
+/**
+ * Formats a Date object into an ISO 8601-formatted string representing the date portion only
+ * The time portion is removed by splitting the ISO string at 'T' and taking the first part, 
+ * which corresponds to the date. This format is often used in querying ElasticSearch.
+ *
+ * @param {Date} date - The date to format into an ISO 8601 date string.
+ * @returns {string} The ISO 8601 formatted date string.
+ */
 function formatDateToISO(date) {
   return date.toISOString().split('T')[0];
 }
 
-// Define external variables
-let dateRange, startYear, endYear;
-
-// Helper to adjust start and end dates (used for yearly navigation)
+/**
+ * Adjusts global `startYear` and `endYear` to the years of the new start and end dates and constructs
+ * a date range string formatted for ElasticSearch queries. 
+ * The start date is decremented by one day and the end date is incremented by one day, 
+ * ensuring that the range includes all times within the start and end dates.
+ *
+ * @param {Date} newStart - The date representing the start of the range.
+ * @param {Date} newEnd - The date representing the end of the range.
+ * @returns {string} The date range string formatted for ElasticSearch query syntax.
+ */
 function replaceDateRange(newStart, newEnd) {
   startYear = newStart.getFullYear();
   endYear = newEnd.getFullYear();
@@ -67,7 +102,14 @@ function replaceDateRange(newStart, newEnd) {
   return dateRange;
 }
 
-// Create a date utility
+/**
+ * Creates a Date object representing a specific date
+ *
+ * @param {number} year - The full year of the date.
+ * @param {number} month - The month of the date (0-11, where 0 corresponds to January).
+ * @param {number} day - The day of the month.
+ * @returns {Date} The new Date object representing the specific date.
+ */
 function createDate(year, month, day) {
   return new Date(year, month, day);
 }
