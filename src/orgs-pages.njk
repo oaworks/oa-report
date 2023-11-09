@@ -12,7 +12,7 @@ permalink: "{{ org._source.objectID | slug }}/"
 <main class="bg-carnation-100">
   <div class="px-3 md:px-6">
     <div class="grid grid-cols-2 gap-3 sm:gap-6 md:gap-12 py-3 xl:pb-6 xl:pt-12">
-      <header class="mb-3 col-span-2 md:col-span-2">
+      <header class="mb-4 col-span-2 md:col-span-2">
         <h1 class="flex items-center">
           <div>
             <span class="font-semibold uppercase text-sm md:text-base line-thru">
@@ -84,7 +84,7 @@ permalink: "{{ org._source.objectID | slug }}/"
   <section class="bg-neutral-900 text-white scroll-mt-32 js_section" id="insights">
     <div class="p-3 md:px-6 md:py-16">
       <header class="col-span-3">
-        <h2 class="mb-3 text-base md:text-lg leading-6">
+        <h2 class="mb-4 text-base md:text-lg leading-6">
           <span class="font-semibold uppercase text-sm md:text-base line-thru">
             <span class="bg-neutral-900">
               Insights on <strong class="font-bold">articles</strong>
@@ -346,7 +346,7 @@ permalink: "{{ org._source.objectID | slug }}/"
     <div class="p-3 md:px-6 md:py-16">
       
       <header class="col-span-3">
-        <h2 class="mb-3 text-base md:text-lg leading-6">
+        <h2 class="text-base md:text-lg leading-6">
           <span class="font-semibold uppercase text-sm md:text-base line-thru">
             <span class="bg-neutral-800">
               Data exploration
@@ -358,11 +358,11 @@ permalink: "{{ org._source.objectID | slug }}/"
         </h2>
       </header>
 
-      <div class="mb-6 flex flex-wrap space-r-4 items-center" id="groupby_buttons"></div>
+      <div class="flex flex-wrap space-r-4 space-b-4 items-center" id="groupby_buttons"></div>
 
-      <div id="export_table">
+      <div id="export_table" class="mt-6 hidden">
         <h3 class="mb-12 text-4xl" aria-live="polite">
-          Previewing first <strong id="export_records_shown">0</strong> of <strong id="export_title">0</strong> <span class="js_export_type">records</span> for <strong id="export_year">2023</strong>
+          Top <strong id="export_records_shown">20</strong> of <strong id="export_title">0</strong> <span class="js_export_type">records</span> for <strong id="export_year">2023</strong>
           {{ component("tooltip", {
             msg: "This table is a preview of all the records for your query. To see the full data set in CSV format, use the <em>Download full data (CSV)</em> button."
           }) }} 

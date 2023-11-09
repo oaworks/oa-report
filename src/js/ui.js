@@ -120,6 +120,11 @@ function bindYearButton(button, startDate, endDate, reportText) {
 function updateButtonStyling(event) {
   event.preventDefault();
 
+  // TODO: Make the data explorer work with the date range
+  // TEMP clear table
+  console.log("click");
+  document.getElementById("export_table").classList.add("hidden");
+
   // When unselected
   yearButtons.forEach((button) => {
     button.classList.remove("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
@@ -157,7 +162,6 @@ function handleTabBtnClick(event) {
   const selectedTabContents = document.querySelector(`.js_strategies #${selectedStrategy}`);
   const otherTabContents = document.querySelectorAll(`.js_strategy:not(#${selectedStrategy})`);
   const otherTabBtns = document.querySelectorAll(`.js_strategy_btn:not(#strategy_${selectedStrategy})`);
-
 
   // When unselected
   for (let tabContents of otherTabContents) {

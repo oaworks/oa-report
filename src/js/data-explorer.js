@@ -100,7 +100,7 @@ function getKeyFromButtonId(buttonId, groupByKeyNames) {
 // Create a button for each "group by" type
 function createGroupByBtn(key, groupByKeyNames) {
   const button = document.createElement("button");
-  button.className = "items-center inline-flex p-2 px-4 mr-4 mb-4 px-3 rounded-full bg-carnation-100 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500";
+  button.className = "items-center inline-flex p-2 px-4 mr-4 mt-4 px-3 rounded-full bg-carnation-100 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500";
   button.id = groupByKeyNames[key].id + "_button";
   
   const groupbyBtn = document.createElement("span");
@@ -411,6 +411,7 @@ function setupButtonListeners(container, groupByKeyNames) {
 
       const clickedButton = event.target.closest("button");
       toggleActiveButton(clickedButton, container);
+      exportTable.classList.remove("hidden");
 
       // Call the table display functions using the id of the clicked button
       const key = getKeyFromButtonId(clickedButton.id, groupByKeyNames);
