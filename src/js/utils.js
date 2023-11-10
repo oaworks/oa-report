@@ -1,11 +1,11 @@
+// ========================
+// Utility/helper functions
+// ========================
+
 import { readableDateOptions, userLocale } from './constants.js';
 
 // Define external variables used for managing the date range and yearly navigation
 export let dateRange, startYear, endYear;
-
-// ========================
-// Utility/helper functions
-// ========================
 
 /**
  * Replace all instances of a text found in elements with a given class name.

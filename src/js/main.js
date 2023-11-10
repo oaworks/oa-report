@@ -1,5 +1,5 @@
 import { makeDateReadable, changeDays, formatDateToISO, createDate, replaceDateRange } from './utils.js';
-import { yearButtons } from './state-and-dom.js';
+import { yearButtons, strategyTabBtns } from './state-and-dom.js';
 import { oareport } from './oareport.js';
 
 // Set today's date and a date from 12 months ago for default data display
@@ -37,34 +37,45 @@ const reportYear = document.getElementById("report-year");
 
 startYearBtn.textContent = startYearDate.getFullYear();
 
-getDateRangeForUserType();
-
-// Display default date range since start of the current year
+/**
+ * Displays the default date range from the start of the current year.
+ * The end date is determined based on the user's (paid or free) status.
+ */
 function getDateRangeForUserType() {
   const endDate = paid ? currentDate : fixedDate;
   replaceDateRange(startYearDate, endDate);
 }
 
-// Sticky year header — add padding when the year is at the top
-document.addEventListener("scroll", function() {
+getDateRangeForUserType();
+
+/**
+ * Adjusts the navigation bar's style based on the scroll position.
+ * Adds or removes classes to the navigation bar when it reaches the top of the viewport.
+ */
+function adjustNavOnScroll() {
   const nav = document.querySelector("#top_nav");
   const rect = nav.getBoundingClientRect();
 
-  // Add 'transition-pb-6' class when the nav is at the top of the viewport
   if (rect.top <= 0) {
-    nav.classList.add("shadow-lg");
-    nav.classList.add("transition-pb-3");
-    nav.classList.add("md:transition-pb-6");
+    nav.classList.add("shadow-lg", "transition-pb-3", "md:transition-pb-6");
     nav.classList.remove("transition-pb-0");
   } else {
-    nav.classList.remove("shadow-lg");
-    nav.classList.remove("transition-pb-3");
-    nav.classList.remove("md:transition-pb-6");
+    nav.classList.remove("shadow-lg", "transition-pb-3", "md:transition-pb-6");
     nav.classList.add("transition-pb-0");
   }
-});
+}
 
-// Bind report’s year select to generate report for that time range
+document.addEventListener("scroll", adjustNavOnScroll);
+
+/**
+ * Binds a year selection button to update the report's date range.
+ * Updates the displayed date range and report text when the button is clicked.
+ *
+ * @param {HTMLElement} button - The button element to bind the click event.
+ * @param {Date} startDate - The start date for the report.
+ * @param {Date} endDate - The end date for the report.
+ * @param {string} reportText - The text to display for the report year.
+ */
 function bindYearButton(button, startDate, endDate, reportText) {
   if (!button) return;
 
@@ -77,41 +88,44 @@ function bindYearButton(button, startDate, endDate, reportText) {
   });
 }
 
-// Update year buttons when clicked or active/selected
-function updateButtonStyling(event) {
+bindYearButton(startYearBtn, startYearDate, paid ? currentDate : fixedDate);
+bindYearButton(lastYearBtn, lastYearStartDate, lastYearEndDate);
+bindYearButton(twoYearsBtn, new Date(currentDate.getFullYear() - 2, 0, 1), new Date(currentDate.getFullYear() - 2, 11, 31));
+bindYearButton(allTimeBtn, new Date(1980, 0, 1), currentDate, "All time");
+
+/**
+ * Updates the styling of year selection buttons upon user interaction (selected or not).
+ *
+ * @param {Event} event - The event object associated with the click or selection.
+ */
+function updateYearButtonStyling(event) {
   event.preventDefault();
 
-  // TODO: Make the data explorer work with the date range
-  // TEMP clear table
   document.getElementById("export_table").classList.add("hidden");
 
-  // When unselected
   yearButtons.forEach((button) => {
     button.classList.remove("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
     button.classList.add("bg-white", "text-neutral-900");
     button.setAttribute("aria-pressed", false);
   });
 
-  // When selected
   event.target.classList.add("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
   event.target.classList.remove("bg-white", "text-neutral-900");
   event.target.setAttribute("aria-pressed", true);
 }
 
 yearButtons.forEach((button) => {
-  button.addEventListener("click", updateButtonStyling);
+  button.addEventListener("click", updateYearButtonStyling);
 });
 
-bindYearButton(startYearBtn, startYearDate, paid ? currentDate : fixedDate);
-bindYearButton(lastYearBtn, lastYearStartDate, lastYearEndDate);
-bindYearButton(twoYearsBtn, new Date(currentDate.getFullYear() - 2, 0, 1), new Date(currentDate.getFullYear() - 2, 11, 31));
-bindYearButton(allTimeBtn, new Date(1980, 0, 1), currentDate, "All time");
-
-/* Display strategy contents strategy button selection (MD + larger viewports) */
-const strategyTabBtns = document.querySelectorAll(".js_strategy_btn");
-
-function handleTabBtnClick(event) {
-  // If the click event's target is the span inside of <li>, stop the event propagation
+/**
+ * Handles click events on tab buttons to switch between different tabs.
+ * This function controls the display of tab content and updates the appearance of tabs based on the selected state.
+ *
+ * @param {Event} event - The click event object.
+ */
+function updateStrategyButtonStyling(event) {
+  // Check if the target is a span and stop propagation if so
   if (event.target.tagName.toLowerCase() === 'span') {
     event.stopPropagation();
     return;
@@ -147,83 +161,7 @@ function handleTabBtnClick(event) {
 }
 
 strategyTabBtns.forEach((tabBtn) => {
-  tabBtn.addEventListener("click", handleTabBtnClick);
+  tabBtn.addEventListener("click", updateStrategyButtonStyling);
 });
 
 oareport(org);
-
-/* Modal windows */
-class Modal {
-  constructor(titleSelector, contentSelector) {
-    this.modal = document.querySelector('#dynamic-modal');
-    this.closeModalBtn = this.modal.querySelector('.close-modal-btn');
-    this.modalTitle = this.modal.querySelector('.modal-title');
-    this.modalContent = this.modal.querySelector('.modal-content');
-
-    this.titleSelector = titleSelector;
-    this.contentSelector = contentSelector;
-
-    this.closeModalBtn.addEventListener('click', () => this.close());
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && !this.modal.classList.contains('hidden')) {
-        this.close();
-      }
-    });
-
-    // Adding event listener to close the modal on outside click
-    this.modal.addEventListener('click', (e) => {
-      if (e.target === this.modal) {
-        this.close();
-      }
-    });
-  }
-
-  open() {
-    const titleElement = document.querySelector(this.titleSelector);
-    const contentElement = document.querySelector(this.contentSelector);
-  
-    if (titleElement && contentElement) {
-      this.modalTitle.textContent = titleElement.textContent;
-  
-      // Clear the current modal content
-      this.modalContent.innerHTML = '';
-  
-      // Clone the content element and append it to the modal content
-      const clonedContent = contentElement.cloneNode(true);
-      clonedContent.classList.remove('hidden');
-      
-      // Update the `for` attribute of labels and `id` of inputs to maintain association
-      // This is necessary to ensure that form inputs are still focussed visually 
-      // when selecting their corresponding labels (for a11y)
-      const labels = clonedContent.querySelectorAll('label');
-      labels.forEach((label) => {
-        const htmlFor = label.getAttribute('for');
-        if (htmlFor) {
-          const input = clonedContent.querySelector(`#${htmlFor}`);
-          if (input) {
-            const newID = `cloned-${htmlFor}`;
-            label.setAttribute('for', newID);
-            input.id = newID;
-          }
-        }
-      });
-  
-      this.modalContent.append(clonedContent);
-  
-      this.modal.classList.remove('hidden');
-      this.modal.setAttribute('aria-hidden', 'false');
-      document.body.classList.add('overflow-hidden');
-      this.closeModalBtn.focus();
-    } else {
-      console.error('Title or content element not found.');
-    }
-  }  
-
-  close() {
-    this.modal.classList.add('hidden');
-    this.modal.setAttribute('aria-hidden', 'true');
-    document.body.classList.remove('overflow-hidden');
-  }
-}
-
-let currentModal = null;
