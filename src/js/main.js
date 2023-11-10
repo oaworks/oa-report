@@ -150,6 +150,8 @@ strategyTabBtns.forEach((tabBtn) => {
   tabBtn.addEventListener("click", handleTabBtnClick);
 });
 
+oareport(org);
+
 /* Modal windows */
 class Modal {
   constructor(titleSelector, contentSelector) {
