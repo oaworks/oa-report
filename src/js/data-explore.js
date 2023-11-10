@@ -147,24 +147,27 @@ export function appendDataExploreRowToFragment(data, fragment, groupByKeyName, d
  * 
  * @param {string} type - The type of cell to create ('td' for table data cell or 'th' for table header cell).
  * @param {string} className - The class name to apply to the cell.
- * @param {string} content - The text content to be included in the cell.
+ * @param {string | any} content - The text content to be included in the cell. It can be of any type but will be treated as a string.
  * @returns {HTMLElement} The created table cell element.
  */
 export function createDataExploreCell(type, className, content) {
   const cell = document.createElement(type);
   cell.className = className;
 
+  // Ensuring that content is treated as a string
+  const contentStr = String(content);
+
   // Check if the content is a URL
-  if (content.startsWith("http://") || content.startsWith("https://")) {
-    const link = document.createElement("a");
-    link.href = content;
-    link.textContent = content;
-    link.className = "underline underline-offset-2 decoration-1"; 
-    link.rel = "noopener"; 
-    link.target = "_blank";
+  if (contentStr.startsWith('http://') || contentStr.startsWith('https://')) {
+    const link = document.createElement('a');
+    link.href = contentStr;
+    link.textContent = contentStr;
+    link.className = 'underline underline-offset-2 decoration-1'; // Applying the specified classes
+    link.rel = 'noopener'; // Adding rel attribute for security
+    link.target = '_blank'; // Open in a new tab
     cell.appendChild(link);
   } else {
-    cell.textContent = content;
+    cell.textContent = contentStr;
   }
 
   return cell;
