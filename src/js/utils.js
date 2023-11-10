@@ -4,6 +4,22 @@
 
 import { readableDateOptions, userLocale } from './constants.js';
 
+/**
+ * Fetches data from the OA Works API using a POST request.
+ * 
+ * @param {Object} postData - The data to be sent in the POST request.
+ * @returns {Object|null} The response data from the API, or null if an error occurs.
+ */
+export async function fetchData(postData) {
+  try {
+    const response = await axios.post("https://bg.api.oa.works/report/works", postData);
+    return response.data; 
+  } catch (error) {
+    console.error("There was a problem with the request: ", error.message);
+    return null; 
+  }
+}
+
 // Define external variables used for managing the date range and yearly navigation
 export let dateRange, startYear, endYear;
 
@@ -125,4 +141,21 @@ export function changeOpacity(id, opacity = 100) {
     elem.classList.remove("opacity-0");
     elem.classList.add(`opacity-${opacity}`);
   }
+}
+
+/**
+ * Retrieves the corresponding key for a given button ID in data explore section from the provided mapping object.
+ * 
+ * @param {string} buttonId - The ID of the button in the data explore section.
+ * @param {Object} groupByKeyNames - The mapping object containing key names for the data explore section.
+ * @returns {string|null} The corresponding key if found, otherwise null.
+ */
+export function getDataExploreKeyFromButtonId(buttonId, groupByKeyNames) {
+  const buttonIdPrefix = buttonId.replace("_button", "");
+  for (const key in groupByKeyNames) {
+    if (groupByKeyNames[key].id === buttonIdPrefix) {
+      return key;
+    }
+  }
+  return null;
 }

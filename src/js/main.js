@@ -1,5 +1,7 @@
-import { makeDateReadable, changeDays, formatDateToISO, createDate, replaceDateRange } from './utils.js';
+import { makeDateReadable, changeDays, formatDateToISO, createDate, replaceDateRange, getDataExploreKeyFromButtonId } from './utils.js';
+import { groupByKeyNames } from './constants.js';
 import { yearButtons, strategyTabBtns } from './state-and-dom.js';
+import { toggleDataExploreActiveButton, appendDataExploreButtonsToContainer, enableDataExploreRowHighlighting, enableDataExploreTableScroll, updateDataExploreTableHeaders, updateDataExploreTableBody, toggleDataExploreDisplay } from './data-explore.js';
 import { oareport } from './oareport.js';
 
 // Set today's date and a date from 12 months ago for default data display
@@ -168,4 +170,47 @@ strategyTabBtns.forEach((tabBtn) => {
   tabBtn.addEventListener("click", updateStrategyButtonStyling);
 });
 
-oareport(org);
+// Generate the data table — main event listener
+document.addEventListener("DOMContentLoaded", function() {
+  oareport(org);
+
+  if (document.getElementById("explore")) { 
+    const groupbyBtns = document.getElementById("groupby_buttons");
+    appendDataExploreButtonsToContainer(groupbyBtns, groupByKeyNames);
+    setupDataExploreButtonListeners(groupbyBtns, groupByKeyNames);
+  }
+});
+
+/**
+ * Sets up event listeners for buttons in the data exploration section.
+ * This includes initializing row highlighting, table scrolling, and handling button click events.
+ * 
+ * @param {HTMLElement} container - The container element holding the buttons.
+ * @param {Object} groupByKeyNames - The mapping object containing key names and display names for group by types.
+ */
+export function setupDataExploreButtonListeners(container, groupByKeyNames) {
+  const exportTable = document.getElementById("export_table");
+
+  enableDataExploreRowHighlighting();
+  enableDataExploreTableScroll();
+
+  container.addEventListener("click", function(event) {
+
+    if (event.target.closest("button")) {
+      // Clear any old state/data here
+      const clickedButton = event.target.closest("button");
+      toggleDataExploreActiveButton(clickedButton, container);
+      exportTable.classList.remove("hidden");
+
+      // Call the table display functions using the id of the clicked button
+      const key = getDataExploreKeyFromButtonId(clickedButton.id, groupByKeyNames);
+      if (key) {
+        updateDataExploreTableHeaders(key);
+        updateDataExploreTableBody(key);
+
+        // Reset and reinitialize the toggle functionality
+        toggleDataExploreDisplay(key);
+      }
+    }
+  });
+}

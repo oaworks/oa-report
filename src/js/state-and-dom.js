@@ -1,3 +1,7 @@
+// ================
+// UI’s state & DOM
+// ================
+
 // Fetch UI elements for date range
 const endDateContents = document.getElementById("end_date");
 const startDateContents = document.getElementById("start_date");
