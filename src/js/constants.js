@@ -109,7 +109,7 @@ export const groupByHeaderNames = {
  * Class names for different table columns in the data explore section.
  */
 export const dataTableClasses = {
-  firstCol: "border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left md:whitespace-nowrap md:truncate",
+  firstCol: "border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left",
   secondCol: "border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate",
   otherCols: "border-b border-neutral-500 p-2 whitespace-nowrap truncate text-right hover:bg-neutral-600"
 };

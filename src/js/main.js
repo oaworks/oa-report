@@ -1,8 +1,13 @@
 import { makeDateReadable, changeDays, formatDateToISO, createDate, replaceDateRange, getDataExploreKeyFromButtonId } from './utils.js';
 import { groupByKeyNames } from './constants.js';
-import { yearButtons, strategyTabBtns } from './state-and-dom.js';
 import { toggleDataExploreActiveButton, appendDataExploreButtonsToContainer, enableDataExploreRowHighlighting, enableDataExploreTableScroll, updateDataExploreTableHeaders, updateDataExploreTableBody, toggleDataExploreDisplay } from './data-explore.js';
 import { oareport } from './oareport.js';
+
+// Get year button nav elements
+const yearButtons = document.querySelectorAll(".js_year_select");
+
+// Get statregy button nav elements
+const strategyTabBtns = document.querySelectorAll(".js_strategy_btn");
 
 // Set today's date and a date from 12 months ago for default data display
 const currentDate = new Date();
