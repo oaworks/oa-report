@@ -1,3 +1,5 @@
+import { startYear, endYear, makeNumberReadable } from './utils.js';
+
 /** Data explorer — display data from api-requests.js **/
 
 // Map "group by" keys to human-readable names

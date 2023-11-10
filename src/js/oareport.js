@@ -1,3 +1,5 @@
+import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable } from './utils.js';
+
 const base             = `https://${apiEndpoint}.oa.works/report/`,
       baseBg           = `https://bg.${apiEndpoint}.oa.works/report/`,
       queryBase        = `${base}works?size=100&`,
@@ -7,19 +9,6 @@ const base             = `https://${apiEndpoint}.oa.works/report/`,
 
 // Set report base path
 let report = `${base}orgs?q=objectID:%22${org}%22`;
-
-// Visually hide an element
-displayNone = function(id) {
-  var elem = document.getElementById(id);
-    if (elem) elem.style.display = 'none';
-}
-
-// Turn opacity to 100% for an element
-changeOpacity = function(id, opacity = 100) {
-  var elem = document.getElementById(id);
-      elem.classList.remove("opacity-0");
-      elem.classList.add(`opacity-${opacity}`);
-}
 
 /* Get report page elements where data will be inserted */
 // Send CSV data by email form
@@ -45,7 +34,7 @@ let exportIncludes = "&include=DOI,title,subtitle,publisher,journal,issn,publish
 let exportSort = "&sort=published_date:desc"
 
 // Generate report’s UI for any given date range
-oareport = function(org) {
+export function oareport(org) {
 
   // Set paths for orgindex
   let queryPrefix                  = `${queryBase}q=${dateRange}`,
@@ -87,7 +76,7 @@ oareport = function(org) {
   };
 
     /** Get Insights data and display it **/
-    getInsight = function(numerator, denominator, denominatorText, info) {
+    function getInsight(numerator, denominator, denominatorText, info) {
 
       var shown     = response.data.hits.hits[0]._source.analysis[numerator].show_on_web,
           contentID = `${numerator}`; // the whole insight’s data card
@@ -114,12 +103,12 @@ oareport = function(org) {
         infoContents.setAttribute('aria-controls', tooltipID);
 
         // Get numerator’s count query
-        num = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.analysis[numerator].query);
+        let num = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.analysis[numerator].query);
 
         // Display data in UI if both a numerator & denominator were defined
         if (numerator && denominator) {
           // Get denominator’s count query
-          denom = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.analysis[denominator].query);
+          let denom = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.analysis[denominator].query);
 
           Promise.all([num, denom])
             .then(function (results) {
@@ -201,7 +190,7 @@ oareport = function(org) {
     );
 
     /* Get Strategy data and display it  */
-    displayStrategy = function(strategy, keys, tableRow) {
+    function displayStrategy(strategy, keys, tableRow) {
       var shown  = response.data.hits.hits[0]._source.strategy[strategy].show_on_web,
           sort   = `&sort=${response.data.hits.hits[0]._source.strategy[strategy].sort}`,
           tabID  = `strategy_${strategy}`;
@@ -283,7 +272,7 @@ oareport = function(org) {
                       
                       // If mailto is included, replace its body’s content with the action’s values
                       if ("mailto" in action) {
-                        mailto = response.data.hits.hits[0]._source.strategy[strategy].mailto;
+                        var mailto = response.data.hits.hits[0]._source.strategy[strategy].mailto;
 
                         var newMailto = mailto.replaceAll("\'", "’");
                         newMailto = newMailto.replaceAll("{doi}", (action.DOI ? action.DOI : "[No DOI found]"));
@@ -432,7 +421,7 @@ oareport = function(org) {
     var hasCustomExportIncludes = (response.data.hits.hits[0]._source.export_includes);
 
     /* "Download CSV" form: all articles displayed on page */
-    getExportLink = function() {
+    function getExportLink() {
       Promise.all([hasCustomExportIncludes])
         .then(function (results) {
           let hasCustomExportIncludes = results[0].data;
@@ -470,7 +459,7 @@ oareport = function(org) {
     }
 
     /* Strategy-level "download CSV" form */
-    getStrategyExportLink = function(id) {
+    function getStrategyExportLink(id) {
       var hasCustomExportIncludes = (response.data.hits.hits[0]._source.strategy[id].export_includes),
           strategyQuery           = (response.data.hits.hits[0]._source.strategy[id].query);
 

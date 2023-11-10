@@ -62,7 +62,7 @@
   {# Load UI-related JS for org report pages only #} 
   {% if org._source.name %}
   <script defer src="../js/oaworksKeys.js"></script>
-  <script defer src="../js/ui.js"></script>
+  <script type="module" src="../js/main.js"></script>
   {% endif %}
 
   {# Preconnect to the API endpoint #}
