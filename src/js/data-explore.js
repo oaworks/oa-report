@@ -142,6 +142,8 @@ export function appendDataExploreRowToFragment(data, fragment, groupByKeyName, d
 /**
  * Creates a table cell (td or th) for the data exploration section with the specified content and class.
  * This function is part of managing the DOM in response to changes in the application's data state.
+ * If the content is a URL (starting with 'http://' or 'https://'), it turns it into a clickable link,
+ * applying specified classes and the 'rel=noopener' attribute for security.
  * 
  * @param {string} type - The type of cell to create ('td' for table data cell or 'th' for table header cell).
  * @param {string} className - The class name to apply to the cell.
@@ -151,7 +153,20 @@ export function appendDataExploreRowToFragment(data, fragment, groupByKeyName, d
 export function createDataExploreCell(type, className, content) {
   const cell = document.createElement(type);
   cell.className = className;
-  cell.textContent = content;
+
+  // Check if the content is a URL
+  if (content.startsWith("http://") || content.startsWith("https://")) {
+    const link = document.createElement("a");
+    link.href = content;
+    link.textContent = content;
+    link.className = "underline underline-offset-2 decoration-1"; 
+    link.rel = "noopener"; 
+    link.target = "_blank";
+    cell.appendChild(link);
+  } else {
+    cell.textContent = content;
+  }
+
   return cell;
 }
 
