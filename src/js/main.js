@@ -65,7 +65,11 @@ function adjustNavOnScroll() {
   }
 }
 
+// Attach the function to the scroll event
 document.addEventListener("scroll", adjustNavOnScroll);
+
+// Call the function immediately to check the initial scroll position
+adjustNavOnScroll();
 
 /**
  * Binds a year selection button to update the report's date range.
