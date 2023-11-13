@@ -18,6 +18,11 @@ export const userLocale = navigator.languages && navigator.languages.length
  * @type {{[key: string]: { id: string, singular: string, plural: string }}}
  */
 export const groupByKeyNames = {
+  "articles": { 
+    id: "article",
+    singular: "Article", 
+    plural: "Articles" 
+  },
   "supplements.grantid__bmgf": { 
     id: "grant",
     singular: "Grant", 
