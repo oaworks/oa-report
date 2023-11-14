@@ -362,7 +362,7 @@ permalink: "{{ org._source.objectID | slug }}/"
 
       <div id="export_table" class="mt-6 hidden">
         <h3 class="mb-12 text-4xl" aria-live="polite">
-          Top <strong id="export_records_shown">20</strong> of <strong id="export_title">0</strong> <span class="js_export_type">records</span> for <strong id="export_year">2023</strong>
+          Top <strong id="export_records_shown">20</strong> of <strong id="export_title">0</strong> <span class="js_export_type">records</span> for <strong class="export-year">2023</strong>
           {{ component("tooltip", {
             msg: "This table is a preview of all the records for your query. To see the full data set in CSV format, use the <em>Download full data (CSV)</em> button."
           }) }} 
@@ -470,9 +470,9 @@ permalink: "{{ org._source.objectID | slug }}/"
 
           <nav class="hidden sm:block mt-6 mb-10">
             <h3 class="absolute right-0 bottom-0 text-9xl font-black text-white opacity-20">
-              <span class="sr-only">Actions for </span><span id="report-year">2023</span>
+              <span class="sr-only">Actions for </span><span class="export-year" id="report-year">2023</span>
             </h3>
-            <ul role="tablist" aria-label="Actions Tabs">
+            <ul class="flex flex-wrap space-r-4 space-b-4 items-center" role="tablist" aria-label="Actions Tabs">
               {{ component("strategy-pill", {
                 id: "email_author_vor",
                 txt: "Deposit publisher PDFs",
