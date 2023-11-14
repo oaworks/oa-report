@@ -12,7 +12,7 @@ import { readableDateOptions, userLocale } from './constants.js';
  */
 export async function fetchData(postData) {
   try {
-    const response = await axios.post("https://bg.api.oa.works/report/works", postData);
+    const response = await axios.post(`https://bg.${apiEndpoint}.oa.works/report/works`, postData);
     return response.data; 
   } catch (error) {
     console.error("There was a problem with the request: ", error.message);
