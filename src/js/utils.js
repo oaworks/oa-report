@@ -31,7 +31,7 @@ export let dateRange, startYear, endYear;
  */
 
 export function replaceText(className, parameter) {
-  document.querySelectorAll(className).forEach(element => element.textContent = parameter);
+  document.querySelectorAll(`.${className}`).forEach(element => element.textContent = parameter);
 }
 
 /**
