@@ -362,7 +362,7 @@ permalink: "{{ org._source.objectID | slug }}/"
 
       <div id="export_table" class="mt-6 hidden">
         <h3 class="mb-12 text-4xl" aria-live="polite">
-          Top <strong class="agg-type"></strong> for <strong class="export-year">2023</strong>
+          Top <strong class="agg-type">articles</strong> in <strong class="export-year">2023</strong>
           {{ component("tooltip", {
             msg: "This table is a preview of all the records for your query. To see the full data set in CSV format, use the <em>Download full data (CSV)</em> button."
           }) }} 
@@ -557,7 +557,7 @@ permalink: "{{ org._source.objectID | slug }}/"
     <div class="grid grid-cols-2 gap-3 sm:gap-6 md:gap-12 py-6 xl:py-12"> 
       <div class="col-span-2 grid md:grid-cols-2 gap-12 text-base md:text-2xl md:leading-8 md:font-light" id="about">
         <div>
-          <h2 class=" font-semibold uppercase text-sm md:text-base line-thru">
+          <h2 class="font-semibold uppercase text-sm md:text-base line-thru">
             <span class="bg-carnation-100 pr-3">About this report</span>
           </h2>
           {# PAID USERS #}
@@ -587,12 +587,17 @@ permalink: "{{ org._source.objectID | slug }}/"
           {% endif %}
         </div>
         {# PROMPT TO SEARCH OTHER ORGS #}
-        <div class="hidden sm:block sm:w-1/3 md:w-1/2">
-          {% if page.url != "/" %}
-            {{ component("search-form", {
-              sr_only: true
-            }) }}
-          {% endif %}
+        <div>
+          <h2 class="font-semibold uppercase text-sm md:text-base line-thru">
+            <span class="bg-carnation-100 pr-3">Find other organizations</span>
+          </h2>
+          <div class="my-6">
+            {% if page.url != "/" %}
+              {{ component("search-form", {
+                sr_only: true
+              }) }}
+            {% endif %}
+          </div>
         </div>
       </div>
     </div>
