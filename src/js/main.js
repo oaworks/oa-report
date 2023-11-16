@@ -1,6 +1,6 @@
-import { makeDateReadable, changeDays, formatDateToISO, createDate, replaceDateRange, getDataExploreKeyFromButtonId } from './utils.js';
+import { makeDateReadable, changeDays, formatDateToISO, createDate, replaceDateRange, getDataExploreKeyFromButtonId, replaceText } from './utils.js';
 import { groupByKeyNames } from './constants.js';
-import { toggleDataExploreActiveButton, appendDataExploreButtonsToContainer, enableDataExploreRowHighlighting, enableDataExploreTableScroll, updateDataExploreTableHeaders, updateDataExploreTableBody, toggleDataExploreDisplay } from './data-explore.js';
+import { toggleDataExploreActiveButton, appendDataExploreButtonsToContainer, enableDataExploreRowHighlighting, enableDataExploreTableScroll, updateDataExploreTableHeaders, updateDataExploreTableBody, toggleDataExploreDisplay } from './explore.js';
 import { oareport } from './oareport.js';
 
 // Get year button nav elements
@@ -34,7 +34,7 @@ const lastYearEndDateISO = formatDateToISO(lastYearEndDateQuery);
 // Fixed end date set for free/non-paying users
 const fixedDate = createDate(2023, 5, 30);
 
-// Preset "quick date filter" buttons
+// Year selection 
 const startYearBtn = document.getElementById("start-year");
 const lastYearBtn = document.getElementById("last-year");
 const twoYearsBtn = document.getElementById("two-years-ago");
@@ -43,6 +43,10 @@ const reportDateRange = document.getElementById("report-range");
 const reportYear = document.getElementById("report-year");
 
 startYearBtn.textContent = startYearDate.getFullYear();
+
+// Aggregation selection
+const aggType = document.querySelectorAll(".agg-type");;
+const aggYear = document.querySelectorAll(".agg-year");
 
 /**
  * Displays the default date range from the start of the current year.
@@ -64,9 +68,11 @@ function adjustNavOnScroll() {
   const rect = nav.getBoundingClientRect();
 
   if (rect.top <= 0) {
+    yearButtons.forEach((button) => { button.classList.add("border-b") });
     nav.classList.add("shadow-lg", "transition-pb-3", "md:transition-pb-6");
     nav.classList.remove("transition-pb-0");
   } else {
+    yearButtons.forEach((button) => { button.classList.remove("border-b") });
     nav.classList.remove("shadow-lg", "transition-pb-3", "md:transition-pb-6");
     nav.classList.add("transition-pb-0");
   }
@@ -95,7 +101,16 @@ function bindYearButton(button, startDate, endDate, reportText) {
     replaceDateRange(startDate, endDate);
     reportDateRange.textContent = reportText || `In ${startDate.getFullYear()}`;
     reportYear.textContent = reportText || startDate.getFullYear();
+    if (aggYear) replaceText("agg-year", reportText || startDate.getFullYear());
     oareport(org);
+
+    // Attempt to refresh the data table using the button's ID
+    const key = getDataExploreKeyFromButtonId(button.id, groupByKeyNames);
+    if (key) {
+      updateDataExploreTableHeaders(key);
+      updateDataExploreTableBody(key);
+      toggleDataExploreDisplay(key);
+    }
   });
 }
 
@@ -180,7 +195,7 @@ document.addEventListener("DOMContentLoaded", function() {
   oareport(org);
 
   if (document.getElementById("explore")) { 
-    const groupbyBtns = document.getElementById("groupby_buttons");
+    const groupbyBtns = document.getElementById("explore_buttons");
     appendDataExploreButtonsToContainer(groupbyBtns, groupByKeyNames);
     setupDataExploreButtonListeners(groupbyBtns, groupByKeyNames);
   }
@@ -200,7 +215,6 @@ export function setupDataExploreButtonListeners(container, groupByKeyNames) {
   enableDataExploreTableScroll();
 
   container.addEventListener("click", function(event) {
-
     if (event.target.closest("button")) {
       // Clear any old state/data here
       const clickedButton = event.target.closest("button");
@@ -209,8 +223,10 @@ export function setupDataExploreButtonListeners(container, groupByKeyNames) {
 
       // Call the table display functions using the id of the clicked button
       const key = getDataExploreKeyFromButtonId(clickedButton.id, groupByKeyNames);
+
+
       if (key) {
-        updateDataExploreTableHeaders(key);
+        // updateDataExploreTableHeaders(key);
         updateDataExploreTableBody(key);
 
         // Reset and reinitialize the toggle functionality

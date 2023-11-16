@@ -346,5 +346,4 @@ function createPostData(orgName, key, startYear, endYear) {
       }
     }
   };
-;
 };

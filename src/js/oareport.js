@@ -503,6 +503,3 @@ export function oareport(org) {
   })
 };
 
-oareport(org);
-
-

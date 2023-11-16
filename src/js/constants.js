@@ -19,62 +19,14 @@ export const userLocale = navigator.languages && navigator.languages.length
  */
 export const groupByKeyNames = {
   "articles": { 
-    id: "article",
     singular: "Article", 
     plural: "Articles" 
   },
-  "supplements.grantid__bmgf": { 
-    id: "grant",
+  "grant": { 
     singular: "Grant", 
     plural: "Grants" 
   },
-  "publisher": { 
-    id: "publisher",
-    singular: "Publisher", 
-    plural: "Publishers" 
-  },
-  "concepts.display_name": { 
-    id: "concept",
-    singular: "Concept", 
-    plural: "Concepts" 
-  },
-  "oa_status": { 
-    id: "oa_status",
-    singular: "Open Access status", 
-    plural: "Open Access statuses" 
-  },
-  "supplements.program__bmgf": { 
-    id: "program",
-    singular: "Program", 
-    plural: "Programs" 
-  },
-  "authorships.institutions.display_name": { 
-    id: "institution",
-    singular: "Institution", 
-    plural: "Institutions" 
-  },
-  "authorships.institutions.country_code": { 
-    id: "country",
-    singular: "Country", 
-    plural: "Countries" 
-  },
-  "journal": { 
-    id: "journal",
-    singular: "Journal", 
-    plural: "Journals" 
-  },
-  "funder.name": { 
-    id: "funder",
-    singular: "Co-funder", 
-    plural: "Co-funders" 
-  },
-  "publisher_license": { 
-    id: "publisher_license",
-    singular: "Publisher license", 
-    plural: "Publisher licenses" 
-  },
-  "authorships.author.orcid": { 
-    id: "author",
+  "author": { 
     singular: "Author", 
     plural: "Authors" 
   }
@@ -106,7 +58,6 @@ export const groupByHeaderNames = {
   "has_grantid": { pretty: "With grant ID", key: "doc_count" }
 }
 // Example usage:
-// console.log(groupByHeaderNames["is_oa"]);  // Outputs: "Open Access articles"
 // console.log(groupByHeaderNames["is_oa"].pretty);  // Outputs: "Open Access articles"
 // console.log(groupByHeaderNames["is_oa"].key);  // Outputs: "doc_count"
 

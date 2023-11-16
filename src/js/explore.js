@@ -7,6 +7,44 @@ import { createGroupByBtn } from './components.js';
 import { groupByKeyNames, groupByHeaderNames, dataTableClasses } from './constants.js';
 
 /**
+ * Makes an API call and returns the response data for the Explore section
+ * @returns {Promise<Array>} A promise that resolves to an array of hits from the API response.
+ */
+async function fetchExploreData() {
+  return axios.get(`https://bg.${apiEndpoint}.oa.works/report/orgs?q=${org}&include=explore`)
+    .then(({ data }) => data?.hits?.hits)
+    .catch(error => {
+      console.error("Error fetching data:", error.message);
+      return null; // Return null or an appropriate value in case of an error
+    });
+}
+
+/**
+ * Processes "Explore" items from the API response.
+ *
+ * @param {Array} hits - The array of hits from the API response.
+ * @returns {Array<Object>} An array of objects where each object represents an "explore" item with its associated keys and values.
+ */
+function processExploreItems(hits) {
+  const exploreObjects = [];
+
+  hits.forEach(({ _source }) => {
+    _source?.explore?.forEach(exploreItem => {
+      const exploreObject = {};
+
+      for (const key in exploreItem) {
+        if (exploreItem.hasOwnProperty(key)) {
+          exploreObject[key] = exploreItem[key];
+        }
+      }
+      exploreObjects.push(exploreObject);
+    });
+  });
+
+  return exploreObjects;
+}
+
+/**
  * Appends "group by" buttons specific to the data exploration section to a specified container. 
  * Each button is created based on the keys in the provided groupByKeyNames object.
  * 
@@ -14,10 +52,20 @@ import { groupByKeyNames, groupByHeaderNames, dataTableClasses } from './constan
  * @param {Object} groupByKeyNames - The mapping object containing key names and display names for group by types in the data exploration section.
  */
 export function appendDataExploreButtonsToContainer(container, groupByKeyNames) {
-  for (const key in groupByKeyNames) {
-    const button = createGroupByBtn(key, groupByKeyNames); // Ensure createDataExploreGroupByBtn is either imported or defined in the same file
-    container.appendChild(button);
-  }
+  fetchExploreData().then(hits => {
+    if (hits) {
+      const exploreObjects = processExploreItems(hits);
+
+      exploreObjects.forEach(exploreObject => {
+        if (exploreObject.id) {
+          const button = createGroupByBtn(exploreObject.id, groupByKeyNames);
+          container.appendChild(button); // Add button to the container
+        }
+      });
+    } else {
+      console.log("No data explore IDs found in the response");
+    }
+  });
 }
 
 /**
@@ -128,7 +176,6 @@ export function appendDataExploreRowToFragment(data, fragment, groupByKeyName, d
         const cellContent = displayMode === "raw" 
                             ? bucketValue 
                             : formatDataExploreValueBasedOnKey(headerKey, bucketValue, articlesPublishedValue) || "0";
-
         const cell = createDataExploreCell(cellType, className, cellContent);
         row.appendChild(cell);
         columnCounter++;
