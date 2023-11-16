@@ -13,24 +13,47 @@ export const userLocale = navigator.languages && navigator.languages.length
                         ? navigator.languages[0] 
                         : navigator.language;
 
+
+/**
+ * Mapping of explore item IDs to their display and tooltip information.
+ * @type {Object.<string, {singular: string, plural: string, tooltip: string}>}
+ */
+export const exploreItem = {
+  "articles": {
+    singular: "Article",
+    plural: "Articles",
+    tooltip: "Explore various articles"
+  },
+  "grant": {
+    singular: "Grant",
+    plural: "Grants",
+    tooltip: "View grant-related data"
+  },
+  "author": {
+    singular: "Author",
+    plural: "Authors",
+    tooltip: "Discover information about authors"
+  }
+};
+
 /**
  * Maps "group by" keys to human-readable names for various data categories.
  * @type {{[key: string]: { id: string, singular: string, plural: string }}}
  */
-export const groupByKeyNames = {
-  "articles": { 
-    singular: "Article", 
-    plural: "Articles" 
-  },
-  "grant": { 
-    singular: "Grant", 
-    plural: "Grants" 
-  },
-  "author": { 
-    singular: "Author", 
-    plural: "Authors" 
-  }
-};
+// export const groupByKeyNames = {
+//   "articles": { 
+//     singular: "Article", 
+//     plural: "Articles" 
+//   },
+//   "grant": { 
+//     singular: "Grant", 
+//     plural: "Grants" 
+//   },
+//   "author": { 
+//     singular: "Author", 
+//     plural: "Authors" 
+//   }
+// };
 // Example usage:
 // console.log(groupByKeyNames["supplements.grantid__bmgf"].id);  // Outputs: "grant"
 // console.log(groupByKeyNames["supplements.grantid__bmgf"].singular);  // Outputs: "Grant"

@@ -1,7 +1,7 @@
 /* Display publisher list from api-requests.js  */
 
 // Fetch data function using Axios
-async function fetchData(postData, listId) {
+async function fetchPostData(postData, listId) {
   try {
     const response = await axios.post('https://bg.api.oa.works/report/works', postData);
     displayData(response.data, listId);
@@ -25,7 +25,7 @@ function displayData(data, listId) {
 }
 
 // Allow any input from user for testing: 
-function fetchDataForForm(formId, orgSelectId, groupbySelectId, startYearInputId, endYearInputId, codeId, listId) {
+function fetchPostDataForForm(formId, orgSelectId, groupbySelectId, startYearInputId, endYearInputId, codeId, listId) {
   const form = document.getElementById(formId);
   const orgSelect = document.getElementById(orgSelectId);
   const groupbySelect = document.getElementById(groupbySelectId);
@@ -45,7 +45,7 @@ function fetchDataForForm(formId, orgSelectId, groupbySelectId, startYearInputId
     const endYearValue = endYearInput.value || 2023;
 
     const postData = createPostData(org, groupByValue, startYearValue, endYearValue);
-    fetchData(postData, listId);
+    fetchPostData(postData, listId);
 
     // Update <code> snippet 
     let currentContent = codeElement.textContent;
@@ -64,5 +64,5 @@ function fetchDataForForm(formId, orgSelectId, groupbySelectId, startYearInputId
 }
 
 // Setup event listeners for both forms
-fetchDataForForm('custom-api-form-1', 'org-select-1', 'groupby-select-1', 'start-year-input-1', 'end-year-input-1', 'code-1', 'any-list-1');
-fetchDataForForm('custom-api-form-2', 'org-select-2', 'groupby-select-2', 'start-year-input-2', 'end-year-input-2', 'code-2', 'any-list-2');
+fetchPostDataForForm('custom-api-form-1', 'org-select-1', 'groupby-select-1', 'start-year-input-1', 'end-year-input-1', 'code-1', 'any-list-1');
+fetchPostDataForForm('custom-api-form-2', 'org-select-2', 'groupby-select-2', 'start-year-input-2', 'end-year-input-2', 'code-2', 'any-list-2');

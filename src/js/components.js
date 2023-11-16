@@ -2,6 +2,23 @@
 // UI Components
 // =============
 
+import { exploreItem } from "./constants.js";
+
+/**
+ * Creates a button element for an explore item.
+ *
+ * @param {string} id - The ID of the explore item.
+ * @returns {HTMLButtonElement} The created button element.
+ */
+export function createButton(id) {
+  const button = document.createElement("button");
+  button.className = "items-center inline-flex p-2 px-4 mr-4 mt-4 px-3 rounded-full bg-carnation-100 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500";
+  button.innerHTML = `<span>${exploreItem[id]?.plural || id}</span>`;
+  button.setAttribute("aria-label", exploreItem[id]?.tooltip || "No tooltip available");
+  // onclick behaviour here
+  return button;
+}
+
 /**
  * Creates a button for each "group by" type in the data explore section.
  * 

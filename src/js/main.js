@@ -1,7 +1,7 @@
 import { makeDateReadable, changeDays, formatDateToISO, createDate, replaceDateRange, getDataExploreKeyFromButtonId, replaceText } from './utils.js';
-import { groupByKeyNames } from './constants.js';
-import { toggleDataExploreActiveButton, appendDataExploreButtonsToContainer, enableDataExploreRowHighlighting, enableDataExploreTableScroll, updateDataExploreTableHeaders, updateDataExploreTableBody, toggleDataExploreDisplay } from './explore.js';
+// import { toggleDataExploreActiveButton, appendDataExploreButtonsToContainer, enableDataExploreRowHighlighting, enableDataExploreTableScroll, updateDataExploreTableHeaders, updateDataExploreTableBody, toggleDataExploreDisplay } from './data-explore.js';
 import { oareport } from './oareport.js';
+import { fetchAndProcessExploreData, addButtonsToDOM } from './explore.js';
 
 // Get year button nav elements
 const yearButtons = document.querySelectorAll(".js_year_select");
@@ -105,12 +105,12 @@ function bindYearButton(button, startDate, endDate, reportText) {
     oareport(org);
 
     // Attempt to refresh the data table using the button's ID
-    const key = getDataExploreKeyFromButtonId(button.id, groupByKeyNames);
-    if (key) {
-      updateDataExploreTableHeaders(key);
-      updateDataExploreTableBody(key);
-      toggleDataExploreDisplay(key);
-    }
+    // const key = getDataExploreKeyFromButtonId(button.id, groupByKeyNames);
+    // if (key) {
+    //   updateDataExploreTableHeaders(key);
+    //   updateDataExploreTableBody(key);
+    //   toggleDataExploreDisplay(key);
+    // }
   });
 }
 
@@ -126,8 +126,6 @@ bindYearButton(allTimeBtn, new Date(1980, 0, 1), currentDate, "All time");
  */
 function updateYearButtonStyling(event) {
   event.preventDefault();
-
-  document.getElementById("export_table").classList.add("hidden");
 
   yearButtons.forEach((button) => {
     button.classList.remove("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
@@ -193,45 +191,5 @@ strategyTabBtns.forEach((tabBtn) => {
 // Generate the data table — main event listener
 document.addEventListener("DOMContentLoaded", function() {
   oareport(org);
-
-  if (document.getElementById("explore")) { 
-    const groupbyBtns = document.getElementById("explore_buttons");
-    appendDataExploreButtonsToContainer(groupbyBtns, groupByKeyNames);
-    setupDataExploreButtonListeners(groupbyBtns, groupByKeyNames);
-  }
+  fetchAndProcessExploreData(org, addButtonsToDOM);
 });
-
-/**
- * Sets up event listeners for buttons in the data exploration section.
- * This includes initializing row highlighting, table scrolling, and handling button click events.
- * 
- * @param {HTMLElement} container - The container element holding the buttons.
- * @param {Object} groupByKeyNames - The mapping object containing key names and display names for group by types.
- */
-export function setupDataExploreButtonListeners(container, groupByKeyNames) {
-  const exportTable = document.getElementById("export_table");
-
-  enableDataExploreRowHighlighting();
-  enableDataExploreTableScroll();
-
-  container.addEventListener("click", function(event) {
-    if (event.target.closest("button")) {
-      // Clear any old state/data here
-      const clickedButton = event.target.closest("button");
-      toggleDataExploreActiveButton(clickedButton, container);
-      exportTable.classList.remove("hidden");
-
-      // Call the table display functions using the id of the clicked button
-      const key = getDataExploreKeyFromButtonId(clickedButton.id, groupByKeyNames);
-
-
-      if (key) {
-        // updateDataExploreTableHeaders(key);
-        updateDataExploreTableBody(key);
-
-        // Reset and reinitialize the toggle functionality
-        toggleDataExploreDisplay(key);
-      }
-    }
-  });
-}

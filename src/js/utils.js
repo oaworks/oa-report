@@ -5,19 +5,29 @@
 import { readableDateOptions, userLocale } from './constants.js';
 
 /**
- * Fetches data from the OA Works API using a POST request.
+ * Fetches data from the OA Works API using Axios with a POST request.
  * 
  * @param {Object} postData - The data to be sent in the POST request.
  * @returns {Object|null} The response data from the API, or null if an error occurs.
  */
-export async function fetchData(postData) {
+export async function fetchPostData(postData) {
   try {
     const response = await axios.post(`https://bg.${apiEndpoint}.oa.works/report/works`, postData);
     return response.data; 
   } catch (error) {
-    console.error("There was a problem with the request: ", error.message);
+    console.error("There was a problem with the POST request: ", error.message);
     return null; 
   }
+}
+
+/**
+ * Fetches JSON data from the given URL using Axios with a GET request.
+ *
+ * @param {string} url - The URL to fetch data from.
+ * @returns {Promise<Object>} A promise that resolves to the JSON data.
+ */
+export async function fetchGetData(url) {
+  return axios.get(url).then(response => response.data);
 }
 
 // Define external variables used for managing the date range and yearly navigation
