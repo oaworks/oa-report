@@ -1,48 +1,7 @@
 // =============
+// components.js
 // UI Components
 // =============
-
-import { exploreItem } from "./constants.js";
-
-/**
- * Creates a button element for an explore item.
- *
- * @param {string} id - The ID of the explore item.
- * @returns {HTMLButtonElement} The created button element.
- */
-export function createButton(id) {
-  const button = document.createElement("button");
-  button.className = "items-center inline-flex p-2 px-4 mr-4 mt-4 px-3 rounded-full bg-carnation-100 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500";
-  button.innerHTML = `<span>${exploreItem[id]?.plural || id}</span>`;
-  button.setAttribute("aria-label", exploreItem[id]?.tooltip || "No tooltip available");
-  // onclick behaviour here
-  return button;
-}
-
-/**
- * Creates a button for each "group by" type in the data explore section.
- * 
- * @param {string} key - The key used to identify the group by type.
- * @param {Object} groupByKeyNames - The mapping object containing key names and display names for group by types.
- * @returns {HTMLButtonElement} The button element configured for the specified group by type.
- */
-export function createGroupByBtn(key, groupByKeyNames) {
-  const button = document.createElement("button");
-  button.className = "items-center inline-flex p-2 px-4 mr-4 mt-4 px-3 rounded-full bg-carnation-100 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500";
-  button.id = key + "_button";
-  
-  const groupbyBtn = document.createElement("span");
-  groupbyBtn.textContent = groupByKeyNames[key].plural;
-  button.appendChild(groupbyBtn);
-
-  // TODO: Get total numbers here 
-  // const nbRecords = document.createElement("span");
-  // nbRecords.className = "bg-neutral-800 text-white ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block";
-  // nbRecords.textContent = "999";
-  // button.appendChild(nbRecords);
-  
-  return button;
-}
 
 /**
  * Class representing a modal window.

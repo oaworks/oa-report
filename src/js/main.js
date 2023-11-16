@@ -103,14 +103,6 @@ function bindYearButton(button, startDate, endDate, reportText) {
     reportYear.textContent = reportText || startDate.getFullYear();
     if (aggYear) replaceText("agg-year", reportText || startDate.getFullYear());
     oareport(org);
-
-    // Attempt to refresh the data table using the button's ID
-    // const key = getDataExploreKeyFromButtonId(button.id, groupByKeyNames);
-    // if (key) {
-    //   updateDataExploreTableHeaders(key);
-    //   updateDataExploreTableBody(key);
-    //   toggleDataExploreDisplay(key);
-    // }
   });
 }
 
