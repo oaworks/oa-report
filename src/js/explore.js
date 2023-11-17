@@ -14,7 +14,7 @@ import { exploreItem } from "./constants.js";
 export function addButtonsToDOM(exploreData) {
   const exploreButtons = document.getElementById('explore_buttons');
   exploreData.forEach(item => {
-    const button = createButton(item.id, item.term); // Pass term to createButton
+    const button = createExploreButton(item.id, item.term); // Pass term to button
     exploreButtons.appendChild(button);
   });
 }
@@ -41,7 +41,7 @@ export function fetchAndProcessExploreData(org, callback) {
  * @param {string} term - The term associated with the explore item.
  * @returns {HTMLButtonElement} The created button element.
  */
-export function createButton(id, term) {
+export function createExploreButton(id, term) {
   const buttonId = `explore_${id}_button`;
   const button = document.createElement("button");
   button.id = buttonId;
@@ -85,7 +85,7 @@ export function updateButtonStylesAndTable(buttonId) {
   exportTable.classList.remove('hidden');
 
   // Update table header based on the button clicked
-  updateTableAndHeader(buttonId.split('_')[1]);
+  updateTableContainer(buttonId.split('_')[1]);
 }
 
 /**
@@ -93,22 +93,11 @@ export function updateButtonStylesAndTable(buttonId) {
  *
  * @param {string} selectedId - The ID of the selected explore item.
  */
-function updateTableAndHeader(selectedId) {
+function updateTableContainer(selectedId) {
   // Update the header with .plural version of the ID
   const header = document.querySelector(".agg-type");
   header.textContent = exploreItem[selectedId]?.plural || selectedId;
 
   // Fetch and update table content
   updateTableContent(selectedId);
-}
-
-/**
- * Fetches data and updates the content of the table based on the selected explore item.
- *
- * @param {string} selectedId - The ID of the selected explore item.
- */
-function updateTableContent(selectedId) {
-  // Implementation depends on how data is fetched and structured
-  // fetchDataForSelectedId(selectedId) needs to be defined
-  // Populate table rows based on fetched data
 }

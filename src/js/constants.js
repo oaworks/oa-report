@@ -33,6 +33,11 @@ export const exploreItem = {
     singular: "Author",
     plural: "Authors",
     tooltip: "Discover information about authors"
+  },
+  "year": {
+    singular: "Year",
+    plural: "Years",
+    tooltip: "Discover information about years"
   }
 };
 
