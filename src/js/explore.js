@@ -49,14 +49,16 @@ export function createExploreButton(id, term) {
   button.innerHTML = `<span>${exploreItem[id]?.plural || id}</span>`;
   button.setAttribute("aria-label", exploreItem[id]?.tooltip || "No tooltip available");
 
+  // Add event listener to fetch data and update table on click
   button.addEventListener("click", async function() {
     updateButtonStylesAndTable(buttonId);
     updateTableContainer(id);
 
     // Fetch data and log it
     const postData = createPostData(orgName, term, "2023", "2023"); // Static years for now
+    console.log(`orgName: ${orgName}, term: ${term}`)
     const responseData = await fetchPostData(postData);
-    console.log(responseData); // Log the data
+    console.log(responseData.aggregations); // Log the data
   });
 
   return button;

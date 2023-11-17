@@ -45,6 +45,7 @@ function fetchPostDataForForm(formId, orgSelectId, groupbySelectId, startYearInp
     const endYearValue = endYearInput.value || 2023;
 
     const postData = createPostData(org, groupByValue, startYearValue, endYearValue);
+    console.log(`org: ${org}, groupByValue: ${groupByValue}, startYearValue: ${startYearValue}, endYearValue: ${endYearValue}`);
     fetchPostData(postData, listId);
 
     // Update <code> snippet 
