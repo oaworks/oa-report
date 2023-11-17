@@ -51,6 +51,7 @@ export function createExploreButton(id, term) {
 
   button.addEventListener("click", async function() {
     updateButtonStylesAndTable(buttonId);
+    updateTableContainer(id);
 
     // Fetch data and log it
     const postData = createPostData(orgName, term, "2023", "2023"); // Static years for now
@@ -80,12 +81,6 @@ export function updateButtonStylesAndTable(buttonId) {
     selectedButton.classList.add("bg-carnation-500");
   }
 
-  // Remove 'hidden' class to show the table
-  const exportTable = document.getElementById('export_table');
-  exportTable.classList.remove('hidden');
-
-  // Update table header based on the button clicked
-  updateTableContainer(buttonId.split('_')[1]);
 }
 
 /**
@@ -98,6 +93,10 @@ function updateTableContainer(selectedId) {
   const header = document.querySelector(".agg-type");
   header.textContent = exploreItem[selectedId]?.plural || selectedId;
 
+  // Remove 'hidden' class to show the table
+  const exportTable = document.getElementById('export_table');
+  exportTable.classList.remove('hidden');
+
   // Fetch and update table content
-  updateTableContent(selectedId);
+  // updateTableContent(selectedId);
 }
