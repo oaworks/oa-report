@@ -56,9 +56,9 @@ export function createExploreButton(id, term) {
 
     // Fetch data and log it
     const postData = createPostData(orgName, term, "2023", "2023"); // Static years for now
-    console.log(`orgName: ${orgName}, term: ${term}`)
+    console.log(`orgName: ${orgName}, term: ${term}, startYear: 2023, endYear: 2023`)
     const responseData = await fetchPostData(postData);
-    console.log(responseData.aggregations); // Log the data
+    console.log(responseData.aggregations.key.buckets); // Log the data
   });
 
   return button;
