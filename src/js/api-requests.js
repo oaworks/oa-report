@@ -1,5 +1,5 @@
 // Dynamically configure POST data 
-function createPostData(orgName, term, startYear, endYear, size = 20) {
+function createPostData(orgName, term, startYear, endYear, size = 20, order = "count") {
   return {
     "query": {
       "bool": {
@@ -56,7 +56,7 @@ function createPostData(orgName, term, startYear, endYear, size = 20) {
           "field": `${term}.keyword`,
           "size": size,
           "order": {
-            "_key": "desc"
+            [`_${order}`]: "desc"
           }
         },
         "aggs": {
