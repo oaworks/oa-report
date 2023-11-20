@@ -50,14 +50,24 @@ export function createExploreButton(id, term) {
   button.setAttribute("aria-label", exploreItem[id]?.tooltip || "No tooltip available");
 
   // Add event listener to fetch data and update table on click
+  // button.addEventListener("click", async function() {
+  //   updateButtonStylesAndTable(buttonId);
+  
+  //   const postData = createPostData(orgName, term, "2023", "2023"); // Static years for now
+  //   const responseData = await fetchPostData(postData);
+  //   const records = responseData.aggregations.key.buckets
+    
+  //   console.log(records);
+  //   updateTableContainer(id, records);
+  // });
+
   button.addEventListener("click", async function() {
     updateButtonStylesAndTable(buttonId);
   
     const postData = createPostData(orgName, term, "2023", "2023"); // Static years for now
     const responseData = await fetchPostData(postData);
-    const records = responseData.aggregations.key.buckets
-    
-    console.log(records);
+    const records = responseData.aggregations.key.buckets;
+  
     updateTableContainer(id, records);
   });
 
@@ -103,7 +113,8 @@ function updateTableContainer(selectedId, data) {
   enableExploreRowHighlighting();
   enableExploreTableScroll();
 
-  populateTable(data, 'export_table_body'); // Ensure this ID matches your table body ID
+  // Clear existing data and populate the table with new data
+  populateTable(data, 'export_table_body');
 }
 
 /**
@@ -165,18 +176,18 @@ function createTableRow(data) {
  * @param {string} tableId - The ID of the table to populate.
  */
 function populateTable(data, tableId) {
-  const table = document.getElementById(tableId);
-  if (!table) return;
+  const tableBody = document.getElementById(tableId);
+  if (!tableBody) return;
 
-  // Clear existing table rows, except for the header row
-  while (table.rows.length > 1) {
-    table.deleteRow(1);
+  // Clear existing table rows
+  while (tableBody.firstChild) {
+    tableBody.removeChild(tableBody.firstChild);
   }
 
   // Add new rows from data
   data.forEach(dataObject => {
     const row = createTableRow(dataObject);
-    table.appendChild(row);
+    tableBody.appendChild(row);
   });
 }
 
