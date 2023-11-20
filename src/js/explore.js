@@ -4,7 +4,7 @@
 // =================================================
 
 import { fetchGetData, fetchPostData } from "./utils.js";
-import { exploreItem } from "./constants.js";
+import { exploreItem, dataTableClasses } from "./constants.js";
 
 /**
  * Adds generated buttons to the DOM based on the explore data.
@@ -52,13 +52,13 @@ export function createExploreButton(id, term) {
   // Add event listener to fetch data and update table on click
   button.addEventListener("click", async function() {
     updateButtonStylesAndTable(buttonId);
-    updateTableContainer(id);
-
-    // Fetch data and log it
+  
     const postData = createPostData(orgName, term, "2023", "2023"); // Static years for now
-    console.log(`orgName: ${orgName}, term: ${term}, startYear: 2023, endYear: 2023`)
     const responseData = await fetchPostData(postData);
-    console.log(responseData.aggregations.key.buckets); // Log the data
+    const records = responseData.aggregations.key.buckets
+    
+    console.log(records);
+    updateTableContainer(id, records);
   });
 
   return button;
@@ -82,15 +82,15 @@ export function updateButtonStylesAndTable(buttonId) {
     selectedButton.classList.remove("bg-carnation-100");
     selectedButton.classList.add("bg-carnation-500");
   }
-
 }
 
 /**
  * Updates the table header and fetches data to populate the table.
  *
  * @param {string} selectedId - The ID of the selected explore item.
+ * @param {Array<Object>} data - The data array to populate the table.
  */
-function updateTableContainer(selectedId) {
+function updateTableContainer(selectedId, data) {
   // Update the header with .plural version of the ID
   const header = document.querySelector(".agg-type");
   header.textContent = exploreItem[selectedId]?.plural || selectedId;
@@ -103,8 +103,81 @@ function updateTableContainer(selectedId) {
   enableExploreRowHighlighting();
   enableExploreTableScroll();
 
-  // Fetch and update table content
-  // updateTableContent(selectedId);
+  populateTable(data, 'export_table_body'); // Ensure this ID matches your table body ID
+}
+
+/**
+ * Creates a table cell element with the given content and CSS class.
+ * 
+ * @param {string} content - The content to be placed inside the cell.
+ * @param {string} cssClass - The CSS class to apply to the cell.
+ * @param {boolean} isHeader - Indicates if the cell is a header cell (th) or a regular cell (td).
+ * @returns {HTMLElement} The created table cell element.
+ */
+function createTableCell(content, cssClass, isHeader = false) {
+  const cell = document.createElement(isHeader ? 'th' : 'td');
+  cell.className = cssClass;
+  cell.textContent = content;
+  return cell;
+}
+
+/**
+ * Generates a table row from a data object.
+ * 
+ * @param {Object} data - The data object to create the table row for.
+ * @returns {HTMLTableRowElement} The created table row element.
+ */
+function createTableRow(data) {
+  const row = document.createElement('tr');
+
+  // Create and append the first column (key)
+  row.appendChild(createTableCell(data.key, dataTableClasses.firstCol, true));
+
+  // Create and append the second column (doc_count)
+  row.appendChild(createTableCell(data.doc_count, dataTableClasses.secondCol, true));
+
+  // Iterate over other properties in data and create cells
+  Object.keys(data).forEach(key => {
+    if (key !== 'key' && key !== 'doc_count') {
+      let content = '';
+      if (typeof data[key] === 'object' && data[key].value !== undefined) {
+        content = data[key].value;
+        if (key.includes('percentage')) {
+          content += '%'; // Append '%' for percentage values
+        } else if (key.includes('apcs_paid')) {
+          content += `US$${parseFloat(content).toFixed(2)}`;
+        }
+      } else if (typeof data[key] === 'object') {
+        content = data[key].doc_count; // Use doc_count for nested objects
+      }
+
+      row.appendChild(createTableCell(content, dataTableClasses.otherCols));
+    }
+  });
+
+  return row;
+}
+
+/**
+ * Populates a table with data.
+ * 
+ * @param {Array<Object>} data - Array of data objects to populate the table with.
+ * @param {string} tableId - The ID of the table to populate.
+ */
+function populateTable(data, tableId) {
+  const table = document.getElementById(tableId);
+  if (!table) return;
+
+  // Clear existing table rows, except for the header row
+  while (table.rows.length > 1) {
+    table.deleteRow(1);
+  }
+
+  // Add new rows from data
+  data.forEach(dataObject => {
+    const row = createTableRow(dataObject);
+    table.appendChild(row);
+  });
 }
 
 /**
