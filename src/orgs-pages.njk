@@ -417,6 +417,9 @@ permalink: "{{ org._source.objectID | slug }}/"
           </div>          
         </div>
         <div class="relative">
+          <div id="loading-indicator" class="hidden flex">
+            <div class="loader ease-linear rounded-full border-8 border-t-8 h-12 w-12 absolute mx-auto inset-x-0 z-50 bg-opacity-50 justify-center items-center"></div>
+          </div>
           <button
             id="js_scroll_table_btn"
             class="p-2 bg-carnation-100 text-neutral-900 text-2xl focus:outline-none focus:ring focus:ring-carnation-500 hover:bg-carnation-300 transition duration-300 ml-4 absolute right-3 top-1/2 transform -translate-y-1/2"

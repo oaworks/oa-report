@@ -5,6 +5,7 @@
 
 import { fetchGetData, fetchPostData } from "./utils.js";
 import { exploreItem, dataTableClasses } from "./constants.js";
+import { toggleLoadingIndicator } from "./components.js";
 
 /**
  * Adds generated buttons to the DOM based on the explore data.
@@ -62,6 +63,7 @@ export function createExploreButton(id, term) {
   // });
 
   button.addEventListener("click", async function() {
+    toggleLoadingIndicator(true); // Show loading indicator
     updateButtonStylesAndTable(buttonId);
   
     const postData = createPostData(orgName, term, "2023", "2023"); // Static years for now
@@ -69,6 +71,7 @@ export function createExploreButton(id, term) {
     const records = responseData.aggregations.key.buckets;
   
     updateTableContainer(id, records);
+    toggleLoadingIndicator(false); // Hide loading indicator after data is loaded
   });
 
   return button;

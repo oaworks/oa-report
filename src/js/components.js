@@ -4,6 +4,18 @@
 // =============
 
 /**
+ * Toggles the visibility of the loading indicator.
+ *
+ * @param {boolean} show - Determines whether to show or hide the loading indicator.
+ */
+export function toggleLoadingIndicator(show) {
+  const loader = document.getElementById('loading-indicator');
+  if (loader) {
+    loader.className = show ? 'flex' : 'hidden';
+  }
+}
+
+/**
  * Class representing a modal window.
  * This class handles opening and closing of a modal, as well as setting its title and content.
  */

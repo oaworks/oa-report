@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Spinner/loader */
+@layer utilities {
+  .loader {
+    @apply animate-spin;
+    border-color: transparent;
+    border-top-color: white;
+  }
+}
+
 /* Texting highlighting in the style of a marker */
 .highlight {
   border-radius: 0.8em 0.3em;
