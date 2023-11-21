@@ -116,8 +116,10 @@ function updateTableContainer(selectedId, data) {
   enableExploreRowHighlighting();
   enableExploreTableScroll();
 
+  const headers = data.length > 0 ? Object.keys(data[0]) : [];
+
   // Populate table with data
-  populateTableHeader(data, 'export_table_head');
+  populateTableHeader(headers, 'export_table_head');
   populateTableBody(data, 'export_table_body');
 }
 
@@ -139,15 +141,14 @@ function createTableCell(content, cssClass, isHeader = false) {
 /**
  * Generates a table header row from the keys of a data object.
  * 
- * @param {Object} data - A sample data object to extract keys for header columns.
+ * @param {Object} headers - A sample data object to extract keys for header columns.
  * @returns {HTMLTableRowElement} The created header row element.
  */
-function createTableHeader(data) {
+function createTableHeader(headers) {
   const headerRow = document.createElement('tr');
-
-  // Use a counter to apply different classes for the first, second, and other columns
   let columnIndex = 0;
-  Object.keys(data).forEach(key => {
+
+  headers.forEach(key => {
     let cssClass;
     if (columnIndex === 0) {
       cssClass = dataTableHeaderClasses.firstHeaderCol;
@@ -207,10 +208,10 @@ function createTableBodyRow(data) {
  * The function clears any existing headers before appending the new ones. It assumes that the 
  * first object in the data array is representative of the structure for all objects in the array.
  * 
- * @param {Object[]} data - An array of data objects used to derive the header columns. Assumes all objects have the same structure.
- * @param {string} headerId - The ID of the table header element where the headers should be appended.
+ * @param {Object[]} headers - An array of data objects used to derive the header columns. Assumes all objects have the same structure.
+ * @param {string} tableHeaderId - The ID of the table header element where the headers should be appended.
  */
-function populateTableHeader(data, tableHeaderId) {
+function populateTableHeader(headers, tableHeaderId) {
   const tableHeader = document.getElementById(tableHeaderId);
   if (!tableHeader) return;
 
@@ -219,19 +220,18 @@ function populateTableHeader(data, tableHeaderId) {
     tableHeader.removeChild(tableHeader.firstChild);
   }
 
-  // Add new header row based on data keys
-  if (data.length > 0) {
-    const headerRow = createTableHeader(data[0]);
+  // Add new header row using the provided headers array
+  if (headers.length > 0) {
+    const headerRow = createTableHeader(headers);
     tableHeader.appendChild(headerRow);
   }
 }
-
 
 /**
  * Populates a table with data.
  * 
  * @param {Array<Object>} data - Array of data objects to populate the table with.
- * @param {string} tableId - The ID of the table to populate.
+ * @param {string} tableBodyId - The ID of the table to populate.
  */
 function populateTableBody(data, tableBodyId) {
   const tableBody = document.getElementById(tableBodyId);
