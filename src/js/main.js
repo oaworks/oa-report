@@ -1,8 +1,11 @@
+// =================================================
+// main.js
+// Main event listeners and functions
+// =================================================
+
 import { makeDateReadable, changeDays, formatDateToISO, createDate, replaceDateRange, getDataExploreKeyFromButtonId, replaceText } from './utils.js';
-// import { toggleDataExploreActiveButton, appendDataExploreButtonsToContainer, enableDataExploreRowHighlighting, enableDataExploreTableScroll, updateDataExploreTableHeaders, updateDataExploreTableBody, toggleDataExploreDisplay } from './data-explore.js';
-import { oareport } from './oareport.js';
-import { fetchAndProcessExploreData, addButtonsToDOM } from './explore.js';
-import { report } from './oareport.js';
+import { oareport, report } from './oareport.js';
+import { initDataExplore } from './explore.js';
 
 // Get year button nav elements
 const yearButtons = document.querySelectorAll(".js_year_select");
@@ -184,5 +187,5 @@ strategyTabBtns.forEach((tabBtn) => {
 // Generate the data table — main event listener
 document.addEventListener("DOMContentLoaded", function() {
   oareport(org);
-  fetchAndProcessExploreData(org, addButtonsToDOM);
+  initDataExplore(org);
 });

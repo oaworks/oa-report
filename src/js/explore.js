@@ -7,6 +7,26 @@ import { fetchGetData, fetchPostData, debounce } from "./utils.js";
 import { exploreItem, dataTableBodyClasses, dataTableHeaderClasses } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 
+// Cache for storing fetched data to reduce API calls
+const dataCache = {};
+
+/**
+ * Initializes the data explore section by fetching and adding buttons.
+ * @param {string} org - The organization identifier for the API query.
+ */
+export async function initDataExplore(org) {
+  try {
+    if (!dataCache[org]) {
+      const exploreData = await fetchGetData(`https://bg.${apiEndpoint}.oa.works/report/orgs?q=${org}&include=explore`);
+      dataCache[org] = exploreData.hits.hits[0]._source.explore;
+    }
+    addButtonsToDOM(dataCache[org]);
+  } catch (error) {
+    console.error('Error initializing data explore:', error);
+  }
+}
+
+
 /**
  * Adds generated buttons to the DOM based on the explore data.
  *
@@ -105,11 +125,9 @@ function updateTableContainer(selectedId, data) {
   enableExploreRowHighlighting();
   enableExploreTableScroll();
 
-  // Update table header
+  // Populate table with data
   populateTableHeader(data, 'export_table_head');
-
-  // Clear existing data and populate the table with new data
-  populateTable(data, 'export_table_body');
+  populateTableBody(data, 'export_table_body');
 }
 
 /**
@@ -224,7 +242,7 @@ function populateTableHeader(data, headerId) {
  * @param {Array<Object>} data - Array of data objects to populate the table with.
  * @param {string} tableId - The ID of the table to populate.
  */
-function populateTable(data, tableId) {
+function populateTableBody(data, tableId) {
   const tableBody = document.getElementById(tableId);
   if (!tableBody) return;
 
