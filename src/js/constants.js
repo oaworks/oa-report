@@ -13,9 +13,8 @@ export const userLocale = navigator.languages && navigator.languages.length
                         ? navigator.languages[0] 
                         : navigator.language;
 
-
 /**
- * Mapping of explore item IDs to their display and tooltip information.
+ * Mapping of explore item IDs to their display name and tooltip information.
  * @type {Object.<string, {singular: string, plural: string, tooltip: string}>}
  */
 export const exploreItem = {
@@ -38,31 +37,41 @@ export const exploreItem = {
     singular: "Year",
     plural: "Years",
     tooltip: "Discover information about years"
+  },
+  "journal": {
+    singular: "Journal",
+    plural: "Journals",
+    tooltip: "Discover information about journals"
+  },
+  "publisher": {
+    singular: "Publisher",
+    plural: "Publishers"
+  },
+  "oa_status": {
+    singular: "OA status",
+    plural: "OA statuses"
+  },
+  "author": {
+    singular: "Author",
+    plural: "Authors"
+  },
+  "subject": {
+    singular: "Subject",
+    plural: "Subjects"
+  },
+  "institution": {
+    singular: "Institution",
+    plural: "Institutions"
+  },
+  "country": {
+    singular: "Country",
+    plural: "Countries"
+  },
+  "co_funder": {
+    singular: "Co-funder",
+    plural: "Co-funders"
   }
 };
-
-/**
- * Maps "group by" keys to human-readable names for various data categories.
- * @type {{[key: string]: { id: string, singular: string, plural: string }}}
- */
-// export const groupByKeyNames = {
-//   "articles": { 
-//     singular: "Article", 
-//     plural: "Articles" 
-//   },
-//   "grant": { 
-//     singular: "Grant", 
-//     plural: "Grants" 
-//   },
-//   "author": { 
-//     singular: "Author", 
-//     plural: "Authors" 
-//   }
-// };
-// Example usage:
-// console.log(groupByKeyNames["supplements.grantid__bmgf"].id);  // Outputs: "grant"
-// console.log(groupByKeyNames["supplements.grantid__bmgf"].singular);  // Outputs: "Grant"
-// console.log(groupByKeyNames["supplements.grantid__bmgf"].plural);    // Outputs: "Grants"
 
 /**
  * Maps "group by" headers to human-readable names and corresponding keys.
