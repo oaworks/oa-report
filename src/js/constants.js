@@ -111,7 +111,7 @@ export const dataTableBodyClasses = {
  * Class names for table header columns in the data explore section.
  */
 export const dataTableHeaderClasses = {
-  firstHeaderCol: "border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate",
-  secondHeaderCol: "border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 w-32 truncate",
-  otherHeaderCols: "border-b border-neutral-500 p-2 w-32 truncate"
+  firstHeaderCol: "border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-32 md:w-60 align-bottom",
+  secondHeaderCol: "border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-700 p-2 w-24 md:w-32 align-bottom break-words",
+  otherHeaderCols: "border-b border-neutral-500 p-2 w-32 align-bottom break-words text-right"
 };

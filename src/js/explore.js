@@ -101,7 +101,7 @@ export function updateButtonStylesAndTable(buttonId) {
  * Updates the table header and fetches data to populate the table.
  *
  * @param {string} selectedId - The ID of the selected explore item.
- * @param {Array<Object>} data - The data array to populate the table.
+ * @param {Array<Object>} data - The data array to populate the table, with each object representing a row.
  */
 function updateTableContainer(selectedId, data) {
   // Update the header with .plural version of the ID
@@ -116,6 +116,7 @@ function updateTableContainer(selectedId, data) {
   enableExploreRowHighlighting();
   enableExploreTableScroll();
 
+  // Assuming the first object's keys represent the headers
   const headers = data.length > 0 ? Object.keys(data[0]) : [];
 
   // Populate table with data
