@@ -3,7 +3,7 @@
 // State & DOM manipulation specific to Data Explore
 // =================================================
 
-import { fetchGetData, fetchPostData } from "./utils.js";
+import { fetchGetData, fetchPostData, debounce } from "./utils.js";
 import { exploreItem, dataTableClasses } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 
@@ -62,7 +62,7 @@ export function createExploreButton(id, term) {
   //   updateTableContainer(id, records);
   // });
 
-  button.addEventListener("click", async function() {
+  button.addEventListener("click", debounce(async function() {
     toggleLoadingIndicator(true); // Show loading indicator
     updateButtonStylesAndTable(buttonId);
   
@@ -72,7 +72,7 @@ export function createExploreButton(id, term) {
   
     updateTableContainer(id, records);
     toggleLoadingIndicator(false); // Hide loading indicator after data is loaded
-  });
+  }, 500));
 
   return button;
 }

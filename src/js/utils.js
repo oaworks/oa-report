@@ -170,3 +170,23 @@ export function getDataExploreKeyFromButtonId(buttonId, groupByKeyNames) {
   }
   return null;
 }
+
+/**
+ * Delays invoking a function until after wait milliseconds have elapsed 
+ * since the last time the debounced function was invoked.
+ *
+ * @param {function} func - The function to debounce.
+ * @param {number} wait - The number of milliseconds to delay.
+ * @returns {function} The debounced function.
+ */
+export function debounce(func, wait) {
+  let timeout;
+  return function(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func.apply(this, args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
