@@ -12,8 +12,8 @@
 <article class="flex flex-col h-full bg-white" id="{{ params.id }}">
   {# Header #}
   {# TODO: uncomment when vis bar is enabled
-  <header class="p-3 md:h-28 overflow-hidden bg-carnation-100 text-neutral-900 flex flex-col justify-between hover:cursor-pointer"> #}
-  <header class="p-3 md:h-28 overflow-hidden bg-carnation-100 text-neutral-900 flex flex-col justify-between">
+  <header class="p-3 md:h-32 overflow-hidden bg-carnation-100 text-neutral-900 flex flex-col justify-between hover:cursor-pointer"> #}
+  <header class="p-3 md:h-32 overflow-hidden bg-carnation-100 text-neutral-900 flex flex-col justify-between">
     <div class="mb-3 -ml-1">
       {% icon_small params.icon %}
     </div>
@@ -32,7 +32,7 @@
     </p>
   </div>
   {# Footer #}
-  <footer class="p-3">
+  <footer class="p-3 md:h-16 flex flex-col justify-end">
     <p class="text-xs font-medium text-neutral-600">
       <span id="articles_{{ params.id }}">articles</span>
     </p>
