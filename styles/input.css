@@ -6,8 +6,6 @@
 @layer utilities {
   .loader {
     @apply animate-spin;
-    border-color: transparent;
-    border-top-color: white;
   }
 }
 
