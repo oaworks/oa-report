@@ -50,18 +50,6 @@ export function createExploreButton(id, term) {
   button.innerHTML = `<span>${exploreItem[id]?.plural || id}</span>`;
   button.setAttribute("aria-label", exploreItem[id]?.tooltip || "No tooltip available");
 
-  // Add event listener to fetch data and update table on click
-  // button.addEventListener("click", async function() {
-  //   updateButtonStylesAndTable(buttonId);
-  
-  //   const postData = createPostData(orgName, term, "2023", "2023"); // Static years for now
-  //   const responseData = await fetchPostData(postData);
-  //   const records = responseData.aggregations.key.buckets
-    
-  //   console.log(records);
-  //   updateTableContainer(id, records);
-  // });
-
   button.addEventListener("click", debounce(async function() {
     toggleLoadingIndicator(true); // Show loading indicator
     updateButtonStylesAndTable(buttonId);
@@ -71,6 +59,7 @@ export function createExploreButton(id, term) {
     const records = responseData.aggregations.key.buckets;
   
     updateTableContainer(id, records);
+    console.log(records);
     toggleLoadingIndicator(false); // Hide loading indicator after data is loaded
   }, 500));
 
@@ -165,10 +154,10 @@ function createTableRow(data) {
         content = data[key].doc_count; // Use doc_count for nested objects
       }
 
-      row.appendChild(createTableCell(content, dataTableClasses.otherCols));
+      row.appendChild(createTableCell(`${content} (${key})`, dataTableClasses.otherCols));
     }
   });
-
+  
   return row;
 }
 
