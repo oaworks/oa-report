@@ -157,7 +157,7 @@ export function oareport(org) {
     getInsight(
       "is_compliant",
       "is_covered_by_policy",
-      "articles covered",
+      "articles covered by policy",
       `<p class='mb-2'>The percentage of articles that are compliant with <a href='${response.data.hits.hits[0]._source.policy.url}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a>.</p> <p>This number is specific to your policy and your requirements.</p>`
     );
 
