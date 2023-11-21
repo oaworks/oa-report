@@ -4,7 +4,7 @@
 // =================================================
 
 import { fetchGetData, fetchPostData, debounce } from "./utils.js";
-import { exploreItem, dataTableClasses } from "./constants.js";
+import { exploreItem, dataTableBodyClasses, dataTableHeaderClasses } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 
 /**
@@ -105,6 +105,9 @@ function updateTableContainer(selectedId, data) {
   enableExploreRowHighlighting();
   enableExploreTableScroll();
 
+  // Update table header
+  populateTableHeader(data, 'export_table_head');
+
   // Clear existing data and populate the table with new data
   populateTable(data, 'export_table_body');
 }
@@ -125,19 +128,48 @@ function createTableCell(content, cssClass, isHeader = false) {
 }
 
 /**
+ * Generates a table header row from the keys of a data object.
+ * 
+ * @param {Object} data - A sample data object to extract keys for header columns.
+ * @returns {HTMLTableRowElement} The created header row element.
+ */
+function createTableHeader(data) {
+  const headerRow = document.createElement('tr');
+
+  // Use a counter to apply different classes for the first, second, and other columns
+  let columnIndex = 0;
+  Object.keys(data).forEach(key => {
+    let cssClass;
+    if (columnIndex === 0) {
+      cssClass = dataTableHeaderClasses.firstHeaderCol;
+    } else if (columnIndex === 1) {
+      cssClass = dataTableHeaderClasses.secondHeaderCol;
+    } else {
+      cssClass = dataTableHeaderClasses.otherHeaderCols;
+    }
+
+    const headerCell = createTableCell(key, cssClass, true);
+    headerRow.appendChild(headerCell);
+    columnIndex++;
+  });
+
+  return headerRow;
+}
+
+/**
  * Generates a table row from a data object.
  * 
  * @param {Object} data - The data object to create the table row for.
  * @returns {HTMLTableRowElement} The created table row element.
  */
-function createTableRow(data) {
+function createTableBodyRow(data) {
   const row = document.createElement('tr');
 
   // Create and append the first column (key)
-  row.appendChild(createTableCell(data.key, dataTableClasses.firstCol, true));
+  row.appendChild(createTableCell(data.key, dataTableBodyClasses.firstCol, true));
 
   // Create and append the second column (doc_count)
-  row.appendChild(createTableCell(data.doc_count, dataTableClasses.secondCol, true));
+  row.appendChild(createTableCell(data.doc_count, dataTableBodyClasses.secondCol, true));
 
   // Iterate over other properties in data and create cells
   Object.keys(data).forEach(key => {
@@ -154,12 +186,37 @@ function createTableRow(data) {
         content = data[key].doc_count; // Use doc_count for nested objects
       }
 
-      row.appendChild(createTableCell(`${content} (${key})`, dataTableClasses.otherCols));
+      row.appendChild(createTableCell(content, dataTableBodyClasses.otherCols));
     }
   });
   
   return row;
 }
+
+/**
+ * Populates the header of a table with column headers derived from the keys of a data object.
+ * The function clears any existing headers before appending the new ones. It assumes that the 
+ * first object in the data array is representative of the structure for all objects in the array.
+ * 
+ * @param {Object[]} data - An array of data objects used to derive the header columns. Assumes all objects have the same structure.
+ * @param {string} headerId - The ID of the table header element where the headers should be appended.
+ */
+function populateTableHeader(data, headerId) {
+  const tableHeader = document.getElementById(headerId);
+  if (!tableHeader) return;
+
+  // Clear existing header cells
+  while (tableHeader.firstChild) {
+    tableHeader.removeChild(tableHeader.firstChild);
+  }
+
+  // Add new header row based on data keys
+  if (data.length > 0) {
+    const headerRow = createTableHeader(data[0]);
+    tableHeader.appendChild(headerRow);
+  }
+}
+
 
 /**
  * Populates a table with data.
@@ -178,7 +235,7 @@ function populateTable(data, tableId) {
 
   // Add new rows from data
   data.forEach(dataObject => {
-    const row = createTableRow(dataObject);
+    const row = createTableBodyRow(dataObject);
     tableBody.appendChild(row);
   });
 }

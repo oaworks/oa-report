@@ -2,6 +2,7 @@ import { makeDateReadable, changeDays, formatDateToISO, createDate, replaceDateR
 // import { toggleDataExploreActiveButton, appendDataExploreButtonsToContainer, enableDataExploreRowHighlighting, enableDataExploreTableScroll, updateDataExploreTableHeaders, updateDataExploreTableBody, toggleDataExploreDisplay } from './data-explore.js';
 import { oareport } from './oareport.js';
 import { fetchAndProcessExploreData, addButtonsToDOM } from './explore.js';
+import { report } from './oareport.js';
 
 // Get year button nav elements
 const yearButtons = document.querySelectorAll(".js_year_select");

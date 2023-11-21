@@ -99,10 +99,19 @@ export const groupByHeaderNames = {
 // console.log(groupByHeaderNames["is_oa"].key);  // Outputs: "doc_count"
 
 /**
- * Class names for different table columns in the data explore section.
+ * Class names for table body columns in the data explore section.
  */
-export const dataTableClasses = {
+export const dataTableBodyClasses = {
   firstCol: "border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left",
   secondCol: "border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-700 p-2 text-left whitespace-nowrap truncate",
   otherCols: "border-b border-neutral-500 p-2 whitespace-nowrap truncate text-right hover:bg-neutral-600"
+};
+
+/**
+ * Class names for table header columns in the data explore section.
+ */
+export const dataTableHeaderClasses = {
+  firstHeaderCol: "border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-60 truncate",
+  secondHeaderCol: "border-b border-neutral-500 sticky left-60 bg-neutral-700 p-2 w-32 truncate",
+  otherHeaderCols: "border-b border-neutral-500 p-2 w-32 truncate"
 };
