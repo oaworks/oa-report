@@ -27,7 +27,7 @@ export function addButtonsToDOM(exploreData) {
  * @param {Function} callback - The callback function to process the data.
  */
 export function fetchAndProcessExploreData(org, callback) {
-  fetchGetData(`https://bg.beta.oa.works/report/orgs?q=${org}&include=explore`)
+  fetchGetData(`https://bg.${apiEndpoint}.oa.works/report/orgs?q=${org}&include=explore`)
     .then(data => {
       const exploreData = data.hits.hits[0]._source.explore;
       callback(exploreData);
