@@ -3,7 +3,7 @@
 // State & DOM manipulation specific to Data Explore
 // =================================================
 
-import { fetchGetData, fetchPostData, debounce } from "./utils.js";
+import { isCacheExpired, fetchGetData, fetchPostData, debounce } from "./utils.js";
 import { exploreItem, dataTableBodyClasses, dataTableHeaderClasses } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 
@@ -16,16 +16,22 @@ const dataCache = {};
  */
 export async function initDataExplore(org) {
   try {
-    if (!dataCache[org]) {
+    // Check if the data is in cache and hasn't expired
+    if (dataCache[org] && !isCacheExpired(dataCache[org].timestamp)) {
+      addButtonsToDOM(dataCache[org].data);
+    } else {
+      // Fetch new data and update cache
       const exploreData = await fetchGetData(`https://bg.${apiEndpoint}.oa.works/report/orgs?q=${org}&include=explore`);
-      dataCache[org] = exploreData.hits.hits[0]._source.explore;
+      dataCache[org] = {
+        data: exploreData.hits.hits[0]._source.explore,
+        timestamp: new Date().getTime() // Current timestamp in milliseconds
+      };
+      addButtonsToDOM(dataCache[org].data);
     }
-    addButtonsToDOM(dataCache[org]);
   } catch (error) {
     console.error('Error initializing data explore:', error);
   }
 }
-
 
 /**
  * Adds generated buttons to the DOM based on the explore data.

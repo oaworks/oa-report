@@ -6,6 +6,18 @@
 import { readableDateOptions, userLocale } from './constants.js';
 
 /**
+ * Checks if the cached data has expired.
+ * 
+ * @param {number} timestamp - The timestamp when the data was cached.
+ * @param {number} [expiryDuration=86400000] - Expiration duration in milliseconds (default 24 hours).
+ * @returns {boolean} True if the cache has expired, false otherwise.
+ */
+export function isCacheExpired(timestamp, expiryDuration = 86400000) { // 24 hours
+  const now = new Date().getTime();
+  return now - timestamp > expiryDuration;
+}
+
+/**
  * Fetches data from the OA Works API using Axios with a POST request.
  * 
  * @param {Object} postData - The data to be sent in the POST request.
