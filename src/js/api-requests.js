@@ -307,14 +307,6 @@ function createPostData(orgName, term, startYear, endYear, size = 20, order = "c
               "field": "supplements.apc_cost"
             }
           },
-          "average_apcs_paid_rounded": {
-            "bucket_script": {
-              "buckets_path": {
-                "averageValue": "average_apcs_paid_raw"
-              },
-              "script": "Math.round(params.averageValue * 100) / 100.0"
-            }
-          },
           "median_apcs_paid_raw": {
             "percentiles": {
               "field": "supplements.apc_cost",
