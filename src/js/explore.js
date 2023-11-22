@@ -21,7 +21,7 @@ export async function initDataExplore(org) {
       addButtonsToDOM(dataCache[org].data);
     } else {
       // Fetch new data and update cache
-      const exploreData = await fetchGetData(`https://bg.${apiEndpoint}.oa.works/report/orgs?q=${org}&include=explore`);
+      const exploreData = await fetchGetData(`https://${apiEndpoint}.oa.works/report/orgs?q=${org}&include=explore`);
       dataCache[org] = {
         data: exploreData.hits.hits[0]._source.explore,
         timestamp: new Date().getTime() // Current timestamp in milliseconds
