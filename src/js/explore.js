@@ -21,7 +21,7 @@ export async function initDataExplore(org) {
       addButtonsToDOM(dataCache[org].data);
     } else {
       // Fetch new data and update cache
-      const exploreData = await fetchGetData(`https://${apiEndpoint}.oa.works/report/orgs?q=${org}&include=explore`);
+      const exploreData = await fetchGetData(`https://${apiEndpoint}.oa.works/report/orgs?q=${org}&include=explore,analysis`);
       dataCache[org] = {
         data: exploreData.hits.hits[0]._source.explore,
         timestamp: new Date().getTime() // Current timestamp in milliseconds
@@ -50,7 +50,7 @@ export function addButtonsToDOM(exploreData) {
  * Creates a button element for an explore item.
  * 
  * @param {string} id - The ID of the explore item.
- * @param {string} term - The term associated with the explore item.
+ * @param {string} [term] - The term associated with the explore item. Optional.
  * @returns {HTMLButtonElement} The created button element.
  */
 export function createExploreButton(id, term) {
@@ -64,13 +64,21 @@ export function createExploreButton(id, term) {
   button.addEventListener("click", debounce(async function() {
     toggleLoadingIndicator(true); // Show loading indicator
     updateButtonStylesAndTable(buttonId);
-  
-    const postData = createPostData(orgName, term, "2023", "2023"); // Static years for now
-    const responseData = await fetchPostData(postData);
-    const records = responseData.aggregations.key.buckets;
-  
-    updateTableContainer(id, records);
-    console.log(records);
+
+    if (term) {
+      // Logic for aggregate-type objects like 'grant', 'publisher', etc.
+      const postData = createPostData(orgName, term, "2023", "2023"); // Static years for now
+      const responseData = await fetchPostData(postData);
+      const records = responseData.aggregations.key.buckets;
+
+      updateTableContainer(id, records);
+      console.log(records);
+    } else {
+      // Logic for individual article-based objects like 'articles'
+      const exploreData = dataCache[org].data;
+      console.log(exploreData)
+    }
+
     toggleLoadingIndicator(false); // Hide loading indicator after data is loaded
   }, 500));
 
