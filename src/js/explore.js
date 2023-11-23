@@ -78,48 +78,65 @@ export function createExploreButton(id, query = null, term = null, includes = nu
     updateButtonStylesAndTable(buttonId);
     
     if (term) {
-      // Logic for term-based objects like 'grant', 'publisher', 'author', etc.
-      const postData = createPostData(orgName, term, "2023", "2023"); // Static years for now
-      const responseData = await fetchPostData(postData);
-      const records = responseData.aggregations.key.buckets;
-
-      updateTableContainer(id, records);
-      console.log(typeof(records)); 
-      console.log(records);
+      await handleTermBasedButtonClick(id, term);
     } else if (includes) {
-      // Logic for individual article-based objects like 'articles'
-      // This is identified by the non-existence of the key 'term' in the object
-
-      const analysisResponse = await fetchGetData(`https://${apiEndpoint}.oa.works/report/orgs?q=${org}&include=analysis`);
-      const analysisData = analysisResponse.hits.hits[0]._source;
-
-      // Find the articles object in exploreData
-      const exploreData = dataCache[org].data;
-      const articlesObject = exploreData.find(item => item.id === id);
-  
-      if (articlesObject && analysisData) {
-        // TODO: work out how to include both is_paper and is_preprint. Using either OR or AND yields zero results. 
-        // const queryArray = articlesObject.query.split(',');
-        // const queryParts = queryArray.map(part => encodeURIComponent(getNestedProperty(analysisData, part))).join("%20OR%20"); 
-        const query = analysisData.analysis.is_paper.query;
-        console.log(query);
-        const size = 20;
-        const fullQueryUrl = `https://beta.oa.works/report/works/?q=(published_date:%3E2022-12-31%20AND%20published_date:%3C2023-11-23)%20AND%20(${query})&size=${size}&include=${includes}`;
-        const data = await fetchGetData(fullQueryUrl);
-        
-        if (data && data.hits && data.hits.hits) {
-          const records = data.hits.hits.map(hit => hit._source); // Only get the _source object from the hits array
-          console.log(records); 
-        }
-      } else {
-        console.log("No data not found.");
-      }
+      await handleArticleBasedButtonClick(id, includes);
     }
 
     toggleLoadingIndicator(false); // Hide loading indicator after data is loaded
   }, 500));
 
   return button;
+}
+
+/**
+ * Handles the click event for buttons associated with term-based explore items.
+ * It fetches data using a POST request and updates the table with the results.
+ * 
+ * @param {string} id - The ID of the explore item.
+ * @param {string} term - The term associated with the explore item, used in the data fetch.
+ */
+async function handleTermBasedButtonClick(id, term) {
+  const postData = createPostData(orgName, term, "2023", "2023");
+  const responseData = await fetchPostData(postData);
+  const records = responseData.aggregations.key.buckets;
+  updateTableContainer(id, records);
+  console.log(records);
+}
+
+
+/**
+ * Handles the click event for buttons associated with article-based explore items.
+ * It constructs a query URL using provided parameters, fetches data using a GET request,
+ * and updates the table with the results.
+ * 
+ * @param {string} id - The ID of the explore item.
+ * @param {string} includes - The 'includes' key associated with the explore item, used in data fetch.
+ */
+async function handleArticleBasedButtonClick(id, includes) {
+  const analysisResponse = await fetchGetData(`https://${apiEndpoint}.oa.works/report/orgs?q=${org}&include=analysis`);
+  const analysisData = analysisResponse.hits.hits[0]._source;
+
+  const exploreData = dataCache[org].data;
+  const articlesObject = exploreData.find(item => item.id === id);
+  
+  if (articlesObject && analysisData) {
+    // TODO: work out how to include both is_paper and is_preprint. Using either OR or AND yields zero results. 
+    // const queryArray = articlesObject.query.split(',');
+    // const queryParts = queryArray.map(part => encodeURIComponent(getNestedProperty(analysisData, part))).join("%20OR%20"); 
+    const query = analysisData.analysis.is_paper.query;
+    console.log(query);
+    const size = 20;
+    const fullQueryUrl = `https://beta.oa.works/report/works/?q=(published_date:%3E2022-12-31%20AND%20published_date:%3C2023-11-23)%20AND%20(${query})&size=${size}&include=${includes}`;
+    const data = await fetchGetData(fullQueryUrl);
+
+    if (data && data.hits && data.hits.hits) {
+      const records = data.hits.hits.map(hit => hit._source);
+      console.log(records);
+    }
+  } else {
+    console.log("Articles or analysis data not found.");
+  }
 }
 
 /**
