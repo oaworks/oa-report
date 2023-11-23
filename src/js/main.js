@@ -188,4 +188,5 @@ strategyTabBtns.forEach((tabBtn) => {
 document.addEventListener("DOMContentLoaded", function() {
   oareport(org);
   initDataExplore(org);
+  console.log(report);
 });

@@ -202,3 +202,15 @@ export function debounce(func, wait) {
     timeout = setTimeout(later, wait);
   };
 }
+
+/**
+ * Accesses a nested property in an object based on a dot-separated string path.
+ * 
+ * @param {Object} obj - The object to retrieve the property from.
+ * @param {string} path - The dot-separated string path to the property.
+ * @returns {*} - The value at the specified nested property, or undefined if not found.
+ */
+export function getNestedProperty(obj, path) {
+  const pathParts = path.split('.');
+  return pathParts.reduce((currentObj, key) => currentObj ? currentObj[key] : undefined, obj);
+}
