@@ -76,11 +76,13 @@ export function createExploreButton(id, query = null, term = null, includes = nu
   button.addEventListener("click", debounce(async function() {
     toggleLoadingIndicator(true); // Show loading indicator
     updateButtonStylesAndTable(buttonId);
+
+    let isArticleBased;
     
     if (term) {
-      await handleTermBasedButtonClick(id, term);
+      await handleTermBasedButtonClick(id, term, isArticleBased = false);
     } else if (includes) {
-      await handleArticleBasedButtonClick(id, includes);
+      await handleArticleBasedButtonClick(id, includes, isArticleBased = true);
     }
 
     toggleLoadingIndicator(false); // Hide loading indicator after data is loaded
@@ -101,6 +103,7 @@ async function handleTermBasedButtonClick(id, term) {
   const responseData = await fetchPostData(postData);
   const records = responseData.aggregations.key.buckets;
   updateTableContainer(id, records);
+  console.log("Term-based table.");
   console.log(records);
 }
 
@@ -113,7 +116,7 @@ async function handleTermBasedButtonClick(id, term) {
  * @param {string} id - The ID of the explore item.
  * @param {string} includes - The 'includes' key associated with the explore item, used in data fetch.
  */
-async function handleArticleBasedButtonClick(id, includes) {
+async function handleArticleBasedButtonClick(id, includes, isArticleBased = true) {
   const analysisResponse = await fetchGetData(`https://${apiEndpoint}.oa.works/report/orgs?q=${org}&include=analysis`);
   const analysisData = analysisResponse.hits.hits[0]._source;
 
@@ -125,17 +128,16 @@ async function handleArticleBasedButtonClick(id, includes) {
     // const queryArray = articlesObject.query.split(',');
     // const queryParts = queryArray.map(part => encodeURIComponent(getNestedProperty(analysisData, part))).join("%20OR%20"); 
     const query = analysisData.analysis.is_paper.query;
-    console.log(query);
     const size = 20;
-    const fullQueryUrl = `https://beta.oa.works/report/works/?q=(published_date:%3E2022-12-31%20AND%20published_date:%3C2023-11-23)%20AND%20(${query})&size=${size}&include=${includes}`;
+    const fullQueryUrl = `https://${apiEndpoint}.oa.works/report/works/?q=(published_date:%3E2022-12-31%20AND%20published_date:%3C2023-11-23)%20AND%20(${query})&size=${size}&include=${includes}`;
     const data = await fetchGetData(fullQueryUrl);
 
     if (data && data.hits && data.hits.hits) {
       const records = data.hits.hits.map(hit => hit._source);
+      updateTableContainer(id, records, isArticleBased = true);
+      console.log("Article-based table.");
       console.log(records);
     }
-  } else {
-    console.log("Articles or analysis data not found.");
   }
 }
 
@@ -165,7 +167,7 @@ export function updateButtonStylesAndTable(buttonId) {
  * @param {string} selectedId - The ID of the selected explore item.
  * @param {Array<Object>} data - The data array to populate the table, with each object representing a row.
  */
-function updateTableContainer(selectedId, data) {
+function updateTableContainer(selectedId, data, isArticleBased = false) {
   // Update the header with .plural version of the ID
   const header = document.querySelector(".agg-type");
   header.textContent = exploreItem[selectedId]?.plural || selectedId;
@@ -182,8 +184,8 @@ function updateTableContainer(selectedId, data) {
   const headers = data.length > 0 ? Object.keys(data[0]) : [];
 
   // Populate table with data
-  populateTableHeader(headers, 'export_table_head');
-  populateTableBody(data, 'export_table_body');
+  populateTableHeader(headers, 'export_table_head', isArticleBased);
+  populateTableBody(data, 'export_table_body', isArticleBased);
 }
 
 /**
@@ -207,23 +209,46 @@ function createTableCell(content, cssClass, isHeader = false) {
  * @param {Object} headers - A sample data object to extract keys for header columns.
  * @returns {HTMLTableRowElement} The created header row element.
  */
-function createTableHeader(headers) {
+function createTableHeader(headers, isArticleBased = false) {
   const headerRow = document.createElement('tr');
-  let columnIndex = 0;
+
+  if (isArticleBased) {
+    // Reorder headers for article-based data: 'title', 'DOI', then others
+    const titleIndex = headers.indexOf("title");
+    const doiIndex = headers.indexOf("DOI");
+    
+    if (titleIndex > -1) {
+      headers.splice(titleIndex, 1); // Remove 'title'
+      headers.unshift("title"); // Add 'title' at the beginning
+    }
+
+    if (doiIndex > -1) {
+      headers.splice(doiIndex, 1); // Remove 'DOI'
+      headers.splice(1, 0, "DOI"); // Add 'DOI' as the second element
+    }
+  }
 
   headers.forEach(key => {
     let cssClass;
-    if (columnIndex === 0) {
-      cssClass = dataTableHeaderClasses.firstHeaderCol;
-    } else if (columnIndex === 1) {
-      cssClass = dataTableHeaderClasses.secondHeaderCol;
+    if (isArticleBased) {
+      if (key === "title") {
+        cssClass = dataTableHeaderClasses.firstHeaderCol;
+      } else if (key === "DOI") {
+        cssClass = dataTableHeaderClasses.secondHeaderCol;
+      } else {
+        cssClass = dataTableHeaderClasses.otherHeaderCols;
+      }
     } else {
-      cssClass = dataTableHeaderClasses.otherHeaderCols;
+      if (key === "key") {
+        cssClass = dataTableHeaderClasses.firstHeaderCol;
+      } else if (key === "doc_count") {
+        cssClass = dataTableHeaderClasses.secondHeaderCol;
+      } else {
+        cssClass = dataTableHeaderClasses.otherHeaderCols;
+      }
     }
-
     const headerCell = createTableCell(key, cssClass, true);
     headerRow.appendChild(headerCell);
-    columnIndex++;
   });
 
   return headerRow;
@@ -231,37 +256,42 @@ function createTableHeader(headers) {
 
 /**
  * Generates a table row from a data object.
+ * This function handles both term-based and article-based data objects.
  * 
  * @param {Object} data - The data object to create the table row for.
+ * @param {boolean} isArticleBased - Indicates if the data object is article-based.
  * @returns {HTMLTableRowElement} The created table row element.
  */
-function createTableBodyRow(data) {
+function createTableBodyRow(data, isArticleBased = false) {
   const row = document.createElement('tr');
 
-  // Create and append the first column (key)
-  row.appendChild(createTableCell(data.key, dataTableBodyClasses.firstCol, true));
-
-  // Create and append the second column (doc_count)
-  row.appendChild(createTableCell(data.doc_count, dataTableBodyClasses.secondCol, true));
-
-  // Iterate over other properties in data and create cells
-  Object.keys(data).forEach(key => {
-    if (key !== 'key' && key !== 'doc_count') {
-      let content = '';
-      if (typeof data[key] === 'object' && data[key].value !== undefined) {
-        content = data[key].value;
-        if (key.includes('percentage')) {
-          content += '%'; // Append '%' for percentage values
-        } else if (key.includes('apcs_paid')) {
-          content += `US$${parseFloat(content).toFixed(2)}`;
-        }
-      } else if (typeof data[key] === 'object') {
-        content = data[key].doc_count; // Use doc_count for nested objects
+  if (isArticleBased) {
+    // Handle article-based data (first column: title, second column: DOI)
+    row.appendChild(createTableCell(data.title, dataTableBodyClasses.firstCol, true));
+    row.appendChild(createTableCell(data.DOI, dataTableBodyClasses.secondCol, true));
+    for (const key in data) {
+      if (key !== 'title' && key !== 'DOI') {
+        const value = data[key];
+        let content = Array.isArray(value) || typeof value === 'object' ? JSON.stringify(value) : value;
+        row.appendChild(createTableCell(content, dataTableBodyClasses.otherCols));
       }
-
-      row.appendChild(createTableCell(content, dataTableBodyClasses.otherCols));
     }
-  });
+  } else {
+    // Handle term-based data (first column: key, second column: doc_count)
+    row.appendChild(createTableCell(data.key, dataTableBodyClasses.firstCol, true));
+    row.appendChild(createTableCell(data.doc_count, dataTableBodyClasses.secondCol, true));
+    Object.keys(data).forEach(key => {
+      if (key !== 'key' && key !== 'doc_count') {
+        let content = '';
+        if (typeof data[key] === 'object' && data[key].value !== undefined) {
+          content = data[key].value;
+        } else if (typeof data[key] === 'object') {
+          content = data[key].doc_count;
+        }
+        row.appendChild(createTableCell(content, dataTableBodyClasses.otherCols));
+      }
+    });
+  }
   
   return row;
 }
@@ -274,7 +304,7 @@ function createTableBodyRow(data) {
  * @param {Object[]} headers - An array of data objects used to derive the header columns. Assumes all objects have the same structure.
  * @param {string} tableHeaderId - The ID of the table header element where the headers should be appended.
  */
-function populateTableHeader(headers, tableHeaderId) {
+function populateTableHeader(headers, tableHeaderId, isArticleBased = false) {
   const tableHeader = document.getElementById(tableHeaderId);
   if (!tableHeader) return;
 
@@ -284,19 +314,18 @@ function populateTableHeader(headers, tableHeaderId) {
   }
 
   // Add new header row using the provided headers array
-  if (headers.length > 0) {
-    const headerRow = createTableHeader(headers);
-    tableHeader.appendChild(headerRow);
-  }
+  const headerRow = createTableHeader(headers, isArticleBased);
+  tableHeader.appendChild(headerRow);
 }
 
 /**
- * Populates a table with data.
+ * Populates a table with data from either term-based or article-based explore items.
  * 
  * @param {Array<Object>} data - Array of data objects to populate the table with.
  * @param {string} tableBodyId - The ID of the table to populate.
+ * @param {boolean} isArticleBased - Indicates if the data array is article-based.
  */
-function populateTableBody(data, tableBodyId) {
+function populateTableBody(data, tableBodyId, isArticleBased = false) {
   const tableBody = document.getElementById(tableBodyId);
   if (!tableBody) return;
 
@@ -307,7 +336,7 @@ function populateTableBody(data, tableBodyId) {
 
   // Add new rows from data
   data.forEach(dataObject => {
-    const row = createTableBodyRow(dataObject);
+    const row = createTableBodyRow(dataObject, isArticleBased);
     tableBody.appendChild(row);
   });
 }
