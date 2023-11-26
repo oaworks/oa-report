@@ -3,12 +3,27 @@
 // State & DOM manipulation specific to Data Explore
 // =================================================
 
+// =================================================
+// Imports
+// =================================================
+
 import { isCacheExpired, fetchGetData, fetchPostData, debounce, getNestedProperty } from "./utils.js";
-import { exploreItem, dataTableBodyClasses, dataTableHeaderClasses } from "./constants.js";
+import { exploreItem, dataTableBodyClasses, dataTableHeaderClasses, termBasedHeaders } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 
-// Cache for storing fetched data to reduce API calls
-const dataCache = {};
+// =================================================
+// Global variables
+// =================================================
+
+/** Cache for storing fetched data to reduce API calls
+ * 
+ * @global 
+*/
+const dataCache = {}; 
+
+// =================================================
+// DOM Manipulation functions
+// =================================================
 
 /**
  * Initializes the data explore section by fetching and adding buttons.
@@ -75,7 +90,7 @@ export function createExploreButton(id, query = null, term = null, includes = nu
 
   button.addEventListener("click", debounce(async function() {
     toggleLoadingIndicator(true); // Show loading indicator
-    updateButtonStylesAndTable(buttonId);
+    updateButtonActiveStyles(buttonId); // Highlight selected button
 
     let isArticleBased;
     
@@ -134,32 +149,16 @@ async function handleArticleBasedButtonClick(id, includes, isArticleBased = true
 
     if (data && data.hits && data.hits.hits) {
       const records = data.hits.hits.map(hit => hit._source);
-      updateTableContainer(id, records, isArticleBased = true);
+      updateTableContainer(id, records, includes, isArticleBased = true);
       console.log("Article-based table.");
       console.log(records);
     }
   }
 }
 
-/**
- * Updates the button styles and table content based on the selected button ID.
- *
- * @param {string} buttonId - The ID of the selected button.
- */
-export function updateButtonStylesAndTable(buttonId) {
-  // Reset styles for all buttons
-  document.querySelectorAll("#explore_buttons button").forEach(btn => {
-    btn.classList.remove("bg-carnation-500");
-    btn.classList.add("bg-carnation-100");
-  });
-
-  // Apply selected style to the clicked button
-  const selectedButton = document.getElementById(buttonId);
-  if (selectedButton) {
-    selectedButton.classList.remove("bg-carnation-100");
-    selectedButton.classList.add("bg-carnation-500");
-  }
-}
+// =================================================
+// Table updating and styling functions
+// =================================================
 
 /**
  * Updates the table header and fetches data to populate the table.
@@ -167,7 +166,7 @@ export function updateButtonStylesAndTable(buttonId) {
  * @param {string} selectedId - The ID of the selected explore item.
  * @param {Array<Object>} data - The data array to populate the table, with each object representing a row.
  */
-function updateTableContainer(selectedId, data, isArticleBased = false) {
+function updateTableContainer(selectedId, data, includes = null, isArticleBased = false) {
   // Update the header with .plural version of the ID
   const header = document.querySelector(".agg-type");
   header.textContent = exploreItem[selectedId]?.plural || selectedId;
@@ -185,7 +184,52 @@ function updateTableContainer(selectedId, data, isArticleBased = false) {
 
   // Populate table with data
   populateTableHeader(headers, 'export_table_head', isArticleBased);
-  populateTableBody(data, 'export_table_body', isArticleBased);
+  populateTableBody(data, 'export_table_body', includes, isArticleBased);
+}
+
+/**
+ * Populates the header of a table with column headers derived from the keys of a data object.
+ * The function clears any existing headers before appending the new ones. It assumes that the 
+ * first object in the data array is representative of the structure for all objects in the array.
+ * 
+ * @param {Object[]} headers - An array of data objects used to derive the header columns. Assumes all objects have the same structure.
+ * @param {string} tableHeaderId - The ID of the table header element where the headers should be appended.
+ */
+function populateTableHeader(headers, tableHeaderId, isArticleBased = false) {
+  const tableHeader = document.getElementById(tableHeaderId);
+  if (!tableHeader) return;
+
+  // Clear existing header cells
+  while (tableHeader.firstChild) {
+    tableHeader.removeChild(tableHeader.firstChild);
+  }
+
+  // Add new header row using the provided headers array
+  const headerRow = createTableHeader(headers, isArticleBased);
+  tableHeader.appendChild(headerRow);
+}
+
+/**
+ * Populates a table with data from either term-based or article-based explore items.
+ * 
+ * @param {Array<Object>} data - Array of data objects to populate the table with.
+ * @param {string} tableBodyId - The ID of the table to populate.
+ * @param {boolean} isArticleBased - Indicates if the data array is article-based.
+ */
+function populateTableBody(data, tableBodyId, includes = null, isArticleBased = false) {
+  const tableBody = document.getElementById(tableBodyId);
+  if (!tableBody) return;
+
+  // Clear existing table rows
+  while (tableBody.firstChild) {
+    tableBody.removeChild(tableBody.firstChild);
+  }
+
+  // Add new rows from data
+  data.forEach(dataObject => {
+    const row = createTableBodyRow(dataObject, includes, isArticleBased);
+    tableBody.appendChild(row);
+  });
 }
 
 /**
@@ -262,84 +306,46 @@ function createTableHeader(headers, isArticleBased = false) {
  * @param {boolean} isArticleBased - Indicates if the data object is article-based.
  * @returns {HTMLTableRowElement} The created table row element.
  */
-function createTableBodyRow(data, isArticleBased = false) {
+function createTableBodyRow(data, includes = null, isArticleBased = false) {
   const row = document.createElement('tr');
 
   if (isArticleBased) {
-    // Handle article-based data (first column: title, second column: DOI)
-    row.appendChild(createTableCell(data.title, dataTableBodyClasses.firstCol, true));
-    row.appendChild(createTableCell(data.DOI, dataTableBodyClasses.secondCol, true));
-    for (const key in data) {
-      if (key !== 'title' && key !== 'DOI') {
-        const value = data[key];
-        let content = Array.isArray(value) || typeof value === 'object' ? JSON.stringify(value) : value;
-        row.appendChild(createTableCell(content, dataTableBodyClasses.otherCols));
-      }
-    }
+    // Define all possible keys for article-based data
+    const allKeys = includes.split(",");
+
+    // Apply custom styling for the first two keys and handle missing keys
+    allKeys.forEach((key, index) => {
+      let cssClass;
+      if (index === 0) cssClass = dataTableBodyClasses.firstCol;
+      else if (index === 1) cssClass = dataTableBodyClasses.secondCol;
+      else cssClass = dataTableBodyClasses.otherCols;
+
+      const content = data[key] !== undefined ? data[key] : "N/A";
+      let cellContent = Array.isArray(content) || typeof content === 'object' ? JSON.stringify(content) : content;
+      row.appendChild(createTableCell(cellContent, cssClass));
+    });
   } else {
-    // Handle term-based data (first column: key, second column: doc_count)
-    row.appendChild(createTableCell(data.key, dataTableBodyClasses.firstCol, true));
-    row.appendChild(createTableCell(data.doc_count, dataTableBodyClasses.secondCol, true));
-    Object.keys(data).forEach(key => {
-      if (key !== 'key' && key !== 'doc_count') {
-        let content = '';
-        if (typeof data[key] === 'object' && data[key].value !== undefined) {
-          content = data[key].value;
-        } else if (typeof data[key] === 'object') {
-          content = data[key].doc_count;
-        }
-        row.appendChild(createTableCell(content, dataTableBodyClasses.otherCols));
-      }
+      // Handle term-based data
+    Object.keys(termBasedHeaders).forEach((key, index) => {
+      let cssClass;
+      // Apply custom styling for the first two keys and handle missing 
+      if (index === 0) cssClass = dataTableBodyClasses.firstCol;
+      else if (index === 1) cssClass = dataTableBodyClasses.secondCol;
+      else cssClass = dataTableBodyClasses.otherCols;
+
+      const content = data[key] !== undefined ? data[key].doc_count : "N/A";
+      console.log(content);
+      let cellContent = typeof content === 'object' && content.value !== undefined ? content.value : content;
+      row.appendChild(createTableCell(cellContent, cssClass));
     });
   }
   
   return row;
 }
 
-/**
- * Populates the header of a table with column headers derived from the keys of a data object.
- * The function clears any existing headers before appending the new ones. It assumes that the 
- * first object in the data array is representative of the structure for all objects in the array.
- * 
- * @param {Object[]} headers - An array of data objects used to derive the header columns. Assumes all objects have the same structure.
- * @param {string} tableHeaderId - The ID of the table header element where the headers should be appended.
- */
-function populateTableHeader(headers, tableHeaderId, isArticleBased = false) {
-  const tableHeader = document.getElementById(tableHeaderId);
-  if (!tableHeader) return;
-
-  // Clear existing header cells
-  while (tableHeader.firstChild) {
-    tableHeader.removeChild(tableHeader.firstChild);
-  }
-
-  // Add new header row using the provided headers array
-  const headerRow = createTableHeader(headers, isArticleBased);
-  tableHeader.appendChild(headerRow);
-}
-
-/**
- * Populates a table with data from either term-based or article-based explore items.
- * 
- * @param {Array<Object>} data - Array of data objects to populate the table with.
- * @param {string} tableBodyId - The ID of the table to populate.
- * @param {boolean} isArticleBased - Indicates if the data array is article-based.
- */
-function populateTableBody(data, tableBodyId, isArticleBased = false) {
-  const tableBody = document.getElementById(tableBodyId);
-  if (!tableBody) return;
-
-  // Clear existing table rows
-  while (tableBody.firstChild) {
-    tableBody.removeChild(tableBody.firstChild);
-  }
-
-  // Add new rows from data
-  data.forEach(dataObject => {
-    const row = createTableBodyRow(dataObject, isArticleBased);
-    tableBody.appendChild(row);
-  });
-}
+// =================================================
+// Interactive feature functions
+// =================================================
 
 /**
  * Enables row highlighting functionality for a table in the data exploration section.
@@ -412,4 +418,24 @@ export function enableExploreTableScroll() {
       scrollRightBtn.style.display = "block";
     }
   });
+}
+
+/**
+ * Updates the styles of buttons to indicate the active (selected) button.
+ *
+ * @param {string} buttonId - The ID of the selected button.
+ */
+export function updateButtonActiveStyles(buttonId) {
+  // Reset styles for all buttons
+  document.querySelectorAll("#explore_buttons button").forEach(btn => {
+    btn.classList.remove("bg-carnation-500");
+    btn.classList.add("bg-carnation-100");
+  });
+
+  // Apply selected style to the clicked button
+  const selectedButton = document.getElementById(buttonId);
+  if (selectedButton) {
+    selectedButton.classList.remove("bg-carnation-100");
+    selectedButton.classList.add("bg-carnation-500");
+  }
 }
