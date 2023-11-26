@@ -214,3 +214,31 @@ export function getNestedProperty(obj, path) {
   const pathParts = path.split('.');
   return pathParts.reduce((currentObj, key) => currentObj ? currentObj[key] : undefined, obj);
 }
+
+/**
+ * Reorders the keys of each record according to a specified order.
+ * 
+ * @param {Array<Object>} records - The array of records to be reordered.
+ * @param {string} includes - The string specifying the order of keys.
+ * @returns {Array<Object>} The array of reordered records.
+ */
+export function reorderRecords(records, includes) {
+  // Split the includes string into an array of keys
+  const order = includes.split(',');
+
+  // Map through each record and reorder its keys
+  return records.map(record => {
+    let reorderedRecord = {};
+
+    // Iterate through the order array and construct the reordered record
+    order.forEach(key => {
+      // Handle nested properties like 'supplements.is_compliant__bmgf'
+      let value = getNestedProperty(record, key);
+      if (value !== undefined) {
+        reorderedRecord[key] = value;
+      }
+    });
+
+    return reorderedRecord;
+  });
+}

@@ -7,8 +7,8 @@
 // Imports
 // =================================================
 
-import { isCacheExpired, fetchGetData, fetchPostData, debounce, getNestedProperty } from "./utils.js";
-import { exploreItem, dataTableBodyClasses, dataTableHeaderClasses, termBasedHeaders } from "./constants.js";
+import { isCacheExpired, fetchGetData, fetchPostData, debounce, reorderRecords, getNestedProperty } from "./utils.js";
+import { exploreItem, dataTableBodyClasses, dataTableHeaderClasses, termBasedHeaders, articleBasedDataHeaders } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 
 // =================================================
@@ -148,7 +148,8 @@ async function handleArticleBasedButtonClick(id, includes, isArticleBased = true
     const data = await fetchGetData(fullQueryUrl);
 
     if (data && data.hits && data.hits.hits) {
-      const records = data.hits.hits.map(hit => hit._source);
+      let records = data.hits.hits.map(hit => hit._source);
+      records = reorderRecords(records, includes);
       updateTableContainer(id, records, includes, isArticleBased = true);
       console.log("Article-based table.");
       console.log(records);
@@ -311,10 +312,12 @@ function createTableBodyRow(data, includes = null, isArticleBased = false) {
 
   if (isArticleBased) {
     // Define all possible keys for article-based data
-    const allKeys = includes.split(",");
+    // const allKeys = includes.split(",");
+    
+    // console.log(data);
 
     // Apply custom styling for the first two keys and handle missing keys
-    allKeys.forEach((key, index) => {
+    Object.keys(articleBasedDataHeaders).forEach((key, index) => {
       let cssClass;
       if (index === 0) cssClass = dataTableBodyClasses.firstCol;
       else if (index === 1) cssClass = dataTableBodyClasses.secondCol;
@@ -326,6 +329,7 @@ function createTableBodyRow(data, includes = null, isArticleBased = false) {
     });
   } else {
       // Handle term-based data
+      // console.log(data);
     Object.keys(termBasedHeaders).forEach((key, index) => {
       let cssClass;
       // Apply custom styling for the first two keys and handle missing 
@@ -334,7 +338,6 @@ function createTableBodyRow(data, includes = null, isArticleBased = false) {
       else cssClass = dataTableBodyClasses.otherCols;
 
       const content = data[key] !== undefined ? data[key].doc_count : "N/A";
-      console.log(content);
       let cellContent = typeof content === 'object' && content.value !== undefined ? content.value : content;
       row.appendChild(createTableCell(cellContent, cssClass));
     });

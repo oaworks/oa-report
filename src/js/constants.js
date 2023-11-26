@@ -138,10 +138,10 @@ export const termBasedHeaders = {
  * @type {{[key: string]: { pretty: string, key: string }}}
  */
 export const articleBasedDataHeaders = {
+  "title": { pretty: "", key: "published_date" },
   "DOI": { pretty: "DOI", key: "published_date" },
   "supplements.is_compliant__bmgf": { pretty: "", key: "published_date" },
   "supplements.grantid__bmgf": { pretty: "", key: "published_date" },
-  "title": { pretty: "", key: "published_date" },
   "publisher": { pretty: "", key: "published_date" },
   "journal": { pretty: "", key: "published_date" },
   "issn": { pretty: "", key: "published_date" },
