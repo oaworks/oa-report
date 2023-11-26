@@ -7,7 +7,7 @@
 // Imports
 // =================================================
 
-import { isCacheExpired, fetchGetData, fetchPostData, debounce, reorderRecords, getNestedProperty } from "./utils.js";
+import { isCacheExpired, fetchGetData, fetchPostData, debounce, reorderRecords } from "./utils.js";
 import { exploreItem, dataTableBodyClasses, dataTableHeaderClasses, termBasedHeaders, articleBasedDataHeaders } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 
@@ -152,6 +152,7 @@ async function handleArticleBasedButtonClick(id, includes, isArticleBased = true
       records = reorderRecords(records, includes);
       updateTableContainer(id, records, includes, isArticleBased = true);
       console.log("Article-based table.");
+      console.log(includes);
       console.log(records);
     }
   }

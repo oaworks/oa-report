@@ -204,41 +204,56 @@ export function debounce(func, wait) {
 }
 
 /**
- * Accesses a nested property in an object based on a dot-separated string path.
+ * Reorders the keys of each record in an array based on a specified order.
  * 
- * @param {Object} obj - The object to retrieve the property from.
- * @param {string} path - The dot-separated string path to the property.
- * @returns {*} - The value at the specified nested property, or undefined if not found.
- */
-export function getNestedProperty(obj, path) {
-  const pathParts = path.split('.');
-  return pathParts.reduce((currentObj, key) => currentObj ? currentObj[key] : undefined, obj);
-}
-
-/**
- * Reorders the keys of each record according to a specified order.
- * 
- * @param {Array<Object>} records - The array of records to be reordered.
- * @param {string} includes - The string specifying the order of keys.
- * @returns {Array<Object>} The array of reordered records.
+ * @param {Array<Object>} records - The array of records to reorder.
+ * @param {string} includes - Comma-separated string of keys in the desired order.
+ * @returns {Array<Object>} The reordered array of records.
  */
 export function reorderRecords(records, includes) {
-  // Split the includes string into an array of keys
-  const order = includes.split(',');
+  const keysOrder = includes.split(',');
 
-  // Map through each record and reorder its keys
   return records.map(record => {
-    let reorderedRecord = {};
+    const reorderedRecord = {};
 
-    // Iterate through the order array and construct the reordered record
-    order.forEach(key => {
-      // Handle nested properties like 'supplements.is_compliant__bmgf'
-      let value = getNestedProperty(record, key);
-      if (value !== undefined) {
-        reorderedRecord[key] = value;
+    keysOrder.forEach(key => {
+      let value = getNestedPropertyValue(record, key);
+
+      // Handle arrays and nested properties
+      if (Array.isArray(value)) {
+        value = value.filter(item => item !== null); // Remove null items
+        if (value.length === 0) {
+          value = null; // Set to null if array is empty
+        }
       }
+
+      reorderedRecord[key] = value;
     });
 
     return reorderedRecord;
   });
+}
+
+/**
+ * Safely retrieves a nested property value from an object.
+ * 
+ * @param {Object} obj - The object to retrieve the property from.
+ * @param {string} path - Path to the property in dot notation.
+ * @returns {*} The value of the property, or null if not found.
+ */
+function getNestedPropertyValue(obj, path) {
+  return path.split('.').reduce((currentObj, key) => {
+    if (currentObj === null) {
+      return null;
+    }
+
+    if (typeof currentObj === 'object' && key in currentObj) {
+      return currentObj[key];
+    } else if (Array.isArray(currentObj)) {
+      // Process each element in the array
+      return currentObj.map(item => item && key in item ? item[key] : null);
+    }
+
+    return null;
+  }, obj);
 }
