@@ -7,7 +7,7 @@
 // Imports
 // =================================================
 
-import { isCacheExpired, fetchGetData, fetchPostData, debounce, reorderRecords } from "./utils.js";
+import { isCacheExpired, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList } from "./utils.js";
 import { exploreItem, dataTableBodyClasses, dataTableHeaderClasses, termBasedHeaders, articleBasedDataHeaders } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 
@@ -31,7 +31,7 @@ const dataCache = {};
  */
 export async function initDataExplore(org) {
   try {
-    // Check if the data is in cache and hasn't expired
+    // Check if the data is in cache and hasn't expired (set at 24 hours)
     if (dataCache[org] && !isCacheExpired(dataCache[org].timestamp)) {
       addButtonsToDOM(dataCache[org].data);
     } else {
@@ -55,15 +55,8 @@ export async function initDataExplore(org) {
  */
 export async function addButtonsToDOM(exploreData) {
   const exploreButtons = document.getElementById('explore_buttons');
-  for (const item of exploreData) {
-    let button;
-    if ('term' in item) {
-      button = createExploreButton(item.id, item.query, item.term); // For term-based objects like 'grant', 'publisher', 'author', etc.
-    } else if ('includes' in item) {
-      button = createExploreButton(item.id, item.query, null, item.includes); // For article-based objects, pass includes as a parameter
-    } else {
-      button = createExploreButton(item.id); // If neither 'term' nor 'includes' is present
-    }
+  for (const exploreDataType of exploreData) {
+    let button = createExploreButton(exploreDataType);
     exploreButtons.appendChild(button);
   }
 }
@@ -74,13 +67,14 @@ export async function addButtonsToDOM(exploreData) {
  * based on the type of explore item. It handles both term-based items (e.g., 'grant', 'publisher')
  * and article-based items which are identified by the 'includes' key.
  * 
- * @param {string} id - The ID of the explore item. Used for button ID and to fetch specific data.
- * @param {string|null} query - The 'query' key associated with the explore item, if applicable. This is used for both term- and article-based items.
- * @param {string|null} term - The 'term' ket associated with the explore item, if applicable. This is used for term-based items.
- * @param {string|null} [includes=null] - The 'includes' key associated with the explore item, if applicable. This is used for article-based items.
+ * @param {string} record - 
  * @returns {HTMLButtonElement} The created button element with event listeners attached.
  */
-export function createExploreButton(id, query = null, term = null, includes = null) {
+export function createExploreButton(exploreDataType) {
+  const id = exploreDataType.id;
+  const type = exploreDataType.type;
+  const sort = exploreDataType.sort;
+  const includes = exploreDataType.includes;
   const buttonId = `explore_${id}_button`;
   const button = document.createElement("button");
   button.id = buttonId;
@@ -91,13 +85,12 @@ export function createExploreButton(id, query = null, term = null, includes = nu
   button.addEventListener("click", debounce(async function() {
     toggleLoadingIndicator(true); // Show loading indicator
     updateButtonActiveStyles(buttonId); // Highlight selected button
-
-    let isArticleBased;
     
-    if (term) {
-      await handleTermBasedButtonClick(id, term, isArticleBased = false);
-    } else if (includes) {
-      await handleArticleBasedButtonClick(id, includes, isArticleBased = true);
+    if (type === "terms") {
+      const term = exploreDataType.term;
+      await handleTermBasedButtonClick(id, term, sort, includes);
+    } else if (type === "articles") {
+      await handleArticleBasedButtonClick(id, includes);
     }
 
     toggleLoadingIndicator(false); // Hide loading indicator after data is loaded
@@ -113,11 +106,11 @@ export function createExploreButton(id, query = null, term = null, includes = nu
  * @param {string} id - The ID of the explore item.
  * @param {string} term - The term associated with the explore item, used in the data fetch.
  */
-async function handleTermBasedButtonClick(id, term) {
-  const postData = createPostData(orgName, term, "2023", "2023");
+async function handleTermBasedButtonClick(id, term, sort, includes) {
+  const postData = createPostData(orgName, term, "2023", "2023", 20, sort);
   const responseData = await fetchPostData(postData);
   const records = responseData.aggregations.key.buckets;
-  updateTableContainer(id, records);
+  updateTableContainer(id, records, includes);
   console.log("Term-based table.");
   console.log(records);
 }
@@ -131,7 +124,7 @@ async function handleTermBasedButtonClick(id, term) {
  * @param {string} id - The ID of the explore item.
  * @param {string} includes - The 'includes' key associated with the explore item, used in data fetch.
  */
-async function handleArticleBasedButtonClick(id, includes, isArticleBased = true) {
+async function handleArticleBasedButtonClick(id, includes) {
   const analysisResponse = await fetchGetData(`https://${apiEndpoint}.oa.works/report/orgs?q=${org}&include=analysis`);
   const analysisData = analysisResponse.hits.hits[0]._source;
 
@@ -150,9 +143,8 @@ async function handleArticleBasedButtonClick(id, includes, isArticleBased = true
     if (data && data.hits && data.hits.hits) {
       let records = data.hits.hits.map(hit => hit._source);
       records = reorderRecords(records, includes);
-      updateTableContainer(id, records, includes, isArticleBased = true);
+      updateTableContainer(id, records, includes);
       console.log("Article-based table.");
-      console.log(includes);
       console.log(records);
     }
   }
@@ -168,7 +160,7 @@ async function handleArticleBasedButtonClick(id, includes, isArticleBased = true
  * @param {string} selectedId - The ID of the selected explore item.
  * @param {Array<Object>} data - The data array to populate the table, with each object representing a row.
  */
-function updateTableContainer(selectedId, data, includes = null, isArticleBased = false) {
+function updateTableContainer(selectedId, data, includes) {
   // Update the header with .plural version of the ID
   const header = document.querySelector(".agg-type");
   header.textContent = exploreItem[selectedId]?.plural || selectedId;
@@ -185,8 +177,8 @@ function updateTableContainer(selectedId, data, includes = null, isArticleBased 
   const headers = data.length > 0 ? Object.keys(data[0]) : [];
 
   // Populate table with data
-  populateTableHeader(headers, 'export_table_head', isArticleBased);
-  populateTableBody(data, 'export_table_body', includes, isArticleBased);
+  populateTableHeader(headers, 'export_table_head', includes);
+  populateTableBody(data, 'export_table_body', includes);
 }
 
 /**
@@ -197,7 +189,7 @@ function updateTableContainer(selectedId, data, includes = null, isArticleBased 
  * @param {Object[]} headers - An array of data objects used to derive the header columns. Assumes all objects have the same structure.
  * @param {string} tableHeaderId - The ID of the table header element where the headers should be appended.
  */
-function populateTableHeader(headers, tableHeaderId, isArticleBased = false) {
+function populateTableHeader(headers, tableHeaderId) {
   const tableHeader = document.getElementById(tableHeaderId);
   if (!tableHeader) return;
 
@@ -206,8 +198,17 @@ function populateTableHeader(headers, tableHeaderId, isArticleBased = false) {
     tableHeader.removeChild(tableHeader.firstChild);
   }
 
-  // Add new header row using the provided headers array
-  const headerRow = createTableHeader(headers, isArticleBased);
+  // Create and add the header row
+  const headerRow = document.createElement('tr');
+  headers.forEach((key, index) => {
+    let cssClass;
+    if (index === 0) cssClass = dataTableHeaderClasses.firstHeaderCol;
+    // else if (index === 1) cssClass = dataTableHeaderClasses.secondHeaderCol;
+    else cssClass = dataTableHeaderClasses.otherHeaderCols;
+
+    const headerCell = createTableCell(key, cssClass, true);
+    headerRow.appendChild(headerCell);
+  });
   tableHeader.appendChild(headerRow);
 }
 
@@ -216,9 +217,9 @@ function populateTableHeader(headers, tableHeaderId, isArticleBased = false) {
  * 
  * @param {Array<Object>} data - Array of data objects to populate the table with.
  * @param {string} tableBodyId - The ID of the table to populate.
- * @param {boolean} isArticleBased - Indicates if the data array is article-based.
+ * @param {string} includes - Comma-separated string defining the order and selection of keys to include in the table.
  */
-function populateTableBody(data, tableBodyId, includes = null, isArticleBased = false) {
+function populateTableBody(data, tableBodyId, includes) {
   const tableBody = document.getElementById(tableBodyId);
   if (!tableBody) return;
 
@@ -227,104 +228,47 @@ function populateTableBody(data, tableBodyId, includes = null, isArticleBased = 
     tableBody.removeChild(tableBody.firstChild);
   }
 
+  // Define the order of the keys based on the includes array
+  const keysOrder = includes.split(",");
+
   // Add new rows from data
   data.forEach(dataObject => {
-    const row = createTableBodyRow(dataObject, includes, isArticleBased);
+    const row = document.createElement('tr');
+    keysOrder.forEach((key, index) => {
+      let cssClass;
+      if (index === 0) cssClass = dataTableBodyClasses.firstCol;
+      // else if (index === 1) cssClass = dataTableBodyClasses.secondCol;
+      else cssClass = dataTableBodyClasses.otherCols;
+
+      const content = dataObject[key] !== undefined ? dataObject[key] : "N/A";
+      row.appendChild(createTableCell(content, cssClass));
+    });
     tableBody.appendChild(row);
   });
 }
 
 /**
- * Creates a table cell element with the given content and CSS class.
+ * Creates a table cell element (th or td) with specified content and CSS class.
+ * If the content is an object, its values are formatted as an unordered list.
  * 
- * @param {string} content - The content to be placed inside the cell.
+ * @param {string|Object} content - The content to be placed inside the cell. If an object, its values are formatted as an unordered list.
  * @param {string} cssClass - The CSS class to apply to the cell.
- * @param {boolean} isHeader - Indicates if the cell is a header cell (th) or a regular cell (td).
+ * @param {boolean} [isHeader=false] - Indicates if the cell is a header cell (th) or a regular cell (td).
  * @returns {HTMLElement} The created table cell element.
  */
 function createTableCell(content, cssClass, isHeader = false) {
   const cell = document.createElement(isHeader ? 'th' : 'td');
   cell.className = cssClass;
-  cell.textContent = content;
+
+  // Check if the content is an object and format its values as a list
+  if (typeof content === 'object' && content !== null) {
+    const listContent = `<ul>${formatObjectValuesAsList(content)}</ul>`;
+    cell.innerHTML = listContent;
+  } else {
+    cell.textContent = content;
+  }
+
   return cell;
-}
-
-/**
- * Generates a table header row from the keys of a data object.
- * 
- * @param {Object} headers - A sample data object to extract keys for header columns.
- * @returns {HTMLTableRowElement} The created header row element.
- */
-function createTableHeader(headers, isArticleBased = false) {
-  const headerRow = document.createElement('tr');
-
-  if (isArticleBased) {
-    // For article-based data
-    headers.forEach((key, index) => {
-      let cssClass;
-      // Apply custom CSS classes to the first two headers
-      if (index === 0) cssClass = dataTableHeaderClasses.firstHeaderCol;
-      // else if (index === 1) cssClass = dataTableHeaderClasses.secondHeaderCol; TODO: uncomment once we decide the first two columns
-      else cssClass = dataTableHeaderClasses.otherHeaderCols;
-
-      const headerCell = createTableCell(key, cssClass, true);
-      headerRow.appendChild(headerCell);
-    });
-  } else {
-    // For term-based data
-    headers.forEach(key => {
-      let cssClass;
-      if (key === "key") {
-        cssClass = dataTableHeaderClasses.firstHeaderCol;
-      } else if (key === "doc_count") {
-        cssClass = dataTableHeaderClasses.secondHeaderCol;
-      } else {
-        cssClass = dataTableHeaderClasses.otherHeaderCols;
-      }
-      const headerCell = createTableCell(key, cssClass, true);
-      headerRow.appendChild(headerCell);
-    });
-  }
-  return headerRow;
-}
-
-/**
- * Generates a table row from a data object.
- * This function handles both term-based and article-based data objects.
- * 
- * @param {Object} data - The data object to create the table row for.
- * @param {boolean} isArticleBased - Indicates if the data object is article-based.
- * @returns {HTMLTableRowElement} The created table row element.
- */
-function createTableBodyRow(data, includes = null, isArticleBased = false) {
-  const row = document.createElement('tr');
-
-  if (isArticleBased) {
-    // Define the order of the keys based on the includes array
-    const keysOrder = includes.split(",");
-    
-    // Apply custom styling for the first two keys and handle missing keys
-    keysOrder.forEach((key, index) => {
-      let cssClass;
-      if (index === 0) cssClass = dataTableBodyClasses.firstCol;
-      // else if (index === 1) cssClass = dataTableBodyClasses.secondCol;  TODO: uncomment once we decide the first two columns
-      else cssClass = dataTableBodyClasses.otherCols;
-
-      // Handle missing keys by setting default content to "N/A"
-      const content = data[key] !== undefined ? data[key] : "N/A";
-      let cellContent = Array.isArray(content) || typeof content === 'object' ? JSON.stringify(content) : content;
-      row.appendChild(createTableCell(cellContent, cssClass));
-    });
-  } else {
-    // Handle term-based data
-    Object.keys(termBasedHeaders).forEach((key, index) => {
-      let cssClass = (index === 0) ? dataTableBodyClasses.firstCol : dataTableBodyClasses.otherCols;
-      const content = data[key] !== undefined ? data[key].doc_count : "N/A";
-      row.appendChild(createTableCell(content, cssClass));
-    });
-  }
-
-  return row;
 }
 
 

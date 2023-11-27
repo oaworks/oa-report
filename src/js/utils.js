@@ -204,6 +204,26 @@ export function debounce(func, wait) {
 }
 
 /**
+ * Formats the values of an object as list items.
+ * If a value is an array, each element is formatted as a list item.
+ * If a value is a string or number, it is formatted as a single list item.
+ *
+ * @param {Object} object - The object whose values will be formatted.
+ * @returns {string} A string containing HTML list items.
+ */
+export function formatObjectValuesAsList(object) {
+  let listItems = [];
+  for (const key in object) {
+    if (Array.isArray(object[key])) {
+      object[key].forEach(item => listItems.push(`<li>${item}</li>`));
+    } else {
+      listItems.push(`<li>${object[key]}</li>`);
+    }
+  }
+  return listItems.join('');
+}
+
+/**
  * Reorders the keys of each record in an array based on a specified order.
  * 
  * @param {Array<Object>} records - The array of records to reorder.
