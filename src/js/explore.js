@@ -259,32 +259,21 @@ function createTableHeader(headers, isArticleBased = false) {
   const headerRow = document.createElement('tr');
 
   if (isArticleBased) {
-    // Reorder headers for article-based data: 'title', 'DOI', then others
-    const titleIndex = headers.indexOf("title");
-    const doiIndex = headers.indexOf("DOI");
-    
-    if (titleIndex > -1) {
-      headers.splice(titleIndex, 1); // Remove 'title'
-      headers.unshift("title"); // Add 'title' at the beginning
-    }
+    // For article-based data
+    headers.forEach((key, index) => {
+      let cssClass;
+      // Apply custom CSS classes to the first two headers
+      if (index === 0) cssClass = dataTableHeaderClasses.firstHeaderCol;
+      // else if (index === 1) cssClass = dataTableHeaderClasses.secondHeaderCol; TODO: uncomment once we decide the first two columns
+      else cssClass = dataTableHeaderClasses.otherHeaderCols;
 
-    if (doiIndex > -1) {
-      headers.splice(doiIndex, 1); // Remove 'DOI'
-      headers.splice(1, 0, "DOI"); // Add 'DOI' as the second element
-    }
-  }
-
-  headers.forEach(key => {
-    let cssClass;
-    if (isArticleBased) {
-      if (key === "title") {
-        cssClass = dataTableHeaderClasses.firstHeaderCol;
-      } else if (key === "DOI") {
-        cssClass = dataTableHeaderClasses.secondHeaderCol;
-      } else {
-        cssClass = dataTableHeaderClasses.otherHeaderCols;
-      }
-    } else {
+      const headerCell = createTableCell(key, cssClass, true);
+      headerRow.appendChild(headerCell);
+    });
+  } else {
+    // For term-based data
+    headers.forEach(key => {
+      let cssClass;
       if (key === "key") {
         cssClass = dataTableHeaderClasses.firstHeaderCol;
       } else if (key === "doc_count") {
@@ -292,11 +281,10 @@ function createTableHeader(headers, isArticleBased = false) {
       } else {
         cssClass = dataTableHeaderClasses.otherHeaderCols;
       }
-    }
-    const headerCell = createTableCell(key, cssClass, true);
-    headerRow.appendChild(headerCell);
-  });
-
+      const headerCell = createTableCell(key, cssClass, true);
+      headerRow.appendChild(headerCell);
+    });
+  }
   return headerRow;
 }
 
@@ -312,40 +300,33 @@ function createTableBodyRow(data, includes = null, isArticleBased = false) {
   const row = document.createElement('tr');
 
   if (isArticleBased) {
-    // Define all possible keys for article-based data
-    // const allKeys = includes.split(",");
+    // Define the order of the keys based on the includes array
+    const keysOrder = includes.split(",");
     
-    // console.log(data);
-
     // Apply custom styling for the first two keys and handle missing keys
-    Object.keys(articleBasedDataHeaders).forEach((key, index) => {
+    keysOrder.forEach((key, index) => {
       let cssClass;
       if (index === 0) cssClass = dataTableBodyClasses.firstCol;
-      else if (index === 1) cssClass = dataTableBodyClasses.secondCol;
+      // else if (index === 1) cssClass = dataTableBodyClasses.secondCol;  TODO: uncomment once we decide the first two columns
       else cssClass = dataTableBodyClasses.otherCols;
 
+      // Handle missing keys by setting default content to "N/A"
       const content = data[key] !== undefined ? data[key] : "N/A";
       let cellContent = Array.isArray(content) || typeof content === 'object' ? JSON.stringify(content) : content;
       row.appendChild(createTableCell(cellContent, cssClass));
     });
   } else {
-      // Handle term-based data
-      // console.log(data);
+    // Handle term-based data
     Object.keys(termBasedHeaders).forEach((key, index) => {
-      let cssClass;
-      // Apply custom styling for the first two keys and handle missing 
-      if (index === 0) cssClass = dataTableBodyClasses.firstCol;
-      else if (index === 1) cssClass = dataTableBodyClasses.secondCol;
-      else cssClass = dataTableBodyClasses.otherCols;
-
+      let cssClass = (index === 0) ? dataTableBodyClasses.firstCol : dataTableBodyClasses.otherCols;
       const content = data[key] !== undefined ? data[key].doc_count : "N/A";
-      let cellContent = typeof content === 'object' && content.value !== undefined ? content.value : content;
-      row.appendChild(createTableCell(cellContent, cssClass));
+      row.appendChild(createTableCell(content, cssClass));
     });
   }
-  
+
   return row;
 }
+
 
 // =================================================
 // Interactive feature functions
