@@ -277,3 +277,25 @@ function getNestedPropertyValue(obj, path) {
     return null;
   }, obj);
 }
+
+/**
+ * Converts a singular noun to its plural form.
+ * Capitalises the first letter; replaces 'y' with 'ies', or appends 's'.
+ *
+ * @param {string} noun - The singular noun to pluralise.
+ * @return {string} Pluralised form of the noun.
+ */
+export function pluraliseNoun(noun) {
+  if (typeof noun !== "string") {
+      throw new Error("Input must be a string");
+  }
+
+  let firstLetter = noun.charAt(0).toUpperCase();
+  let restOfTheWord = noun.slice(1);
+
+  if (noun.endsWith("y")) {
+      return firstLetter + restOfTheWord.slice(0, -1) + "ies";
+  } else {
+      return firstLetter + restOfTheWord + "s";
+  }
+}

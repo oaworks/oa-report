@@ -7,8 +7,8 @@
 // Imports
 // =================================================
 
-import { isCacheExpired, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList } from "./utils.js";
-import { exploreItem, dataTableBodyClasses, dataTableHeaderClasses, termBasedHeaders, articleBasedDataHeaders } from "./constants.js";
+import { isCacheExpired, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun } from "./utils.js";
+import { exploreItem, dataTableBodyClasses, dataTableHeaderClasses } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 
 // =================================================
@@ -70,83 +70,105 @@ export async function addButtonsToDOM(exploreData) {
  * @param {string} exploreDataType - The explore data object to create a button for. 
  * @returns {HTMLButtonElement} The created button element with event listeners attached.
  */
-export function createExploreButton(exploreDataType) {
-  const id = exploreDataType.id;
-  const type = exploreDataType.type;
-  const sort = exploreDataType.sort;
-  const includes = exploreDataType.includes;
-  const buttonId = `explore_${id}_button`;
-  const button = document.createElement("button");
-  button.id = buttonId;
-  button.className = "items-center inline-flex p-2 px-4 mr-4 mt-4 px-3 rounded-full bg-carnation-100 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500";
-  button.innerHTML = `<span>${exploreItem[id]?.plural || id}</span>`;
-  button.setAttribute("aria-label", exploreItem[id]?.tooltip || "No tooltip available");
+// export function createExploreButton(exploreDataType) {
+//   const id = exploreDataType.id;
+//   const type = exploreDataType.type;
+//   const sort = exploreDataType.sort;
+//   const includes = exploreDataType.includes;
+//   const buttonId = `explore_${id}_button`;
+//   const button = document.createElement("button");
+//   button.id = buttonId;
+//   button.className = "items-center inline-flex p-2 px-4 mr-4 mt-4 px-3 rounded-full bg-carnation-100 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500";
+//   button.innerHTML = `<span>${exploreItem[id]?.plural || id}</span>`;
+//   button.setAttribute("aria-label", exploreItem[id]?.tooltip || "No tooltip available");
 
-  button.addEventListener("click", debounce(async function() {
-    toggleLoadingIndicator(true); // Show loading indicator
-    updateButtonActiveStyles(buttonId); // Highlight selected button
+//   button.addEventListener("click", debounce(async function() {
+//     toggleLoadingIndicator(true); // Show loading indicator
+//     updateButtonActiveStyles(buttonId); // Highlight selected button
     
-    if (type === "terms") {
-      const term = exploreDataType.term;
-      await handleTermBasedButtonClick(id, term, sort, includes);
-    } else if (type === "articles") {
-      await handleArticleBasedButtonClick(id, includes);
-    }
+//     if (type === "terms") {
+//       const term = exploreDataType.term;
+//       await handleTermBasedButtonClick(id, term, sort, includes);
+//     } else if (type === "articles") {
+//       await handleArticleBasedButtonClick(id, includes);
+//     }
 
-    toggleLoadingIndicator(false); // Hide loading indicator after data is loaded
-  }, 500));
+//     toggleLoadingIndicator(false); // Hide loading indicator after data is loaded
+//   }, 500));
 
+//   return button;
+// }
+
+/**
+ * Creates and configures a button element for an explore item.
+ * 
+ * @param {Object} exploreDataType - The explore data object to create a button for.
+ * @returns {HTMLButtonElement} The created and configured button element.
+ */
+export function createExploreButton(exploreDataType) {
+  const button = document.createElement("button");
+  const id = exploreDataType.id;
+  button.id = `explore_${id}_button`;
+  button.className = "items-center inline-flex p-2 px-4 mr-4 mt-4 px-3 rounded-full bg-carnation-100 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500";
+  button.innerHTML = `<span>${exploreItem[id]?.plural || pluraliseNoun(id)}</span>`; // Set button text to plural form of label
+  setupButtonEventListener(button, exploreDataType);
   return button;
 }
 
 /**
- * Handles the click event for buttons associated with term-based explore items.
- * It fetches data using a POST request and updates the table with the results.
+ * Creates a button element with a specified id.
  * 
- * @param {string} id - The ID of the explore item.
- * @param {string} term - The term associated with the explore item, used in the data fetch.
+ * @param {string} id - The ID for the button element.
+ * @returns {HTMLButtonElement} The created button element.
  */
-async function handleTermBasedButtonClick(id, term, sort, includes) {
-  const postData = createPostData(orgName, term, "2023", "2023", 20, sort);
-  const responseData = await fetchPostData(postData);
-  const records = responseData.aggregations.key.buckets;
-  updateTableContainer(id, records, includes);
-  console.log("Term-based table.");
-  console.log(records);
-}
-
+// function createButton(id) {
+//   const button = document.createElement("button");
+//   button.id = `explore_${id}_button`;
+//   button.className = "items-center inline-flex p-2 px-4 mr-4 mt-4 px-3 rounded-full bg-carnation-100 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500";
+//   button.innerHTML = `<span>${exploreItem[id]?.plural || id}</span>`;
+//   return button;
+// }
 
 /**
- * Handles the click event for buttons associated with article-based explore items.
- * It constructs a query URL using provided parameters, fetches data using a GET request,
- * and updates the table with the results.
+ * Sets up the event listener for a button element.
  * 
- * @param {string} id - The ID of the explore item.
- * @param {string} includes - The 'includes' key associated with the explore item, used in data fetch.
+ * @param {HTMLButtonElement} button - The button element to attach the event listener to.
+ * @param {Object} itemData - The data object associated with the explore item.
  */
-async function handleArticleBasedButtonClick(id, includes) {
-  const analysisResponse = await fetchGetData(`https://${apiEndpoint}.oa.works/report/orgs?q=${org}&include=analysis`);
-  const analysisData = analysisResponse.hits.hits[0]._source;
+function setupButtonEventListener(button, itemData) {
+  button.addEventListener("click", debounce(async function() {
+    toggleLoadingIndicator(true);
+    updateButtonActiveStyles(button.id);
+    await handleButtonClick(itemData.type, itemData.id, itemData.term, itemData.sort, itemData.includes);
+    toggleLoadingIndicator(false);
+  }, 500));
+}
 
-  const exploreData = dataCache[org].data;
-  const articlesObject = exploreData.find(item => item.id === id);
-  
-  if (articlesObject && analysisData) {
-    // TODO: work out how to include both is_paper and is_preprint. Using either OR or AND yields zero results. 
-    // const queryArray = articlesObject.query.split(',');
-    // const queryParts = queryArray.map(part => encodeURIComponent(getNestedProperty(analysisData, part))).join("%20OR%20"); 
-    const query = analysisData.analysis.is_paper.query;
-    const size = 20;
-    const fullQueryUrl = `https://${apiEndpoint}.oa.works/report/works/?q=(published_date:%3E2022-12-31%20AND%20published_date:%3C2023-11-23)%20AND%20(${query})&size=${size}&include=${includes}`;
-    const data = await fetchGetData(fullQueryUrl);
+/**
+ * Handles the click event for both term-based and article-based explore items.
+ * Fetches data and updates the table with the results.
+ * 
+ * @param {string} itemType - The type of the item ('terms' or 'articles').
+ * @param {string} id - The ID of the explore item.
+ * @param {string} [term] - The term associated with the explore item, used in the data fetch for term-based items.
+ * @param {string} [sort] - The sorting order.
+ * @param {string} [includes] - The 'includes' key associated with the explore item, used in data fetch for article-based items.
+ */
+async function handleButtonClick(itemType, id, term, sort, includes) {
+  let responseData;
+  if (itemType === "terms") {
+    const postData = createPostData(orgName, term, "2023", "2023", 20, sort);
+    responseData = await fetchPostData(postData);
+  } else if (itemType === "articles") {
+    // similar logic for article-based items
+  }
 
-    if (data && data.hits && data.hits.hits) {
-      let records = data.hits.hits.map(hit => hit._source);
-      records = reorderRecords(records, includes);
-      updateTableContainer(id, records, includes);
-      console.log("Article-based table.");
-      console.log(records);
-    }
+  // Common logic for both term and article based types
+  if (responseData) {
+    const records = responseData.aggregations.key.buckets;
+    updateTableContainer(id, records, includes);
+    console.log(`${itemType}-based table.`);
+    console.log(records);
   }
 }
 
@@ -216,11 +238,10 @@ function populateTableHeader(tableHeaderId, includes) {
 }
 
 /**
- * Populates a table with data from either term-based or article-based explore items.
+ * Populates a table body with data from explore items.
  * 
  * @param {Array<Object>} data - Array of data objects to populate the table with.
- * @param {string} tableBodyId - The ID of the table to populate.
- * @param {string} includes - Comma-separated string defining the order and selection of keys to include in the table.
+ * @param {string} tableBodyId - The ID of the table body to populate.
  */
 function populateTableBody(data, tableBodyId, includes) {
   const tableBody = document.getElementById(tableBodyId);
