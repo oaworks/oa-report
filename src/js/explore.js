@@ -189,7 +189,7 @@ function updateTableContainer(selectedId, data, includes) {
  * @param {Object[]} headers - An array of data objects used to derive the header columns. Assumes all objects have the same structure.
  * @param {string} tableHeaderId - The ID of the table header element where the headers should be appended.
  */
-function populateTableHeader(headers, tableHeaderId) {
+function populateTableHeader(headers, tableHeaderId, includes) {
   const tableHeader = document.getElementById(tableHeaderId);
   if (!tableHeader) return;
 
@@ -198,18 +198,33 @@ function populateTableHeader(headers, tableHeaderId) {
     tableHeader.removeChild(tableHeader.firstChild);
   }
 
+  const keysOrder = includes.split(",");
+  keysOrder.unshift("key"); // Add key for the first column
+
   // Create and add the header row
   const headerRow = document.createElement('tr');
-  headers.forEach((key, index) => {
-    let cssClass;
-    if (index === 0) cssClass = dataTableHeaderClasses.firstHeaderCol;
-    // else if (index === 1) cssClass = dataTableHeaderClasses.secondHeaderCol;
+    keysOrder.forEach((key, index) => {
+      let cssClass;
+      if (index === 0) cssClass = dataTableHeaderClasses.firstHeaderCol;
+    else if (index === 1) cssClass = dataTableHeaderClasses.secondHeaderCol;
     else cssClass = dataTableHeaderClasses.otherHeaderCols;
 
-    const headerCell = createTableCell(key, cssClass, true);
-    headerRow.appendChild(headerCell);
-  });
-  tableHeader.appendChild(headerRow);
+      const headerCell = createTableCell(key, cssClass, true);
+      headerRow.appendChild(headerCell);
+    });
+    tableHeader.appendChild(headerRow);
+
+  // const headerRow = document.createElement('tr');
+  // headers.forEach((key, index) => {
+  //   let cssClass;
+  //   if (index === 0) cssClass = dataTableHeaderClasses.firstHeaderCol;
+  //   else if (index === 1) cssClass = dataTableHeaderClasses.secondHeaderCol;
+  //   else cssClass = dataTableHeaderClasses.otherHeaderCols;
+
+  //   const headerCell = createTableCell(key, cssClass, true);
+  //   headerRow.appendChild(headerCell);
+  // });
+  // tableHeader.appendChild(headerRow);
 }
 
 /**
@@ -230,6 +245,7 @@ function populateTableBody(data, tableBodyId, includes) {
 
   // Define the order of the keys based on the includes array
   const keysOrder = includes.split(",");
+  keysOrder.unshift("key"); // Add key for the first column
 
   // Add new rows from data
   data.forEach(dataObject => {
@@ -237,7 +253,7 @@ function populateTableBody(data, tableBodyId, includes) {
     keysOrder.forEach((key, index) => {
       let cssClass;
       if (index === 0) cssClass = dataTableBodyClasses.firstCol;
-      // else if (index === 1) cssClass = dataTableBodyClasses.secondCol;
+      else if (index === 1) cssClass = dataTableBodyClasses.secondCol;
       else cssClass = dataTableBodyClasses.otherCols;
 
       const content = dataObject[key] !== undefined ? dataObject[key] : "N/A";
