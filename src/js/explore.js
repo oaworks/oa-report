@@ -67,7 +67,7 @@ export async function addButtonsToDOM(exploreData) {
  * based on the type of explore item. It handles both term-based items (e.g., 'grant', 'publisher')
  * and article-based items which are identified by the 'includes' key.
  * 
- * @param {string} record - 
+ * @param {string} exploreDataType - The explore data object to create a button for. 
  * @returns {HTMLButtonElement} The created button element with event listeners attached.
  */
 export function createExploreButton(exploreDataType) {
@@ -177,7 +177,7 @@ function updateTableContainer(selectedId, data, includes) {
   const headers = data.length > 0 ? Object.keys(data[0]) : [];
 
   // Populate table with data
-  populateTableHeader(headers, 'export_table_head', includes);
+  populateTableHeader('export_table_head', includes);
   populateTableBody(data, 'export_table_body', includes);
 }
 
@@ -189,7 +189,7 @@ function updateTableContainer(selectedId, data, includes) {
  * @param {Object[]} headers - An array of data objects used to derive the header columns. Assumes all objects have the same structure.
  * @param {string} tableHeaderId - The ID of the table header element where the headers should be appended.
  */
-function populateTableHeader(headers, tableHeaderId, includes) {
+function populateTableHeader(tableHeaderId, includes) {
   const tableHeader = document.getElementById(tableHeaderId);
   if (!tableHeader) return;
 
