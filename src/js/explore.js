@@ -213,18 +213,6 @@ function populateTableHeader(headers, tableHeaderId, includes) {
       headerRow.appendChild(headerCell);
     });
     tableHeader.appendChild(headerRow);
-
-  // const headerRow = document.createElement('tr');
-  // headers.forEach((key, index) => {
-  //   let cssClass;
-  //   if (index === 0) cssClass = dataTableHeaderClasses.firstHeaderCol;
-  //   else if (index === 1) cssClass = dataTableHeaderClasses.secondHeaderCol;
-  //   else cssClass = dataTableHeaderClasses.otherHeaderCols;
-
-  //   const headerCell = createTableCell(key, cssClass, true);
-  //   headerRow.appendChild(headerCell);
-  // });
-  // tableHeader.appendChild(headerRow);
 }
 
 /**
