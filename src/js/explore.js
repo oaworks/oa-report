@@ -7,9 +7,10 @@
 // Imports
 // =================================================
 
-import { isCacheExpired, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear } from "./utils.js";
+import { displayNone, isCacheExpired, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear } from "./utils.js";
 import { exploreItem, dataTableBodyClasses, dataTableHeaderClasses } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
+import { report } from './oareport.js';
 
 // =================================================
 // Global variables
@@ -25,6 +26,14 @@ const dataCache = {};
 // DOM Manipulation functions
 // =================================================
 
+
+// WRONG: https://beta.oa.works/report/orgs?q=templeton-world-charity-foundation&include=explore
+// right https://beta.oa.works/report/orgs?q=objectID:%22templeton-world-charity-foundation%22 
+// Ensure that the total published is the same as year total
+// cHECK with GATES
+
+
+
 /**
  * Initializes the data explore section by fetching data from the org index 
  * and adding buttons.
@@ -38,17 +47,24 @@ export async function initDataExplore(org) {
       addButtonsToDOM(dataCache[org].data);
     } else {
       // Fetch new data and update cache
-      const exploreData = await fetchGetData(`https://${apiEndpoint}.oa.works/report/orgs?q=${org}&include=explore`);
-      dataCache[org] = {
-        data: exploreData.hits.hits[0]._source.explore,
-        timestamp: new Date().getTime() // Current timestamp in milliseconds
-      };
-      addButtonsToDOM(dataCache[org].data);
+      const exploreData = await fetchGetData(report);
+      console.log(exploreData);
+
+      if (exploreData.hits.hits[0]._source.explore) {
+        dataCache[org] = {
+          data: exploreData.hits.hits[0]._source.explore,
+          timestamp: new Date().getTime() // Current timestamp in milliseconds
+        };
+        addButtonsToDOM(dataCache[org].data);
+      } else {
+        handleNoExploreData(); // Handle the case where there is no explore object
+      }
     }
   } catch (error) {
     console.error('Error initializing data explore:', error);
   }
 }
+
 
 /**
  * Adds buttons to the DOM, one per item found in the org index explore data.
@@ -136,6 +152,7 @@ async function handleButtonClick(itemData) {
     const analysisResponse = await fetchGetData(`https://${apiEndpoint}.oa.works/report/orgs?q=${org}&include=analysis`);
     const query = analysisResponse.hits.hits[0]._source.analysis.is_paper.query; // TODO: should be using itemData.query
 
+    // TODO: use dynamic date here
     const getDataUrl = `https://${apiEndpoint}.oa.works/report/works/?q=(published_date:%3E2022-12-31%20AND%20published_date:%3C2023-11-23)%20AND%20(${query})&size=${size}&include=${includes}`;
     responseData = await fetchGetData(getDataUrl); // No need to generate POST request
 
@@ -154,9 +171,21 @@ async function handleButtonClick(itemData) {
   }
 }
 
+// Use explore.item.query comma-selected list
+// Hardcore filter label to "is_paper" and is_preprint (= articles, = preprints)
+
+
 // =================================================
 // Table updating and styling functions
 // =================================================
+
+/**
+ * Handles the scenario when explore data is not available for an org
+ * by simply not displaying the Explore section on the report.
+ */
+function handleNoExploreData() {
+  displayNone("explore");
+}
 
 /**
  * Updates the table header and fetches data to populate the table.
