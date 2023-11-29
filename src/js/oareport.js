@@ -65,7 +65,7 @@ export function initInsightsAndStrategies(org) {
       if (email !== 'undefined' && hasOrgKey) {
           axios.get(`${articleEmailBase + doi}?${orgKey}`)
               .then(function (response) {
-                  let authorEmail = orgData;
+                  let authorEmail = response.data;
                   mailto = mailto.replaceAll("{email}", authorEmail);
                   window.open(`mailto:${mailto}`);
               })
