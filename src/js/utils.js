@@ -299,3 +299,35 @@ export function pluraliseNoun(noun) {
       return firstLetter + restOfTheWord + "s";
   }
 }
+
+/**
+ * Retrieves the full name of a researcher from ORCiD using their ORCiD ID.
+ * 
+ * @param {string} orcidId - The ORCiD ID of the researcher.
+ * @returns {Promise<string>} A promise that resolves to the full name of the researcher.
+ * @throws {Error} Throws an error if the request fails or if the data is not available.
+ */
+export function getORCiDFullName(orcidId) {
+  return new Promise((resolve, reject) => {
+      const url = `https://pub.orcid.org/v3.0/${orcidId}/person`;
+
+      axios.get(url, {
+          headers: {
+              'Accept': 'application/json'
+          }
+      })
+      .then(response => {
+          try {
+              const givenName = response.data.name['given-names'].value;
+              const familyName = response.data.name['family-name'].value;
+              const fullName = `${givenName} ${familyName}`;
+              resolve(fullName);
+          } catch (error) {
+              reject(new Error('Failed to extract the full name from the response.'));
+          }
+      })
+      .catch(error => {
+          reject(new Error('Failed to retrieve data from ORCiD.'));
+      });
+  });
+}
