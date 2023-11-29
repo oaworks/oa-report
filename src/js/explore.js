@@ -26,7 +26,9 @@ const dataCache = {};
 // =================================================
 
 /**
- * Initializes the data explore section by fetching and adding buttons.
+ * Initializes the data explore section by fetching data from the org index 
+ * and adding buttons.
+ * 
  * @param {string} org - The organization identifier for the API query.
  */
 export async function initDataExplore(org) {
@@ -49,98 +51,62 @@ export async function initDataExplore(org) {
 }
 
 /**
- * Adds generated buttons to the DOM based on the explore data.
+ * Adds buttons to the DOM, one per item found in the org index explore data.
  *
  * @param {Array<Object>} exploreData - Array of explore data objects from the API response.
  */
 export async function addButtonsToDOM(exploreData) {
   const exploreButtons = document.getElementById('explore_buttons');
-  for (const exploreDataType of exploreData) {
-    let button = createExploreButton(exploreDataType);
+  console.log("step 1: addButtonsToDOM. Display exploreData:");
+  console.log(exploreData);
+  console.log("--------------");
+  for (const exploreDataItem of exploreData) {
+    let button = createExploreButton(exploreDataItem);
     exploreButtons.appendChild(button);
   }
 }
 
 /**
- * Creates a button element for an explore item.
- * This function dynamically creates a button and assigns appropriate event listeners
- * based on the type of explore item. It handles both term-based items (e.g., 'grant', 'publisher')
- * and article-based items which are identified by the 'includes' key.
- * 
- * @param {string} exploreDataType - The explore data object to create a button for. 
- * @returns {HTMLButtonElement} The created button element with event listeners attached.
- */
-// export function createExploreButton(exploreDataType) {
-//   const id = exploreDataType.id;
-//   const type = exploreDataType.type;
-//   const sort = exploreDataType.sort;
-//   const includes = exploreDataType.includes;
-//   const buttonId = `explore_${id}_button`;
-//   const button = document.createElement("button");
-//   button.id = buttonId;
-//   button.className = "items-center inline-flex p-2 px-4 mr-4 mt-4 px-3 rounded-full bg-carnation-100 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500";
-//   button.innerHTML = `<span>${exploreItem[id]?.plural || id}</span>`;
-//   button.setAttribute("aria-label", exploreItem[id]?.tooltip || "No tooltip available");
-
-//   button.addEventListener("click", debounce(async function() {
-//     toggleLoadingIndicator(true); // Show loading indicator
-//     updateButtonActiveStyles(buttonId); // Highlight selected button
-    
-//     if (type === "terms") {
-//       const term = exploreDataType.term;
-//       await handleTermBasedButtonClick(id, term, sort, includes);
-//     } else if (type === "articles") {
-//       await handleArticleBasedButtonClick(id, includes);
-//     }
-
-//     toggleLoadingIndicator(false); // Hide loading indicator after data is loaded
-//   }, 500));
-
-//   return button;
-// }
-
-/**
- * Creates and configures a button element for an explore item.
+ * Creates and configures a button element for an explore item with a specified
+ * ID, the group of data to be shown (label), and Tailwind CSS classes.
  * 
  * @param {Object} exploreDataType - The explore data object to create a button for.
  * @returns {HTMLButtonElement} The created and configured button element.
  */
-export function createExploreButton(exploreDataType) {
+export function createExploreButton(exploreDataItem) {
+  console.log("step 2: createExploreButton. Display exploreDataItem:");
+  console.log(exploreDataItem);
+  console.log("--------------");
+
   const button = document.createElement("button");
-  const id = exploreDataType.id;
+  const id = exploreDataItem.id;
   button.id = `explore_${id}_button`;
-  button.className = "items-center inline-flex p-2 px-4 mr-4 mt-4 px-3 rounded-full bg-carnation-100 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500";
   button.innerHTML = `<span>${exploreItem[id]?.plural || pluraliseNoun(id)}</span>`; // Set button text to plural form of label
-  setupButtonEventListener(button, exploreDataType);
+  button.className = "items-center inline-flex p-2 px-4 mr-4 mt-4 px-3 rounded-full bg-carnation-100 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500";
+  setupButtonEventListener(button, exploreDataItem);
   return button;
 }
 
 /**
- * Creates a button element with a specified id.
- * 
- * @param {string} id - The ID for the button element.
- * @returns {HTMLButtonElement} The created button element.
- */
-// function createButton(id) {
-//   const button = document.createElement("button");
-//   button.id = `explore_${id}_button`;
-//   button.className = "items-center inline-flex p-2 px-4 mr-4 mt-4 px-3 rounded-full bg-carnation-100 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500";
-//   button.innerHTML = `<span>${exploreItem[id]?.plural || id}</span>`;
-//   return button;
-// }
-
-/**
- * Sets up the event listener for a button element.
+ * Sets up the click event listener for an explore button, including showing a loading
+ * indicator, updating the button styles, and calling the appropriate handler function
+ * to display the data in a table.
  * 
  * @param {HTMLButtonElement} button - The button element to attach the event listener to.
  * @param {Object} itemData - The data object associated with the explore item.
  */
 function setupButtonEventListener(button, itemData) {
   button.addEventListener("click", debounce(async function() {
-    toggleLoadingIndicator(true);
+    console.log("step 3: setupButtonEventListener. Display button:");
+    console.log(button);
+    console.log("Display itemData:")
+    console.log(itemData);
+    console.log("--------------");
+    
+    toggleLoadingIndicator(true); // Display loading indicator on button click
     updateButtonActiveStyles(button.id);
-    await handleButtonClick(itemData.type, itemData.id, itemData.term, itemData.sort, itemData.includes);
-    toggleLoadingIndicator(false);
+    await handleButtonClick(itemData); // 
+    toggleLoadingIndicator(false); // Once data is loaded, hide loading indicator
   }, 500));
 }
 
@@ -154,20 +120,36 @@ function setupButtonEventListener(button, itemData) {
  * @param {string} [sort] - The sorting order.
  * @param {string} [includes] - The 'includes' key associated with the explore item, used in data fetch for article-based items.
  */
-async function handleButtonClick(itemType, id, term, sort, includes) {
-  let responseData;
-  if (itemType === "terms") {
-    const postData = createPostData(orgName, term, "2023", "2023", 20, sort);
+async function handleButtonClick(itemData) {
+
+  const type = itemData.type;
+  const id = itemData.id;
+  const term = itemData.term;
+  const sort = itemData.sort;
+  const includes = itemData.includes;
+
+  let responseData, records;
+
+  console.log(`step 4: handleButtonClick. Display itemData for ${id}:`);
+  console.log(itemData);
+  console.log("--------------");
+
+  if (type === "terms") {
+    // For term-based objects like 'grant', 'publisher', 'author', etc.
+    const postData = createPostData(orgName, term, "2023", "2023", 20, sort); // Generate POST request
     responseData = await fetchPostData(postData);
-  } else if (itemType === "articles") {
-    // similar logic for article-based items
+    records = responseData.aggregations.key.buckets; // Get a clean records array from the response
+
+    console.log(responseData);
+  } else if (type === "articles") {
+    // For article-based objects
+    // responseData = [];
   }
 
   // Common logic for both term and article based types
   if (responseData) {
-    const records = responseData.aggregations.key.buckets;
     updateTableContainer(id, records, includes);
-    console.log(`${itemType}-based table.`);
+    console.log(`${type}-based table (${id}).`);
     console.log(records);
   }
 }
@@ -194,9 +176,6 @@ function updateTableContainer(selectedId, data, includes) {
   // Add functionalities to the table
   enableExploreRowHighlighting();
   enableExploreTableScroll();
-
-  // Assuming the first object's keys represent the headers
-  const headers = data.length > 0 ? Object.keys(data[0]) : [];
 
   // Populate table with data
   populateTableHeader('export_table_head', includes);
