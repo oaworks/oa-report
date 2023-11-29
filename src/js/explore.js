@@ -221,7 +221,6 @@ function populateTableHeader(tableHeaderId, includes) {
   }
 
   const keysOrder = includes.split(",");
-  keysOrder.unshift("key"); // Add key for the first column
 
   // Create and add the header row
   const headerRow = document.createElement('tr');
@@ -254,7 +253,6 @@ function populateTableBody(data, tableBodyId, includes) {
 
   // Define the order of the keys based on the includes array
   const keysOrder = includes.split(",");
-  keysOrder.unshift("key"); // Add key for the first column
 
   // Add new rows from data
   data.forEach(dataObject => {
