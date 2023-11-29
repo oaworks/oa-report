@@ -57,9 +57,7 @@ export async function initDataExplore(org) {
  */
 export async function addButtonsToDOM(exploreData) {
   const exploreButtons = document.getElementById('explore_buttons');
-  console.log("step 1: addButtonsToDOM. Display exploreData:");
-  console.log(exploreData);
-  console.log("--------------");
+  
   for (const exploreDataItem of exploreData) {
     let button = createExploreButton(exploreDataItem);
     exploreButtons.appendChild(button);
@@ -69,20 +67,17 @@ export async function addButtonsToDOM(exploreData) {
 /**
  * Creates and configures a button element for an explore item with a specified
  * ID, the group of data to be shown (label), and Tailwind CSS classes.
+ * Then attach event listener to the button.
  * 
  * @param {Object} exploreDataType - The explore data object to create a button for.
  * @returns {HTMLButtonElement} The created and configured button element.
  */
 export function createExploreButton(exploreDataItem) {
-  console.log("step 2: createExploreButton. Display exploreDataItem:");
-  console.log(exploreDataItem);
-  console.log("--------------");
-
   const button = document.createElement("button");
-  const id = exploreDataItem.id;
-  button.id = `explore_${id}_button`;
+  const id = exploreDataItem.id; 
+  button.id = `explore_${id}_button`; 
   button.innerHTML = `<span>${exploreItem[id]?.plural || pluraliseNoun(id)}</span>`; // Set button text to plural form of label
-  button.className = "items-center inline-flex p-2 px-4 mr-4 mt-4 px-3 rounded-full bg-carnation-100 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500";
+  button.className = "items-center inline-flex p-2 px-4 mr-4 mt-4 px-3 rounded-full bg-carnation-100 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500"; 
   setupButtonEventListener(button, exploreDataItem);
   return button;
 }
@@ -96,13 +91,7 @@ export function createExploreButton(exploreDataItem) {
  * @param {Object} itemData - The data object associated with the explore item.
  */
 function setupButtonEventListener(button, itemData) {
-  button.addEventListener("click", debounce(async function() {
-    console.log("step 3: setupButtonEventListener. Display button:");
-    console.log(button);
-    console.log("Display itemData:")
-    console.log(itemData);
-    console.log("--------------");
-    
+  button.addEventListener("click", debounce(async function() {    
     toggleLoadingIndicator(true); // Display loading indicator on button click
     updateButtonActiveStyles(button.id);
     await handleButtonClick(itemData); // 
@@ -121,33 +110,43 @@ function setupButtonEventListener(button, itemData) {
  * @param {string} [includes] - The 'includes' key associated with the explore item, used in data fetch for article-based items.
  */
 async function handleButtonClick(itemData) {
-
+  // Get all atributes of an explore item 
   const type = itemData.type;
   const id = itemData.id;
   const term = itemData.term;
   const sort = itemData.sort;
   const includes = itemData.includes;
 
-  let responseData, records;
+  const size = 20; // Set the number of records to fetch
 
-  console.log(`step 4: handleButtonClick. Display itemData for ${id}:`);
-  console.log(itemData);
-  console.log("--------------");
+  let responseData, records;
 
   if (type === "terms") {
     // For term-based objects like 'grant', 'publisher', 'author', etc.
-    const postData = createPostData(orgName, term, "2023", "2023", 20, sort); // Generate POST request
+    const postData = createPostData(orgName, term, "2023", "2023", size, sort); // Generate POST request
     responseData = await fetchPostData(postData);
-    records = responseData.aggregations.key.buckets; // Get a clean records array from the response
 
-    console.log(responseData);
+    // Check nested properties before assigning records
+    if (responseData && responseData.aggregations && responseData.aggregations.key && responseData.aggregations.key.buckets) {
+      records = responseData.aggregations.key.buckets; // Get a clean records array from the response
+    }
   } else if (type === "articles") {
     // For article-based objects
-    // responseData = [];
+    const analysisResponse = await fetchGetData(`https://${apiEndpoint}.oa.works/report/orgs?q=${org}&include=analysis`);
+    const query = analysisResponse.hits.hits[0]._source.analysis.is_paper.query; // TODO: should be using itemData.query
+
+    const getDataUrl = `https://${apiEndpoint}.oa.works/report/works/?q=(published_date:%3E2022-12-31%20AND%20published_date:%3C2023-11-23)%20AND%20(${query})&size=${size}&include=${includes}`;
+    responseData = await fetchGetData(getDataUrl); // No need to generate POST request
+
+    // Check nested properties before assigning records
+    if (responseData && responseData.hits && responseData.hits.hits) {
+      records = responseData.hits.hits.map(hit => hit._source); // Get a clean records array from the response
+    }
   }
 
   // Common logic for both term and article based types
-  if (responseData) {
+  if (records) {
+    records = reorderRecords(records, includes); // Ensure correct order of the records array according to its 'includes' value
     updateTableContainer(id, records, includes);
     console.log(`${type}-based table (${id}).`);
     console.log(records);
