@@ -121,12 +121,8 @@ function setupButtonEventListener(button, itemData) {
  * @param {string} [includes] - The 'includes' key associated with the explore item, used in data fetch for article-based items.
  */
 async function handleButtonClick(itemData) {
-  // Get all atributes of an explore item 
-  const type = itemData.type;
-  const id = itemData.id;
-  const term = itemData.term;
-  const sort = itemData.sort;
-  const includes = itemData.includes;
+  // Object destructuring to extract an explore item's properties 
+  const { type, id, term, sort, includes } = itemData;
 
   const size = 20; // Set the number of records to fetch
 
