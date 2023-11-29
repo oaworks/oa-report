@@ -4,7 +4,7 @@
 // =================================================
 
 import { makeDateReadable, changeDays, formatDateToISO, createDate, replaceDateRange, getDataExploreKeyFromButtonId, replaceText } from './utils.js';
-import { oareport, report } from './oareport.js';
+import { initInsightsAndStrategies, report } from './oareport.js';
 import { initDataExplore } from './explore.js';
 
 // Get year button nav elements
@@ -106,7 +106,7 @@ function bindYearButton(button, startDate, endDate, reportText) {
     reportDateRange.textContent = reportText || `In ${startDate.getFullYear()}`;
     reportYear.textContent = reportText || startDate.getFullYear();
     if (aggYear) replaceText("agg-year", reportText || startDate.getFullYear());
-    oareport(org);
+    initInsightsAndStrategies(org);
   });
 }
 
@@ -184,9 +184,9 @@ strategyTabBtns.forEach((tabBtn) => {
   tabBtn.addEventListener("click", updateStrategyButtonStyling);
 });
 
-// Generate the data table — main event listener
+// Main event listener
 document.addEventListener("DOMContentLoaded", function() {
-  oareport(org);
+  initInsightsAndStrategies(org);
   initDataExplore(org);
   console.log(report);
 });

@@ -34,7 +34,7 @@ let exportIncludes = "&include=DOI,title,subtitle,publisher,journal,issn,publish
 let exportSort = "&sort=published_date:desc"
 
 // Generate report’s UI for any given date range
-export function oareport(org) {
+export function initInsightsAndStrategies(org) {
 
   // Set paths for orgindex
   let queryPrefix                  = `${queryBase}q=${dateRange}`,
