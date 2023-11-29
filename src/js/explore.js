@@ -114,49 +114,75 @@ function setupButtonEventListener(button, itemData) {
  * Handles the click event for both term-based and article-based explore items.
  * Fetches data and updates the table with the results.
  * 
- * @param {string} itemType - The type of the item ('terms' or 'articles').
- * @param {string} id - The ID of the explore item.
- * @param {string} [term] - The term associated with the explore item, used in the data fetch for term-based items.
- * @param {string} [sort] - The sorting order.
- * @param {string} [includes] - The 'includes' key associated with the explore item, used in data fetch for article-based items.
+ * @param {Object} itemData - The data object of the explore item.
  */
 async function handleButtonClick(itemData) {
-  // Object destructuring to extract an explore item's properties 
-  const { type, id, term, sort, includes } = itemData;
-
+  const { type, id, term, sort, includes } = itemData; // Extract explore item's properties
   const size = 20; // Set the number of records to fetch
 
-  let responseData, records;
+  let records = [];
 
   if (type === "terms") {
-    // For term-based objects like 'grant', 'publisher', 'author', etc.
-    const postData = createPostData(orgName, term, startYear, endYear, size, sort); // Generate POST request
-    responseData = await fetchPostData(postData);
-
-    // Check nested properties before assigning records
-    if (responseData && responseData.aggregations && responseData.aggregations.key && responseData.aggregations.key.buckets) {
-      records = responseData.aggregations.key.buckets; // Get a clean records array from the response
-    }
+    records = await fetchTermBasedData(term, sort, size);
   } else if (type === "articles") {
-    // For article-based objects
     const query = orgData.hits.hits[0]._source.analysis.is_paper.query;
-
-    const getDataUrl = `https://${apiEndpoint}.oa.works/report/works/?q=${dateRange}(${query})&size=${size}&include=${includes}&sort=${sort}`;
-    responseData = await fetchGetData(getDataUrl); // No need to generate POST request
-
-    // Check nested properties before assigning records
-    if (responseData && responseData.hits && responseData.hits.hits) {
-      records = responseData.hits.hits.map(hit => hit._source); // Get a clean records array from the response
-    }
+    records = await fetchArticleBasedData(query, includes, sort, size);
   }
 
-  // Common logic for both term and article based types
-  if (records) {
-    records = reorderRecords(records, includes); // Ensure correct order of the records array according to its 'includes' value
-    updateTableContainer(id, records, includes);
+  if (records.length > 0) {
+    processAndDisplayRecords(id, records, includes);
     console.log(`${type}-based table (${id}).`);
     console.log(records);
   }
+}
+
+/**
+ * Fetches term-based data.
+ * 
+ * @param {string} term - The term associated with the explore item.
+ * @param {string} sort - The sorting order.
+ * @param {number} size - The number of records to fetch.
+ * @returns {Promise<Array>} A promise that resolves to an array of term-based records.
+ */
+async function fetchTermBasedData(term, sort, size) {
+  const postData = createPostData(orgName, term, startYear, endYear, size, sort); // Generate POST request
+  const response = await fetchPostData(postData);
+  // Check nested properties before assigning records
+  if (response && response.aggregations && response.aggregations.key && response.aggregations.key.buckets) {
+    return response.aggregations.key.buckets; 
+  }
+  return [];
+}
+
+/**
+ * Fetches article-based data.
+ * 
+ * @param {string} query - The query string for fetching articles.
+ * @param {string} includes - The 'includes' key associated with the explore item.
+ * @param {string} sort - The sorting order.
+ * @param {number} size - The number of records to fetch.
+ * @returns {Promise<Array>} A promise that resolves to an array of article-based records.
+ */
+async function fetchArticleBasedData(query, includes, sort, size) {
+  const getDataUrl = `https://${apiEndpoint}.oa.works/report/works/?q=${dateRange}(${query})&size=${size}&include=${includes}&sort=${sort}`;
+  const response = await fetchGetData(getDataUrl); // No need to generate POST request
+  // Check nested properties before assigning records
+  if (response && response.hits && response.hits.hits) {
+    return response.hits.hits.map(hit => hit._source);
+  }
+  return [];
+}
+
+/**
+ * Processes and displays records in the UI.
+ * 
+ * @param {string} id - The ID of the explore item.
+ * @param {Array} records - The records to be processed and displayed.
+ * @param {string} includes - The 'includes' key for reordering records.
+ */
+function processAndDisplayRecords(id, records, includes) {
+  records = reorderRecords(records, includes);
+  updateTableContainer(id, records, includes);
 }
 
 // =================================================
