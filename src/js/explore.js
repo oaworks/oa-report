@@ -153,7 +153,8 @@ async function handleButtonClick(itemData) {
     // For article-based objects
     const query = orgData.hits.hits[0]._source.analysis.is_paper.query;
 
-    const getDataUrl = `https://${apiEndpoint}.oa.works/report/works/?q=${dateRange}(${query})&size=${size}&include=${includes}`;
+    const getDataUrl = `https://${apiEndpoint}.oa.works/report/works/?q=${dateRange}(${query})&size=${size}&include=${includes}&sort=${sort}`;
+    console.log(`https://${apiEndpoint}.oa.works/report/works/?q=${dateRange}(${query})&size=${size}&include=${includes}`)
     responseData = await fetchGetData(getDataUrl); // No need to generate POST request
 
     // Check nested properties before assigning records
