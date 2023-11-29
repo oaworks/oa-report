@@ -89,7 +89,9 @@ export function createExploreButton(exploreDataItem) {
   button.id = `explore_${id}_button`; 
   button.innerHTML = `<span>${exploreItem[id]?.plural || pluraliseNoun(id)}</span>`; // Set button text to plural form of label
   button.className = "items-center inline-flex p-2 px-4 mr-4 mt-4 px-3 rounded-full bg-carnation-100 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500"; 
-  setupButtonEventListener(button, exploreDataItem);
+  button.addEventListener("click", debounce(async function() {
+    processExploreButtonClick(button, exploreDataItem);
+  }, 500));
   return button;
 }
 
@@ -101,13 +103,11 @@ export function createExploreButton(exploreDataItem) {
  * @param {HTMLButtonElement} button - The button element to attach the event listener to.
  * @param {Object} itemData - The data object associated with the explore item.
  */
-function setupButtonEventListener(button, itemData) {
-  button.addEventListener("click", debounce(async function() {    
-    toggleLoadingIndicator(true); // Display loading indicator on button click
-    updateButtonActiveStyles(button.id);
-    await handleButtonClick(itemData); // 
-    toggleLoadingIndicator(false); // Once data is loaded, hide loading indicator
-  }, 500));
+async function processExploreButtonClick(button, itemData) {
+  toggleLoadingIndicator(true); // Display loading indicator on button click
+  updateButtonActiveStyles(button.id);
+  await fetchAndDisplayExploreData(itemData);
+  toggleLoadingIndicator(false); // Once data is loaded, hide loading indicator
 }
 
 /**
@@ -116,7 +116,7 @@ function setupButtonEventListener(button, itemData) {
  * 
  * @param {Object} itemData - The data object of the explore item.
  */
-async function handleButtonClick(itemData) {
+async function fetchAndDisplayExploreData(itemData) {
   const { type, id, term, sort, includes } = itemData; // Extract explore item's properties
   const size = 20; // Set the number of records to fetch
 
