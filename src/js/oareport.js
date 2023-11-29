@@ -8,7 +8,7 @@ const base             = `https://${apiEndpoint}.oa.works/report/`,
       articleEmailBase = `${baseBg}email/`;
 
 // Set report base path
-export let report = `${base}orgs?q=objectID:%22${org}%22`;
+export let orgApiUrl = `${base}orgs?q=objectID:%22${org}%22`;
 
 /* Get report page elements where data will be inserted */
 // Send CSV data by email form
@@ -41,7 +41,7 @@ export function initInsightsAndStrategies(org) {
       countQueryPrefix             = `${countQueryBase}q=${dateRange}`;
 
   // Get organisational data to produce reports
-  axios.get(report).then(function (response) {
+  axios.get(orgApiUrl).then(function (response) {
     /** Decrypt emails if user has an orgKey **/
     window.handleDecryptEmailClick = function(buttonElement) {
       const email = buttonElement.getAttribute('data-email');

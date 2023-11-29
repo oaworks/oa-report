@@ -4,7 +4,7 @@
 // =================================================
 
 import { makeDateReadable, changeDays, formatDateToISO, createDate, replaceDateRange, getDataExploreKeyFromButtonId, replaceText } from './utils.js';
-import { initInsightsAndStrategies, report } from './oareport.js';
+import { initInsightsAndStrategies, orgApiUrl } from './oareport.js';
 import { initDataExplore } from './explore.js';
 
 // Get year button nav elements
@@ -188,5 +188,5 @@ strategyTabBtns.forEach((tabBtn) => {
 document.addEventListener("DOMContentLoaded", function() {
   initInsightsAndStrategies(org);
   initDataExplore(org);
-  console.log(report);
+  console.log(orgApiUrl);
 });

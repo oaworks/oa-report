@@ -10,7 +10,7 @@
 import { displayNone, isCacheExpired, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear } from "./utils.js";
 import { exploreItem, dataTableBodyClasses, dataTableHeaderClasses } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
-import { report } from './oareport.js';
+import { orgApiUrl } from './oareport.js';
 
 // =================================================
 // Global variables
@@ -47,7 +47,7 @@ export async function initDataExplore(org) {
       addButtonsToDOM(dataCache[org].data);
     } else {
       // Fetch new data and update cache
-      const exploreData = await fetchGetData(report);
+      const exploreData = await fetchGetData(orgApiUrl);
       console.log(exploreData);
 
       if (exploreData.hits.hits[0]._source.explore) {
@@ -150,7 +150,7 @@ async function handleButtonClick(itemData) {
   } else if (type === "articles") {
     // For article-based objects
     const analysisResponse = await fetchGetData(`https://${apiEndpoint}.oa.works/report/orgs?q=${org}&include=analysis`);
-    const query = analysisResponse.hits.hits[0]._source.analysis.is_paper.query; // TODO: should be using itemData.query
+    const query = analysisResponse.hits.hits[0]._source.analysis.is_paper.query;
 
     // TODO: use dynamic date here
     const getDataUrl = `https://${apiEndpoint}.oa.works/report/works/?q=(published_date:%3E2022-12-31%20AND%20published_date:%3C2023-11-23)%20AND%20(${query})&size=${size}&include=${includes}`;
