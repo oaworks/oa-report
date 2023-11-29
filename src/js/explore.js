@@ -7,7 +7,7 @@
 // Imports
 // =================================================
 
-import { isCacheExpired, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun } from "./utils.js";
+import { isCacheExpired, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear } from "./utils.js";
 import { exploreItem, dataTableBodyClasses, dataTableHeaderClasses } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 
@@ -116,6 +116,7 @@ async function handleButtonClick(itemData) {
   const term = itemData.term;
   const sort = itemData.sort;
   const includes = itemData.includes;
+  console.log(sort);
 
   const size = 20; // Set the number of records to fetch
 
@@ -123,7 +124,7 @@ async function handleButtonClick(itemData) {
 
   if (type === "terms") {
     // For term-based objects like 'grant', 'publisher', 'author', etc.
-    const postData = createPostData(orgName, term, "2023", "2023", size, sort); // Generate POST request
+    const postData = createPostData(orgName, term, startYear, endYear, size, sort); // Generate POST request
     responseData = await fetchPostData(postData);
 
     // Check nested properties before assigning records
