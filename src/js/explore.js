@@ -10,7 +10,7 @@
 import { displayNone, isCacheExpired, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear } from "./utils.js";
 import { exploreItem, dataTableBodyClasses, dataTableHeaderClasses } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
-import { orgApiUrl } from './oareport.js';
+import { orgApiUrl, orgDataPromise } from './oareport.js';
 
 // =================================================
 // Global variables
@@ -41,27 +41,31 @@ const dataCache = {};
  * @param {string} org - The organization identifier for the API query.
  */
 export async function initDataExplore(org) {
+  let orgData;
+
   try {
     // Check if the data is in cache and hasn't expired (set at 24 hours)
     if (dataCache[org] && !isCacheExpired(dataCache[org].timestamp)) {
       addButtonsToDOM(dataCache[org].data);
     } else {
       // Fetch new data and update cache
-      const exploreData = await fetchGetData(orgApiUrl);
-      console.log(exploreData);
+      orgDataPromise.then(function (response) {
+        orgData = response.data;
 
-      if (exploreData.hits.hits[0]._source.explore) {
-        dataCache[org] = {
-          data: exploreData.hits.hits[0]._source.explore,
-          timestamp: new Date().getTime() // Current timestamp in milliseconds
-        };
-        addButtonsToDOM(dataCache[org].data);
-      } else {
-        handleNoExploreData(); // Handle the case where there is no explore object
-      }
+        if (orgData.hits.hits[0]._source.explore) {
+          dataCache[org] = {
+            data: orgData.hits.hits[0]._source.explore,
+            timestamp: new Date().getTime() // Current timestamp in milliseconds
+          };
+          addButtonsToDOM(dataCache[org].data);
+        } else {
+          handleNoExploreData(); // Handle the case where there is no explore object
+        }
+      });
+      
     }
   } catch (error) {
-    console.error('Error initializing data explore:', error);
+    console.error('Error initialising data explore: ', error);
   }
 }
 
@@ -132,7 +136,6 @@ async function handleButtonClick(itemData) {
   const term = itemData.term;
   const sort = itemData.sort;
   const includes = itemData.includes;
-  console.log(sort);
 
   const size = 20; // Set the number of records to fetch
 

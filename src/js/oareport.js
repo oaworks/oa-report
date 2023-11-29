@@ -7,8 +7,11 @@ const base             = `https://${apiEndpoint}.oa.works/report/`,
       csvExportBase    = `${baseBg}works.csv?size=all&`,
       articleEmailBase = `${baseBg}email/`;
 
-// Set report base path
-export let orgApiUrl = `${base}orgs?q=objectID:%22${org}%22`;
+// Set report org index URL’s base path
+export const orgApiUrl = `${base}orgs?q=objectID:%22${org}%22`;
+
+// Fetch and store organisational data in a constant
+export const orgDataPromise = axios.get(orgApiUrl);
 
 /* Get report page elements where data will be inserted */
 // Send CSV data by email form
@@ -35,13 +38,13 @@ let exportSort = "&sort=published_date:desc"
 
 // Generate report’s UI for any given date range
 export function initInsightsAndStrategies(org) {
-
   // Set paths for orgindex
-  let queryPrefix                  = `${queryBase}q=${dateRange}`,
-      countQueryPrefix             = `${countQueryBase}q=${dateRange}`;
+  let queryPrefix = `${queryBase}q=${dateRange}`,
+      countQueryPrefix = `${countQueryBase}q=${dateRange}`;
 
-  // Get organisational data to produce reports
-  axios.get(orgApiUrl).then(function (response) {
+  orgDataPromise.then(function (response) {
+    const orgData = response.data; // Storing the fetched data in a constant
+
     /** Decrypt emails if user has an orgKey **/
     window.handleDecryptEmailClick = function(buttonElement) {
       const email = buttonElement.getAttribute('data-email');
@@ -62,7 +65,7 @@ export function initInsightsAndStrategies(org) {
       if (email !== 'undefined' && hasOrgKey) {
           axios.get(`${articleEmailBase + doi}?${orgKey}`)
               .then(function (response) {
-                  let authorEmail = response.data;
+                  let authorEmail = orgData;
                   mailto = mailto.replaceAll("{email}", authorEmail);
                   window.open(`mailto:${mailto}`);
               })
@@ -73,12 +76,12 @@ export function initInsightsAndStrategies(org) {
       } else {
           openEmailClientWithFallback();
       }
-  };
+    };
 
     /** Get Insights data and display it **/
     function getInsight(numerator, denominator, denominatorText, info) {
 
-      var shown     = response.data.hits.hits[0]._source.analysis[numerator].show_on_web,
+      var shown     = orgData.hits.hits[0]._source.analysis[numerator].show_on_web,
           contentID = `${numerator}`; // the whole insight’s data card
 
       if (shown === true) {
@@ -103,12 +106,12 @@ export function initInsightsAndStrategies(org) {
         infoContents.setAttribute('aria-controls', tooltipID);
 
         // Get numerator’s count query
-        let num = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.analysis[numerator].query);
+        let num = axios.get(countQueryPrefix + orgData.hits.hits[0]._source.analysis[numerator].query);
 
         // Display data in UI if both a numerator & denominator were defined
         if (numerator && denominator) {
           // Get denominator’s count query
-          let denom = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.analysis[denominator].query);
+          let denom = axios.get(countQueryPrefix + orgData.hits.hits[0]._source.analysis[denominator].query);
 
           Promise.all([num, denom])
             .then(function (results) {
@@ -158,7 +161,7 @@ export function initInsightsAndStrategies(org) {
       "is_compliant",
       "is_covered_by_policy",
       "articles covered by policy",
-      `<p class='mb-2'>The percentage of articles that are compliant with <a href='${response.data.hits.hits[0]._source.policy.url}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a>.</p> <p>This number is specific to your policy and your requirements.</p>`
+      `<p class='mb-2'>The percentage of articles that are compliant with <a href='${orgData.hits.hits[0]._source.policy.url}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a>.</p> <p>This number is specific to your policy and your requirements.</p>`
     );
 
     getInsight(
@@ -188,11 +191,11 @@ export function initInsightsAndStrategies(org) {
       "articles with code",
       "<p class='mb-2'>The percentage of articles that shared any code under a permissive open-source licence, such as MIT.</p> <p class='mb-2'>This figure measures how many articles shared Open Code if they generated code in the first place. It also only measures if <strong>any parts</strong> of the code generated are open, not if <strong>all</strong> of it is open.</p> <p> We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>"
     );
-
+    
     /* Get Strategy data and display it  */
     function displayStrategy(strategy, keys, tableRow) {
-      var shown  = response.data.hits.hits[0]._source.strategy[strategy].show_on_web,
-          sort   = `&sort=${response.data.hits.hits[0]._source.strategy[strategy].sort}`,
+      var shown  = orgData.hits.hits[0]._source.strategy[strategy].show_on_web,
+          sort   = `&sort=${orgData.hits.hits[0]._source.strategy[strategy].sort}`,
           tabID  = `strategy_${strategy}`;
 
       if (shown === true) {
@@ -201,8 +204,8 @@ export function initInsightsAndStrategies(org) {
             tableCountContents = document.getElementById(`total_${strategy}`),
             tableBody          = document.getElementById(`table_${strategy}`).getElementsByTagName('tbody')[0];
         
-        var countQuery              = countQueryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query,
-            listQuery               = queryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query + sort;
+        var countQuery              = countQueryPrefix + orgData.hits.hits[0]._source.strategy[strategy].query,
+            listQuery               = queryPrefix + orgData.hits.hits[0]._source.strategy[strategy].query + sort;
         
         // Get total action (article) count for this strategy
         axios.get(countQuery)
@@ -272,7 +275,7 @@ export function initInsightsAndStrategies(org) {
                       
                       // If mailto is included, replace its body’s content with the action’s values
                       if ("mailto" in action) {
-                        var mailto = response.data.hits.hits[0]._source.strategy[strategy].mailto;
+                        var mailto = orgData.hits.hits[0]._source.strategy[strategy].mailto;
 
                         var newMailto = mailto.replaceAll("\'", "’");
                         newMailto = newMailto.replaceAll("{doi}", (action.DOI ? action.DOI : "[No DOI found]"));
@@ -417,7 +420,7 @@ export function initInsightsAndStrategies(org) {
     );
 
     // Check if org has custom export_includes to display in downloaded CSV columns
-    var hasCustomExportIncludes = (response.data.hits.hits[0]._source.export_includes);
+    var hasCustomExportIncludes = (orgData.hits.hits[0]._source.export_includes);
 
     /* "Download CSV" form: all articles displayed on page */
     function getExportLink() {
@@ -427,7 +430,7 @@ export function initInsightsAndStrategies(org) {
           }
         ).catch(function (error) { console.log(`Export error: ${error}`); });
 
-      isPaperURL = (dateRange + response.data.hits.hits[0]._source.analysis.is_paper.query);
+      isPaperURL = (dateRange + orgData.hits.hits[0]._source.analysis.is_paper.query);
       let query = `q=${isPaperURL.replaceAll(" ", "%20")}`,
           form = new FormData(document.getElementById("download_csv"));
 
@@ -459,8 +462,8 @@ export function initInsightsAndStrategies(org) {
 
     /* Strategy-level "download CSV" form */
     function getStrategyExportLink(id) {
-      var hasCustomExportIncludes = (response.data.hits.hits[0]._source.strategy[id].export_includes),
-          strategyQuery           = (response.data.hits.hits[0]._source.strategy[id].query);
+      var hasCustomExportIncludes = (orgData.hits.hits[0]._source.strategy[id].export_includes),
+          strategyQuery           = (orgData.hits.hits[0]._source.strategy[id].query);
 
       Promise.all([hasCustomExportIncludes])
         .then(function (results) {
@@ -500,6 +503,5 @@ export function initInsightsAndStrategies(org) {
   }).catch(error => {
     console.log(`Report ERROR: ${error}`);
     displayErrorHeader();
-  })
+  });
 };
-
