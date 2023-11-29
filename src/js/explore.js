@@ -27,14 +27,6 @@ let orgData;
 // DOM Manipulation functions
 // =================================================
 
-
-// WRONG: https://beta.oa.works/report/orgs?q=templeton-world-charity-foundation&include=explore
-// right https://beta.oa.works/report/orgs?q=objectID:%22templeton-world-charity-foundation%22 
-// Ensure that the total published is the same as year total
-// cHECK with GATES
-
-
-
 /**
  * Initializes the data explore section by fetching data from the org index 
  * and adding buttons.
@@ -154,7 +146,6 @@ async function handleButtonClick(itemData) {
     const query = orgData.hits.hits[0]._source.analysis.is_paper.query;
 
     const getDataUrl = `https://${apiEndpoint}.oa.works/report/works/?q=${dateRange}(${query})&size=${size}&include=${includes}&sort=${sort}`;
-    console.log(`https://${apiEndpoint}.oa.works/report/works/?q=${dateRange}(${query})&size=${size}&include=${includes}`)
     responseData = await fetchGetData(getDataUrl); // No need to generate POST request
 
     // Check nested properties before assigning records
@@ -171,10 +162,6 @@ async function handleButtonClick(itemData) {
     console.log(records);
   }
 }
-
-// Use explore.item.query comma-selected list
-// Hardcore filter label to "is_paper" and is_preprint (= articles, = preprints)
-
 
 // =================================================
 // Table updating and styling functions
