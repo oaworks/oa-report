@@ -7,10 +7,10 @@
 // Imports
 // =================================================
 
-import { displayNone, isCacheExpired, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear } from "./utils.js";
+import { displayNone, isCacheExpired, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange } from "./utils.js";
 import { exploreItem, dataTableBodyClasses, dataTableHeaderClasses } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
-import { orgApiUrl, orgDataPromise } from './oareport.js';
+import { orgDataPromise } from './oareport.js';
 
 // =================================================
 // Global variables
@@ -21,6 +21,7 @@ import { orgApiUrl, orgDataPromise } from './oareport.js';
  * @global 
 */
 const dataCache = {}; 
+let orgData;
 
 // =================================================
 // DOM Manipulation functions
@@ -40,9 +41,7 @@ const dataCache = {};
  * 
  * @param {string} org - The organization identifier for the API query.
  */
-export async function initDataExplore(org) {
-  let orgData;
-
+export async function initDataExplore(org) {  
   try {
     // Check if the data is in cache and hasn't expired (set at 24 hours)
     if (dataCache[org] && !isCacheExpired(dataCache[org].timestamp)) {
@@ -152,11 +151,9 @@ async function handleButtonClick(itemData) {
     }
   } else if (type === "articles") {
     // For article-based objects
-    const analysisResponse = await fetchGetData(`https://${apiEndpoint}.oa.works/report/orgs?q=${org}&include=analysis`);
-    const query = analysisResponse.hits.hits[0]._source.analysis.is_paper.query;
+    const query = orgData.hits.hits[0]._source.analysis.is_paper.query;
 
-    // TODO: use dynamic date here
-    const getDataUrl = `https://${apiEndpoint}.oa.works/report/works/?q=(published_date:%3E2022-12-31%20AND%20published_date:%3C2023-11-23)%20AND%20(${query})&size=${size}&include=${includes}`;
+    const getDataUrl = `https://${apiEndpoint}.oa.works/report/works/?q=${dateRange}(${query})&size=${size}&include=${includes}`;
     responseData = await fetchGetData(getDataUrl); // No need to generate POST request
 
     // Check nested properties before assigning records
