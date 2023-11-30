@@ -21,7 +21,24 @@ import { orgDataPromise } from './oareport.js';
  * @global 
 */
 const dataCache = {}; 
+
+/** Data object representing metadata on an organisation
+ * 
+ * @global 
+*/
 let orgData;
+
+/** Tracks currently active explore item button for use in processExploreDataTable()
+ * 
+ * @global 
+*/
+export let currentActiveExploreItemButton = null;
+
+/** Tracks currently active explore item data for use in processExploreDataTable()
+ * 
+ * @global 
+*/
+export let currentActiveExploreItemData = null;
 
 // =================================================
 // DOM Manipulation functions
@@ -90,7 +107,7 @@ export function createExploreButton(exploreDataItem) {
   button.innerHTML = `<span>${exploreItem[id]?.plural || pluraliseNoun(id)}</span>`; // Set button text to plural form of label
   button.className = "items-center inline-flex p-2 px-4 mr-4 mt-4 px-3 rounded-full bg-carnation-100 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500"; 
   button.addEventListener("click", debounce(async function() {
-    processExploreButtonClick(button, exploreDataItem);
+    processExploreDataTable(button, exploreDataItem);
   }, 500));
   return button;
 }
@@ -103,7 +120,9 @@ export function createExploreButton(exploreDataItem) {
  * @param {HTMLButtonElement} button - The button element to attach the event listener to.
  * @param {Object} itemData - The data object associated with the explore item.
  */
-async function processExploreButtonClick(button, itemData) {
+export async function processExploreDataTable(button, itemData) {
+  currentActiveExploreItemButton = button; // Set the currently active explore item btn
+  currentActiveExploreItemData = itemData; // Set the currently active explore item data
   toggleLoadingIndicator(true); // Display loading indicator on button click
   updateButtonActiveStyles(button.id);
   await fetchAndDisplayExploreData(itemData);
@@ -213,6 +232,7 @@ function updateTableContainer(selectedId, data, includes) {
   exportTable.classList.remove('hidden');
   
   // Add functionalities to the table
+  // TODO: This only works on the first table that the user clicks on
   enableExploreRowHighlighting();
   enableExploreTableScroll();
 

@@ -1,11 +1,11 @@
 // =================================================
 // main.js
 // Main event listeners and functions
-// =================================================
+// =================================================,
 
-import { makeDateReadable, changeDays, formatDateToISO, createDate, replaceDateRange, getDataExploreKeyFromButtonId, replaceText } from './utils.js';
+import { makeDateReadable, changeDays, formatDateToISO, createDate, replaceDateRange, replaceText } from './utils.js';
 import { initInsightsAndStrategies, orgApiUrl } from './oareport.js';
-import { initDataExplore } from './explore.js';
+import { currentActiveExploreItemButton, currentActiveExploreItemData, initDataExplore, processExploreDataTable } from './explore.js';
 
 // Get year button nav elements
 const yearButtons = document.querySelectorAll(".js_year_select");
@@ -107,6 +107,9 @@ function bindYearButton(button, startDate, endDate, reportText) {
     reportYear.textContent = reportText || startDate.getFullYear();
     if (aggYear) replaceText("agg-year", reportText || startDate.getFullYear());
     initInsightsAndStrategies(org);
+    console.log(currentActiveExploreItemButton);
+    console.log(currentActiveExploreItemData);
+    processExploreDataTable(currentActiveExploreItemButton, currentActiveExploreItemData);
   });
 }
 
