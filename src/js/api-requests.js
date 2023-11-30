@@ -1,36 +1,12 @@
 // Dynamically configure POST data 
-export function createPostData(orgName, term, startYear, endYear, size = 20, sort = "_count") {
+export function createPostData(query, term, startYear, endYear, size = 20, sort = "_count") {
   return {
     "query": {
       "bool": {
         "must": [
           {
-            "term": {
-              "orgs.keyword": orgName
-            }
-          },
-          {
-            "bool": {
-              "should": [
-                {
-                  "terms": {
-                    "type.keyword": [
-                      "journal-article",
-                      "posted-content",
-                      "article"
-                    ]
-                  }
-                },
-                {
-                  "bool": {
-                    "must_not": {
-                      "exists": {
-                        "field": "type"
-                      }
-                    }
-                  }
-                }
-              ]
+            "query_string": {
+              "query": query
             }
           },
           {
@@ -41,12 +17,7 @@ export function createPostData(orgName, term, startYear, endYear, size = 20, sor
               }
             }
           }
-        ],
-        "must_not": {
-          "term": {
-            "supplements.is_preprint": true
-          }
-        }
+        ]
       }
     },
     "size": 0,

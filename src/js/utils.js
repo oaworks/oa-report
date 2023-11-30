@@ -44,7 +44,7 @@ export async function fetchGetData(url) {
 }
 
 // Define external variables used for managing the date range and yearly navigation
-export let dateRange, startYear, endYear;
+export let dateRange, startDate, endDate, startYear, endYear;
 
 /**
  * Replace all instances of a text found in elements with a given class name.

@@ -162,7 +162,6 @@ export function createExploreFilterRadioButton(id) {
   const label = exploreFilters[id] || id; // Default to ID if no label is found in 
   const filterRadioButton = document.createElement("div");
   filterRadioButton.className = "flex items-center mr-4 mb-3";
-  const filterQuery = orgData.hits.hits[0]._source.analysis[id].query; // Retrieve query for this filter
   const radioInput = 
     `<input type="radio" 
             id="filter_${id}" 
@@ -175,7 +174,7 @@ export function createExploreFilterRadioButton(id) {
   filterRadioButton.innerHTML = radioInput + labelElement;
 
   filterRadioButton.addEventListener("click", debounce(async function() {
-    console.log(id);
+    fetchAndDisplayExploreData(currentActiveExploreItemData, id); // Pass the filter’s ID to re-fetch filtered data 
   }, 500));
 
   return filterRadioButton;
@@ -187,16 +186,20 @@ export function createExploreFilterRadioButton(id) {
  * 
  * @param {Object} itemData - The data object of the explore item.
  */
-async function fetchAndDisplayExploreData(itemData) {
+async function fetchAndDisplayExploreData(itemData, filter = "is_paper") {
   const { type, id, term, sort, includes } = itemData; // Extract explore item's properties
   const size = 20; // Set the number of records to fetch
+  const query = orgData.hits.hits[0]._source.analysis[filter].query; // Get the query string for the selected filter
+  console.log(query);
 
   let records = [];
 
+  // Default query is for all articles 
+  const defaultQuery = "(supplements.sheets:(*pub__bmgf OR \"grantid_cw__bmgf\" OR \"chronos_v2__bmgf\" OR \"pmc__bmgf\" OR \"users__bmgf\" OR \"all-time__bmgf\" OR \"name_epmc__bmgf\" OR \"finance_v3__bmgf\" OR \"preprints_oa_locations__bmgf\" OR \"preprints-enrichment__bmgf\" OR \"staff__bmgf\") OR funder.DOI:\"10.13039/100000865\" OR authorships.institutions.ror:\"0456r8d26\" OR authorships.institutions.ror:\"033sn5p83\" OR authorships.institutions.display_name:\"Bill  Melinda Gates Foundation\" OR authorships.institutions.display_name:\"Bill and Melinda Gates Foundation\" OR authorships.institutions.display_name:\"melinda gates foundation\" OR authorships.institutions.display_name:\"Gates Cambridge Trust\" OR authorships.institutions.display_name:\"gates ventures\" OR funder.name:\"Bill  Melinda Gates Foundation\" OR funder.name:\"Bill and Melinda Gates Foundation\" OR funder.name:\"melinda gates foundation\" OR funder.name:\"Gates Cambridge Trust\" OR funder.name:\"gates ventures\") AND (type:(\"posted-content\" OR \"article\" OR \"editorial\" OR \"letter\") OR (NOT type:*)) AND NOT supplements.is_preprint:true";
+
   if (type === "terms") {
-    records = await fetchTermBasedData(term, sort, size);
+    records = await fetchTermBasedData(defaultQuery, term, sort, size);
   } else if (type === "articles") {
-    const query = orgData.hits.hits[0]._source.analysis.is_paper.query;
     records = await fetchArticleBasedData(query, includes, sort, size);
   }
 
@@ -215,8 +218,9 @@ async function fetchAndDisplayExploreData(itemData) {
  * @param {number} size - The number of records to fetch.
  * @returns {Promise<Array>} A promise that resolves to an array of term-based records.
  */
-async function fetchTermBasedData(term, sort, size) {
-  const postData = createPostData(orgName, term, startYear, endYear, size, sort); // Generate POST request
+async function fetchTermBasedData(query, term, sort, size) {
+  const postData = createPostData(query, term, startYear, endYear, size, sort); // Generate POST request
+  console.log(postData);
   const response = await fetchPostData(postData);
   // Check nested properties before assigning records
   if (response && response.aggregations && response.aggregations.key && response.aggregations.key.buckets) {
