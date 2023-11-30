@@ -128,26 +128,28 @@ export async function processExploreDataTable(button, itemData) {
   currentActiveExploreItemData = itemData; // Set the currently active explore item data
   toggleLoadingIndicator(true); // Display loading indicator on button click
   updateButtonActiveStyles(button.id);
-  addExploreFiltersToDOM(itemData, itemData.query);
+  addExploreFiltersToDOM(itemData.query);
   await fetchAndDisplayExploreData(itemData);
   toggleLoadingIndicator(false); // Once data is loaded, hide loading indicator
 }
 
 /**
- * Adds explore data filters to the DOM
+ * Adds radio buttons for explore data filters to the DOM. The filters are derived from 
+ * a comma-separated 'query' string from the org index. The 'is_preprint' filter radio 
+ * button is selected and set as the default.
  *
- * @param {Array<Object>} itemData - Array of explore data objects from the API response.
+ * @param {string} query - A comma-separated string of filters from the API response.
  */
-export async function addExploreFiltersToDOM(itemData, query) {
+export async function addExploreFiltersToDOM(query) {
   const exploreFiltersElement = document.getElementById("explore_filters");
-  exploreFiltersElement.innerHTML = ''; // Clear existing radio buttons in the container
-  const filters = query.split(","); 
+  exploreFiltersElement.innerHTML = ""; // Clear existing radio buttons
+  const filters = query.split(","); // Split the query into individual filters
 
-  for (const filter of filters) {
-    const id = filter.replace("analysis.", "").replace(".query", ""); // Extract an ID from the filter
-    let radioButton = createExploreFilterRadioButton(id);
+  filters.forEach(filter => {
+    const id = filter.replace("analysis.", "").replace(".query", ""); // Format filter ID
+    const radioButton = createExploreFilterRadioButton(id);
     exploreFiltersElement.appendChild(radioButton);
-  }
+  });
 }
 
 /**
@@ -155,26 +157,39 @@ export async function addExploreFiltersToDOM(itemData, query) {
  * ID, its human-readable label, and Tailwind CSS classes.
  * Then attaches event listener to the radio button.
  * 
- * @param {Object} exploreDataType - The explore data object to create a button for.
- * @returns {HTMLButtonElement} The created and configured button element.
+ * @param {string} id - The ID of the filter.
+ * @returns {HTMLDivElement} The div element containing the configured radio button and label.
  */
 export function createExploreFilterRadioButton(id) {
-  const label = exploreFilters[id] || id; // Default to ID if no label is found in 
-  const filterRadioButton = document.createElement("div");
-  filterRadioButton.className = "flex items-center mr-4 mb-3";
-  const radioInput = 
-    `<input type="radio" 
-            id="filter_${id}" 
-            class="mr-1" 
-            name="filter_by" 
-            value="${id}" 
-            aria-hidden="true"}
-      >`;
-  const labelElement = `<label for="filter_${id}" class="text-xs cursor-pointer flex items-center whitespace-nowrap">${label}</label>`;
-  filterRadioButton.innerHTML = radioInput + labelElement;
+  const label = exploreFilters[id] || id; // Use label from filters or default to ID
+  const filterRadioButton = document.createElement('div');
+  filterRadioButton.className = 'flex items-center mr-4 mb-3';
 
-  filterRadioButton.addEventListener("click", debounce(async function() {
-    fetchAndDisplayExploreData(currentActiveExploreItemData, id); // Pass the filter’s ID to re-fetch filtered data 
+  // Creating and appending radio input
+  const radioInput = document.createElement('input');
+  Object.assign(radioInput, {
+    type: 'radio',
+    id: `filter_${id}`,
+    className: 'mr-1',
+    name: 'filter_by',
+    value: id,
+    checked: id === 'is_paper', // Set 'is_paper' (all articles) as default selected filter
+    'aria-hidden': 'true'
+  });
+  filterRadioButton.appendChild(radioInput);
+
+  // Creating and appending label
+  const labelElement = document.createElement('label');
+  Object.assign(labelElement, {
+    htmlFor: `filter_${id}`,
+    className: 'text-xs cursor-pointer flex items-center whitespace-nowrap',
+    textContent: label
+  });
+  filterRadioButton.appendChild(labelElement);
+
+  // Event listener for filter change
+  filterRadioButton.addEventListener('click', debounce(async function() {
+    fetchAndDisplayExploreData(currentActiveExploreItemData, id);
   }, 500));
 
   return filterRadioButton;
@@ -190,14 +205,13 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper") {
   const { type, id, term, sort, includes } = itemData; // Extract explore item's properties
   const size = 20; // Set the number of records to fetch
   const query = orgData.hits.hits[0]._source.analysis[filter].query; // Get the query string for the selected filter
-  console.log(query);
 
   let records = [];
 
-  // Default query is for all articles 
-  const defaultQuery = "(supplements.sheets:(*pub__bmgf OR \"grantid_cw__bmgf\" OR \"chronos_v2__bmgf\" OR \"pmc__bmgf\" OR \"users__bmgf\" OR \"all-time__bmgf\" OR \"name_epmc__bmgf\" OR \"finance_v3__bmgf\" OR \"preprints_oa_locations__bmgf\" OR \"preprints-enrichment__bmgf\" OR \"staff__bmgf\") OR funder.DOI:\"10.13039/100000865\" OR authorships.institutions.ror:\"0456r8d26\" OR authorships.institutions.ror:\"033sn5p83\" OR authorships.institutions.display_name:\"Bill  Melinda Gates Foundation\" OR authorships.institutions.display_name:\"Bill and Melinda Gates Foundation\" OR authorships.institutions.display_name:\"melinda gates foundation\" OR authorships.institutions.display_name:\"Gates Cambridge Trust\" OR authorships.institutions.display_name:\"gates ventures\" OR funder.name:\"Bill  Melinda Gates Foundation\" OR funder.name:\"Bill and Melinda Gates Foundation\" OR funder.name:\"melinda gates foundation\" OR funder.name:\"Gates Cambridge Trust\" OR funder.name:\"gates ventures\") AND (type:(\"posted-content\" OR \"article\" OR \"editorial\" OR \"letter\") OR (NOT type:*)) AND NOT supplements.is_preprint:true";
-
   if (type === "terms") {
+    // Default query is for all articles 
+    const defaultQuery = "(supplements.sheets:(*pub__bmgf OR \"grantid_cw__bmgf\" OR \"chronos_v2__bmgf\" OR \"pmc__bmgf\" OR \"users__bmgf\" OR \"all-time__bmgf\" OR \"name_epmc__bmgf\" OR \"finance_v3__bmgf\" OR \"preprints_oa_locations__bmgf\" OR \"preprints-enrichment__bmgf\" OR \"staff__bmgf\") OR funder.DOI:\"10.13039/100000865\" OR authorships.institutions.ror:\"0456r8d26\" OR authorships.institutions.ror:\"033sn5p83\" OR authorships.institutions.display_name:\"Bill  Melinda Gates Foundation\" OR authorships.institutions.display_name:\"Bill and Melinda Gates Foundation\" OR authorships.institutions.display_name:\"melinda gates foundation\" OR authorships.institutions.display_name:\"Gates Cambridge Trust\" OR authorships.institutions.display_name:\"gates ventures\" OR funder.name:\"Bill  Melinda Gates Foundation\" OR funder.name:\"Bill and Melinda Gates Foundation\" OR funder.name:\"melinda gates foundation\" OR funder.name:\"Gates Cambridge Trust\" OR funder.name:\"gates ventures\") AND (type:(\"posted-content\" OR \"article\" OR \"editorial\" OR \"letter\") OR (NOT type:*)) AND NOT supplements.is_preprint:true";
+
     records = await fetchTermBasedData(defaultQuery, term, sort, size);
   } else if (type === "articles") {
     records = await fetchArticleBasedData(query, includes, sort, size);
