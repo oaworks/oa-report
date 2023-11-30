@@ -74,6 +74,16 @@ export const exploreItem = {
 };
 
 /**
+ * Mapping of explore filter IDs to human-readable labels.
+ * 
+ * @type {Object.<string, string>}
+ */
+export const exploreFilters = {
+  "is_paper": "All articles",
+  "is_preprint": "Preprints",
+};
+
+/**
  * Maps term-based objects like 'grant', 'publisher', 'author', etc. to human-readable names and corresponding keys.
  * Used for displaying data in a user-friendly format.
  * @type {{[key: string]: { pretty: string, key: string }}}

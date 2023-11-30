@@ -8,7 +8,7 @@
 // =================================================
 
 import { displayNone, isCacheExpired, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange } from "./utils.js";
-import { exploreItem, dataTableBodyClasses, dataTableHeaderClasses } from "./constants.js";
+import { exploreItem, exploreFilters, dataTableBodyClasses, dataTableHeaderClasses } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { orgDataPromise } from './insights-and-strategies.js';
 import { createPostData } from './api-requests.js';
@@ -96,7 +96,7 @@ export async function addExploreButtonsToDOM(exploreData) {
 /**
  * Creates and configures a button element for an explore item with a specified
  * ID, the group of data to be shown (label), and Tailwind CSS classes.
- * Then attach event listener to the button.
+ * Then attaches event listener to the button.
  * 
  * @param {Object} exploreDataType - The explore data object to create a button for.
  * @returns {HTMLButtonElement} The created and configured button element.
@@ -106,10 +106,12 @@ export function createExploreButton(exploreDataItem) {
   const id = exploreDataItem.id; 
   button.id = `explore_${id}_button`; 
   button.innerHTML = `<span>${exploreItem[id]?.plural || pluraliseNoun(id)}</span>`; // Set button text to plural form of label
-  button.className = "items-center inline-flex p-2 px-4 mr-4 mt-4 px-3 rounded-full bg-carnation-100 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500"; 
+  button.className = "items-center inline-flex p-2 px-4 mr-4 mt-4 px-3 rounded-full bg-carnation-100 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500";
+
   button.addEventListener("click", debounce(async function() {
     processExploreDataTable(button, exploreDataItem);
   }, 500));
+
   return button;
 }
 
@@ -126,8 +128,57 @@ export async function processExploreDataTable(button, itemData) {
   currentActiveExploreItemData = itemData; // Set the currently active explore item data
   toggleLoadingIndicator(true); // Display loading indicator on button click
   updateButtonActiveStyles(button.id);
+  addExploreFiltersToDOM(itemData, itemData.query);
   await fetchAndDisplayExploreData(itemData);
   toggleLoadingIndicator(false); // Once data is loaded, hide loading indicator
+}
+
+/**
+ * Adds explore data filters to the DOM
+ *
+ * @param {Array<Object>} itemData - Array of explore data objects from the API response.
+ */
+export async function addExploreFiltersToDOM(itemData, query) {
+  const exploreFiltersElement = document.getElementById("explore_filters");
+  exploreFiltersElement.innerHTML = ''; // Clear existing radio buttons in the container
+  const filters = query.split(","); 
+
+  for (const filter of filters) {
+    const id = filter.replace("analysis.", "").replace(".query", ""); // Extract an ID from the filter
+    let radioButton = createExploreFilterRadioButton(id);
+    exploreFiltersElement.appendChild(radioButton);
+  }
+}
+
+/**
+ * Creates and configures a radio button element for an explore item’s filters with a specified
+ * ID, its human-readable label, and Tailwind CSS classes.
+ * Then attaches event listener to the radio button.
+ * 
+ * @param {Object} exploreDataType - The explore data object to create a button for.
+ * @returns {HTMLButtonElement} The created and configured button element.
+ */
+export function createExploreFilterRadioButton(id) {
+  const label = exploreFilters[id] || id; // Default to ID if no label is found in 
+  const filterRadioButton = document.createElement("div");
+  filterRadioButton.className = "flex items-center mr-4 mb-3";
+  const filterQuery = orgData.hits.hits[0]._source.analysis[id].query; // Retrieve query for this filter
+  const radioInput = 
+    `<input type="radio" 
+            id="filter_${id}" 
+            class="mr-1" 
+            name="filter_by" 
+            value="${id}" 
+            aria-hidden="true"}
+      >`;
+  const labelElement = `<label for="filter_${id}" class="text-xs cursor-pointer flex items-center whitespace-nowrap">${label}</label>`;
+  filterRadioButton.innerHTML = radioInput + labelElement;
+
+  filterRadioButton.addEventListener("click", debounce(async function() {
+    console.log(id);
+  }, 500));
+
+  return filterRadioButton;
 }
 
 /**

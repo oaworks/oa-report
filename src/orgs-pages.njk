@@ -377,8 +377,8 @@ permalink: "{{ org._source.objectID | slug }}/"
           <form class="col-span-1 w-auto">
             <fieldset>
               <legend class="mb-3 text-xs font-semibold uppercase">Filter by</legend>
-              <div class="flex flex-wrap items-center">
-                {{ component("radio-filter", {
+              <div class="flex flex-wrap items-center" id="explore_filters">
+                {# {{ component("radio-filter", {
                   id: "all_articles",
                   txt: "All articles",
                   selected: true
@@ -406,7 +406,7 @@ permalink: "{{ org._source.objectID | slug }}/"
                 {{ component("radio-filter", {
                   id: "authored_articles",
                   txt: "Staff-authored"
-                }) }}
+                }) }} #}
               </div>
             </fieldset>
           </form>
