@@ -49,8 +49,8 @@ const reportYear = document.getElementById("report-year");
 startYearBtn.textContent = startYearDate.getFullYear();
 
 // Aggregation selection
-const aggType = document.querySelectorAll(".agg-type");;
-const aggYear = document.querySelectorAll(".agg-year");
+const aggType = document.querySelectorAll(".explore_type");;
+const aggYear = document.querySelectorAll(".report_year");
 
 /**
  * Displays the default date range from the start of the current year.
@@ -105,7 +105,7 @@ function bindYearButton(button, startDate, endDate, reportText) {
     replaceDateRange(startDate, endDate);
     reportDateRange.textContent = reportText || `In ${startDate.getFullYear()}`;
     reportYear.textContent = reportText || startDate.getFullYear();
-    if (aggYear) replaceText("agg-year", reportText || startDate.getFullYear());
+    if (aggYear) replaceText("report_year", reportText || startDate.getFullYear());
     initInsightsAndStrategies(org);
     console.log(currentActiveExploreItemButton);
     console.log(currentActiveExploreItemData);

@@ -7,7 +7,7 @@
 // Imports
 // =================================================
 
-import { displayNone, isCacheExpired, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange } from "./utils.js";
+import { displayNone, isCacheExpired, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText } from "./utils.js";
 import { exploreItem, exploreFilters, dataTableBodyClasses, dataTableHeaderClasses } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { orgDataPromise } from './insights-and-strategies.js';
@@ -293,10 +293,6 @@ function handleNoExploreData() {
  * @param {Array<Object>} data - The data array to populate the table, with each object representing a row.
  */
 function updateTableContainer(selectedId, data, includes) {
-  // Update the header with .plural version of the ID
-  const header = document.querySelector(".agg-type");
-  header.textContent = exploreItem[selectedId]?.plural || selectedId;
-
   // Remove 'hidden' class to show the table
   const exportTable = document.getElementById('export_table');
   exportTable.classList.remove('hidden');
@@ -309,6 +305,9 @@ function updateTableContainer(selectedId, data, includes) {
   // Populate table with data
   populateTableHeader('export_table_head', includes);
   populateTableBody(data, 'export_table_body', includes);
+
+  // Update any mentions of the explore data type with .plural version of the ID
+  replaceText("explore_type", exploreItem[selectedId]?.plural || selectedId);
 }
 
 /**
@@ -332,16 +331,16 @@ function populateTableHeader(tableHeaderId, includes) {
 
   // Create and add the header row
   const headerRow = document.createElement('tr');
-    keysOrder.forEach((key, index) => {
-      let cssClass;
-      if (index === 0) cssClass = dataTableHeaderClasses.firstHeaderCol;
+  keysOrder.forEach((key, index) => {
+    let cssClass;
+    if (index === 0) cssClass = dataTableHeaderClasses.firstHeaderCol;
     else if (index === 1) cssClass = dataTableHeaderClasses.secondHeaderCol;
     else cssClass = dataTableHeaderClasses.otherHeaderCols;
 
-      const headerCell = createTableCell(key, cssClass, true);
-      headerRow.appendChild(headerCell);
-    });
-    tableHeader.appendChild(headerRow);
+    const headerCell = createTableCell(key, cssClass, true);
+    headerRow.appendChild(headerCell);
+  });
+  tableHeader.appendChild(headerRow);
 }
 
 /**
@@ -381,6 +380,7 @@ function populateTableBody(data, tableBodyId, includes) {
 /**
  * Creates a table cell element (th or td) with specified content and CSS class.
  * If the content is an object, its values are formatted as an unordered list.
+ * If the content is 'key', it inserts a span with class 'explore_type'.
  * 
  * @param {string|Object} content - The content to be placed inside the cell. If an object, its values are formatted as an unordered list.
  * @param {string} cssClass - The CSS class to apply to the cell.
@@ -391,17 +391,25 @@ function createTableCell(content, cssClass, isHeader = false) {
   const cell = document.createElement(isHeader ? 'th' : 'td');
   cell.className = cssClass;
 
+  console.log(currentActiveExploreItemData.id)
+
+  // Check if content is 'key' and insert a span with class 'explore_type'
+  if (content === 'key') {
+    const spanElement = document.createElement('span');
+    spanElement.className = 'explore_type';
+    cell.appendChild(spanElement);
+  } 
   // Check if the content is an object and format its values as a list
-  if (typeof content === 'object' && content !== null) {
+  else if (typeof content === 'object' && content !== null) {
     const listContent = `<ul>${formatObjectValuesAsList(content)}</ul>`;
     cell.innerHTML = listContent;
-  } else {
+  } 
+  else {
     cell.textContent = content;
   }
 
   return cell;
 }
-
 
 // =================================================
 // Interactive feature functions
