@@ -4,7 +4,7 @@
 // =================================================,
 
 import { makeDateReadable, changeDays, formatDateToISO, createDate, replaceDateRange, replaceText } from './utils.js';
-import { initInsightsAndStrategies, orgApiUrl } from './oareport.js';
+import { initInsightsAndStrategies, orgApiUrl } from './insights-and-strategies.js';
 import { currentActiveExploreItemButton, currentActiveExploreItemData, initDataExplore, processExploreDataTable } from './explore.js';
 
 // Get year button nav elements

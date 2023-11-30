@@ -10,7 +10,7 @@
 import { displayNone, isCacheExpired, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange } from "./utils.js";
 import { exploreItem, dataTableBodyClasses, dataTableHeaderClasses } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
-import { orgDataPromise } from './oareport.js';
+import { orgDataPromise } from './insights-and-strategies.js';
 
 // =================================================
 // Global variables
