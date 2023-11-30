@@ -1,5 +1,5 @@
 // Dynamically configure POST data 
-function createPostData(orgName, term, startYear, endYear, size = 20, sort = "_count") {
+export function createPostData(orgName, term, startYear, endYear, size = 20, sort = "_count") {
   return {
     "query": {
       "bool": {

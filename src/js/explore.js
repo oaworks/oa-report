@@ -11,6 +11,7 @@ import { displayNone, isCacheExpired, fetchGetData, fetchPostData, debounce, reo
 import { exploreItem, dataTableBodyClasses, dataTableHeaderClasses } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { orgDataPromise } from './insights-and-strategies.js';
+import { createPostData } from './api-requests.js';
 
 // =================================================
 // Global variables
@@ -54,7 +55,7 @@ export async function initDataExplore(org) {
   try {
     // Check if the data is in cache and hasn't expired (set at 24 hours)
     if (dataCache[org] && !isCacheExpired(dataCache[org].timestamp)) {
-      addButtonsToDOM(dataCache[org].data);
+      addExploreButtonsToDOM(dataCache[org].data);
     } else {
       // Fetch new data and update cache
       orgDataPromise.then(function (response) {
@@ -65,7 +66,7 @@ export async function initDataExplore(org) {
             data: orgData.hits.hits[0]._source.explore,
             timestamp: new Date().getTime() // Current timestamp in milliseconds
           };
-          addButtonsToDOM(dataCache[org].data);
+          addExploreButtonsToDOM(dataCache[org].data);
         } else {
           handleNoExploreData(); // Handle the case where there is no explore object
         }
@@ -83,7 +84,7 @@ export async function initDataExplore(org) {
  *
  * @param {Array<Object>} exploreData - Array of explore data objects from the API response.
  */
-export async function addButtonsToDOM(exploreData) {
+export async function addExploreButtonsToDOM(exploreData) {
   const exploreButtons = document.getElementById('explore_buttons');
   
   for (const exploreDataItem of exploreData) {
