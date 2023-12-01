@@ -29,23 +29,29 @@ const dataCache = {};
 */
 let orgData;
 
-/** Tracks currently active explore item button for use in processExploreDataTable()
+/** Tracks currently active explore item BUTTON for use in processExploreDataTable()
  * 
  * @global 
 */
 export let currentActiveExploreItemButton = null;
 
-/** Tracks currently active explore item data for use in processExploreDataTable()
+/** Tracks currently active explore item DATA for use in processExploreDataTable()
  * 
  * @global 
 */
 export let currentActiveExploreItemData = null;
 
-/** Tracks currently active explore item data for use in processExploreDataTable()
+/** Tracks currently active explore item QUERY for use in createExploreFilterRadioButton()
  * 
  * @global 
 */
 export let currentActiveExploreItemQuery = 'is_paper';
+
+/** Tracks currently active explore item SIZE for use in handleRecordsShownChange()
+ * 
+ * @global 
+*/
+export let currentActiveExploreItemSize = 10;
 
 // =================================================
 // DOM Manipulation functions
@@ -85,7 +91,6 @@ export async function initDataExplore(org) {
     console.error('Error initialising data explore: ', error);
   }
 }
-
 
 /**
  * Adds buttons to the DOM, one per item found in the org index explore data.
@@ -132,7 +137,7 @@ export function createExploreButton(exploreDataItem) {
  * @param {Object} itemData - The data object associated with the explore item.
  */
 export async function processExploreDataTable(button, itemData) {
-  currentActiveExploreItemButton = button; // Set the currently active explore item btn
+  currentActiveExploreItemButton = button; // Set the currently active explore item button
   currentActiveExploreItemData = itemData; // Set the currently active explore item data
 
   toggleLoadingIndicator(true); // Display loading indicator on button click
@@ -170,6 +175,7 @@ export async function addExploreFiltersToDOM(query) {
     exploreFilterField.style.display = ""; // Ensure the form is visible otherwise
   }
 }
+
 /**
  * Creates and configures a radio button element for an explore item’s filters with a specified
  * ID, its human-readable label, and Tailwind CSS classes.
@@ -244,29 +250,12 @@ export function addRecordsShownSelectToDOM() {
 }
 
 /**
- * Handles the event when the number of records to show is changed.
- * Fetches and updates the table data based on the new selection.
- *
- * @param {Event} event - The event object from the select menu change.
- */
-async function handleRecordsShownChange(event) {
-  const newSize = event.target.value;
-  toggleLoadingIndicator(true); // Show loading indicator
-
-  try {
-    await fetchAndDisplayExploreData(currentActiveExploreItemData, currentActiveExploreItemQuery, newSize);
-  } catch (error) {
-    console.error('Error updating records shown: ', error);
-  }
-
-  toggleLoadingIndicator(false); // Hide loading indicator
-}
-
-/**
  * Handles the click event for both term-based and article-based explore items.
  * Fetches data and updates the table with the results.
  * 
  * @param {Object} itemData - The data object of the explore item.
+ * @param {string} filter - The filter to use for fetching data.
+ * @param {number} size - The number of records to fetch.
  */
 async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 10) {
   const { type, id, term, sort, includes } = itemData; // Extract explore item's properties
@@ -492,29 +481,23 @@ function createTableCell(content, cssClass, isHeader = false) {
  */
 export function enableExploreRowHighlighting() {
   const tableBody = document.getElementById("export_table_body");
-  const tableRows = tableBody.querySelectorAll("tr"); 
 
   tableBody.addEventListener("click", (event) => {
     const target = event.target;
 
+    // Check if the clicked element is a TD or TH
     if (target.tagName === "TD" || target.tagName === "TH") {
-      const row = target.parentElement; // Get the parent <tr> element
-      const cellsToHighlight = Array.from(row.querySelectorAll("td, th")); 
+      const row = target.closest("tr"); // Get the closest parent row of the clicked cell
 
       // Remove highlighting from all rows
-      tableRows.forEach((r) => {
+      document.querySelectorAll("#export_table_body tr").forEach((r) => {
         r.classList.remove("bg-neutral-200", "bg-neutral-300", "hover:bg-neutral-100", "text-neutral-900");
       });
 
-      // Toggle highlighting for the selected <td> and <th> elements
-      cellsToHighlight.forEach((cell) => {
-        if (cell.tagName === "TD") {
-          cell.classList.toggle("bg-neutral-200");
-        } else if (cell.tagName === "TH") {
-          cell.classList.toggle("bg-neutral-300");
-        }
-        cell.classList.toggle("hover:bg-neutral-100");
-        cell.classList.toggle("text-neutral-900");
+      // Add highlighting to the clicked row
+      row.classList.add("bg-neutral-200", "hover:bg-neutral-100", "text-neutral-900");
+      row.querySelectorAll("th, td").forEach(cell => {
+        cell.classList.add("bg-neutral-200", "hover:bg-neutral-100", "text-neutral-900");
       });
     }
   });
@@ -526,9 +509,9 @@ export function enableExploreRowHighlighting() {
  */
 export function enableExploreTableScroll() {
   const tableContainer = document.querySelector(".js_export_table_container");
-  const scrollRightBtn = document.getElementById("js_scroll_table_btn");
+  const scrollRightButton = document.getElementById("js_scroll_table_btn");
 
-  scrollRightBtn.addEventListener("click", () => {
+  scrollRightButton.addEventListener("click", () => {
     const scrollAmount = 200; 
     const currentScroll = tableContainer.scrollLeft;
     const maxScroll = tableContainer.scrollWidth - tableContainer.clientWidth;
@@ -536,8 +519,8 @@ export function enableExploreTableScroll() {
     const targetScroll = currentScroll + scrollAmount;
 
     if (targetScroll >= maxScroll) {
-      // If reaching the end, hide the scrollRightBtn
-      scrollRightBtn.style.display = "none";
+      // If reaching the end, hide the scrollRightButton
+      scrollRightButton.style.display = "none";
     } else {
       // Otherwise, scroll smoothly to the right
       tableContainer.scrollTo({
@@ -552,9 +535,9 @@ export function enableExploreTableScroll() {
     const maxScroll = tableContainer.scrollWidth - tableContainer.clientWidth;
 
     if (currentScroll >= maxScroll) {
-      scrollRightBtn.style.display = "none";
+      scrollRightButton.style.display = "none";
     } else {
-      scrollRightBtn.style.display = "block";
+      scrollRightButton.style.display = "block";
     }
   });
 }
@@ -566,9 +549,9 @@ export function enableExploreTableScroll() {
  */
 export function updateButtonActiveStyles(buttonId) {
   // Reset styles for all buttons
-  document.querySelectorAll("#explore_buttons button").forEach(btn => {
-    btn.classList.remove("bg-carnation-500");
-    btn.classList.add("bg-carnation-100");
+  document.querySelectorAll("#explore_buttons button").forEach(button => {
+    button.classList.remove("bg-carnation-500");
+    button.classList.add("bg-carnation-100");
   });
 
   // Apply selected style to the clicked button
@@ -577,4 +560,24 @@ export function updateButtonActiveStyles(buttonId) {
     selectedButton.classList.remove("bg-carnation-100");
     selectedButton.classList.add("bg-carnation-500");
   }
+}
+
+/**
+ * Handles the event when the number of records to show is changed.
+ * Fetches and updates the table data based on the new selection.
+ *
+ * @param {Event} event - The event object from the select menu change.
+ */
+async function handleRecordsShownChange(event) {
+  const newSize = event.target.value;
+  currentActiveExploreItemSize = newSize; // Update the currently active explore item sizes
+  toggleLoadingIndicator(true); // Show loading indicator
+
+  try {
+    await fetchAndDisplayExploreData(currentActiveExploreItemData, currentActiveExploreItemQuery, newSize);
+  } catch (error) {
+    console.error('Error updating records shown: ', error);
+  }
+
+  toggleLoadingIndicator(false); // Hide loading indicator
 }
