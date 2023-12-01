@@ -135,13 +135,14 @@ export async function processExploreDataTable(button, itemData) {
 
 /**
  * Adds radio buttons for explore data filters to the DOM. The filters are derived from 
- * a comma-separated 'query' string from the org index. The 'is_preprint' filter radio 
- * button is selected and set as the default.
+ * a comma-separated 'query' string from the org index.  Hides the '#explore_form' if 
+ * the only filter is 'is_paper'.
  *
  * @param {string} query - A comma-separated string of filters from the API response.
  */
 export async function addExploreFiltersToDOM(query) {
   const exploreFiltersElement = document.getElementById("explore_filters");
+  const exploreFormElement = document.getElementById("explore_form");
   exploreFiltersElement.innerHTML = ""; // Clear existing radio buttons
   const filters = query.split(","); // Split the query into individual filters
 
@@ -150,8 +151,16 @@ export async function addExploreFiltersToDOM(query) {
     const radioButton = createExploreFilterRadioButton(id);
     exploreFiltersElement.appendChild(radioButton);
   });
-}
 
+  // Hide the explore form if only 'is_paper' filter is present
+  if (filters.length === 1 && filters[0].includes("is_paper")) {
+    if (exploreFormElement) {
+      exploreFormElement.style.display = "none"; // Hide the explore form
+    }
+  } else if (exploreFormElement) {
+    exploreFormElement.style.display = ""; // Ensure the form is visible otherwise
+  }
+}
 /**
  * Creates and configures a radio button element for an explore item’s filters with a specified
  * ID, its human-readable label, and Tailwind CSS classes.

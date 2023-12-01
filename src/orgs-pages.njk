@@ -375,39 +375,9 @@ permalink: "{{ org._source.objectID | slug }}/"
         </h3> 
         <div class="my-4 gap-3 md:gap-6 grid grid-cols-1 md:grid-cols-2">
           <form class="col-span-1 w-auto">
-            <fieldset>
+            <fieldset id="explore_form">
               <legend class="mb-3 text-xs font-semibold uppercase">Filter by</legend>
-              <div class="flex flex-wrap items-center" id="explore_filters">
-                {# {{ component("radio-filter", {
-                  id: "all_articles",
-                  txt: "All articles",
-                  selected: true
-                }) }}
-                {{ component("radio-filter", {
-                  id: "preprints",
-                  txt: "Preprints"
-                }) }}
-                {{ component("radio-filter", {
-                  id: "original_research_articles",
-                  txt: "Peer-reviewed"
-                }) }}
-                {{ component("radio-filter", {
-                  id: "articles_with_apcs",
-                  txt: "With APCs"
-                }) }}
-                {{ component("radio-filter", {
-                  id: "articles_covered_by_policy",
-                  txt: "Covered by policy"
-                }) }}
-                {{ component("radio-filter", {
-                  id: "funded_articles",
-                  txt: "Funded"
-                }) }}
-                {{ component("radio-filter", {
-                  id: "authored_articles",
-                  txt: "Staff-authored"
-                }) }} #}
-              </div>
+              <div class="flex flex-wrap items-center" id="explore_filters"></div>
             </fieldset>
           </form>
           <div class="col-span-1 md:justify-self-end w-auto">            
