@@ -7,7 +7,7 @@
 // Imports
 // =================================================
 
-import { displayNone, isCacheExpired, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText } from "./utils.js";
+import { displayNone, isCacheExpired, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars } from "./utils.js";
 import { exploreItem, exploreFilters, dataTableBodyClasses, dataTableHeaderClasses } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { orgDataPromise } from './insights-and-strategies.js';
@@ -213,15 +213,12 @@ export function createExploreFilterRadioButton(id) {
 async function fetchAndDisplayExploreData(itemData, filter = "is_paper") {
   const { type, id, term, sort, includes } = itemData; // Extract explore item's properties
   const size = 20; // Set the number of records to fetch
-  const query = orgData.hits.hits[0]._source.analysis[filter].query; // Get the query string for the selected filter
-
+  let query = orgData.hits.hits[0]._source.analysis[filter].query; // Get the query string for the selected filter
   let records = [];
 
   if (type === "terms") {
-    // Default query is for all articles 
-    const defaultQuery = "(supplements.sheets:(*pub__bmgf OR \"grantid_cw__bmgf\" OR \"chronos_v2__bmgf\" OR \"pmc__bmgf\" OR \"users__bmgf\" OR \"all-time__bmgf\" OR \"name_epmc__bmgf\" OR \"finance_v3__bmgf\" OR \"preprints_oa_locations__bmgf\" OR \"preprints-enrichment__bmgf\" OR \"staff__bmgf\") OR funder.DOI:\"10.13039/100000865\" OR authorships.institutions.ror:\"0456r8d26\" OR authorships.institutions.ror:\"033sn5p83\" OR authorships.institutions.display_name:\"Bill  Melinda Gates Foundation\" OR authorships.institutions.display_name:\"Bill and Melinda Gates Foundation\" OR authorships.institutions.display_name:\"melinda gates foundation\" OR authorships.institutions.display_name:\"Gates Cambridge Trust\" OR authorships.institutions.display_name:\"gates ventures\" OR funder.name:\"Bill  Melinda Gates Foundation\" OR funder.name:\"Bill and Melinda Gates Foundation\" OR funder.name:\"melinda gates foundation\" OR funder.name:\"Gates Cambridge Trust\" OR funder.name:\"gates ventures\") AND (type:(\"posted-content\" OR \"article\" OR \"editorial\" OR \"letter\") OR (NOT type:*)) AND NOT supplements.is_preprint:true";
-
-    records = await fetchTermBasedData(defaultQuery, term, sort, size);
+    query = decodeAndReplaceUrlEncodedChars(query); // Decode and replace any URL-encoded characters for JSON
+    records = await fetchTermBasedData(query, term, sort, size);
   } else if (type === "articles") {
     records = await fetchArticleBasedData(query, includes, sort, size);
   }
@@ -399,8 +396,6 @@ function populateTableBody(data, tableBodyId, includes) {
 function createTableCell(content, cssClass, isHeader = false) {
   const cell = document.createElement(isHeader ? 'th' : 'td');
   cell.className = cssClass;
-
-  console.log(currentActiveExploreItemData.id)
 
   // Check if content is 'key' and insert a span with class 'explore_type'
   if (content === 'key') {

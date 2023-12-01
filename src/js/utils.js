@@ -331,3 +331,21 @@ export function getORCiDFullName(orcidId) {
       });
   });
 }
+
+/**
+ * Decodes a URL-encoded string and replaces specific URL-encoded characters with their actual representations.
+ * It also handles multiple layers of URL encoding.
+ *
+ * @param {string} encodedString - The URL-encoded string to be processed.
+ * @returns {string} The string with URL-encoded characters replaced.
+ */
+export function decodeAndReplaceUrlEncodedChars(encodedString) {
+  let decodedString = decodeURIComponent(encodedString);
+
+  // Handling multiple layers of URL encoding
+  while (decodedString.includes('%')) {
+      decodedString = decodeURIComponent(decodedString);
+  }
+
+  return decodedString;
+}
