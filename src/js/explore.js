@@ -7,7 +7,7 @@
 // Imports
 // =================================================
 
-import { displayNone, isCacheExpired, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars } from "./utils.js";
+import { displayNone, isCacheExpired, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName } from "./utils.js";
 import { exploreItem, exploreFilters, dataTableBodyClasses, dataTableHeaderClasses } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { orgDataPromise } from './insights-and-strategies.js';
@@ -385,8 +385,6 @@ function populateTableBody(data, tableBodyId, includes) {
 
 /**
  * Creates a table cell element (th or td) with specified content and CSS class.
- * If the content is an object, its values are formatted as an unordered list.
- * If the content is 'key', it inserts a span with class 'explore_type'.
  * 
  * @param {string|Object} content - The content to be placed inside the cell. If an object, its values are formatted as an unordered list.
  * @param {string} cssClass - The CSS class to apply to the cell.
@@ -397,23 +395,38 @@ function createTableCell(content, cssClass, isHeader = false) {
   const cell = document.createElement(isHeader ? 'th' : 'td');
   cell.className = cssClass;
 
-  // Check if content is 'key' and insert a span with class 'explore_type'
   if (content === 'key') {
+    // Check if content is 'key' and insert a span with class 'explore_type'
     const spanElement = document.createElement('span');
     spanElement.className = 'explore_type';
     cell.appendChild(spanElement);
-  } 
-  // Check if the content is an object and format its values as a list
-  else if (typeof content === 'object' && content !== null) {
-    const listContent = `<ul>${formatObjectValuesAsList(content)}</ul>`;
-    cell.innerHTML = listContent;
-  } 
-  else {
+  } else if (typeof content === 'string' && content.includes('orcid.org')) {
+    // Check if content is an ORCiD URL and fetch the full name
+    const orcidId = content.split('/').pop();
+    cell.textContent = orcidId;
+    getORCiDFullName(orcidId)
+      .then(
+        // Display full name with link to ORCiD profile
+        fullName => cell.innerHTML = `
+          <a href="${content}" 
+             target="_blank" 
+             rel="noopener noreferrer" 
+             class="underline underline-offset-2 decoration-1">
+            ${fullName}
+          </a>
+        `
+      )
+      .catch(() => cell.textContent = 'Error fetching ORCiD data');
+  } else if (typeof content === 'object' && content !== null) {
+    // Check if the content is an object and format its values as a list
+    cell.innerHTML = `<ul>${formatObjectValuesAsList(content)}</ul>`;
+  } else {
     cell.textContent = content;
   }
 
   return cell;
 }
+
 
 // =================================================
 // Interactive feature functions
