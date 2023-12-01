@@ -407,16 +407,22 @@ function createTableCell(content, cssClass, isHeader = false) {
     getORCiDFullName(orcidId)
       .then(
         // Display full name with link to ORCiD profile
-        fullName => cell.innerHTML = `
-          <a href="${content}" 
-             target="_blank" 
-             rel="noopener noreferrer" 
-             class="underline underline-offset-2 decoration-1">
-            ${fullName}
-          </a>
-        `
+        fullName => cell.innerHTML = 
+        `<a href="${content}" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            class="underline underline-offset-2 decoration-1">
+          ${fullName}
+        </a>`
       )
-      .catch(() => cell.textContent = 'Error fetching ORCiD data');
+      .catch(() => cell.innerHTML = 
+        `<a href="${content}" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            class="underline underline-offset-2 decoration-1">
+          ${content} (Name not found)
+        </a>`
+      );
   } else if (typeof content === 'object' && content !== null) {
     // Check if the content is an object and format its values as a list
     cell.innerHTML = `<ul>${formatObjectValuesAsList(content)}</ul>`;
