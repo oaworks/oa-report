@@ -107,9 +107,9 @@ function bindYearButton(button, startDate, endDate, reportText) {
     reportYear.textContent = reportText || startDate.getFullYear();
     if (aggYear) replaceText("report_year", reportText || startDate.getFullYear());
     initInsightsAndStrategies(org);
-    console.log(currentActiveExploreItemButton);
-    console.log(currentActiveExploreItemData);
-    processExploreDataTable(currentActiveExploreItemButton, currentActiveExploreItemData);
+    if (currentActiveExploreItemButton) {
+      processExploreDataTable(currentActiveExploreItemButton, currentActiveExploreItemData);
+    }
   });
 }
 
