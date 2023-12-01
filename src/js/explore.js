@@ -41,6 +41,12 @@ export let currentActiveExploreItemButton = null;
 */
 export let currentActiveExploreItemData = null;
 
+/** Tracks currently active explore item data for use in processExploreDataTable()
+ * 
+ * @global 
+*/
+export let currentActiveExploreItemQuery = 'is_paper';
+
 // =================================================
 // DOM Manipulation functions
 // =================================================
@@ -56,6 +62,7 @@ export async function initDataExplore(org) {
     // Check if the data is in cache and hasn't expired (set at 24 hours)
     if (dataCache[org] && !isCacheExpired(dataCache[org].timestamp)) {
       addExploreButtonsToDOM(dataCache[org].data);
+      addRecordsShownSelectToDOM();
     } else {
       // Fetch new data and update cache
       orgDataPromise.then(function (response) {
@@ -67,8 +74,9 @@ export async function initDataExplore(org) {
             timestamp: new Date().getTime() // Current timestamp in milliseconds
           };
           addExploreButtonsToDOM(dataCache[org].data);
+          addRecordsShownSelectToDOM();
         } else {
-          handleNoExploreData(); // Handle the case where there is no explore object
+          displayNone("explore"); // Hide the explore section if no data is available
         }
       });
       
@@ -126,6 +134,7 @@ export function createExploreButton(exploreDataItem) {
 export async function processExploreDataTable(button, itemData) {
   currentActiveExploreItemButton = button; // Set the currently active explore item btn
   currentActiveExploreItemData = itemData; // Set the currently active explore item data
+
   toggleLoadingIndicator(true); // Display loading indicator on button click
   updateButtonActiveStyles(button.id);
   addExploreFiltersToDOM(itemData.query);
@@ -135,14 +144,14 @@ export async function processExploreDataTable(button, itemData) {
 
 /**
  * Adds radio buttons for explore data filters to the DOM. The filters are derived from 
- * a comma-separated 'query' string from the org index.  Hides the '#explore_form' if 
+ * a comma-separated 'query' string from the org index.  Hides '#explore_filter_field' if 
  * the only filter is 'is_paper'.
  *
  * @param {string} query - A comma-separated string of filters from the API response.
  */
 export async function addExploreFiltersToDOM(query) {
   const exploreFiltersElement = document.getElementById("explore_filters");
-  const exploreFormElement = document.getElementById("explore_form");
+  const exploreFilterField = document.getElementById("explore_filter_field");
   exploreFiltersElement.innerHTML = ""; // Clear existing radio buttons
   const filters = query.split(","); // Split the query into individual filters
 
@@ -154,11 +163,11 @@ export async function addExploreFiltersToDOM(query) {
 
   // Hide the explore form if only 'is_paper' filter is present
   if (filters.length === 1 && filters[0].includes("is_paper")) {
-    if (exploreFormElement) {
-      exploreFormElement.style.display = "none"; // Hide the explore form
+    if (exploreFilterField) {
+      exploreFilterField.style.display = "none"; // Hide the explore form
     }
-  } else if (exploreFormElement) {
-    exploreFormElement.style.display = ""; // Ensure the form is visible otherwise
+  } else if (exploreFilterField) {
+    exploreFilterField.style.display = ""; // Ensure the form is visible otherwise
   }
 }
 /**
@@ -199,9 +208,58 @@ export function createExploreFilterRadioButton(id) {
   // Event listener for filter change
   filterRadioButton.addEventListener('click', debounce(async function() {
     fetchAndDisplayExploreData(currentActiveExploreItemData, id);
+    currentActiveExploreItemQuery = id;
   }, 500));
 
   return filterRadioButton;
+}
+
+/**
+ * Adds a <select> menu for changing the number of records shown in the active table.
+ * Inserts the menu into a div with the id "explore_records_shown".
+ */
+export function addRecordsShownSelectToDOM() {
+  const exploreRecordsShownElement = document.getElementById("explore_records_shown");
+  exploreRecordsShownElement.innerHTML = ""; // Clear existing menu if any
+
+  // Create the select element
+  const selectMenu = document.createElement("select");
+  selectMenu.id = "records_shown_select";
+  selectMenu.className = "p-1 border border-neutral-500 bg-transparent text-xs";
+  selectMenu.addEventListener("change", handleRecordsShownChange);
+
+  // Define options for the select menu
+  const options = [5, 10, 20, 50];
+  options.forEach((optionValue) => {
+    const option = document.createElement("option");
+    option.value = optionValue;
+    option.textContent = `${optionValue}`;
+    if (optionValue === 10) { // Set default value
+      option.selected = true;
+    }
+    selectMenu.appendChild(option);
+  });
+
+  exploreRecordsShownElement.appendChild(selectMenu);
+}
+
+/**
+ * Handles the event when the number of records to show is changed.
+ * Fetches and updates the table data based on the new selection.
+ *
+ * @param {Event} event - The event object from the select menu change.
+ */
+async function handleRecordsShownChange(event) {
+  const newSize = event.target.value;
+  toggleLoadingIndicator(true); // Show loading indicator
+
+  try {
+    await fetchAndDisplayExploreData(currentActiveExploreItemData, currentActiveExploreItemQuery, newSize);
+  } catch (error) {
+    console.error('Error updating records shown: ', error);
+  }
+
+  toggleLoadingIndicator(false); // Hide loading indicator
 }
 
 /**
@@ -210,9 +268,8 @@ export function createExploreFilterRadioButton(id) {
  * 
  * @param {Object} itemData - The data object of the explore item.
  */
-async function fetchAndDisplayExploreData(itemData, filter = "is_paper") {
+async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 10) {
   const { type, id, term, sort, includes } = itemData; // Extract explore item's properties
-  const size = 20; // Set the number of records to fetch
   let query = orgData.hits.hits[0]._source.analysis[filter].query; // Get the query string for the selected filter
   let records = [];
 
@@ -240,7 +297,6 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper") {
  */
 async function fetchTermBasedData(query, term, sort, size) {
   const postData = createPostData(query, term, startYear, endYear, size, sort); // Generate POST request
-  console.log(postData);
   const response = await fetchPostData(postData);
   // Check nested properties before assigning records
   if (response && response.aggregations && response.aggregations.key && response.aggregations.key.buckets) {
@@ -283,14 +339,6 @@ function processAndDisplayRecords(id, records, includes) {
 // =================================================
 // Table updating and styling functions
 // =================================================
-
-/**
- * Handles the scenario when explore data is not available for an org
- * by simply not displaying the Explore section on the report.
- */
-function handleNoExploreData() {
-  displayNone("explore");
-}
 
 /**
  * Updates the table header and fetches data to populate the table.

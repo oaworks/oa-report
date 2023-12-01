@@ -373,9 +373,15 @@ permalink: "{{ org._source.objectID | slug }}/"
             msg: "This table is a preview of all the records for your query. To see the full data set in CSV format, use the <em>Download full data (CSV)</em> button."
           }) }} 
         </h3> 
-        <div class="my-4 gap-3 md:gap-6 grid grid-cols-1 md:grid-cols-2">
+        <div class="my-4 gap-3 md:gap-6 grid grid-cols-2 md:grid-cols-3">
           <form class="col-span-1 w-auto">
-            <fieldset id="explore_form">
+            <fieldset id="explore_records_shown_field">
+              <legend class="mb-3 text-xs font-semibold uppercase">Records shown</legend>
+              <div class="flex flex-wrap items-center" id="explore_records_shown"></div>
+            </fieldset>
+          </form>
+          <form class="col-span-1 w-auto">
+            <fieldset id="explore_filter_field">
               <legend class="mb-3 text-xs font-semibold uppercase">Filter by</legend>
               <div class="flex flex-wrap items-center" id="explore_filters"></div>
             </fieldset>
