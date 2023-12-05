@@ -261,6 +261,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
   const { type, id, term, sort, includes } = itemData; // Extract explore item's properties
   let query = orgData.hits.hits[0]._source.analysis[filter].query; // Get the query string for the selected filter
   let records = [];
+  size = currentActiveExploreItemSize; 
 
   if (type === "terms") {
     query = decodeAndReplaceUrlEncodedChars(query); // Decode and replace any URL-encoded characters for JSON
@@ -574,7 +575,7 @@ async function handleRecordsShownChange(event) {
   toggleLoadingIndicator(true); // Show loading indicator
 
   try {
-    await fetchAndDisplayExploreData(currentActiveExploreItemData, currentActiveExploreItemQuery, newSize);
+    await fetchAndDisplayExploreData(currentActiveExploreItemData, currentActiveExploreItemQuery, currentActiveExploreItemSize);
   } catch (error) {
     console.error('Error updating records shown: ', error);
   }
