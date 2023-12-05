@@ -65,27 +65,24 @@ export let currentActiveExploreItemSize = 10;
  */
 export async function initDataExplore(org) {  
   try {
-    // Check if the data is in cache and hasn't expired (set at 24 hours)
     if (dataCache[org] && !isCacheExpired(dataCache[org].timestamp)) {
       addExploreButtonsToDOM(dataCache[org].data);
       addRecordsShownSelectToDOM();
     } else {
-      // Fetch new data and update cache
-      orgDataPromise.then(function (response) {
-        orgData = response.data;
+      const response = await orgDataPromise; // Await the promise to resolve
+      orgData = response.data;
 
-        if (orgData.hits.hits[0]._source.explore) {
-          dataCache[org] = {
-            data: orgData.hits.hits[0]._source.explore,
-            timestamp: new Date().getTime() // Current timestamp in milliseconds
-          };
-          addExploreButtonsToDOM(dataCache[org].data);
-          addRecordsShownSelectToDOM();
-        } else {
-          displayNone("explore"); // Hide the explore section if no data is available
-        }
-      });
-      
+      // Check if explore data exists and is not empty
+      if (orgData.hits.hits.length > 0 && orgData.hits.hits[0]._source.explore && orgData.hits.hits[0]._source.explore.length > 0) {
+        dataCache[org] = {
+          data: orgData.hits.hits[0]._source.explore,
+          timestamp: new Date().getTime() // Current timestamp in milliseconds
+        };
+        addExploreButtonsToDOM(dataCache[org].data);
+        addRecordsShownSelectToDOM();
+      } else {
+        displayNone("explore"); // Hide the explore section if no data is available
+      }
     }
   } catch (error) {
     console.error('Error initialising data explore: ', error);

@@ -4,7 +4,7 @@
 // =================================================
 
 import { makeDateReadable, changeDays, formatDateToISO, createDate, replaceDateRange, replaceText } from './utils.js';
-import { initInsightsAndStrategies } from './insights-and-strategies.js';
+import { initInsightsAndStrategies, orgApiUrl } from './insights-and-strategies.js';
 import { currentActiveExploreItemButton, currentActiveExploreItemData, initDataExplore, processExploreDataTable } from './explore.js';
 
 // Constants for date calculations
@@ -39,6 +39,7 @@ function initialise() {
   setupDateDefaults();
   bindYearSelectionButtons();
   initInsightsAndStrategies(org);
+  console.log(orgApiUrl);
   
   if (!isDataExploreInitialised) {
     initDataExplore(org);
