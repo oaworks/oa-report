@@ -342,7 +342,7 @@ function updateTableContainer(selectedId, data, includes) {
   
   // Add functionalities to the table
   // TODO: This only works on the first table that the user clicks on
-  enableExploreRowHighlighting();
+  // enableExploreRowHighlighting();
   enableExploreTableScroll();
 
   // Populate table with data
