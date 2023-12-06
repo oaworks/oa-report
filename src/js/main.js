@@ -3,9 +3,10 @@
 // Main event listeners and functions
 // =================================================
 
-import { makeDateReadable, changeDays, formatDateToISO, createDate, replaceDateRange, replaceText } from './utils.js';
+import { createDate, replaceDateRange, replaceText } from './utils.js';
 import { initInsightsAndStrategies, orgApiUrl } from './insights-and-strategies.js';
 import { currentActiveExploreItemButton, currentActiveExploreItemData, initDataExplore, processExploreDataTable } from './explore.js';
+import { initStrategyTabs } from './strategies.js';
 
 // Constants for date calculations
 const currentDate = new Date();
@@ -47,7 +48,8 @@ function initialise() {
     initDataExplore(org);
     isDataExploreInitialised = true;
   }
-  
+
+  initStrategyTabs();
   adjustNavOnScroll();
 }
 
@@ -62,7 +64,7 @@ function setupDateDefaults() {
 /**
  * Determines and displays the default date range based on the user's type (paid or free).
  */
-function getDateRangeForUserType() {
+export function getDateRangeForUserType() {
   const endDate = paid ? currentDate : fixedDate;  // Assuming 'paid' is a global variable or state
   replaceDateRange(startYearDate, endDate);
 }
@@ -155,53 +157,6 @@ function adjustNavOnScroll() {
   // Call the function immediately to check the initial scroll position
   adjustNavStyle();
 }
-
-/**
- * Handles click events on tab buttons to switch between different tabs.
- * This function controls the display of tab content and updates the appearance of tabs based on the selected state.
- *
- * @param {Event} event - The click event object.
- */
-function updateStrategyButtonStyling(event) {
-  // Check if the target is a span and stop propagation if so
-  if (event.target.tagName.toLowerCase() === 'span') {
-    event.stopPropagation();
-    return;
-  }
-
-  const tabBtn = event.currentTarget;
-  const selectedStrategy = tabBtn.getAttribute("aria-controls");
-  const selectedTabContents = document.querySelector(`.js_strategies #${selectedStrategy}`);
-  const otherTabContents = document.querySelectorAll(`.js_strategy:not(#${selectedStrategy})`);
-  const otherTabBtns = document.querySelectorAll(`.js_strategy_btn:not(#strategy_${selectedStrategy})`);
-
-  // When unselected
-  for (let tabContents of otherTabContents) {
-    tabContents.classList.add("hidden");
-    tabContents.setAttribute("hidden", true);
-  }
-
-  for (let unselectedTabBtn of otherTabBtns) {
-    unselectedTabBtn.classList.remove("bg-carnation-300", "font-semibold");
-    unselectedTabBtn.classList.add("hover:text-neutral-700", "hover:border-neutral-300", "font-normal");
-    unselectedTabBtn.setAttribute("aria-selected", "false");
-    unselectedTabBtn.setAttribute("tabindex", "-1");
-  }
-
-  // When selected
-  selectedTabContents.classList.remove("hidden");
-  selectedTabContents.removeAttribute("hidden");
-
-  tabBtn.classList.add("bg-carnation-300", "font-semibold");
-  tabBtn.classList.remove("hover:text-neutral-700", "hover:border-neutral-300", "font-normal");
-  tabBtn.setAttribute("aria-selected", "true");
-  tabBtn.setAttribute("tabindex", "0");
-}
-
-// Attach event listeners to strategy buttons
-strategyTabBtns.forEach((tabBtn) => {
-  tabBtn.addEventListener("click", updateStrategyButtonStyling);
-});
 
 // Start the initialisation process
 initialise();
