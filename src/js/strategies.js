@@ -1,5 +1,7 @@
+// ================================================
 // strategies.js
-import { initInsightsAndStrategies } from './insights-and-strategies.js';
+// State & DOM manipulation specific to Strategies
+// ================================================
 
 /**
  * Initialises event listeners for strategy tab buttons.
