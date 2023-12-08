@@ -268,13 +268,8 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
   }
 
   if (records.length > 0) {
-    let formattedRecords = deepCopy(records);
-    formattedRecords = formatRecords(formattedRecords);
-    processAndDisplayRecords(id, formattedRecords, includes);
-    console.log(`${type}-based table (${id}).`);
-    console.log(records);
-    console.log(`-------`);
-    console.log(formattedRecords);
+    records = reorderRecords(records, includes); 
+    updateTableContainer(id, records, includes);
   }
 }
 
@@ -329,18 +324,6 @@ async function fetchArticleBasedData(query, includes, sort, size) {
   return [];
 }
 
-/**
- * Processes and displays records in the UI.
- * 
- * @param {string} id - The ID of the explore item.
- * @param {Array} records - The records to be processed and displayed.
- * @param {string} includes - The 'includes' key for reordering records.
- */
-function processAndDisplayRecords(id, records, includes) {
-  records = reorderRecords(records, includes);
-  updateTableContainer(id, records, includes);
-}
-
 // =================================================
 // Table updating and styling functions
 // =================================================
@@ -352,9 +335,8 @@ function processAndDisplayRecords(id, records, includes) {
  * @param {Array<Object>} data - The data array to populate the table, with each object representing a row.
  */
 function updateTableContainer(selectedId, data, includes) {
-  // Remove 'hidden' class to show the table
   const exportTable = document.getElementById('export_table');
-  exportTable.classList.remove('hidden');
+  exportTable.classList.remove('hidden'); // Show the table
   
   // Add functionalities to the table
   // TODO: This only works on the first table that the user clicks on
@@ -386,7 +368,8 @@ function populateTableHeader(tableHeaderId, includes) {
     tableHeader.removeChild(tableHeader.firstChild);
   }
 
-  const keysOrder = includes.split(",");
+  let keysOrder = includes.split(",");
+  keysOrder = prettifyHeaders(keysOrder);
 
   // Create and add the header row
   const headerRow = document.createElement('tr');
@@ -417,8 +400,13 @@ function populateTableBody(data, tableBodyId, includes) {
     tableBody.removeChild(tableBody.firstChild);
   }
 
-  // Define the order of the keys based on the includes array
-  const keysOrder = includes.split(",");
+  // Define the order of the keys based on the includes array and remove non-percentage counterparts
+  let keysOrder = includes.split(",");
+  keysOrder = keysOrder.filter(header => header.endsWith("_pct") || !keysOrder.includes(header + "_pct"));
+
+  // Format and prettify the data
+  data = formatRecords(data);
+  data = prettifyRecords(data);
 
   // Add new rows from data
   data.forEach(dataObject => {
@@ -429,7 +417,7 @@ function populateTableBody(data, tableBodyId, includes) {
       else if (index === 1) cssClass = dataTableBodyClasses.secondCol;
       else cssClass = dataTableBodyClasses.otherCols;
 
-      const content = dataObject[key] !== undefined ? dataObject[key] : "N/A";
+      const content = dataObject[key];
       row.appendChild(createTableCell(content, cssClass));
     });
     tableBody.appendChild(row);
@@ -480,10 +468,46 @@ function createTableCell(content, cssClass, isHeader = false) {
     // Check if the content is an object and format its values as a list
     cell.innerHTML = `<ul>${formatObjectValuesAsList(content)}</ul>`;
   } else {
-    cell.textContent = content;
+    cell.innerHTML = content;
   }
 
   return cell;
+}
+
+/**
+ * Formats headers for display. For headers with a corresponding "_pct" counterpart,
+ * only the "_pct" version is retained and the "_pct" suffix is removed. Headers are 
+ * also made more human-readable, with specific capitalization rules for known phrases and acronyms.
+ * 
+ * @param {string[]} headers - The array of headers to be prettified.
+ * @returns {string[]} - The prettified headers.
+ */
+function prettifyHeaders(headers) {
+  // Define special cases for phrases and acronyms
+  const specialCases = {
+    "open access": "Open Access",
+    "open data": "Open Data",
+    "apc": "APC<span style='text-transform: lowercase;'>s</span>",
+    "free to read": "Free-to-Read"
+  };
+
+  return headers
+    .filter(header => header.endsWith("_pct") || !headers.includes(header + "_pct"))
+    .map(header => {
+      header = header.replace(/_pct$/, ""); // Remove '_pct' suffix
+      header = header.replace(/_/g, " "); // Replace underscores with spaces
+      header = header.charAt(0).toUpperCase() + header.slice(1).toLowerCase(); // Capitalize only the first letter of the header
+
+      // Check and replace special cases using regex
+      Object.entries(specialCases).forEach(([key, value]) => {
+        const regex = new RegExp(key, "i"); // 'i' flag for case-insensitive match
+        if (regex.test(header)) {
+          header = header.replace(regex, value);
+        }
+      });
+      return header;
+    }
+  );
 }
 
 /**
@@ -513,6 +537,24 @@ function formatRecords(records) {
       // Non-numeric values are left unchanged
     });
   });
+  return records;
+}
+
+/**
+ * Formats records or headers for display. Removes non-percentage counterparts 
+ * from records and formats headers to be more human-readable.
+ * 
+ * @param {Object[]} records - The array of records to be prettified.
+ * @returns {Object[]|string[]} - The prettified records or headers.
+ */
+function prettifyRecords(records) {
+  records.forEach(record => {
+    Object.keys(record).forEach(key => {
+      const pctKey = key + "_pct";
+      if (record.hasOwnProperty(pctKey)) delete record[key]; // Delete non-percentage counterpart
+    });
+  });
+
   return records;
 }
 
