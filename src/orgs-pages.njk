@@ -187,19 +187,21 @@ permalink: "{{ org._source.objectID | slug }}/"
             msg: "This table is a preview of all the records for your query. To see the full data set in CSV format, use the <em>Download full data (CSV)</em> button."
           }) }} 
         </h3> 
-        <div class="my-4 gap-3 md:gap-12 flex content-start">
-          <form class="w-auto">
-            <fieldset id="explore_records_shown_field">
-              <legend class="mb-4 text-xs font-semibold uppercase">Records shown</legend>
-              <div class="flex flex-wrap items-center" id="explore_records_shown"></div>
-            </fieldset>
-          </form>
-          <form class="w-auto">
-            <fieldset id="explore_filter_field">
-              <legend class="mb-4 text-xs font-semibold uppercase">Filter by</legend>
-              <div class="flex flex-wrap items-center" id="explore_filters"></div>
-            </fieldset>
-          </form>
+        <div class="my-4 gap-3 md:gap-12 flex justify-between">
+          <div class="gap-3 md:gap-12 flex justify-between">
+            <form class="w-auto">
+              <fieldset id="explore_records_shown_field">
+                <legend class="mb-4 text-xs font-semibold uppercase">Records shown</legend>
+                <div class="flex flex-wrap items-center" id="explore_records_shown"></div>
+              </fieldset>
+            </form>
+            <form class="w-auto">
+              <fieldset id="explore_filter_field">
+                <legend class="mb-4 text-xs font-semibold uppercase">Filter by</legend>
+                <div class="flex flex-wrap items-center" id="explore_filters"></div>
+              </fieldset>
+            </form>
+          </div>
           <form class="w-auto">        
             <fieldset id="explore_display_style_field">   
               <legend class="mb-4 text-xs font-semibold uppercase" for="toggler-data-view">Data display style</legend>
@@ -212,7 +214,7 @@ permalink: "{{ org._source.objectID | slug }}/"
                 <span class="ml-2 text-xs">Raw</span>
               </div>
             </fieldset>
-          </form>          
+          </form>     
         </div>
         <div class="relative">
           <button
