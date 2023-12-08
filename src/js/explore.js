@@ -528,7 +528,7 @@ function createTableCell(content, cssClass, isHeader = false) {
   const cell = document.createElement(isHeader ? 'th' : 'td');
   cell.className = cssClass;
 
-  if (content === 'key') {
+  if (content === 'Key') {
     // Check if content is 'key' and insert a span with class 'explore_type'
     const spanElement = document.createElement('span');
     spanElement.className = 'explore_type';
