@@ -187,30 +187,32 @@ permalink: "{{ org._source.objectID | slug }}/"
             msg: "This table is a preview of all the records for your query. To see the full data set in CSV format, use the <em>Download full data (CSV)</em> button."
           }) }} 
         </h3> 
-        <div class="my-4 gap-3 md:gap-6 grid grid-cols-2 md:grid-cols-3">
-          <form class="col-span-1 w-auto">
+        <div class="my-4 gap-3 md:gap-12 flex content-start">
+          <form class="w-auto">
             <fieldset id="explore_records_shown_field">
-              <legend class="mb-3 text-xs font-semibold uppercase">Records shown</legend>
+              <legend class="mb-4 text-xs font-semibold uppercase">Records shown</legend>
               <div class="flex flex-wrap items-center" id="explore_records_shown"></div>
             </fieldset>
           </form>
-          <form class="col-span-1 w-auto">
+          <form class="w-auto">
             <fieldset id="explore_filter_field">
-              <legend class="mb-3 text-xs font-semibold uppercase">Filter by</legend>
+              <legend class="mb-4 text-xs font-semibold uppercase">Filter by</legend>
               <div class="flex flex-wrap items-center" id="explore_filters"></div>
             </fieldset>
           </form>
-          <div class="col-span-1 md:justify-self-end w-auto">            
-            <label for="toggler-data-view" class="mb-3 text-xs font-semibold uppercase">Data display style</label>
-            <div class="flex items-center">
-              <span class="mr-2 text-xs">Pretty</span>
-                <button id="toggle-data-view" type="button" class="relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-carnation-500 focus:ring-offset-2" role="switch" aria-checked="true">
-                  <span aria-hidden="true" class="bg-carnation-500 pointer-events-none absolute mx-auto h-4 w-9 rounded-full transition-colors duration-200 ease-in-out"></span>
-                  <span aria-hidden="true" class="translate-x-100 pointer-events-none absolute left-0 inline-block h-5 w-5 transform rounded-full border border-neutral-500 bg-neutral-800 shadow ring-0 transition-transform duration-200 ease-in-out"></span>
-                </button>
-              <span class="ml-2 text-xs">Raw</span>
-            </div>
-          </div>          
+          <form class="w-auto">        
+            <fieldset id="explore_display_style_field">   
+              <legend class="mb-4 text-xs font-semibold uppercase" for="toggler-data-view">Data display style</legend>
+              <div class="flex items-center">
+                <span class="mr-2 text-xs">Pretty</span>
+                  <button id="toggle-data-view" type="button" class="relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-carnation-500 focus:ring-offset-2" role="switch" aria-checked="true">
+                    <span aria-hidden="true" class="bg-carnation-500 pointer-events-none absolute mx-auto h-4 w-9 rounded-full transition-colors duration-200 ease-in-out"></span>
+                    <span aria-hidden="true" class="translate-x-100 pointer-events-none absolute left-0 inline-block h-5 w-5 transform rounded-full border border-neutral-500 bg-neutral-800 shadow ring-0 transition-transform duration-200 ease-in-out"></span>
+                  </button>
+                <span class="ml-2 text-xs">Raw</span>
+              </div>
+            </fieldset>
+          </form>          
         </div>
         <div class="relative">
           <button
