@@ -243,10 +243,9 @@ export function reorderRecords(records, includes) {
       if (Array.isArray(value)) {
         value = value.filter(item => item !== null); // Remove null items
         if (value.length === 0) {
-          value = null; // Set to null if array is empty
+          value = 'null'; // Set to null if array is empty
         }
       }
-
       reorderedRecord[key] = value;
     });
 

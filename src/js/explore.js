@@ -94,7 +94,7 @@ export async function initDataExplore(org) {
  *
  * @param {Array<Object>} exploreData - Array of explore data objects from the API response.
  */
-export async function addExploreButtonsToDOM(exploreData) {
+async function addExploreButtonsToDOM(exploreData) {
   const exploreButtons = document.getElementById('explore_buttons');
   
   for (const exploreDataItem of exploreData) {
@@ -111,7 +111,7 @@ export async function addExploreButtonsToDOM(exploreData) {
  * @param {Object} exploreDataType - The explore data object to create a button for.
  * @returns {HTMLButtonElement} The created and configured button element.
  */
-export function createExploreButton(exploreDataItem) {
+function createExploreButton(exploreDataItem) {
   const button = document.createElement("button");
   const id = exploreDataItem.id; 
   button.id = `explore_${id}_button`; 
@@ -151,7 +151,7 @@ export async function processExploreDataTable(button, itemData) {
  *
  * @param {string} query - A comma-separated string of filters from the API response.
  */
-export async function addExploreFiltersToDOM(query) {
+async function addExploreFiltersToDOM(query) {
   const exploreFiltersElement = document.getElementById("explore_filters");
   const exploreFilterField = document.getElementById("explore_filter_field");
   exploreFiltersElement.innerHTML = ""; // Clear existing radio buttons
@@ -181,7 +181,7 @@ export async function addExploreFiltersToDOM(query) {
  * @param {string} id - The ID of the filter.
  * @returns {HTMLDivElement} The div element containing the configured radio button and label.
  */
-export function createExploreFilterRadioButton(id) {
+function createExploreFilterRadioButton(id) {
   const label = exploreFilters[id] || id; // Use label from filters or default to ID
   const filterRadioButton = document.createElement('div');
   filterRadioButton.className = 'flex items-center mr-4 mb-3';
@@ -221,7 +221,7 @@ export function createExploreFilterRadioButton(id) {
  * Adds a <select> menu for changing the number of records shown in the active table.
  * Inserts the menu into a div with the id "explore_records_shown".
  */
-export function addRecordsShownSelectToDOM() {
+function addRecordsShownSelectToDOM() {
   const exploreRecordsShownElement = document.getElementById("explore_records_shown");
   exploreRecordsShownElement.innerHTML = ""; // Clear existing menu if any
 
@@ -268,6 +268,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
   }
 
   if (records.length > 0) {
+    console.log(records);
     records = reorderRecords(records, includes); 
     updateTableContainer(id, records, includes);
   }
@@ -405,8 +406,13 @@ function populateTableBody(data, tableBodyId, includes) {
   keysOrder = keysOrder.filter(header => header.endsWith("_pct") || !keysOrder.includes(header + "_pct"));
 
   // Format and prettify the data
+  console.log(data);
+
   data = formatRecords(data);
   data = prettifyRecords(data);
+
+  console.log("Formatted data: ")
+  console.log(data);
 
   // Add new rows from data
   data.forEach(dataObject => {
@@ -422,56 +428,6 @@ function populateTableBody(data, tableBodyId, includes) {
     });
     tableBody.appendChild(row);
   });
-}
-
-/**
- * Creates a table cell element (th or td) with specified content and CSS class.
- * 
- * @param {string|Object} content - The content to be placed inside the cell. If an object, its values are formatted as an unordered list.
- * @param {string} cssClass - The CSS class to apply to the cell.
- * @param {boolean} [isHeader=false] - Indicates if the cell is a header cell (th) or a regular cell (td).
- * @returns {HTMLElement} The created table cell element.
- */
-function createTableCell(content, cssClass, isHeader = false) {
-  const cell = document.createElement(isHeader ? 'th' : 'td');
-  cell.className = cssClass;
-
-  if (content === 'key') {
-    // Check if content is 'key' and insert a span with class 'explore_type'
-    const spanElement = document.createElement('span');
-    spanElement.className = 'explore_type';
-    cell.appendChild(spanElement);
-  } else if (typeof content === 'string' && content.includes('orcid.org')) {
-    // Check if content is an ORCiD URL and fetch the full name
-    const orcidId = content.split('/').pop();
-    cell.textContent = orcidId;
-    getORCiDFullName(orcidId)
-      .then(
-        // Display full name with link to ORCiD profile
-        fullName => cell.innerHTML = 
-        `<a href="${content}" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            class="underline underline-offset-2 decoration-1">
-          ${fullName}
-        </a>`
-      )
-      .catch(() => cell.innerHTML = 
-        `<a href="${content}" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            class="underline underline-offset-2 decoration-1">
-          ${content} (Name not found)
-        </a>`
-      );
-  } else if (typeof content === 'object' && content !== null) {
-    // Check if the content is an object and format its values as a list
-    cell.innerHTML = `<ul>${formatObjectValuesAsList(content)}</ul>`;
-  } else {
-    cell.innerHTML = content;
-  }
-
-  return cell;
 }
 
 /**
@@ -527,7 +483,7 @@ function formatRecords(records) {
         }
 
         if (key.endsWith("_pct")) {
-          record[key] = `${formattedNumber*100}%`;
+          record[key] = `${(formattedNumber*100).toFixed()}%`;
         } else if (key.endsWith("_amount")) {
           record[key] = `${makeNumberReadable(parseFloat(formattedNumber), true)}`;
         } else {
@@ -558,6 +514,58 @@ function prettifyRecords(records) {
   return records;
 }
 
+/**
+ * Creates a table cell element (th or td) with specified content and CSS class.
+ * 
+ * @param {string|Object} content - The content to be placed inside the cell. If an object, its values are formatted as an unordered list.
+ * @param {string} cssClass - The CSS class to apply to the cell.
+ * @param {boolean} [isHeader=false] - Indicates if the cell is a header cell (th) or a regular cell (td).
+ * @returns {HTMLElement} The created table cell element.
+ */
+function createTableCell(content, cssClass, isHeader = false) {
+  const cell = document.createElement(isHeader ? 'th' : 'td');
+  cell.className = cssClass;
+
+  if (content === 'key') {
+    // Check if content is 'key' and insert a span with class 'explore_type'
+    const spanElement = document.createElement('span');
+    spanElement.className = 'explore_type';
+    cell.appendChild(spanElement);
+  } else if (typeof content === 'string' && content.includes('orcid.org')) {
+    // Check if content is an ORCiD URL and fetch the full name
+    const orcidId = content.split('/').pop();
+    cell.textContent = orcidId;
+    getORCiDFullName(orcidId)
+      .then(
+        // Display full name with link to ORCiD profile
+        fullName => cell.innerHTML = 
+        `<a href="${content}" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            class="underline underline-offset-2 decoration-1">
+          ${fullName}
+        </a>`
+      )
+      .catch(() => cell.innerHTML = 
+        `<a href="${content}" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            class="underline underline-offset-2 decoration-1">
+          ${content} (Name not found)
+        </a>`
+      );
+  } else if (typeof content === 'object' && content !== null) {
+    // Check if the content is an object and format its values as a list
+    cell.innerHTML = `<ul>${formatObjectValuesAsList(content)}</ul>`;
+  } else if (content === null) {
+    cell.innerHTML = "N/A";
+  } else {
+    cell.innerHTML = content;
+  }
+
+  return cell;
+}
+
 // =================================================
 // Interactive feature functions
 // =================================================
@@ -566,7 +574,7 @@ function prettifyRecords(records) {
  * Enables row highlighting functionality for a table in the data exploration section.
  * Clicking on a row will highlight it.
  */
-export function enableExploreRowHighlighting() {
+function enableExploreRowHighlighting() {
   const tableBody = document.getElementById("export_table_body");
 
   tableBody.addEventListener("click", (event) => {
@@ -594,7 +602,7 @@ export function enableExploreRowHighlighting() {
  * Enables horizontal scrolling functionality for the table in the data exploration section.
  * A button click will scroll the table to the right.
  */
-export function enableExploreTableScroll() {
+function enableExploreTableScroll() {
   const tableContainer = document.querySelector(".js_export_table_container");
   const scrollRightButton = document.getElementById("js_scroll_table_btn");
 
@@ -634,7 +642,7 @@ export function enableExploreTableScroll() {
  *
  * @param {string} buttonId - The ID of the selected button.
  */
-export function updateButtonActiveStyles(buttonId) {
+function updateButtonActiveStyles(buttonId) {
   // Reset styles for all buttons
   document.querySelectorAll("#explore_buttons button").forEach(button => {
     button.classList.remove("bg-carnation-500");
