@@ -68,6 +68,7 @@ export async function initDataExplore(org) {
     if (dataCache[org] && !isCacheExpired(dataCache[org].timestamp)) {
       addExploreButtonsToDOM(dataCache[org].data);
       addRecordsShownSelectToDOM();
+      handleDataDisplayToggle();
     } else {
       const response = await orgDataPromise; // Await the promise to resolve
       orgData = response.data;
@@ -80,6 +81,7 @@ export async function initDataExplore(org) {
         };
         addExploreButtonsToDOM(dataCache[org].data);
         addRecordsShownSelectToDOM();
+        handleDataDisplayToggle();
       } else {
         displayNone("explore"); // Hide the explore section if no data is available
       }
@@ -676,3 +678,36 @@ async function handleRecordsShownChange(event) {
 
   toggleLoadingIndicator(false); // Hide loading indicator
 }
+
+/**
+ * Handle the toggling of the data display style in the table.
+ * 
+ * This function sets up an event listener on the toggle button. When the button is clicked,
+ * it switches between two states - 'Pretty' and 'Raw'.
+ */
+function handleDataDisplayToggle() {
+  const toggleButton = document.getElementById('toggle-data-view');
+  toggleButton.addEventListener('click', function() {
+    const toggleBg = this.querySelector('span.pointer-events-none');
+    const toggleDot = this.querySelector('span.translate-x-100, span.translate-x-5');
+
+    // Check if the toggle is in the 'Pretty' (active) state
+    if (this.getAttribute('aria-checked') === 'true') {
+        // Switch to 'Raw' (inactive) state
+        this.setAttribute('aria-checked', 'false');
+        toggleBg.classList.replace('bg-carnation-500', 'bg-neutral-200');
+        toggleDot.classList.replace('translate-x-100', 'translate-x-5');
+
+        // display raw data
+
+    } else {
+        // Switch back to 'Pretty' (active) state
+        this.setAttribute('aria-checked', 'true');
+        toggleBg.classList.replace('bg-neutral-200', 'bg-carnation-500');
+        toggleDot.classList.replace('translate-x-5', 'translate-x-100');
+
+        // display pretty data 
+    }
+  });
+}
+
