@@ -503,9 +503,9 @@ function formatRecords(records) {
         }
 
         if (key.endsWith("_pct")) {
-          record[key] = `${formattedNumber}%`;
+          record[key] = `${formattedNumber*100}%`;
         } else if (key.endsWith("_amount")) {
-          record[key] = `USD $${makeNumberReadable(parseFloat(formattedNumber), true)}`;
+          record[key] = `${makeNumberReadable(parseFloat(formattedNumber), true)}`;
         } else {
           record[key] = makeNumberReadable(parseFloat(formattedNumber));
         }
