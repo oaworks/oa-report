@@ -7,7 +7,7 @@
 // Imports
 // =================================================
 
-import { displayNone, isCacheExpired, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName } from "./utils.js";
+import { displayNone, isCacheExpired, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, deepCopy, makeNumberReadable } from "./utils.js";
 import { exploreItem, exploreFilters, dataTableBodyClasses, dataTableHeaderClasses } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { orgDataPromise } from './insights-and-strategies.js';
@@ -268,9 +268,13 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
   }
 
   if (records.length > 0) {
-    processAndDisplayRecords(id, records, includes);
+    let formattedRecords = deepCopy(records);
+    formattedRecords = formatRecords(formattedRecords);
+    processAndDisplayRecords(id, formattedRecords, includes);
     console.log(`${type}-based table (${id}).`);
     console.log(records);
+    console.log(`-------`);
+    console.log(formattedRecords);
   }
 }
 
@@ -285,9 +289,23 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 async function fetchTermBasedData(query, term, sort, size) {
   const postData = createPostData(query, term, startYear, endYear, size, sort); // Generate POST request
   const response = await fetchPostData(postData);
-  // Check nested properties before assigning records
+
   if (response && response.aggregations && response.aggregations.key && response.aggregations.key.buckets) {
-    return response.aggregations.key.buckets; 
+    return response.aggregations.key.buckets.map(bucket => {
+      const formattedBucket = {};
+      Object.keys(bucket).forEach(key => {
+        if (key.startsWith("median_")) {
+          formattedBucket[key] = bucket[key].values["50.0"];
+        } else if (bucket[key].doc_count !== undefined) {
+          formattedBucket[key] = bucket[key].doc_count;
+        } else if (bucket[key].value !== undefined) {
+          formattedBucket[key] = bucket[key].value;
+        } else {
+          formattedBucket[key] = bucket[key];
+        }
+      });
+      return formattedBucket;
+    });
   }
   return [];
 }
@@ -468,6 +486,35 @@ function createTableCell(content, cssClass, isHeader = false) {
   return cell;
 }
 
+/**
+ * Formats the records for display. This includes converting numerical values
+ * to human-readable formats such as percentages and currency.
+ * 
+ * @param {Object[]} records - The records to format.
+ */
+function formatRecords(records) {
+  records.forEach(record => {
+    Object.keys(record).forEach(key => {
+      if (typeof record[key] === 'number') {
+        let formattedNumber = record[key].toFixed(2);
+
+        if (formattedNumber.endsWith('.00')) {
+          formattedNumber = formattedNumber.slice(0, -3);
+        }
+
+        if (key.endsWith("_pct")) {
+          record[key] = `${formattedNumber}%`;
+        } else if (key.endsWith("_amount")) {
+          record[key] = `USD $${makeNumberReadable(parseFloat(formattedNumber), true)}`;
+        } else {
+          record[key] = makeNumberReadable(parseFloat(formattedNumber));
+        }
+      }
+      // Non-numeric values are left unchanged
+    });
+  });
+  return records;
+}
 
 // =================================================
 // Interactive feature functions

@@ -351,3 +351,15 @@ export function decodeAndReplaceUrlEncodedChars(encodedString) {
 
   return decodedString;
 }
+
+/**
+ * Creates a deep copy of a given object or array. This is useful for cloning complex
+ * data structures like arrays of objects, where a shallow copy would still reference
+ * the same nested objects.
+ * 
+ * @param {Object|Array} obj - The object or array to be deep copied.
+ * @returns {Object|Array} A deep copy of the provided object or array.
+ */
+export function deepCopy(obj) {
+  return JSON.parse(JSON.stringify(obj));
+}
