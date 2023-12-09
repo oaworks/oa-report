@@ -103,13 +103,32 @@ export async function initDataExplore(org) {
  * @param {Array<Object>} exploreData - Array of explore data objects from the API response.
  */
 async function addExploreButtonsToDOM(exploreData) {
-  const exploreButtons = document.getElementById('explore_buttons');
-  
+  const exploreButtonsContainer = document.getElementById('explore_buttons');
+  const moreButtons = []; // Array to store buttons with featured === false
+  let moreButtonsVisible = false; // State to track visibility of more buttons
+
   for (const exploreDataItem of exploreData) {
     let button = createExploreButton(exploreDataItem);
-    exploreButtons.appendChild(button);
+    if (exploreDataItem.featured) {
+      exploreButtonsContainer.appendChild(button);
+    } else {
+      button.classList.add('hidden'); // Initially hide the button
+      moreButtons.push(button);
+      exploreButtonsContainer.appendChild(button); // Add the button to the container, but keep it hidden
+    }
   }
+
+  // "See more/See fewer" button logic for non-featured buttons
+  const seeMoreButton = document.getElementById('explore_see_more_button');
+  seeMoreButton.addEventListener('click', function() {
+    moreButtonsVisible = !moreButtonsVisible; // Toggle visibility state
+    moreButtons.forEach(button => button.classList.toggle('hidden')); // Toggle visibility of buttons
+
+    // Update the text of the button based on the state
+    seeMoreButton.querySelector('span').textContent = moreButtonsVisible ? 'See fewer' : 'See more';
+  });
 }
+
 
 /**
  * Creates and configures a button element for an explore item with a specified
