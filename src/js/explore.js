@@ -276,6 +276,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     query = decodeAndReplaceUrlEncodedChars(query); // Decode and replace any URL-encoded characters for JSON
     records = await fetchTermBasedData(query, term, sort, size);
     records = reorderRecords(records, includes);
+    replaceText("explore_sort", "publication count"); // Update the sort text in header
     if (pretty === true) {
       records = formatRecords(records); 
       records = prettifyRecords(records);
@@ -284,6 +285,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     }
   } else if (type === "articles") {
     records = await fetchArticleBasedData(query, includes, sort, size);
+    replaceText("explore_sort", "publication date"); // Update the sort text in header
   }
 
   if (records.length > 0) {
