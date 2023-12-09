@@ -256,7 +256,7 @@ function addRecordsShownSelectToDOM() {
  * @param {string} filter - The filter to use for fetching data.
  * @param {number} size - The number of records to fetch.
  */
-async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 10) {
+async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 10, pretty = true) {
   const { type, id, term, sort, includes } = itemData; // Extract explore item's properties
   let query = orgData.hits.hits[0]._source.analysis[filter].query; // Get the query string for the selected filter
   let records = [];
@@ -265,14 +265,19 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
   if (type === "terms") {
     query = decodeAndReplaceUrlEncodedChars(query); // Decode and replace any URL-encoded characters for JSON
     records = await fetchTermBasedData(query, term, sort, size);
+    records = reorderRecords(records, includes);
+    if (pretty === true) {
+      records = formatRecords(records); 
+      records = prettifyRecords(records);
+    } else {
+      records = prettifyRecords(records, false);
+    }
   } else if (type === "articles") {
     records = await fetchArticleBasedData(query, includes, sort, size);
   }
 
   if (records.length > 0) {
-    console.log(records);
-    records = reorderRecords(records, includes); 
-    updateTableContainer(id, records, includes);
+    updateTableContainer(id, records);
   }
 }
 
@@ -335,9 +340,9 @@ async function fetchArticleBasedData(query, includes, sort, size) {
  * Updates the table header and fetches data to populate the table.
  *
  * @param {string} selectedId - The ID of the selected explore item.
- * @param {Array<Object>} data - The data array to populate the table, with each object representing a row.
+ * @param {Array<Object>} records - The data array to populate the table, with each object representing a row.
  */
-function updateTableContainer(selectedId, data, includes) {
+function updateTableContainer(selectedId, records) {
   const exportTable = document.getElementById('export_table');
   exportTable.classList.remove('hidden'); // Show the table
   
@@ -347,8 +352,8 @@ function updateTableContainer(selectedId, data, includes) {
   enableExploreTableScroll();
 
   // Populate table with data
-  populateTableHeader('export_table_head', includes);
-  populateTableBody(data, 'export_table_body', includes);
+  populateTableHeader(records[0], 'export_table_head');
+  populateTableBody(records, 'export_table_body');
 
   // Update any mentions of the explore data type with .plural version of the ID
   replaceText("explore_type", exploreItem[selectedId]?.plural || selectedId);
@@ -359,10 +364,10 @@ function updateTableContainer(selectedId, data, includes) {
  * The function clears any existing headers before appending the new ones. It assumes that the 
  * first object in the data array is representative of the structure for all objects in the array.
  * 
- * @param {Object[]} headers - An array of data objects used to derive the header columns. Assumes all objects have the same structure.
+ * @param {Object[]} records - An array of data objects used to derive the header columns. Assumes all objects have the same structure.
  * @param {string} tableHeaderId - The ID of the table header element where the headers should be appended.
  */
-function populateTableHeader(tableHeaderId, includes) {
+function populateTableHeader(records, tableHeaderId) {
   const tableHeader = document.getElementById(tableHeaderId);
   if (!tableHeader) return;
 
@@ -371,12 +376,11 @@ function populateTableHeader(tableHeaderId, includes) {
     tableHeader.removeChild(tableHeader.firstChild);
   }
 
-  let keysOrder = includes.split(",");
-  keysOrder = prettifyHeaders(keysOrder);
+  records = Object.keys(records); // Only extract the keys from the records
+  let headers = prettifyHeaders(records);
 
-  // Create and add the header row
-  const headerRow = document.createElement('tr');
-  keysOrder.forEach((key, index) => {
+  const headerRow = document.createElement('tr'); // Create and add the header row
+  headers.forEach((key, index) => {
     let cssClass;
     if (index === 0) cssClass = dataTableHeaderClasses.firstHeaderCol;
     else if (index === 1) cssClass = dataTableHeaderClasses.secondHeaderCol;
@@ -394,43 +398,35 @@ function populateTableHeader(tableHeaderId, includes) {
  * @param {Array<Object>} data - Array of data objects to populate the table with.
  * @param {string} tableBodyId - The ID of the table body to populate.
  */
-function populateTableBody(data, tableBodyId, includes) {
+function populateTableBody(data, tableBodyId) {
   const tableBody = document.getElementById(tableBodyId);
-  if (!tableBody) return;
+  if (!tableBody || data.length === 0) return;
 
   // Clear existing table rows
   while (tableBody.firstChild) {
     tableBody.removeChild(tableBody.firstChild);
   }
 
-  // Define the order of the keys based on the includes array and remove non-percentage counterparts
-  let keysOrder = includes.split(",");
-  keysOrder = keysOrder.filter(header => header.endsWith("_pct") || !keysOrder.includes(header + "_pct"));
-
-  // Format and prettify the data
-  console.log(data);
-
-  data = formatRecords(data);
-  data = prettifyRecords(data);
-
-  console.log("Formatted data: ")
-  console.log(data);
-
   // Add new rows from data
-  data.forEach(dataObject => {
+  data.forEach(record => {
     const row = document.createElement('tr');
-    keysOrder.forEach((key, index) => {
+    let columnIndex = 0; // Keep track of column index for CSS class assignment
+
+    for (const key in record) {
       let cssClass;
-      if (index === 0) cssClass = dataTableBodyClasses.firstCol;
-      else if (index === 1) cssClass = dataTableBodyClasses.secondCol;
+      if (columnIndex === 0) cssClass = dataTableBodyClasses.firstCol;
+      else if (columnIndex === 1) cssClass = dataTableBodyClasses.secondCol;
       else cssClass = dataTableBodyClasses.otherCols;
 
-      const content = dataObject[key];
+      const content = record[key];
       row.appendChild(createTableCell(content, cssClass));
-    });
+
+      columnIndex++; // Increment the column index
+    }
     tableBody.appendChild(row);
   });
 }
+
 
 /**
  * Formats headers for display. For headers with a corresponding "_pct" counterpart,
@@ -446,7 +442,9 @@ function prettifyHeaders(headers) {
     "open access": "Open Access",
     "open data": "Open Data",
     "apc": "APC<span style='text-transform: lowercase;'>s</span>",
-    "free to read": "Free-to-Read"
+    "free to read": "Free-to-Read",
+    "doi": "DOI",
+    "id": "ID"
   };
 
   return headers
@@ -505,11 +503,15 @@ function formatRecords(records) {
  * @param {Object[]} records - The array of records to be prettified.
  * @returns {Object[]|string[]} - The prettified records or headers.
  */
-function prettifyRecords(records) {
+function prettifyRecords(records, pretty = true) {
   records.forEach(record => {
     Object.keys(record).forEach(key => {
       const pctKey = key + "_pct";
-      if (record.hasOwnProperty(pctKey)) delete record[key]; // Delete non-percentage counterpart
+      if (pretty === true) {
+        if (record.hasOwnProperty(pctKey)) delete record[key]; // Delete non-percentage counterpart
+      } else if (pretty === false) {
+        if (record.hasOwnProperty(pctKey)) delete record[pctKey]; // Delete percentage counterpart
+      }
     });
   });
 
@@ -697,16 +699,13 @@ function handleDataDisplayToggle() {
         this.setAttribute('aria-checked', 'false');
         toggleBg.classList.replace('bg-carnation-500', 'bg-neutral-200');
         toggleDot.classList.replace('translate-x-100', 'translate-x-5');
-
-        // display raw data
-
+        fetchAndDisplayExploreData(currentActiveExploreItemData, currentActiveExploreItemQuery, currentActiveExploreItemSize, false);
     } else {
         // Switch back to 'Pretty' (active) state
         this.setAttribute('aria-checked', 'true');
         toggleBg.classList.replace('bg-neutral-200', 'bg-carnation-500');
         toggleDot.classList.replace('translate-x-5', 'translate-x-100');
-
-        // display pretty data 
+        fetchAndDisplayExploreData(currentActiveExploreItemData, currentActiveExploreItemQuery, currentActiveExploreItemSize, true);
     }
   });
 }
