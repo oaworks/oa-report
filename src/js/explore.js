@@ -53,6 +53,12 @@ export let currentActiveExploreItemQuery = 'is_paper';
 */
 export let currentActiveExploreItemSize = 10;
 
+/** Tracks currently active explore item DATA DISPLAY STYLE for use in handleDataDisplayToggle()
+ * 
+ * @global 
+*/
+export let currentActiveDataDisplayToggle = true;
+
 // =================================================
 // DOM Manipulation functions
 // =================================================
@@ -142,7 +148,10 @@ export async function processExploreDataTable(button, itemData) {
   toggleLoadingIndicator(true); // Display loading indicator on button click
   updateButtonActiveStyles(button.id);
   addExploreFiltersToDOM(itemData.query);
-  await fetchAndDisplayExploreData(itemData);
+
+  // Fetch and display data based on the current state of the data display style toggle
+  await fetchAndDisplayExploreData(itemData, currentActiveExploreItemQuery, currentActiveExploreItemSize, currentActiveDataDisplayToggle);
+
   toggleLoadingIndicator(false); // Once data is loaded, hide loading indicator
 }
 
@@ -260,6 +269,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
   const { type, id, term, sort, includes } = itemData; // Extract explore item's properties
   let query = orgData.hits.hits[0]._source.analysis[filter].query; // Get the query string for the selected filter
   let records = [];
+  pretty = currentActiveDataDisplayToggle;
   size = currentActiveExploreItemSize; 
 
   if (type === "terms") {
@@ -699,14 +709,15 @@ function handleDataDisplayToggle() {
         this.setAttribute('aria-checked', 'false');
         toggleBg.classList.replace('bg-carnation-500', 'bg-neutral-200');
         toggleDot.classList.replace('translate-x-100', 'translate-x-5');
-        fetchAndDisplayExploreData(currentActiveExploreItemData, currentActiveExploreItemQuery, currentActiveExploreItemSize, false);
+        currentActiveDataDisplayToggle = false; // Update the global toggle state
     } else {
         // Switch back to 'Pretty' (active) state
         this.setAttribute('aria-checked', 'true');
         toggleBg.classList.replace('bg-neutral-200', 'bg-carnation-500');
         toggleDot.classList.replace('translate-x-5', 'translate-x-100');
-        fetchAndDisplayExploreData(currentActiveExploreItemData, currentActiveExploreItemQuery, currentActiveExploreItemSize, true);
+        currentActiveDataDisplayToggle = true; // Update the global toggle state
     }
+    // Fetch and display data with the updated pretty/raw format
+    fetchAndDisplayExploreData(currentActiveExploreItemData, currentActiveExploreItemQuery, currentActiveExploreItemSize);
   });
 }
-
