@@ -81,6 +81,8 @@ export const EXPLORE_TYPES = {
 export const EXPLORE_FILTERS = {
   "is_paper": "All articles",
   "is_preprint": "Preprints",
+  "is_found_only_by_external_sources": "Found only by external sources",
+  "is_found_by_all_sources": "Found by all sources",
 };
 
 /**
