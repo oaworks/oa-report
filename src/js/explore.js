@@ -8,7 +8,7 @@
 // =================================================
 
 import { displayNone, isCacheExpired, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, deepCopy, makeNumberReadable } from "./utils.js";
-import { EXPLORE_TYPES, EXPLORE_FILTERS, DATA_TABLE_BODY_CLASSES, DATA_TABLE_HEADER_CLASSES } from "./constants.js";
+import { EXPLORE_TYPES, EXPLORE_FILTERS, DATA_TABLE_BODY_CLASSES, DATA_TABLE_HEADER_CLASSES, COUNTRY_CODES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { orgDataPromise } from './insights-and-strategies.js';
 import { createPostData } from './api-requests.js';
@@ -386,7 +386,7 @@ function updateTableContainer(selectedId, records) {
 
   // Populate table with data
   populateTableHeader(records[0], 'export_table_head');
-  populateTableBody(records, 'export_table_body');
+  populateTableBody(records, 'export_table_body', selectedId);
 
   // Update any mentions of the explore data type with .plural version of the ID
   replaceText("explore_type", EXPLORE_TYPES[selectedId]?.plural || selectedId);
@@ -430,8 +430,9 @@ function populateTableHeader(records, tableHeaderId) {
  * 
  * @param {Array<Object>} data - Array of data objects to populate the table with.
  * @param {string} tableBodyId - The ID of the table body to populate.
+ * @param {string} exploreItemId - The ID of the selected explore item.
  */
-function populateTableBody(data, tableBodyId) {
+function populateTableBody(data, tableBodyId, exploreItemId) {
   const tableBody = document.getElementById(tableBodyId);
   if (!tableBody || data.length === 0) return;
 
@@ -452,7 +453,7 @@ function populateTableBody(data, tableBodyId) {
       else cssClass = DATA_TABLE_BODY_CLASSES.otherCols;
 
       const content = record[key];
-      row.appendChild(createTableCell(content, cssClass));
+      row.appendChild(createTableCell(content, cssClass, exploreItemId));
 
       columnIndex++; // Increment the column index
     }
@@ -564,7 +565,7 @@ function prettifyRecords(records, pretty = true) {
  * @param {boolean} [isHeader=false] - Indicates if the cell is a header cell (th) or a regular cell (td).
  * @returns {HTMLElement} The created table cell element.
  */
-function createTableCell(content, cssClass, isHeader = false) {
+function createTableCell(content, cssClass, exploreItemId = null, isHeader = false) {
   const cell = document.createElement(isHeader ? 'th' : 'td');
   cell.className = cssClass;
 
@@ -573,6 +574,9 @@ function createTableCell(content, cssClass, isHeader = false) {
     const spanElement = document.createElement('span');
     spanElement.className = 'explore_type';
     cell.appendChild(spanElement);
+  } else if (exploreItemId === 'country') {
+    const countryName = COUNTRY_CODES[content]  || "Unknown country";
+    cell.textContent = countryName;
   } else if (typeof content === 'string' && content.includes('orcid.org')) {
     // Check if content is an ORCiD URL and fetch the full name
     const orcidId = content.split('/').pop();
