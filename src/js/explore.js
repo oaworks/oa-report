@@ -323,7 +323,6 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
  */
 async function fetchTermBasedData(suffix, query, term, sort, size) {
   const postData = createPostData(suffix, query, term, startYear, endYear, size, sort); // Generate POST request
-  console.log(postData)
   const response = await fetchPostData(postData);
 
   if (response && response.aggregations && response.aggregations.key && response.aggregations.key.buckets) {
@@ -453,7 +452,6 @@ function populateTableBody(data, tableBodyId, exploreItemId) {
       else cssClass = DATA_TABLE_BODY_CLASSES.otherCols;
 
       const content = record[key];
-      console.log(key, content);
       row.appendChild(createTableCell(content, cssClass, exploreItemId, key, false));
 
       columnIndex++; // Increment the column index
@@ -479,7 +477,6 @@ function prettifyHeaders(headers) {
     "open data": "Open Data",
     "apc": "APC<span style='text-transform: lowercase;'>s</span>",
     "free to read": "Free-to-Read",
-    "doi": "DOI",
     "dois": "DOI<span style='text-transform: lowercase;'>s</span>",
     "id": "ID",
     "rors": "ROR<span style='text-transform: lowercase;'>s</span>",
