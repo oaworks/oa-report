@@ -478,7 +478,10 @@ function prettifyHeaders(headers) {
     "apc": "APC<span style='text-transform: lowercase;'>s</span>",
     "free to read": "Free-to-Read",
     "doi": "DOI",
-    "id": "ID"
+    "id": "ID",
+    "rors": "ROR<span style='text-transform: lowercase;'>s</span>",
+    "orcIDs": "ORC<span style='text-transform: lowercase;'>i</span>D<span style='text-transform: lowercase;'>s</span>",
+    "fundref": "FundRef",
   };
 
   return headers
