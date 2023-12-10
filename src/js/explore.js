@@ -419,7 +419,7 @@ function populateTableHeader(records, tableHeaderId) {
     else if (index === 1) cssClass = DATA_TABLE_HEADER_CLASSES.secondHeaderCol;
     else cssClass = DATA_TABLE_HEADER_CLASSES.otherHeaderCols;
 
-    const headerCell = createTableCell(key, cssClass, true);
+    const headerCell = createTableCell(key, cssClass, null, null, true);
     headerRow.appendChild(headerCell);
   });
   tableHeader.appendChild(headerRow);
@@ -453,7 +453,8 @@ function populateTableBody(data, tableBodyId, exploreItemId) {
       else cssClass = DATA_TABLE_BODY_CLASSES.otherCols;
 
       const content = record[key];
-      row.appendChild(createTableCell(content, cssClass, exploreItemId));
+      console.log(key, content);
+      row.appendChild(createTableCell(content, cssClass, exploreItemId, key, false));
 
       columnIndex++; // Increment the column index
     }
@@ -565,7 +566,7 @@ function prettifyRecords(records, pretty = true) {
  * @param {boolean} [isHeader=false] - Indicates if the cell is a header cell (th) or a regular cell (td).
  * @returns {HTMLElement} The created table cell element.
  */
-function createTableCell(content, cssClass, exploreItemId = null, isHeader = false) {
+function createTableCell(content, cssClass, exploreItemId = null, key = null, isHeader = false) {
   const cell = document.createElement(isHeader ? 'th' : 'td');
   cell.className = cssClass;
 
@@ -574,7 +575,7 @@ function createTableCell(content, cssClass, exploreItemId = null, isHeader = fal
     const spanElement = document.createElement('span');
     spanElement.className = 'explore_type';
     cell.appendChild(spanElement);
-  } else if (exploreItemId === 'country') {
+  } else if (exploreItemId === 'country' && key === 'key') {
     const countryName = COUNTRY_CODES[content]  || "Unknown country";
     cell.textContent = countryName;
   } else if (typeof content === 'string' && content.includes('orcid.org')) {
