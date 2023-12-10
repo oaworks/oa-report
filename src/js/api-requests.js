@@ -3,8 +3,7 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
   return {
     "query": {
       "bool": {
-        "must": [
-          {
+        "must": [{
             "query_string": {
               "query": query
             }
@@ -41,8 +40,7 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
           "open_access": {
             "filter": {
               "bool": {
-                "should": [
-                  {
+                "should": [{
                     "terms": {
                       "publisher_license.keyword": [
                         "cc-by",
@@ -341,8 +339,7 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
           "with_shared_data": {
             "filter": {
               "bool": {
-                "must": [
-                  {
+                "must": [{
                     "term": {
                       "supplements.dev.data.has_shared_data": true
                     }
@@ -371,31 +368,26 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
           "without_shared_data": {
             "filter": {
               "bool": {
-                "should": [
-                  {
+                "should": [{
                     "term": {
                       "supplements.dev.data.with_shared_data": false
                     }
                   },
                   {
                     "bool": {
-                      "must": [
-                        {
-                          "term": {
-                            "supplements.dev.data.evidence": "supplementary"
-                          }
+                      "must": [{
+                        "term": {
+                          "supplements.dev.data.evidence": "supplementary"
                         }
-                      ],
-                      "must_not": [
-                        {
-                          "terms": {
-                            "supplements.dev.data.evidence": [
-                              "da",
-                              "fulltext"
-                            ]
-                          }
+                      }],
+                      "must_not": [{
+                        "terms": {
+                          "supplements.dev.data.evidence": [
+                            "da",
+                            "fulltext"
+                          ]
                         }
-                      ]
+                      }]
                     }
                   }
                 ],
@@ -435,8 +427,7 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
           "with_shared_data_in_repository": {
             "filter": {
               "bool": {
-                "must": [
-                  {
+                "must": [{
                     "term": {
                       "supplements.dev.data.has_shared_data": true
                     }
@@ -450,8 +441,7 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
                     }
                   }
                 ],
-                "should": [
-                  {
+                "should": [{
                     "exists": {
                       "field": "supplements.dev.data.doi"
                     }
@@ -483,8 +473,7 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
           "with_open_data": {
             "filter": {
               "bool": {
-                "must": [
-                  {
+                "must": [{
                     "term": {
                       "supplements.dev.data.has_open_data": true
                     }
@@ -513,8 +502,7 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
           "with_open_data_in_repository": {
             "filter": {
               "bool": {
-                "must": [
-                  {
+                "must": [{
                     "term": {
                       "supplements.dev.data.has_open_data": true
                     }
@@ -528,8 +516,7 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
                     }
                   }
                 ],
-                "should": [
-                  {
+                "should": [{
                     "exists": {
                       "field": "supplements.dev.data.doi"
                     }
@@ -561,8 +548,7 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
           "with_data_doi": {
             "filter": {
               "bool": {
-                "must": [
-                  {
+                "must": [{
                     "terms": {
                       "supplements.dev.data.evidence": [
                         "da",
@@ -591,8 +577,7 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
           "with_data_accession_number": {
             "filter": {
               "bool": {
-                "must": [
-                  {
+                "must": [{
                     "terms": {
                       "supplements.dev.data.evidence": [
                         "da",
@@ -616,6 +601,86 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
                 "total_count": "_count"
               },
               "script": "params.with_data_accession_number / params.total_count"
+            }
+          },
+          "with_doi": {
+            "filter": {
+              "exists": {
+                "field": "DOI"
+              }
+            }
+          },
+          "with_doi_pct": {
+            "bucket_script": {
+              "buckets_path": {
+                "with_doi": "with_doi>_count",
+                "total_count": "_count"
+              },
+              "script": "params.with_doi / params.total_count"
+            }
+          },
+          "with_orcids": {
+            "filter": {
+              "exists": {
+                "field": "authorships.author.orcid"
+              }
+            }
+          },
+          "with_orcids_pct": {
+            "bucket_script": {
+              "buckets_path": {
+                "with_orcids": "with_orcids>_count",
+                "total_count": "_count"
+              },
+              "script": "params.with_orcids / params.total_count"
+            }
+          },
+          "with_rors": {
+            "filter": {
+              "exists": {
+                "field": "authorships.institutions.ror"
+              }
+            }
+          },
+          "with_rors_pct": {
+            "bucket_script": {
+              "buckets_path": {
+                "with_rors": "with_rors>_count",
+                "total_count": "_count"
+              },
+              "script": "params.with_rors / params.total_count"
+            }
+          },
+          "with_fundref_doi": {
+            "filter": {
+              "exists": {
+                "field": "funder.DOI"
+              }
+            }
+          },
+          "with_fundref_doi_pct": {
+            "bucket_script": {
+              "buckets_path": {
+                "with_fundref_doi": "with_fundref_doi>_count",
+                "total_count": "_count"
+              },
+              "script": "params.with_fundref_doi / params.total_count"
+            }
+          },
+          "with_grant_doi": {
+            "filter": {
+              "prefix": {
+                "funder.award": "10."
+              }
+            }
+          },
+          "with_grant_doi_pct": {
+            "bucket_script": {
+              "buckets_path": {
+                "with_grant_doi": "with_grant_doi>_count",
+                "total_count": "_count"
+              },
+              "script": "params.with_grant_doi / params.total_count"
             }
           }
         }
