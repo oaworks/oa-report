@@ -287,13 +287,14 @@ function addRecordsShownSelectToDOM() {
 async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 10, pretty = true) {
   const { type, id, term, sort, includes } = itemData; // Extract explore item's properties
   let query = orgData.hits.hits[0]._source.analysis[filter].query; // Get the query string for the selected filter
+  let suffix = orgData.hits.hits[0]._source.key_suffix; // Get the suffix for the org
   let records = [];
   pretty = currentActiveDataDisplayToggle;
   size = currentActiveExploreItemSize; 
 
   if (type === "terms") {
     query = decodeAndReplaceUrlEncodedChars(query); // Decode and replace any URL-encoded characters for JSON
-    records = await fetchTermBasedData(query, term, sort, size);
+    records = await fetchTermBasedData(suffix, query, term, sort, size);
     records = reorderRecords(records, includes);
     replaceText("explore_sort", "publication count"); // Update the sort text in header
     if (pretty === true) {
@@ -320,8 +321,9 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
  * @param {number} size - The number of records to fetch.
  * @returns {Promise<Array>} A promise that resolves to an array of term-based records.
  */
-async function fetchTermBasedData(query, term, sort, size) {
-  const postData = createPostData(query, term, startYear, endYear, size, sort); // Generate POST request
+async function fetchTermBasedData(suffix, query, term, sort, size) {
+  const postData = createPostData(suffix, query, term, startYear, endYear, size, sort); // Generate POST request
+  console.log(postData)
   const response = await fetchPostData(postData);
 
   if (response && response.aggregations && response.aggregations.key && response.aggregations.key.buckets) {
@@ -471,6 +473,7 @@ function prettifyHeaders(headers) {
   // Define special cases for phrases and acronyms
   const specialCases = {
     "open access": "Open Access",
+    "oa": "Open Access",
     "open data": "Open Data",
     "apc": "APC<span style='text-transform: lowercase;'>s</span>",
     "free to read": "Free-to-Read",

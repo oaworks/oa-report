@@ -1,5 +1,5 @@
 // Dynamically configure POST data 
-export function createPostData(query, term, startYear, endYear, size = 20, sort = "_count") {
+export function createPostData(suffix, query, term, startYear, endYear, size = 20, sort = "_count") {
   return {
     "query": {
       "bool": {
@@ -104,7 +104,7 @@ export function createPostData(query, term, startYear, endYear, size = 20, sort 
           "compliant": {
             "filter": {
               "term": {
-                "supplements.is_compliant__bmgf": true
+                [`supplements.is_compliant__${suffix}`]: true
               }
             }
           },
@@ -120,7 +120,7 @@ export function createPostData(query, term, startYear, endYear, size = 20, sort 
           "covered_by_policy": {
             "filter": {
               "term": {
-                "supplements.is_covered_by_policy__bmgf": true
+                [`supplements.is_covered_by_policy__${suffix}`]: true
               }
             }
           },
@@ -168,7 +168,7 @@ export function createPostData(query, term, startYear, endYear, size = 20, sort 
           "in_approved_repository": {
             "filter": {
               "term": {
-                "supplements.is_approved_repository__bmgf": true
+                [`supplements.is_approved_repository__${suffix}`]: true
               }
             }
           },
@@ -200,7 +200,7 @@ export function createPostData(query, term, startYear, endYear, size = 20, sort 
           "with_grant_id": {
             "filter": {
               "exists": {
-                "field": "supplements.grantid__bmgf"
+                "field": `supplements.grantid__${suffix}`
               }
             }
           },
