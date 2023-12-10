@@ -2,14 +2,14 @@
 // Constants/configurations
 // ========================
 
-export const readableDateOptions = {
+export const READABLE_DATE_OPTIONS = {
   day: "numeric",
   month: "long",
   year: "numeric"
 };
 
 // Detect the user's locale
-export const userLocale = navigator.languages && navigator.languages.length 
+export const USER_LOCALE = navigator.languages && navigator.languages.length 
                         ? navigator.languages[0] 
                         : navigator.language;
 
@@ -17,7 +17,7 @@ export const userLocale = navigator.languages && navigator.languages.length
  * Mapping of explore item IDs to their display name and tooltip information.
  * @type {Object.<string, {singular: string, plural: string, tooltip: string}>}
  */
-export const exploreItem = {
+export const EXPLORE_TYPES = {
   "articles": {
     singular: "Article",
     plural: "Articles",
@@ -78,7 +78,7 @@ export const exploreItem = {
  * 
  * @type {Object.<string, string>}
  */
-export const exploreFilters = {
+export const EXPLORE_FILTERS = {
   "is_paper": "All articles",
   "is_preprint": "Preprints",
 };
@@ -209,7 +209,7 @@ export const articleBasedDataHeaders = {
 /**
  * Class names for table header columns in the data explore section.
  */
-export const dataTableHeaderClasses = {
+export const DATA_TABLE_HEADER_CLASSES = {
   firstHeaderCol: "border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-32 md:w-60 align-bottom",
   secondHeaderCol: "border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-700 p-2 w-24 md:w-32 align-bottom break-words text-right",
   otherHeaderCols: "border-b border-neutral-500 p-2 w-32 align-bottom break-words text-right"
@@ -218,7 +218,7 @@ export const dataTableHeaderClasses = {
 /**
  * Class names for table body columns in the data explore section.
  */
-export const dataTableBodyClasses = {
+export const DATA_TABLE_BODY_CLASSES = {
   firstCol: "border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left",
   secondCol: "border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-700 p-2 text-right whitespace-nowrap truncate",
   otherCols: "border-b border-neutral-500 p-2 whitespace-nowrap truncate text-right hover:bg-neutral-600"
@@ -227,7 +227,7 @@ export const dataTableBodyClasses = {
 /**
  * Maps ISO 3166-1 alpha-2 country codes to country names
 */
-export const countryCodes = {
+export const COUNTRY_CODES = {
   "AF": "Afghanistan",
   "AL": "Albania",
   "DZ": "Algeria",

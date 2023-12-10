@@ -8,7 +8,7 @@
 // =================================================
 
 import { displayNone, isCacheExpired, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, deepCopy, makeNumberReadable } from "./utils.js";
-import { exploreItem, exploreFilters, dataTableBodyClasses, dataTableHeaderClasses } from "./constants.js";
+import { EXPLORE_TYPES, EXPLORE_FILTERS, DATA_TABLE_BODY_CLASSES, DATA_TABLE_HEADER_CLASSES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { orgDataPromise } from './insights-and-strategies.js';
 import { createPostData } from './api-requests.js';
@@ -142,7 +142,7 @@ function createExploreButton(exploreDataItem) {
   const button = document.createElement("button");
   const id = exploreDataItem.id; 
   button.id = `explore_${id}_button`; 
-  button.innerHTML = `<span>${exploreItem[id]?.plural || pluraliseNoun(id)}</span>`; // Set button text to plural form of label
+  button.innerHTML = `<span>${EXPLORE_TYPES[id]?.plural || pluraliseNoun(id)}</span>`; // Set button text to plural form of label
   button.className = "items-center inline-flex p-2 px-4 mr-4 mt-4 px-3 rounded-full bg-carnation-100 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500";
 
   button.addEventListener("click", debounce(async function() {
@@ -212,7 +212,7 @@ async function addExploreFiltersToDOM(query) {
  * @returns {HTMLDivElement} The div element containing the configured radio button and label.
  */
 function createExploreFilterRadioButton(id) {
-  const label = exploreFilters[id] || id; // Use label from filters or default to ID
+  const label = EXPLORE_FILTERS[id] || id; // Use label from filters or default to ID
   const filterRadioButton = document.createElement('div');
   filterRadioButton.className = 'flex items-center mr-4 mb-3';
 
@@ -389,7 +389,7 @@ function updateTableContainer(selectedId, records) {
   populateTableBody(records, 'export_table_body');
 
   // Update any mentions of the explore data type with .plural version of the ID
-  replaceText("explore_type", exploreItem[selectedId]?.plural || selectedId);
+  replaceText("explore_type", EXPLORE_TYPES[selectedId]?.plural || selectedId);
 }
 
 /**
@@ -415,9 +415,9 @@ function populateTableHeader(records, tableHeaderId) {
   const headerRow = document.createElement('tr'); // Create and add the header row
   headers.forEach((key, index) => {
     let cssClass;
-    if (index === 0) cssClass = dataTableHeaderClasses.firstHeaderCol;
-    else if (index === 1) cssClass = dataTableHeaderClasses.secondHeaderCol;
-    else cssClass = dataTableHeaderClasses.otherHeaderCols;
+    if (index === 0) cssClass = DATA_TABLE_HEADER_CLASSES.firstHeaderCol;
+    else if (index === 1) cssClass = DATA_TABLE_HEADER_CLASSES.secondHeaderCol;
+    else cssClass = DATA_TABLE_HEADER_CLASSES.otherHeaderCols;
 
     const headerCell = createTableCell(key, cssClass, true);
     headerRow.appendChild(headerCell);
@@ -447,9 +447,9 @@ function populateTableBody(data, tableBodyId) {
 
     for (const key in record) {
       let cssClass;
-      if (columnIndex === 0) cssClass = dataTableBodyClasses.firstCol;
-      else if (columnIndex === 1) cssClass = dataTableBodyClasses.secondCol;
-      else cssClass = dataTableBodyClasses.otherCols;
+      if (columnIndex === 0) cssClass = DATA_TABLE_BODY_CLASSES.firstCol;
+      else if (columnIndex === 1) cssClass = DATA_TABLE_BODY_CLASSES.secondCol;
+      else cssClass = DATA_TABLE_BODY_CLASSES.otherCols;
 
       const content = record[key];
       row.appendChild(createTableCell(content, cssClass));

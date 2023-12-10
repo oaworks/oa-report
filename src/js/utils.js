@@ -3,7 +3,7 @@
 // Utility/helper functions
 // ========================
 
-import { readableDateOptions, userLocale } from './constants.js';
+import { READABLE_DATE_OPTIONS, USER_LOCALE } from './constants.js';
 
 /**
  * Checks if the cached data has expired.
@@ -64,7 +64,7 @@ export function replaceText(className, parameter) {
  * @returns {string} The localised date string.
  */
 export function makeDateReadable(date) {
-  return date.toLocaleDateString(userLocale, readableDateOptions);
+  return date.toLocaleDateString(USER_LOCALE, READABLE_DATE_OPTIONS);
 }
 
 /**
@@ -91,9 +91,9 @@ export function changeDays(days, date) {
  */
 export function makeNumberReadable(number, isCurrency = false) {
   if (isCurrency) {
-    return new Intl.NumberFormat(userLocale, { style: 'currency', currency: 'USD' }).format(number);
+    return new Intl.NumberFormat(USER_LOCALE, { style: 'currency', currency: 'USD' }).format(number);
   }
-  return number.toLocaleString(userLocale);
+  return number.toLocaleString(USER_LOCALE);
 }
 
 /**
