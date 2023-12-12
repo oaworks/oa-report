@@ -59,6 +59,13 @@ export let currentActiveExploreItemSize = 10;
 */
 export let currentActiveDataDisplayToggle = true;
 
+/**
+ * Tracks currently selected row keys for use in enableExploreRowHighlighting() 
+ * @global
+ */
+let selectedRowKeys = [];
+
+
 // =================================================
 // DOM Manipulation functions
 // =================================================
@@ -476,6 +483,17 @@ function populateTableBody(data, tableBodyId, exploreItemId) {
     }
     tableBody.appendChild(row);
   });
+
+  // Highlight the selected rows if they exist in the new data
+  if (selectedRowKeys.length > 0) {
+    data.forEach((record, index) => {
+      if (selectedRowKeys.includes(record.key)) {
+        const row = tableBody.children[index]; // Get the corresponding row
+        const rowCells = row.querySelectorAll('td');
+        rowCells.forEach(cell => cell.classList.add('bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900'));
+      }
+    });
+  }
 }
 
 
@@ -642,17 +660,19 @@ function enableExploreRowHighlighting() {
   tableBody.addEventListener('click', function(event) {
     if (event.target.tagName === 'TD') {
       const rowCells = event.target.parentElement.querySelectorAll('td');
+      const firstCellContent = rowCells[0].textContent;
       const isRowHighlighted = rowCells[0].classList.contains('bg-neutral-200');
 
       if (isRowHighlighted) {
         rowCells.forEach(cell => cell.classList.remove('bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900'));
+        selectedRowKeys = selectedRowKeys.filter(key => key !== firstCellContent); // Remove key from array
       } else {
         rowCells.forEach(cell => cell.classList.add('bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900'));
+        selectedRowKeys.push(firstCellContent); // Add key to array
       }
     }
   });
 }
-
 
 /**
  * Clears highlighted rows in the table.
