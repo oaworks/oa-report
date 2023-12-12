@@ -213,7 +213,7 @@ export const articleBasedDataHeaders = {
  */
 export const DATA_TABLE_HEADER_CLASSES = {
   firstHeaderCol: "border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-32 md:w-60 align-bottom",
-  secondHeaderCol: "border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-700 p-2 w-24 md:w-32 align-bottom break-words text-right",
+  secondHeaderCol: "border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-600 p-2 w-24 md:w-32 align-bottom break-words",
   otherHeaderCols: "border-b border-neutral-500 p-2 w-32 align-bottom break-words text-right"
 };
 
@@ -222,7 +222,7 @@ export const DATA_TABLE_HEADER_CLASSES = {
  */
 export const DATA_TABLE_BODY_CLASSES = {
   firstCol: "border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left",
-  secondCol: "border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-700 p-2 text-right whitespace-nowrap truncate",
+  secondCol: "border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-600 p-2 whitespace-nowrap truncate",
   otherCols: "border-b border-neutral-500 p-2 whitespace-nowrap truncate text-right hover:bg-neutral-600"
 };
 
