@@ -98,7 +98,9 @@ export async function initDataExplore(org) {
 }
 
 /**
- * Adds buttons to the DOM, one per item found in the org index explore data.
+ * Adds buttons to the DOM, one per item found in the org index explore data. 
+ * Display a see more / see fewer button for non-featured items.
+ * Animate the see more / see fewer button on click.
  *
  * @param {Array<Object>} exploreData - Array of explore data objects from the API response.
  */
@@ -112,23 +114,32 @@ async function addExploreButtonsToDOM(exploreData) {
     if (exploreDataItem.featured) {
       exploreButtonsContainer.appendChild(button);
     } else {
-      button.classList.add('hidden'); // Initially hide the button
+      // Apply initial hidden state only for non-featured buttons
+      button.classList.add('hidden', 'opacity-0', 'transform', 'translate-y-1', 'transition', 'duration-300', 'ease-in-out');
       moreButtons.push(button);
-      exploreButtonsContainer.appendChild(button); // Add the button to the container, but keep it hidden
+      exploreButtonsContainer.appendChild(button);
     }
   }
 
-  // "See more/See fewer" button logic for non-featured buttons
+  // "See more/See fewer" button logic
   const seeMoreButton = document.getElementById('explore_see_more_button');
   seeMoreButton.addEventListener('click', function() {
     moreButtonsVisible = !moreButtonsVisible; // Toggle visibility state
-    moreButtons.forEach(button => button.classList.toggle('hidden')); // Toggle visibility of buttons
 
-    // Update the text of the button based on the state
+    moreButtons.forEach((button, index) => {
+      // Use a timeout to stagger the animation of each button
+      setTimeout(() => {
+        button.classList.toggle('hidden', !moreButtonsVisible);
+        if (moreButtonsVisible) {
+          button.classList.remove('opacity-0', 'translate-y-1'); // Make visible and slide down
+        }
+      }, index * 70); // Adjust the time for each button
+    });
+
+    // Update the text of the button
     seeMoreButton.querySelector('span').textContent = moreButtonsVisible ? 'See fewer' : 'See more';
   });
 }
-
 
 /**
  * Creates and configures a button element for an explore item with a specified
