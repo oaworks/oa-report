@@ -392,11 +392,6 @@ async function fetchArticleBasedData(query, includes, sort, size) {
 function updateTableContainer(selectedId, records) {
   const exportTable = document.getElementById('export_table');
   exportTable.classList.remove('hidden'); // Show the table
-  
-  // Add functionalities to the table
-  // TODO: This only works on the first table that the user clicks on
-  // enableExploreRowHighlighting();
-  enableExploreTableScroll();
 
   // Populate table with data
   populateTableHeader(records[0], 'export_table_head');
@@ -404,6 +399,9 @@ function updateTableContainer(selectedId, records) {
 
   // Update any mentions of the explore data type with .plural version of the ID
   replaceText("explore_type", EXPLORE_TYPES[selectedId]?.plural || pluraliseNoun(selectedId));
+  
+  // Add functionalities to the table
+  enableExploreTableScroll();
 }
 
 /**
@@ -455,6 +453,9 @@ function populateTableBody(data, tableBodyId, exploreItemId) {
     tableBody.removeChild(tableBody.firstChild);
   }
 
+  // Clear any highlighted rows if user has already interacted with the table
+  clearRowHighlights(); 
+
   // Add new rows from data
   data.forEach(record => {
     const row = document.createElement('tr');
@@ -473,6 +474,8 @@ function populateTableBody(data, tableBodyId, exploreItemId) {
     }
     tableBody.appendChild(row);
   });
+
+  enableExploreRowHighlighting();
 }
 
 
@@ -631,31 +634,34 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
 
 /**
  * Enables row highlighting functionality for a table in the data exploration section.
- * Clicking on a row will highlight it.
+ * Clicking on a cell in any row will highlight all cells in that row.
  */
 function enableExploreRowHighlighting() {
-  const tableBody = document.getElementById("export_table_body");
+  const tableBody = document.getElementById('export_table_body'); // The table body where rows will be added
 
-  tableBody.addEventListener("click", (event) => {
-    const target = event.target;
+  tableBody.addEventListener('click', function(event) {
+    if (event.target.tagName === 'TD') {
+      clearRowHighlights(); // Clear any existing highlights
 
-    // Check if the clicked element is a TD or TH
-    if (target.tagName === "TD" || target.tagName === "TH") {
-      const row = target.closest("tr"); // Get the closest parent row of the clicked cell
+      const rowCells = event.target.parentElement.querySelectorAll('td'); // Get all cells in the clicked row
 
-      // Remove highlighting from all rows
-      document.querySelectorAll("#export_table_body tr").forEach((r) => {
-        r.classList.remove("bg-neutral-200", "bg-neutral-300", "hover:bg-neutral-100", "text-neutral-900");
-      });
-
-      // Add highlighting to the clicked row
-      row.classList.add("bg-neutral-200", "hover:bg-neutral-100", "text-neutral-900");
-      row.querySelectorAll("th, td").forEach(cell => {
-        cell.classList.add("bg-neutral-200", "hover:bg-neutral-100", "text-neutral-900");
+      // Apply highlighting classes to each cell in the row
+      rowCells.forEach(cell => {
+        cell.classList.add('bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900');
       });
     }
   });
 }
+
+/**
+ * Clears highlighted rows in the table.
+ */
+function clearRowHighlights() {
+  document.querySelectorAll('.js_export_table_container td').forEach(cell => {
+    cell.classList.remove('bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900');
+  });
+}
+
 
 /**
  * Enables horizontal scrolling functionality for the table in the data exploration section.
