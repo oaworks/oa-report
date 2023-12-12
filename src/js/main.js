@@ -42,6 +42,7 @@ function initialise() {
   setupDateDefaults();
   bindYearSelectionButtons();
   initInsightsAndStrategies(org);
+
   console.log(orgApiUrl);
   
   if (!isDataExploreInitialised) {

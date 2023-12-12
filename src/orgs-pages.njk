@@ -96,6 +96,12 @@ permalink: "{{ org._source.objectID | slug }}/"
         </h2>
       </header>
 
+      <div class="relative">
+        <div class="hidden" id="insights_loading">
+          <div class="loader ease-linear rounded-full border-8 border-t-8 border-carnation-200 border-t-carnation-500 h-12 w-12 absolute mt-6 mx-auto inset-x-0 z-10 bg-opacity-50 justify-center items-center"></div>
+        </div>
+      </div>
+
       <div class="grid gap-3 md:gap-6 grid-cols-2 md:grid-cols-4 lg:grid-cols-none lg:grid-flow-col xl:auto-cols-fr">
         {{ component("card", {
           id: "is_paper",
@@ -178,7 +184,7 @@ permalink: "{{ org._source.objectID | slug }}/"
       </div>
 
       <div class="relative">
-        <div id="loading-indicator" class="hidden">
+        <div class="hidden" id="explore_loading">
           <div class="loader ease-linear rounded-full border-8 border-t-8 border-carnation-200 border-t-carnation-500 h-12 w-12 absolute mt-6 mx-auto inset-x-0 z-10 bg-opacity-50 justify-center items-center"></div>
         </div>
       </div>

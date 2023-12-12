@@ -7,9 +7,10 @@
  * Toggles the visibility of the loading indicator.
  *
  * @param {boolean} show - Determines whether to show or hide the loading indicator.
+ * @param {string} id - The ID of the loading indicator to show/hide.
  */
-export function toggleLoadingIndicator(show) {
-  const loader = document.getElementById('loading-indicator');
+export function toggleLoadingIndicator(show, id) {
+  let loader = document.getElementById(id);
   if (loader) {
     loader.className = show ? 'flex' : 'hidden';
   }

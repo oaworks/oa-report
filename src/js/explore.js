@@ -175,14 +175,14 @@ export async function processExploreDataTable(button, itemData) {
   currentActiveExploreItemButton = button; // Set the currently active explore item button
   currentActiveExploreItemData = itemData; // Set the currently active explore item data
 
-  toggleLoadingIndicator(true); // Display loading indicator on button click
+  toggleLoadingIndicator(true, 'explore_loading'); // Display loading indicator on button click
   updateButtonActiveStyles(button.id);
   addExploreFiltersToDOM(itemData.query);
 
   // Fetch and display data based on the current state of the data display style toggle
   await fetchAndDisplayExploreData(itemData, currentActiveExploreItemQuery, currentActiveExploreItemSize, currentActiveDataDisplayToggle);
 
-  toggleLoadingIndicator(false); // Once data is loaded, hide loading indicator
+  toggleLoadingIndicator(false, 'explore_loading'); // Once data is loaded, hide loading indicator
 }
 
 /**
@@ -273,7 +273,7 @@ function addRecordsShownSelectToDOM() {
   selectMenu.addEventListener("change", handleRecordsShownChange);
 
   // Define options for the select menu
-  const options = [5, 10, 20, 50];
+  const options = [5, 10, 20, 50, 100];
   options.forEach((optionValue) => {
     const option = document.createElement("option");
     option.value = optionValue;
@@ -721,7 +721,7 @@ function updateButtonActiveStyles(buttonId) {
 async function handleRecordsShownChange(event) {
   const newSize = event.target.value;
   currentActiveExploreItemSize = newSize; // Update the currently active explore item sizes
-  toggleLoadingIndicator(true); // Show loading indicator
+  toggleLoadingIndicator(true, 'explore_loading'); // Show loading indicator
 
   try {
     await fetchAndDisplayExploreData(currentActiveExploreItemData, currentActiveExploreItemQuery, currentActiveExploreItemSize);
@@ -729,7 +729,7 @@ async function handleRecordsShownChange(event) {
     console.error('Error updating records shown: ', error);
   }
 
-  toggleLoadingIndicator(false); // Hide loading indicator
+  toggleLoadingIndicator(false, 'explore_loading'); // Hide loading indicator
 }
 
 /**

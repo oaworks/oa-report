@@ -80,7 +80,6 @@ export function initInsightsAndStrategies(org) {
 
     /** Get Insights data and display it **/
     function getInsight(numerator, denominator, denominatorText, info) {
-
       var shown     = orgData.hits.hits[0]._source.analysis[numerator].show_on_web,
           contentID = `${numerator}`; // the whole insight’s data card
 
@@ -141,6 +140,7 @@ export function initInsightsAndStrategies(org) {
       } else {
         displayNone(contentID);
       };
+
     };
 
     getInsight(
