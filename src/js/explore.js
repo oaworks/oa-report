@@ -188,7 +188,7 @@ export async function processExploreDataTable(button, itemData) {
 /**
  * Adds radio buttons for explore data filters to the DOM. The filters are derived from 
  * a comma-separated 'query' string from the org index.  Hides '#explore_filter_field' if 
- * the only filter is 'is_paper'.
+ * there is only one filter.
  *
  * @param {string} query - A comma-separated string of filters from the API response.
  */
@@ -198,18 +198,21 @@ async function addExploreFiltersToDOM(query) {
   exploreFiltersElement.innerHTML = ""; // Clear existing radio buttons
   const filters = query.split(","); // Split the query into individual filters
 
-  filters.forEach(filter => {
+  // Update currentActiveExploreItemQuery to the first filter
+  if (filters.length > 0) {
+    currentActiveExploreItemQuery = filters[0].replace("analysis.", "").replace(".query", ""); 
+  }
+
+  filters.forEach((filter, index) => {
     const id = filter.replace("analysis.", "").replace(".query", ""); // Format filter ID
-    const radioButton = createExploreFilterRadioButton(id);
+    const radioButton = createExploreFilterRadioButton(id, index === 0);
     exploreFiltersElement.appendChild(radioButton);
   });
 
-  // Hide the explore form if only 'is_paper' filter is present
-  if (filters.length === 1 && filters[0].includes("is_paper")) {
-    if (exploreFilterField) {
-      exploreFilterField.style.display = "none"; // Hide the explore form
-    }
-  } else if (exploreFilterField) {
+  // Hide the explore form if only one filter is present
+  if (filters.length === 1) {
+    exploreFilterField.style.display = "none"; // Hide the explore form
+  } else {
     exploreFilterField.style.display = ""; // Ensure the form is visible otherwise
   }
 }
@@ -220,9 +223,10 @@ async function addExploreFiltersToDOM(query) {
  * Then attaches event listener to the radio button.
  * 
  * @param {string} id - The ID of the filter.
+ * @param {boolean} isChecked - True if the filter should be checked by default.
  * @returns {HTMLDivElement} The div element containing the configured radio button and label.
  */
-function createExploreFilterRadioButton(id) {
+function createExploreFilterRadioButton(id, isChecked) {
   const label = EXPLORE_FILTERS[id] || id; // Use label from filters or default to ID
   const filterRadioButton = document.createElement('div');
   filterRadioButton.className = 'flex items-center mr-4 mb-3';
@@ -235,7 +239,7 @@ function createExploreFilterRadioButton(id) {
     className: 'mr-1',
     name: 'filter_by',
     value: id,
-    checked: id === 'is_paper', // Set 'is_paper' (all articles) as default selected filter
+    checked: isChecked,
     'aria-hidden': 'true'
   });
   filterRadioButton.appendChild(radioInput);
@@ -399,7 +403,7 @@ function updateTableContainer(selectedId, records) {
   populateTableBody(records, 'export_table_body', selectedId);
 
   // Update any mentions of the explore data type with .plural version of the ID
-  replaceText("explore_type", EXPLORE_TYPES[selectedId]?.plural || selectedId);
+  replaceText("explore_type", EXPLORE_TYPES[selectedId]?.plural || pluraliseNoun(selectedId));
 }
 
 /**
