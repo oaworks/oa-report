@@ -641,8 +641,6 @@ function enableExploreRowHighlighting() {
 
   tableBody.addEventListener('click', function(event) {
     if (event.target.tagName === 'TD') {
-      clearRowHighlights(); // Clear any existing highlights
-
       const rowCells = event.target.parentElement.querySelectorAll('td'); // Get all cells in the clicked row
 
       // Apply highlighting classes to each cell in the row
