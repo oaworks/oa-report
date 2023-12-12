@@ -107,9 +107,10 @@ export async function initDataExplore(org) {
 }
 
 /**
- * Adds buttons to the DOM, one per item found in the org index explore data. 
+ * Adds buttons to the DOM, one per item found in the org index explore data.
  * Display a see more / see fewer button for non-featured items.
  * Animate the see more / see fewer button on click.
+ * Adjust visibility based on the total number of buttons.
  *
  * @param {Array<Object>} exploreData - Array of explore data objects from the API response.
  */
@@ -117,21 +118,28 @@ async function addExploreButtonsToDOM(exploreData) {
   const exploreButtonsContainer = document.getElementById('explore_buttons');
   const moreButtons = []; // Array to store buttons with featured === false
   let moreButtonsVisible = false; // State to track visibility of more buttons
+  let featuredButtonsCount = 6; // Count of featured buttons
 
   for (const exploreDataItem of exploreData) {
     let button = createExploreButton(exploreDataItem);
-    if (exploreDataItem.featured) {
-      exploreButtonsContainer.appendChild(button);
-    } else {
-      // Apply initial hidden state only for non-featured buttons
-      button.classList.add('hidden', 'opacity-0', 'transform', 'translate-y-1', 'transition', 'duration-300', 'ease-in-out');
+    exploreButtonsContainer.appendChild(button);
+    if (!exploreDataItem.featured) {
+      // Add non-featured buttons to moreButtons array
       moreButtons.push(button);
-      exploreButtonsContainer.appendChild(button);
     }
+  }
+
+  // Determine initial visibility based on the total number of buttons
+  const totalButtons = exploreData.length;
+  moreButtonsVisible = totalButtons <= featuredButtonsCount;
+  if (!moreButtonsVisible) {
+    moreButtons.forEach(button => button.classList.add('hidden', 'opacity-0', 'transform', 'translate-y-1', 'transition', 'duration-300', 'ease-in-out'));
   }
 
   // "See more/See fewer" button logic
   const seeMoreButton = document.getElementById('explore_see_more_button');
+  seeMoreButton.querySelector('span').textContent = moreButtonsVisible ? 'See fewer' : 'See more';
+  
   seeMoreButton.addEventListener('click', function() {
     moreButtonsVisible = !moreButtonsVisible; // Toggle visibility state
 
