@@ -75,6 +75,7 @@ export async function initDataExplore(org) {
       addExploreButtonsToDOM(dataCache[org].data);
       addRecordsShownSelectToDOM();
       handleDataDisplayToggle();
+      enableExploreRowHighlighting();
     } else {
       const response = await orgDataPromise; // Await the promise to resolve
       orgData = response.data;
@@ -88,6 +89,7 @@ export async function initDataExplore(org) {
         addExploreButtonsToDOM(dataCache[org].data);
         addRecordsShownSelectToDOM();
         handleDataDisplayToggle();
+        enableExploreRowHighlighting();
       } else {
         displayNone("explore"); // Hide the explore section if no data is available
       }
@@ -474,8 +476,6 @@ function populateTableBody(data, tableBodyId, exploreItemId) {
     }
     tableBody.appendChild(row);
   });
-
-  enableExploreRowHighlighting();
 }
 
 
@@ -637,19 +637,22 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
  * Clicking on a cell in any row will highlight all cells in that row.
  */
 function enableExploreRowHighlighting() {
-  const tableBody = document.getElementById('export_table_body'); // The table body where rows will be added
+  const tableBody = document.getElementById('export_table_body');
 
   tableBody.addEventListener('click', function(event) {
     if (event.target.tagName === 'TD') {
-      const rowCells = event.target.parentElement.querySelectorAll('td'); // Get all cells in the clicked row
+      const rowCells = event.target.parentElement.querySelectorAll('td');
+      const isRowHighlighted = rowCells[0].classList.contains('bg-neutral-200');
 
-      // Apply highlighting classes to each cell in the row
-      rowCells.forEach(cell => {
-        cell.classList.add('bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900');
-      });
+      if (isRowHighlighted) {
+        rowCells.forEach(cell => cell.classList.remove('bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900'));
+      } else {
+        rowCells.forEach(cell => cell.classList.add('bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900'));
+      }
     }
   });
 }
+
 
 /**
  * Clears highlighted rows in the table.
