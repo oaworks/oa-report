@@ -282,7 +282,7 @@ function addRecordsShownSelectToDOM() {
   // Create the select element
   const selectMenu = document.createElement("select");
   selectMenu.id = "records_shown_select";
-  selectMenu.className = "p-1 border border-neutral-500 bg-transparent text-xs";
+  selectMenu.className = "appearance-none py-1 px-2 border border-neutral-500 bg-neutral-800 text-white text-xs";
   selectMenu.addEventListener("change", handleRecordsShownChange);
 
   // Define options for the select menu
