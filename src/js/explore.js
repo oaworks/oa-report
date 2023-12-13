@@ -336,6 +336,8 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     }
   } else if (type === "articles") {
     records = await fetchArticleBasedData(query, includes, sort, size);
+    console.log(includes);
+    records = reorderRecords(records, includes);
     replaceText("explore_sort", "publication date"); // Update the sort text in header
   }
 
@@ -409,6 +411,7 @@ async function fetchArticleBasedData(query, includes, sort, size) {
  * @param {Array<Object>} records - The data array to populate the table, with each object representing a row.
  */
 function updateTableContainer(selectedId, records) {
+  console.log(records);
   const exportTable = document.getElementById('export_table');
   exportTable.classList.remove('hidden'); // Show the table
 
@@ -525,11 +528,18 @@ function prettifyHeaders(headers) {
     "open data": "Open Data",
     "apc": "APC<span style='text-transform: lowercase;'>s</span>",
     "free to read": "Free-to-Read",
+    "doi": "DOI",
     "dois": "DOI<span style='text-transform: lowercase;'>s</span>",
     "id": "ID",
     "rors": "ROR<span style='text-transform: lowercase;'>s</span>",
     "orcIDs": "ORC<span style='text-transform: lowercase;'>i</span>D<span style='text-transform: lowercase;'>s</span>",
     "fundref": "FundRef",
+    "supplements.": "",
+    "authorships.institutions.display name": "Authors",
+    "concepts.display name": "Concepts",
+    "funder.name": "Funder",
+    "publisher license best": "Publisher license",
+    "repository license best": "Repository license",
   };
 
   return headers
