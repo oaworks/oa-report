@@ -17,44 +17,44 @@ import { createPostData } from './api-requests.js';
 // Global variables
 // =================================================
 
-/** Cache for storing fetched data to reduce API calls
- * 
- * @global 
-*/
+/**
+ * Cache for storing fetched data to reduce API calls.
+ * @global
+ */
 const dataCache = {}; 
 
-/** Data object representing metadata on an organisation
- * 
- * @global 
-*/
+/**
+ * Data object representing metadata on an organization.
+ * @global
+ */
 let orgData;
 
-/** Tracks currently active explore item BUTTON for use in processExploreDataTable()
- * 
- * @global 
-*/
+/**
+ * Tracks the currently active explore item BUTTON for use in processExploreDataTable().
+ * @global
+ */
 export let currentActiveExploreItemButton = null;
 
-/** Tracks currently active explore item DATA for use in processExploreDataTable()
- * 
+/** 
+ * Tracks currently active explore item DATA for use in processExploreDataTable()
  * @global 
 */
 export let currentActiveExploreItemData = null;
 
-/** Tracks currently active explore item QUERY for use in createExploreFilterRadioButton()
- * 
+/** 
+ * Tracks currently active explore item QUERY for use in createExploreFilterRadioButton()
  * @global 
 */
 export let currentActiveExploreItemQuery = 'is_paper';
 
-/** Tracks currently active explore item SIZE for use in handleRecordsShownChange()
- * 
+/** 
+ * Tracks currently active explore item SIZE for use in handleRecordsShownChange()
  * @global 
 */
 export let currentActiveExploreItemSize = 10;
 
-/** Tracks currently active explore item DATA DISPLAY STYLE for use in handleDataDisplayToggle()
- * 
+/** 
+ * Tracks currently active explore item DATA DISPLAY STYLE for use in handleDataDisplayToggle()
  * @global 
 */
 export let currentActiveDataDisplayToggle = true;
@@ -72,8 +72,9 @@ let selectedRowKeys = [];
 
 /**
  * Initializes the data explore section by fetching data from the org index 
- * and adding buttons.
+ * and adding buttons, filters, and functionalities.
  * 
+ * @async
  * @param {string} org - The organization identifier for the API query.
  */
 export async function initDataExplore(org) {  
@@ -107,11 +108,10 @@ export async function initDataExplore(org) {
 }
 
 /**
- * Adds buttons to the DOM, one per item found in the org index explore data.
- * Display a see more / see fewer button for non-featured items.
- * Animate the see more / see fewer button on click.
- * Adjust visibility based on the total number of buttons.
- *
+ * Adds buttons to the DOM for each item in the explore data. Controls the display 
+ * of 'see more' and 'see fewer' buttons based on the number of items.
+ * 
+ * @async
  * @param {Array<Object>} exploreData - Array of explore data objects from the API response.
  */
 async function addExploreButtonsToDOM(exploreData) {
@@ -160,11 +160,10 @@ async function addExploreButtonsToDOM(exploreData) {
 
 /**
  * Creates and configures a button element for an explore item with a specified
- * ID, the group of data to be shown (label), and Tailwind CSS classes.
- * Then attaches event listener to the button.
+ * ID, the group of data to be shown, and Tailwind CSS classes. Attaches an event listener.
  * 
- * @param {Object} exploreDataType - The explore data object to create a button for.
- * @returns {HTMLButtonElement} The created and configured button element.
+ * @param {Object} exploreDataItem - The explore data object to create a button for.
+ * @returns {HTMLButtonElement} - The created and configured button element.
  */
 function createExploreButton(exploreDataItem) {
   const button = document.createElement("button");
@@ -181,10 +180,10 @@ function createExploreButton(exploreDataItem) {
 }
 
 /**
- * Sets up the click event listener for an explore button, including showing a loading
- * indicator, updating the button styles, and calling the appropriate handler function
- * to display the data in a table.
+ * Sets up the click event listener for an explore button, displaying a loading
+ * indicator, updating the button styles, and displaying data in a table.
  * 
+ * @async
  * @param {HTMLButtonElement} button - The button element to attach the event listener to.
  * @param {Object} itemData - The data object associated with the explore item.
  */
@@ -203,9 +202,8 @@ export async function processExploreDataTable(button, itemData) {
 }
 
 /**
- * Adds radio buttons for explore data filters to the DOM. The filters are derived from 
- * a comma-separated 'query' string from the org index.  Hides '#explore_filter_field' if 
- * there is only one filter.
+ * Adds radio buttons for explore data filters to the DOM based on a given query string.
+ * Adjusts visibility based on the number of filters available.
  *
  * @param {string} query - A comma-separated string of filters from the API response.
  */
@@ -235,9 +233,8 @@ async function addExploreFiltersToDOM(query) {
 }
 
 /**
- * Creates and configures a radio button element for an explore item’s filters with a specified
- * ID, its human-readable label, and Tailwind CSS classes.
- * Then attaches event listener to the radio button.
+ * Creates a radio button for an explore item's filter. Configures it with specified
+ * ID, label, and CSS classes. Attaches an event listener to the radio button.
  * 
  * @param {string} id - The ID of the filter.
  * @param {boolean} isChecked - True if the filter should be checked by default.
@@ -280,7 +277,7 @@ function createExploreFilterRadioButton(id, isChecked) {
 }
 
 /**
- * Adds a <select> menu for changing the number of records shown in the active table.
+ * Adds a select menu for changing the number of records shown in the active table.
  * Inserts the menu into a div with the id "explore_records_shown".
  */
 function addRecordsShownSelectToDOM() {
@@ -309,12 +306,14 @@ function addRecordsShownSelectToDOM() {
 }
 
 /**
- * Handles the click event for both term-based and article-based explore items.
- * Fetches data and updates the table with the results.
+ * Handles the click event for explore items. Fetches data and updates the table 
+ * with the results based on the selected filter and display style.
  * 
+ * @async
  * @param {Object} itemData - The data object of the explore item.
- * @param {string} filter - The filter to use for fetching data.
- * @param {number} size - The number of records to fetch.
+ * @param {string} [filter="is_paper"] - The filter to use for fetching data.
+ * @param {number} [size=10] - The number of records to fetch.
+ * @param {boolean} [pretty=true] - Flag to determine if data should be displayed in a pretty format.
  */
 async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 10, pretty = true) {
   const { type, id, term, sort, includes } = itemData; // Extract explore item's properties
@@ -346,9 +345,11 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 }
 
 /**
- * Fetches term-based data.
+ * Fetches term-based data using provided parameters.
  * 
- * @param {string} term - The term associated with the explore item.
+ * @param {string} suffix - The suffix for the org, used in the POST request.
+ * @param {string} query - The query string for fetching data. 
+ * @param {string} term - The term (i.e. type of data breakdown) associated with the explore item.
  * @param {string} sort - The sorting order.
  * @param {number} size - The number of records to fetch.
  * @returns {Promise<Array>} A promise that resolves to an array of term-based records.
@@ -378,9 +379,9 @@ async function fetchTermBasedData(suffix, query, term, sort, size) {
 }
 
 /**
- * Fetches article-based data.
+ * Fetches article-based data using provided parameters.
  * 
- * @param {string} query - The query string for fetching articles.
+ * @param {string} query - The query string for fetching data.
  * @param {string} includes - The 'includes' key associated with the explore item.
  * @param {string} sort - The sorting order.
  * @param {number} size - The number of records to fetch.
@@ -402,6 +403,7 @@ async function fetchArticleBasedData(query, includes, sort, size) {
 
 /**
  * Updates the table header and fetches data to populate the table.
+ * Called when an explore item is clicked.
  *
  * @param {string} selectedId - The ID of the selected explore item.
  * @param {Array<Object>} records - The data array to populate the table, with each object representing a row.
@@ -584,6 +586,7 @@ function formatRecords(records) {
  * from records and formats headers to be more human-readable.
  * 
  * @param {Object[]} records - The array of records to be prettified.
+ * @param {boolean} [pretty=true] - Flag to determine if data should be displayed in a pretty format.
  * @returns {Object[]|string[]} - The prettified records or headers.
  */
 function prettifyRecords(records, pretty = true) {
@@ -606,6 +609,8 @@ function prettifyRecords(records, pretty = true) {
  * 
  * @param {string|Object} content - The content to be placed inside the cell. If an object, its values are formatted as an unordered list.
  * @param {string} cssClass - The CSS class to apply to the cell.
+ * @param {string} [exploreItemId=null] - The ID of the selected explore item.
+ * @param {string} [key=null] - The key of the selected explore item.
  * @param {boolean} [isHeader=false] - Indicates if the cell is a header cell (th) or a regular cell (td).
  * @returns {HTMLElement} The created table cell element.
  */
