@@ -2,13 +2,20 @@
 // Constants/configurations
 // ========================
 
+/**
+ * Options for displaying dates in a human-readable format.
+ * @type {{day: string, month: string, year: string}}
+ */
 export const READABLE_DATE_OPTIONS = {
   day: "numeric",
   month: "long",
   year: "numeric"
 };
 
-// Detect the user's locale
+/**
+ * The user's locale, derived from the navigator languages or language.
+ * @type {string}
+ */
 export const USER_LOCALE = navigator.languages && navigator.languages.length 
                         ? navigator.languages[0] 
                         : navigator.language;
@@ -75,7 +82,6 @@ export const EXPLORE_TYPES = {
 
 /**
  * Mapping of explore filter IDs to human-readable labels.
- * 
  * @type {Object.<string, string>}
  */
 export const EXPLORE_FILTERS = {
@@ -86,70 +92,10 @@ export const EXPLORE_FILTERS = {
 };
 
 /**
- * Maps term-based objects like 'grant', 'publisher', 'author', etc. to human-readable names and corresponding keys.
- * Used for displaying data in a user-friendly format.
+ * Maps article-based objects to human-readable names and corresponding keys for display.
  * @type {{[key: string]: { pretty: string, key: string }}}
  */
-export const termBasedHeaders = {
-  "key": { pretty: "", key: "key" },
-  "articles_published": { pretty: "", key: "doc_count" },
-  "are_open_access": { pretty: "", key: "doc_count" },
-  "are_open_access_percentage": { pretty: "", key: "doc_count" },
-  "are_compliant": { pretty: "", key: "doc_count" },
-  "are_compliant_percentage": { pretty: "", key: "doc_count" },
-  "are_covered_by_policy": { pretty: "", key: "doc_count" },
-  "are_covered_by_policy_percentage": { pretty: "", key: "doc_count" },
-  "are_free_to_read": { pretty: "", key: "doc_count" },
-  "are_free_to_read_percentage": { pretty: "", key: "doc_count" },
-  "in_repository": { pretty: "", key: "doc_count" },
-  "in_repository_percentage": { pretty: "", key: "doc_count" },
-  "in_approved_repository": { pretty: "", key: "doc_count" },
-  "in_approved_repository_percentage": { pretty: "", key: "doc_count" },
-  "has_preprint": { pretty: "", key: "doc_count" },
-  "has_preprint_percentage": { pretty: "", key: "doc_count" },
-  "has_grantid": { pretty: "", key: "doc_count" },
-  "has_grantid_percentage": { pretty: "", key: "doc_count" },
-  "has_data_availability_statement": { pretty: "", key: "doc_count" },
-  "has_data_availability_statement_percentage": { pretty: "", key: "doc_count" },
-  "no_data_availability_statement": { pretty: "", key: "doc_count" },
-  "no_data_availability_statement_percentage": { pretty: "", key: "doc_count" },
-  "total_citations": { pretty: "", key: "doc_count" },
-  "has_apc": { pretty: "", key: "doc_count" },
-  "has_apc_percentage": { pretty: "", key: "doc_count" },
-  "total_apcs_paid": { pretty: "", key: "value" },
-  "average_apcs_paid_raw": { pretty: "", key: "value" },
-  "median_apcs_paid_raw": { pretty: "", key: "values['50.0']" },
-  "has_data": { pretty: "", key: "doc_count" },
-  "has_data_percentage": { pretty: "", key: "doc_count" },
-  "no_data": { pretty: "", key: "doc_count" },
-  "no_data_percentage": { pretty: "", key: "doc_count" },
-  "ukn__data": { pretty: "", key: "doc_count" },
-  "ukn__data_percentage": { pretty: "", key: "doc_count" },
-  "has_shared_data": { pretty: "", key: "doc_count" },
-  "has_shared_data_percentage": { pretty: "", key: "doc_count" },
-  "no_shared_data": { pretty: "", key: "doc_count" },
-  "no_shared_data_percentage": { pretty: "", key: "doc_count" },
-  "ukn_shared_data": { pretty: "", key: "doc_count" },
-  "ukn_shared_data_percentage": { pretty: "", key: "doc_count" },
-  "has_shared_data_in_repo": { pretty: "", key: "doc_count" },
-  "has_shared_data_in_repo_percentage": { pretty: "", key: "doc_count" },
-  "has_open_data": { pretty: "", key: "doc_count" },
-  "has_open_data_percentage": { pretty: "", key: "doc_count" },
-  "has_open_data_in_repo": { pretty: "", key: "doc_count" },
-  "has_open_data_in_repo_percentage": { pretty: "", key: "doc_count" },
-  "has_data_doi": { pretty: "", key: "doc_count" },
-  "has_data_doi_percentage": { pretty: "", key: "doc_count" },
-  "has_data_accession_number": { pretty: "", key: "doc_count" },
-  "has_data_accession_number_percentage": { pretty: "", key: "doc_count" }
-};
-
-
-/**
- * Maps article-based objects to human-readable names and corresponding keys.
- * Used for displaying data in a user-friendly format.
- * @type {{[key: string]: { pretty: string, key: string }}}
- */
-export const articleBasedDataHeaders = {
+export const ARTICLE_DATA_TABLE_HEADERS = {
   "title": { pretty: "", key: "published_date" },
   "DOI": { pretty: "DOI", key: "published_date" },
   "supplements.is_compliant__bmgf": { pretty: "", key: "published_date" },
@@ -210,6 +156,7 @@ export const articleBasedDataHeaders = {
 
 /**
  * Class names for table header columns in the data explore section.
+ * @type {{firstHeaderCol: string, secondHeaderCol: string, otherHeaderCols: string}}
  */
 export const DATA_TABLE_HEADER_CLASSES = {
   firstHeaderCol: "border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-32 md:w-60 align-bottom",
@@ -219,6 +166,7 @@ export const DATA_TABLE_HEADER_CLASSES = {
 
 /**
  * Class names for table body columns in the data explore section.
+ * @type {{firstCol: string, secondCol: string, otherCols: string}}
  */
 export const DATA_TABLE_BODY_CLASSES = {
   firstCol: "border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left",
@@ -227,8 +175,9 @@ export const DATA_TABLE_BODY_CLASSES = {
 };
 
 /**
- * Maps ISO 3166-1 alpha-2 country codes to country names
-*/
+ * Maps ISO 3166-1 alpha-2 country codes to country names.
+ * @type {Object.<string, string>}
+ */
 export const COUNTRY_CODES = {
   "AF": "Afghanistan",
   "AL": "Albania",
