@@ -204,22 +204,42 @@ export function debounce(func, wait) {
 }
 
 /**
- * Formats the values of an object as list items.
- * If a value is an array, each element is formatted as a list item.
- * If a value is a string or number, it is formatted as a single list item.
+ * Formats the values of an object as inline list items.
+ * If a value is an array, each element is formatted as an inline list item.
+ * If a value is a single string or number, it is also formatted as an inline list item.
+ * Adds a comma and space to every list item except the last one if 'inline' is true.
  *
  * @param {Object} object - The object whose values will be formatted.
+ * @param {boolean} [inline=false] - Whether to format the list inline with commas.
  * @returns {string} A string containing HTML list items.
  */
-export function formatObjectValuesAsList(object) {
+export function formatObjectValuesAsList(object, inline = false) {
   let listItems = [];
+  let itemCount = 0;
+
   for (const key in object) {
     if (Array.isArray(object[key])) {
-      object[key].forEach(item => listItems.push(`<li>${item}</li>`));
+      itemCount += object[key].length;
     } else {
-      listItems.push(`<li>${object[key]}</li>`);
+      itemCount++;
     }
   }
+
+  let currentIndex = 0;
+  for (const key in object) {
+    if (Array.isArray(object[key])) {
+      object[key].forEach(item => {
+        currentIndex++;
+        const itemWithComma = inline && currentIndex < itemCount ? `${item}, ` : item;
+        listItems.push(`<li class="inline">${itemWithComma}</li>`);
+      });
+    } else {
+      currentIndex++;
+      const itemWithComma = inline && currentIndex < itemCount ? `${object[key]}, ` : object[key];
+      listItems.push(`<li class="inline">${itemWithComma}</li>`);
+    }
+  }
+
   return listItems.join('');
 }
 

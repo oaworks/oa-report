@@ -345,8 +345,8 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 
   } else if (type === "articles") {
     records = await fetchArticleBasedData(query, includes, sort, size);
-    console.log(includes);
     records = reorderRecords(records, includes);
+    console.log(records);
     replaceText("explore_sort", "publication date"); // Update the sort text in header
   }
 
@@ -657,7 +657,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
       );
   } else if (typeof content === 'object' && content !== null) {
     // Check if the content is an object and format its values as a list
-    cell.innerHTML = `<ul>${formatObjectValuesAsList(content)}</ul>`;
+    cell.innerHTML = `<ul">${formatObjectValuesAsList(content, true)}</ul>`;
   } else if (content === null) {
     cell.innerHTML = "N/A";
   } else {
