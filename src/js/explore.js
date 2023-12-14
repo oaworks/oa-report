@@ -480,14 +480,20 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
     let columnIndex = 0; // Keep track of column index for CSS class assignment
 
     for (const key in record) {
+      let content = record[key];
+      
+      // Special processing for articles data type and DOI key
+      if (dataType === 'articles' && key === 'DOI') {
+        // Turn DOIs into clickable URLs
+        content = `<a href="https://doi.org/${content}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 decoration-1">${content}</a>`;
+      }
+
       let cssClass;
       if (columnIndex === 0) cssClass = DATA_TABLE_BODY_CLASSES[dataType].firstCol;
       else if (columnIndex === 1) cssClass = DATA_TABLE_BODY_CLASSES[dataType].secondCol;
       else cssClass = DATA_TABLE_BODY_CLASSES[dataType].otherCols;
 
-      const content = record[key];
       row.appendChild(createTableCell(content, cssClass, exploreItemId, key, false));
-
       columnIndex++; // Increment the column index
     }
     tableBody.appendChild(row);
