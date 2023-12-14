@@ -291,7 +291,7 @@ function addRecordsShownSelectToDOM() {
   selectMenu.addEventListener("change", handleRecordsShownChange);
 
   // Define options for the select menu
-  const options = [5, 10, 20, 50, 100];
+  const options = [5, 10, 20, 50, 100, 500];
   options.forEach((optionValue) => {
     const option = document.createElement("option");
     option.value = optionValue;

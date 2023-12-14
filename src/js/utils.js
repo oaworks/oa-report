@@ -395,7 +395,7 @@ export function deepCopy(obj) {
 export function convertTextToLinks(text, forceLink = false, urlPrefix = '') {
   // Check if text is null or not a string
   if (text === null || typeof text !== 'string') {
-    return text;
+    return 'N/A';
   }
 
   if (text.startsWith('http://') || text.startsWith('https://') || forceLink) {
