@@ -8,7 +8,7 @@
 // =================================================
 
 import { displayNone, isCacheExpired, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, deepCopy, makeNumberReadable } from "./utils.js";
-import { EXPLORE_TYPES, EXPLORE_FILTERS, TERMS_DATA_TABLE_BODY_CLASSES, TERMS_DATA_TABLE_HEADER_CLASSES, COUNTRY_CODES } from "./constants.js";
+import { EXPLORE_TYPES, EXPLORE_FILTERS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, COUNTRY_CODES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { orgDataPromise } from './insights-and-strategies.js';
 import { createPostData } from './api-requests.js';
@@ -334,12 +334,15 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     records = await fetchTermBasedData(suffix, query, term, sort, size);
     records = reorderRecords(records, includes);
     replaceText("explore_sort", "publication count"); // Update the sort text in header
+
+    // Format records depending on data display toggler choice 
     if (pretty === true) {
       records = formatRecords(records); 
       records = prettifyRecords(records);
     } else {
       records = prettifyRecords(records, false);
     }
+
   } else if (type === "articles") {
     records = await fetchArticleBasedData(query, includes, sort, size);
     console.log(includes);
@@ -349,8 +352,8 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 
   if (records.length > 0) {
     // Populate table with data
-    populateTableHeader(records[0], 'export_table_head');
-    populateTableBody(records, 'export_table_body', id);
+    populateTableHeader(records[0], 'export_table_head', type);
+    populateTableBody(records, 'export_table_body', id, type);
     
     // Update any mentions of the explore data type with .plural version of the ID
     replaceText("explore_type", EXPLORE_TYPES[id]?.plural || pluraliseNoun(id));
@@ -425,7 +428,7 @@ async function fetchArticleBasedData(query, includes, sort, size) {
  * @param {Object[]} records - An array of data objects used to derive the header columns. Assumes all objects have the same structure.
  * @param {string} tableHeaderId - The ID of the table header element where the headers should be appended.
  */
-function populateTableHeader(records, tableHeaderId) {
+function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
   const tableHeader = document.getElementById(tableHeaderId);
   if (!tableHeader) return;
 
@@ -440,9 +443,9 @@ function populateTableHeader(records, tableHeaderId) {
   const headerRow = document.createElement('tr'); // Create and add the header row
   headers.forEach((key, index) => {
     let cssClass;
-    if (index === 0) cssClass = TERMS_DATA_TABLE_HEADER_CLASSES.firstHeaderCol;
-    else if (index === 1) cssClass = TERMS_DATA_TABLE_HEADER_CLASSES.secondHeaderCol;
-    else cssClass = TERMS_DATA_TABLE_HEADER_CLASSES.otherHeaderCols;
+    if (index === 0) cssClass = DATA_TABLE_HEADER_CLASSES[dataType].firstHeaderCol;
+    else if (index === 1) cssClass = DATA_TABLE_HEADER_CLASSES[dataType].secondHeaderCol;
+    else cssClass = DATA_TABLE_HEADER_CLASSES[dataType].otherHeaderCols;
 
     const headerCell = createTableCell(key, cssClass, null, null, true);
     headerRow.appendChild(headerCell);
@@ -457,7 +460,7 @@ function populateTableHeader(records, tableHeaderId) {
  * @param {string} tableBodyId - The ID of the table body to populate.
  * @param {string} exploreItemId - The ID of the selected explore item.
  */
-function populateTableBody(data, tableBodyId, exploreItemId) {
+function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms') {
   const tableBody = document.getElementById(tableBodyId);
   if (!tableBody || data.length === 0) return;
 
@@ -476,9 +479,9 @@ function populateTableBody(data, tableBodyId, exploreItemId) {
 
     for (const key in record) {
       let cssClass;
-      if (columnIndex === 0) cssClass = TERMS_DATA_TABLE_BODY_CLASSES.firstCol;
-      else if (columnIndex === 1) cssClass = TERMS_DATA_TABLE_BODY_CLASSES.secondCol;
-      else cssClass = TERMS_DATA_TABLE_BODY_CLASSES.otherCols;
+      if (columnIndex === 0) cssClass = DATA_TABLE_BODY_CLASSES[dataType].firstCol;
+      else if (columnIndex === 1) cssClass = DATA_TABLE_BODY_CLASSES[dataType].secondCol;
+      else cssClass = DATA_TABLE_BODY_CLASSES[dataType].otherCols;
 
       const content = record[key];
       row.appendChild(createTableCell(content, cssClass, exploreItemId, key, false));

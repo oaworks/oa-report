@@ -92,107 +92,63 @@ export const EXPLORE_FILTERS = {
 };
 
 /**
- * Maps article-based objects to human-readable names and corresponding keys for display.
- * @type {{[key: string]: { pretty: string, key: string }}}
+ * Class names for table header (<thead>) columns in the data explore section.
+ * This constant provides TailwindCSS classes for different types of data tables, 
+ * including 'terms' and 'articles', with each type having its own set of classes 
+ * for 'firstHeaderCol', 'secondHeaderCol', and 'otherHeaderCols'.
+ * 
+ * @constant
+ * @type {Object}
+ * @property {Object} terms - CSS classes for the 'terms' type table headers.
+ * @property {string} terms.firstHeaderCol - Class for the first header column in 'terms' table.
+ * @property {string} terms.secondHeaderCol - Class for the second header column in 'terms' table.
+ * @property {string} terms.otherHeaderCols - Class for other header columns in 'terms' table.
+ * @property {Object} articles - CSS classes for the 'articles' type table headers.
+ * @property {string} articles.firstHeaderCol - Class for the first header column in 'articles' table.
+ * @property {string} articles.secondHeaderCol - Class for the second header column in 'articles' table.
+ * @property {string} articles.otherHeaderCols - Class for other header columns in 'articles' table.
  */
-export const ARTICLE_DATA_TABLE_HEADERS = {
-  "title": { pretty: "", key: "published_date" },
-  "DOI": { pretty: "DOI", key: "published_date" },
-  "supplements.is_compliant__bmgf": { pretty: "", key: "published_date" },
-  "supplements.grantid__bmgf": { pretty: "", key: "published_date" },
-  "publisher": { pretty: "", key: "published_date" },
-  "journal": { pretty: "", key: "published_date" },
-  "issn": { pretty: "", key: "published_date" },
-  "published_date": { pretty: "", key: "published_date" },
-  "published_year": { pretty: "", key: "published_date" },
-  "PMCID": { pretty: "", key: "published_date" },
-  "authorships.institutions.display_name": { pretty: "", key: "published_date" },
-  "funder.name": { pretty: "", key: "published_date" },
-  "is_oa": { pretty: "", key: "published_date" },
-  "oa_status": { pretty: "", key: "published_date" },
-  "journal_oa_type": { pretty: "", key: "published_date" },
-  "supplements.publisher_license_best": { pretty: "", key: "published_date" },
-  "has_repository_copy": { pretty: "", key: "published_date" },
-  "supplements.repository_license_best": { pretty: "", key: "published_date" },
-  "repository_version": { pretty: "", key: "published_date" },
-  "repository_url": { pretty: "", key: "published_date" },
-  "supplements.is_approved_repository__bmgf": { pretty: "", key: "published_date" },
-  "supplements.is_preprint": { pretty: "", key: "published_date" },
-  "can_archive": { pretty: "", key: "published_date" },
-  "version": { pretty: "", key: "published_date" },
-  "concepts.display_name": { pretty: "", key: "published_date" },
-  "subject": { pretty: "", key: "published_date" },
-  "supplements.program__bmgf": { pretty: "", key: "published_date" },
-  "supplements.has_data_availability_statement": { pretty: "", key: "published_date" },
-  "cited_by_count": { pretty: "", key: "published_date" },
-  "author_email_name": { pretty: "", key: "published_date" },
-  "email": { pretty: "", key: "published_date" },
-  "supplements.invoice_date": { pretty: "", key: "published_date" },
-  "supplements.invoice_number": { pretty: "", key: "published_date" },
-  "supplements.apc_cost": { pretty: "", key: "published_date" },
-  "supplements.oasupport.status": { pretty: "", key: "published_date" },
-  "supplements.sheets": { pretty: "", key: "published_date" },
-  "supplements.is_new__bmgf": { pretty: "", key: "published_date" },
-  "supplements.dev.data.has_shared_data": { pretty: "", key: "published_date" },
-  "supplements.dev.data.has_open_data": { pretty: "", key: "published_date" },
-  "supplements.dev.data.doi": { pretty: "", key: "published_date" },
-  "supplements.dev.data.url": { pretty: "", key: "published_date" },
-  "supplements.dev.data.accession": { pretty: "", key: "published_date" },
-  "supplements.dev.data.location": { pretty: "", key: "published_date" },
-  "supplements.dev.data.licence": { pretty: "", key: "published_date" },
-  "supplements.dev.data.evidence": { pretty: "", key: "published_date" },
-  "supplements.dev.code.has_made_code": { pretty: "", key: "published_date" },
-  "supplements.dev.code.has_shared_code": { pretty: "", key: "published_date" },
-  "supplements.dev.code.has_open_code": { pretty: "", key: "published_date" },
-  "supplements.dev.code.doi": { pretty: "", key: "published_date" },
-  "supplements.dev.code.url": { pretty: "", key: "published_date" },
-  "supplements.dev.code.accession": { pretty: "", key: "published_date" },
-  "supplements.dev.code.location": { pretty: "", key: "published_date" },
-  "supplements.dev.code.licence": { pretty: "", key: "published_date" },
-  "supplements.dev.code.evidence": { pretty: "", key: "published_date" },
-  "supplements.is_original_research": { pretty: "", key: "published_date" },
-  "supplements.data_availability_statement_category": { pretty: "", key: "published_date" }
-}
-
-/**
- * Class names for table header columns in the data explore section.
- * @type {{firstHeaderCol: string, secondHeaderCol: string, otherHeaderCols: string}}
- */
-export const TERMS_DATA_TABLE_HEADER_CLASSES = {
-  firstHeaderCol: "border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-32 md:w-60 align-bottom",
-  secondHeaderCol: "border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-600 p-2 w-24 md:w-32 align-bottom break-words",
-  otherHeaderCols: "border-b border-neutral-500 p-2 w-32 align-bottom break-words text-right"
+export const DATA_TABLE_HEADER_CLASSES = {
+  terms: {
+    firstHeaderCol: "border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-32 md:w-60 align-bottom",
+    secondHeaderCol: "border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-600 p-2 w-24 md:w-32 align-bottom break-words",
+    otherHeaderCols: "border-b border-neutral-500 p-2 w-32 align-bottom break-words text-right"
+  },
+  articles: {
+    firstHeaderCol: "border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-32 md:w-60 align-bottom",
+    secondHeaderCol: "border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-600 p-2 w-24 md:w-32 align-bottom break-words",
+    otherHeaderCols: "border-b border-neutral-500 p-2 w-32 align-bottom break-words text-right"
+  }
 };
 
 /**
- * Class names for table body columns in the data explore section.
- * @type {{firstCol: string, secondCol: string, otherCols: string}}
+ * Class names for table body (<tbody>) columns in the data explore section.
+ * This constant provides TailwindCSS classes for different types of data tables, 
+ * including 'terms' and 'articles', with each type having its own set of classes 
+ * for 'firstCol', 'secondCol', and 'otherCols'.
+ * 
+ * @constant
+ * @type {Object}
+ * @property {Object} terms - CSS classes for the 'terms' type tables.
+ * @property {string} terms.firstCol - Class for the first column in 'terms' table.
+ * @property {string} terms.secondCol - Class for the second column in 'terms' table.
+ * @property {string} terms.otherCols - Class for other columns in 'terms' table.
+ * @property {Object} articles - CSS classes for the 'articles' type tables.
+ * @property {string} articles.firstCol - Class for the first column in 'articles' table.
+ * @property {string} articles.secondCol - Class for the second column in 'articles' table.
+ * @property {string} articles.otherCols - Class for other columns in 'articles' table.
  */
-export const TERMS_DATA_TABLE_BODY_CLASSES = {
-  firstCol: "border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left",
-  secondCol: "border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-600 p-2 whitespace-nowrap truncate",
-  otherCols: "border-b border-neutral-500 p-2 whitespace-nowrap truncate text-right hover:bg-neutral-600"
-};
-
-
-/**
- * Class names for table header columns in the data explore section.
- * @type {{firstHeaderCol: string, secondHeaderCol: string, otherHeaderCols: string}}
- */
-export const ARTICLES_DATA_TABLE_HEADER_CLASSES = {
-  firstHeaderCol: "border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-32 md:w-60 align-bottom",
-  secondHeaderCol: "border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-600 p-2 w-24 md:w-32 align-bottom break-words",
-  otherHeaderCols: "border-b border-neutral-500 p-2 w-32 align-bottom break-words"
-};
-
-/**
- * Class names for table body columns in the data explore section.
- * @type {{firstCol: string, secondCol: string, otherCols: string}}
- */
-export const ARTICLES_DATA_TABLE_BODY_CLASSES = {
-  firstCol: "border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2",
-  secondCol: "border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-600 p-2 whitespace-nowrap truncate",
-  otherCols: "border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600"
+export const DATA_TABLE_BODY_CLASSES = {
+  terms: {
+    firstCol: "border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left",
+    secondCol: "border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-600 p-2 whitespace-nowrap truncate",
+    otherCols: "border-b border-neutral-500 p-2 whitespace-nowrap truncate text-right hover:bg-neutral-600"
+  },
+  articles: {
+    firstCol: "border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2",
+    secondCol: "border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-600 p-2 whitespace-nowrap truncate",
+    otherCols: "border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600"
+  }
 };
 
 /**
