@@ -770,10 +770,6 @@ function enableTooltipsForTruncatedCells() {
               let cellText = cell.textContent;
               // Check if the cell's content is truncated
               if (cell.offsetWidth < cell.scrollWidth) {
-                  // If content starts with 'http' or 'https', turn it into a clickable link
-                  // if (cellText.startsWith('http://') || cellText.startsWith('https://')) {
-                  //     cellText = `<a href="${cellText}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 decoration-1">${cellText}</a>`;
-                  // }
                   cellText = convertTextToLinks(cellText);
                   instance.setContent(cellText); // Set the formatted content
                   return true; // Show the tooltip
