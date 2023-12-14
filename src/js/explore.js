@@ -348,6 +348,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     records = reorderRecords(records, includes);
     console.log(records);
     replaceText("explore_sort", "publication date"); // Update the sort text in header
+    displayNone("explore_display_style_field"); // No need for the data display style field in article tables
   }
 
   if (records.length > 0) {
