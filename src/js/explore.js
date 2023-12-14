@@ -7,7 +7,7 @@
 // Imports
 // =================================================
 
-import { displayNone, isCacheExpired, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, deepCopy, makeNumberReadable } from "./utils.js";
+import { displayNone, isCacheExpired, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, deepCopy, makeNumberReadable, convertTextToLinks } from "./utils.js";
 import { EXPLORE_TYPES, EXPLORE_FILTERS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, COUNTRY_CODES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { orgDataPromise } from './insights-and-strategies.js';
@@ -766,9 +766,15 @@ function enableTooltipsForTruncatedCells() {
           hideOnClick: false,
           theme: 'table-tooltip', // Custom theme defined in 'src/styles/input.css'
           onShow(instance) {
+              let cellText = cell.textContent;
               // Check if the cell's content is truncated
               if (cell.offsetWidth < cell.scrollWidth) {
-                  instance.setContent(cell.textContent); // Update content in case it changed
+                  // If content starts with 'http' or 'https', turn it into a clickable link
+                  // if (cellText.startsWith('http://') || cellText.startsWith('https://')) {
+                  //     cellText = `<a href="${cellText}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 decoration-1">${cellText}</a>`;
+                  // }
+                  cellText = convertTextToLinks(cellText);
+                  instance.setContent(cellText); // Set the formatted content
                   return true; // Show the tooltip
               }
               return false; // Prevent the tooltip from showing

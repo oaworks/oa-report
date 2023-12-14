@@ -382,3 +382,16 @@ export function decodeAndReplaceUrlEncodedChars(encodedString) {
 export function deepCopy(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
+
+/**
+ * Converts URLs in a text string to clickable anchor tags.
+ * 
+ * @param {string} text - The text string to process.
+ * @return {string} The processed string with URLs converted to clickable links.
+ */
+export function convertTextToLinks(text) {
+  if (text.startsWith('http://') || text.startsWith('https://')) {
+    return `<a href="${text}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 decoration-1">${text}</a>`;
+  }
+  return text;
+}
