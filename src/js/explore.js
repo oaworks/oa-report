@@ -484,8 +484,7 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
       
       // Special processing for articles data type and DOI key
       if (dataType === 'articles' && key === 'DOI') {
-        // Turn DOIs into clickable URLs
-        content = `<a href="https://doi.org/${content}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 decoration-1">${content}</a>`;
+        content = convertTextToLinks(content, true, 'https://doi.org/');
       }
 
       let cssClass;
