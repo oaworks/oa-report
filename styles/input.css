@@ -57,6 +57,20 @@
   color: #24201e;
 }
 
+.tippy-box[data-theme~='table-tooltip'] {
+  background-color: #e9e9e9;
+  color: #24201e;
+  font-weight: normal;
+  line-height: 1.5;
+  text-transform: none;
+  --tw-drop-shadow: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+
+.tippy-box[data-theme~='table-tooltip'] .tippy-arrow {
+  color: #e9e9e9;
+}
+
 [data-tippy-content], sup > svg {
   cursor: pointer;
 }

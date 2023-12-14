@@ -360,6 +360,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 
     // Add functionalities to the table
     enableExploreTableScroll();
+    enableTooltipsForTruncatedCells();
   }
 }
 
@@ -744,6 +745,35 @@ function enableExploreTableScroll() {
     } else {
       scrollRightButton.style.display = "block";
     }
+  });
+}
+
+/**
+ * Initialises tooltips for table cells with truncated content using Tippy.js.
+ * Each tooltip will display the full text content of the cell when hovered over.
+ * The tooltip is only shown if the cell's content is actually truncated and the user hovers over it with intent.
+ */
+function enableTooltipsForTruncatedCells() {
+  document.querySelectorAll('.truncate').forEach(cell => {
+      tippy(cell, {
+          content: cell.textContent,
+          allowHTML: true,
+          interactive: true,
+          placement: 'bottom',
+          appendTo: document.body,
+          delay: [500, 0], // 500 ms delay before showing, 0 ms delay before hiding
+          trigger: 'mouseenter focus', // Trigger on mouse enter and focus
+          hideOnClick: false,
+          theme: 'table-tooltip', // Custom theme defined in 'src/styles/input.css'
+          onShow(instance) {
+              // Check if the cell's content is truncated
+              if (cell.offsetWidth < cell.scrollWidth) {
+                  instance.setContent(cell.textContent); // Update content in case it changed
+                  return true; // Show the tooltip
+              }
+              return false; // Prevent the tooltip from showing
+          }
+      });
   });
 }
 
