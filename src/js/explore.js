@@ -7,7 +7,7 @@
 // Imports
 // =================================================
 
-import { displayNone, isCacheExpired, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, deepCopy, makeNumberReadable, convertTextToLinks } from "./utils.js";
+import { displayNone, isCacheExpired, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, deepCopy, makeNumberReadable, convertTextToLinks } from "./utils.js";
 import { EXPLORE_TYPES, EXPLORE_FILTERS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, COUNTRY_CODES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { orgDataPromise } from './insights-and-strategies.js';
@@ -482,9 +482,15 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
     for (const key in record) {
       let content = record[key];
       
-      // Special processing for articles data type and DOI key
+      // Special processing for articles data type
+      // DOI key
       if (dataType === 'articles' && key === 'DOI') {
         content = convertTextToLinks(content, true, 'https://doi.org/');
+      }
+
+      // Date
+      if (dataType === 'articles' && key === 'published_date') {
+        content = makeDateReadable(new Date(content));
       }
 
       let cssClass;

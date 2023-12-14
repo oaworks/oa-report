@@ -8,7 +8,7 @@
  */
 export const READABLE_DATE_OPTIONS = {
   day: "numeric",
-  month: "long",
+  month: "short",
   year: "numeric"
 };
 
