@@ -158,7 +158,7 @@ export const ARTICLE_DATA_TABLE_HEADERS = {
  * Class names for table header columns in the data explore section.
  * @type {{firstHeaderCol: string, secondHeaderCol: string, otherHeaderCols: string}}
  */
-export const DATA_TABLE_HEADER_CLASSES = {
+export const TERMS_DATA_TABLE_HEADER_CLASSES = {
   firstHeaderCol: "border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-32 md:w-60 align-bottom",
   secondHeaderCol: "border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-600 p-2 w-24 md:w-32 align-bottom break-words",
   otherHeaderCols: "border-b border-neutral-500 p-2 w-32 align-bottom break-words text-right"
@@ -168,10 +168,31 @@ export const DATA_TABLE_HEADER_CLASSES = {
  * Class names for table body columns in the data explore section.
  * @type {{firstCol: string, secondCol: string, otherCols: string}}
  */
-export const DATA_TABLE_BODY_CLASSES = {
+export const TERMS_DATA_TABLE_BODY_CLASSES = {
   firstCol: "border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 text-left",
   secondCol: "border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-600 p-2 whitespace-nowrap truncate",
   otherCols: "border-b border-neutral-500 p-2 whitespace-nowrap truncate text-right hover:bg-neutral-600"
+};
+
+
+/**
+ * Class names for table header columns in the data explore section.
+ * @type {{firstHeaderCol: string, secondHeaderCol: string, otherHeaderCols: string}}
+ */
+export const ARTICLES_DATA_TABLE_HEADER_CLASSES = {
+  firstHeaderCol: "border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-32 md:w-60 align-bottom",
+  secondHeaderCol: "border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-600 p-2 w-24 md:w-32 align-bottom break-words",
+  otherHeaderCols: "border-b border-neutral-500 p-2 w-32 align-bottom break-words"
+};
+
+/**
+ * Class names for table body columns in the data explore section.
+ * @type {{firstCol: string, secondCol: string, otherCols: string}}
+ */
+export const ARTICLES_DATA_TABLE_BODY_CLASSES = {
+  firstCol: "border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2",
+  secondCol: "border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-600 p-2 whitespace-nowrap truncate",
+  otherCols: "border-b border-neutral-500 p-2 whitespace-nowrap truncate hover:bg-neutral-600"
 };
 
 /**

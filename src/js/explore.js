@@ -8,7 +8,7 @@
 // =================================================
 
 import { displayNone, isCacheExpired, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, deepCopy, makeNumberReadable } from "./utils.js";
-import { EXPLORE_TYPES, EXPLORE_FILTERS, DATA_TABLE_BODY_CLASSES, DATA_TABLE_HEADER_CLASSES, COUNTRY_CODES } from "./constants.js";
+import { EXPLORE_TYPES, EXPLORE_FILTERS, TERMS_DATA_TABLE_BODY_CLASSES, TERMS_DATA_TABLE_HEADER_CLASSES, COUNTRY_CODES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { orgDataPromise } from './insights-and-strategies.js';
 import { createPostData } from './api-requests.js';
@@ -317,9 +317,15 @@ function addRecordsShownSelectToDOM() {
  */
 async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 10, pretty = true) {
   const { type, id, term, sort, includes } = itemData; // Extract explore item's properties
+
+  // Show the table
+  const exportTable = document.getElementById('export_table');
+  exportTable.classList.remove('hidden'); 
+
   let query = orgData.hits.hits[0]._source.analysis[filter].query; // Get the query string for the selected filter
   let suffix = orgData.hits.hits[0]._source.key_suffix; // Get the suffix for the org
   let records = [];
+
   pretty = currentActiveDataDisplayToggle;
   size = currentActiveExploreItemSize; 
 
@@ -342,7 +348,15 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
   }
 
   if (records.length > 0) {
-    updateTableContainer(id, records);
+    // Populate table with data
+    populateTableHeader(records[0], 'export_table_head');
+    populateTableBody(records, 'export_table_body', id);
+    
+    // Update any mentions of the explore data type with .plural version of the ID
+    replaceText("explore_type", EXPLORE_TYPES[id]?.plural || pluraliseNoun(id));
+
+    // Add functionalities to the table
+    enableExploreTableScroll();
   }
 }
 
@@ -404,29 +418,6 @@ async function fetchArticleBasedData(query, includes, sort, size) {
 // =================================================
 
 /**
- * Updates the table header and fetches data to populate the table.
- * Called when an explore item is clicked.
- *
- * @param {string} selectedId - The ID of the selected explore item.
- * @param {Array<Object>} records - The data array to populate the table, with each object representing a row.
- */
-function updateTableContainer(selectedId, records) {
-  console.log(records);
-  const exportTable = document.getElementById('export_table');
-  exportTable.classList.remove('hidden'); // Show the table
-
-  // Populate table with data
-  populateTableHeader(records[0], 'export_table_head');
-  populateTableBody(records, 'export_table_body', selectedId);
-
-  // Update any mentions of the explore data type with .plural version of the ID
-  replaceText("explore_type", EXPLORE_TYPES[selectedId]?.plural || pluraliseNoun(selectedId));
-  
-  // Add functionalities to the table
-  enableExploreTableScroll();
-}
-
-/**
  * Populates the header of a table with column headers derived from the keys of a data object.
  * The function clears any existing headers before appending the new ones. It assumes that the 
  * first object in the data array is representative of the structure for all objects in the array.
@@ -449,9 +440,9 @@ function populateTableHeader(records, tableHeaderId) {
   const headerRow = document.createElement('tr'); // Create and add the header row
   headers.forEach((key, index) => {
     let cssClass;
-    if (index === 0) cssClass = DATA_TABLE_HEADER_CLASSES.firstHeaderCol;
-    else if (index === 1) cssClass = DATA_TABLE_HEADER_CLASSES.secondHeaderCol;
-    else cssClass = DATA_TABLE_HEADER_CLASSES.otherHeaderCols;
+    if (index === 0) cssClass = TERMS_DATA_TABLE_HEADER_CLASSES.firstHeaderCol;
+    else if (index === 1) cssClass = TERMS_DATA_TABLE_HEADER_CLASSES.secondHeaderCol;
+    else cssClass = TERMS_DATA_TABLE_HEADER_CLASSES.otherHeaderCols;
 
     const headerCell = createTableCell(key, cssClass, null, null, true);
     headerRow.appendChild(headerCell);
@@ -485,9 +476,9 @@ function populateTableBody(data, tableBodyId, exploreItemId) {
 
     for (const key in record) {
       let cssClass;
-      if (columnIndex === 0) cssClass = DATA_TABLE_BODY_CLASSES.firstCol;
-      else if (columnIndex === 1) cssClass = DATA_TABLE_BODY_CLASSES.secondCol;
-      else cssClass = DATA_TABLE_BODY_CLASSES.otherCols;
+      if (columnIndex === 0) cssClass = TERMS_DATA_TABLE_BODY_CLASSES.firstCol;
+      else if (columnIndex === 1) cssClass = TERMS_DATA_TABLE_BODY_CLASSES.secondCol;
+      else cssClass = TERMS_DATA_TABLE_BODY_CLASSES.otherCols;
 
       const content = record[key];
       row.appendChild(createTableCell(content, cssClass, exploreItemId, key, false));
@@ -534,6 +525,7 @@ function prettifyHeaders(headers) {
     "rors": "ROR<span style='text-transform: lowercase;'>s</span>",
     "orcIDs": "ORC<span style='text-transform: lowercase;'>i</span>D<span style='text-transform: lowercase;'>s</span>",
     "fundref": "FundRef",
+    "supplements.dev.": "",
     "supplements.": "",
     "authorships.institutions.display name": "Authors",
     "concepts.display name": "Concepts",
@@ -546,6 +538,7 @@ function prettifyHeaders(headers) {
     .filter(header => header.endsWith("_pct") || !headers.includes(header + "_pct"))
     .map(header => {
       header = header.replace(/_pct$/, ""); // Remove '_pct' suffix
+      header = header.replace(/__.*/, ""); // Remove any suffixes after '__'
       header = header.replace(/_/g, " "); // Replace underscores with spaces
       header = header.charAt(0).toUpperCase() + header.slice(1).toLowerCase(); // Capitalize only the first letter of the header
 
