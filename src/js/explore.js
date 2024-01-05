@@ -362,6 +362,13 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     // Add functionalities to the table
     enableExploreTableScroll();
     enableTooltipsForTruncatedCells();
+
+    // Add data download link only if it's an 'articles'-type data table
+    if (type === "articles") {
+      addCSVExportLink();
+    } else {
+      removeCSVExportLink(); // Remove the CSV export link if there's one
+    }
   }
 }
 
@@ -720,7 +727,6 @@ function clearRowHighlights() {
   });
 }
 
-
 /**
  * Enables horizontal scrolling functionality for the table in the data exploration section.
  * A button click will scroll the table to the right.
@@ -860,4 +866,35 @@ function handleDataDisplayToggle() {
     // Fetch and display data with the updated pretty/raw format
     fetchAndDisplayExploreData(currentActiveExploreItemData, currentActiveExploreItemQuery, currentActiveExploreItemSize);
   });
+}
+
+/**
+ * Adds a CSV export link to the data table’s container.
+ */
+function addCSVExportLink() {
+  const exportLinkContainer = document.getElementById('explore_export_container');
+
+  // Create the CSV export link markup
+  const csvExportLink = document.createElement('a');
+  csvExportLink.href = '#'; 
+  csvExportLink.setAttribute('download', ''); // Set a default filename here
+  csvExportLink.setAttribute('role', 'button');
+  csvExportLink.setAttribute('aria-label', 'Download full data as CSV');
+  csvExportLink.id = 'explore_export_link';
+  csvExportLink.className = 'items-center space-x-2 px-4 py-2 text-base font-medium uppercase border border-neutral-100 text-neutral-100 bg-neutral-800 hover:bg-neutral-100 hover:text-neutral-900 focus:outline-none focus:ring-1 focus:ring-carnation-400 duration-500 whitespace-nowrap inline-block';
+  csvExportLink.innerHTML = 'Download all <span class="explore_export_type">data</span> (CSV)';
+
+  // Append the link to the container
+  exportLinkContainer.appendChild(csvExportLink);
+}
+
+/**
+ * Removes the CSV export link from the DOM.
+ */
+function removeCSVExportLink() {
+  const exportLinkContainer = document.getElementById('explore_export_container');
+  const csvExportLink = document.getElementById('explore_export_link');
+  if (csvExportLink) {
+    exportLinkContainer.removeChild(csvExportLink);
+  }
 }
