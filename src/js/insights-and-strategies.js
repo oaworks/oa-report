@@ -459,49 +459,73 @@ export function initInsightsAndStrategies(org) {
       // Do not navigate away from the page on submit
       return false;
     }
-
-    /* Strategy-level "download CSV" form */
-    function getStrategyExportLink(id) {
-      var hasCustomExportIncludes = (orgData.hits.hits[0]._source.strategy[id].export_includes),
-          strategyQuery           = (orgData.hits.hits[0]._source.strategy[id].query);
-
-      Promise.all([hasCustomExportIncludes])
-        .then(function (results) {
-          hasCustomExportIncludes = results[0].data;
-          }
-        ).catch(function (error) { console.log(`Export error: ${error}`); });
-
-      // Set up export query
-      isPaperURL = (dateRange + strategyQuery);
-      let query = `q=${isPaperURL.replaceAll(" ", "%20")}`,
-          form = new FormData(document.getElementById(`form_${id}`));
-
-      // Get form content — email address input
-      var email = `&${new URLSearchParams(form).toString()}`;
-
-      // Display export includes if there are any
-      var include;
-      if (hasCustomExportIncludes !== undefined) {
-        include = `&include=${hasCustomExportIncludes}`;
-      }
-
-      // Build full query
-      query = csvExportBase + query + include + exportSort + email + orgKey;
-
-      var xhr = new XMLHttpRequest();
-      xhr.open("GET", query);
-      // Display message when server responds
-      xhr.onload = function () {
-        document.getElementById(`msg-${id}`).innerHTML = `OA.Report has started building your CSV export at <a href='${this.response}' target='_blank' class='underline underline-offset-2 decoration-1'>this URL</a>. Please check your email to get the full data once it’s ready.`;
-      };
-      xhr.send();
-
-      // Do not navigate away from the page on submit
-      return false;
-    }
-
+    
   }).catch(error => {
     console.log(`Report ERROR: ${error}`);
     displayErrorHeader();
   });
+};
+
+/**
+ * Calls the getStrategyExportLink function with the necessary orgData.
+ * This function is designed to be called from HTML templates and handles
+ * fetching the organization data before executing getStrategyExportLink.
+ *
+ * @param {string} id - The identifier for the strategy export link.
+ */
+window.callGetStrategyExportLink = function(id) {
+  orgDataPromise.then(function (response) {
+      const orgData = response.data;
+      getStrategyExportLink(id, orgData);
+  }).catch(function (error) {
+      console.error(`Error fetching orgData: ${error}`);
+  });
+
+  // Do not navigate away from the page on submit
+  return false;
+};
+
+/**
+* Handles the creation and sending of a strategy export link request.
+* This function is called with organizational data and an identifier to
+* construct the appropriate export link.
+*
+* @param {string} id - The identifier for the strategy export link.
+* @param {Object} orgData - The organization data required for the export link.
+* @returns {boolean} - Always returns false to prevent default form submission.
+*/
+export function getStrategyExportLink(id, orgData) {
+  let hasCustomExportIncludes = (orgData.hits.hits[0]._source.export_includes),
+      strategyQuery           = (orgData.hits.hits[0]._source.strategy[id].query);
+  
+  Promise.all([hasCustomExportIncludes])
+    .then(function (results) {
+      hasCustomExportIncludes = results[0].data;
+      }
+    ).catch(function (error) { console.log(`Export error: ${error}`); });
+
+  // Set up export query
+  let isPaperURL = (dateRange + strategyQuery);
+  let query = `q=${isPaperURL.replaceAll(" ", "%20")}`,
+      form = new FormData(document.getElementById(`form_${id}`));
+
+  // Get form content — email address input
+  var email = `&${new URLSearchParams(form).toString()}`;
+
+  // Display export includes if there are any
+  var include;
+  if (hasCustomExportIncludes !== undefined) {
+    include = `&include=${hasCustomExportIncludes}`;
+  }
+
+  // Build full query
+  query = csvExportBase + query + include + exportSort + email + orgKey;
+
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", query);
+  // Display message when server responds
+  xhr.onload = function () {
+    document.getElementById(`msg-${id}`).innerHTML = `OA.Report has started building your CSV export at <a href='${this.response}' target='_blank' class='underline underline-offset-2 decoration-1'>this URL</a>. Please check your email to get the full data once it’s ready.`;
+  };
+  xhr.send();
 };
