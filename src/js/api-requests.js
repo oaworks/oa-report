@@ -102,7 +102,7 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
           "compliant": {
             "filter": {
               "term": {
-                [`supplements.is_compliant__${suffix}`]: true
+                [`supplements.is_compliant_all_works__${suffix}`]: true
               }
             }
           },
