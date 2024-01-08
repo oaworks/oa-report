@@ -184,14 +184,17 @@ permalink: "{{ org._source.objectID | slug }}/"
       </div>
       
       <div id="export_table" class="mt-6 hidden">
-        <h3 class="mb-12 text-4xl" aria-live="polite">
-          Top <strong class="lowercase explore_type">articles</strong> for <strong class="lowercase report_year">2023</strong>
-          {{ component("tooltip", {
-            msg: "<p class='mb-2'>This table is a preview of the <span class='explore_type'>articles</span> records. You can view up to 500 records here.</p> <p>To see more, use the <em>Download full article data as CSV</em> form below.</p>"
-          }) }} 
-          <br>
-          <span class="text-sm text-neutral-200">Sorted by <strong class="explore_sort">publication count</strong></span>
-        </h3> 
+        <header class="mb-12 grid grid-cols-3 gap-3 sm:gap-6 md:gap-12 ">
+          <h3 class="mb-4 md:mb-0 text-4xl col-span-3 md:col-span-1" aria-live="polite">
+            Top <strong class="lowercase explore_type">articles</strong> for <strong class="lowercase report_year">2023</strong>
+          </h3> 
+          <p class="col-span-3 md:col-span-1 mb-2 md:mb-0 text-sm md:border-l md:pl-4 border-neutral-300">
+            This table is a preview of the <strong class="explore_type lowercase">articles</strong> records sorted by <strong class="explore_sort">publication count</strong>.
+          </p>
+          <p class="col-span-3 md:col-span-1 text-sm md:border-l md:pl-4 border-neutral-300">
+            You can view up to 500 records here. <span id="explore_table_tooltip_articles">To see all of them, use the <a href="#download_csv_form_container" class="underline underline-offset-2 decoration-1">Download full article data as CSV</a> form below.</span>
+          </p>
+        </header>
         <div class="my-4 gap-3 md:gap-12 flex justify-between">
           <div class="gap-3 md:gap-12 flex justify-between">
             <form class="w-auto">
@@ -221,7 +224,7 @@ permalink: "{{ org._source.objectID | slug }}/"
             </fieldset>
           </form>     
         </div>
-        <div class="mb-12 relative">
+        <div class="relative">
           <button
             id="js_scroll_table_btn"
             class="p-2 bg-carnation-100 text-neutral-900 text-2xl focus:outline-none focus:ring focus:ring-carnation-500 hover:bg-carnation-300 transition duration-300 ml-4 absolute right-3 top-1/2 transform -translate-y-1/2"
@@ -250,7 +253,7 @@ permalink: "{{ org._source.objectID | slug }}/"
             </a>
           </div>
         </div> #}
-        {% include 'partials/email-download-form.njk' %}
+        <div class="pt-24" id="download_csv_form_container">{% include 'partials/email-download-form.njk' %}</div>
       </div>
     </div>
   </section>

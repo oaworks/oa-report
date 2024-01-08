@@ -385,13 +385,16 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     enableTooltipsForTruncatedCells();
 
     const downloadCSVForm = document.getElementById('download_csv_form');
+    const exploreTableTooltip = document.getElementById('explore_table_tooltip_articles');
     // Add data download link only if it's an 'articles'-type data table
     if (type === "articles") {
       // addCSVExportLink(); TODO: once we can download the CSV directly from the link, use this
       downloadCSVForm.style.display = "block" // Display download_csv_form if it's an 'articles'-type data table
+      exploreTableTooltip.style.display = "inline"; // Display the tooltip
     } else {
       // removeCSVExportLink(); // Remove the CSV export link if there's one
       downloadCSVForm.style.display = "none" // Hide download_csv_form if it's NOT an 'articles'-type data table
+      exploreTableTooltip.style.display = "none"; // Hide the tooltip
     }
   }
 }
