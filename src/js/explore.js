@@ -17,6 +17,26 @@ import { createPostData } from './api-requests.js';
 // Global variables
 // =================================================
 
+// TEMP; these constants are repeated in insights-and-strategies.js
+const base             = `https://${apiEndpoint}.oa.works/report/`,
+      baseBg           = `https://bg.${apiEndpoint}.oa.works/report/`,
+      queryBase        = `${base}works?size=all&`,
+      csvExportBase    = `${baseBg}works.csv?size=all&`;
+const exportSort = "&sort=published_date:desc";
+
+let orgKey = "",
+    hasOrgKey = Object.keys(OAKEYS).length !== 0;
+if (hasOrgKey) {
+  // logged in
+  orgKey = `&orgkey=${Object.values(OAKEYS)}`;
+  displayNone("about-paid-logged-out");
+  displayNone("about-free-logged-out");
+} else {
+  // logged out
+  displayNone("logout");
+  //displayNone("explore");
+}
+
 /**
  * Cache for storing fetched data to reduce API calls.
  * @global
@@ -346,7 +366,6 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
   } else if (type === "articles") {
     records = await fetchArticleBasedData(query, includes, sort, size);
     records = reorderRecords(records, includes);
-    console.log(records);
     replaceText("explore_sort", "publication date"); // Update the sort text in header
     displayNone("explore_display_style_field"); // No need for the data display style field in article tables
   }
@@ -417,6 +436,7 @@ async function fetchTermBasedData(suffix, query, term, sort, size) {
  */
 async function fetchArticleBasedData(query, includes, sort, size) {
   const getDataUrl = `https://${apiEndpoint}.oa.works/report/works/?q=${dateRange}(${query})&size=${size}&include=${includes}&sort=${sort}`;
+  console.log(getDataUrl);
   const response = await fetchGetData(getDataUrl); // No need to generate POST request
   // Check nested properties before assigning records
   if (response && response.hits && response.hits.hits) {
@@ -869,24 +889,69 @@ function handleDataDisplayToggle() {
 }
 
 /**
- * Adds a CSV export link to the data table’s container.
+ * Adds a CSV export link to the data table's container.
  */
-function addCSVExportLink() {
-  const exportLinkContainer = document.getElementById('explore_export_container');
+async function addCSVExportLink() { // Declare the function as async
+  const exportContainer = document.getElementById('explore_export_container');
+  if (!exportContainer) return;
 
-  // Create the CSV export link markup
+  // Create the CSV export link
   const csvExportLink = document.createElement('a');
-  csvExportLink.href = '#'; 
-  csvExportLink.setAttribute('download', ''); // Set a default filename here
-  csvExportLink.setAttribute('role', 'button');
-  csvExportLink.setAttribute('aria-label', 'Download full data as CSV');
   csvExportLink.id = 'explore_export_link';
   csvExportLink.className = 'items-center space-x-2 px-4 py-2 text-base font-medium uppercase border border-neutral-100 text-neutral-100 bg-neutral-800 hover:bg-neutral-100 hover:text-neutral-900 focus:outline-none focus:ring-1 focus:ring-carnation-400 duration-500 whitespace-nowrap inline-block';
+  
+  // Generate the href attribute value based on current data
+  try {
+    const csvLinkHref = await generateCSVLinkHref();
+    csvExportLink.href = csvLinkHref;
+  } catch (error) {
+    console.error('Error generating CSV link: ', error);
+  }
+
+  csvExportLink.setAttribute('role', 'button');
+  csvExportLink.setAttribute('aria-label', 'Download full data as CSV');
+  csvExportLink.setAttribute('download', ''); // Optionally set a default filename
   csvExportLink.innerHTML = 'Download all <span class="explore_export_type">data</span> (CSV)';
 
   // Append the link to the container
-  exportLinkContainer.appendChild(csvExportLink);
+  exportContainer.appendChild(csvExportLink);
 }
+
+/**
+ * Generates the href attribute value for the CSV export link.
+ *
+ * @returns {Promise<string>} A promise that resolves to the URL for downloading the CSV.
+ */
+async function generateCSVLinkHref() {
+  const hasCustomExportIncludes = orgData.hits.hits[0]._source.export_includes;
+  const isPaperURL = dateRange + orgData.hits.hits[0]._source.analysis.is_paper.query;
+
+  removeCSVExportLink(); // Remove CSV export link when this function is called
+
+  let exportIncludes = "&include=DOI,title,subtitle,publisher,journal,issn,published_date,published_year,PMCID,volume,issue,authorships.author.display_name,authorships.author.orcid,authorships.institutions.display_name,authorships.institutions.ror,funder.name,funder.award,is_oa,oa_status,journal_oa_type,publisher_license,has_repository_copy,repository_license,repository_version,repository_url,has_oa_locations_embargoed,can_archive,version,concepts.display_name,subject,pmc_has_data_availability_statement,cited_by_count";
+
+  let query = `q=${encodeURIComponent(isPaperURL)}`;
+
+  let include;
+  if (hasCustomExportIncludes) {
+    include = `&include=${hasCustomExportIncludes}`;
+  } else {
+    include = exportIncludes;
+  }
+
+  const csvLink = csvExportBase + query + include + exportSort + orgKey;
+  // console.log(csvLink);
+
+
+  try {
+    const response = await axios.get(csvLink);
+    return response.data; // The CSV download link
+  } catch (error) {
+    console.error('Error fetching CSV export link: ', error);
+    return ''; // Return an empty string in case of an error
+  }
+}
+
 
 /**
  * Removes the CSV export link from the DOM.

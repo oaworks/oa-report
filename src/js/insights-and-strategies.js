@@ -32,8 +32,7 @@ if (hasOrgKey) {
   //displayNone("explore");
 }
 
-// Set default export_includes and sorting order for CSV downloads
-let exportIncludes = "&include=DOI,title,subtitle,publisher,journal,issn,published_date,published_year,PMCID,volume,issue,authorships.author.display_name,authorships.author.orcid,authorships.institutions.display_name,authorships.institutions.ror,funder.name,funder.award,is_oa,oa_status,journal_oa_type,publisher_license,has_repository_copy,repository_license,repository_version,repository_url,has_oa_locations_embargoed,can_archive,version,concepts.display_name,subject,pmc_has_data_availability_statement,cited_by_count";
+// Set default sorting order for CSV downloads
 let exportSort = "&sort=published_date:desc"
 
 // Generate report’s UI for any given date range
@@ -418,47 +417,6 @@ export function initInsightsAndStrategies(org) {
         </button>\
       </td>"
     );
-
-    // Check if org has custom export_includes to display in downloaded CSV columns
-    var hasCustomExportIncludes = (orgData.hits.hits[0]._source.export_includes);
-
-    /* "Download CSV" form: all articles displayed on page */
-    function getExportLink() {
-      Promise.all([hasCustomExportIncludes])
-        .then(function (results) {
-          let hasCustomExportIncludes = results[0].data;
-          }
-        ).catch(function (error) { console.log(`Export error: ${error}`); });
-
-      isPaperURL = (dateRange + orgData.hits.hits[0]._source.analysis.is_paper.query);
-      let query = `q=${isPaperURL.replaceAll(" ", "%20")}`,
-          form = new FormData(document.getElementById("download_csv"));
-
-      // Get form content — email address input
-      var email = `&${new URLSearchParams(form).toString()}`;
-
-      var include;
-      // If the org has custom export includes AND there is an orgkey, show these custom includes in the public CSV
-      if ((hasCustomExportIncludes !== undefined && hasCustomExportIncludes !== "") && (hasOrgKey && OAKEYS[orgSlug])) {
-        include = `&include=${hasCustomExportIncludes}`;
-      } else {
-        include = exportIncludes;
-      }
-
-      // Build full query
-      query = csvExportBase + query + include + exportSort + email + orgKey;
-
-      var xhr = new XMLHttpRequest();
-      xhr.open("GET", query);
-      // Display message when server responds
-      xhr.onload = function () {
-        document.getElementById("csv_email_msg").innerHTML = `OA.Report has started building your CSV export at <a href='${this.response}' target='_blank' class='underline underline-offset-2 decoration-1' id='email_export_link'>this URL</a>. Please check your email to get the full data once it’s ready.`;
-      };
-      xhr.send();
-
-      // Do not navigate away from the page on submit
-      return false;
-    }
     
   }).catch(error => {
     console.log(`Report ERROR: ${error}`);
