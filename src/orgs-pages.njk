@@ -36,18 +36,18 @@ permalink: "{{ org._source.objectID | slug }}/"
   <nav class="sticky top-0 pt-3 md:pt-6 z-20 bg-carnation-100 transition-pb-0" id="top_nav">
     <h2 class="sr-only">See the report by year</h2>
     <ul class="mx-3 md:mx-6">
-      <li class="inline-block mr-3">
-        {{ component("year-select", {
-          id: "start-year",
-          txt: "",
-          selected: true
-        }) }}
-      </li>
       {% if org._source.paid == true %}
       <li class="inline-block mr-3">
         {{ component("year-select", {
-          id: "last-year",
+          id: "start-year",
           txt: ""
+        }) }}
+      </li>
+      <li class="inline-block mr-3">
+        {{ component("year-select", {
+          id: "last-year",
+          txt: "",
+          selected: true
         }) }}
       </li>
       <li class="inline-block mr-3">
@@ -64,7 +64,14 @@ permalink: "{{ org._source.objectID | slug }}/"
       </li>
       {% else %}
       <li class="inline-block mr-3 py-2 px-4 text-xs md:text-lg bg-white text-neutral-900 border border-b-0 opacity-50">
-        2023
+        2024
+      </li>
+      <li class="inline-block mr-3">
+        {{ component("year-select", {
+          id: "last-year",
+          txt: "",
+          selected: true
+        }) }}
       </li>
       <li class="inline-block mr-3 py-2 px-4 text-xs md:text-lg bg-white text-neutral-900 border border-b-0 opacity-50">
         2022
@@ -186,7 +193,7 @@ permalink: "{{ org._source.objectID | slug }}/"
         </div>
       </div>
       
-      <div id="export_table" class="mt-6 hidden">
+      <div id="export_table" class="mt-12 hidden">
         <header class="mb-12 grid grid-cols-3 gap-3 sm:gap-6 md:gap-12 ">
           <h3 class="mb-4 md:mb-0 text-4xl col-span-3 md:col-span-1" aria-live="polite">
             Top <strong class="lowercase explore_type">articles</strong> for <strong class="lowercase report_year">2023</strong>

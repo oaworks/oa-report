@@ -58,8 +58,19 @@ function initialise() {
  * Sets up default dates for the application.
  */
 function setupDateDefaults() {
-  startYearBtn.textContent = startYearDate.getFullYear();
-  getDateRangeForUserType();
+  // Original default for ongoing year
+  // getDateRangeForUserType();
+
+  // Temporary change to set the default to last year (2023)
+  // Change startYearDate and endDate to last year's start and end dates
+  const lastYearStartDate = createDate(2023, 0, 1); // Start of 2023
+  const lastYearEndDate = paid ? createDate(2023, 11, 31) : fixedDate; // End of 2023 for paying users, fixed date for non-paying
+
+  replaceDateRange(lastYearStartDate, lastYearEndDate);
+  reportDateRange.textContent = `In ${lastYearStartDate.getFullYear()}`;
+  reportYear.textContent = lastYearStartDate.getFullYear();
+
+  // To revert back to the original settings, uncomment the first two lines.
 }
 
 /**
