@@ -79,12 +79,16 @@ export const EXPLORE_TYPES = {
     plural: "Co-funders"
   },
   "article_oa_type": {
-    singular: "Article OA type",
-    plural: "Article OA types"
+    singular: "Article <span class='uppercase'>OA</span> type",
+    plural: "Article <span class='uppercase'>OA</span> types"
   },
   "journal_oa_type": {
-    singular: "Journal OA type",
-    plural: "Journal OA Types"
+    singular: "Journal <span class='uppercase'>OA</span> type",
+    plural: "Journal <span class='uppercase'>OA</span> Types"
+  },
+  "data_availability_statement": {
+    singular: "Data availability statement",
+    plural: "Data availability statements"
   }
 };
 

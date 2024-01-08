@@ -54,7 +54,7 @@ export let dateRange, startDate, endDate, startYear, endYear;
  */
 
 export function replaceText(className, parameter) {
-  document.querySelectorAll(`.${className}`).forEach(element => element.textContent = parameter);
+  document.querySelectorAll(`.${className}`).forEach(element => element.innerHTML = parameter);
 }
 
 /**
