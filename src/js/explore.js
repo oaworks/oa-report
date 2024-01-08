@@ -366,6 +366,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
   } else if (type === "articles") {
     records = await fetchArticleBasedData(query, includes, sort, size);
     records = reorderRecords(records, includes);
+    console.log(records);
     replaceText("explore_sort", "publication date"); // Update the sort text in header
     displayNone("explore_display_style_field"); // No need for the data display style field in article tables
   }
@@ -698,8 +699,8 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
   } else if (typeof content === 'object' && content !== null) {
     // Check if the content is an object and format its values as a list
     cell.innerHTML = `<ul">${formatObjectValuesAsList(content, true)}</ul>`;
-  } else if (content === null) {
-    cell.innerHTML = "N/A";
+  } else if (content === null || content === undefined || content === "'null'" || content === '"null"' || content === "null") {
+    cell.innerHTML = ""; // Replace null values with empty string
   } else {
     cell.innerHTML = content;
   }
