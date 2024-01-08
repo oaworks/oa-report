@@ -84,7 +84,7 @@ export const EXPLORE_TYPES = {
   },
   "journal_oa_type": {
     singular: "Journal <span class='uppercase'>OA</span> type",
-    plural: "Journal <span class='uppercase'>OA</span> Types"
+    plural: "Journal <span class='uppercase'>OA</span> types"
   },
   "data_availability_statement": {
     singular: "Data availability statement",
