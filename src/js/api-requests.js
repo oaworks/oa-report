@@ -213,11 +213,23 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
           },
           "with_data_availability_statement": {
             "filter": {
-              "term": {
-                "supplements.has_data_availability_statement": true
-              }
+                "bool": {
+                    "should": [
+                        {
+                            "term": {
+                                "supplements.has_data_availability_statement": true
+                            }
+                        },
+                        {
+                            "exists": {
+                                "field": "data_availability_statement"
+                            }
+                        }
+                    ],
+                    "minimum_should_match": 1
+                }
             }
-          },
+        },
           "with_data_availability_statement_pct": {
             "bucket_script": {
               "buckets_path": {
@@ -229,11 +241,23 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
           },
           "without_data_availability_statement": {
             "filter": {
-              "term": {
-                "supplements.has_data_availability_statement": false
-              }
+                "bool": {
+                    "must_not": [
+                        {
+                            "term": {
+                                "supplements.has_data_availability_statement": true
+                            }
+                        },
+                        {
+                            "exists": {
+                                "field": "data_availability_statement"
+                            }
+                        }
+                    ],
+                    "minimum_should_match": 1
+                }
             }
-          },
+        },
           "without_data_availability_statement_pct": {
             "bucket_script": {
               "buckets_path": {
