@@ -1,24 +1,24 @@
 {# Download in CSV #}
-<form class="lg:w-1/2" id="download_csv" onsubmit="return getExportLink()">
+<form class="lg:w-1/3 ml-auto" id="download_csv_form" onsubmit="return window.getExportLink()">
   <h2 class="mb-3">
     {# <div class="mb-1 uppercase font-semibold">Get data in CSV by email {{ component("tooltip", {
       msg: "Enter your email address to receive a link to a CSV for download. <strong>We do not save email addresses or use them for any purpose</strong> other than sending you the CSV file containing OA.Report data when you request it."
     }) }}
     </div> #}
-    <div class="text-lg font-medium">Send CSV</div> 
-    <span class="text-base">For <span id="start_date"></span> — <span id="end_date"></span></span>
+    <div class="text-lg font-medium">Download full article data as CSV</div> 
+    {# <span class="text-base">For <span id="download_start_date"></span> — <span id="download_end_date"></span></span> #}
   </h2>
   <label for="email" class="sr-only">Email address</label>
   <div class="mt-1 mb-3 flex shadow-md">
     <div class="relative flex items-stretch flex-grow focus-within:z-10">
-      <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+      <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none text-white">
         {% icon_small "mail" %}
       </div>
-      <input type="email" name="email" id="email" class="focus:ring-carnation-300 focus:border-carnation-500 block w-full pl-10 py-3 sm:text-sm border-1" placeholder="you@example.com" required>
-    </div>
-    <button type="submit" class="--ml-px relative inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium text-white bg-neutral-900 hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 border-0 whitespace-nowrap">
+      <input type="email" name="email" id="email" class="focus:ring-carnation-300 focus:border-carnation-500 block w-full pl-10 py-2 sm:text-sm border border-neutral-100 bg-transparent text-white" placeholder="you@example.com" required>
+    </div> 
+    <button type="submit" class="--ml-px relative inline-flex items-center space-x-2 px-2 py-2 text-sm font-medium border border-neutral-100 text-white hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 border-l-0 whitespace-nowrap">
       Send CSV
     </button>
   </div>
-  <p class="leading-5 text-xs text-neutral-600" id="csv_email_msg"></p>
+  <p class="leading-5 text-xs text-neutral-200" id="csv_email_msg"></p>
 </form>

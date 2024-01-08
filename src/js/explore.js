@@ -338,6 +338,8 @@ function addRecordsShownSelectToDOM() {
 async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 10, pretty = true) {
   const { type, id, term, sort, includes } = itemData; // Extract explore item's properties
 
+  document.getElementById("csv_email_msg").innerHTML = ""; // Clear any existing message in CSV download form
+
   // Show the table
   const exportTable = document.getElementById('export_table');
   exportTable.classList.remove('hidden'); 
@@ -366,7 +368,6 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
   } else if (type === "articles") {
     records = await fetchArticleBasedData(query, includes, sort, size);
     records = reorderRecords(records, includes);
-    console.log(records);
     replaceText("explore_sort", "publication date"); // Update the sort text in header
     displayNone("explore_display_style_field"); // No need for the data display style field in article tables
   }
@@ -383,11 +384,14 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     enableExploreTableScroll();
     enableTooltipsForTruncatedCells();
 
+    const downloadCSVForm = document.getElementById('download_csv_form');
     // Add data download link only if it's an 'articles'-type data table
     if (type === "articles") {
-      addCSVExportLink();
+      // addCSVExportLink(); TODO: once we can download the CSV directly from the link, use this
+      downloadCSVForm.style.display = "block" // Display download_csv_form if it's an 'articles'-type data table
     } else {
-      removeCSVExportLink(); // Remove the CSV export link if there's one
+      // removeCSVExportLink(); // Remove the CSV export link if there's one
+      downloadCSVForm.style.display = "none" // Hide download_csv_form if it's NOT an 'articles'-type data table
     }
   }
 }
@@ -437,7 +441,6 @@ async function fetchTermBasedData(suffix, query, term, sort, size) {
  */
 async function fetchArticleBasedData(query, includes, sort, size) {
   const getDataUrl = `https://${apiEndpoint}.oa.works/report/works/?q=${dateRange}(${query})&size=${size}&include=${includes}&sort=${sort}`;
-  console.log(getDataUrl);
   const response = await fetchGetData(getDataUrl); // No need to generate POST request
   // Check nested properties before assigning records
   if (response && response.hits && response.hits.hits) {
@@ -890,7 +893,7 @@ function handleDataDisplayToggle() {
 }
 
 /**
- * Adds a CSV export link to the data table's container.
+ * Adds a CSV export link styled as a button to the data table's container.
  */
 async function addCSVExportLink() { // Declare the function as async
   const exportContainer = document.getElementById('explore_export_container');
@@ -912,7 +915,7 @@ async function addCSVExportLink() { // Declare the function as async
   csvExportLink.setAttribute('role', 'button');
   csvExportLink.setAttribute('aria-label', 'Download full data as CSV');
   csvExportLink.setAttribute('download', ''); // Optionally set a default filename
-  csvExportLink.innerHTML = 'Download all <span class="explore_export_type">data</span> (CSV)';
+  csvExportLink.innerHTML = 'Download all article data (CSV)';
 
   // Append the link to the container
   exportContainer.appendChild(csvExportLink);
@@ -941,7 +944,7 @@ async function generateCSVLinkHref() {
   }
 
   const csvLink = csvExportBase + query + include + exportSort + orgKey;
-  // console.log(csvLink);
+  console.log(csvLink);
 
 
   try {
@@ -964,3 +967,52 @@ function removeCSVExportLink() {
     exportLinkContainer.removeChild(csvExportLink);
   }
 }
+
+/**
+ * Handles the creation and sending of an export link request.
+ * This function fetches organizational data and constructs the appropriate export link.
+ *
+ * @returns {boolean} - Always returns false to prevent default form submission.
+ */
+window.getExportLink = function() {
+  orgDataPromise.then(function (response) {
+    const orgData = response.data;
+    let hasCustomExportIncludes = (orgData.hits.hits[0]._source.export_includes);
+
+    Promise.all([hasCustomExportIncludes])
+      .then(function (results) {
+        hasCustomExportIncludes = results[0].data;
+      }).catch(function (error) { console.log(`Export error: ${error}`); });
+
+    let isPaperURL = (dateRange + orgData.hits.hits[0]._source.analysis.is_paper.query);
+    let query = `q=${isPaperURL.replaceAll(" ", "%20")}`,
+        form = new FormData(document.getElementById("download_csv_form"));
+
+    var email = `&${new URLSearchParams(form).toString()}`;
+
+    var include;
+    if ((hasCustomExportIncludes !== undefined && hasCustomExportIncludes !== "") && (hasOrgKey && OAKEYS[orgSlug])) {
+      include = `&include=${hasCustomExportIncludes}`;
+    } else {
+      include = "&include=DOI,title,subtitle,publisher,journal,issn,published_date,published_year,PMCID,volume,issue,authorships.author.display_name,authorships.author.orcid,authorships.institutions.display_name,authorships.institutions.ror,funder.name,funder.award,is_oa,oa_status,journal_oa_type,publisher_license,has_repository_copy,repository_license,repository_version,repository_url,has_oa_locations_embargoed,can_archive,version,concepts.display_name,subject,pmc_has_data_availability_statement,cited_by_count";
+    }
+
+    query = csvExportBase + query + include + exportSort + email + orgKey;
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", query);
+    xhr.onload = function () {
+      document.getElementById("csv_email_msg").innerHTML = `OA.Report has started building your CSV export at <a href='${this.response}' target='_blank' class='underline underline-offset-2 decoration-1'>this URL</a>. Please check your email to get the full data once it’s ready.`;
+
+      // Reset the form after the request is sent
+      document.getElementById("download_csv_form").reset();
+    };
+    xhr.send();
+
+  }).catch(function (error) {
+    console.error(`Error fetching orgData: ${error}`);
+  });
+
+  return false; // Prevent default form submission
+}
+

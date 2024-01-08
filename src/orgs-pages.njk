@@ -12,7 +12,7 @@ permalink: "{{ org._source.objectID | slug }}/"
 <main class="bg-carnation-100">
   <div class="px-3 md:px-6">
     <div class="grid grid-cols-2 gap-3 sm:gap-6 md:gap-12 py-3 xl:pb-6 xl:pt-12">
-      <header class="mb-4 col-span-2 md:col-span-2">
+      <header class="col-span-2 md:col-span-1">
         <h1 class="flex items-center">
           <div>
             <span class="font-semibold uppercase text-sm md:text-base line-thru">
@@ -29,6 +29,7 @@ permalink: "{{ org._source.objectID | slug }}/"
           Since the start of 2023
         </h2>
       </header>
+      <section class="col-span-2 md:col-span-1 md:text-right"></section>
     </div>
   </div>
 
@@ -186,7 +187,7 @@ permalink: "{{ org._source.objectID | slug }}/"
         <h3 class="mb-12 text-4xl" aria-live="polite">
           Top <strong class="lowercase explore_type">articles</strong> for <strong class="lowercase report_year">2023</strong>
           {{ component("tooltip", {
-            msg: "This table is a preview of all the records for your query. To see the full data set in CSV format, use the <em>Download full data (CSV)</em> button."
+            msg: "<p class='mb-2'>This table is a preview of the <span class='explore_type'>articles</span> records. You can view up to 500 records here.</p> <p>To see more, use the <em>Download full article data as CSV</em> form below.</p>"
           }) }} 
           <br>
           <span class="text-sm text-neutral-200">Sorted by <strong class="explore_sort">publication count</strong></span>
@@ -235,7 +236,7 @@ permalink: "{{ org._source.objectID | slug }}/"
             </table>
           </div>
         </div>
-        <div class="flex justify-between" id="explore_export_container"></div>
+        {# <div class="flex justify-between" id="explore_export_container"></div> #}
         {# TODO: allow downloading of all data in CSV #}
         {# <div class="flex justify-between">
           <div class="text-right">
@@ -249,6 +250,7 @@ permalink: "{{ org._source.objectID | slug }}/"
             </a>
           </div>
         </div> #}
+        {% include 'partials/email-download-form.njk' %}
       </div>
     </div>
   </section>
