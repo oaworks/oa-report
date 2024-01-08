@@ -77,6 +77,14 @@ export const EXPLORE_TYPES = {
   "co_funder": {
     singular: "Co-funder",
     plural: "Co-funders"
+  },
+  "oa_types": {
+    singular: "Article OA type",
+    plural: "Article OA types"
+  },
+  "journal_oa_types": {
+    singular: "Journal OA type",
+    plural: "Journal OA Types"
   }
 };
 
