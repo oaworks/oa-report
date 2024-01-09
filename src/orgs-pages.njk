@@ -168,7 +168,6 @@ permalink: "{{ org._source.objectID | slug }}/"
   </section>
 
   {# EXPLORE #}
-  {% if org._source.paid == true %}
   <section class="bg-neutral-800 text-white scroll-mt-32 js_section" id="explore">
     <div class="p-3 md:px-6 md:py-16">
       
@@ -267,7 +266,6 @@ permalink: "{{ org._source.objectID | slug }}/"
       </div>
     </div>
   </section>
-  {% endif %}
   
   {# ACTIONS #}
   <section class="bg-neutral-700 text-white scroll-mt-32 js_section relative" id="strategies">
