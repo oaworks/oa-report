@@ -1,5 +1,10 @@
 // Dynamically configure POST data 
 export function createPostData(suffix, query, term, startYear, endYear, size = 20, sort = "_count") {
+  // Only the term published_year on the live API does not require the .keyword suffix 
+  let termField = term;
+  if (!(term === "published_year" && apiEndpoint === "api")) {
+    termField += ".keyword";
+  }
   return {
     "query": {
       "bool": {
@@ -23,7 +28,7 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
     "aggs": {
       "key": {
         "terms": {
-          "field": `${term}.keyword`,
+          "field": termField, // previously `${term}.keyword` but this doesn’t for published_year
           "size": size,
           "order": {
             [`${sort}`]: "desc"
@@ -33,7 +38,7 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
           "publications": {
             "filter": {
               "exists": {
-                "field": `${term}.keyword`
+                "field": termField // previously `${term}.keyword` but this doesn’t for published_year
               }
             }
           },
