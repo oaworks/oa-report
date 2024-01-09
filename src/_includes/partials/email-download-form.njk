@@ -1,12 +1,13 @@
 {# Download in CSV #}
 <form class="md:w-1/2 lg:w-1/3" id="download_csv_form" onsubmit="return window.getExportLink()">
-  <h2 class="mb-3">
-    {# <div class="mb-1 uppercase font-semibold">Get data in CSV by email {{ component("tooltip", {
+  <h2 class="mb-4">
+    <div class="mb-1 text-sm font-semibold uppercase">
+      Download full article data as CSV
+      {{ component("tooltip", {
       msg: "Enter your email address to receive a link to a CSV for download. <strong>We do not save email addresses or use them for any purpose</strong> other than sending you the CSV file containing OA.Report data when you request it."
     }) }}
-    </div> #}
-    <div class="mb-4 text-xs font-semibold uppercase">Download full article data as CSV</div> 
-    {# <span class="text-base">For <span id="download_start_date"></span> — <span id="download_end_date"></span></span> #}
+    </div> 
+    <span class="text-sm">For <span class="report_readable_start_date"></span> — <span class="report_readable_end_date"></span></span>
   </h2>
   <label for="email" class="sr-only">Email address</label>
   <div class="mt-1 mb-3 flex shadow-md">
