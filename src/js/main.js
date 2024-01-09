@@ -3,7 +3,7 @@
 // Main event listeners and functions
 // =================================================
 
-import { createDate, replaceDateRange, replaceText } from './utils.js';
+import { createDate, replaceDateRange, replaceText, bindSmoothScrollLinks } from './utils.js';
 import { initInsightsAndStrategies, orgApiUrl } from './insights-and-strategies.js';
 import { currentActiveExploreItemButton, currentActiveExploreItemData, initDataExplore, processExploreDataTable } from './explore.js';
 import { initStrategyTabs } from './strategies.js';
@@ -50,8 +50,10 @@ function initialise() {
     isDataExploreInitialised = true;
   }
 
+  // Add general page interactivity 
   initStrategyTabs();
   adjustNavOnScroll();
+  bindSmoothScrollLinks(); 
 }
 
 /**

@@ -406,3 +406,34 @@ export function convertTextToLinks(text, forceLink = false, urlPrefix = '') {
   }
   return text;
 }
+
+/**
+ * Binds click events to all anchor links for smooth scrolling. 
+ * Considers the dynamic height of a the #top_nav sticky header.
+ * Adds additional spacing for a comfortable view.
+ */
+export function bindSmoothScrollLinks() {
+  const additionalSpacing = 20; // Extra spacing in pixels
+
+  document.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', function(event) {
+      event.preventDefault();
+      const targetId = this.getAttribute('href').substring(1); // Remove the '#' from the href attribute
+      const targetElement = document.getElementById(targetId);
+
+      if (targetElement) {
+        const header = document.getElementById('top_nav');
+        const headerHeight = header ? header.offsetHeight : 0; // Dynamically get the header height
+        const targetPosition = targetElement.getBoundingClientRect().top; // Position of the target element
+        const offsetPosition = targetPosition + window.pageYOffset - headerHeight - additionalSpacing; // Calculate position with offset and extra spacing
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      } else {
+        console.error('Target element not found:', targetId);
+      }
+    });
+  });
+}
