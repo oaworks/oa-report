@@ -7,7 +7,7 @@
 // Imports
 // =================================================
 
-import { displayNone, isCacheExpired, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, deepCopy, makeNumberReadable, convertTextToLinks, removeDisplayStyle } from "./utils.js";
+import { displayNone, isCacheExpired, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, deepCopy, makeNumberReadable, convertTextToLinks, removeDisplayStyle, showNoResultsRow } from "./utils.js";
 import { EXPLORE_TYPES, EXPLORE_FILTERS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, COUNTRY_CODES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { orgDataPromise } from './insights-and-strategies.js';
@@ -231,7 +231,6 @@ export async function processExploreDataTable(button, itemData) {
  */
 async function addExploreFiltersToDOM(query) {
   const exploreFiltersElement = document.getElementById("explore_filters");
-  const exploreFilterField = document.getElementById("explore_filter_field");
   exploreFiltersElement.innerHTML = ""; // Clear existing radio buttons
   const filters = query.split(","); // Split the query into individual filters
 
@@ -248,9 +247,9 @@ async function addExploreFiltersToDOM(query) {
 
   // Hide the explore form if only one filter is present
   if (filters.length === 1) {
-    exploreFilterField.style.display = "none"; // Hide the explore form
+    displayNone("explore_filter_field"); // Hide the explore form
   } else {
-    exploreFilterField.style.display = ""; // Ensure the form is visible otherwise
+    removeDisplayStyle("explore_filter_field"); // Display the explore form
   }
 }
 
@@ -405,6 +404,8 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       exploreTableTooltip.style.display = "none"; // Hide the tooltip
       removeDisplayStyle("explore_display_style_field"); // Display the data display style field
     }
+  } else {
+    showNoResultsRow(10, "export_table_body", "js_export_table"); // Show a message for no results
   }
 }
 

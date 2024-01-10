@@ -449,3 +449,31 @@ export function bindSmoothScrollLinks() {
     });
   });
 }
+
+/**
+ * Inserts a 'No results found' message row into a table body.
+ * This function clears any existing content in the table body and then
+ * adds a single row with one cell that spans all columns.
+ * 
+ * @param {number} columnCount - The number of columns in the table, to set the colspan attribute.
+ * @param {string} tableBodyId - The ID of the table body element where the message should be inserted.
+ * @param {string} tableId - The ID of the table, used for the aria-labelledby attribute.
+ */
+export function showNoResultsRow(columnCount, tableBodyId, tableId) {
+  const tableBody = document.getElementById(tableBodyId);
+  const noResultsRow = document.createElement('tr');
+  const noResultsCell = document.createElement('td');
+
+  // Clear previous content in the table body
+  tableBody.innerHTML = '';
+
+  // Set the colspan attribute to span all columns, TailwindCSS classes, and aria-labelledby for accessibility
+  noResultsCell.colSpan = columnCount;
+  noResultsCell.setAttribute('aria-labelledby', tableId);
+  noResultsCell.classList.add('border-b', 'border-neutral-500', 'p-4', 'text-xl');
+  noResultsCell.textContent = 'No results found.';
+
+  // Append the cell to the row, and the row to the table body
+  noResultsRow.appendChild(noResultsCell);
+  tableBody.appendChild(noResultsRow);
+}
