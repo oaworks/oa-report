@@ -940,7 +940,7 @@ async function addCSVExportLink() { // Declare the function as async
  * @returns {Promise<string>} A promise that resolves to the URL for downloading the CSV.
  */
 async function generateCSVLinkHref() {
-  const hasCustomExportIncludes = orgData.hits.hits[0]._source.export_includes;
+  const hasCustomExportIncludes = orgData.hits.hits[0]._source.explore.includes;
   const isPaperURL = dateRange + orgData.hits.hits[0]._source.analysis.is_paper.query;
 
   removeCSVExportLink(); // Remove CSV export link when this function is called
@@ -990,12 +990,8 @@ function removeCSVExportLink() {
 window.getExportLink = function() {
   orgDataPromise.then(function (response) {
     const orgData = response.data;
-    let hasCustomExportIncludes = (orgData.hits.hits[0]._source.export_includes);
-
-    Promise.all([hasCustomExportIncludes])
-      .then(function (results) {
-        hasCustomExportIncludes = results[0].data;
-      }).catch(function (error) { console.log(`Export error: ${error}`); });
+    let hasCustomExportIncludes = (orgData.hits.hits[0]._source.explore[0].includes);
+    console.log(hasCustomExportIncludes);
 
     let isPaperURL = (dateRange + orgData.hits.hits[0]._source.analysis.is_paper.query);
     let query = `q=${isPaperURL.replaceAll(" ", "%20")}`,
