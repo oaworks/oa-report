@@ -142,9 +142,15 @@ async function addExploreButtonsToDOM(exploreData) {
   let moreButtonsVisible = false; // State to track visibility of more buttons
   let featuredButtonsCount = 6; // Count of featured buttons
 
+  // Getting the See More button
+  const seeMoreButton = document.getElementById('explore_see_more_button');
+
   for (const exploreDataItem of exploreData) {
     let button = createExploreButton(exploreDataItem);
-    exploreButtonsContainer.appendChild(button);
+
+    // Insert each button before the See More button
+    exploreButtonsContainer.insertBefore(button, seeMoreButton);
+
     if (!exploreDataItem.featured) {
       // Add non-featured buttons to moreButtons array
       moreButtons.push(button);
@@ -159,9 +165,8 @@ async function addExploreButtonsToDOM(exploreData) {
   }
 
   // "See more/See fewer" button logic
-  const seeMoreButton = document.getElementById('explore_see_more_button');
   seeMoreButton.querySelector('span').textContent = moreButtonsVisible ? 'See fewer' : 'See more';
-  
+
   seeMoreButton.addEventListener('click', function() {
     moreButtonsVisible = !moreButtonsVisible; // Toggle visibility state
 
