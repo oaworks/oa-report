@@ -195,7 +195,7 @@ permalink: "{{ org._source.objectID | slug }}/"
       <div id="export_table" class="mt-12 hidden">
         <header class="mb-12 grid grid-cols-3 gap-3 sm:gap-6 md:gap-12 ">
           <h3 class="mb-4 md:mb-0 text-4xl col-span-3 md:col-span-1" aria-live="polite">
-            Top <strong class="lowercase explore_type">articles</strong> for <strong class="lowercase report_year">2023</strong>
+            <span class="report_sort_adjective">Top</span> <strong class="lowercase explore_type">articles</strong> for <strong class="lowercase report_year">2023</strong>
           </h3> 
           <p class="col-span-3 md:col-span-1 mb-2 md:mb-0 text-sm md:border-l md:pl-4 border-neutral-300 text-neutral-100">
             This table is a preview of the <strong class="explore_type lowercase">articles</strong> records sorted by <strong class="explore_sort">publication count</strong>.
@@ -219,7 +219,7 @@ permalink: "{{ org._source.objectID | slug }}/"
               </fieldset>
             </form>
           </div>
-          <form class="w-auto" id="explore_display_style_field">        
+          <form class="w-auto block" id="explore_display_style_field">        
             <fieldset>   
               <legend class="mb-4 text-xs font-semibold uppercase text-right" for="toggler-data-view">Data display style</legend>
               <div class="flex items-center">

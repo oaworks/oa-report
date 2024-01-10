@@ -153,6 +153,18 @@ export function displayNone(id) {
 }
 
 /**
+ * Removes the display style attribute from an HTML element, allowing it to revert to its default display style.
+ *
+ * @param {string} id - The ID of the HTML element from which to remove the display style.
+ */
+export function removeDisplayStyle(id) {
+  var elem = document.getElementById(id);
+  if (elem) {
+    elem.style.removeProperty('display');
+  }
+}
+
+/**
  * Changes the opacity of an HTML element by adding a specific class.
  * Removes the 'opacity-0' class and adds an 'opacity-x' class, where x is the provided opacity value.
  * It assumes that relevant CSS classes like 'opacity-100' etc., exist.

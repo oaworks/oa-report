@@ -7,7 +7,7 @@
 // Imports
 // =================================================
 
-import { displayNone, isCacheExpired, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, deepCopy, makeNumberReadable, convertTextToLinks } from "./utils.js";
+import { displayNone, isCacheExpired, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, deepCopy, makeNumberReadable, convertTextToLinks, removeDisplayStyle } from "./utils.js";
 import { EXPLORE_TYPES, EXPLORE_FILTERS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, COUNTRY_CODES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { orgDataPromise } from './insights-and-strategies.js';
@@ -104,6 +104,7 @@ export async function initDataExplore(org) {
       addRecordsShownSelectToDOM();
       handleDataDisplayToggle();
       enableExploreRowHighlighting();
+      // displayDefaultArticlesData();
     } else {
       const response = await orgDataPromise; // Await the promise to resolve
       orgData = response.data;
@@ -118,6 +119,7 @@ export async function initDataExplore(org) {
         addRecordsShownSelectToDOM();
         handleDataDisplayToggle();
         enableExploreRowHighlighting();
+        // displayDefaultArticlesData();
       } else {
         displayNone("explore"); // Hide the explore section if no data is available
       }
@@ -355,7 +357,10 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     query = decodeAndReplaceUrlEncodedChars(query); // Decode and replace any URL-encoded characters for JSON
     records = await fetchTermBasedData(suffix, query, term, sort, size);
     records = reorderRecords(records, includes);
-    replaceText("explore_sort", "publication count"); // Update the sort text in header
+
+     // Update the sort text in header
+    replaceText("explore_sort", "publication count");
+    replaceText("report_sort_adjective", "Top");
 
     // Format records depending on data display toggler choice 
     if (pretty === true) {
@@ -368,8 +373,10 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
   } else if (type === "articles") {
     records = await fetchArticleBasedData(query, includes, sort, size);
     records = reorderRecords(records, includes);
-    replaceText("explore_sort", "publication date"); // Update the sort text in header
-    displayNone("explore_display_style_field"); // No need for the data display style field in article tables
+
+    // Update the sort text in header
+    replaceText("explore_sort", "publication date"); 
+    replaceText("report_sort_adjective", "Latest");
   }
 
   if (records.length > 0) {
@@ -391,10 +398,12 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       // addCSVExportLink(); TODO: once we can download the CSV directly from the link, use this
       downloadCSVForm.style.display = "block" // Display download_csv_form if it's an 'articles'-type data table
       exploreTableTooltip.style.display = "inline"; // Display the tooltip
+      displayNone("explore_display_style_field"); // No need for the data display style field in article tables
     } else {
       // removeCSVExportLink(); // Remove the CSV export link if there's one
       downloadCSVForm.style.display = "none" // Hide download_csv_form if it's NOT an 'articles'-type data table
       exploreTableTooltip.style.display = "none"; // Hide the tooltip
+      removeDisplayStyle("explore_display_style_field"); // Display the data display style field
     }
   }
 }
@@ -1019,3 +1028,12 @@ window.getExportLink = function() {
   return false; // Prevent default form submission
 }
 
+/**
+ * Function to display default 'articles' type data on page load.
+ */
+function displayDefaultArticlesData() {
+  let button = document.getElementById("explore_articles_button");
+  let id = "articles";
+  let data = dataCache[org].data[0];
+  processExploreDataTable(button, data);
+}
