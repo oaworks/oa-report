@@ -104,7 +104,7 @@ export async function initDataExplore(org) {
       addRecordsShownSelectToDOM();
       handleDataDisplayToggle();
       enableExploreRowHighlighting();
-      // displayDefaultArticlesData();
+      displayDefaultArticlesData();
     } else {
       const response = await orgDataPromise; // Await the promise to resolve
       orgData = response.data;
@@ -119,7 +119,7 @@ export async function initDataExplore(org) {
         addRecordsShownSelectToDOM();
         handleDataDisplayToggle();
         enableExploreRowHighlighting();
-        // displayDefaultArticlesData();
+        displayDefaultArticlesData();
       } else {
         displayNone("explore"); // Hide the explore section if no data is available
       }
