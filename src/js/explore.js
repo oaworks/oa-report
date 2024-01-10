@@ -990,12 +990,8 @@ function removeCSVExportLink() {
 window.getExportLink = function() {
   orgDataPromise.then(function (response) {
     const orgData = response.data;
-    let hasCustomExportIncludes = (orgData.hits.hits[0]._source.explore.includes);
-
-    Promise.all([hasCustomExportIncludes])
-      .then(function (results) {
-        hasCustomExportIncludes = results[0].data;
-      }).catch(function (error) { console.log(`Export error: ${error}`); });
+    let hasCustomExportIncludes = (orgData.hits.hits[0]._source.explore[0].includes);
+    console.log(hasCustomExportIncludes);
 
     let isPaperURL = (dateRange + orgData.hits.hits[0]._source.analysis.is_paper.query);
     let query = `q=${isPaperURL.replaceAll(" ", "%20")}`,
