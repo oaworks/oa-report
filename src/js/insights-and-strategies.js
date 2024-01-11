@@ -453,7 +453,7 @@ window.callGetStrategyExportLink = function(id) {
 * @returns {boolean} - Always returns false to prevent default form submission.
 */
 export function getStrategyExportLink(id, orgData) {
-  let hasCustomExportIncludes = (orgData.hits.hits[0]._source.export_includes),
+  let hasCustomExportIncludes = (orgData.hits.hits[0]._source.strategy[id].export_includes),
       strategyQuery           = (orgData.hits.hits[0]._source.strategy[id].query);
   
   Promise.all([hasCustomExportIncludes])
