@@ -25,14 +25,17 @@ const base             = `https://${apiEndpoint}.oa.works/report/`,
 const exportSort = "&sort=published_date:desc";
 
 let orgKey = "",
+    loggedIn = false,
     hasOrgKey = Object.keys(OAKEYS).length !== 0;
 if (hasOrgKey) {
   // logged in
   orgKey = `&orgkey=${Object.values(OAKEYS)}`;
+  loggedIn = true;
   displayNone("about-paid-logged-out");
   displayNone("about-free-logged-out");
 } else {
   // logged out
+  loggedIn = false;
   displayNone("logout");
   //displayNone("explore");
 }
@@ -141,48 +144,53 @@ async function addExploreButtonsToDOM(exploreData) {
   const moreButtons = []; // Array to store buttons with featured === false
   let moreButtonsVisible = false; // State to track visibility of more buttons
   let featuredButtonsCount = 6; // Count of featured buttons
-
-  // Getting the See More button
   const seeMoreButton = document.getElementById('explore_see_more_button');
+
+  // Filter exploreData if not logged in
+  if (!loggedIn) {
+    exploreData = exploreData.filter(item => item.id === 'articles');
+  }
 
   for (const exploreDataItem of exploreData) {
     let button = createExploreButton(exploreDataItem);
-
-    // Insert each button before the See More button
     exploreButtonsContainer.insertBefore(button, seeMoreButton);
 
     if (!exploreDataItem.featured) {
-      // Add non-featured buttons to moreButtons array
       moreButtons.push(button);
     }
   }
 
-  // Determine initial visibility based on the total number of buttons
-  const totalButtons = exploreData.length;
-  moreButtonsVisible = totalButtons <= featuredButtonsCount;
-  if (!moreButtonsVisible) {
-    moreButtons.forEach(button => button.classList.add('hidden', 'opacity-0', 'transform', 'translate-y-1', 'transition', 'duration-300', 'ease-in-out'));
-  }
+  // Hide 'See More/Fewer' button if only the 'articles' button is present
+  if (exploreData.length <= 1) {
+    seeMoreButton.style.display = 'none';
+  } else {
+    // Determine initial visibility based on the total number of buttons
+    const totalButtons = exploreData.length;
+    moreButtonsVisible = totalButtons <= featuredButtonsCount;
+    if (!moreButtonsVisible) {
+      moreButtons.forEach(button => button.classList.add('hidden', 'opacity-0', 'transform', 'translate-y-1', 'transition', 'duration-300', 'ease-in-out'));
+    }
 
-  // "See more/See fewer" button logic
-  seeMoreButton.querySelector('span').textContent = moreButtonsVisible ? 'See fewer' : 'See more';
-
-  seeMoreButton.addEventListener('click', function() {
-    moreButtonsVisible = !moreButtonsVisible; // Toggle visibility state
-
-    moreButtons.forEach((button, index) => {
-      // Use a timeout to stagger the animation of each button
-      setTimeout(() => {
-        button.classList.toggle('hidden', !moreButtonsVisible);
-        if (moreButtonsVisible) {
-          button.classList.remove('opacity-0', 'translate-y-1'); // Make visible and slide down
-        }
-      }, index * 70); // Adjust the time for each button
-    });
-
-    // Update the text of the button
+    // "See more/See fewer" button logic
     seeMoreButton.querySelector('span').textContent = moreButtonsVisible ? 'See fewer' : 'See more';
-  });
+
+    seeMoreButton.addEventListener('click', function() {
+      moreButtonsVisible = !moreButtonsVisible; // Toggle visibility state
+
+      moreButtons.forEach((button, index) => {
+        // Use a timeout to stagger the animation of each button
+        setTimeout(() => {
+          button.classList.toggle('hidden', !moreButtonsVisible);
+          if (moreButtonsVisible) {
+            button.classList.remove('opacity-0', 'translate-y-1'); // Make visible and slide down
+          }
+        }, index * 70); // Adjust the time for each button
+      });
+
+      // Update the text of the button
+      seeMoreButton.querySelector('span').textContent = moreButtonsVisible ? 'See fewer' : 'See more';
+    });
+  }
 }
 
 /**
