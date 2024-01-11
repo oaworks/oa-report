@@ -10,9 +10,9 @@ permalink: "{{ org._source.objectID | slug }}/"
 {%- from "system/component.njk" import component -%}
 
 <main class="bg-carnation-100">
-  <div class="container mx-auto px-6">
-    <div class="grid grid-cols-2 gap-6 md:gap-12 py-3 xl:pb-6 xl:pt-12">
-      <header class="mb-3 col-span-2 md:col-span-1">
+  <div class="px-3 md:px-6">
+    <div class="grid grid-cols-2 gap-3 sm:gap-6 md:gap-12 py-3 xl:pb-6 xl:pt-12">
+      <header class="col-span-2 md:col-span-1">
         <h1 class="flex items-center">
           <div>
             <span class="font-semibold uppercase text-sm md:text-base line-thru">
@@ -29,57 +29,58 @@ permalink: "{{ org._source.objectID | slug }}/"
           Since the start of 2023
         </h2>
       </header>
-
-      <section class="col-span-2 md:col-span-1 md:text-right">
-        {% include 'partials/email-download-form.njk' %}
-      </section>
+      <section class="col-span-2 md:col-span-1 md:text-right"></section>
     </div>
   </div>
 
-  <nav class="container mx-auto px-6">
+  <nav class="sticky top-0 pt-3 md:pt-6 z-20 bg-carnation-100 transition-pb-0" id="top_nav">
     <h2 class="sr-only">See the report by year</h2>
-    <ul>
-      <li class="mr-2 inline-block">
-        {{ component("pill", {
+    <ul class="mx-3 md:mx-6">
+      {% if org._source.paid == true %}
+      <li class="inline-block mr-3">
+        {{ component("year-select", {
           id: "start-year",
+          txt: ""
+        }) }}
+      </li>
+      <li class="inline-block mr-3">
+        {{ component("year-select", {
+          id: "last-year",
           txt: "",
           selected: true
         }) }}
       </li>
-      {% if org._source.paid == true %}
-      <li class="mr-2 inline-block">
-        {{ component("pill", {
-          id: "last-year",
-          txt: ""
-        }) }}
-      </li>
-      <li class="mr-2 inline-block">
-        {{ component("pill", {
+      <li class="inline-block mr-3">
+        {{ component("year-select", {
           id: "two-years-ago",
           txt: ""
         }) }}
       </li>
-      <li class="inline-block">
-        {{ component("pill", {
+      <li class="inline-block mr-3">
+        {{ component("year-select", {
           id: "all-time",
           txt: "All time"
         }) }}
       </li>
       {% else %}
-      <li class="mr-2 inline-block">
-        <span class="inline-flex items-center px-4 py-2 md:px-6 md:py-4 border-t-4 text-base md:text-lg bg-white text-neutral-900 opacity-50">
-          2022
-        </span>
+      <li class="inline-block mr-3 py-2 px-4 text-xs md:text-lg bg-white text-neutral-900 border border-b-0 opacity-50 js_year_select">
+        2024
       </li>
-      <li class="mr-2 inline-block">
-        <span class="inline-flex items-center px-4 py-2 md:px-6 md:py-4 border-t-4 text-base md:text-lg bg-white text-neutral-900 opacity-50">
-          2021
-        </span>
+      <li class="inline-block mr-3">
+        {{ component("year-select", {
+          id: "last-year",
+          txt: "",
+          selected: true
+        }) }}
       </li>
-      <li class="mr-2 inline-block">
-        <span class="inline-flex items-center px-4 py-2 md:px-6 md:py-4 border-t-4 text-base md:text-lg bg-white text-neutral-900 opacity-50">
-          All time
-        </span>
+      <li class="inline-block mr-3 py-2 px-4 text-xs md:text-lg bg-white text-neutral-900 border border-b-0 opacity-50 js_year_select">
+        2022
+      </li>
+      <li class="inline-block mr-3 py-2 px-4 text-xs md:text-lg bg-white text-neutral-900 border border-b-0 opacity-50 js_year_select">
+        2021
+      </li>
+      <li class="inline-block mr-3 py-2 px-4 text-xs md:text-lg bg-white text-neutral-900 border border-b-0 opacity-50 js_year_select">
+        All time
       </li>
       <li class="inline-block">
         {{ component("tooltip", {
@@ -90,10 +91,11 @@ permalink: "{{ org._source.objectID | slug }}/"
     </ul>
   </nav>
 
-  <section class="bg-neutral-900 text-white" id="insights">
-    <div class="mx-auto px-6 py-6 xl:py-12">
+  {# INSIGHTS #}
+  <section class="bg-neutral-900 text-white scroll-mt-32 js_section" id="insights">
+    <div class="p-3 md:px-6 md:py-16">
       <header class="col-span-3">
-        <h2 class="mb-3 text-base md:text-lg leading-6">
+        <h2 class="mb-4 text-base md:text-lg leading-6">
           <span class="font-semibold uppercase text-sm md:text-base line-thru">
             <span class="bg-neutral-900">
               Insights on <strong class="font-bold">articles</strong>
@@ -105,12 +107,17 @@ permalink: "{{ org._source.objectID | slug }}/"
         </h2>
       </header>
 
-      <div class="col-span-3 gap-6 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4">
+      <div class="relative">
+        <div class="hidden" id="insights_loading">
+          <div class="loader ease-linear rounded-full border-8 border-t-8 border-carnation-200 border-t-carnation-500 h-12 w-12 absolute mt-6 mx-auto inset-x-0 z-10 bg-opacity-50 justify-center items-center"></div>
+        </div>
+      </div>
+
+      <div class="grid gap-3 md:gap-6 grid-cols-2 md:grid-cols-4 lg:grid-cols-none lg:grid-flow-col xl:auto-cols-fr">
         {{ component("card", {
           id: "is_paper",
-          title: "Total published",
-          icon: "file-text",
-          raw_number: true
+          title: "Total publications",
+          icon: "file-text"
         }) }}
 
         {{ component("card", {
@@ -148,55 +155,165 @@ permalink: "{{ org._source.objectID | slug }}/"
           title: "With Open Code",
           icon: "code"
         }) }}
+      </div>
 
-
+      {# <div class="sticky bottom-3 md:bottom-6 md:static mt-6 col-span-3 shadow-lg" id="insights_bar_container">
+        <div class="bg-carnation-100 h-10 relative transition-all duration-1000" id="insights_bar">
+          <span class="absolute inset-0 flex items-center justify-center text-neutral-800 text-xs md:text-sm font-semibold uppercase z-10 p-1" id="insights_text">Click on an Insight to visualise it</span>
+          <div class="bg-carnation-300 h-10 transition-all duration-1000 absolute top-0 left-0" style="width: 0%;" id="insights_superset"></div>
+          <div class="bg-carnation-500 h-10 transition-all duration-1000 absolute top-0 left-0" style="width: 0%;" id="insights_subset"></div>
+        </div>
+      </div> #}
     </div>
   </section>
 
-  <section class="bg-neutral-700 text-white relative" id="strategies">
-    <div class="container mx-auto px-6">
-      <div class="grid grid-cols-2 gap-6 md:gap-12 py-6 xl:py-12"> 
+  {# EXPLORE #}
+  <section class="bg-neutral-800 text-white scroll-mt-32 js_section" id="explore">
+    <div class="p-3 md:px-6 md:py-16">
+      
+      <header class="col-span-3">
+        <h2 class="text-base md:text-lg leading-6">
+          <span class="font-semibold uppercase text-sm md:text-base line-thru">
+            <span class="bg-neutral-800">
+              Data exploration
+            </span>
+          </span>
+        </h2>
+      </header>
+
+      <div class="flex flex-wrap space-r-4 space-b-4 items-center">
+        <div id="explore_buttons">
+          <button id="explore_see_more_button" class="items-center inline-flex p-2 px-4 mr-4 mt-4 px-3 rounded-full bg-carnation-300 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500"><span>See more</span></button>
+        </div>
+      </div>
+
+      <div class="relative">
+        <div class="hidden" id="explore_loading">
+          <div class="loader ease-linear rounded-full border-8 border-t-8 border-carnation-200 border-t-carnation-500 h-12 w-12 absolute mt-6 mx-auto inset-x-0 z-10 bg-opacity-50 justify-center items-center"></div>
+        </div>
+      </div>
+      
+      <div id="export_table" class="mt-12 hidden">
+        <header class="mb-12 grid grid-cols-3 gap-3 sm:gap-6 md:gap-12 ">
+          <h3 class="mb-4 md:mb-0 text-4xl col-span-3 md:col-span-1" aria-live="polite">
+            <span class="report_sort_adjective">Top</span> <strong class="lowercase explore_type">articles</strong> for <strong class="lowercase report_year">2023</strong>
+          </h3> 
+          <p class="col-span-3 md:col-span-1 mb-2 md:mb-0 text-sm md:border-l md:pl-4 border-neutral-300 text-neutral-100">
+            This table is a preview of the <strong class="explore_type lowercase">articles</strong> records sorted by <strong class="explore_sort">publication count</strong>.
+          </p>
+          <p class="col-span-3 md:col-span-1 text-sm md:border-l md:pl-4 border-neutral-300 text-neutral-100">
+            You can view up to 500 records here. <span id="explore_table_tooltip_articles">To see all of them, use the <a href="#download_csv_form_container" class="underline underline-offset-2 decoration-1">Download full article data as CSV</a> form below.</span>
+          </p>
+        </header>
+        <div class="my-4 gap-3 md:gap-12 flex justify-between">
+          <div class="gap-3 md:gap-12 flex justify-between">
+            <form class="w-auto">
+              <fieldset id="explore_records_shown_field">
+                <legend class="mb-4 text-xs font-semibold uppercase">Records shown</legend>
+                <div class="flex flex-wrap items-center" id="explore_records_shown"></div>
+              </fieldset>
+            </form>
+            <form class="w-auto">
+              <fieldset id="explore_filter_field">
+                <legend class="mb-4 text-xs font-semibold uppercase">Filter by</legend>
+                <div class="flex flex-wrap items-center" id="explore_filters"></div>
+              </fieldset>
+            </form>
+          </div>
+          <form class="w-auto block" id="explore_display_style_field">        
+            <fieldset>   
+              <legend class="mb-4 text-xs font-semibold uppercase text-right" for="toggler-data-view">Data display style</legend>
+              <div class="flex items-center">
+                <span class="mr-2 text-xs">{% icon_small "percent" %} Pretty</span>
+                  <button id="toggle-data-view" type="button" class="relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-carnation-500 focus:ring-offset-2" role="switch" aria-checked="true">
+                    <span aria-hidden="true" class="bg-carnation-500 pointer-events-none absolute mx-auto h-4 w-9 rounded-full transition-colors duration-200 ease-in-out"></span>
+                    <span aria-hidden="true" class="translate-x-100 pointer-events-none absolute left-0 inline-block h-5 w-5 transform rounded-full border border-neutral-500 bg-neutral-800 shadow ring-0 transition-transform duration-200 ease-in-out"></span>
+                  </button>
+                <span class="ml-2 text-xs">Raw {% icon_small "hash" %}</span>
+              </div>
+            </fieldset>
+          </form>     
+        </div>
+        <div class="relative mb-12">
+          <button
+            id="js_scroll_table_btn"
+            class="p-2 bg-carnation-100 text-neutral-900 text-2xl focus:outline-none focus:ring focus:ring-carnation-500 hover:bg-carnation-300 transition duration-300 ml-4 absolute right-3 top-1/2 transform -translate-y-1/2"
+            aria-label="Scroll to see more of the table"
+          >
+            →
+          </button>
+          <div class="mb-4 overflow-x-auto border border-neutral-200 js_export_table_container" aria-live="polite">
+            <table class="border-collapse w-full table-fixed js_export_table">
+              <thead class="border-b border-neutral-200 text-left text-xs font-medium uppercase tracking-wider" id="export_table_head"></thead>
+              <tbody class="text-xs md:text-sm" id="export_table_body"></tbody>
+            </table>
+          </div>
+        </div>
+        {# <div class="flex justify-between" id="explore_export_container"></div> #}
+        {# TODO: allow downloading of all data in CSV #}
+        {# <div class="flex justify-between">
+          <div class="text-right">
+            <a href="/temp/bmgf_all-articles_from_2023-01-01-to-2023-10-04_on_2023-09-27.csv" 
+              download 
+              role="button" 
+              aria-label="Download full data as CSV"
+              id="export_link"
+              class="items-center space-x-2 px-4 py-2 text-base font-medium uppercase border border-neutral-100 text-neutral-100 bg-neutral-800 hover:bg-neutral-100 hover:text-neutral-900 focus:outline-none focus:ring-1 focus:ring-carnation-400 duration-500 whitespace-nowrap inline-block">
+                Download all <span class="js_export_type">data</span> (CSV)
+            </a>
+          </div>
+        </div> #}
+        <div id="download_csv_form_container">{% include 'partials/email-download-form.njk' %}</div>
+      </div>
+    </div>
+  </section>
+  
+  {# ACTIONS #}
+  <section class="bg-neutral-700 text-white scroll-mt-32 js_section relative" id="strategies">
+    <div class="p-3 md:px-6 md:py-16">
+      <div class="grid grid-cols-2 gap-3 sm:gap-6 md:gap-12"> 
         <div class="col-span-2">
           <h2 class="leading-6 font-semibold uppercase text-sm md:text-base line-thru">
             <span class="bg-neutral-700">
-              Strategies
+              Actions
               {{ component("tooltip", {
                 msg: "The <em>Strategy</em> section provides actionable steps for making more of your articles Open Access."
               }) }}
             </span>
           </h2>
+          
 
           <nav class="hidden sm:block mt-6 mb-10">
             <h3 class="absolute right-0 bottom-0 text-9xl font-black text-white opacity-20">
-              <span class="sr-only">Actions for </span><span id="report-year">2023</span>
+              <span class="sr-only">Actions for </span><span class="export-year" id="report-year">2023</span>
             </h3>
-            <ul role="tablist" aria-label="Strategies Tabs">
-              {{ component("tab-item", {
+            <ul class="flex flex-wrap space-r-4 space-b-4 items-center" role="tablist" aria-label="Actions Tabs">
+              {{ component("strategy-pill", {
                 id: "email_author_vor",
                 txt: "Deposit publisher PDFs",
                 class: "font-semibold bg-carnation-300",
                 first: true
               }) }}
 
-              {{ component("tab-item", {
+              {{ component("strategy-pill", {
                 id: "email_author_aam",
                 txt: "Deposit accepted manuscripts"
               }) }}
 
-              {{ component("tab-item", {
+              {{ component("strategy-pill", {
                 id: "apc_followup",
                 txt: "Correct publisher errors"
               }) }}
 
-              {{ component("tab-item", {
+              {{ component("strategy-pill", {
                 id: "unanswered_requests",
                 txt: "Escalate unanswered requests"
               }) }}
             </ul>
           </nav>
 
-          <div class="hidden sm:block js-tab-content-all">
-            {{ component("tab-contents", {
+          <div class="hidden sm:block js_strategies">
+            {{ component("strategy-contents", {
               id: "email_author_vor",
               heading: "Deposit publisher PDFs",
               desc: "Send emails to authors to request they make their work free to read. In these cases, they can do that by making a <strong>publisher PDF (version of record, VOR)</strong> available in a repository.",
@@ -207,7 +324,7 @@ permalink: "{{ org._source.objectID | slug }}/"
               hidden: false
             }) }}
 
-            {{ component("tab-contents", {
+            {{ component("strategy-contents", {
               id: "email_author_aam",
               heading: "Deposit accepted manuscripts",
               desc: "Send emails to authors to request they make their work free to read. In these cases, they can do that by making an <strong>author accepted manuscript (AAM)</strong> available in a repository.",
@@ -218,7 +335,7 @@ permalink: "{{ org._source.objectID | slug }}/"
               hidden: true
             }) }}
 
-            {{ component("tab-contents", {
+            {{ component("strategy-contents", {
               id: "apc_followup",
               heading: "Correct publisher errors",
               desc: "These are articles where an APC has been paid, but the article isn't compliant with the policy. Use this list to follow up with publishers. If an article is made compliant, and the metadata is updated, it will be removed from this list.",
@@ -230,7 +347,7 @@ permalink: "{{ org._source.objectID | slug }}/"
               hidden: true
             }) }}
 
-            {{ component("tab-contents", {
+            {{ component("strategy-contents", {
               id: "unanswered_requests",
               heading: "Escalate unanswered requests",
               desc: "These articles are not compliant with policy, and their authors haven’t answered multiple requests to comply. Use this list to escalate requests to authors and request they make their work freely available.",
@@ -243,18 +360,19 @@ permalink: "{{ org._source.objectID | slug }}/"
           </div>
 
           <div class="sm:hidden text-base mt-6">
-            <p>Strategies aren’t available on mobile yet. Please head to a desktop computer to take action!</p>
+            <p>Actions aren’t available on mobile yet. Please head to a desktop computer to take action!</p>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="container mx-auto px-6">
-    <div class="grid grid-cols-2 gap-6 md:gap-12 py-6 xl:py-12"> 
+  {# ABOUT #}
+  <section class="px-3 md:px-6 md:py-16">
+    <div class="grid grid-cols-2 gap-3 sm:gap-6 md:gap-12 py-6 xl:py-12"> 
       <div class="col-span-2 grid md:grid-cols-2 gap-12 text-base md:text-2xl md:leading-8 md:font-light" id="about">
         <div>
-          <h2 class=" font-semibold uppercase text-sm md:text-base line-thru">
+          <h2 class="font-semibold uppercase text-sm md:text-base line-thru">
             <span class="bg-carnation-100 pr-3">About this report</span>
           </h2>
           {# PAID USERS #}
@@ -270,26 +388,57 @@ permalink: "{{ org._source.objectID | slug }}/"
           <p class="my-6">
             <strong class="text-bold">{{ org._source.name }}</strong>’s OA.Report uses <a href="https://about.oa.report/docs/sources#open-sources" target="_blank" class="underline underline-offset-4 decoration-1">open data</a> and automated analysis to provide insights into their publication volume and how open their research is.
           </p>
+          <div id="about-free-logged-out">
+            <h2 class="font-semibold uppercase text-sm md:text-base line-thru">
+              <span class="bg-carnation-100 pr-3">Unlock your institution’s research</span>
+            </h2>
+            <p class="my-6">
+              Sign up to access your institution's Actions for free. Consider a <a href="https://about.oa.report/pricing" target="_blank" class="underline underline-offset-4 decoration-1">paid plan</a> to help <a href="https://about.oa.report/docs/sources" target="_blank" class="underline underline-offset-4 decoration-1">discover all your papers</a> and provide up-to-date, deep insights into the state of open at your institution.
+            </p>
+            <div class="my-6 w-6/12">
+              {% include 'partials/signup-form.njk' %}
+            </div>
+          </div>
           {% endif %}
         </div>
-        {# FREE USERS #}
-        {% if org._source.paid != true %}
-        <div id="about-free-logged-out">
+        {# PROMPT TO SEARCH OTHER ORGS #}
+        <div>
           <h2 class="font-semibold uppercase text-sm md:text-base line-thru">
-            <span class="bg-carnation-100 pr-3">Unlock your institution’s research</span>
+            <span class="bg-carnation-100 pr-3">Find other organizations</span>
           </h2>
-          <p class="my-6">
-            Sign up to access your institution's strategies for free. Consider a <a href="https://about.oa.report/pricing" target="_blank" class="underline underline-offset-4 decoration-1">paid plan</a> to help <a href="https://about.oa.report/docs/sources" target="_blank" class="underline underline-offset-4 decoration-1">discover all your papers</a> and provide up-to-date, deep insights into the state of open at your institution.
-          </p>
-          <div class="my-6 w-6/12">
-            {% include 'partials/signup-form.njk' %}
+          <div class="my-6">
+            {% if page.url != "/" %}
+              {{ component("search-form", {
+                sr_only: true
+              }) }}
+            {% endif %}
           </div>
         </div>
-        {% else %}
-        <div>
-        </div>
-        {% endif %}
       </div>
     </div>
   </section>
+
+  {# Dynamic modal #}
+  {# <div id="dynamic-modal" class="fixed inset-0 flex items-center justify-center p-4 bg-neutral-900 bg-opacity-50 hidden transition-opacity duration-300 z-50" aria-hidden="true" tabindex="-1" role="dialog" aria-modal="true">
+    <div class="bg-carnation-100 text-neutral-900 p-3 md:p-6 shadow-lg md:w-8/12 overflow-y-auto max-h-[80vh] min-h-0" role="document">
+      <div class="flex justify-between items-start">
+        <h2 class="modal-title text-2xl font-semibold"></h2>
+        <button class="close-modal-btn text-2xl font-semibold text-neutral-700 hover:text-neutral-900">
+          <span class="sr-only">Close modal</span>
+          &times;
+        </button>
+      </div>
+      <div class="modal-content mt-4"></div>
+    </div>
+  </div> #}
+
+  {# Container for all export modals’ HTML content #}
+  {# <div id="export_modals">
+    {{ component("modal", {
+      id: "custom_export",
+      title: "Create your own",
+      include: "custom-export-form"
+    }) }}
+  </div> #}
 </main>
+

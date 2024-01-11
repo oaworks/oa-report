@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Spinner/loader */
+@layer utilities {
+  .loader {
+    @apply animate-spin;
+  }
+}
+
 /* Texting highlighting in the style of a marker */
 .highlight {
   border-radius: 0.8em 0.3em;
@@ -50,6 +57,20 @@
   color: #24201e;
 }
 
+.tippy-box[data-theme~='table-tooltip'] {
+  background-color: #e9e9e9;
+  color: #24201e;
+  font-weight: normal;
+  line-height: 1.5;
+  text-transform: none;
+  --tw-drop-shadow: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+
+.tippy-box[data-theme~='table-tooltip'] .tippy-arrow {
+  color: #e9e9e9;
+}
+
 [data-tippy-content], sup > svg {
   cursor: pointer;
 }
@@ -66,3 +87,31 @@
 @supports (font-variation-settings: normal) {
   :root { font-family: 'Inter var', sans-serif; }
 }
+
+.transition-pb-0 {
+  padding-bottom: 0;
+  transition: padding-bottom 0.3s ease;
+}
+
+.transition-pb-3 {
+  padding-bottom: .75rem; 
+  transition: padding-bottom 0.3s ease;
+}
+
+@media (min-width: 768px) {
+  .md\:transition-pb-6 {
+    padding-bottom: 1.5rem; 
+    transition: padding-bottom 0.3s ease;
+  }
+}
+
+.striped-bg {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(36, 32, 30, .25),
+    rgba(36, 32, 30, .25) 3px,
+    rgba(255, 255, 255, 0) 3px,
+    rgba(255, 255, 255, 0) 6px
+  );
+}
+

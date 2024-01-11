@@ -1,3 +1,5 @@
+import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable } from './utils.js';
+
 const base             = `https://${apiEndpoint}.oa.works/report/`,
       baseBg           = `https://bg.${apiEndpoint}.oa.works/report/`,
       queryBase        = `${base}works?size=100&`,
@@ -5,21 +7,11 @@ const base             = `https://${apiEndpoint}.oa.works/report/`,
       csvExportBase    = `${baseBg}works.csv?size=all&`,
       articleEmailBase = `${baseBg}email/`;
 
-// Set report base path
-let report = `${base}orgs?q=objectID:%22${org}%22`;
+// Set report org index URL’s base path
+export const orgApiUrl = `${base}orgs?q=objectID:%22${org}%22`;
 
-// Visually hide an element
-displayNone = function(id) {
-  var elem = document.getElementById(id);
-    if (elem) elem.style.display = 'none';
-}
-
-// Turn opacity to 100% for an element
-changeOpacity = function(id, opacity = 100) {
-  var elem = document.getElementById(id);
-      elem.classList.remove("opacity-0");
-      elem.classList.add(`opacity-${opacity}`);
-}
+// Fetch and store organisational data in a constant
+export const orgDataPromise = axios.get(orgApiUrl);
 
 /* Get report page elements where data will be inserted */
 // Send CSV data by email form
@@ -37,21 +29,21 @@ if (hasOrgKey) {
 } else {
   // logged out
   displayNone("logout");
+  //displayNone("explore");
 }
 
-// Set default export_includes and sorting order for CSV downloads
-let exportIncludes = "&include=DOI,title,subtitle,publisher,journal,issn,published_date,published_year,PMCID,volume,issue,authorships.author.display_name,authorships.author.orcid,authorships.institutions.display_name,authorships.institutions.ror,funder.name,funder.award,is_oa,oa_status,journal_oa_type,publisher_license,has_repository_copy,repository_license,repository_version,repository_url,has_oa_locations_embargoed,can_archive,version,concepts.display_name,subject,pmc_has_data_availability_statement,cited_by_count";
+// Set default sorting order for CSV downloads
 let exportSort = "&sort=published_date:desc"
 
 // Generate report’s UI for any given date range
-oareport = function(org) {
-
+export function initInsightsAndStrategies(org) {
   // Set paths for orgindex
-  let queryPrefix                  = `${queryBase}q=${dateRange}`,
-      countQueryPrefix             = `${countQueryBase}q=${dateRange}`;
+  let queryPrefix = `${queryBase}q=${dateRange}`,
+      countQueryPrefix = `${countQueryBase}q=${dateRange}`;
 
-  // Get organisational data to produce reports
-  axios.get(report).then(function (response) {
+  orgDataPromise.then(function (response) {
+    const orgData = response.data; // Storing the fetched data in a constant
+
     /** Decrypt emails if user has an orgKey **/
     window.handleDecryptEmailClick = function(buttonElement) {
       const email = buttonElement.getAttribute('data-email');
@@ -83,12 +75,11 @@ oareport = function(org) {
       } else {
           openEmailClientWithFallback();
       }
-  };
+    };
 
     /** Get Insights data and display it **/
-    getInsight = function(numerator, denominator, denominatorText, info) {
-
-      var shown     = response.data.hits.hits[0]._source.analysis[numerator].show_on_web,
+    function getInsight(numerator, denominator, denominatorText, info) {
+      var shown     = orgData.hits.hits[0]._source.analysis[numerator].show_on_web,
           contentID = `${numerator}`; // the whole insight’s data card
 
       if (shown === true) {
@@ -113,12 +104,12 @@ oareport = function(org) {
         infoContents.setAttribute('aria-controls', tooltipID);
 
         // Get numerator’s count query
-        num = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.analysis[numerator].query);
+        let num = axios.get(countQueryPrefix + orgData.hits.hits[0]._source.analysis[numerator].query);
 
         // Display data in UI if both a numerator & denominator were defined
         if (numerator && denominator) {
           // Get denominator’s count query
-          denom = axios.get(countQueryPrefix + response.data.hits.hits[0]._source.analysis[denominator].query);
+          let denom = axios.get(countQueryPrefix + orgData.hits.hits[0]._source.analysis[denominator].query);
 
           Promise.all([num, denom])
             .then(function (results) {
@@ -129,7 +120,7 @@ oareport = function(org) {
                 articlesContents.textContent = `${makeNumberReadable(numeratorCount)} of ${makeNumberReadable(denominatorCount)} ${denominatorText}`;
                 percentageContents.textContent = `${Math.round(((numeratorCount / denominatorCount) * 100))}%`;
               } else {
-                articlesContents.textContent = "";
+                articlesContents.innerHTML = `<span class="invisible" aria-hidden="true">---</span>`;
                 percentageContents.textContent = "N/A";
               };
             }
@@ -148,6 +139,7 @@ oareport = function(org) {
       } else {
         displayNone(contentID);
       };
+
     };
 
     getInsight(
@@ -167,8 +159,8 @@ oareport = function(org) {
     getInsight(
       "is_compliant",
       "is_covered_by_policy",
-      "articles covered",
-      `<p class='mb-2'>The percentage of articles that are compliant with <a href='${response.data.hits.hits[0]._source.policy.url}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a>.</p> <p>This number is specific to your policy and your requirements.</p>`
+      "articles covered by policy",
+      `<p class='mb-2'>The percentage of articles that are compliant with <a href='${orgData.hits.hits[0]._source.policy.url}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a>.</p> <p>This number is specific to your policy and your requirements.</p>`
     );
 
     getInsight(
@@ -188,21 +180,22 @@ oareport = function(org) {
     getInsight(
       "has_open_data",
       "has_data",
-      "articles generating data",
+      "articles with data",
       "<p class='mb-2'>The percentage of articles that shared any data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>CC-BY</a> license.</p> <p class='mb-2'>This figure only measures how many articles shared Open Data if they generated data in the first place. It also only measures if any of the datasets generated were open, not if all of them were open.</p> <p>We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>"
     );
 
     getInsight(
       "has_open_code",
       "has_code",
-      "articles generating code",
+      "articles with code",
       "<p class='mb-2'>The percentage of articles that shared any code under a permissive open-source licence, such as MIT.</p> <p class='mb-2'>This figure measures how many articles shared Open Code if they generated code in the first place. It also only measures if <strong>any parts</strong> of the code generated are open, not if <strong>all</strong> of it is open.</p> <p> We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>"
     );
-
-    displayStrategy = function(strategy, keys, tableRow) {
-      var shown  = response.data.hits.hits[0]._source.strategy[strategy].show_on_web,
-          sort   = `&sort=${response.data.hits.hits[0]._source.strategy[strategy].sort}`,
-          tabID  = `tab_${strategy}`;
+    
+    /* Get Strategy data and display it  */
+    function displayStrategy(strategy, keys, tableRow) {
+      var shown  = orgData.hits.hits[0]._source.strategy[strategy].show_on_web,
+          sort   = `&sort=${orgData.hits.hits[0]._source.strategy[strategy].sort}`,
+          tabID  = `strategy_${strategy}`;
 
       if (shown === true) {
         // Get tab elements
@@ -210,8 +203,8 @@ oareport = function(org) {
             tableCountContents = document.getElementById(`total_${strategy}`),
             tableBody          = document.getElementById(`table_${strategy}`).getElementsByTagName('tbody')[0];
         
-        var countQuery              = countQueryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query,
-            listQuery               = queryPrefix + response.data.hits.hits[0]._source.strategy[strategy].query + sort;
+        var countQuery              = countQueryPrefix + orgData.hits.hits[0]._source.strategy[strategy].query,
+            listQuery               = queryPrefix + orgData.hits.hits[0]._source.strategy[strategy].query + sort;
         
         // Get total action (article) count for this strategy
         axios.get(countQuery)
@@ -281,7 +274,7 @@ oareport = function(org) {
                       
                       // If mailto is included, replace its body’s content with the action’s values
                       if ("mailto" in action) {
-                        mailto = response.data.hits.hits[0]._source.strategy[strategy].mailto;
+                        var mailto = orgData.hits.hits[0]._source.strategy[strategy].mailto;
 
                         var newMailto = mailto.replaceAll("\'", "’");
                         newMailto = newMailto.replaceAll("{doi}", (action.DOI ? action.DOI : "[No DOI found]"));
@@ -306,7 +299,6 @@ oareport = function(org) {
             // Otherwise, display a message prompting user to log or contact us to access strategies
             else {
               tableBody.innerHTML = `<tr><td class='py-4 pl-4 pr-3 text-base text-center align-top break-words' colspan='3'><p class='font-bold'>Strategies help you take action to make your institution’s research more open.</p> <p>Find out more about them by <a href='mailto:hello@oa.works?subject=OA.Report%20&mdash;%20${decodeURIComponent(org)}' class='underline underline-offset-2 decoration-1'>contacting us</a> or <a href='https://about.oa.report/docs/user-accounts' class='underline underline-offset-2 decoration-1' title='Information on user accounts'>logging in to your account</a> to access them.</p></td></tr>`;
-              tableCountContents.parentNode.remove();
               displayNone(`form_${strategy}`);
             }
           })
@@ -425,94 +417,73 @@ oareport = function(org) {
         </button>\
       </td>"
     );
-
-    // Check if org has custom export_includes to display in downloaded CSV columns
-    var hasCustomExportIncludes = (response.data.hits.hits[0]._source.export_includes);
-
-    /* "Download CSV" form: all articles displayed on page */
-    getExportLink = function() {
-      Promise.all([hasCustomExportIncludes])
-        .then(function (results) {
-          let hasCustomExportIncludes = results[0].data;
-          }
-        ).catch(function (error) { console.log(`Export error: ${error}`); });
-
-      isPaperURL = (dateRange + response.data.hits.hits[0]._source.analysis.is_paper.query);
-      let query = `q=${isPaperURL.replaceAll(" ", "%20")}`,
-          form = new FormData(document.getElementById("download_csv"));
-
-      // Get form content — email address input
-      var email = `&${new URLSearchParams(form).toString()}`;
-
-      var include;
-      // If the org has custom export includes AND there is an orgkey, show these custom includes in the public CSV
-      if ((hasCustomExportIncludes !== undefined && hasCustomExportIncludes !== "") && (hasOrgKey && OAKEYS[orgSlug])) {
-        include = `&include=${hasCustomExportIncludes}`;
-      } else {
-        include = exportIncludes;
-      }
-
-      // Build full query
-      query = csvExportBase + query + include + exportSort + email + orgKey;
-
-      var xhr = new XMLHttpRequest();
-      xhr.open("GET", query);
-      // Display message when server responds
-      xhr.onload = function () {
-        document.getElementById("csv_email_msg").innerHTML = `OA.Report has started building your CSV export at <a href='${this.response}' target='_blank' class='underline underline-offset-2 decoration-1' id='email_export_link'>this URL</a>. Please check your email to get the full data once it’s ready.`;
-      };
-      xhr.send();
-
-      // Do not navigate away from the page on submit
-      return false;
-    }
-
-    /* Strategy-level "download CSV" form */
-    getStrategyExportLink = function(id) {
-      var hasCustomExportIncludes = (response.data.hits.hits[0]._source.strategy[id].export_includes),
-          strategyQuery           = (response.data.hits.hits[0]._source.strategy[id].query);
-
-      Promise.all([hasCustomExportIncludes])
-        .then(function (results) {
-          hasCustomExportIncludes = results[0].data;
-          }
-        ).catch(function (error) { console.log(`Export error: ${error}`); });
-
-      // Set up export query
-      isPaperURL = (dateRange + strategyQuery);
-      let query = `q=${isPaperURL.replaceAll(" ", "%20")}`,
-          form = new FormData(document.getElementById(`form_${id}`));
-
-      // Get form content — email address input
-      var email = `&${new URLSearchParams(form).toString()}`;
-
-      // Display export includes if there are any
-      var include;
-      if (hasCustomExportIncludes !== undefined) {
-        include = `&include=${hasCustomExportIncludes}`;
-      }
-
-      // Build full query
-      query = csvExportBase + query + include + exportSort + email + orgKey;
-
-      var xhr = new XMLHttpRequest();
-      xhr.open("GET", query);
-      // Display message when server responds
-      xhr.onload = function () {
-        document.getElementById(`msg-${id}`).innerHTML = `OA.Report has started building your CSV export at <a href='${this.response}' target='_blank' class='underline underline-offset-2 decoration-1'>this URL</a>. Please check your email to get the full data once it’s ready.`;
-      };
-      xhr.send();
-
-      // Do not navigate away from the page on submit
-      return false;
-    }
-
+    
   }).catch(error => {
     console.log(`Report ERROR: ${error}`);
     displayErrorHeader();
-  })
+  });
 };
 
-oareport(org);
+/**
+ * Calls the getStrategyExportLink function with the necessary orgData.
+ * This function is designed to be called from HTML templates and handles
+ * fetching the organization data before executing getStrategyExportLink.
+ *
+ * @param {string} id - The identifier for the strategy export link.
+ */
+window.callGetStrategyExportLink = function(id) {
+  orgDataPromise.then(function (response) {
+      const orgData = response.data;
+      getStrategyExportLink(id, orgData);
+  }).catch(function (error) {
+      console.error(`Error fetching orgData: ${error}`);
+  });
 
+  // Do not navigate away from the page on submit
+  return false;
+};
 
+/**
+* Handles the creation and sending of a strategy export link request.
+* This function is called with organizational data and an identifier to
+* construct the appropriate export link.
+*
+* @param {string} id - The identifier for the strategy export link.
+* @param {Object} orgData - The organization data required for the export link.
+* @returns {boolean} - Always returns false to prevent default form submission.
+*/
+export function getStrategyExportLink(id, orgData) {
+  let hasCustomExportIncludes = (orgData.hits.hits[0]._source.strategy[id].export_includes),
+      strategyQuery           = (orgData.hits.hits[0]._source.strategy[id].query);
+  
+  Promise.all([hasCustomExportIncludes])
+    .then(function (results) {
+      hasCustomExportIncludes = results[0].data;
+      }
+    ).catch(function (error) { console.log(`Export error: ${error}`); });
+
+  // Set up export query
+  let isPaperURL = (dateRange + strategyQuery);
+  let query = `q=${isPaperURL.replaceAll(" ", "%20")}`,
+      form = new FormData(document.getElementById(`form_${id}`));
+
+  // Get form content — email address input
+  var email = `&${new URLSearchParams(form).toString()}`;
+
+  // Display export includes if there are any
+  var include;
+  if (hasCustomExportIncludes !== undefined) {
+    include = `&include=${hasCustomExportIncludes}`;
+  }
+
+  // Build full query
+  query = csvExportBase + query + include + exportSort + email + orgKey;
+
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", query);
+  // Display message when server responds
+  xhr.onload = function () {
+    document.getElementById(`msg-${id}`).innerHTML = `OA.Report has started building your CSV export at <a href='${this.response}' target='_blank' class='underline underline-offset-2 decoration-1'>this URL</a>. Please check your email to get the full data once it’s ready.`;
+  };
+  xhr.send();
+};

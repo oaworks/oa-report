@@ -7,26 +7,34 @@
 }) }}
 #}
 
-<article class="flex relative bg-white transition ease-in delay-150 opacity-0 overflow-hidden" id="{{ params.id }}">
-  <div class="p-3 md:p-4 bg-carnation-100 text-neutral-700">
-    {% icon params.icon %}
-  </div>
-  <div class="p-3 md:p-4">
-    <header>
-      <h3 class="mb-2 text-sm md:text-base text-neutral-900">
-        {{ params.title }}
-        <sup id="info_{{ params.id }}" aria-hidden="true">{% icon_small "help-circle" %}</sup>
-      </h3>
-    </header>
-    <div class="items-baseline">
-      <p class="text-5xl font-black text-neutral-900">
-        <span id="percent_{{ params.id }}">00%</span>
-      </p>
-      {% if not params.raw_number %}
-      <p class="mt-2 text-xs md:text-sm font-medium text-neutral-600">
-        <span id="articles_{{ params.id }}">000</span>
-      </p>
-      {% endif %}
+{# TODO: uncomment when vis bar is enabled
+<article class="flex flex-col h-full bg-white hover:outline hover:outline-offset-2 hover:outline-2 hover:outline-carnation-300" id="{{ params.id }}"> #}
+<article class="flex flex-col h-full bg-white" id="{{ params.id }}">
+  {# Header #}
+  {# TODO: uncomment when vis bar is enabled
+  <header class="p-3 md:h-32 overflow-hidden bg-carnation-100 text-neutral-900 flex flex-col justify-between hover:cursor-pointer"> #}
+  <header class="p-3 md:h-32 overflow-hidden bg-carnation-100 text-neutral-900 flex flex-col justify-between">
+    <div class="mb-3 -ml-1">
+      {% icon_small params.icon %}
     </div>
+    <h3 class="text-xs md:text-sm">
+      <span class="font-medium">{{ params.title }}</span>
+      {% if params.subtitle %}<br><span class="text-neutral-600">{{ params.subtitle }}</span>{% endif %}
+    </h3>
+  </header>
+  {# Body #}
+  <div class="pt-8 px-3 pb-3 flex flex-col justify-center flex-grow text-neutral-900">
+    <p class="text-4xl font-black">
+      <span id="percent_{{ params.id }}">00%</span>
+      <sup tabindex="0" id="info_{{ params.id }}" role="tooltip" aria-hidden="true">
+        {% icon_small "help-circle" %}
+      </sup>
+    </p>
   </div>
+  {# Footer #}
+  <footer class="p-3 md:h-16 flex flex-col justify-end">
+    <p class="text-xs font-medium text-neutral-600">
+      <span id="articles_{{ params.id }}">articles</span>
+    </p>
+  </footer>
 </article>

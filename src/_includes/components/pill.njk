@@ -1,9 +1,19 @@
-{# Pill-style button component
+{# Pill component
 {{ component("pill", {
   id: "",
-  txt: "",
-  class: ""
+  txt: ""
 }) }}
 #}
 
-<button class="inline-flex items-center px-4 py-2 md:px-6 md:py-4 border-t-4 text-base md:text-lg transition duration-300 ease-in-out hover:bg-neutral-800 hover:text-white hover:border-neutral-800 js-pill {% if params.selected %}border-carnation-500 bg-neutral-900 text-white font-semibold{% else %}bg-white text-neutral-900{% endif %}" id="{{ params.id }}">{{ params.txt }}</button>
+<button
+  class="items-center inline-flex p-2 pl-4 mr-4 mb-4 px-3 rounded-full bg-white font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500 {% if params.highlight %}bg-carnation-300 {% endif %}js_export_pill" 
+  data-title="{{ params.title }}" 
+  data-csv="{{ params.csv }}"
+  id="export_{{ params.id }}">
+  <span id="{{ params.id }}_text">
+    {{ params.txt }}
+  </span>
+  <span id="count_{{ params.id }}" class="bg-neutral-800 text-white ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block">
+    {{ params.count }}
+  </span>
+</button>

@@ -65,8 +65,13 @@
 </script>
 
 {# To fetch data from the API and display it in the UI #}
-<script defer src="../js/axios.min.js"></script>
-<script defer src="../js/oareport.js"></script>
+<script src="../js/axios.min.js"></script>
+<script type="module" src="../js/insights-and-strategies.js"></script>
+
+{# crappy prototype #}
+<script>
+  const orgName = "{{ org._source.name|safe }}"; // NEEDS TO BE REPLACED WITH ORGID
+</script>
 {% endif %}
 
 {# For the search tool #}
