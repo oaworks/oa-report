@@ -277,6 +277,11 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
               "field": "cited_by_count"
             }
           },
+          "mean_citations": {
+            "avg": {
+              "field": "cited_by_count"
+            }
+          },
           "with_apc": {
             "filter": {
               "range": {
