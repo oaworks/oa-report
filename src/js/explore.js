@@ -1011,7 +1011,7 @@ window.getExportLink = function() {
     var email = `&${new URLSearchParams(form).toString()}`;
 
     var include;
-    if ((hasCustomExportIncludes !== undefined && hasCustomExportIncludes !== "") && (hasOrgKey && OAKEYS[orgSlug])) {
+    if ((hasCustomExportIncludes !== undefined && hasCustomExportIncludes !== "")) {
       include = `&include=${hasCustomExportIncludes}`;
     }
     query = csvExportBase + query + include + exportSort + email + orgKey;
