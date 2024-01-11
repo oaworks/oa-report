@@ -951,20 +951,15 @@ async function generateCSVLinkHref() {
 
   removeCSVExportLink(); // Remove CSV export link when this function is called
 
-  let exportIncludes = "&include=DOI,title,subtitle,publisher,journal,issn,published_date,published_year,PMCID,volume,issue,authorships.author.display_name,authorships.author.orcid,authorships.institutions.display_name,authorships.institutions.ror,funder.name,funder.award,is_oa,oa_status,journal_oa_type,publisher_license,has_repository_copy,repository_license,repository_version,repository_url,has_oa_locations_embargoed,can_archive,version,concepts.display_name,subject,pmc_has_data_availability_statement,cited_by_count";
-
   let query = `q=${encodeURIComponent(isPaperURL)}`;
 
   let include;
   if (hasCustomExportIncludes) {
     include = `&include=${hasCustomExportIncludes}`;
-  } else {
-    include = exportIncludes;
   }
 
   const csvLink = csvExportBase + query + include + exportSort + orgKey;
   console.log(csvLink);
-
 
   try {
     const response = await axios.get(csvLink);
@@ -1010,10 +1005,7 @@ window.getExportLink = function() {
     var include;
     if ((hasCustomExportIncludes !== undefined && hasCustomExportIncludes !== "") && (hasOrgKey && OAKEYS[orgSlug])) {
       include = `&include=${hasCustomExportIncludes}`;
-    } else {
-      include = "&include=DOI,title,subtitle,publisher,journal,issn,published_date,published_year,PMCID,volume,issue,authorships.author.display_name,authorships.author.orcid,authorships.institutions.display_name,authorships.institutions.ror,funder.name,funder.award,is_oa,oa_status,journal_oa_type,publisher_license,has_repository_copy,repository_license,repository_version,repository_url,has_oa_locations_embargoed,can_archive,version,concepts.display_name,subject,pmc_has_data_availability_statement,cited_by_count";
     }
-
     query = csvExportBase + query + include + exportSort + email + orgKey;
 
     var xhr = new XMLHttpRequest();
