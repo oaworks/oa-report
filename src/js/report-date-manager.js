@@ -53,7 +53,7 @@ export function setDefaultYear(defaultYear) {
  * @param {number} endYear - The ending year for the range of years.
  * @param {number} [visibleYears=4] - The number of years to be visible outside the dropdown.
  */
-export function bindDynamicYearButtons(startYear, endYear, visibleYears = 4) {
+export function bindDynamicYearButtons(startYear, endYear, visibleYears = 3) {
   const yearsContainer = document.getElementById("year-buttons-container");
   const { dropdown, dropdownContent, dropdownButton } = createDropdownContainer();
   const currentYear = new Date().getFullYear(); // Get current year
@@ -106,7 +106,7 @@ function createDropdownContainer() {
   dropdown.classList.add("relative", "inline-block", "js_dropdown");
 
   const dropdownButton = document.createElement("button");
-  dropdownButton.classList.add("px-4", "py-2", "border", "border-neutral-900", "bg-white", "text-neutral-900", "hover:bg-neutral-800", "hover:text-white", "focus:outline-none", "focus:ring-2", "focus:ring-offset-2", "focus:ring-neutral-900", "js_year_select");
+  dropdownButton.classList.add("px-4", "py-2", "mt-1", "mr-1", "md:mt-3", "md:mr-3", "md:border-b-0", "border", "border-neutral-900", "bg-white", "text-neutral-900", "hover:bg-neutral-800", "hover:text-white", "focus:outline-none", "focus:ring-2", "focus:ring-offset-2", "focus:ring-neutral-900", "js_year_select");
   dropdownButton.setAttribute("aria-haspopup", "true");
   dropdownButton.setAttribute("aria-expanded", "false");
   dropdownButton.innerHTML = "More years <span class='ml-1 text-xs'>&#9660;</span>";
@@ -172,7 +172,7 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
   button.textContent = buttonText;
 
   // Add classes for styling
-  button.classList.add("px-4", "py-2", "border", "border-b-0", "border-neutral-900", "bg-white", "text-neutral-900", "hover:bg-neutral-800", "hover:text-white", "focus:outline-none", "focus:ring-2", "focus:ring-offset-2", "focus:ring-neutral-900", "js_year_select");
+  button.classList.add("px-4", "py-2", "border", "mt-1", "mr-1", "md:mt-3", "md:mr-3", "md:border-b-0", "border-neutral-900", "bg-white", "text-neutral-900", "hover:bg-neutral-800", "hover:text-white", "focus:outline-none", "focus:ring-2", "focus:ring-offset-2", "focus:ring-neutral-900", "js_year_select");
   button.setAttribute("aria-pressed", buttonText === `${DEFAULT_YEAR}` ? "true" : "false");
 
   // Add event listener
