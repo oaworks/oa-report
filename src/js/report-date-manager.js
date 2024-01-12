@@ -107,10 +107,12 @@ function createDropdownContainer() {
 
   const dropdownButton = document.createElement("button");
   dropdownButton.classList.add("px-4", "py-2", "border", "border-neutral-900", "bg-white", "text-neutral-900", "hover:bg-neutral-800", "hover:text-white", "focus:outline-none", "focus:ring-2", "focus:ring-offset-2", "focus:ring-neutral-900");
+  dropdownButton.setAttribute("aria-haspopup", "true");
+  dropdownButton.setAttribute("aria-expanded", "false");
   dropdownButton.innerHTML = "More years <span class='ml-1 text-xs'>&#9660;</span>";
 
   const dropdownContent = document.createElement("div");
-  dropdownContent.classList.add("absolute", "left-0", "mt-1", "w-56", "shadow-lg", "bg-white", "ring-1", "ring-black", "ring-opacity-5", "divide-y", "divide-gray-100", "hidden");
+  dropdownContent.classList.add("absolute", "left-0", "mt-1", "w-56", "shadow-lg", "bg-white", "ring-1", "ring-black", "ring-opacity-5", "divide-y", "divide-gray-100", "hidden", "js_dropdown_content");
   dropdownContent.setAttribute("hidden", true);
 
   dropdownButton.addEventListener("click", () => {

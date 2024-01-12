@@ -484,28 +484,34 @@ export function showNoResultsRow(columnCount, tableBodyId, tableId) {
  * @param {string} dropdownSelector - The CSS selector for the dropdown container.
  */
 export function initDropdown(dropdownSelector) {
-  // Select the dropdown container, button, and content based on the provided selector
   const dropdownContainer = document.querySelector(dropdownSelector);
-  const dropdownButton = dropdownContainer.querySelector('button');
-  const dropdownContent = dropdownButton.nextElementSibling;
+  if (!dropdownContainer) {
+    console.error('Dropdown container not found:', dropdownSelector);
+    return;
+  }
 
-  // Event listener for toggling dropdown visibility
-  dropdownButton.addEventListener('click', function() {
-    const isHidden = dropdownContent.hasAttribute('hidden');
-    if (isHidden) {
-      dropdownContent.removeAttribute('hidden');
-      dropdownContent.classList.remove('hidden');
-    } else {
-      dropdownContent.setAttribute('hidden', 'true');
+  const dropdownButton = dropdownContainer.querySelector('button[aria-haspopup="true"]');
+  const dropdownContent = dropdownContainer.querySelector('.js_dropdown_content');
+
+  dropdownButton.addEventListener('click', function(event) {
+    event.stopPropagation();
+    const isExpanded = this.getAttribute('aria-expanded') === 'true';
+    this.setAttribute('aria-expanded', !isExpanded);
+
+    if (isExpanded) {
       dropdownContent.classList.add('hidden');
+      dropdownContent.setAttribute('hidden', 'true');
+    } else {
+      dropdownContent.classList.remove('hidden');
+      dropdownContent.removeAttribute('hidden');
     }
   });
 
-  // Close the dropdown if clicked outside
-  document.addEventListener('click', function(event) {
-    if (!dropdownContainer.contains(event.target)) {
-      dropdownContent.setAttribute('hidden', 'true');
+  document.addEventListener('click', function() {
+    if (!dropdownContent.classList.contains('hidden')) {
       dropdownContent.classList.add('hidden');
+      dropdownContent.setAttribute('hidden', 'true');
+      dropdownButton.setAttribute('aria-expanded', 'false');
     }
   });
 }
