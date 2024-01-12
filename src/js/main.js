@@ -4,7 +4,7 @@
 // =================================================
 
 import { createDate, bindSmoothScrollLinks } from './utils.js';
-import { DEFAULT_YEAR, currentDate, bindDynamicYearButtons, setDefaultYear } from './report-date-manager.js';
+import { DEFAULT_YEAR, FIRST_YEAR, currentDate, bindDynamicYearButtons, setDefaultYear } from './report-date-manager.js';
 import { initInsightsAndStrategies } from './insights-and-strategies.js';
 import { initDataExplore } from './explore.js';
 import { initStrategyTabs } from './strategies.js';
@@ -25,7 +25,7 @@ function initialise() {
   
   // Set the default year
   setDefaultYear(DEFAULT_YEAR);
-  bindDynamicYearButtons(2019, currentDate.getFullYear()); 
+  bindDynamicYearButtons(FIRST_YEAR, currentDate.getFullYear()); 
 
   initInsightsAndStrategies(org);
 

@@ -13,6 +13,7 @@ const reportYear = document.getElementById("report-year");
 
 export const currentDate = new Date();
 export const DEFAULT_YEAR = 2023;
+export const FIRST_YEAR = 2015;
 
 // Constants for date calculations
 const startYearDate = createDate(currentDate.getFullYear(), 0, 1);
@@ -109,7 +110,7 @@ function createDropdownContainer() {
   dropdownButton.classList.add("px-4", "py-2", "mt-1", "mr-1", "md:mt-3", "md:mr-3", "md:border-b-0", "border", "border-neutral-900", "bg-white", "text-neutral-900", "hover:bg-neutral-800", "hover:text-white", "focus:outline-none", "focus:ring-2", "focus:ring-offset-2", "focus:ring-neutral-900", "js_year_select");
   dropdownButton.setAttribute("aria-haspopup", "true");
   dropdownButton.setAttribute("aria-expanded", "false");
-  dropdownButton.innerHTML = "More years <span class='ml-1 text-xs'>&#9660;</span>";
+  dropdownButton.innerHTML = "More <span class='sr-only'>years</span> <span class='ml-1 text-xs'>&#9660;</span>";
 
   const dropdownContent = document.createElement("div");
   dropdownContent.classList.add("absolute", "left-0", "mt-1", "w-full", "shadow-lg", "bg-white", "ring-1", "ring-black", "ring-opacity-5", "divide-y", "divide-neutral-200", "hidden", "js_dropdown_content");
@@ -240,7 +241,7 @@ function resetDropdown() {
   // Reset the dropdown button text to 'More years'
   const dropdownButton = document.querySelector('.js_dropdown_button');
   if (dropdownButton) {
-    dropdownButton.innerHTML = `More years <span class='ml-1 text-xs'>&#9660;</span>`;
+    dropdownButton.innerHTML = `More <span class='sr-only'>years</span> <span class='ml-1 text-xs'>&#9660;</span>`;
   }
 
   // Reset styling for all dropdown items to their original state
