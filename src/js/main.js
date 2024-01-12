@@ -3,7 +3,7 @@
 // Main event listeners and functions
 // =================================================
 
-import { createDate, bindSmoothScrollLinks } from './utils.js';
+import { bindSmoothScrollLinks } from './utils.js';
 import { DEFAULT_YEAR, FIRST_YEAR, currentDate, bindDynamicYearButtons, setDefaultYear } from './report-date-manager.js';
 import { initInsightsAndStrategies } from './insights-and-strategies.js';
 import { initDataExplore } from './explore.js';

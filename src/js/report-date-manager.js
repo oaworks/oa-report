@@ -56,9 +56,9 @@ export function setDefaultYear(defaultYear) {
  */
 export function bindDynamicYearButtons(startYear, endYear, visibleYears = 3) {
   const yearsContainer = document.getElementById("year-buttons-container");
-  const { dropdown, dropdownContent, dropdownButton } = createDropdownContainer();
   const currentYear = new Date().getFullYear(); // Get current year
   const currentDate = new Date(); // Get current date
+  const { dropdown, dropdownContent, dropdownButton } = createDropdownContainer();
 
   for (let year = endYear; year >= startYear; year--) {
     const startDate = createDate(year, 0, 1); // Create a date for January 1st of the year
@@ -75,13 +75,18 @@ export function bindDynamicYearButtons(startYear, endYear, visibleYears = 3) {
     const buttonText = `${year}`;
 
     if (endYear - year < visibleYears) {
-      // Display as a button if the year is within the visible range
-      const button = createYearButton(buttonId, buttonText, startDate, endDate);
-      yearsContainer.appendChild(button);
-    } else {
-      // Otherwise, display in a dropdown menu
+      // Determine if the year button should be active or disabled based on free or paid reports
+      let element;
+      if (paid) {
+        element = createYearButton(buttonId, buttonText, startDate, endDate);
+      } else {
+        element = createDisabledYearElement(buttonText);
+      }
+      yearsContainer.appendChild(element);
+    } else if (paid) {
+      // For dropdown items (i.e. years outside the visible range)
       const dropdownItem = createDropdownItem(buttonId, buttonText, startDate, endDate, dropdownButton);
-      dropdownContent.appendChild(dropdownItem); // Append items to dropdownContent instead of dropdownContainer
+      dropdownContent.appendChild(dropdownItem);
     }
   }
 
@@ -91,10 +96,22 @@ export function bindDynamicYearButtons(startYear, endYear, visibleYears = 3) {
   }
 
   // Create an 'All time' button with a fixed start date and the current date as the end date
-  const allTimeButton = createYearButton("all-time", "All time", createDate(1980, 0, 1), currentDate);
+  let allTimeButton
+  if (paid) {
+    allTimeButton = createYearButton("all-time", "All time", createDate(1980, 0, 1), currentDate);
+  } else {
+    allTimeButton = createDisabledYearElement("All time");
+  }
   yearsContainer.appendChild(allTimeButton);
 
-  initDropdown(".js_dropdown");
+  if (paid) initDropdown(".js_dropdown");
+}
+
+function createDisabledYearElement(text) {
+  const element = document.createElement("div");
+  element.className = "inline-block px-4 py-2 border mt-1 mr-1 md:mt-3 md:mr-3 md:border-b-0 bg-white text-neutral-900 opacity-50";
+  element.textContent = text;
+  return element;
 }
 
 /**
