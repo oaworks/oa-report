@@ -81,6 +81,10 @@ export function bindDynamicYearButtons(startYear, endYear, visibleYears = 3) {
         element = createYearButton(buttonId, buttonText, startDate, endDate);
       } else {
         element = createDisabledYearElement(buttonText);
+        console.log(`element: ${year}`);
+        if (year === DEFAULT_YEAR) {
+          updateYearButtonStyling(element);
+        }
       }
       yearsContainer.appendChild(element);
     } else if (paid) {
@@ -252,7 +256,7 @@ function updateYearButtonStyling(selectedButton) {
 
   // Apply selected styling to the selected button
   selectedButton.classList.add("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
-  selectedButton.classList.remove("bg-white", "text-neutral-900");
+  selectedButton.classList.remove("bg-white", "text-neutral-900", "opacity-50");
   selectedButton.setAttribute("aria-pressed", "true");
 }
 
