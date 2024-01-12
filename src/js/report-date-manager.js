@@ -3,7 +3,7 @@
 // 
 // =================================================
 
-import { createDate, replaceDateRange, replaceText } from './utils.js';
+import { createDate, replaceDateRange, replaceText, initDropdown } from './utils.js';
 import { initInsightsAndStrategies } from './insights-and-strategies.js';
 import { currentActiveExploreItemButton, currentActiveExploreItemData, processExploreDataTable } from './explore.js';
 
@@ -45,27 +45,29 @@ export function setDefaultYear(defaultYear) {
 }
 
 /**
- * Binds dynamically created year selection buttons to the DOM.
- * 
- * @param {number} startYear - The starting year of the range.
- * @param {number} endYear - The ending year of the range.
- * @param {number} [visibleYears=5] - The number of years to show as buttons.
+ * Binds dynamic year buttons to a container and initializes a dropdown for additional years.
+ * This function dynamically creates buttons for each year in a given range and appends them
+ * to the specified container. Years outside of the visible range are added to a dropdown menu.
+ *
+ * @param {number} startYear - The starting year for the range of years.
+ * @param {number} endYear - The ending year for the range of years.
+ * @param {number} [visibleYears=4] - The number of years to be visible outside the dropdown.
  */
 export function bindDynamicYearButtons(startYear, endYear, visibleYears = 4) {
   const yearsContainer = document.getElementById("year-buttons-container");
-  const dropdownContainer = createDropdownContainer();
+  const { dropdown, dropdownContent } = createDropdownContainer();
   const currentYear = new Date().getFullYear(); // Get current year
   const currentDate = new Date(); // Get current date
 
   for (let year = endYear; year >= startYear; year--) {
-    const startDate = createDate(year, 0, 1);
+    const startDate = createDate(year, 0, 1); // Create a date for January 1st of the year
     let endDate;
 
     // Check if the current year is being processed
     if (year === currentYear) {
       endDate = currentDate; // Set endDate to today's date for the current year
     } else {
-      endDate = createDate(year, 11, 31); // Use 31st Dec for other years
+      endDate = createDate(year, 11, 31); // Use December 31st for other years
     }
 
     const buttonId = `year-${year}`;
@@ -78,15 +80,20 @@ export function bindDynamicYearButtons(startYear, endYear, visibleYears = 4) {
     } else {
       // Otherwise, display in a dropdown menu
       const dropdownItem = createDropdownItem(buttonId, buttonText, startDate, endDate);
-      dropdownContainer.appendChild(dropdownItem);
+      dropdownContent.appendChild(dropdownItem); // Append items to dropdownContent instead of dropdownContainer
     }
   }
 
-  yearsContainer.appendChild(dropdownContainer);
+  // Append the dropdown container only if it has items
+  if (dropdownContent.hasChildNodes()) {
+    yearsContainer.appendChild(dropdown); // Append the entire dropdown structure
+  }
 
-  // Create an 'All time' button with fixed start date and current date as the end date
+  // Create an 'All time' button with a fixed start date and the current date as the end date
   const allTimeButton = createYearButton("all-time", "All time", createDate(1980, 0, 1), currentDate);
   yearsContainer.appendChild(allTimeButton);
+
+  initDropdown(".js_dropdown");
 }
 
 /**
@@ -96,23 +103,31 @@ export function bindDynamicYearButtons(startYear, endYear, visibleYears = 4) {
  */
 function createDropdownContainer() {
   const dropdown = document.createElement("div");
-  dropdown.classList.add("relative", "inline-block");
+  dropdown.classList.add("relative", "inline-block", "js_dropdown");
 
   const dropdownButton = document.createElement("button");
   dropdownButton.classList.add("px-4", "py-2", "border", "border-neutral-900", "bg-white", "text-neutral-900", "hover:bg-neutral-800", "hover:text-white", "focus:outline-none", "focus:ring-2", "focus:ring-offset-2", "focus:ring-neutral-900");
-  dropdownButton.textContent = "More years";
-  dropdownButton.addEventListener("click", () => {
-    dropdown.classList.toggle("show-dropdown");
-  });
+  dropdownButton.innerHTML = "More years <span class='ml-1 text-xs'>&#9660;</span>";
 
   const dropdownContent = document.createElement("div");
   dropdownContent.classList.add("absolute", "left-0", "mt-1", "w-56", "shadow-lg", "bg-white", "ring-1", "ring-black", "ring-opacity-5", "divide-y", "divide-gray-100", "hidden");
   dropdownContent.setAttribute("hidden", true);
 
+  dropdownButton.addEventListener("click", () => {
+    const isHidden = dropdownContent.hasAttribute('hidden');
+    if (isHidden) {
+      dropdownContent.removeAttribute('hidden');
+      dropdownContent.classList.remove('hidden');
+    } else {
+      dropdownContent.setAttribute('hidden', 'true');
+      dropdownContent.classList.add('hidden');
+    }
+  });
+
   dropdown.appendChild(dropdownButton);
   dropdown.appendChild(dropdownContent);
 
-  return dropdown;
+  return { dropdown, dropdownContent };
 }
 
 /**
@@ -202,3 +217,5 @@ function updateYearButtonStyling(selectedButton) {
   selectedButton.classList.remove("bg-white", "text-neutral-900");
   selectedButton.setAttribute("aria-pressed", "true");
 }
+
+

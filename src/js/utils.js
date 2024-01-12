@@ -477,3 +477,35 @@ export function showNoResultsRow(columnCount, tableBodyId, tableId) {
   noResultsRow.appendChild(noResultsCell);
   tableBody.appendChild(noResultsRow);
 }
+
+/**
+ * Initialises a dropdown menu. Requires the dropdown container to have button elements as the options.
+ * 
+ * @param {string} dropdownSelector - The CSS selector for the dropdown container.
+ */
+export function initDropdown(dropdownSelector) {
+  // Select the dropdown container, button, and content based on the provided selector
+  const dropdownContainer = document.querySelector(dropdownSelector);
+  const dropdownButton = dropdownContainer.querySelector('button');
+  const dropdownContent = dropdownButton.nextElementSibling;
+
+  // Event listener for toggling dropdown visibility
+  dropdownButton.addEventListener('click', function() {
+    const isHidden = dropdownContent.hasAttribute('hidden');
+    if (isHidden) {
+      dropdownContent.removeAttribute('hidden');
+      dropdownContent.classList.remove('hidden');
+    } else {
+      dropdownContent.setAttribute('hidden', 'true');
+      dropdownContent.classList.add('hidden');
+    }
+  });
+
+  // Close the dropdown if clicked outside
+  document.addEventListener('click', function(event) {
+    if (!dropdownContainer.contains(event.target)) {
+      dropdownContent.setAttribute('hidden', 'true');
+      dropdownContent.classList.add('hidden');
+    }
+  });
+}
