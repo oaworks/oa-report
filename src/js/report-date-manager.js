@@ -55,7 +55,7 @@ export function setDefaultYear(defaultYear) {
  */
 export function bindDynamicYearButtons(startYear, endYear, visibleYears = 4) {
   const yearsContainer = document.getElementById("year-buttons-container");
-  const { dropdown, dropdownContent } = createDropdownContainer();
+  const { dropdown, dropdownContent, dropdownButton } = createDropdownContainer();
   const currentYear = new Date().getFullYear(); // Get current year
   const currentDate = new Date(); // Get current date
 
@@ -79,7 +79,7 @@ export function bindDynamicYearButtons(startYear, endYear, visibleYears = 4) {
       yearsContainer.appendChild(button);
     } else {
       // Otherwise, display in a dropdown menu
-      const dropdownItem = createDropdownItem(buttonId, buttonText, startDate, endDate);
+      const dropdownItem = createDropdownItem(buttonId, buttonText, startDate, endDate, dropdownButton);
       dropdownContent.appendChild(dropdownItem); // Append items to dropdownContent instead of dropdownContainer
     }
   }
@@ -106,13 +106,13 @@ function createDropdownContainer() {
   dropdown.classList.add("relative", "inline-block", "js_dropdown");
 
   const dropdownButton = document.createElement("button");
-  dropdownButton.classList.add("px-4", "py-2", "border", "border-neutral-900", "bg-white", "text-neutral-900", "hover:bg-neutral-800", "hover:text-white", "focus:outline-none", "focus:ring-2", "focus:ring-offset-2", "focus:ring-neutral-900");
+  dropdownButton.classList.add("px-4", "py-2", "border", "border-neutral-900", "bg-white", "text-neutral-900", "hover:bg-neutral-800", "hover:text-white", "focus:outline-none", "focus:ring-2", "focus:ring-offset-2", "focus:ring-neutral-900", "js_year_select");
   dropdownButton.setAttribute("aria-haspopup", "true");
   dropdownButton.setAttribute("aria-expanded", "false");
   dropdownButton.innerHTML = "More years <span class='ml-1 text-xs'>&#9660;</span>";
 
   const dropdownContent = document.createElement("div");
-  dropdownContent.classList.add("absolute", "left-0", "mt-1", "w-56", "shadow-lg", "bg-white", "ring-1", "ring-black", "ring-opacity-5", "divide-y", "divide-gray-100", "hidden", "js_dropdown_content");
+  dropdownContent.classList.add("absolute", "left-0", "mt-1", "w-full", "shadow-lg", "bg-white", "ring-1", "ring-black", "ring-opacity-5", "divide-y", "divide-neutral-200", "hidden", "js_dropdown_content");
   dropdownContent.setAttribute("hidden", true);
 
   dropdownButton.addEventListener("click", () => {
@@ -129,7 +129,7 @@ function createDropdownContainer() {
   dropdown.appendChild(dropdownButton);
   dropdown.appendChild(dropdownContent);
 
-  return { dropdown, dropdownContent };
+  return { dropdown, dropdownContent, dropdownButton };
 }
 
 /**
@@ -141,13 +141,17 @@ function createDropdownContainer() {
  * @param {Date} endDate - The end date for the report corresponding to the item.
  * @returns {HTMLElement} The created dropdown item element.
  */
-function createDropdownItem(buttonId, buttonText, startDate, endDate) {
+function createDropdownItem(buttonId, buttonText, startDate, endDate, dropdownButton) {
   const item = document.createElement("button");
-  item.classList.add("block", "px-4", "py-2", "text-sm", "text-gray-700", "hover:bg-gray-100");
+  item.classList.add("block", "px-4", "py-2", "w-full", "hover:bg-neutral-900", "hover:text-white", "js_dropdown_item");
   item.textContent = buttonText;
+
   item.addEventListener("click", (event) => {
     event.preventDefault();
+    // Update dropdown button text and style
+    dropdownButton.innerHTML = `${buttonText} <span class='ml-1 text-xs'>&#9660;</span>`;
     handleYearButtonLogic(item, startDate, endDate, buttonText);
+    updateYearButtonStyling(dropdownButton, true);
   });
 
   return item;
@@ -190,6 +194,11 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
  * @param {string} buttonText - The text displayed on the button, typically the year.
  */
 function handleYearButtonLogic(button, startDate, endDate, buttonText) {
+  // Reset the dropdown if a visible year button is clicked
+  if (!button.classList.contains('js_dropdown_item')) {
+    resetDropdown();
+  }
+
   replaceDateRange(startDate, endDate);
   reportDateRange.textContent = `In ${startDate.getFullYear()}`;
   reportYear.textContent = startDate.getFullYear();
@@ -221,3 +230,24 @@ function updateYearButtonStyling(selectedButton) {
 }
 
 
+/**
+ * Resets the dropdown to its default state - back to 'More years' and reverting the 
+ * styling of any previously selected dropdown items to their original state.
+ * It targets elements with specific class names: '.js_dropdown_button' for the dropdown button,
+ * and '.js_dropdown_item' for the dropdown items.
+ */
+function resetDropdown() {
+  // Reset the dropdown button text to 'More years'
+  const dropdownButton = document.querySelector('.js_dropdown_button');
+  if (dropdownButton) {
+    dropdownButton.innerHTML = `More years <span class='ml-1 text-xs'>&#9660;</span>`;
+  }
+
+  // Reset styling for all dropdown items to their original state
+  const dropdownItems = document.querySelectorAll('.js_dropdown_item');
+  dropdownItems.forEach(item => {
+    // Assuming these are the TailwindCSS classes you initially use for dropdown items
+    item.classList.remove("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
+    item.classList.add("bg-white", "text-neutral-900");
+  });
+}
