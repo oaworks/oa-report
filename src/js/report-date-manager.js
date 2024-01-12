@@ -109,7 +109,7 @@ export function bindDynamicYearButtons(startYear, endYear, visibleYears = 3) {
 
 function createDisabledYearElement(text) {
   const element = document.createElement("div");
-  element.className = "inline-block px-4 py-2 border mt-1 mr-1 md:mt-3 md:mr-3 md:border-b-0 bg-white text-neutral-900 opacity-50";
+  element.className = "inline-block px-4 py-2 border mt-1 mr-1 md:mt-3 md:mr-3 md:border-b-0 bg-white text-neutral-900 opacity-50 js_year_select";
   element.textContent = text;
   return element;
 }

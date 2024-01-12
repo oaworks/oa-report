@@ -35,7 +35,16 @@ permalink: "{{ org._source.objectID | slug }}/"
 
   <nav class="sticky top-0 pt-3 md:pt-6 z-20 bg-carnation-100 transition-pb-0" id="top_nav">
     <h2 class="sr-only">See the report by year</h2>
-     <div id="year-buttons-container" class="mx-3 md:mx-6 flex flex-wrap text-xs md:text-sm lg:text-lg"></div>
+    <div class="flex">
+      <div id="year-buttons-container" class="mx-3 md:mx-6 flex flex-wrap text-xs md:text-sm lg:text-lg"></div>
+      {% if org._source.paid == false %}
+        <span class="-ml-6">
+          {{ component("tooltip", {
+            msg: "<strong>Access previous years’ reports</strong><br> Upgrade to a <a href='https://about.oa.report/about/pricing#premium' target='_blank' class='underline underline-offset-2 decoration-1'>premium OA.Report</a> to understand your trends. Start now by <a href='#about-free-logged-out' class='underline underline-offset-2 decoration-1'>signing up</a>."}) 
+          }}
+        </span>
+      {% endif %}
+    </div>
   </nav>
 
   {# INSIGHTS #}
