@@ -113,7 +113,7 @@ function createDropdownContainer() {
   dropdownButton.innerHTML = "More <span class='sr-only'>years</span> <span class='ml-1 text-xs'>&#9660;</span>";
 
   const dropdownContent = document.createElement("div");
-  dropdownContent.classList.add("absolute", "left-0", "mt-1", "w-full", "shadow-lg", "bg-white", "ring-1", "ring-black", "ring-opacity-5", "divide-y", "divide-neutral-200", "hidden", "js_dropdown_content");
+  dropdownContent.classList.add("absolute", "left-0", "mt-1", "w-full", "shadow-lg", "bg-white", "focus:outline-none",  "focus:ring-2", "focus:ring-offset-2", "focus:ring-neutral-900", "divide-y", "divide-neutral-200", "hidden", "js_dropdown_content");
   dropdownContent.setAttribute("hidden", true);
 
   dropdownButton.addEventListener("click", () => {
@@ -144,7 +144,7 @@ function createDropdownContainer() {
  */
 function createDropdownItem(buttonId, buttonText, startDate, endDate, dropdownButton) {
   const item = document.createElement("button");
-  item.classList.add("block", "px-4", "py-2", "w-full", "hover:bg-neutral-900", "hover:text-white", "js_dropdown_item");
+  item.classList.add("block", "px-4", "py-2", "w-full", "hover:bg-neutral-900", "hover:text-white",  "focus:outline-none",  "focus:ring-2", "focus:ring-offset-2", "focus:ring-neutral-900", "js_dropdown_item");
   item.textContent = buttonText;
 
   item.addEventListener("click", (event) => {
@@ -173,7 +173,7 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
   button.textContent = buttonText;
 
   // Add classes for styling
-  button.classList.add("px-4", "py-2", "border", "mt-1", "mr-1", "md:mt-3", "md:mr-3", "md:border-b-0", "border-neutral-900", "bg-white", "text-neutral-900", "hover:bg-neutral-800", "hover:text-white", "focus:outline-none", "focus:ring-2", "focus:ring-offset-2", "focus:ring-neutral-900", "js_year_select");
+  button.classList.add("px-4", "py-2", "border", "mt-1", "mr-1", "md:mt-3", "md:mr-3", "md:border-b-0", "border-neutral-900", "bg-white", "text-neutral-900", "hover:bg-neutral-800", "hover:text-white", "focus:outline-none",  "focus:ring-2", "focus:ring-offset-2", "focus:ring-neutral-900", "js_year_select");
   button.setAttribute("aria-pressed", buttonText === `${DEFAULT_YEAR}` ? "true" : "false");
 
   // Add event listener
@@ -213,23 +213,31 @@ function handleYearButtonLogic(button, startDate, endDate, buttonText) {
 }
 
 /**
- * Updates the styling of year selection buttons.
+ * Updates the styling of year selection buttons and resets styles for all other year buttons and dropdown items.
  *
  * @param {HTMLElement} selectedButton - The button element that was selected.
  */
 function updateYearButtonStyling(selectedButton) {
+  // Reset styles for year buttons
   const yearButtons = document.querySelectorAll(".js_year_select");
-  yearButtons.forEach((button) => {
+  yearButtons.forEach(button => {
     button.classList.remove("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
     button.classList.add("bg-white", "text-neutral-900");
     button.setAttribute("aria-pressed", "false");
   });
 
+  // Reset styles for dropdown items
+  const dropdownItems = document.querySelectorAll('.js_dropdown_item');
+  dropdownItems.forEach(item => {
+    item.classList.remove("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
+    item.classList.add("bg-white", "text-neutral-900");
+  });
+
+  // Apply selected styling to the selected button
   selectedButton.classList.add("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
   selectedButton.classList.remove("bg-white", "text-neutral-900");
   selectedButton.setAttribute("aria-pressed", "true");
 }
-
 
 /**
  * Resets the dropdown to its default state - back to 'More years' and reverting the 
