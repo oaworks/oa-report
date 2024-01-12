@@ -99,7 +99,7 @@ function createDropdownContainer() {
   dropdown.classList.add("relative", "inline-block");
 
   const dropdownButton = document.createElement("button");
-  dropdownButton.classList.add("text-xs", "md:text-lg", "px-4", "py-2", "mr-3", "border", "border-neutral-900", "bg-white", "text-neutral-900", "hover:bg-neutral-800", "hover:text-white", "focus:outline-none", "focus:ring-2", "focus:ring-offset-2", "focus:ring-neutral-900");
+  dropdownButton.classList.add("px-4", "py-2", "border", "border-neutral-900", "bg-white", "text-neutral-900", "hover:bg-neutral-800", "hover:text-white", "focus:outline-none", "focus:ring-2", "focus:ring-offset-2", "focus:ring-neutral-900");
   dropdownButton.textContent = "More years";
   dropdownButton.addEventListener("click", () => {
     dropdown.classList.toggle("show-dropdown");
@@ -125,8 +125,7 @@ function createDropdownContainer() {
  * @returns {HTMLElement} The created dropdown item element.
  */
 function createDropdownItem(buttonId, buttonText, startDate, endDate) {
-  const item = document.createElement("a");
-  item.href = "#";
+  const item = document.createElement("button");
   item.classList.add("block", "px-4", "py-2", "text-sm", "text-gray-700", "hover:bg-gray-100");
   item.textContent = buttonText;
   item.addEventListener("click", (event) => {
@@ -152,7 +151,7 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
   button.textContent = buttonText;
 
   // Add classes for styling
-  button.classList.add("text-xs", "md:text-lg", "px-4", "py-2", "mr-3", "border", "border-b-0", "border-neutral-900", "bg-white", "text-neutral-900", "hover:bg-neutral-800", "hover:text-white", "focus:outline-none", "focus:ring-2", "focus:ring-offset-2", "focus:ring-neutral-900", "js_year_select");
+  button.classList.add("px-4", "py-2", "border", "border-b-0", "border-neutral-900", "bg-white", "text-neutral-900", "hover:bg-neutral-800", "hover:text-white", "focus:outline-none", "focus:ring-2", "focus:ring-offset-2", "focus:ring-neutral-900", "js_year_select");
   button.setAttribute("aria-pressed", buttonText === `${DEFAULT_YEAR}` ? "true" : "false");
 
   // Add event listener
