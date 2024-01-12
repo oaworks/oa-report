@@ -54,17 +54,29 @@ export function setDefaultYear(defaultYear) {
 export function bindDynamicYearButtons(startYear, endYear, visibleYears = 4) {
   const yearsContainer = document.getElementById("year-buttons-container");
   const dropdownContainer = createDropdownContainer();
+  const currentYear = new Date().getFullYear(); // Get current year
+  const currentDate = new Date(); // Get current date
 
   for (let year = endYear; year >= startYear; year--) {
     const startDate = createDate(year, 0, 1);
-    const endDate = createDate(year, 11, 31);
+    let endDate;
+
+    // Check if the current year is being processed
+    if (year === currentYear) {
+      endDate = currentDate; // Set endDate to today's date for the current year
+    } else {
+      endDate = createDate(year, 11, 31); // Use 31st Dec for other years
+    }
+
     const buttonId = `year-${year}`;
     const buttonText = `${year}`;
 
     if (endYear - year < visibleYears) {
+      // Display as a button if the year is within the visible range
       const button = createYearButton(buttonId, buttonText, startDate, endDate);
       yearsContainer.appendChild(button);
     } else {
+      // Otherwise, display in a dropdown menu
       const dropdownItem = createDropdownItem(buttonId, buttonText, startDate, endDate);
       dropdownContainer.appendChild(dropdownItem);
     }
@@ -72,7 +84,8 @@ export function bindDynamicYearButtons(startYear, endYear, visibleYears = 4) {
 
   yearsContainer.appendChild(dropdownContainer);
 
-  const allTimeButton = createYearButton("all-time", "All Time", createDate(1980, 0, 1), currentDate);
+  // Create an 'All time' button with fixed start date and current date as the end date
+  const allTimeButton = createYearButton("all-time", "All time", createDate(1980, 0, 1), currentDate);
   yearsContainer.appendChild(allTimeButton);
 }
 
@@ -86,7 +99,7 @@ function createDropdownContainer() {
   dropdown.classList.add("relative", "inline-block");
 
   const dropdownButton = document.createElement("button");
-  dropdownButton.classList.add("text-xs", "md:text-lg", "px-4", "py-2", "border", "border-neutral-900", "bg-white", "text-neutral-900", "hover:bg-neutral-800", "hover:text-white", "focus:outline-none", "focus:ring-2", "focus:ring-offset-2", "focus:ring-neutral-900");
+  dropdownButton.classList.add("text-xs", "md:text-lg", "px-4", "py-2", "mr-3", "border", "border-neutral-900", "bg-white", "text-neutral-900", "hover:bg-neutral-800", "hover:text-white", "focus:outline-none", "focus:ring-2", "focus:ring-offset-2", "focus:ring-neutral-900");
   dropdownButton.textContent = "More years";
   dropdownButton.addEventListener("click", () => {
     dropdown.classList.toggle("show-dropdown");
