@@ -55,11 +55,17 @@ function adjustNavOnScroll() {
     const rect = nav.getBoundingClientRect();
     
     if (rect.top <= 0) {
-      yearButtons.forEach((button) => { button.classList.add("md:border-b") });
+      yearButtons.forEach((button) => { 
+        button.classList.add("md:border-b");
+        button.classList.remove("md:border-b-0");
+      });
       nav.classList.add("shadow-lg", "transition-pb-3", "md:transition-pb-6");
       nav.classList.remove("transition-pb-0");
     } else {
-      yearButtons.forEach((button) => { button.classList.remove("md:border-b") });
+      yearButtons.forEach((button) => { 
+        button.classList.remove("md:border-b");
+        button.classList.add("md:border-b-0");
+      });
       nav.classList.remove("shadow-lg", "transition-pb-3", "md:transition-pb-6");
       nav.classList.add("transition-pb-0");
     }
