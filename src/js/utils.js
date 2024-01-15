@@ -477,3 +477,41 @@ export function showNoResultsRow(columnCount, tableBodyId, tableId) {
   noResultsRow.appendChild(noResultsCell);
   tableBody.appendChild(noResultsRow);
 }
+
+/**
+ * Initialises a dropdown menu. Requires the dropdown container to have button elements as the options.
+ * 
+ * @param {string} dropdownSelector - The CSS selector for the dropdown container.
+ */
+export function initDropdown(dropdownSelector) {
+  const dropdownContainer = document.querySelector(dropdownSelector);
+  if (!dropdownContainer) {
+    console.error('Dropdown container not found:', dropdownSelector);
+    return;
+  }
+
+  const dropdownButton = dropdownContainer.querySelector('button[aria-haspopup="true"]');
+  const dropdownContent = dropdownContainer.querySelector('.js_dropdown_content');
+
+  dropdownButton.addEventListener('click', function(event) {
+    event.stopPropagation();
+    const isExpanded = this.getAttribute('aria-expanded') === 'true';
+    this.setAttribute('aria-expanded', !isExpanded);
+
+    if (isExpanded) {
+      dropdownContent.classList.add('hidden');
+      dropdownContent.setAttribute('hidden', 'true');
+    } else {
+      dropdownContent.classList.remove('hidden');
+      dropdownContent.removeAttribute('hidden');
+    }
+  });
+
+  document.addEventListener('click', function() {
+    if (!dropdownContent.classList.contains('hidden')) {
+      dropdownContent.classList.add('hidden');
+      dropdownContent.setAttribute('hidden', 'true');
+      dropdownButton.setAttribute('aria-expanded', 'false');
+    }
+  });
+}

@@ -1,9 +1,0 @@
-{# Pill-style button component
-{{ component("year-select", {
-  id: "",
-  txt: "",
-  class: ""
-}) }}
-#}
-
-<button class="border border-b-0 inline-flex items-center py-2 px-4 text-xs md:text-lg transition duration-300 ease-in-out hover:border-neutral-800 hover:bg-neutral-800 hover:text-white {% if params.selected %} border-neutral-900 bg-neutral-900 text-white font-semibold{% else %}border-neutral-900 bg-white text-neutral-900{% endif %} js_year_select" id="{{ params.id }}" aria-pressed="{% if params.selected %}true{% else %}false{% endif %}">{{ params.txt }}</button>
