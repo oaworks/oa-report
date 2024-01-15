@@ -3,6 +3,7 @@
 // 
 // =================================================
 
+import { DATE_SELECTION_BUTTON_CLASSES } from './constants.js';
 import { createDate, replaceDateRange, replaceText, initDropdown } from './utils.js';
 import { initInsightsAndStrategies } from './insights-and-strategies.js';
 import { currentActiveExploreItemButton, currentActiveExploreItemData, processExploreDataTable } from './explore.js';
@@ -124,7 +125,7 @@ export function bindDynamicYearButtons(startYear, endYear, visibleYears = 3) {
 
 function createDisabledYearElement(text) {
   const element = document.createElement("div");
-  element.className = "inline-block px-4 py-2 border mt-1 mr-1 md:mt-0 md:mr-3 md:border-b-0 bg-white text-neutral-900 opacity-50 js_year_select";
+  element.className = DATE_SELECTION_BUTTON_CLASSES.disabled;
   element.textContent = text;
   return element;
 }
@@ -139,7 +140,7 @@ function createDropdownContainer() {
   dropdown.classList.add("relative", "inline-block", "js_dropdown");
 
   const dropdownButton = document.createElement("button");
-  dropdownButton.classList.add("px-4", "py-2", "mt-1", "mr-1", "md:mt-0", "md:mr-3", "md:border-b-0", "border", "border-neutral-900", "bg-white", "text-neutral-900", "hover:bg-neutral-800", "hover:text-white", "focus:outline-none", "focus:ring-2", "focus:ring-offset-2", "focus:ring-neutral-900", "js_year_select");
+  dropdownButton.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " js_dropdown_button";
   dropdownButton.setAttribute("aria-haspopup", "true");
   dropdownButton.setAttribute("aria-expanded", "false");
   dropdownButton.innerHTML = "More <span class='sr-only'>years</span> <span class='ml-1 text-xs'>&#9660;</span>";
@@ -176,7 +177,7 @@ function createDropdownContainer() {
  */
 function createDropdownItem(buttonId, buttonText, startDate, endDate, dropdownButton) {
   const item = document.createElement("button");
-  item.classList.add("block", "px-4", "py-2", "w-full", "hover:bg-neutral-900", "hover:text-white",  "focus:outline-none",  "focus:ring-2", "focus:ring-offset-2", "focus:ring-neutral-900", "js_dropdown_item");
+  item.className = DATE_SELECTION_BUTTON_CLASSES.enabled  + " w-full"; 
   item.textContent = buttonText;
 
   item.addEventListener("click", (event) => {
@@ -205,7 +206,7 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
   button.textContent = buttonText;
 
   // Add classes for styling
-  button.classList.add("px-4", "py-2", "border", "mt-1", "mr-1", "md:mt-0", "md:mr-3", "md:border-b-0", "border-neutral-900", "bg-white", "text-neutral-900", "hover:bg-neutral-800", "hover:text-white", "focus:outline-none",  "focus:ring-2", "focus:ring-offset-2", "focus:ring-neutral-900", "js_year_select");
+  button.className = DATE_SELECTION_BUTTON_CLASSES.enabled;
   button.setAttribute("aria-pressed", buttonText === `${DEFAULT_YEAR}` ? "true" : "false");
 
   // Add event listener

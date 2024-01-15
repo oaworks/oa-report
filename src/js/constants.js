@@ -93,6 +93,17 @@ export const EXPLORE_TYPES = {
 };
 
 /**
+ * Class names for the report’s top-nav date or year selection buttons.
+ * This constant provides TailwindCSS classes for the different states of the
+ * date selection buttons, including 'enabled', 'disabled', and 'active'.
+ */
+export const DATE_SELECTION_BUTTON_CLASSES = {
+  enabled: "block px-4 py-2 border mt-1 mr-1 md:mt-0 md:mr-3 md:border-b-0 border-neutral-900 bg-white text-neutral-900 hover:bg-neutral-800 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 js_year_select",
+  disabled: "block px-4 py-2 border mt-1 mr-1 md:mt-0 md:mr-3 md:border-b-0 bg-white text-neutral-900 opacity-50 cursor-not-allowed js_year_select",
+  active: "px-4 py-2 border mt-1 mr-1 md:mt-0 md:mr-3 hover:bg-neutral-800 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 md:border-b-0 bg-neutral-900 text-white font-semibold border-neutral-900 js_year_select"
+}
+
+/**
  * Mapping of explore filter IDs to human-readable labels.
  * @type {Object.<string, string>}
  */
