@@ -132,6 +132,10 @@ permalink: "{{ org._source.objectID | slug }}/"
           <span class="font-semibold uppercase text-sm md:text-base line-thru">
             <span class="bg-neutral-800">
               Data exploration
+              {{ component("tooltip", {
+                msg: "The <em>Data Exploration</em> section is in beta. We’re working on adding more features. If you have any feedback, please <a href='mailto:joe@oa.works?subject=OA.Report feedback' class='underline underline-offset-2 decoration-1'>get in touch by email</a>.",
+                text: "Beta"
+              }) }}
             </span>
           </span>
         </h2>
