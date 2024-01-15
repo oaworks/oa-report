@@ -22,13 +22,23 @@ const lastYearEndDate = createDate(currentDate.getFullYear() - 1, 11, 31);
 const fixedDate = createDate(2023, 5, 30); // Fixed end date for free/non-paying users
 
 /**
- * Sets up the default year for the application.
+ * Sets up the default year for the application, depending on whether the user is a paid user or not.
  * 
  * @param {number} defaultYear - The default year to be selected.
  */
 export function setDefaultYear(defaultYear) {
-  const defaultStartDate = createDate(defaultYear, 0, 1);
-  const defaultEndDate = createDate(defaultYear, 11, 31);
+  let defaultStartDate;
+  let defaultEndDate;
+
+  if (paid) {
+    // For paid users, use the full year
+    defaultStartDate = createDate(defaultYear, 0, 1);
+    defaultEndDate = createDate(defaultYear, 11, 31);
+  } else {
+    // For non-paid users, restrict the date range from Jan 1 to Jun 30 of DEFAULT_YEAR
+    defaultStartDate = createDate(DEFAULT_YEAR, 0, 1);
+    defaultEndDate = createDate(DEFAULT_YEAR, 5, 30); // June 30th
+  }
 
   replaceDateRange(defaultStartDate, defaultEndDate);
   reportDateRange.textContent = `In ${defaultYear}`;
@@ -44,6 +54,7 @@ export function setDefaultYear(defaultYear) {
     }
   }, 0);
 }
+
 
 /**
  * Binds dynamic year buttons to a container and initializes a dropdown for additional years.
