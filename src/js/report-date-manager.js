@@ -177,7 +177,7 @@ function createDropdownContainer() {
  */
 function createDropdownItem(buttonId, buttonText, startDate, endDate, dropdownButton) {
   const item = document.createElement("button");
-  item.className = DATE_SELECTION_BUTTON_CLASSES.enabled  + " w-full"; 
+  item.className = DATE_SELECTION_BUTTON_CLASSES.enabled  + " w-full js_dropdown_item"; 
   item.textContent = buttonText;
 
   item.addEventListener("click", (event) => {
