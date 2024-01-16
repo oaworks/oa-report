@@ -28,32 +28,35 @@ const fixedDate = createDate(2023, 5, 30); // Fixed end date for free/non-paying
  * @param {number} defaultYear - The default year to be selected.
  */
 export function setDefaultYear(defaultYear) {
-  let defaultStartDate;
-  let defaultEndDate;
+  // Attempt to load date range from URL parameters
+  if (!loadDateRangeFromURL()) {
+    // Set default dates based on user type
+    let defaultStartDate, defaultEndDate;
 
-  if (paid) {
-    // For paid users, use the full year
-    defaultStartDate = createDate(defaultYear, 0, 1);
-    defaultEndDate = createDate(defaultYear, 11, 31);
-  } else {
-    // For non-paid users, restrict the date range from Jan 1 to Jun 30 of DEFAULT_YEAR
-    defaultStartDate = createDate(DEFAULT_YEAR, 0, 1);
-    defaultEndDate = createDate(DEFAULT_YEAR, 5, 30); // June 30th
-  }
-
-  replaceDateRange(defaultStartDate, defaultEndDate);
-  reportDateRange.textContent = `In ${defaultYear}`;
-  reportYear.textContent = defaultYear;
-
-  // Wait for the DOM to update with year buttons
-  setTimeout(() => {
-    // Select the default year button and style it as selected
-    const defaultButton = document.getElementById(`year-${defaultYear}`);
-    if (defaultButton) {
-      handleYearButtonLogic(defaultButton, defaultStartDate, defaultEndDate, `${defaultYear}`);
-      updateYearButtonStyling(defaultButton);
+    if (paid) {
+      // For paid users, use the full year
+      defaultStartDate = createDate(defaultYear, 0, 1);
+      defaultEndDate = createDate(defaultYear, 11, 31);
+    } else {
+      // For non-paid users, restrict the date range from Jan 1 to Jun 30 of DEFAULT_YEAR
+      defaultStartDate = createDate(DEFAULT_YEAR, 0, 1);
+      defaultEndDate = createDate(DEFAULT_YEAR, 5, 30); // June 30th
     }
-  }, 0);
+
+    replaceDateRange(defaultStartDate, defaultEndDate);
+    reportDateRange.textContent = `In ${defaultYear}`;
+    reportYear.textContent = defaultYear;
+
+    // Wait for the DOM to update with year buttons
+    setTimeout(() => {
+      // Select the default year button and style it as selected
+      const defaultButton = document.getElementById(`year-${defaultYear}`);
+      if (defaultButton) {
+        handleYearButtonLogic(defaultButton, defaultStartDate, defaultEndDate, `${defaultYear}`);
+        updateYearButtonStyling(defaultButton);
+      }
+    }, 0);
+  }
 }
 
 
@@ -265,6 +268,12 @@ function createDateRangeForm() {
   
     const startDate = new Date(startDateInput.value);
     const endDate = new Date(endDateInput.value);
+    
+    // Update URL with query parameters
+    const queryParams = new URLSearchParams(window.location.search);
+    queryParams.set('start', startDate.toISOString().split('T')[0]);
+    queryParams.set('end', endDate.toISOString().split('T')[0]);
+    history.pushState(null, '', '?' + queryParams.toString());
   
     // Validate dates
     if (startDate > endDate) {
@@ -402,4 +411,18 @@ function resetDropdown() {
     item.classList.remove("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
     item.classList.add("bg-white", "text-neutral-900");
   });
+}
+
+function loadDateRangeFromURL() {
+  const queryParams = new URLSearchParams(window.location.search);
+  if (queryParams.has('start') && queryParams.has('end')) {
+    const startDate = new Date(queryParams.get('start'));
+    const endDate = new Date(queryParams.get('end'));
+
+    // Trigger any additional logic needed to refresh the report
+    handleYearButtonLogic(null, startDate, endDate, `${makeDateReadable(startDate)} &ndash; ${makeDateReadable(endDate)}`);
+    updateYearButtonStyling(null, true);
+    return true; // Indicates that URL parameters were found and used
+  }
+  return false; // Indicates that no URL parameters were found
 }

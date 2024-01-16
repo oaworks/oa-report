@@ -42,6 +42,7 @@ function initialise() {
   bindSmoothScrollLinks(); 
 }
 
+
 /**
  * Adjusts the navigation bar's style based on the scroll position.
  * Adds or removes classes to the navigation bar when it reaches the top of the viewport.
