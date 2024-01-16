@@ -252,7 +252,7 @@ function createDateRangeForm() {
   // Create and append a submit button
   const submitButton = document.createElement("button");
   submitButton.type = "submit";
-  submitButton.className = "text-xs uppercase text-center py-2 px-3 bg-neutral-200 hover:bg-neutral-800 hover:text-white";
+  submitButton.className = "text-xs uppercase md:text-center py-2 px-3 bg-neutral-200 hover:bg-neutral-800 hover:text-white";
   submitButton.textContent = "Submit";
   form.appendChild(submitButton);
 

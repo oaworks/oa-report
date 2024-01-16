@@ -111,6 +111,7 @@ export const EXPLORE_FILTERS = {
   "is_paper": "All articles",
   "is_preprint": "Preprints",
   "is_covered_by_policy": "Covered by policy",
+  "is_original_research": "Original research",
   "with_grant_id": "With grant ID",
   "is_found_only_by_external_sources": "Found only by external sources",
   "is_found_only_by_oareport": "Found only by OA.Report",
