@@ -130,7 +130,7 @@ export function bindDynamicYearButtons(startYear, endYear, visibleYears = 3) {
 
 function createDisabledYearElement(text) {
   const element = document.createElement("div");
-  element.className = DATE_SELECTION_BUTTON_CLASSES.disabled;
+  element.className = DATE_SELECTION_BUTTON_CLASSES.disabled + " px-4";
   element.textContent = text;
   return element;
 }
@@ -142,7 +142,7 @@ function createDisabledYearElement(text) {
  */
 function createDropdownContainer() {
   const dropdown = document.createElement("div");
-  dropdown.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " relative inline-block js_dropdown";
+  dropdown.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " relative inline-block px-4 js_dropdown";
 
   const dropdownButton = document.createElement("button");
   dropdownButton.className = "h-full w-full js_dropdown_button";
@@ -211,7 +211,7 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
   button.textContent = buttonText;
 
   // Add classes for styling
-  button.className = DATE_SELECTION_BUTTON_CLASSES.enabled;
+  button.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " px-4";
   button.setAttribute("aria-pressed", buttonText === `${DEFAULT_YEAR}` ? "true" : "false");
 
   // Add event listener
@@ -230,7 +230,7 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
  */
 function createDateRangeForm() {
   const form = document.createElement("form");
-  form.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " date_range_form flex items-center hover:bg-white hover:text-neutral-900"; 
+  form.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " flex items-center hover:bg-white hover:text-neutral-900 date_range_form"; 
   form.setAttribute('role', 'form');
   form.setAttribute('aria-labelledby', 'date-range-form-title');
 
@@ -252,7 +252,7 @@ function createDateRangeForm() {
   // Create and append a submit button
   const submitButton = document.createElement("button");
   submitButton.type = "submit";
-  submitButton.className = "text-xs md:text-sm uppercase font-semibold text-center bg-neutral-900 text-white my-2 py-2 px-4 hover:bg-neutral-800";
+  submitButton.className = "text-xs uppercase text-center py-2 px-3 bg-neutral-200 hover:bg-neutral-800 hover:text-white";
   submitButton.textContent = "Submit";
   form.appendChild(submitButton);
 
