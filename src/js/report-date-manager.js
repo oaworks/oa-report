@@ -145,7 +145,7 @@ function createDropdownContainer() {
   dropdown.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " relative inline-block js_dropdown";
 
   const dropdownButton = document.createElement("button");
-  dropdownButton.className = "h-full js_dropdown_button";
+  dropdownButton.className = "h-full w-full js_dropdown_button";
   dropdownButton.setAttribute("aria-haspopup", "true");
   dropdownButton.setAttribute("aria-expanded", "false");
   dropdownButton.innerHTML = "More <span class='sr-only'>years</span> <span class='ml-1 text-xs'>&#9660;</span>";
@@ -317,27 +317,40 @@ function handleYearButtonLogic(button, startDate, endDate, buttonText) {
  * Updates the styling of year selection buttons and resets styles for all other year buttons and dropdown items.
  *
  * @param {HTMLElement} selectedButton - The button element that was selected.
+ * @param {boolean} isDropdownItem - Indicates whether the selected button is a dropdown item.
  */
-function updateYearButtonStyling(selectedButton) {
-  // Reset styles for year buttons
+function updateYearButtonStyling(selectedButton, isDropdownItem = false) {
+  // Reset styles for year buttons and dropdown items
   const yearButtons = document.querySelectorAll(".js_year_select");
   yearButtons.forEach(button => {
+    // Reset styles for each button
     button.classList.remove("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
     button.classList.add("bg-white", "text-neutral-900");
     button.setAttribute("aria-pressed", "false");
+
+    // Reset styles for the container of the dropdown button
+    const parentDropdown = button.closest('.js_dropdown');
+    if (parentDropdown) {
+      parentDropdown.classList.remove("bg-neutral-900", "border-neutral-900");
+      parentDropdown.classList.add("bg-white");
+    }
   });
 
-  // Reset styles for dropdown items
-  const dropdownItems = document.querySelectorAll('.js_dropdown_item');
-  dropdownItems.forEach(item => {
-    item.classList.remove("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
-    item.classList.add("bg-white", "text-neutral-900");
-  });
+  // Apply selected styling to the selected button only if it's not the dropdown button
+  if (!selectedButton.classList.contains('js_dropdown_button')) {
+    selectedButton.classList.add("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
+    selectedButton.classList.remove("bg-white", "text-neutral-900");
+    selectedButton.setAttribute("aria-pressed", "true");
+  }
 
-  // Apply selected styling to the selected button
-  selectedButton.classList.add("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
-  selectedButton.classList.remove("bg-white", "text-neutral-900", "opacity-50");
-  selectedButton.setAttribute("aria-pressed", "true");
+  // If the selected button is a dropdown item, apply styling to the dropdown container only
+  if (isDropdownItem) {
+    const dropdownContainer = selectedButton.closest('.js_dropdown');
+    if (dropdownContainer) {
+      dropdownContainer.classList.add("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
+      dropdownContainer.classList.remove("bg-white");
+    }
+  }
 }
 
 /**
