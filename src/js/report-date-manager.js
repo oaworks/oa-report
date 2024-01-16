@@ -339,7 +339,7 @@ function updateYearButtonStyling(selectedButton, isDropdownItem = false) {
   // Apply selected styling to the selected button only if it's not the dropdown button
   if (!selectedButton.classList.contains('js_dropdown_button')) {
     selectedButton.classList.add("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
-    selectedButton.classList.remove("bg-white", "text-neutral-900");
+    selectedButton.classList.remove("bg-white", "text-neutral-900", "opacity-50");
     selectedButton.setAttribute("aria-pressed", "true");
   }
 
