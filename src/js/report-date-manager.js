@@ -4,7 +4,7 @@
 // =================================================
 
 import { DATE_SELECTION_BUTTON_CLASSES } from './constants.js';
-import { createDate, replaceDateRange, replaceText, initDropdown } from './utils.js';
+import { makeDateReadable, createDate, replaceDateRange, replaceText, initDropdown } from './utils.js';
 import { initInsightsAndStrategies } from './insights-and-strategies.js';
 import { currentActiveExploreItemButton, currentActiveExploreItemData, processExploreDataTable } from './explore.js';
 
@@ -256,6 +256,28 @@ function createDateRangeForm() {
   submitButton.textContent = "Submit";
   form.appendChild(submitButton);
 
+  // Add event listener for form submission
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+  
+    const startDateInput = document.getElementById('start-date');
+    const endDateInput = document.getElementById('end-date');
+  
+    const startDate = new Date(startDateInput.value);
+    const endDate = new Date(endDateInput.value);
+  
+    // Validate dates
+    if (startDate > endDate) {
+      console.log('Start date must be before end date.');
+      return;
+    }
+  
+    const dateRangeForm = document.getElementsByClassName("date_range_form");
+    handleYearButtonLogic(null, startDate, endDate, `${makeDateReadable(startDate)} &ndash; ${makeDateReadable(endDate)}`);
+    updateYearButtonStyling(null, true);
+  });
+  
+
   return form;
 }
 
@@ -280,6 +302,7 @@ function createDateInput(id, label) {
   input.id = id;
   input.className = "mr-4 text-xs md:text-sm text-center uppercase"; 
   input.setAttribute('aria-label', label);
+  input.setAttribute('required', true);
   wrapper.appendChild(input);
 
   return wrapper;
@@ -296,8 +319,11 @@ function createDateInput(id, label) {
  * @param {string} buttonText - The text displayed on the button, typically the year.
  */
 function handleYearButtonLogic(button, startDate, endDate, buttonText) {
-  // Reset the dropdown if a visible year button is clicked
-  if (!button.classList.contains('js_dropdown_item')) {
+  // Check if the button is null or not
+  const isDropdownItem = button && button.classList.contains('js_dropdown_item');
+
+  // Reset the dropdown if a visible year button is clicked and it's not a dropdown item
+  if (!isDropdownItem) {
     resetDropdown();
   }
 
@@ -310,7 +336,10 @@ function handleYearButtonLogic(button, startDate, endDate, buttonText) {
     processExploreDataTable(currentActiveExploreItemButton, currentActiveExploreItemData);
   }
 
-  updateYearButtonStyling(button);
+  // Only update styling if button is not null
+  if (button) {
+    updateYearButtonStyling(button, isDropdownItem);
+  }
 }
 
 /**
@@ -323,12 +352,10 @@ function updateYearButtonStyling(selectedButton, isDropdownItem = false) {
   // Reset styles for year buttons and dropdown items
   const yearButtons = document.querySelectorAll(".js_year_select");
   yearButtons.forEach(button => {
-    // Reset styles for each button
     button.classList.remove("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
     button.classList.add("bg-white", "text-neutral-900");
     button.setAttribute("aria-pressed", "false");
 
-    // Reset styles for the container of the dropdown button
     const parentDropdown = button.closest('.js_dropdown');
     if (parentDropdown) {
       parentDropdown.classList.remove("bg-neutral-900", "border-neutral-900");
@@ -336,19 +363,21 @@ function updateYearButtonStyling(selectedButton, isDropdownItem = false) {
     }
   });
 
-  // Apply selected styling to the selected button only if it's not the dropdown button
-  if (!selectedButton.classList.contains('js_dropdown_button')) {
-    selectedButton.classList.add("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
-    selectedButton.classList.remove("bg-white", "text-neutral-900", "opacity-50");
-    selectedButton.setAttribute("aria-pressed", "true");
-  }
+  // Check if selectedButton is not null before applying styles
+  if (selectedButton) {
+    if (!selectedButton.classList.contains('js_dropdown_button')) {
+      selectedButton.classList.add("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
+      selectedButton.classList.remove("bg-white", "text-neutral-900", "opacity-50");
+      selectedButton.setAttribute("aria-pressed", "true");
+    }
 
-  // If the selected button is a dropdown item, apply styling to the dropdown container only
-  if (isDropdownItem) {
-    const dropdownContainer = selectedButton.closest('.js_dropdown');
-    if (dropdownContainer) {
-      dropdownContainer.classList.add("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
-      dropdownContainer.classList.remove("bg-white");
+    // If the selected button is a dropdown item, apply styling to the dropdown container only
+    if (isDropdownItem) {
+      const dropdownContainer = selectedButton.closest('.js_dropdown');
+      if (dropdownContainer) {
+        dropdownContainer.classList.add("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
+        dropdownContainer.classList.remove("bg-white");
+      }
     }
   }
 }
