@@ -120,7 +120,12 @@ export function bindDynamicYearButtons(startYear, endYear, visibleYears = 3) {
   }
   yearsContainer.appendChild(allTimeButton);
 
-  if (paid) initDropdown(".js_dropdown");
+  // Create and append the date range form for paid users, initialise the dropdown menu
+  if (paid) {
+    const dateRangeForm = createDateRangeForm();
+    yearsContainer.appendChild(dateRangeForm); // Append the form to the container
+    initDropdown(".js_dropdown");
+  }
 }
 
 function createDisabledYearElement(text) {
@@ -137,10 +142,10 @@ function createDisabledYearElement(text) {
  */
 function createDropdownContainer() {
   const dropdown = document.createElement("div");
-  dropdown.classList.add("relative", "inline-block", "js_dropdown");
+  dropdown.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " relative inline-block js_dropdown";
 
   const dropdownButton = document.createElement("button");
-  dropdownButton.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " js_dropdown_button";
+  dropdownButton.className = "h-full js_dropdown_button";
   dropdownButton.setAttribute("aria-haspopup", "true");
   dropdownButton.setAttribute("aria-expanded", "false");
   dropdownButton.innerHTML = "More <span class='sr-only'>years</span> <span class='ml-1 text-xs'>&#9660;</span>";
@@ -177,7 +182,7 @@ function createDropdownContainer() {
  */
 function createDropdownItem(buttonId, buttonText, startDate, endDate, dropdownButton) {
   const item = document.createElement("button");
-  item.className = DATE_SELECTION_BUTTON_CLASSES.enabled  + " w-full js_dropdown_item"; 
+  item.className = DATE_SELECTION_BUTTON_CLASSES.enabled  + " py-2 w-full js_dropdown_item"; 
   item.textContent = buttonText;
 
   item.addEventListener("click", (event) => {
@@ -215,6 +220,69 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
   });
 
   return button;
+}
+
+/**
+ * Creates a form with two date input fields for selecting a custom date range,
+ * ensuring a11y compliance.
+ * 
+ * @returns {HTMLElement} The created form element with date inputs and a submit button.
+ */
+function createDateRangeForm() {
+  const form = document.createElement("form");
+  form.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " date_range_form flex items-center hover:bg-white hover:text-neutral-900"; 
+  form.setAttribute('role', 'form');
+  form.setAttribute('aria-labelledby', 'date-range-form-title');
+
+  // Title for the form (for a11y)
+  const formTitle = document.createElement('h2');
+  formTitle.id = 'date-range-form-title';
+  formTitle.textContent = 'Select custom date range';
+  formTitle.className = 'sr-only';
+  form.appendChild(formTitle);
+
+  // Create the start date input
+  const startDateInput = createDateInput("start-date", "Start Date");
+  form.appendChild(startDateInput);
+
+  // Create the end date input
+  const endDateInput = createDateInput("end-date", "End Date");
+  form.appendChild(endDateInput);
+
+  // Create and append a submit button
+  const submitButton = document.createElement("button");
+  submitButton.type = "submit";
+  submitButton.className = "text-xs md:text-sm uppercase font-semibold text-center bg-neutral-900 text-white my-2 py-2 px-4 hover:bg-neutral-800";
+  submitButton.textContent = "Submit";
+  form.appendChild(submitButton);
+
+  return form;
+}
+
+/**
+ * Creates a date input field with a label, ensuring a11y compliance.
+ * 
+ * @param {string} id - The ID to be assigned to the input field.
+ * @param {string} label - The label text for the input field.
+ * @returns {HTMLElement} The created input field with label.
+ */
+function createDateInput(id, label) {
+  const wrapper = document.createElement("div");
+
+  const labelElement = document.createElement("label");
+  labelElement.htmlFor = id;
+  labelElement.textContent = label;
+  labelElement.className = "mr-2 font-semibold uppercase text-xs text-neutral-500";
+  wrapper.appendChild(labelElement);
+
+  const input = document.createElement("input");
+  input.type = "date";
+  input.id = id;
+  input.className = "mr-4 text-xs md:text-sm text-center uppercase"; 
+  input.setAttribute('aria-label', label);
+  wrapper.appendChild(input);
+
+  return wrapper;
 }
 
 /**
