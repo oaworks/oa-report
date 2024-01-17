@@ -73,7 +73,7 @@ export function bindDynamicYearButtons(startYear, endYear, visibleYears = 3) {
   const yearsContainer = document.getElementById("year-buttons-container");
   const currentYear = new Date().getFullYear(); // Get current year
   const currentDate = new Date(); // Get current date
-  const { dropdown, dropdownContent, dropdownButton } = createDropdownContainer();
+  const { dropdown, dropdownContent, dropdownButton } = createDropdownContainer("date_range_more_dropdown");
 
   for (let year = endYear; year >= startYear; year--) {
     const startDate = createDate(year, 0, 1); // Create a date for January 1st of the year
@@ -143,12 +143,13 @@ function createDisabledYearElement(text) {
  * 
  * @returns {HTMLElement} The created dropdown container element.
  */
-function createDropdownContainer() {
+function createDropdownContainer(id = null) {
   const dropdown = document.createElement("div");
   dropdown.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " relative inline-block px-4 js_dropdown";
 
   const dropdownButton = document.createElement("button");
   dropdownButton.className = "h-full w-full js_dropdown_button";
+  if (id) dropdownButton.id = id;
   dropdownButton.setAttribute("aria-haspopup", "true");
   dropdownButton.setAttribute("aria-expanded", "false");
   dropdownButton.innerHTML = "More <span class='sr-only'>years</span> <span class='ml-1 text-xs'>&#9660;</span>";
