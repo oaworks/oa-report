@@ -277,7 +277,7 @@ async function addExploreFiltersToDOM(query) {
 function createExploreFilterRadioButton(id, isChecked) {
   const label = EXPLORE_FILTERS[id] || id; // Use label from filters or default to ID
   const filterRadioButton = document.createElement('div');
-  filterRadioButton.className = 'flex items-center mr-4 mb-3';
+  filterRadioButton.className = 'flex items-center mr-3 md:mr-6 mb-3';
 
   // Creating and appending radio input
   const radioInput = document.createElement('input');
@@ -296,7 +296,7 @@ function createExploreFilterRadioButton(id, isChecked) {
   const labelElement = document.createElement('label');
   Object.assign(labelElement, {
     htmlFor: `filter_${id}`,
-    className: 'text-xs cursor-pointer flex items-center whitespace-nowrap',
+    className: 'text-xs md:text-base cursor-pointer flex items-center whitespace-nowrap',
     textContent: label
   });
   filterRadioButton.appendChild(labelElement);
@@ -321,7 +321,7 @@ function addRecordsShownSelectToDOM() {
   // Create the select element
   const selectMenu = document.createElement("select");
   selectMenu.id = "records_shown_select";
-  selectMenu.className = "appearance-none py-1 px-2 border border-neutral-500 bg-neutral-800 text-white text-xs";
+  selectMenu.className = "appearance-none py-1 px-2 border border-neutral-500 bg-neutral-800 text-white text-xs md:text-base";
   selectMenu.addEventListener("change", handleRecordsShownChange);
 
   // Define options for the select menu
@@ -929,7 +929,6 @@ async function addCSVExportLink() { // Declare the function as async
   // Create the CSV export link
   const csvExportLink = document.createElement('a');
   csvExportLink.id = 'explore_export_link';
-  csvExportLink.className = 'items-center space-x-2 px-4 py-2 text-base font-medium uppercase border border-neutral-100 text-neutral-100 bg-neutral-800 hover:bg-neutral-100 hover:text-neutral-900 focus:outline-none focus:ring-1 focus:ring-carnation-400 duration-500 whitespace-nowrap inline-block';
   
   // Generate the href attribute value based on current data
   try {

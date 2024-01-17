@@ -470,7 +470,7 @@ export function showNoResultsRow(columnCount, tableBodyId, tableId) {
   // Set the colspan attribute to span all columns, TailwindCSS classes, and aria-labelledby for accessibility
   noResultsCell.colSpan = columnCount;
   noResultsCell.setAttribute('aria-labelledby', tableId);
-  noResultsCell.classList.add('border-b', 'border-neutral-500', 'p-4', 'text-xl');
+  noResultsCell.classList.add('border-b', 'border-neutral-500', 'p-4');
   noResultsCell.textContent = 'No results found.';
 
   // Append the cell to the row, and the row to the table body

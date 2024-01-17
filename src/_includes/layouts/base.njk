@@ -1,7 +1,7 @@
 <!doctype html>
 <html class="no-js scroll-smooth" lang="en">
   {% include 'partials/head.njk' %}
-  <body class="flex flex-col h-screen justify-between antialiased text-neutral-900 tracking-wide leading-relaxed text-sm md:text-xl" data-api-endpoint="{{ env.ELEVENTY_API_ENDPOINT }}">
+  <body class="flex flex-col h-screen justify-between antialiased text-neutral-900 tracking-wide leading-relaxed text-xs md:text-sm lg:text-lg" data-api-endpoint="{{ env.ELEVENTY_API_ENDPOINT }}">
     {% if site.banner %}
     <section class="py-4 bg-carnation-400 font-medium text-center text-xs" style="z-index: 5; position: sticky; top: 0;">
       <p>{{ site.banner | safe }}</p>

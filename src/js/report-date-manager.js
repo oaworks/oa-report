@@ -233,7 +233,8 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
  */
 function createDateRangeForm() {
   const form = document.createElement("form");
-  form.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " flex items-center hover:bg-white hover:text-neutral-900 date_range_form"; 
+  form.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " flex items-center hover:bg-white hover:text-neutral-900"; 
+  form.id = "date_range_form";
   form.setAttribute('role', 'form');
   form.setAttribute('aria-labelledby', 'date-range-form-title');
 
@@ -281,9 +282,9 @@ function createDateRangeForm() {
       return;
     }
   
-    const dateRangeForm = document.getElementsByClassName("date_range_form");
+    const dateRangeForm = document.getElementById("date_range_form");
     handleYearButtonLogic(null, startDate, endDate, `${makeDateReadable(startDate)} &ndash; ${makeDateReadable(endDate)}`);
-    updateYearButtonStyling(null, true);
+    updateYearButtonStyling(dateRangeForm, true);
   });
   
 
@@ -303,13 +304,13 @@ function createDateInput(id, label) {
   const labelElement = document.createElement("label");
   labelElement.htmlFor = id;
   labelElement.textContent = label;
-  labelElement.className = "mr-2 font-semibold uppercase text-xs text-neutral-500";
+  labelElement.className = "mr-1 font-semibold uppercase text-xs text-neutral-500";
   wrapper.appendChild(labelElement);
 
   const input = document.createElement("input");
   input.type = "date";
   input.id = id;
-  input.className = "mr-4 text-xs md:text-sm text-center uppercase"; 
+  input.className = "mr-4 text-xs md:text-sm md:text-center uppercase"; 
   input.setAttribute('aria-label', label);
   input.setAttribute('required', true);
   wrapper.appendChild(input);
@@ -380,6 +381,8 @@ function updateYearButtonStyling(selectedButton, isDropdownItem = false) {
       selectedButton.setAttribute("aria-pressed", "true");
     }
 
+    // todo: STYLE FORM HERE
+
     // If the selected button is a dropdown item, apply styling to the dropdown container only
     if (isDropdownItem) {
       const dropdownContainer = selectedButton.closest('.js_dropdown');
@@ -425,6 +428,9 @@ function loadDateRangeFromURL() {
     // Trigger any additional logic needed to refresh the report
     handleYearButtonLogic(null, startDate, endDate, `${makeDateReadable(startDate)} &ndash; ${makeDateReadable(endDate)}`);
     updateYearButtonStyling(null, true);
+
+    
+
     return true; // Indicates that URL parameters were found and used
   }
   return false; // Indicates that no URL parameters were found
