@@ -399,7 +399,20 @@ function updateYearButtonStyling(selectedButton, isDropdownItem = false) {
       selectedButton.setAttribute("aria-pressed", "true");
     }
 
-    // todo: STYLE FORM HERE
+    // Style form contents if the selected "button" is the date range form
+    if (selectedButton.tagName.toLowerCase() === 'form') {
+      selectedButton.classList.remove("hover:bg-white", "hover:text-neutral-900");
+
+      const labels = selectedButton.querySelectorAll('label');
+      labels.forEach(label => {
+        label.classList.add("text-white");
+      });
+
+      const inputs = selectedButton.querySelectorAll('input');
+      inputs.forEach(input => {
+        input.classList.add("text-white", "bg-neutral-900", "border-neutral-900");
+      });
+    }
 
     // If the selected button is a dropdown item, apply styling to the dropdown container only
     if (isDropdownItem) {
