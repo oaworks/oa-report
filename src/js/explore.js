@@ -318,10 +318,17 @@ function addRecordsShownSelectToDOM() {
   const exploreRecordsShownElement = document.getElementById("explore_records_shown");
   exploreRecordsShownElement.innerHTML = ""; // Clear existing menu if any
 
+  // Create the label element
+  const label = document.createElement("label");
+  label.setAttribute("for", "records_shown_select");
+  label.className = "sr-only"; // Hide the label visually
+  label.textContent = "Records shown:"; 
+
   // Create the select element
   const selectMenu = document.createElement("select");
   selectMenu.id = "records_shown_select";
   selectMenu.className = "appearance-none py-1 px-2 border border-neutral-500 bg-neutral-800 text-white text-xs md:text-base";
+  selectMenu.setAttribute("aria-labelledby", "records_shown_select_label");
   selectMenu.addEventListener("change", handleRecordsShownChange);
 
   // Define options for the select menu
@@ -336,6 +343,8 @@ function addRecordsShownSelectToDOM() {
     selectMenu.appendChild(option);
   });
 
+  // Append the label and select menu to the exploreRecordsShownElement
+  exploreRecordsShownElement.appendChild(label);
   exploreRecordsShownElement.appendChild(selectMenu);
 }
 
@@ -728,7 +737,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
       );
   } else if (typeof content === 'object' && content !== null) {
     // Check if the content is an object and format its values as a list
-    cell.innerHTML = `<ul">${formatObjectValuesAsList(content, true)}</ul>`;
+    cell.innerHTML = `<ul>${formatObjectValuesAsList(content, true)}</ul>`;
   } else if (content === null || content === undefined || content === "'null'" || content === '"null"' || content === "null") {
     cell.innerHTML = ""; // Replace null values with empty string
   } else {
