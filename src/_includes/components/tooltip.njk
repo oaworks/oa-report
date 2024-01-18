@@ -5,7 +5,19 @@
 }) }}
 #}
 
-<sup class="tooltip" tabindex="0" data-tippy-content="{{ params.msg }}"{% if params.id %} id="{{ params.id }}"{% endif %}>
+<sup 
+  class="tooltip" 
+  tabindex="0" 
+  data-tippy-content="{{ params.msg }}"
+  {% if params.id %} id="{{ params.id }}"{% endif %} 
+  aria-label="
+    {% if params.label %}
+      {{ params.label }}
+    {% else %}
+      More information
+    {% endif %}
+  "
+>
   {% if params.text %}
     <span class="py-0.5 px-1 font-semibold uppercase text-xs border">{{ params.text }}</span>
   {% else %}

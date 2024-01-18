@@ -102,6 +102,7 @@ export function initInsightsAndStrategies(org) {
         // Access tooltip instance and its ID; use it for aria-controls attribute
         const tooltipID = instance.popper.id;
         infoContents.setAttribute('aria-controls', tooltipID);
+        infoContents.setAttribute('aria-labelledby', numerator); // Set a11y label to the insight’s ID
 
         // Get numerator’s count query
         let num = axios.get(countQueryPrefix + orgData.hits.hits[0]._source.analysis[numerator].query);
