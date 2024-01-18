@@ -30,9 +30,20 @@ const fixedDate = createDate(2023, 5, 30); // Fixed end date for free/non-paying
 export function setDefaultYear(defaultYear) {
   // Wait for the DOM to update year buttons or date rage inputs
   setTimeout(() => {
-    // Attempt to load date range from URL parameters
-    if (!loadDateRangeFromURL()) {
-      // Set default dates based on user type
+    const queryParams = new URLSearchParams(window.location.search);
+    if (queryParams.has('start') && queryParams.has('end')) {
+      // Attempt to load date range from URL parameters
+      const startDate = new Date(queryParams.get('start'));
+      const endDate = new Date(queryParams.get('end'));
+
+      document.getElementById('start-date').value = startDate.toISOString().split('T')[0];
+      document.getElementById('end-date').value = endDate.toISOString().split('T')[0];
+
+      // Trigger any additional logic needed to refresh the report
+      handleYearButtonLogic(null, startDate, endDate, `${makeDateReadable(startDate)} &ndash; ${makeDateReadable(endDate)}`);
+      updateYearButtonStyling(null, true);
+    } else {
+      // Otherwise, set default dates or years based on user type
       let defaultStartDate, defaultEndDate;
 
       if (paid) {
@@ -415,24 +426,4 @@ function resetDropdown() {
     item.classList.remove("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
     item.classList.add("bg-white", "text-neutral-900");
   });
-}
-
-function loadDateRangeFromURL() {
-  const queryParams = new URLSearchParams(window.location.search);
-  if (queryParams.has('start') && queryParams.has('end')) {
-    const startDate = new Date(queryParams.get('start'));
-    const endDate = new Date(queryParams.get('end'));
-
-    document.getElementById('start-date').value = startDate.toISOString().split('T')[0];
-    document.getElementById('end-date').value = endDate.toISOString().split('T')[0];
-
-    // Trigger any additional logic needed to refresh the report
-    handleYearButtonLogic(null, startDate, endDate, `${makeDateReadable(startDate)} &ndash; ${makeDateReadable(endDate)}`);
-    updateYearButtonStyling(null, true);
-
-    
-
-    return true; // Indicates that URL parameters were found and used
-  }
-  return false; // Indicates that no URL parameters were found
 }
