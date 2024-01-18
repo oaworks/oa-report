@@ -103,6 +103,7 @@ export function initInsightsAndStrategies(org) {
         const tooltipID = instance.popper.id;
         infoContents.setAttribute('aria-controls', tooltipID);
         infoContents.setAttribute('aria-labelledby', numerator); // Set a11y label to the insight’s ID
+        infoContents.setAttribute('title', 'More information on this metric'); // Set title 
 
         // Get numerator’s count query
         let num = axios.get(countQueryPrefix + orgData.hits.hits[0]._source.analysis[numerator].query);
