@@ -445,4 +445,16 @@ function resetDropdown() {
     item.classList.remove("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
     item.classList.add("bg-white", "text-neutral-900");
   });
+
+  // Reset styling for the date range form
+  const dateRangeForm = document.getElementById("date_range_form");
+  const labels = dateRangeForm.querySelectorAll('label');
+  labels.forEach(label => {
+    label.classList.remove("text-white");
+  });
+
+  const inputs = dateRangeForm.querySelectorAll('input');
+  inputs.forEach(input => {
+    input.classList.remove("text-white", "bg-neutral-900", "border-neutral-900");
+  });
 }
