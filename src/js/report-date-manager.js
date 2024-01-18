@@ -106,8 +106,7 @@ export function bindDynamicYearButtons(startYear, endYear, visibleYears = 3) {
       if (paid) {
         element = createYearButton(buttonId, buttonText, startDate, endDate);
       } else {
-        element = createDisabledYearElement(buttonText);
-        console.log(`element: ${year}`);
+        element = createDisabledYearElement(buttonId, buttonText);
         if (year === DEFAULT_YEAR) {
           updateYearButtonStyling(element);
         }
@@ -130,7 +129,7 @@ export function bindDynamicYearButtons(startYear, endYear, visibleYears = 3) {
   if (paid) {
     allTimeButton = createYearButton("all-time", "All time", createDate(1980, 0, 1), currentDate);
   } else {
-    allTimeButton = createDisabledYearElement("All time");
+    allTimeButton = createDisabledYearElement("all-time", "All time");
   }
   yearsContainer.appendChild(allTimeButton);
 
@@ -142,9 +141,10 @@ export function bindDynamicYearButtons(startYear, endYear, visibleYears = 3) {
   }
 }
 
-function createDisabledYearElement(text) {
+function createDisabledYearElement(id, text) {
   const element = document.createElement("div");
   element.className = DATE_SELECTION_BUTTON_CLASSES.disabled + " px-4";
+  element.id = id;
   element.textContent = text;
   return element;
 }
