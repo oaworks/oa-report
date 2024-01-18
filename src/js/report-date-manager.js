@@ -316,7 +316,7 @@ function createDateInput(id, label) {
   const labelElement = document.createElement("label");
   labelElement.htmlFor = id;
   labelElement.textContent = label;
-  labelElement.className = "mr-1 font-semibold uppercase text-xs text-neutral-500";
+  labelElement.className = "mr-1 font-semibold uppercase text-xs text-neutral-600";
   wrapper.appendChild(labelElement);
 
   const input = document.createElement("input");
