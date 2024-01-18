@@ -376,7 +376,13 @@ function updateYearButtonStyling(selectedButton, isDropdownItem = false) {
   yearButtons.forEach(button => {
     button.classList.remove("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
     button.classList.add("bg-white", "text-neutral-900");
-    button.setAttribute("aria-pressed", "false");
+
+    // a11y: check if the element is a button before setting aria-pressed
+    // This ARIA role can only be applied to these elements: div and form can not be pressed
+    // See axe-core 4.4, "Elements must only use allowed ARIA attributes"
+    if (button.tagName.toLowerCase() === 'button') {
+      button.setAttribute("aria-pressed", "false");
+    }
 
     const parentDropdown = button.closest('.js_dropdown');
     if (parentDropdown) {
