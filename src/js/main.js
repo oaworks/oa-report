@@ -5,7 +5,6 @@
 
 import { bindSmoothScrollLinks } from './utils.js';
 import { DEFAULT_YEAR, FIRST_YEAR, currentDate, bindDynamicYearButtons, setDefaultYear } from './report-date-manager.js';
-import { initInsightsAndStrategies } from './insights-and-strategies.js';
 import { initDataExplore } from './explore.js';
 import { initStrategyTabs } from './strategies.js';
 
@@ -26,8 +25,6 @@ function initialise() {
   // Set the default year
   setDefaultYear(DEFAULT_YEAR);
   bindDynamicYearButtons(FIRST_YEAR, currentDate.getFullYear()); 
-
-  initInsightsAndStrategies(org);
 
   // Check if the element with id="explore" exists to trigger data explore initialisation
   var exploreElement = document.getElementById("explore");
