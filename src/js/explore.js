@@ -257,13 +257,6 @@ async function addExploreFiltersToDOM(query) {
     const radioButton = createExploreFilterRadioButton(id, index === 0);
     exploreFiltersElement.appendChild(radioButton);
   });
-
-  // Hide the explore form if only one filter is present
-  if (filters.length === 1) {
-    displayNone("explore_filter_field"); // Hide the explore form
-  } else {
-    removeDisplayStyle("explore_filter_field"); // Display the explore form
-  }
 }
 
 /**
