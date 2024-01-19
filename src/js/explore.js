@@ -7,8 +7,8 @@
 // Imports
 // =================================================
 
-import { displayNone, isCacheExpired, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, deepCopy, makeNumberReadable, convertTextToLinks, removeDisplayStyle, showNoResultsRow } from "./utils.js";
-import { EXPLORE_TYPES, EXPLORE_FILTERS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, COUNTRY_CODES } from "./constants.js";
+import { displayNone, isCacheExpired, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, makeNumberReadable, convertTextToLinks, removeDisplayStyle, showNoResultsRow } from "./utils.js";
+import { CSV_EXPORT_BASE, EXPLORE_TYPES, EXPLORE_FILTERS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, COUNTRY_CODES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { orgDataPromise } from './insights-and-strategies.js';
 import { createPostData } from './api-requests.js';
@@ -17,11 +17,6 @@ import { createPostData } from './api-requests.js';
 // Global variables
 // =================================================
 
-// TEMP; these constants are repeated in insights-and-strategies.js
-const base             = `https://bg.${apiEndpoint}.oa.works/report/`,
-      baseBg           = `https://bg.${apiEndpoint}.oa.works/report/`,
-      queryBase        = `${base}works?size=all&`,
-      csvExportBase    = `${baseBg}works.csv?size=all&`;
 const exportSort = "&sort=published_date:desc";
 
 let orgKey = "",
@@ -967,7 +962,7 @@ async function generateCSVLinkHref() {
     include = `&include=${hasCustomExportIncludes}`;
   }
 
-  const csvLink = csvExportBase + query + include + exportSort + orgKey;
+  const csvLink = CSV_EXPORT_BASE + query + include + exportSort + orgKey;
   console.log(csvLink);
 
   try {
@@ -1015,7 +1010,7 @@ window.getExportLink = function() {
     if ((hasCustomExportIncludes !== undefined && hasCustomExportIncludes !== "")) {
       include = `&include=${hasCustomExportIncludes}`;
     }
-    query = csvExportBase + query + include + exportSort + email + orgKey;
+    query = CSV_EXPORT_BASE + query + include + exportSort + email + orgKey;
 
     var xhr = new XMLHttpRequest();
     xhr.open("GET", query);
