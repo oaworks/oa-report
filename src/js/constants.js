@@ -3,6 +3,41 @@
 // ========================
 
 /**
+ * Base URL for the API endpoint.
+ * This serves as the foundational URL upon which all other endpoints are built.
+ * @type {string}
+ */
+export const API_BASE_URL = `https://bg.${apiEndpoint}.oa.works/report/`;
+
+/**
+ * Endpoint for querying works with a default size of 100.
+ * Utilizes the BASE_URL as its foundational part and appends specific parameters for this endpoint.
+ * @type {string}
+ */
+export const QUERY_BASE = `${API_BASE_URL}works?size=100&`;
+
+/**
+ * Endpoint for counting the number of works.
+ * Utilizes the BASE_URL as its foundational part and appends specific parameters for this endpoint.
+ * @type {string}
+ */
+export const COUNT_QUERY_BASE = `${API_BASE_URL}works/count?`;
+
+/**
+ * Endpoint for exporting works data in CSV format.
+ * Utilizes the BASE_URL as its foundational part and appends specific parameters for this endpoint.
+ * @type {string}
+ */
+export const CSV_EXPORT_BASE = `${API_BASE_URL}works.csv?size=all&`;
+
+/**
+ * Endpoint for sending articles via email.
+ * Utilizes the BASE_URL as its foundational part and appends specific parameters for this endpoint.
+ * @type {string}
+ */
+export const ARTICLE_EMAIL_BASE = `${API_BASE_URL}email/`;
+
+/**
  * Options for displaying dates in a human-readable format.
  * @type {{day: string, month: string, year: string}}
  */
