@@ -367,10 +367,10 @@ function handleYearButtonLogic(button, startDate, endDate, buttonText) {
 /**
  * Updates the styling of year selection buttons and resets styles for all other year buttons and dropdown items.
  *
- * @param {HTMLElement} selectedButton - The button element that was selected.
+ * @param {HTMLElement} selectedElement - The element (can be a button, div, or form) that was selected.
  * @param {boolean} isDropdownItem - Indicates whether the selected button is a dropdown item.
  */
-function updateYearButtonStyling(selectedButton, isDropdownItem = false) {
+function updateYearButtonStyling(selectedElement, isDropdownItem = false) {
   // Reset styles for year buttons and dropdown items
   const yearButtons = document.querySelectorAll(".js_year_select");
   yearButtons.forEach(button => {
@@ -391,24 +391,24 @@ function updateYearButtonStyling(selectedButton, isDropdownItem = false) {
     }
   });
 
-  // Check if selectedButton is not null before applying styles
-  if (selectedButton) {
-    if (!selectedButton.classList.contains('js_dropdown_button')) {
-      selectedButton.classList.add("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
-      selectedButton.classList.remove("bg-white", "text-neutral-900", "opacity-50");
-      selectedButton.setAttribute("aria-pressed", "true");
+  // Check if selectedElement is not null before applying styles
+  if (selectedElement) {
+    if (!selectedElement.classList.contains('js_dropdown_button')) {
+      selectedElement.classList.add("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
+      selectedElement.classList.remove("bg-white", "text-neutral-900", "opacity-50");
+      selectedElement.setAttribute("aria-pressed", "true");
     }
 
     // Style form contents if the selected "button" is the date range form
-    if (selectedButton.tagName.toLowerCase() === 'form') {
-      selectedButton.classList.remove("hover:bg-white", "hover:text-neutral-900");
+    if (selectedElement.tagName.toLowerCase() === 'form') {
+      selectedElement.classList.remove("hover:bg-white", "hover:text-neutral-900");
 
-      const labels = selectedButton.querySelectorAll('label');
+      const labels = selectedElement.querySelectorAll('label');
       labels.forEach(label => {
         label.classList.add("text-white");
       });
 
-      const inputs = selectedButton.querySelectorAll('input');
+      const inputs = selectedElement.querySelectorAll('input');
       inputs.forEach(input => {
         input.classList.add("text-white", "bg-neutral-900", "border-neutral-900");
       });
@@ -416,7 +416,7 @@ function updateYearButtonStyling(selectedButton, isDropdownItem = false) {
 
     // If the selected button is a dropdown item, apply styling to the dropdown container only
     if (isDropdownItem) {
-      const dropdownContainer = selectedButton.closest('.js_dropdown');
+      const dropdownContainer = selectedElement.closest('.js_dropdown');
       if (dropdownContainer) {
         dropdownContainer.classList.add("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
         dropdownContainer.classList.remove("bg-white");
