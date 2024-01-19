@@ -36,12 +36,6 @@ if (hasOrgKey) {
 }
 
 /**
- * Cache for storing fetched data to reduce API calls.
- * @global
- */
-const dataCache = {}; 
-
-/**
  * Data object representing metadata on an organization.
  * @global
  */
@@ -95,32 +89,20 @@ let selectedRowKeys = [];
  * @async
  * @param {string} org - The organization identifier for the API query.
  */
-export async function initDataExplore(org) {  
+export async function initDataExplore(org) {
   try {
-    if (dataCache[org] && !isCacheExpired(dataCache[org].timestamp)) {
-      addExploreButtonsToDOM(dataCache[org].data);
+    const response = await orgDataPromise; // Await the promise to resolve
+    orgData = response.data;
+
+    // Check if explore data exists and is not empty
+    if (orgData.hits.hits.length > 0 && orgData.hits.hits[0]._source.explore && orgData.hits.hits[0]._source.explore.length > 0) {
+      addExploreButtonsToDOM(orgData.hits.hits[0]._source.explore);
       addRecordsShownSelectToDOM();
       handleDataDisplayToggle();
       enableExploreRowHighlighting();
       displayDefaultArticlesData();
     } else {
-      const response = await orgDataPromise; // Await the promise to resolve
-      orgData = response.data;
-
-      // Check if explore data exists and is not empty
-      if (orgData.hits.hits.length > 0 && orgData.hits.hits[0]._source.explore && orgData.hits.hits[0]._source.explore.length > 0) {
-        dataCache[org] = {
-          data: orgData.hits.hits[0]._source.explore,
-          timestamp: new Date().getTime() // Current timestamp in milliseconds
-        };
-        addExploreButtonsToDOM(dataCache[org].data);
-        addRecordsShownSelectToDOM();
-        handleDataDisplayToggle();
-        enableExploreRowHighlighting();
-        displayDefaultArticlesData();
-      } else {
-        displayNone("explore"); // Hide the explore section if no data is available
-      }
+      displayNone("explore"); // Hide the explore section if no data is available
     }
   } catch (error) {
     console.error('Error initialising data explore: ', error);
@@ -1033,8 +1015,12 @@ window.getExportLink = function() {
  * Function to display default 'articles' type data on page load.
  */
 function displayDefaultArticlesData() {
-  let button = document.getElementById("explore_articles_button");
-  let id = "articles";
-  let data = dataCache[org].data[0];
-  processExploreDataTable(button, data);
+  if (orgData.hits.hits.length > 0 && orgData.hits.hits[0]._source.explore) {
+    const exploreData = orgData.hits.hits[0]._source.explore;
+    const articlesData = exploreData.find(item => item.id === 'articles');
+    if (articlesData) {
+      const button = document.getElementById(`explore_${articlesData.id}_button`);
+      processExploreDataTable(button, articlesData);
+    }
+  }
 }
