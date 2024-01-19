@@ -18,7 +18,7 @@ import { createPostData } from './api-requests.js';
 // =================================================
 
 // TEMP; these constants are repeated in insights-and-strategies.js
-const base             = `https://${apiEndpoint}.oa.works/report/`,
+const base             = `https://bg.${apiEndpoint}.oa.works/report/`,
       baseBg           = `https://bg.${apiEndpoint}.oa.works/report/`,
       queryBase        = `${base}works?size=all&`,
       csvExportBase    = `${baseBg}works.csv?size=all&`;

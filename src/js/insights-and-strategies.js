@@ -1,6 +1,6 @@
 import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable } from './utils.js';
 
-const base             = `https://${apiEndpoint}.oa.works/report/`,
+const base             = `https://bg.${apiEndpoint}.oa.works/report/`,
       baseBg           = `https://bg.${apiEndpoint}.oa.works/report/`,
       queryBase        = `${base}works?size=100&`,
       countQueryBase   = `${base}works/count?`,
