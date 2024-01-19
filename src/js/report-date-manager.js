@@ -345,7 +345,9 @@ function handleYearButtonLogic(button, startDate, endDate, buttonText) {
   const isDropdownItem = button && button.classList.contains('js_dropdown_item');
 
   // Reset the dropdown if a visible year button is clicked and it's not a dropdown item
-  if (!isDropdownItem) {
+  // We only need to do this for paid reports
+  // ...free ones don’t have the option to select other dates or years
+  if (!isDropdownItem && paid) {
     resetDropdown();
   }
 
