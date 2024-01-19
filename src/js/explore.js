@@ -100,25 +100,30 @@ let selectedRowKeys = [];
  * @async
  * @param {string} org - The organization identifier for the API query.
  */
-export async function initDataExplore(org) {  
+export async function initDataExplore(org) {
   try {
-    if (dataCache[org] && !isCacheExpired(dataCache[org].timestamp)) {
+    // Check if it's a free report (paid = false) and caching conditions are met
+    if (!paid && dataCache[org] && !isCacheExpired(dataCache[org].timestamp)) {
       addExploreButtonsToDOM(dataCache[org].data);
       addRecordsShownSelectToDOM();
       handleDataDisplayToggle();
       enableExploreRowHighlighting();
       displayDefaultArticlesData();
     } else {
+      // For paid reports or when cache is expired or not available, fetch new data
       const response = await orgDataPromise; // Await the promise to resolve
       orgData = response.data;
 
       // Check if explore data exists and is not empty
       if (orgData.hits.hits.length > 0 && orgData.hits.hits[0]._source.explore && orgData.hits.hits[0]._source.explore.length > 0) {
-        dataCache[org] = {
-          data: orgData.hits.hits[0]._source.explore,
-          timestamp: new Date().getTime() // Current timestamp in milliseconds
-        };
-        addExploreButtonsToDOM(dataCache[org].data);
+        // Update the cache only for free reports
+        if (!paid) {
+          dataCache[org] = {
+            data: orgData.hits.hits[0]._source.explore,
+            timestamp: new Date().getTime() // Current timestamp in milliseconds
+          };
+        }
+        addExploreButtonsToDOM(orgData.hits.hits[0]._source.explore);
         addRecordsShownSelectToDOM();
         handleDataDisplayToggle();
         enableExploreRowHighlighting();
