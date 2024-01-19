@@ -13,7 +13,7 @@
   {# Header #}
   {# TODO: uncomment when vis bar is enabled
   <header class="p-3 md:h-32 overflow-hidden bg-carnation-100 text-neutral-900 flex flex-col justify-between hover:cursor-pointer"> #}
-  <header class="p-3 md:h-32 overflow-hidden bg-carnation-100 text-neutral-900 flex flex-col justify-between">
+  <header class="p-1.5 md:p-2 lg:p-3 md:h-32 overflow-hidden bg-carnation-100 text-neutral-900 flex flex-col justify-between">
     <div class="mb-3 -ml-1">
       {% icon_small params.icon %}
     </div>
@@ -23,7 +23,7 @@
     </h3>
   </header>
   {# Body #}
-  <div class="pt-8 px-3 pb-3 flex flex-col justify-center flex-grow text-neutral-900">
+  <div class="pt-4 px-1.5 pb-1.5 md:pt-6 md:px-2 md:pb-2 lg:pt-8 lg:px-3 lg:pb-3 flex flex-col justify-center flex-grow text-neutral-900">
     <p class="text-lg sm:text-3xl lg:text-4xl font-black">
       <span id="percent_{{ params.id }}">00%</span>
       <sup tabindex="0" id="info_{{ params.id }}" role="tooltip">
@@ -32,7 +32,7 @@
     </p>
   </div>
   {# Footer #}
-  <footer class="p-3 md:h-16 flex flex-col justify-end">
+  <footer class="p-1.5 md:p-2 lg:p-3 md:h-16 flex flex-col justify-end">
     <p class="text-xs font-medium text-neutral-600">
       <span id="articles_{{ params.id }}">articles</span>
     </p>
