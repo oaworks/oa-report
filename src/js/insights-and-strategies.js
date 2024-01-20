@@ -1,14 +1,8 @@
 import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable } from './utils.js';
-
-const base             = `https://${apiEndpoint}.oa.works/report/`,
-      baseBg           = `https://bg.${apiEndpoint}.oa.works/report/`,
-      queryBase        = `${base}works?size=100&`,
-      countQueryBase   = `${base}works/count?`,
-      csvExportBase    = `${baseBg}works.csv?size=all&`,
-      articleEmailBase = `${baseBg}email/`;
+import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE } from './constants.js';
 
 // Set report org index URL’s base path
-export const orgApiUrl = `${base}orgs?q=objectID:%22${org}%22`;
+export const orgApiUrl = `${API_BASE_URL}orgs?q=objectID:%22${org}%22`;
 
 // Fetch and store organisational data in a constant
 export const orgDataPromise = axios.get(orgApiUrl);
@@ -38,8 +32,8 @@ let exportSort = "&sort=published_date:desc"
 // Generate report’s UI for any given date range
 export function initInsightsAndStrategies(org) {
   // Set paths for orgindex
-  let queryPrefix = `${queryBase}q=${dateRange}`,
-      countQueryPrefix = `${countQueryBase}q=${dateRange}`;
+  let queryPrefix = `${QUERY_BASE}q=${dateRange}`,
+      countQueryPrefix = `${COUNT_QUERY_BASE}q=${dateRange}`;
 
   orgDataPromise.then(function (response) {
     const orgData = response.data; // Storing the fetched data in a constant
@@ -62,7 +56,7 @@ export function initInsightsAndStrategies(org) {
   
       // if email is not undefined and there is an orgkey, try to decrypt the author’s email
       if (email !== 'undefined' && hasOrgKey) {
-          axios.get(`${articleEmailBase + doi}?${orgKey}`)
+          axios.get(`${ARTICLE_EMAIL_BASE + doi}?${orgKey}`)
               .then(function (response) {
                   let authorEmail = response.data;
                   mailto = mailto.replaceAll("{email}", authorEmail);
@@ -479,7 +473,7 @@ export function getStrategyExportLink(id, orgData) {
   }
 
   // Build full query
-  query = csvExportBase + query + include + exportSort + email + orgKey;
+  query = CSV_EXPORT_BASE + query + include + exportSort + email + orgKey;
 
   var xhr = new XMLHttpRequest();
   xhr.open("GET", query);

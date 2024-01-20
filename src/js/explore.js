@@ -7,8 +7,8 @@
 // Imports
 // =================================================
 
-import { displayNone, isCacheExpired, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, deepCopy, makeNumberReadable, convertTextToLinks, removeDisplayStyle, showNoResultsRow } from "./utils.js";
-import { EXPLORE_TYPES, EXPLORE_FILTERS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, COUNTRY_CODES } from "./constants.js";
+import { displayNone, isCacheExpired, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, makeNumberReadable, convertTextToLinks, removeDisplayStyle, showNoResultsRow } from "./utils.js";
+import { CSV_EXPORT_BASE, EXPLORE_TYPES, EXPLORE_FILTERS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, COUNTRY_CODES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { orgDataPromise } from './insights-and-strategies.js';
 import { createPostData } from './api-requests.js';
@@ -17,11 +17,6 @@ import { createPostData } from './api-requests.js';
 // Global variables
 // =================================================
 
-// TEMP; these constants are repeated in insights-and-strategies.js
-const base             = `https://${apiEndpoint}.oa.works/report/`,
-      baseBg           = `https://bg.${apiEndpoint}.oa.works/report/`,
-      queryBase        = `${base}works?size=all&`,
-      csvExportBase    = `${baseBg}works.csv?size=all&`;
 const exportSort = "&sort=published_date:desc";
 
 let orgKey = "",
@@ -39,12 +34,6 @@ if (hasOrgKey) {
   displayNone("logout");
   //displayNone("explore");
 }
-
-/**
- * Cache for storing fetched data to reduce API calls.
- * @global
- */
-const dataCache = {}; 
 
 /**
  * Data object representing metadata on an organization.
@@ -102,35 +91,18 @@ let selectedRowKeys = [];
  */
 export async function initDataExplore(org) {
   try {
-    // Check if it's a free report (paid = false) and caching conditions are met
-    if (!paid && dataCache[org] && !isCacheExpired(dataCache[org].timestamp)) {
-      addExploreButtonsToDOM(dataCache[org].data);
+    const response = await orgDataPromise; // Await the promise to resolve
+    orgData = response.data;
+
+    // Check if explore data exists and is not empty
+    if (orgData.hits.hits.length > 0 && orgData.hits.hits[0]._source.explore && orgData.hits.hits[0]._source.explore.length > 0) {
+      addExploreButtonsToDOM(orgData.hits.hits[0]._source.explore);
       addRecordsShownSelectToDOM();
       handleDataDisplayToggle();
       enableExploreRowHighlighting();
       displayDefaultArticlesData();
     } else {
-      // For paid reports or when cache is expired or not available, fetch new data
-      const response = await orgDataPromise; // Await the promise to resolve
-      orgData = response.data;
-
-      // Check if explore data exists and is not empty
-      if (orgData.hits.hits.length > 0 && orgData.hits.hits[0]._source.explore && orgData.hits.hits[0]._source.explore.length > 0) {
-        // Update the cache only for free reports
-        if (!paid) {
-          dataCache[org] = {
-            data: orgData.hits.hits[0]._source.explore,
-            timestamp: new Date().getTime() // Current timestamp in milliseconds
-          };
-        }
-        addExploreButtonsToDOM(orgData.hits.hits[0]._source.explore);
-        addRecordsShownSelectToDOM();
-        handleDataDisplayToggle();
-        enableExploreRowHighlighting();
-        displayDefaultArticlesData();
-      } else {
-        displayNone("explore"); // Hide the explore section if no data is available
-      }
+      displayNone("explore"); // Hide the explore section if no data is available
     }
   } catch (error) {
     console.error('Error initialising data explore: ', error);
@@ -972,7 +944,7 @@ async function generateCSVLinkHref() {
     include = `&include=${hasCustomExportIncludes}`;
   }
 
-  const csvLink = csvExportBase + query + include + exportSort + orgKey;
+  const csvLink = CSV_EXPORT_BASE + query + include + exportSort + orgKey;
   console.log(csvLink);
 
   try {
@@ -1020,7 +992,7 @@ window.getExportLink = function() {
     if ((hasCustomExportIncludes !== undefined && hasCustomExportIncludes !== "")) {
       include = `&include=${hasCustomExportIncludes}`;
     }
-    query = csvExportBase + query + include + exportSort + email + orgKey;
+    query = CSV_EXPORT_BASE + query + include + exportSort + email + orgKey;
 
     var xhr = new XMLHttpRequest();
     xhr.open("GET", query);
@@ -1043,8 +1015,12 @@ window.getExportLink = function() {
  * Function to display default 'articles' type data on page load.
  */
 function displayDefaultArticlesData() {
-  let button = document.getElementById("explore_articles_button");
-  let id = "articles";
-  let data = dataCache[org].data[0];
-  processExploreDataTable(button, data);
+  if (orgData.hits.hits.length > 0 && orgData.hits.hits[0]._source.explore) {
+    const exploreData = orgData.hits.hits[0]._source.explore;
+    const articlesData = exploreData.find(item => item.id === 'articles');
+    if (articlesData) {
+      const button = document.getElementById(`explore_${articlesData.id}_button`);
+      processExploreDataTable(button, articlesData);
+    }
+  }
 }
