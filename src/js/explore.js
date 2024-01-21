@@ -8,7 +8,7 @@
 // =================================================
 
 import { displayNone, isCacheExpired, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, makeNumberReadable, convertTextToLinks, removeDisplayStyle, showNoResultsRow } from "./utils.js";
-import { CSV_EXPORT_BASE, EXPLORE_TYPES, EXPLORE_FILTERS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, COUNTRY_CODES } from "./constants.js";
+import { CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, COUNTRY_CODES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { orgDataPromise } from './insights-and-strategies.js';
 import { createPostData } from './api-requests.js';
@@ -181,7 +181,7 @@ function createExploreButton(exploreDataItem) {
   const button = document.createElement("button");
   const id = exploreDataItem.id; 
   button.id = `explore_${id}_button`; 
-  button.innerHTML = `<span>${EXPLORE_TYPES[id]?.plural || pluraliseNoun(id)}</span>`; // Set button text to plural form of label
+  button.innerHTML = `<span>${EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id)}</span>`; // Set button text to plural form of label
   button.className = "items-center inline-flex p-2 px-4 mr-4 mt-4 px-3 rounded-full bg-carnation-100 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500";
 
   button.addEventListener("click", debounce(async function() {
@@ -245,7 +245,7 @@ async function addExploreFiltersToDOM(query) {
  * @returns {HTMLDivElement} The div element containing the configured radio button and label.
  */
 function createExploreFilterRadioButton(id, isChecked) {
-  const label = EXPLORE_FILTERS[id] || id; // Use label from filters or default to ID
+  const label = EXPLORE_FILTERS_LABELS[id] || id; // Use label from filters or default to ID
   const filterRadioButton = document.createElement('div');
   filterRadioButton.className = 'flex items-center mr-3 md:mr-6 mb-3';
 
@@ -376,7 +376,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     populateTableBody(records, 'export_table_body', id, type);
     
     // Update any mentions of the explore data type with .plural version of the ID
-    replaceText("explore_type", EXPLORE_TYPES[id]?.plural || pluraliseNoun(id));
+    replaceText("explore_type", EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id));
 
     // Add functionalities to the table
     enableExploreTableScroll();

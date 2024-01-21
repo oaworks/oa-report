@@ -56,10 +56,21 @@ export const USER_LOCALE = navigator.languages && navigator.languages.length
                         : navigator.language;
 
 /**
+ * Class names for the report’s top-nav date or year selection buttons.
+ * This constant provides TailwindCSS classes for the different states of the
+ * date selection buttons, including 'enabled', 'disabled', and 'active'.
+ */
+export const DATE_SELECTION_BUTTON_CLASSES = {
+  enabled: "block p-2 border mt-1 mr-1 md:mt-0 md:mr-3 md:border-b-0 border-neutral-900 bg-white text-neutral-900 hover:bg-neutral-800 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 js_year_select",
+  disabled: "block p-2 border mt-1 mr-1 md:mt-0 md:mr-3 md:border-b-0 bg-white text-neutral-900 opacity-50 cursor-not-allowed js_year_select",
+  active: "p-2 border mt-1 mr-1 md:mt-0 md:mr-3 hover:bg-neutral-800 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 md:border-b-0 bg-neutral-900 text-white font-semibold border-neutral-900 js_year_select"
+}
+
+/**
  * Mapping of explore item IDs to their display name and tooltip information.
  * @type {Object.<string, {singular: string, plural: string, tooltip: string}>}
  */
-export const EXPLORE_TYPES = {
+export const EXPLORE_ITEMS_LABELS = {
   "articles": {
     singular: "Article",
     plural: "Articles",
@@ -124,29 +135,23 @@ export const EXPLORE_TYPES = {
   "data_availability_statement": {
     singular: "Data availability statement",
     plural: "Data availability statements"
+  },
+  "articles_cie": {
+    singular: "Article (CIE)",
+    plural: "Articles (CIE)"
   }
 };
 
-/**
- * Class names for the report’s top-nav date or year selection buttons.
- * This constant provides TailwindCSS classes for the different states of the
- * date selection buttons, including 'enabled', 'disabled', and 'active'.
- */
-export const DATE_SELECTION_BUTTON_CLASSES = {
-  enabled: "block p-2 border mt-1 mr-1 md:mt-0 md:mr-3 md:border-b-0 border-neutral-900 bg-white text-neutral-900 hover:bg-neutral-800 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 js_year_select",
-  disabled: "block p-2 border mt-1 mr-1 md:mt-0 md:mr-3 md:border-b-0 bg-white text-neutral-900 opacity-50 cursor-not-allowed js_year_select",
-  active: "p-2 border mt-1 mr-1 md:mt-0 md:mr-3 hover:bg-neutral-800 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 md:border-b-0 bg-neutral-900 text-white font-semibold border-neutral-900 js_year_select"
-}
 
 /**
  * Mapping of explore filter IDs to human-readable labels.
  * @type {Object.<string, string>}
  */
-export const EXPLORE_FILTERS = {
+export const EXPLORE_FILTERS_LABELS = {
   "is_paper": "All articles",
   "is_preprint": "Preprints",
   "is_covered_by_policy": "Covered by OA policy",
-  "is_compliant": "Covered by & compliant with OA policy",
+  "is_compliant": "Covered by & compl with OA policy",
   "is_compliant_all_works": "Compliant with OA policy",
   "is_original_research": "Original research",
   "with_grant_id": "With grant ID",
