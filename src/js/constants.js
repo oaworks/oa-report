@@ -151,7 +151,7 @@ export const EXPLORE_FILTERS_LABELS = {
   "is_paper": "All articles",
   "is_preprint": "Preprints",
   "is_covered_by_policy": "Covered by OA policy",
-  "is_compliant": "Covered by & compl with OA policy",
+  "is_compliant": "Covered by & compliant with OA policy",
   "is_compliant_all_works": "Compliant with OA policy",
   "is_original_research": "Original research",
   "with_grant_id": "With grant ID",
