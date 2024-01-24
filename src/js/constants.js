@@ -155,6 +155,7 @@ export const EXPLORE_FILTERS_LABELS = {
   "is_compliant_all_works": "Compliant with OA policy",
   "is_original_research": "Original research",
   "with_grant_id": "With grant ID",
+  "is_found_by_external_sources": "Found by external sources",
   "is_found_only_by_external_sources": "Found only by external sources",
   "is_found_only_by_oareport": "Found only by OA.Report",
   "is_found_by_all_sources": "Found by all sources",

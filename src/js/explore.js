@@ -7,7 +7,7 @@
 // Imports
 // =================================================
 
-import { displayNone, isCacheExpired, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, makeNumberReadable, convertTextToLinks, removeDisplayStyle, showNoResultsRow } from "./utils.js";
+import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, makeNumberReadable, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries } from "./utils.js";
 import { CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, COUNTRY_CODES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { orgDataPromise } from './insights-and-strategies.js';
@@ -57,7 +57,7 @@ export let currentActiveExploreItemData = null;
  * Tracks currently active explore item QUERY for use in createExploreFilterRadioButton()
  * @global 
 */
-export let currentActiveExploreItemQuery = 'is_paper';
+export let currentActiveExploreItemQuery = null;
 
 /** 
  * Tracks currently active explore item SIZE for use in handleRecordsShownChange()
@@ -222,19 +222,19 @@ export async function processExploreDataTable(button, itemData) {
 async function addExploreFiltersToDOM(query) {
   const exploreFiltersElement = document.getElementById("explore_filters");
   exploreFiltersElement.innerHTML = ""; // Clear existing radio buttons
-  const filters = query.split(","); // Split the query into individual filters
+  const filters = parseCommaSeparatedQueries(query); // Parse the query string into an array of filters
 
   // Update currentActiveExploreItemQuery to the first filter
   if (filters.length > 0) {
-    currentActiveExploreItemQuery = filters[0].replace("analysis.", "").replace(".query", ""); 
+    currentActiveExploreItemQuery = filters[0].id;
   }
 
   filters.forEach((filter, index) => {
-    const id = filter.replace("analysis.", "").replace(".query", ""); // Format filter ID
-    const radioButton = createExploreFilterRadioButton(id, index === 0);
+    const radioButton = createExploreFilterRadioButton(filter.id, index === 0);
     exploreFiltersElement.appendChild(radioButton);
   });
 }
+
 
 /**
  * Creates a radio button for an explore item's filter. Configures it with specified

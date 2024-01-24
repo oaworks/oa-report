@@ -515,3 +515,18 @@ export function initDropdown(dropdownSelector) {
     }
   });
 }
+
+/**
+ * Parses a comma-separated string of filters and processes each element to create an array of objects.
+ * Each object represents one element from the input string, processed to remove certain prefixes or suffixes.
+ * 
+ * @param {string} csvString - The comma-separated string.
+ * @returns {Object[]} An array of objects with a processed 'id' property for each element.
+ */
+export function parseCommaSeparatedQueries(csvString) {
+  const elements = csvString.split(",");
+  return elements.map(element => {
+    const id = element.replace("analysis.", "").replace(".query", "");
+    return { id };
+  });
+}
