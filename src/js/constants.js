@@ -137,8 +137,8 @@ export const EXPLORE_ITEMS_LABELS = {
     plural: "Data availability statements"
   },
   "articles_cie": {
-    singular: "Article (CIE)",
-    plural: "Articles (CIE)"
+    singular: "Article (<span class='uppercase'>CIE</span>)",
+    plural: "Articles (<span class='uppercase'>CIE</span>)"
   }
 };
 
