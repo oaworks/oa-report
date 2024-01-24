@@ -15,21 +15,25 @@
       <h3 class="font-semibold text-xl md:text-3xl mb-3 md:mb-6">{{ params.heading }}</h3>
       <p class="text-xs md:text-base mb-3 md:mb-6">{{ params.desc|safe }}</p>
       <form id="form_{{ params.id }}" onsubmit="return window.callGetStrategyExportLink('{{ params.id }}')">
-        <h2 class="mb-3 font-medium text-xs md:text-base">
-          Get data in CSV by email {{ component("tooltip", {
+        <h2 class="mb-4">
+          <div class="mb-2 text-sm font-semibold uppercase">
+            CSV download
+            {{ component("tooltip", {
             msg: "Enter your email address to receive a link to a CSV for download. We do not use email addresses for any purpose other than sending you the CSV file containing OA.Report data when you request it."
           }) }}
+          </div> 
+          <div class="text-sm">You are downloading a list of <span class="py-1 px-2 my-1 bg-opacity-10 bg-carnation-200 text-neutral-100 rounded-full lowercase strategy_type">actions</span> for <span class="py-1 px-2 my-1 bg-opacity-10 bg-carnation-200 text-neutral-100 rounded-full"><span class="report_readable_start_date"></span> — <span class="report_readable_end_date"></span></span> 
         </h2>
         <label for="email" class="sr-only">Email address</label>
         <div class="mt-1 mb-3 flex shadow-sm">
           <div class="relative flex items-stretch flex-grow focus-within:z-10 text-neutral-900">
-            <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+            <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none text-white">
               {% icon_small "mail" %}
             </div>
-            <input type="email" name="email" id="email-{{ params.id }}" class=" focus:ring-carnation-300 focus:border-carnation-500 block w-full pl-10 text-xs md:text-base shadow-md border-1 js-csv_email_input" placeholder="you@example.com" required>
+            <input type="email" name="email" id="email-{{ params.id }}" class="focus:ring-carnation-300 focus:border-carnation-500 block w-full pl-10 py-2 sm:text-sm border border-neutral-100 bg-transparent text-white" placeholder="you@example.com" required>
           </div>
-          <button type="submit" class="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 text-xs md:text-base font-medium text-white bg-neutral-900 hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 shadow-md border-0 js-csv_email_button">
-            Send CSV
+          <button type="submit" class="--ml-px relative inline-flex items-center space-x-2 px-2 py-2 text-sm font-medium border border-neutral-100 text-white hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 border-l-0 whitespace-nowrap">
+            <span>Get list of <span class="strategy_type">actions</span></span>
           </button>
         </div>
         <p class="leading-5 text-xs text-white" id="msg-{{ params.id }}"></p>
