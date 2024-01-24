@@ -227,6 +227,7 @@ async function addExploreFiltersToDOM(query) {
   // Update currentActiveExploreItemQuery to the first filter
   if (filters.length > 0) {
     currentActiveExploreItemQuery = filters[0].id;
+    replaceText("explore_filter", EXPLORE_FILTERS_LABELS[filters[0].id] || filters[0].id);
   }
   
   filters.forEach((filter, index) => {
