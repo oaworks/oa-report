@@ -228,17 +228,17 @@ async function addExploreFiltersToDOM(query) {
   if (filters.length > 0) {
     currentActiveExploreItemQuery = filters[0].id;
   }
-
+  
   filters.forEach((filter, index) => {
     const radioButton = createExploreFilterRadioButton(filter.id, index === 0);
     exploreFiltersElement.appendChild(radioButton);
   });
 }
 
-
 /**
- * Creates a radio button for an explore item's filter. Configures it with specified
- * ID, label, and CSS classes. Attaches an event listener to the radio button.
+ * Creates a radio button for an explore item's filter. Configures it with a specified
+ * ID, label, and CSS classes. Attaches an event listener to the radio button that
+ * calls handleFilterChange when a user interacts with the filter.
  * 
  * @param {string} id - The ID of the filter.
  * @param {boolean} isChecked - True if the filter should be checked by default.
@@ -273,8 +273,7 @@ function createExploreFilterRadioButton(id, isChecked) {
 
   // Event listener for filter change
   filterRadioButton.addEventListener('click', debounce(async function() {
-    fetchAndDisplayExploreData(currentActiveExploreItemData, id);
-    currentActiveExploreItemQuery = id;
+    await handleFilterChange(id);
   }, 500));
 
   return filterRadioButton;
@@ -865,6 +864,20 @@ async function handleRecordsShownChange(event) {
   }
 
   toggleLoadingIndicator(false, 'explore_loading'); // Hide loading indicator
+}
+
+/**
+ * Handles the change in filters when a user clicks on a filter radio button. It displays a loading
+ * indicator, fetches, and displays the explore data based on the selected filter.
+ * 
+ * @async
+ * @param {string} filterId - The ID of the selected filter.
+ */
+async function handleFilterChange(filterId) {
+  toggleLoadingIndicator(true, 'explore_loading'); // Display loading indicator on filter change
+  await fetchAndDisplayExploreData(currentActiveExploreItemData, filterId);
+  currentActiveExploreItemQuery = filterId;
+  toggleLoadingIndicator(false, 'explore_loading'); // Hide loading indicator once data is loaded
 }
 
 /**
