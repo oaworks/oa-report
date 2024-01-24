@@ -1,16 +1,16 @@
 {# Download in CSV #}
-<form class="md:w-1/2 lg:w-1/3" id="download_csv_form" onsubmit="return window.getExportLink()">
+<form id="download_csv_form" onsubmit="return window.getExportLink()">
   <h2 class="mb-4">
-    <div class="mb-1 text-sm font-semibold uppercase">
-      Download full article data as CSV
+    <div class="mb-2 text-sm font-semibold uppercase">
+      CSV download
       {{ component("tooltip", {
       msg: "Enter your email address to receive a link to a CSV for download. <strong>We do not save email addresses or use them for any purpose</strong> other than sending you the CSV file containing OA.Report data when you request it."
     }) }}
     </div> 
-    <span class="text-sm">For <span class="report_readable_start_date"></span> — <span class="report_readable_end_date"></span></span>
+    <div class="text-sm">You are downloading all <span class="py-1 px-2 my-1 bg-opacity-10 bg-carnation-200 text-neutral-100 rounded-full lowercase explore_type">articles</span> for <span class="py-1 px-2 my-1 bg-opacity-10 bg-carnation-200 text-neutral-100 rounded-full"><span class="report_readable_start_date"></span> — <span class="report_readable_end_date"></span></span> sorted by <span class="py-1 px-2 my-1 bg-opacity-10 bg-carnation-200 text-neutral-100 rounded-full explore_sort">publication count</span> & filtered by <span class="py-1 px-2 my-1 bg-opacity-10 bg-carnation-200 text-neutral-100 rounded-full lowercase explore_filter">all articles</span> 
   </h2>
   <label for="email" class="sr-only">Email address</label>
-  <div class="mt-1 mb-3 flex shadow-md">
+  <div class="mt-1 mb-3 flex shadow-md lg:w-1/3">
     <div class="relative flex items-stretch flex-grow focus-within:z-10">
       <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none text-white">
         {% icon_small "mail" %}

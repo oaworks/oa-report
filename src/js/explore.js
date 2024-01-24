@@ -373,7 +373,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       records = reorderRecords(records, includes);
 
       // Update the sort text in header
-      replaceText("explore_sort", "publication date"); 
+      replaceText("explore_sort", "published date"); 
       replaceText("report_sort_adjective", "Latest");
     }
 
@@ -891,6 +891,8 @@ async function handleFilterChange(filterId) {
   toggleLoadingIndicator(true, 'explore_loading'); // Display loading indicator on filter change
   await fetchAndDisplayExploreData(currentActiveExploreItemData, filterId);
   currentActiveExploreItemQuery = filterId;
+  // Update the filter type text in header
+  replaceText("explore_filter", EXPLORE_FILTERS_LABELS[filterId] || filterId);
   toggleLoadingIndicator(false, 'explore_loading'); // Hide loading indicator once data is loaded
 }
 
