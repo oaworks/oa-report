@@ -1009,8 +1009,8 @@ window.getExportLink = function() {
      // TODO: get whatever includes is associated to the explore item for which we’re getting the export link
     let hasCustomExportIncludes = orgData.hits.hits[0]._source.explore.find(item => item.id === 'articles').includes;
 
-    let isPaperURL = (dateRange + orgData.hits.hits[0]._source.analysis.is_paper.query);
-    let query = `q=${isPaperURL.replaceAll(" ", "%20")}`,
+    let queryURL = (dateRange + orgData.hits.hits[0]._source.analysis[currentActiveExploreItemQuery].query);
+    let query = `q=${queryURL.replaceAll(" ", "%20")}`,
         form = new FormData(document.getElementById("download_csv_form"));
 
     var email = `&${new URLSearchParams(form).toString()}`;
