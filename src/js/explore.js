@@ -328,75 +328,89 @@ function addRecordsShownSelectToDOM() {
  * @param {boolean} [pretty=true] - Flag to determine if data should be displayed in a pretty format.
  */
 async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 10, pretty = true) {
-  const { type, id, term, sort, includes } = itemData; // Extract explore item's properties
+  try {
+    const { type, id, term, sort, includes } = itemData; // Extract explore item's properties
 
-  document.getElementById("csv_email_msg").innerHTML = ""; // Clear any existing message in CSV download form
+    document.getElementById("csv_email_msg").innerHTML = ""; // Clear any existing message in CSV download form
 
-  // Show the table
-  const exportTable = document.getElementById('export_table');
-  exportTable.classList.remove('hidden'); 
+    // Show the table
+    const exportTable = document.getElementById('export_table');
+    exportTable.classList.remove('hidden'); 
 
-  let query = orgData.hits.hits[0]._source.analysis[filter].query; // Get the query string for the selected filter
-  let suffix = orgData.hits.hits[0]._source.key_suffix; // Get the suffix for the org
-  let records = [];
+    let query = orgData.hits.hits[0]._source.analysis[filter]?.query; // Get the query string for the selected filter
+    let suffix = orgData.hits.hits[0]._source.key_suffix; // Get the suffix for the org
+    let records = [];
 
-  pretty = currentActiveDataDisplayToggle;
-  size = currentActiveExploreItemSize; 
+    pretty = currentActiveDataDisplayToggle;
+    size = currentActiveExploreItemSize; 
 
-  if (type === "terms") {
-    query = decodeAndReplaceUrlEncodedChars(query); // Decode and replace any URL-encoded characters for JSON
-    records = await fetchTermBasedData(suffix, query, term, sort, size);
-    records = reorderRecords(records, includes);
-
-     // Update the sort text in header
-    replaceText("explore_sort", "publication count");
-    replaceText("report_sort_adjective", "Top");
-
-    // Format records depending on data display toggler choice 
-    if (pretty === true) {
-      records = formatRecords(records); 
-      records = prettifyRecords(records);
-    } else {
-      records = prettifyRecords(records, false);
+    // Check if query is blank or undefined
+    if (!query || query.trim() === '') {
+      showNoResultsRow(10, "export_table_body", "js_export_table"); // Show "No results found."
+      toggleLoadingIndicator(false, 'explore_loading'); // Hide loading indicator
+      return; // Stop further processing
     }
 
-  } else if (type === "articles") {
-    records = await fetchArticleBasedData(query, includes, sort, size);
-    records = reorderRecords(records, includes);
+    if (type === "terms") {
+      query = decodeAndReplaceUrlEncodedChars(query); // Decode and replace any URL-encoded characters for JSON
+      records = await fetchTermBasedData(suffix, query, term, sort, size);
+      records = reorderRecords(records, includes);
 
-    // Update the sort text in header
-    replaceText("explore_sort", "publication date"); 
-    replaceText("report_sort_adjective", "Latest");
-  }
+      // Update the sort text in header
+      replaceText("explore_sort", "publication count");
+      replaceText("report_sort_adjective", "Top");
 
-  if (records.length > 0) {
-    // Populate table with data
-    populateTableHeader(records[0], 'export_table_head', type);
-    populateTableBody(records, 'export_table_body', id, type);
-    
-    // Update any mentions of the explore data type with .plural version of the ID
-    replaceText("explore_type", EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id));
+      // Format records depending on data display toggler choice 
+      if (pretty === true) {
+        records = formatRecords(records); 
+        records = prettifyRecords(records);
+      } else {
+        records = prettifyRecords(records, false);
+      }
 
-    // Add functionalities to the table
-    enableExploreTableScroll();
-    enableTooltipsForTruncatedCells();
+    } else if (type === "articles") {
+      records = await fetchArticleBasedData(query, includes, sort, size);
+      records = reorderRecords(records, includes);
 
-    const downloadCSVForm = document.getElementById('download_csv_form');
-    const exploreTableTooltip = document.getElementById('explore_table_tooltip_articles');
-    // Add data download link only if it's an 'articles'-type data table
-    if (type === "articles") {
-      // addCSVExportLink(); TODO: once we can download the CSV directly from the link, use this
-      downloadCSVForm.style.display = "block" // Display download_csv_form if it's an 'articles'-type data table
-      exploreTableTooltip.style.display = "inline"; // Display the tooltip
-      displayNone("explore_display_style_field"); // No need for the data display style field in article tables
-    } else {
-      // removeCSVExportLink(); // Remove the CSV export link if there's one
-      downloadCSVForm.style.display = "none" // Hide download_csv_form if it's NOT an 'articles'-type data table
-      exploreTableTooltip.style.display = "none"; // Hide the tooltip
-      removeDisplayStyle("explore_display_style_field"); // Display the data display style field
+      // Update the sort text in header
+      replaceText("explore_sort", "publication date"); 
+      replaceText("report_sort_adjective", "Latest");
     }
-  } else {
-    showNoResultsRow(10, "export_table_body", "js_export_table"); // Show a message for no results
+
+    if (records.length > 0) {
+      // Populate table with data
+      populateTableHeader(records[0], 'export_table_head', type);
+      populateTableBody(records, 'export_table_body', id, type);
+      
+      // Update any mentions of the explore data type with .plural version of the ID
+      replaceText("explore_type", EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id));
+
+      // Add functionalities to the table
+      enableExploreTableScroll();
+      enableTooltipsForTruncatedCells();
+
+      const downloadCSVForm = document.getElementById('download_csv_form');
+      const exploreTableTooltip = document.getElementById('explore_table_tooltip_articles');
+      // Add data download link only if it's an 'articles'-type data table
+      if (type === "articles") {
+        // addCSVExportLink(); TODO: once we can download the CSV directly from the link, use this
+        downloadCSVForm.style.display = "block" // Display download_csv_form if it's an 'articles'-type data table
+        exploreTableTooltip.style.display = "inline"; // Display the tooltip
+        displayNone("explore_display_style_field"); // No need for the data display style field in article tables
+      } else {
+        // removeCSVExportLink(); // Remove the CSV export link if there's one
+        downloadCSVForm.style.display = "none" // Hide download_csv_form if it's NOT an 'articles'-type data table
+        exploreTableTooltip.style.display = "none"; // Hide the tooltip
+        removeDisplayStyle("explore_display_style_field"); // Display the data display style field
+      }
+    } else {
+      showNoResultsRow(10, "export_table_body", "js_export_table"); // Show "No results found."
+    }
+  } catch (error) {
+    console.error('Error fetching and displaying explore data: ', error);
+    showNoResultsRow(10, "export_table_body", "js_export_table"); // Show "No results found."
+  } finally {
+    toggleLoadingIndicator(false, 'explore_loading'); // Ensure loading indicator is always hidden after processing
   }
 }
 
