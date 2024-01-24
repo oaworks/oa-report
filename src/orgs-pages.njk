@@ -145,11 +145,18 @@ permalink: "{{ org._source.objectID | slug }}/"
         </div>
       </div>
 
-      <div class="relative">
-        <div class="hidden" id="explore_loading">
-          <div class="loader ease-linear rounded-full border-8 border-t-8 border-carnation-200 border-t-carnation-500 h-12 w-12 absolute mt-6 mx-auto inset-x-0 z-10 bg-opacity-50 justify-center items-center"></div>
-        </div>
+      <div 
+        class="fixed inset-0 z-50 flex justify-center items-center opacity-0 transition-opacity duration-300" 
+        id="explore_loading"
+        aria-live="polite" 
+        aria-busy="true"
+      >
+        <div class="absolute inset-0 bg-neutral-800 bg-opacity-50"></div>
+        <div class="loader ease-linear rounded-full border-8 border-t-8 border-carnation-200 border-t-carnation-500 h-12 w-12 z-10"></div>
+        {# Visually hidden text for screen readers #}
+        <div class="sr-only" id="loading_message">Loading, please wait.</div>
       </div>
+
       
       <div id="export_table" class="mt-12 hidden">
         <header class="mb-12 grid grid-cols-3 gap-3 sm:gap-6 md:gap-12 ">

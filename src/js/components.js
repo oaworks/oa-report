@@ -10,9 +10,39 @@
  * @param {string} id - The ID of the loading indicator to show/hide.
  */
 export function toggleLoadingIndicator(show, id) {
-  let loader = document.getElementById(id);
-  if (loader) {
-    loader.className = show ? 'flex' : 'hidden';
+  const loader = document.getElementById(id);
+  const loadingMessage = document.getElementById('loading_message'); // Get the loading message element for screen readers
+  if (!loader || !loadingMessage) return;
+
+  const minDisplayTime = 500; // minimum display time in milliseconds
+  const fadeOutDuration = 300; // duration of fade-out effect in milliseconds, should match TailwindCSS class
+  const now = Date.now();
+
+  if (show) {
+    loader.dataset.showTime = now; // Store the current time
+    loader.className = 'fixed inset-0 z-50 flex justify-center items-center opacity-100 transition-opacity duration-300';
+    loader.setAttribute('aria-busy', 'true'); // Indicate that the area is busy
+    loadingMessage.textContent = 'Loading, please wait...'; // Set screen reader text
+  } else {
+    const timeShown = now - parseInt(loader.dataset.showTime || '0'); // How long the loader has been shown
+    const hideLoader = () => {
+      loader.className = 'fixed inset-0 z-50 flex justify-center items-center opacity-0 transition-opacity duration-300';
+      setTimeout(() => {
+        if (loader.className.includes('opacity-0')) { // Check if it's still hidden (user hasn't triggered it to show again)
+          loader.className = 'hidden';
+          loader.setAttribute('aria-busy', 'false'); // Indicate that the area is no longer busy
+          loadingMessage.textContent = ''; // Clear screen reader text
+        }
+      }, fadeOutDuration);
+    };
+
+    if (timeShown < minDisplayTime) {
+      // If the minimum display time hasn't been reached, wait for the remaining time
+      setTimeout(hideLoader, minDisplayTime - timeShown);
+    } else {
+      // If min display time has passed, hide the loader immediately
+      hideLoader();
+    }
   }
 }
 
