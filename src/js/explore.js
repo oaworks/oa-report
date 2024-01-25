@@ -226,8 +226,9 @@ async function addExploreFiltersToDOM(query) {
 
   // Update currentActiveExploreItemQuery to the first filter
   if (filters.length > 0) {
-    currentActiveExploreItemQuery = filters[0].id;
-    replaceText("explore_filter", EXPLORE_FILTERS_LABELS[filters[0].id] || filters[0].id);
+    let id = filters[0].id;
+    currentActiveExploreItemQuery = id;
+    replaceText("explore_filter", id === 'is_paper' ? EXPLORE_FILTERS_LABELS[id] : 'articles that are ' + (EXPLORE_FILTERS_LABELS[id] || id)); 
   }
   
   filters.forEach((filter, index) => {
@@ -268,7 +269,7 @@ function createExploreFilterRadioButton(id, isChecked) {
   Object.assign(labelElement, {
     htmlFor: `filter_${id}`,
     className: 'text-xs md:text-base cursor-pointer flex items-center whitespace-nowrap',
-    textContent: label
+    innerHTML: '<span>' + label + '</span>'
   });
   filterRadioButton.appendChild(labelElement);
 
@@ -893,7 +894,7 @@ async function handleFilterChange(filterId) {
   await fetchAndDisplayExploreData(currentActiveExploreItemData, filterId);
   currentActiveExploreItemQuery = filterId;
   // Update the filter type text in header
-  replaceText("explore_filter", EXPLORE_FILTERS_LABELS[filterId] || filterId);
+  replaceText("explore_filter", filterId === 'is_paper' ? EXPLORE_FILTERS_LABELS[filterId] : 'articles that are ' + (EXPLORE_FILTERS_LABELS[filterId] || filterId)); 
   toggleLoadingIndicator(false, 'explore_loading'); // Hide loading indicator once data is loaded
 }
 

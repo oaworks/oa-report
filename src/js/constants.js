@@ -150,14 +150,14 @@ export const EXPLORE_ITEMS_LABELS = {
 export const EXPLORE_FILTERS_LABELS = {
   "is_paper": "All articles",
   "is_preprint": "Preprints",
-  "is_covered_by_policy": "Covered by OA policy",
-  "is_compliant": "Covered by & compliant with OA policy",
-  "is_compliant_all_works": "Compliant with OA policy",
+  "is_covered_by_policy": "Covered by <span class='uppercase'>OA</span> policy",
+  "is_compliant": "Covered by & compliant with <span class='uppercase'>OA</span> policy",
+  "is_compliant_all_works": "Compliant with <span class='uppercase'>OA</span> policy",
   "is_original_research": "Original research",
-  "with_grant_id": "With grant ID",
+  "with_grant_id": "With grant <span class='uppercase'>ID</span>",
   "is_found_by_external_sources": "Found by external sources",
   "is_found_only_by_external_sources": "Found only by external sources",
-  "is_found_only_by_oareport": "Found only by OA.Report",
+  "is_found_only_by_oareport": "Found only by <span class='uppercase'>OA</span>.<span class='uppercase'>R</span>eport",
   "is_found_by_all_sources": "Found by all sources",
   "is_funded": "Funded"
 };
