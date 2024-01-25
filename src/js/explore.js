@@ -642,6 +642,9 @@ function formatRecords(records) {
           record[key] = `${(formattedNumber*100).toFixed()}%`;
         } else if (key.endsWith("_amount")) {
           record[key] = `${makeNumberReadable(parseFloat(formattedNumber), true)}`;
+        } else if (key === 'key') {
+           // Do not process key: it can be a year and we don't want to add commas to those
+          record[key] = formattedNumber;
         } else {
           record[key] = makeNumberReadable(parseFloat(formattedNumber));
         }
@@ -693,6 +696,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
     // Check if content is 'key' and insert a span with class 'explore_type'
     const spanElement = document.createElement('span');
     spanElement.className = 'explore_type';
+
     cell.appendChild(spanElement);
   } else if (exploreItemId === 'country' && key === 'key') {
     const countryName = COUNTRY_CODES[content]  || "Unknown country";
