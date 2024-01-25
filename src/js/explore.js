@@ -223,16 +223,17 @@ async function addExploreFiltersToDOM(query) {
   const exploreFiltersElement = document.getElementById("explore_filters");
   exploreFiltersElement.innerHTML = ""; // Clear existing radio buttons
   const filters = parseCommaSeparatedQueries(query); // Parse the query string into an array of filters
-
-  // Update currentActiveExploreItemQuery to the first filter
-  if (filters.length > 0) {
+  
+  // Only set currentActiveExploreItemQuery to the first filter if it's not already set
+  if (!currentActiveExploreItemQuery && filters.length > 0) {
     let id = filters[0].id;
     currentActiveExploreItemQuery = id;
-    replaceText("explore_filter", id === 'is_paper' ? EXPLORE_FILTERS_LABELS[id] : 'articles that are ' + (EXPLORE_FILTERS_LABELS[id] || id)); 
   }
+
+  replaceText("explore_filter", currentActiveExploreItemQuery === 'is_paper' ? EXPLORE_FILTERS_LABELS[currentActiveExploreItemQuery] : 'articles that are ' + (EXPLORE_FILTERS_LABELS[currentActiveExploreItemQuery] || currentActiveExploreItemQuery)); 
   
   filters.forEach((filter, index) => {
-    const radioButton = createExploreFilterRadioButton(filter.id, index === 0);
+    const radioButton = createExploreFilterRadioButton(filter.id, filter.id === currentActiveExploreItemQuery);
     exploreFiltersElement.appendChild(radioButton);
   });
 }
