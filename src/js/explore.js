@@ -223,15 +223,20 @@ async function addExploreFiltersToDOM(query) {
   const exploreFiltersElement = document.getElementById("explore_filters");
   exploreFiltersElement.innerHTML = ""; // Clear existing radio buttons
   const filters = parseCommaSeparatedQueries(query); // Parse the query string into an array of filters
-  
-  // Only set currentActiveExploreItemQuery to the first filter if it's not already set
-  if (!currentActiveExploreItemQuery && filters.length > 0) {
+
+  // Check if the currentActiveExploreItemQuery is in the new set of filters
+  let currentFilterExists = filters.some(filter => filter.id === currentActiveExploreItemQuery);
+
+  // If currentActiveExploreItemQuery does not exist in the new set, reset it to the first filter
+  if (!currentFilterExists && filters.length > 0) {
     let id = filters[0].id;
     currentActiveExploreItemQuery = id;
   }
 
-  replaceText("explore_filter", currentActiveExploreItemQuery === 'is_paper' ? EXPLORE_FILTERS_LABELS[currentActiveExploreItemQuery] : 'articles that are ' + (EXPLORE_FILTERS_LABELS[currentActiveExploreItemQuery] || currentActiveExploreItemQuery)); 
-  
+  // Update the text for the active filter
+  replaceText("explore_filter", currentActiveExploreItemQuery === 'is_paper' ? EXPLORE_FILTERS_LABELS[currentActiveExploreItemQuery] : 'articles that are ' + (EXPLORE_FILTERS_LABELS[currentActiveExploreItemQuery] || currentActiveExploreItemQuery));
+
+  // Create radio buttons for each filter and append them to the DOM
   filters.forEach((filter, index) => {
     const radioButton = createExploreFilterRadioButton(filter.id, filter.id === currentActiveExploreItemQuery);
     exploreFiltersElement.appendChild(radioButton);
