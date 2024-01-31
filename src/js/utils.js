@@ -539,6 +539,7 @@ export function parseCommaSeparatedQueries(csvString) {
 export function copyToClipboard(buttonId, elementId) {
   const button = document.getElementById(buttonId);
   if (button) {
+    const textSpan = button.querySelector('span'); // Select text content inside <span> in the button
     button.addEventListener('click', () => {
       const element = document.getElementById(elementId);
       if (element) {
@@ -549,8 +550,12 @@ export function copyToClipboard(buttonId, elementId) {
           return cellTexts;
         }).join('\n');
         
-        navigator.clipboard.writeText(tableText).then(() => {
-          console.log('Text copied to clipboard');
+        navigator.clipboard.writeText(element.innerText).then(() => {
+          const originalText = textSpan.innerText;
+          textSpan.innerText = 'Table copied!';
+          setTimeout(() => {
+            textSpan.innerText = originalText; // Revert to original text after 2 seconds
+          }, 2000);
         }).catch(err => {
           console.error('Failed to copy text: ', err);
         });
@@ -562,4 +567,3 @@ export function copyToClipboard(buttonId, elementId) {
     console.error('Button not found:', buttonId);
   }
 }
-

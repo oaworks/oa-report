@@ -213,10 +213,15 @@ permalink: "{{ org._source.objectID | slug }}/"
               <tbody class="text-xs md:text-sm" id="export_table_body"></tbody>
             </table>
           </div>
+          <div class="flex justify-end">
+            <button id="explore_copy_clipboard" class="inline-flex items-center justify-content-end space-x-1 px-4 py-2 text-sm font-medium border border-neutral-100 text-white hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 whitespace-nowrap">
+              <div class="flex items-center -ml-2">
+                {% icon_small "clipboard" %}
+              </div>
+              <span>Copy to clipboard</span>
+            </button>
+          </div>
         </div>
-        <button id="explore_copy_clipboard" class="relative inline-flex items-center space-x-2 px-4 py-2 text-sm font-medium border border-neutral-100 text-white hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 whitespace-nowrap">
-          Copy to clipboard
-        </button>
         {# <div class="flex justify-between" id="explore_export_container"></div> #}
         {# TODO: allow downloading of all data in CSV #}
         {# <div class="flex justify-between">

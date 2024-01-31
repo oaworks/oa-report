@@ -16,8 +16,8 @@ const markdownLib = markdownIt(markdownItOptions).use(markdownItAttrs)
 
 // Feather icon set
 const feather = require('feather-icons');
-const iconShortcode = (icon) => feather.icons[icon].toSvg({ class: 'inline-block duration-500'});
-const iconShortcodeSmall = (icon) => feather.icons[icon].toSvg({ class: 'inline-block h-4 duration-500'});
+const iconShortcode = (icon) => feather.icons[icon].toSvg({ class: 'inline-block'});
+const iconShortcodeSmall = (icon) => feather.icons[icon].toSvg({ class: 'inline-block h-4'});
 
 const now = String(Date.now());
 
