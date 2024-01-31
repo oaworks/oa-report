@@ -22,6 +22,8 @@ function initialise() {
     return;
   }
   
+  // Set the default year
+  setDefaultYear(DEFAULT_YEAR);
   bindDynamicYearButtons(FIRST_YEAR, currentDate.getFullYear()); 
 
   // Check if the element with id="explore" exists to trigger data explore initialisation
@@ -30,8 +32,6 @@ function initialise() {
     initDataExplore(org);
     isDataExploreInitialised = true;
   }
-  
-  setDefaultYear(DEFAULT_YEAR);
 
   // Add general page interactivity 
   initStrategyTabs();
