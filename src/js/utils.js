@@ -568,3 +568,23 @@ export function copyToClipboard(buttonId, elementId) {
     console.error('Button not found:', buttonId);
   }
 }
+
+/**
+ * Updates the URL with the provided query parameters without reloading the page.
+ * @param {Object} params - An object where the key is the parameter name and the value is the parameter value.
+ */
+export function updateURLParams(params) {
+  const queryParams = new URLSearchParams(window.location.search);
+  Object.entries(params).forEach(([key, value]) => queryParams.set(key, value));
+  history.pushState(null, '', '?' + queryParams.toString());
+}
+
+/**
+ * Gets the value of a URL query parameter.
+ * @param {string} param - The name of the parameter.
+ * @returns {string|null} - The value of the parameter or null if not found.
+ */
+export function getURLParam(param) {
+  const queryParams = new URLSearchParams(window.location.search);
+  return queryParams.get(param);
+}
