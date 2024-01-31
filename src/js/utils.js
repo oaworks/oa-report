@@ -546,11 +546,12 @@ export function copyToClipboard(buttonId, elementId) {
         const rows = Array.from(element.rows);
         const tableText = rows.map(row => {
           const cells = Array.from(row.cells);
-          const cellTexts = cells.map(cell => cell.innerText.trim()).join('\t');
+          // Encapsulate each cell's content in quotes and join with tabs to ensure content remains intact
+          const cellTexts = cells.map(cell => `"${cell.innerText.trim()}"`).join('\t');
           return cellTexts;
         }).join('\n');
         
-        navigator.clipboard.writeText(element.innerText).then(() => {
+        navigator.clipboard.writeText(tableText).then(() => {
           const originalText = textSpan.innerText;
           textSpan.innerText = 'Table copied!';
           setTimeout(() => {
