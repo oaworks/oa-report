@@ -530,3 +530,36 @@ export function parseCommaSeparatedQueries(csvString) {
     return { id };
   });
 }
+
+/**
+ * Initialises the copy to clipboard functionality for any given button and element to copy from.
+ * @param {string} buttonId - The ID of the button to attach the event to.
+ * @param {string} elementId - The ID of the element to copy from.
+ */
+export function copyToClipboard(buttonId, elementId) {
+  const button = document.getElementById(buttonId);
+  if (button) {
+    button.addEventListener('click', () => {
+      const element = document.getElementById(elementId);
+      if (element) {
+        const rows = Array.from(element.rows);
+        const tableText = rows.map(row => {
+          const cells = Array.from(row.cells);
+          const cellTexts = cells.map(cell => cell.innerText.trim()).join('\t');
+          return cellTexts;
+        }).join('\n');
+        
+        navigator.clipboard.writeText(tableText).then(() => {
+          console.log('Text copied to clipboard');
+        }).catch(err => {
+          console.error('Failed to copy text: ', err);
+        });
+      } else {
+        console.error('Element to copy from was not found:', elementId);
+      }
+    });
+  } else {
+    console.error('Button not found:', buttonId);
+  }
+}
+
