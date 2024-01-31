@@ -31,9 +31,7 @@ export function setDefaultYear(defaultYear) {
   setTimeout(() => {
     const startParam = getURLParam('start');
     const endParam = getURLParam('end');
-    const breakdownParam = getURLParam('breakdown'); 
 
-    // Check if there’s a start and end date in the URL
     if (startParam && endParam) {
       // Attempt to load date range from URL parameters
       const startDate = new Date(startParam);
@@ -75,17 +73,6 @@ export function setDefaultYear(defaultYear) {
         'start': defaultStartDate.toISOString().split('T')[0], 
         'end': defaultEndDate.toISOString().split('T')[0] 
       });
-    }
-
-    // Check if there’s a breakdown (previously named 'explore item') parameter in the URL
-    if (breakdownParam) {
-      const exploreButton = document.getElementById(`explore_${breakdownParam}_button`);
-      if (exploreButton) {
-        // Simulate a click on the button
-        exploreButton.click(); 
-        // or directly invoke the function to process the explore item
-        // or processExploreDataTable(exploreButton, correspondingItemData);
-      }
     }
   }, 0);
 }
