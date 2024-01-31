@@ -81,13 +81,10 @@ export function setDefaultYear(defaultYear) {
     if (breakdownParam) {
       const exploreButton = document.getElementById(`explore_${breakdownParam}_button`);
       if (exploreButton) {
-        // Simulate a click on the button
-        exploreButton.click(); 
-        // or directly invoke the function to process the explore item
-        // or processExploreDataTable(exploreButton, correspondingItemData);
+        exploreButton.click(); // Simulate a click on the button
       }
     }
-  }, 0);
+  }, 100); // Delay to allow the page to load before executing this function
 }
 
 /**
