@@ -69,5 +69,19 @@
   <link ref="preconnect" href="https://bg.{{ env.ELEVENTY_API_ENDPOINT }}.oa.works">
   <link ref="preconnect" href="https://{{ env.ELEVENTY_API_ENDPOINT }}.oa.works">
 
+  {% if env.BRANCH == 'test' %}
+  <!-- Hotjar Tracking Code for User Testing Site ("OA.Report Testing Site") -->
+  <script>
+    (function(h,o,t,j,a,r){
+        h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+        h._hjSettings={hjid:3858744,hjsv:6};
+        a=o.getElementsByTagName('head')[0];
+        r=o.createElement('script');r.async=1;
+        r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+        a.appendChild(r);
+    })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+  </script>
+  {% endif %}
+
   {% block extra_head %}{% endblock %}
 </head>
