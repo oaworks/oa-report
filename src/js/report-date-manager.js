@@ -34,6 +34,8 @@ export function setDefaultYear(defaultYear) {
     const breakdownParam = getURLParam('breakdown'); 
 
     // Check if there’s a start and end date in the URL
+    // TODO: handle start and end date parameters in a separate function and similar to how
+    // the breakdown parameter is handled
     if (startParam && endParam) {
       // Attempt to load date range from URL parameters
       const startDate = new Date(startParam);
@@ -78,8 +80,11 @@ export function setDefaultYear(defaultYear) {
     }
 
     // Check if there’s a breakdown (previously named 'explore item') parameter in the URL
+    // TODO: this should probably go somewhere else outside of the date management... Maybe in main.js?
+    // ...or in the explore.js file. 
     if (breakdownParam) {
       const exploreButton = document.getElementById(`explore_${breakdownParam}_button`);
+      console.log(exploreButton, breakdownParam);
       if (exploreButton) {
         // Simulate a click on the button
         exploreButton.click(); 
@@ -87,7 +92,7 @@ export function setDefaultYear(defaultYear) {
         // or processExploreDataTable(exploreButton, correspondingItemData);
       }
     }
-  }, 0);
+  }, 250); // Delay execution to ensure the DOM is ready to check for URL parameters
 }
 
 /**
@@ -250,6 +255,12 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
 
   // Add event listener
   button.addEventListener("click", function() {
+    // Update URL with the selected year
+    updateURLParams({ 
+      'start': startDate.toISOString().split('T')[0], 
+      'end': endDate.toISOString().split('T')[0] 
+    });
+
     handleYearButtonLogic(button, startDate, endDate, buttonText);
   });
 
