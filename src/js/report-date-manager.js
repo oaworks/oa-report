@@ -66,8 +66,22 @@ export function setDefaultYear(defaultYear) {
         handleYearButtonLogic(defaultButton, defaultStartDate, defaultEndDate, `${defaultYear}`);
         updateYearButtonStyling(defaultButton);
       }
+
+      // Update URL with the selected year or date range
+      updateURLParams({ 
+        'start': defaultStartDate.toISOString().split('T')[0], 
+        'end': defaultEndDate.toISOString().split('T')[0] 
+      });
     }
-  }, 0);
+
+    // Check if there’s a breakdown (previously named 'explore item') parameter in the URL
+    if (breakdownParam) {
+      const exploreButton = document.getElementById(`explore_${breakdownParam}_button`);
+      if (exploreButton) {
+        exploreButton.click(); // Simulate a click on the button
+      }
+    }
+  }, 100); // Delay to allow the page to load before executing this function
 }
 
 
