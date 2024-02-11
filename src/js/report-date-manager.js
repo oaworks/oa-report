@@ -228,6 +228,11 @@ function createDropdownItem(buttonId, buttonText, startDate, endDate, dropdownBu
     event.preventDefault();
     // Update dropdown button text and style
     dropdownButton.innerHTML = `${buttonText} <span class='ml-1 text-xs'>&#9660;</span>`;
+    // Update URL with the selected year
+    updateURLParams({ 
+      'start': startDate.toISOString().split('T')[0], 
+      'end': endDate.toISOString().split('T')[0] 
+    });
     handleYearButtonLogic(item, startDate, endDate, buttonText);
     updateYearButtonStyling(dropdownButton, true);
   });
