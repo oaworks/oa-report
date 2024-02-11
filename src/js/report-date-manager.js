@@ -32,6 +32,7 @@ export function setDefaultYear(defaultYear) {
     const startParam = getURLParam('start');
     const endParam = getURLParam('end');
     const breakdownParam = getURLParam('breakdown'); 
+    const actionParam = getURLParam('action');
 
     // Check if there’s a start and end date in the URL
     // TODO: handle start and end date parameters in a separate function and similar to how
@@ -84,12 +85,18 @@ export function setDefaultYear(defaultYear) {
     // ...or in the explore.js file. 
     if (breakdownParam) {
       const exploreButton = document.getElementById(`explore_${breakdownParam}_button`);
-      console.log(exploreButton, breakdownParam);
       if (exploreButton) {
         // Simulate a click on the button
         exploreButton.click(); 
         // or directly invoke the function to process the explore item
         // or processExploreDataTable(exploreButton, correspondingItemData);
+      }
+    }
+    
+    if (actionParam) {
+      const strategyButton = document.getElementById(actionParam);
+      if (strategyButton) {
+        strategyButton.click();
       }
     }
   }, 250); // Delay execution to ensure the DOM is ready to check for URL parameters
