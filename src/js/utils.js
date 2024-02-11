@@ -272,7 +272,6 @@ export function reorderRecords(records, includes) {
 
     keysOrder.forEach(key => {
       let value = getNestedPropertyValue(record, key);
-      console.log(value);
 
       // Handle arrays and nested properties
       if (Array.isArray(value)) {
