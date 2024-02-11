@@ -30,8 +30,12 @@ const fixedDate = createDate(2023, 5, 30); // Fixed end date for free/non-paying
 export function setDefaultYear(defaultYear) {
   // Wait for the DOM to update year buttons or date rage inputs
   setTimeout(() => {
-    const queryParams = new URLSearchParams(window.location.search);
-    if (queryParams.has('start') && queryParams.has('end')) {
+    const startParam = getURLParam('start');
+    const endParam = getURLParam('end');
+    const breakdownParam = getURLParam('breakdown'); 
+
+    // Check if there’s a start and end date in the URL
+    if (startParam && endParam) {
       // Attempt to load date range from URL parameters
       const startDate = new Date(queryParams.get('start'));
       const endDate = new Date(queryParams.get('end'));
@@ -78,10 +82,13 @@ export function setDefaultYear(defaultYear) {
     if (breakdownParam) {
       const exploreButton = document.getElementById(`explore_${breakdownParam}_button`);
       if (exploreButton) {
-        exploreButton.click(); // Simulate a click on the button
+        // Simulate a click on the button
+        exploreButton.click(); 
+        // or directly invoke the function to process the explore item
+        // or processExploreDataTable(exploreButton, correspondingItemData);
       }
     }
-  }, 100); // Delay to allow the page to load before executing this function
+  }, 0);
 }
 
 
