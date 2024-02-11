@@ -272,6 +272,7 @@ export function reorderRecords(records, includes) {
 
     keysOrder.forEach(key => {
       let value = getNestedPropertyValue(record, key);
+      console.log(value);
 
       // Handle arrays and nested properties
       if (Array.isArray(value)) {
@@ -300,11 +301,20 @@ function getNestedPropertyValue(obj, path) {
       return null;
     }
 
-    if (typeof currentObj === 'object' && key in currentObj) {
+    // Check if the current object is an array and the key is numeric (array index)
+    if (Array.isArray(currentObj)) {
+      // Map over the array and return the value of the nested property for each item
+      return currentObj.map(item => {
+        if (typeof item === 'object' && item !== null && key in item) {
+          return item[key];
+        } else {
+          // If the item is an array or doesn't have the key, try to go deeper recursively
+          // or return null if not possible
+          return typeof item === 'object' ? getNestedPropertyValue(item, key) : null;
+        }
+      });
+    } else if (typeof currentObj === 'object' && key in currentObj) {
       return currentObj[key];
-    } else if (Array.isArray(currentObj)) {
-      // Process each element in the array
-      return currentObj.map(item => item && key in item ? item[key] : null);
     }
 
     return null;
