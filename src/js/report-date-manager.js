@@ -16,12 +16,6 @@ export const currentDate = new Date();
 export const DEFAULT_YEAR = 2023;
 export const FIRST_YEAR = 2015;
 
-// Constants for date calculations
-const startYearDate = createDate(currentDate.getFullYear(), 0, 1);
-const lastYearStartDate = createDate(currentDate.getFullYear() - 1, 0, 1);
-const lastYearEndDate = createDate(currentDate.getFullYear() - 1, 11, 31);
-const fixedDate = createDate(2023, 5, 30); // Fixed end date for free/non-paying users
-
 /**
  * Sets up the default year for the application, depending on whether the user is a paid user or not.
  * 
