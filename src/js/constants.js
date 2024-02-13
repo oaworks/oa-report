@@ -172,6 +172,8 @@ export const EXPLORE_FILTERS_LABELS = {
   "is_found_only_by_oareport": "Found only by <span class='uppercase'>OA</span>.<span class='uppercase'>R</span>eport",
   "is_found_by_all_sources": "Found by all sources",
   "has_data_availability_statement": "Has data availability statement",
+  "has_apc": "Paid via APC",
+  "is_under_transitional_agreement": "Paid via transitional agreement",
   "is_funded": "Funded"
 };
 
