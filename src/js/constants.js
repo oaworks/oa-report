@@ -159,6 +159,7 @@ export const EXPLORE_FILTERS_LABELS = {
   "is_found_only_by_external_sources": "Found only by external sources",
   "is_found_only_by_oareport": "Found only by <span class='uppercase'>OA</span>.<span class='uppercase'>R</span>eport",
   "is_found_by_all_sources": "Found by all sources",
+  "has_data_availability_statement": "Has data availability statement",
   "is_funded": "Funded"
 };
 
