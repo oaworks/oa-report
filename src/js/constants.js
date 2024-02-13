@@ -139,6 +139,18 @@ export const EXPLORE_ITEMS_LABELS = {
   "articles_cie": {
     singular: "Article (<span class='uppercase'>CIE</span>)",
     plural: "Articles (<span class='uppercase'>CIE</span>)"
+  },
+  "publisher_licenses": {
+    singular: "License (publisher)",
+    plural: "Licenses (publisher)"
+  },
+  "repository_license": {
+    singular: "License (repository)",
+    plural: "Licenses (repository)"
+  },
+  "preprint_server": {
+    singular: "Preprint server",
+    plural: "Preprint servers"
   }
 };
 
