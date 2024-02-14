@@ -189,6 +189,276 @@ export const EXPLORE_HEADER_LABELS = {
 };
 
 /**
+ * Mapping of explore table headers to human-readable labels and their corresponding tooltips.
+ * For terms-based tables
+ */
+export const EXPLORE_HEADER_TERMS_LABELS = {
+  "compliant": {
+    label: "Compliant",
+    info: "Publications that comply with the requirements of the Open Access policy, even if they are not covered by said policy. To be compliant, the publication must have the final version or the author accepted manuscript available for free and under a CC BY or CC0 licence on a publisher or repository website."
+  },
+  "free_to_read": {
+    label: "Free-to-read",
+    info: "Publications that are free to read on the publisher’s website or any online repository, including temporarily accessible articles (“bronze Open Access”)."
+  },
+  "in_repository": {
+    label: "In repository",
+    info: "Publications that have a copy of the work freely available and discoverable in any repository."
+  },
+  "mean_citations": {
+    label: "Mean citations",
+    info: "The mean (i.e. average) number of citations of these publications"
+  },
+  "open_access": {
+    label: "Open Access",
+    info: "Publications that are free and CC BY or CC0 (in the public domain) on the publisher’s website, a repository or a preprint server."
+  },
+  "publications": {
+    label: "Publications",
+    info: "Academic research articles found (including peer-reviewed research, reviews, editorials, etc.)"
+  },
+  "total_citations": {
+    label: "Total citations",
+    info: "Number of citations the publications received."
+  },
+  "unknown_data_status": {
+    label: "Unknown data status",
+    info: ""
+  },
+  "unknown_shared_data_status": {
+    label: "Unknown shared data status",
+    info: ""
+  },
+  "with_data": {
+    label: "With data",
+    info: ""
+  },
+  "with_data_accession_number": {
+    label: "With data accession number",
+    info: ""
+  },
+  "with_data_availability_statement": {
+    label: "With data availability statement",
+    info: "Publications that have a data availability statement. Data availability statements (or 'data access statement', 'resource availability statements', 'code availability statements') tell a reader where the research data or code associated with a paper is available, and how they can be accessed. This figure doesn’t tell you what type of data availability statement is provided (e.g whether there is Open Data or no data at all)."
+  },
+  "with_data_dois": {
+    label: "With data DOI<span style='text-transform: lowercase;'>s</span>",
+    info: ""
+  },
+  "with_dois": {
+    label: "With DOI<span style='text-transform: lowercase;'>s</span>",
+    info: ""
+  },
+  "with_fundref_dois": {
+    label: "With FundRef DOI<span style='text-transform: lowercase;'>s</span>",
+    info: ""
+  },
+  "with_grant_dois": {
+    label: "With grant DOI<span style='text-transform: lowercase;'>s</span>",
+    info: ""
+  },
+  "with_grant_id": {
+    label: "With grant ID<span style='text-transform: lowercase;'>s</span>",
+    info: "Publications that provided the grant ID for the grant you provide them."
+  },
+  "with_open_data": {
+    label: "With Open Data",
+    info: ""
+  },
+  "with_open_data_in_repository": {
+    label: "With Open Data in repository",
+    info: ""
+  },
+  "with_orcids": {
+    label: "With ORC<span style='text-transform: lowercase;'>i</span>D<span style='text-transform: lowercase;'>s</span>",
+    info: ""
+  },
+  "with_preprint": {
+    label: "With preprint",
+    info: "Publications that have a preprint associated with them."
+  },
+  "with_rors": {
+    label: "With ROR<span style='text-transform: lowercase;'>s</span>",
+    info: ""
+  },
+  "with_shared_data": {
+    label: "With shared data",
+    info: ""
+  },
+  "with_shared_data_in_repository": {
+    label: "With shared data in repository",
+    info: ""
+  },
+  "without_data": {
+    label: "Without data",
+    info: ""
+  },
+  "without_data_availability_statement": {
+    label: "Without data availability statement",
+    info: ""
+  },
+  "without_shared_data": {
+    label: "Without shared data",
+    info: ""
+  }
+}
+
+/**
+ * Mapping of explore table headers to human-readable labels and their corresponding tooltips.
+ * For articles-based tables
+ */
+export const EXPLORE_HEADER_ARTICLES_LABELS = {
+  "DOI": {
+    label: "DOI",
+    info: ""
+  },
+  "PMCID": {
+    label: "PMCID",
+    info: ""
+  },
+  "authorships.author.display_name": {
+    label: "Author(s)",
+    info: ""
+  },
+  "authorships.institutions.display_name": {
+    label: "Institution(s)",
+    info: ""
+  },
+  "can_archive": {
+    label: "Archivable?",
+    info: ""
+  },
+  "cited_by_count": {
+    label: "“Cited by” count",
+    info: ""
+  },
+  "concepts.display_name": {
+    label: "Concepts",
+    info: ""
+  },
+  "funder.name": {
+    label: "Funder(s)",
+    info: ""
+  },
+  "has_oa_locations_embargoed": {
+    label: "",
+    info: ""
+  },
+  "has_repository_copy": {
+    label: "",
+    info: ""
+  },
+  "is_oa": {
+    label: "Open Access?",
+    info: ""
+  },
+  "issn": {
+    label: "ISSN",
+    info: ""
+  },
+  "issue": {
+    label: "Issue",
+    info: ""
+  },
+  "journal": {
+    label: "Journal",
+    info: ""
+  },
+  "journal_oa_type": {
+    label: "Journal OA type",
+    info: ""
+  },
+  "oa_status": {
+    label: "OA status",
+    info: ""
+  },
+  "openalex": {
+    label: "OpenAlex",
+    info: ""
+  },
+  "published_date": {
+    label: "Published date",
+    info: ""
+  },
+  "published_year": {
+    label: "Published year",
+    info: ""
+  },
+  "publisher": {
+    label: "Publisher",
+    info: ""
+  },
+  "repository_url": {
+    label: "Repository URL",
+    info: ""
+  },
+  "repository_version": {
+    label: "Repository version",
+    info: ""
+  },
+  "subject": {
+    label: "Subject",
+    info: ""
+  },
+  "subtitle": {
+    label: "Subtitle",
+    info: ""
+  },
+  "supplements.grantid__idrc": {
+    label: "Grant ID",
+    info: ""
+  },
+  "supplements.has_data_availability_statement": {
+    label: "Data availability statement?",
+    info: ""
+  },
+  "supplements.is_compliant__idrc": {
+    label: "Compliant?",
+    info: ""
+  },
+  "supplements.is_covered_by_policy__idrc": {
+    label: "Covered by policy?",
+    info: "Publications that are covered by the Open Access Policy. To be covered, the publication must have been funded by a grant proposal that was received after the policy took effect on July 2015."
+  },
+  "supplements.is_new__idrc": {
+    label: "New?",
+    info: ""
+  },
+  "supplements.preprint_doi": {
+    label: "Preprint DOI",
+    info: ""
+  },
+  "supplements.publisher_license_best": {
+    label: "Publisher license",
+    info: ""
+  },
+  "supplements.repository_license_best": {
+    label: "Repository license",
+    info: ""
+  },
+  "supplements.sheets": {
+    label: "Sheets",
+    info: ""
+  },
+  "supplements_has_preprint_copy": {
+    label: "Preprint copy?",
+    info: ""
+  },
+  "title": {
+    label: "Title",
+    info: ""
+  },
+  "version": {
+    label: "Version",
+    info: ""
+  },
+  "volume": {
+    label: "Volume",
+    info: ""
+  }
+}
+
+/**
  * Class names for table header (<thead>) columns in the data explore section.
  * This constant provides TailwindCSS classes for different types of data tables, 
  * including 'terms' and 'articles', with each type having its own set of classes 
