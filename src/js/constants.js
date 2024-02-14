@@ -139,6 +139,18 @@ export const EXPLORE_ITEMS_LABELS = {
   "articles_cie": {
     singular: "Article (<span class='uppercase'>CIE</span>)",
     plural: "Articles (<span class='uppercase'>CIE</span>)"
+  },
+  "publisher_licenses": {
+    singular: "Publisher license",
+    plural: "Publisher licenses"
+  },
+  "repository_license": {
+    singular: "Repository license",
+    plural: "Repository licenses"
+  },
+  "preprint_server": {
+    singular: "Preprint server",
+    plural: "Preprint servers"
   }
 };
 
@@ -159,6 +171,9 @@ export const EXPLORE_FILTERS_LABELS = {
   "is_found_only_by_external_sources": "Found only by external sources",
   "is_found_only_by_oareport": "Found only by <span class='uppercase'>OA</span>.<span class='uppercase'>R</span>eport",
   "is_found_by_all_sources": "Found by all sources",
+  "has_data_availability_statement": "Has data availability statement",
+  "has_apc": "Paid via APC",
+  "is_under_transitional_agreement": "Paid via transitional agreement",
   "is_funded": "Funded"
 };
 
