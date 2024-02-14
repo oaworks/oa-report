@@ -142,7 +142,6 @@ export const EXPLORE_ITEMS_LABELS = {
   }
 };
 
-
 /**
  * Mapping of explore filter IDs to human-readable labels.
  * @type {Object.<string, string>}
@@ -160,6 +159,33 @@ export const EXPLORE_FILTERS_LABELS = {
   "is_found_only_by_oareport": "Found only by <span class='uppercase'>OA</span>.<span class='uppercase'>R</span>eport",
   "is_found_by_all_sources": "Found by all sources",
   "is_funded": "Funded"
+};
+
+/**
+ * Mapping of explore table headers to human-readable labels and their corresponding tooltips.
+ */
+export const EXPLORE_HEADER_LABELS = {
+  "open access": "Open Access",
+  "oa": "Open Access",
+  "open data": "Open Data",
+  "apc": "APC<span style='text-transform: lowercase;'>s</span>",
+  "free to read": "Free-to-Read",
+  "doi": "DOI",
+  "dois": "DOI<span style='text-transform: lowercase;'>s</span>",
+  "id": "ID",
+  "rors": "ROR<span style='text-transform: lowercase;'>s</span>",
+  "orcIDs": "ORC<span style='text-transform: lowercase;'>i</span>D<span style='text-transform: lowercase;'>s</span>",
+  "fundref": "FundRef",
+  "supplements.dev.": "",
+  "supplements.": "",
+  "authorships.author.display name": "Authors",
+  "authorships.author.orcid": "ORCiDs",
+  "authorships.institutions.display name": "Institutions",
+  "authorships.institutions.ror": "RORs",
+  "concepts.display name": "Concepts",
+  "funder.name": "Funder",
+  "publisher license best": "Publisher license",
+  "repository license best": "Repository license",
 };
 
 /**

@@ -8,7 +8,7 @@
 // =================================================
 
 import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, makeNumberReadable, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard } from "./utils.js";
-import { CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, COUNTRY_CODES } from "./constants.js";
+import { CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, COUNTRY_CODES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { orgDataPromise } from './insights-and-strategies.js';
 import { createPostData } from './api-requests.js';
@@ -586,31 +586,6 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
  * @returns {string[]} - The prettified headers.
  */
 function prettifyHeaders(headers) {
-  // Define special cases for phrases and acronyms
-  const specialCases = {
-    "open access": "Open Access",
-    "oa": "Open Access",
-    "open data": "Open Data",
-    "apc": "APC<span style='text-transform: lowercase;'>s</span>",
-    "free to read": "Free-to-Read",
-    "doi": "DOI",
-    "dois": "DOI<span style='text-transform: lowercase;'>s</span>",
-    "id": "ID",
-    "rors": "ROR<span style='text-transform: lowercase;'>s</span>",
-    "orcIDs": "ORC<span style='text-transform: lowercase;'>i</span>D<span style='text-transform: lowercase;'>s</span>",
-    "fundref": "FundRef",
-    "supplements.dev.": "",
-    "supplements.": "",
-    "authorships.author.display name": "Authors",
-    "authorships.author.orcid": "ORCiDs",
-    "authorships.institutions.display name": "Institutions",
-    "authorships.institutions.ror": "RORs",
-    "concepts.display name": "Concepts",
-    "funder.name": "Funder",
-    "publisher license best": "Publisher license",
-    "repository license best": "Repository license",
-  };
-
   return headers
     .filter(header => header.endsWith("_pct") || !headers.includes(header + "_pct"))
     .map(header => {
@@ -619,8 +594,8 @@ function prettifyHeaders(headers) {
       header = header.replace(/_/g, " "); // Replace underscores with spaces
       header = header.charAt(0).toUpperCase() + header.slice(1).toLowerCase(); // Capitalize only the first letter of the header
 
-      // Check and replace special cases using regex
-      Object.entries(specialCases).forEach(([key, value]) => {
+      // Check and replace special cases for explore labels using regex
+      Object.entries(EXPLORE_HEADER_LABELS).forEach(([key, value]) => {
         const regex = new RegExp(key, "i"); // 'i' flag for case-insensitive match
         if (regex.test(header)) {
           header = header.replace(regex, value);
