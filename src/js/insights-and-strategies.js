@@ -156,7 +156,7 @@ export function initInsightsAndStrategies(org) {
       "is_compliant",
       "is_covered_by_policy",
       "articles covered by policy",
-      `<p class='mb-2'>The percentage of articles that are compliant with <a href='${orgData.hits.hits[0]._source.policy.url}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a>.</p> <p>This number is specific to your policy and your requirements.</p>`
+      `<p class='mb-2'>The percentage of articles covered by <a href='${orgData.hits.hits[0]._source.policy.url}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
     );
 
     getInsight(
