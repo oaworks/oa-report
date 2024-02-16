@@ -261,6 +261,9 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
 
   // Add event listener
   button.addEventListener("click", function() {
+    // Reset the date range form when a year button is clicked
+    document.getElementById('date_range_form').reset();
+
     // Update URL with the selected year
     updateURLParams({ 
       'start': startDate.toISOString().split('T')[0], 
