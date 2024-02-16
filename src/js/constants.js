@@ -162,6 +162,7 @@ export const EXPLORE_ITEMS_LABELS = {
 export const EXPLORE_FILTERS_LABELS = {
   "is_paper": "All articles",
   "is_preprint": "Preprints",
+  "is_authored": "Authored",
   "is_covered_by_policy": "Covered by <span class='uppercase'>OA</span> policy",
   "is_covered_by_current_policy": "Covered by current <span class='uppercase'>OA</span> policy",
   "is_covered_by_old_policy": "Covered by old <span class='uppercase'>OA</span> policy",
