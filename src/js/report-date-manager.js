@@ -9,7 +9,6 @@ import { initInsightsAndStrategies } from './insights-and-strategies.js';
 import { currentActiveExploreItemButton, currentActiveExploreItemData, processExploreDataTable } from './explore.js';
 
 // Capture DOM elements
-const reportDateRange = document.getElementById("report-range");
 const reportYear = document.getElementById("report-year");
 
 export const currentDate = new Date();
@@ -57,7 +56,6 @@ export function setDefaultYear(defaultYear) {
       }
 
       replaceDateRange(defaultStartDate, defaultEndDate);
-      reportDateRange.textContent = `In ${defaultYear}`;
       reportYear.textContent = defaultYear;
 
       // Select the default year button and style it as selected
@@ -391,7 +389,6 @@ function handleYearButtonLogic(button, startDate, endDate, buttonText) {
   }
 
   replaceDateRange(startDate, endDate);
-  reportDateRange.textContent = `In ${startDate.getFullYear()}`;
   reportYear.textContent = startDate.getFullYear();
   if (reportYear) replaceText("report_year", buttonText);
   initInsightsAndStrategies(org);
