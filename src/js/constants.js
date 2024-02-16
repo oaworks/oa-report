@@ -140,7 +140,7 @@ export const EXPLORE_ITEMS_LABELS = {
     singular: "Article (<span class='uppercase'>CIE</span>)",
     plural: "Articles (<span class='uppercase'>CIE</span>)"
   },
-  "publisher_licenses": {
+  "publisher_license": {
     singular: "Publisher license",
     plural: "Publisher licenses"
   },
