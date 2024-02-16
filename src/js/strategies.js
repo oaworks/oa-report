@@ -38,7 +38,7 @@ function updateStrategyButtonStyling(event) {
   // Update URL params 
   // TODO: This should be moved to a more generic function along with
   // other URL param updates in other files (see start, end, and breakdown params)
-  updateURLParams({ 'action': tabBtn.id });
+  updateURLParams({ 'action': selectedStrategy });
 
   // When unselected
   for (let tabContents of otherTabContents) {

@@ -86,9 +86,9 @@ export function setDefaultYear(defaultYear) {
     }
     
     if (actionParam) {
-      const strategyButton = document.getElementById(actionParam);
+      const strategyButton = document.getElementById(`strategy_${actionParam}`);
       if (strategyButton) {
-        strategyButton.click();
+        document.getElementById(`strategy_${actionParam}`)?.click();
       }
     }
   }, 250); // Delay execution to ensure the DOM is ready to check for URL parameters
