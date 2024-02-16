@@ -40,7 +40,10 @@ export function setDefaultYear(defaultYear) {
 
       // Trigger any additional logic needed to refresh the report
       handleYearButtonLogic(null, startDate, endDate, `${makeDateReadable(startDate)} &ndash; ${makeDateReadable(endDate)}`);
-      updateYearButtonStyling(null, true);
+
+      // Style the date range form as selected
+      const dateRangeForm = document.getElementById("date_range_form");
+      updateYearButtonStyling(dateRangeForm, true);
     } else {
       // Otherwise, set default dates or years based on user type
       let defaultStartDate, defaultEndDate;
