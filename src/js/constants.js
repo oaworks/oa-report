@@ -151,7 +151,11 @@ export const EXPLORE_ITEMS_LABELS = {
   "preprint_server": {
     singular: "Preprint server",
     plural: "Preprint servers"
-  }
+  },
+  "articles_with_apcs": {
+    singular: "Article with <span class='uppercase'>APC</span>s",
+    plural: "Articles with <span class='uppercase'>APC</span>s"
+  },
 };
 
 /**
