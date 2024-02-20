@@ -79,11 +79,10 @@ export function initInsightsAndStrategies(org) {
       if (shown === true) {
         // Select elements to show data
         var percentageContents = document.getElementById(`percent_${numerator}`), // % value
-            articlesContents   = document.getElementById(`articles_${numerator}`), // full-text value
-            infoContents       = document.getElementById(`info_${numerator}`); // help text value
+            articlesContents   = document.getElementById(`articles_${numerator}`); // full-text value
 
         // Display help text / info popover
-        const instance = tippy(infoContents, {
+        const instance = tippy(percentageContents, {
           allowHTML: true,
           interactive: true,
           placement: 'top',
@@ -95,9 +94,9 @@ export function initInsightsAndStrategies(org) {
 
         // Access tooltip instance and its ID; use it for aria-controls attribute
         const tooltipID = instance.popper.id;
-        infoContents.setAttribute('aria-controls', tooltipID);
-        infoContents.setAttribute('aria-labelledby', numerator); // Set a11y label to the insight’s ID
-        infoContents.setAttribute('title', 'More information on this metric'); // Set title 
+        percentageContents.setAttribute('aria-controls', tooltipID);
+        percentageContents.setAttribute('aria-labelledby', numerator); // Set a11y label to the insight’s ID
+        percentageContents.setAttribute('title', 'More information on this metric'); // Set title 
 
         // Get numerator’s count query
         let num = axios.get(countQueryPrefix + orgData.hits.hits[0]._source.analysis[numerator].query);
