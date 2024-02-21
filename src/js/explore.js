@@ -7,8 +7,8 @@
 // Imports
 // =================================================
 
-import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, makeNumberReadable, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, updateURLParams } from "./utils.js";
-import { CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, COUNTRY_CODES } from "./constants.js";
+import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, makeNumberReadable, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, updateURLParams, setupTooltip } from "./utils.js";
+import { CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, COUNTRY_CODES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { orgDataPromise } from './insights-and-strategies.js';
 import { createPostData } from './api-requests.js';
@@ -499,16 +499,30 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
   }
 
   records = Object.keys(records); // Only extract the keys from the records
-  let headers = prettifyHeaders(records);
+  // let headers = prettifyHeaders(records);
 
   const headerRow = document.createElement('tr'); // Create and add the header row
-  headers.forEach((key, index) => {
+  records.forEach((key, index) => {
+    key = key.replace(/_pct$/, ""); // Remove '_pct' suffix
+    key = key.replace(/__.*/, ""); // Remove any suffixes after '__'
+    key = key.replace(/supplements./g, ""); // Remove 'supplements.' prefix
+    // key = key.replace(/_/g, " "); // Replace underscores with spaces
+
     let cssClass;
     if (index === 0) cssClass = DATA_TABLE_HEADER_CLASSES[dataType].firstHeaderCol;
     else if (index === 1) cssClass = DATA_TABLE_HEADER_CLASSES[dataType].secondHeaderCol;
     else cssClass = DATA_TABLE_HEADER_CLASSES[dataType].otherHeaderCols;
 
     const headerCell = createTableCell(key, cssClass, null, null, true);
+
+    if (EXPLORE_HEADER_TERMS_LABELS[key] && dataType === 'terms') {
+      const tooltipContent = EXPLORE_HEADER_TERMS_LABELS[key].info;
+      setupTooltip(headerCell, tooltipContent, key);
+    } else if (EXPLORE_HEADER_ARTICLES_LABELS[key] && dataType === 'articles') {
+      const tooltipContent = EXPLORE_HEADER_ARTICLES_LABELS[key].info;
+      setupTooltip(headerCell, tooltipContent, key);
+    }
+
     headerRow.appendChild(headerCell);
   });
   tableHeader.appendChild(headerRow);
@@ -586,26 +600,26 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
  * @param {string[]} headers - The array of headers to be prettified.
  * @returns {string[]} - The prettified headers.
  */
-function prettifyHeaders(headers) {
-  return headers
-    .filter(header => header.endsWith("_pct") || !headers.includes(header + "_pct"))
-    .map(header => {
-      header = header.replace(/_pct$/, ""); // Remove '_pct' suffix
-      header = header.replace(/__.*/, ""); // Remove any suffixes after '__'
-      header = header.replace(/_/g, " "); // Replace underscores with spaces
-      header = header.charAt(0).toUpperCase() + header.slice(1).toLowerCase(); // Capitalize only the first letter of the header
+// function prettifyHeaders(headers) {
+//   return headers
+//     .filter(header => header.endsWith("_pct") || !headers.includes(header + "_pct"))
+//     .map(header => {
+//       header = header.replace(/_pct$/, ""); // Remove '_pct' suffix
+//       header = header.replace(/__.*/, ""); // Remove any suffixes after '__'
+//       header = header.replace(/_/g, " "); // Replace underscores with spaces
+//       header = header.charAt(0).toUpperCase() + header.slice(1).toLowerCase(); // Capitalize only the first letter of the header
 
-      // Check and replace special cases for explore labels using regex
-      Object.entries(EXPLORE_HEADER_LABELS).forEach(([key, value]) => {
-        const regex = new RegExp(key, "i"); // 'i' flag for case-insensitive match
-        if (regex.test(header)) {
-          header = header.replace(regex, value);
-        }
-      });
-      return header;
-    }
-  );
-}
+//       // Check and replace special cases for explore labels using regex
+//       Object.entries(EXPLORE_HEADER_LABELS).forEach(([key, value]) => {
+//         const regex = new RegExp(key, "i"); // 'i' flag for case-insensitive match
+//         if (regex.test(header)) {
+//           header = header.replace(regex, value);
+//         }
+//       });
+//       return header;
+//     }
+//   );
+// }
 
 /**
  * Formats the records for display. This includes converting numerical values
