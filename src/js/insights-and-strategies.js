@@ -1,3 +1,10 @@
+// ================================================
+// insights-and-strategies.js
+// State & DOM manipulation specific to Insights
+// and Actions sections
+// Needs to be completely refactored
+// ================================================
+
 import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable } from './utils.js';
 import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE } from './constants.js';
 
@@ -6,11 +13,6 @@ export const orgApiUrl = `${API_BASE_URL}orgs?q=objectID:%22${org}%22`;
 
 // Fetch and store organisational data in a constant
 export const orgDataPromise = axios.get(orgApiUrl);
-
-/* Get report page elements where data will be inserted */
-// Send CSV data by email form
-var queryHiddenInput               = document.getElementById("download-form-q"),
-    includeHiddenInput             = document.getElementById("download-form-include");
 
 // Check if user is logged in
 let orgKey = "",
