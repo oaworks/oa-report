@@ -3,6 +3,8 @@
 // State & DOM manipulation specific to Strategies
 // ================================================
 
+import { updateURLParams } from './utils.js';
+
 /**
  * Initialises event listeners for strategy tab buttons.
  */
@@ -32,6 +34,11 @@ function updateStrategyButtonStyling(event) {
   const selectedTabContents = document.querySelector(`.js_strategies #${selectedStrategy}`);
   const otherTabContents = document.querySelectorAll(`.js_strategy:not(#${selectedStrategy})`);
   const otherTabBtns = document.querySelectorAll(`.js_strategy_btn:not(#strategy_${selectedStrategy})`);
+
+  // Update URL params 
+  // TODO: This should be moved to a more generic function along with
+  // other URL param updates in other files (see start, end, and breakdown params)
+  updateURLParams({ 'action': selectedStrategy });
 
   // When unselected
   for (let tabContents of otherTabContents) {

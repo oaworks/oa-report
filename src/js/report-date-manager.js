@@ -4,23 +4,16 @@
 // =================================================
 
 import { DATE_SELECTION_BUTTON_CLASSES } from './constants.js';
-import { makeDateReadable, createDate, replaceDateRange, replaceText, initDropdown } from './utils.js';
+import { makeDateReadable, createDate, replaceDateRange, replaceText, initDropdown, getURLParam, updateURLParams } from './utils.js';
 import { initInsightsAndStrategies } from './insights-and-strategies.js';
 import { currentActiveExploreItemButton, currentActiveExploreItemData, processExploreDataTable } from './explore.js';
 
 // Capture DOM elements
-const reportDateRange = document.getElementById("report-range");
 const reportYear = document.getElementById("report-year");
 
 export const currentDate = new Date();
 export const DEFAULT_YEAR = 2023;
 export const FIRST_YEAR = 2015;
-
-// Constants for date calculations
-const startYearDate = createDate(currentDate.getFullYear(), 0, 1);
-const lastYearStartDate = createDate(currentDate.getFullYear() - 1, 0, 1);
-const lastYearEndDate = createDate(currentDate.getFullYear() - 1, 11, 31);
-const fixedDate = createDate(2023, 5, 30); // Fixed end date for free/non-paying users
 
 /**
  * Sets up the default year for the application, depending on whether the user is a paid user or not.
@@ -28,20 +21,29 @@ const fixedDate = createDate(2023, 5, 30); // Fixed end date for free/non-paying
  * @param {number} defaultYear - The default year to be selected.
  */
 export function setDefaultYear(defaultYear) {
-  // Wait for the DOM to update year buttons or date rage inputs
   setTimeout(() => {
-    const queryParams = new URLSearchParams(window.location.search);
-    if (queryParams.has('start') && queryParams.has('end')) {
+    const startParam = getURLParam('start');
+    const endParam = getURLParam('end');
+    const breakdownParam = getURLParam('breakdown'); 
+    const actionParam = getURLParam('action');
+
+    // Check if there’s a start and end date in the URL
+    // TODO: handle start and end date parameters in a separate function and similar to how
+    // the breakdown parameter is handled
+    if (startParam && endParam) {
       // Attempt to load date range from URL parameters
-      const startDate = new Date(queryParams.get('start'));
-      const endDate = new Date(queryParams.get('end'));
+      const startDate = new Date(startParam);
+      const endDate = new Date(endParam);
 
       document.getElementById('start-date').value = startDate.toISOString().split('T')[0];
       document.getElementById('end-date').value = endDate.toISOString().split('T')[0];
 
       // Trigger any additional logic needed to refresh the report
       handleYearButtonLogic(null, startDate, endDate, `${makeDateReadable(startDate)} &ndash; ${makeDateReadable(endDate)}`);
-      updateYearButtonStyling(null, true);
+
+      // Style the date range form as selected
+      const dateRangeForm = document.getElementById("date_range_form");
+      updateYearButtonStyling(dateRangeForm, true);
     } else {
       // Otherwise, set default dates or years based on user type
       let defaultStartDate, defaultEndDate;
@@ -57,7 +59,6 @@ export function setDefaultYear(defaultYear) {
       }
 
       replaceDateRange(defaultStartDate, defaultEndDate);
-      reportDateRange.textContent = `In ${defaultYear}`;
       reportYear.textContent = defaultYear;
 
       // Select the default year button and style it as selected
@@ -66,10 +67,35 @@ export function setDefaultYear(defaultYear) {
         handleYearButtonLogic(defaultButton, defaultStartDate, defaultEndDate, `${defaultYear}`);
         updateYearButtonStyling(defaultButton);
       }
-    }
-  }, 0);
-}
 
+      // Update URL with the selected year or date range
+      updateURLParams({ 
+        'start': defaultStartDate.toISOString().split('T')[0], 
+        'end': defaultEndDate.toISOString().split('T')[0] 
+      });
+    }
+
+    // Check if there’s a breakdown (previously named 'explore item') parameter in the URL
+    // TODO: this should probably go somewhere else outside of the date management... Maybe in main.js?
+    // ...or in the explore.js file. 
+    if (breakdownParam) {
+      const exploreButton = document.getElementById(`explore_${breakdownParam}_button`);
+      if (exploreButton) {
+        // Simulate a click on the button
+        exploreButton.click(); 
+        // or directly invoke the function to process the explore item
+        // or processExploreDataTable(exploreButton, correspondingItemData);
+      }
+    }
+    
+    if (actionParam) {
+      const strategyButton = document.getElementById(`strategy_${actionParam}`);
+      if (strategyButton) {
+        document.getElementById(`strategy_${actionParam}`)?.click();
+      }
+    }
+  }, 250); // Delay execution to ensure the DOM is ready to check for URL parameters
+}
 
 /**
  * Binds dynamic year buttons to a container and initializes a dropdown for additional years.
@@ -204,6 +230,11 @@ function createDropdownItem(buttonId, buttonText, startDate, endDate, dropdownBu
     event.preventDefault();
     // Update dropdown button text and style
     dropdownButton.innerHTML = `${buttonText} <span class='ml-1 text-xs'>&#9660;</span>`;
+    // Update URL with the selected year
+    updateURLParams({ 
+      'start': startDate.toISOString().split('T')[0], 
+      'end': endDate.toISOString().split('T')[0] 
+    });
     handleYearButtonLogic(item, startDate, endDate, buttonText);
     updateYearButtonStyling(dropdownButton, true);
   });
@@ -231,6 +262,15 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
 
   // Add event listener
   button.addEventListener("click", function() {
+    // Reset the date range form when a year button is clicked
+    document.getElementById('date_range_form').reset();
+
+    // Update URL with the selected year
+    updateURLParams({ 
+      'start': startDate.toISOString().split('T')[0], 
+      'end': endDate.toISOString().split('T')[0] 
+    });
+
     handleYearButtonLogic(button, startDate, endDate, buttonText);
   });
 
@@ -352,7 +392,6 @@ function handleYearButtonLogic(button, startDate, endDate, buttonText) {
   }
 
   replaceDateRange(startDate, endDate);
-  reportDateRange.textContent = `In ${startDate.getFullYear()}`;
   reportYear.textContent = startDate.getFullYear();
   if (reportYear) replaceText("report_year", buttonText);
   initInsightsAndStrategies(org);
