@@ -185,33 +185,6 @@ export const EXPLORE_FILTERS_LABELS = {
 
 /**
  * Mapping of explore table headers to human-readable labels and their corresponding tooltips.
- */
-export const EXPLORE_HEADER_LABELS = {
-  "open access": "Open Access",
-  "oa": "Open Access",
-  "open data": "Open Data",
-  "apc": "APC<span style='text-transform: lowercase;'>s</span>",
-  "free to read": "Free-to-Read",
-  "doi": "DOI",
-  "dois": "DOI<span style='text-transform: lowercase;'>s</span>",
-  "id": "ID",
-  "rors": "ROR<span style='text-transform: lowercase;'>s</span>",
-  "orcIDs": "ORC<span style='text-transform: lowercase;'>i</span>D<span style='text-transform: lowercase;'>s</span>",
-  "fundref": "FundRef",
-  "supplements.dev.": "",
-  "supplements.": "",
-  "authorships.author.display name": "Authors",
-  "authorships.author.orcid": "ORCiDs",
-  "authorships.institutions.display name": "Institutions",
-  "authorships.institutions.ror": "RORs",
-  "concepts.display name": "Concepts",
-  "funder.name": "Funder",
-  "publisher license best": "Publisher license",
-  "repository license best": "Repository license",
-};
-
-/**
- * Mapping of explore table headers to human-readable labels and their corresponding tooltips.
  * For terms-based tables
  */
 export const EXPLORE_HEADER_TERMS_LABELS = {
