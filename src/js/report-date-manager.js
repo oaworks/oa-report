@@ -21,7 +21,7 @@ export const FIRST_YEAR = 2015;
  * @param {number} defaultYear - The default year to be selected.
  */
 export function setDefaultYear(defaultYear) {
-  setTimeout(() => {
+  document.addEventListener("DOMContentLoaded", () => {
     const startParam = getURLParam('start');
     const endParam = getURLParam('end');
     const breakdownParam = getURLParam('breakdown'); 
@@ -94,7 +94,7 @@ export function setDefaultYear(defaultYear) {
         document.getElementById(`strategy_${actionParam}`)?.click();
       }
     }
-  }, 250); // Delay execution to ensure the DOM is ready to check for URL parameters
+  });
 }
 
 /**
