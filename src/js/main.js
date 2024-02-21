@@ -37,4 +37,5 @@ function initialise() {
   bindSmoothScrollLinks(); 
 }
 
-initialise();
+// Initialise the report when the DOM is ready
+document.addEventListener('DOMContentLoaded', initialise);

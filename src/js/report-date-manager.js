@@ -21,80 +21,78 @@ export const FIRST_YEAR = 2015;
  * @param {number} defaultYear - The default year to be selected.
  */
 export function setDefaultYear(defaultYear) {
-  document.addEventListener("DOMContentLoaded", () => {
-    const startParam = getURLParam('start');
-    const endParam = getURLParam('end');
-    const breakdownParam = getURLParam('breakdown'); 
-    const actionParam = getURLParam('action');
+  const startParam = getURLParam('start');
+  const endParam = getURLParam('end');
+  const breakdownParam = getURLParam('breakdown'); 
+  const actionParam = getURLParam('action');
 
-    // Check if there’s a start and end date in the URL
-    // TODO: handle start and end date parameters in a separate function and similar to how
-    // the breakdown parameter is handled
-    if (startParam && endParam) {
-      // Attempt to load date range from URL parameters
-      const startDate = new Date(startParam);
-      const endDate = new Date(endParam);
+  // Check if there’s a start and end date in the URL
+  // TODO: handle start and end date parameters in a separate function and similar to how
+  // the breakdown parameter is handled
+  if (startParam && endParam) {
+    // Attempt to load date range from URL parameters
+    const startDate = new Date(startParam);
+    const endDate = new Date(endParam);
 
-      document.getElementById('start-date').value = startDate.toISOString().split('T')[0];
-      document.getElementById('end-date').value = endDate.toISOString().split('T')[0];
+    document.getElementById('start-date').value = startDate.toISOString().split('T')[0];
+    document.getElementById('end-date').value = endDate.toISOString().split('T')[0];
 
-      // Trigger any additional logic needed to refresh the report
-      handleYearButtonLogic(null, startDate, endDate, `${makeDateReadable(startDate)} &ndash; ${makeDateReadable(endDate)}`);
+    // Trigger any additional logic needed to refresh the report
+    handleYearButtonLogic(null, startDate, endDate, `${makeDateReadable(startDate)} &ndash; ${makeDateReadable(endDate)}`);
 
-      // Style the date range form as selected
-      const dateRangeForm = document.getElementById("date_range_form");
-      updateYearButtonStyling(dateRangeForm, true);
+    // Style the date range form as selected
+    const dateRangeForm = document.getElementById("date_range_form");
+    updateYearButtonStyling(dateRangeForm, true);
+  } else {
+    // Otherwise, set default dates or years based on user type
+    let defaultStartDate, defaultEndDate;
+
+    if (paid) {
+      // For paid users, use the full year
+      defaultStartDate = createDate(defaultYear, 0, 1);
+      defaultEndDate = createDate(defaultYear, 11, 31);
     } else {
-      // Otherwise, set default dates or years based on user type
-      let defaultStartDate, defaultEndDate;
-
-      if (paid) {
-        // For paid users, use the full year
-        defaultStartDate = createDate(defaultYear, 0, 1);
-        defaultEndDate = createDate(defaultYear, 11, 31);
-      } else {
-        // For non-paid users, restrict the date range from Jan 1 to Jun 30 of DEFAULT_YEAR
-        defaultStartDate = createDate(DEFAULT_YEAR, 0, 1);
-        defaultEndDate = createDate(DEFAULT_YEAR, 5, 30); // June 30th
-      }
-
-      replaceDateRange(defaultStartDate, defaultEndDate);
-      reportYear.textContent = defaultYear;
-
-      // Select the default year button and style it as selected
-      const defaultButton = document.getElementById(`year-${defaultYear}`);
-      if (defaultButton) {
-        handleYearButtonLogic(defaultButton, defaultStartDate, defaultEndDate, `${defaultYear}`);
-        updateYearButtonStyling(defaultButton);
-      }
-
-      // Update URL with the selected year or date range
-      updateURLParams({ 
-        'start': defaultStartDate.toISOString().split('T')[0], 
-        'end': defaultEndDate.toISOString().split('T')[0] 
-      });
+      // For non-paid users, restrict the date range from Jan 1 to Jun 30 of DEFAULT_YEAR
+      defaultStartDate = createDate(DEFAULT_YEAR, 0, 1);
+      defaultEndDate = createDate(DEFAULT_YEAR, 5, 30); // June 30th
     }
 
-    // Check if there’s a breakdown (previously named 'explore item') parameter in the URL
-    // TODO: this should probably go somewhere else outside of the date management... Maybe in main.js?
-    // ...or in the explore.js file. 
-    if (breakdownParam) {
-      const exploreButton = document.getElementById(`explore_${breakdownParam}_button`);
-      if (exploreButton) {
-        // Simulate a click on the button
-        exploreButton.click(); 
-        // or directly invoke the function to process the explore item
-        // or processExploreDataTable(exploreButton, correspondingItemData);
-      }
+    replaceDateRange(defaultStartDate, defaultEndDate);
+    reportYear.textContent = defaultYear;
+
+    // Select the default year button and style it as selected
+    const defaultButton = document.getElementById(`year-${defaultYear}`);
+    if (defaultButton) {
+      handleYearButtonLogic(defaultButton, defaultStartDate, defaultEndDate, `${defaultYear}`);
+      updateYearButtonStyling(defaultButton);
     }
-    
-    if (actionParam) {
-      const strategyButton = document.getElementById(`strategy_${actionParam}`);
-      if (strategyButton) {
-        document.getElementById(`strategy_${actionParam}`)?.click();
-      }
+
+    // Update URL with the selected year or date range
+    updateURLParams({ 
+      'start': defaultStartDate.toISOString().split('T')[0], 
+      'end': defaultEndDate.toISOString().split('T')[0] 
+    });
+  }
+
+  // Check if there’s a breakdown (previously named 'explore item') parameter in the URL
+  // TODO: this should probably go somewhere else outside of the date management... Maybe in main.js?
+  // ...or in the explore.js file. 
+  if (breakdownParam) {
+    const exploreButton = document.getElementById(`explore_${breakdownParam}_button`);
+    if (exploreButton) {
+      // Simulate a click on the button
+      exploreButton.click(); 
+      // or directly invoke the function to process the explore item
+      // or processExploreDataTable(exploreButton, correspondingItemData);
     }
-  });
+  }
+  
+  if (actionParam) {
+    const strategyButton = document.getElementById(`strategy_${actionParam}`);
+    if (strategyButton) {
+      document.getElementById(`strategy_${actionParam}`)?.click();
+    }
+  }
 }
 
 /**
