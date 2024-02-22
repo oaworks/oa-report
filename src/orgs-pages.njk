@@ -166,15 +166,31 @@ permalink: "{{ org._source.objectID | slug }}/"
           <p class="col-span-3 md:col-span-1 mb-2 md:mb-0 text-sm md:text-base md:border-l md:pl-4 border-neutral-300 text-neutral-100">
             This table is a preview of the <strong class="explore_type lowercase">articles</strong> records sorted by <strong class="explore_sort">publication count</strong>.
           </p>
-          <p class="col-span-3 md:col-span-1 text-sm md:border-l md:pl-4 border-neutral-300 text-neutral-100">
-            You can view up to 500 records here. <span id="explore_table_tooltip_articles">To see all of them, use the <a href="#download_csv_form_container" class="underline underline-offset-2 decoration-1">Download full article data as CSV</a> form below.</span>
-          </p>
         </header>
         <div class="my-4 gap-3 md:gap-12 flex justify-between">
           <div class="gap-3 md:gap-12 flex justify-between">
             <form class="w-auto">
               <fieldset id="explore_records_shown_field">
-                <legend class="mb-4 text-xs font-semibold uppercase">Records shown</legend>
+                <legend class="mb-4 text-xs font-semibold uppercase">
+                  <span id="explore_articles_records_shown_help"
+                        class="tooltip" 
+                        role="tooltip"
+                        tabindex="0"
+                        data-tippy-theme="tooltip-pink"
+                        data-tippy-placement="right"
+                        data-tippy-content="You can view up to 500 records here. To see all of them, use the <em>Get this dataset in CSV</em> form below.">
+                    Records shown
+                  </span>
+                  <span id="explore_terms_records_shown_help"
+                        class="tooltip" 
+                        role="tooltip"
+                        tabindex="0"
+                        data-tippy-theme="tooltip-pink"
+                        data-tippy-placement="right"
+                        data-tippy-content="You can view up to 500 records here.">
+                    Records shown
+                  </span>
+                </legend>
                 <div class="flex flex-wrap items-center" id="explore_records_shown"></div>
               </fieldset>
             </form>

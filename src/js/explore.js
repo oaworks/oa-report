@@ -400,17 +400,20 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       enableTooltipsForTruncatedCells();
 
       const downloadCSVForm = document.getElementById('download_csv_form');
-      const exploreTableTooltip = document.getElementById('explore_table_tooltip_articles');
+      const exploreArticlesTableHelp = document.getElementById('explore_articles_records_shown_help');
+      const exploreTermsTableHelp = document.getElementById('explore_terms_records_shown_help');
       // Add data download link only if it's an 'articles'-type data table
       if (type === "articles") {
         // addCSVExportLink(); TODO: once we can download the CSV directly from the link, use this
         downloadCSVForm.style.display = "block" // Display download_csv_form if it's an 'articles'-type data table
-        exploreTableTooltip.style.display = "inline"; // Display the tooltip
+        exploreArticlesTableHelp.style.display = "block"; // Display the articles tooltip
+        exploreTermsTableHelp.style.display = "none"; // Hide the terms tooltip
         displayNone("explore_display_style_field"); // No need for the data display style field in article tables
       } else {
         // removeCSVExportLink(); // Remove the CSV export link if there's one
         downloadCSVForm.style.display = "none" // Hide download_csv_form if it's NOT an 'articles'-type data table
-        exploreTableTooltip.style.display = "none"; // Hide the tooltip
+        exploreTermsTableHelp.style.display = "block" // Show the terms tooltip
+        exploreArticlesTableHelp.style.display = "none"; // Hide the articles tooltip
         removeDisplayStyle("explore_display_style_field"); // Display the data display style field
       }
     } else {
@@ -502,11 +505,12 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
   // This line seems to be incorrectly placed or based on a misunderstanding; correcting it:
   // records = records.length > 0 ? Object.keys(records[0]) : []; // Corrected line
   records = Object.keys(records); // Only extract the keys from the records
+  console.log(records);
 
   const headerRow = document.createElement('tr');
   records.forEach((key, index) => {
     key = key.replace(/_pct$/, ""); // Remove '_pct' suffix
-    key = key.replace(/__.*/, ""); // Remove any suffixes after '__'
+    key = key.replace(/__.*/, ""); // Remove any suffixes after '__', e.g. org short name
     key = key.replace(/supplements./g, ""); // Remove 'supplements.' prefix
     // key = key.replace(/_/g, " "); // Replace underscores with spaces
 
@@ -520,8 +524,8 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
       ? EXPLORE_HEADER_TERMS_LABELS[key]?.label || key
       : EXPLORE_HEADER_ARTICLES_LABELS[key]?.label || key;
 
-    const headerCell = createTableCell('', cssClass, null, null, true); // Create cell without text
-    setupTooltip(headerCell, key, dataType); // Adjusted to call with key & dataType
+    const headerCell = createTableCell('', cssClass, null, null, true); 
+    setupTooltip(headerCell, key, dataType);
 
     headerRow.appendChild(headerCell);
   });
