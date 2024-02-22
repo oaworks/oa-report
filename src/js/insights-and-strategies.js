@@ -81,14 +81,16 @@ export function initInsightsAndStrategies(org) {
       if (shown === true) {
         // Select elements to show data
         var percentageContents = document.getElementById(`percent_${numerator}`), // % value
-            articlesContents   = document.getElementById(`articles_${numerator}`); // full-text value
+            articlesContents   = document.getElementById(`articles_${numerator}`), // full-text value
+            cardContents       = document.getElementById(contentID); // whole card
 
         // Display help text / info popover
-        const instance = tippy(percentageContents, {
+        const instance = tippy(cardContents, {
           allowHTML: true,
           interactive: true,
-          placement: 'top',
+          placement: 'right',
           appendTo: document.body,
+          theme: 'tooltip',
         });
 
         // Set tooltip content
@@ -96,9 +98,9 @@ export function initInsightsAndStrategies(org) {
 
         // Access tooltip instance and its ID; use it for aria-controls attribute
         const tooltipID = instance.popper.id;
-        percentageContents.setAttribute('aria-controls', tooltipID);
-        percentageContents.setAttribute('aria-labelledby', numerator); // Set a11y label to the insight’s ID
-        percentageContents.setAttribute('title', 'More information on this metric'); // Set title 
+        cardContents.setAttribute('aria-controls', tooltipID);
+        cardContents.setAttribute('aria-labelledby', numerator); // Set a11y label to the insight’s ID
+        cardContents.setAttribute('title', 'More information on this metric'); // Set title 
 
         // Get numerator’s count query
         let num = axios.get(countQueryPrefix + orgData.hits.hits[0]._source.analysis[numerator].query);
