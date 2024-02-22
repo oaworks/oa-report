@@ -516,7 +516,15 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
     const headerCell = createTableCell(key, cssClass, null, null, true);
 
     if (EXPLORE_HEADER_TERMS_LABELS[key] && dataType === 'terms') {
-      const tooltipContent = EXPLORE_HEADER_TERMS_LABELS[key].info;
+      const hasDetails = !!EXPLORE_HEADER_TERMS_LABELS[key].details;
+      const tooltipContent = `
+        <p class='${hasDetails ? "mb-2" : ""}'>${EXPLORE_HEADER_TERMS_LABELS[key].info}</p>
+        ${hasDetails ? `<details>
+          <summary class='hover:cursor-pointer'>Methodology</summary>
+          <p class='mt-2'>${EXPLORE_HEADER_TERMS_LABELS[key].details}</p>
+        </details>` : ""}
+      `;
+
       setupTooltip(headerCell, tooltipContent, key);
     } else if (EXPLORE_HEADER_ARTICLES_LABELS[key] && dataType === 'articles') {
       const tooltipContent = EXPLORE_HEADER_ARTICLES_LABELS[key].info;
@@ -590,36 +598,6 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
     });
   }
 }
-
-
-/**
- * Formats headers for display. For headers with a corresponding "_pct" counterpart,
- * only the "_pct" version is retained and the "_pct" suffix is removed. Headers are 
- * also made more human-readable, with specific capitalization rules for known phrases and acronyms.
- * 
- * @param {string[]} headers - The array of headers to be prettified.
- * @returns {string[]} - The prettified headers.
- */
-// function prettifyHeaders(headers) {
-//   return headers
-//     .filter(header => header.endsWith("_pct") || !headers.includes(header + "_pct"))
-//     .map(header => {
-//       header = header.replace(/_pct$/, ""); // Remove '_pct' suffix
-//       header = header.replace(/__.*/, ""); // Remove any suffixes after '__'
-//       header = header.replace(/_/g, " "); // Replace underscores with spaces
-//       header = header.charAt(0).toUpperCase() + header.slice(1).toLowerCase(); // Capitalize only the first letter of the header
-
-//       // Check and replace special cases for explore labels using regex
-//       Object.entries(EXPLORE_HEADER_LABELS).forEach(([key, value]) => {
-//         const regex = new RegExp(key, "i"); // 'i' flag for case-insensitive match
-//         if (regex.test(header)) {
-//           header = header.replace(regex, value);
-//         }
-//       });
-//       return header;
-//     }
-//   );
-// }
 
 /**
  * Formats the records for display. This includes converting numerical values

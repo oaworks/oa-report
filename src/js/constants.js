@@ -190,27 +190,33 @@ export const EXPLORE_FILTERS_LABELS = {
 export const EXPLORE_HEADER_TERMS_LABELS = {
   "compliant": {
     label: "Compliant",
-    info: "Publications that comply with the requirements of the Open Access policy, even if they are not covered by said policy. To be compliant, the publication must have the final version or the author accepted manuscript available for free and under a CC BY or CC0 licence on a publisher or repository website."
+    info: "Publications that comply with the requirements of the Open Access policy, even if they are not covered by said policy. To be compliant, the publication must have the final version or the author accepted manuscript available for free and under a CC BY or CC0 licence on a publisher or repository website.",
+    details: "We use data from Unpaywall, the gold standard for this data, and supplement that with data from Crossref and OpenAlex."
   },
   "free_to_read": {
     label: "Free-to-read",
-    info: "Publications that are free to read on the publisher’s website or any online repository, including temporarily accessible articles (“bronze Open Access”)."
+    info: "Publications that are free to read on the publisher’s website or any online repository, including temporarily accessible articles (“bronze Open Access”).",
+    details: "We use data from Unpaywall, the gold standard for this data, and supplement that with data from Crossref and OpenAlex."
   },
   "in_repository": {
     label: "In repository",
-    info: "Publications that have a copy of the work freely available and discoverable in any repository."
+    info: "Publications that have a copy of the work freely available and discoverable in any repository.",
+    details: "We use data from Unpaywall, the gold standard for this data, and supplement that with data from Crossref and OpenAlex."
   },
   "mean_citations": {
     label: "Mean citations",
-    info: "The mean (i.e. average) number of citations of these publications"
+    info: "The mean (i.e. average) number of citations of these publications",
+    details: "We used data from OpenAlex's <code>cited_by_count</code>."
   },
   "open_access": {
     label: "Open Access",
-    info: "Publications that are free and CC BY or CC0 (in the public domain) on the publisher’s website, a repository or a preprint server."
+    info: "Publications that are free and CC BY or CC0 (in the public domain) on the publisher’s website, a repository or a preprint server.",
+    details: "We use data from Unpaywall, the gold standard for this data, and supplement that with data from Crossref, OpenAlex, Europe PMC and manual checks (as required). If a work has the required license at any location it is considered Open Access."
   },
   "publications": {
     label: "Publications",
-    info: "Academic research articles found (including peer-reviewed research, reviews, editorials, etc.)"
+    info: "Academic research articles found (including peer-reviewed research, reviews, editorials, etc.)",
+    details: "CrossRef, OpenAlex, PubMed, and Europe PMC were searched for articles authored by or funded by IDRC using a variety of IDs (e.g ROR: 0445x0472 Fundref: 10.13039/501100000193) and aliases (International Development Research Centre, International Development Research Center, Centre de recherches pour le développement international) across all of time. An export of the IDRC Digital Library was utilized by the tool. Item’s with type “Journal Article” or “Abstract” were matched to DOIs. Results were deduplicated and ingested into OA.Report. Results were reviewed by a mix of manual and automated means to remove false positives (e.g mentions in full text, incorrect matches of IDRCs name)."
   },
   "total_citations": {
     label: "Total citations",
@@ -234,7 +240,8 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   },
   "with_data_availability_statement": {
     label: "With data availability statement",
-    info: "Publications that have a data availability statement. Data availability statements (or 'data access statement', 'resource availability statements', 'code availability statements') tell a reader where the research data or code associated with a paper is available, and how they can be accessed. This figure doesn’t tell you what type of data availability statement is provided (e.g whether there is Open Data or no data at all)."
+    info: "Publications that have a data availability statement. Data availability statements (or 'data access statement', 'resource availability statements', 'code availability statements') tell a reader where the research data or code associated with a paper is available, and how they can be accessed. This figure doesn’t tell you what type of data availability statement is provided (e.g whether there is Open Data or no data at all).",
+    details: "To check if a paper has a data availability statement, we use data from PubMed’s data availability filter and review articles manually."
   },
   "with_data_dois": {
     label: "With data DOI<span style='text-transform: lowercase;'>s</span>",
@@ -254,7 +261,8 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   },
   "with_grant_id": {
     label: "With grant ID<span style='text-transform: lowercase;'>s</span>",
-    info: "Publications that provided the grant ID for the grant you provide them."
+    info: "Publications that provided the grant ID for the grant you provide them.",
+    details: "We found and normalized data from Crossref to find data provided by publisher. Where this wasn’t possible, we manually collected the funding statement. The grant ID was then extracted & normalized the grant ID using a mix of automated tools and manual review."
   },
   "with_open_data": {
     label: "With Open Data",
@@ -270,7 +278,8 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   },
   "with_preprint": {
     label: "With preprint",
-    info: "Publications that have a preprint associated with them."
+    info: "Publications that have a preprint associated with them.",
+    details: "We used data from Unpaywall and Crossref."
   },
   "with_rors": {
     label: "With ROR<span style='text-transform: lowercase;'>s</span>",
