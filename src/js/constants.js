@@ -190,7 +190,7 @@ export const EXPLORE_FILTERS_LABELS = {
 export const EXPLORE_HEADER_TERMS_LABELS = {
   "compliant": {
     label: "Compliant",
-    info: "Publications that comply with the requirements of the Open Access policy, even if they are not covered by said policy. To be compliant, the publication must have the final version or the author accepted manuscript available for free and under a CC BY or CC0 licence on a publisher or repository website.",
+    info: "Publications that comply with the requirements of the Open Access policy, even if they are not covered by said policy. To be compliant, the publication must have the final version or the author accepted manuscript available for free and under a CC BY or CC0 license on a publisher or repository website.",
     details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex."
   },
   "covered_by_policy": {
@@ -300,117 +300,253 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
  * For articles-based tables
  */
 export const EXPLORE_HEADER_ARTICLES_LABELS = {
-  "DOI": {
-    label: "DOI"
-  },
-  "PMCID": {
-    label: "PMCID"
+  "author_email_name": {
+    label: "",
+    info: ""
   },
   "authorships.author.display_name": {
-    label: "Author(s)"
+    label: "Author(s)",
+    info: ""
+  },
+  "authorships.author.orcid": {
+    label: "ORCiD<span class='lowercase'>s</span>",
+    info: ""
   },
   "authorships.institutions.display_name": {
-    label: "Institution(s)"
+    label: "Institution(s)",
+    info: ""
+  },
+  "authorships.institutions.ror": {
+    label: "ROR<span class='lowercase'>s</span>",
+    info: ""
   },
   "can_archive": {
-    label: "Archivable?"
+    label: "Archivable?",
+    info: ""
   },
   "cited_by_count": {
-    label: "“Cited by” count"
+    label: "Cited by",
+    info: ""
   },
   "concepts.display_name": {
-    label: "Concepts"
+    label: "Concepts",
+    info: ""
+  },
+  "DOI": {
+    label: "DOI",
+    info: ""
+  },
+  "email": {
+    label: "Email",
+    info: ""
   },
   "funder.name": {
-    label: "Funder(s)"
-  },
-  "has_oa_locations_embargoed": {
-    label: ""
+    label: "Funder(s)",
+    info: ""
   },
   "has_repository_copy": {
-    label: ""
+    label: "In repository?",
+    info: ""
   },
   "is_oa": {
-    label: "Open Access?"
+    label: "Open Access?",
+    info: ""
   },
   "issn": {
-    label: "ISSN"
-  },
-  "issue": {
-    label: "Issue"
-  },
-  "journal": {
-    label: "Journal"
+    label: "ISSN",
+    info: ""
   },
   "journal_oa_type": {
-    label: "Journal OA type"
+    label: "Journal <span class='uppercase'>OA</span> type",
+    info: ""
+  },
+  "journal": {
+    label: "Journal",
+    info: ""
   },
   "oa_status": {
-    label: "OA status"
+    label: "OA status",
+    info: ""
   },
-  "openalex": {
-    label: "OpenAlex"
+  "PMCID": {
+    label: "PMCID",
+    info: ""
   },
   "published_date": {
-    label: "Published date"
+    label: "Published date",
+    info: ""
   },
   "published_year": {
-    label: "Published year"
+    label: "Published year",
+    info: ""
   },
   "publisher": {
-    label: "Publisher"
+    label: "Publisher",
+    info: ""
   },
   "repository_url": {
-    label: "Repository URL"
+    label: "Repository URL",
+    info: ""
   },
   "repository_version": {
-    label: "Repository version"
+    label: "Repository version",
+    info: ""
   },
   "subject": {
-    label: "Subject"
+    label: "Subject",
+    info: ""
   },
-  "subtitle": {
-    label: "Subtitle"
+  "apc_cost": {
+    label: "APC<span class='lowercase'>s</span>",
+    info: ""
   },
-  "supplements.grantid__idrc": {
-    label: "Grant ID"
+  "data_availability_statement_category": {
+    label: "Data availability statement category",
+    info: ""
   },
-  "supplements.has_data_availability_statement": {
-    label: "Data availability statement?"
+  "dev.code.accession": {
+    label: "Code accession number",
+    info: ""
   },
-  "supplements.is_compliant__idrc": {
-    label: "Compliant?"
+  "dev.code.doi": {
+    label: "Code DOI",
+    info: ""
   },
-  "supplements.is_covered_by_policy__idrc": {
-    label: "Covered by policy?",
-    info: "Publications that are covered by the Open Access Policy. To be covered, the publication must have been funded by a grant proposal that was received after the policy took effect on July 2015."
+  "dev.code.evidence": {
+    label: "Code evidence",
+    info: ""
   },
-  "supplements.is_new__idrc": {
-    label: "New?"
+  "dev.code.has_made_code": {
+    label: "Generated code?",
+    info: ""
   },
-  "supplements.preprint_doi": {
-    label: "Preprint DOI"
+  "dev.code.has_open_code": {
+    label: "Open code?",
+    info: ""
   },
-  "supplements.publisher_license_best": {
-    label: "Publisher license"
+  "dev.code.has_shared_code": {
+    label: "Shared code?",
+    info: ""
   },
-  "supplements.repository_license_best": {
-    label: "Repository license"
+  "dev.code.licence": {
+    label: "Code license",
+    info: ""
   },
-  "supplements.sheets": {
-    label: "Sheets"
+  "dev.code.location": {
+    label: "Code location",
+    info: ""
   },
-  "supplements_has_preprint_copy": {
-    label: "Preprint copy?"
+  "dev.code.url": {
+    label: "Code URL",
+    info: ""
+  },
+  "dev.data.accession": {
+    label: "Data accession number(s)",
+    info: ""
+  },
+  "dev.data.doi": {
+    label: "Data DOI",
+    info: ""
+  },
+  "dev.data.evidence": {
+    label: "Data evidence",
+    info: ""
+  },
+  "dev.data.has_open_data": {
+    label: "Open data?",
+    info: ""
+  },
+  "dev.data.has_shared_data": {
+    label: "Shared data?",
+    info: ""
+  },
+  "dev.data.licence": {
+    label: "Data license",
+    info: ""
+  },
+  "dev.data.location": {
+    label: "Data location",
+    info: ""
+  },
+  "dev.data.url": {
+    label: "Data URL",
+    info: ""
+  },
+  "grantid": {
+    label: "Grant ID",
+    info: ""
+  },
+  "has_data_availability_statement": {
+    label: "Data availability statement?",
+    info: ""
+  },
+  "invoice_date": {
+    label: "Invoice date",
+    info: ""
+  },
+  "invoice_number": {
+    label: "Invoice number",
+    info: ""
+  },
+  "invoice_year": {
+    label: "Invoice year",
+    info: ""
+  },
+  "is_approved_repository": {
+    label: "Approved repository?",
+    info: ""
+  },
+  "is_compliant": {
+    label: "Compliant?",
+    info: ""
+  },
+  "is_new": {
+    label: "New?",
+    info: ""
+  },
+  "is_original_research": {
+    label: "Original research?",
+    info: ""
+  },
+  "is_preprint_of": {
+    label: "Preprint of",
+    info: ""
+  },
+  "is_preprint": {
+    label: "Preprint?",
+    info: ""
+  },
+  "oasupport.status": {
+    label: "OA.Support status",
+    info: ""
+  },
+  "program": {
+    label: "Program",
+    info: ""
+  },
+  "publisher_license_best": {
+    label: "Publisher license (best)",
+    info: ""
+  },
+  "publisher_simple": {
+    label: "Publisher (simple)",
+    info: ""
+  },
+  "repository_license_best": {
+    label: "Repository license (best)",
+    info: ""
+  },
+  "sheets": {
+    label: "Sheets",
+    info: ""
   },
   "title": {
-    label: "Title"
+    label: "Title",
+    info: ""
   },
   "version": {
-    label: "Version"
-  },
-  "volume": {
-    label: "Volume"
+    label: "Version",
+    info: ""
   }
 }
 
