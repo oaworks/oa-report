@@ -43,9 +43,22 @@ export function setDefaultYear(defaultYear) {
       // Trigger any additional logic needed to refresh the report
       handleYearButtonLogic(null, startDate, endDate, `${makeDateReadable(startDate)} &ndash; ${makeDateReadable(endDate)}`);
 
-      // Style the date range form as selected
-      const dateRangeForm = document.getElementById("date_range_form");
-      updateYearButtonStyling(dateRangeForm, true);
+      let elementToUpdate;
+
+      // Check if startDate and endDate correspond to the start and end of the same year
+      if (startDate.getFullYear() === endDate.getFullYear() &&
+          startDate.getMonth() === 0 && // January is 0
+          startDate.getDate() === 1 && // Start of the year
+          endDate.getMonth() === 11 && // December is 11
+          endDate.getDate() === 31) { // End of the year
+          // If true, select &style the button with ID `year-[YYYY]`
+          elementToUpdate = document.getElementById(`year-${startDate.getFullYear()}`);
+      } else {
+          // Otherwise, select & style the date range form
+          elementToUpdate = document.getElementById("date_range_form");
+      }
+      // Style the selected element, whether it’s ayear button or the date range form
+      updateYearButtonStyling(elementToUpdate, true);
     } else {
       // Otherwise, set default dates or years based on user type
       let defaultStartDate, defaultEndDate;
