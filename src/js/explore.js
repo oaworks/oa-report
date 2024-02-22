@@ -8,7 +8,7 @@
 // =================================================
 
 import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, makeNumberReadable, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, updateURLParams, setupTooltip } from "./utils.js";
-import { CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, COUNTRY_CODES } from "./constants.js";
+import { CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, COUNTRY_CODES, LANGUAGE_CODES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { orgDataPromise } from './insights-and-strategies.js';
 import { createPostData } from './api-requests.js';
@@ -678,6 +678,9 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
   } else if (exploreItemId === 'country' && key === 'key') {
     const countryName = COUNTRY_CODES[content]  || "Unknown country";
     cell.textContent = countryName;
+  } else if (exploreItemId === 'language' && key === 'key') {
+    const languageName = LANGUAGE_CODES[content] || "Unknown language";
+    cell.textContent = languageName;
   } else if (typeof content === 'string' && content.includes('orcid.org')) {
     // Check if content is an ORCiD URL and fetch the full name
     const orcidId = content.split('/').pop();
