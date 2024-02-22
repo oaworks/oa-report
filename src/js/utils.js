@@ -653,7 +653,7 @@ export function setupTooltip(element, tooltipContent, key) {
     interactive: true,
     placement: 'bottom',
     appendTo: document.body,
-    theme: 'table-tooltip',
+    theme: 'tooltip-white',
   });
 
   // Access tooltip instance and its ID; use it for aria-controls attribute

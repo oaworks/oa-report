@@ -90,7 +90,7 @@ export function initInsightsAndStrategies(org) {
           interactive: true,
           placement: 'right',
           appendTo: document.body,
-          theme: 'tooltip',
+          theme: 'tooltip-pink',
         });
 
         // Set tooltip content

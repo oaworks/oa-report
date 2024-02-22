@@ -43,7 +43,7 @@
 }
 
 /* Custom tooltip styling */
-.tippy-box[data-theme~='tooltip'] {
+.tippy-box[data-theme~='tooltip-pink'] {
   background-color: #ffaeac;
   color: #24201e;
   font-weight: normal;
@@ -53,11 +53,11 @@
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
-.tippy-box[data-theme~='tooltip'] .tippy-arrow {
+.tippy-box[data-theme~='tooltip-pink'] .tippy-arrow {
   color: #ffaeac;
 }
 
-.tippy-box[data-theme~='table-tooltip'] {
+.tippy-box[data-theme~='tooltip-white'] {
   background-color: #e9e9e9;
   color: #24201e;
   font-weight: normal;
@@ -67,7 +67,7 @@
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
-.tippy-box[data-theme~='table-tooltip'] .tippy-arrow {
+.tippy-box[data-theme~='tooltip-white'] .tippy-arrow {
   color: #e9e9e9;
 }
 

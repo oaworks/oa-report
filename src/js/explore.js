@@ -811,7 +811,7 @@ function enableTooltipsForTruncatedCells() {
           delay: [500, 0], // 500 ms delay before showing, 0 ms delay before hiding
           trigger: 'mouseenter focus', // Trigger on mouse enter and focus
           hideOnClick: false,
-          theme: 'table-tooltip', // Custom theme defined in 'src/styles/input.css'
+          theme: 'tooltip-white', // Custom theme defined in 'src/styles/input.css'
           onShow(instance) {
               let cellText = cell.textContent;
               // Check if the cell's content is truncated
