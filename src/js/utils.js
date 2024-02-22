@@ -633,30 +633,3 @@ export function getURLParam(param) {
   const queryParams = new URLSearchParams(window.location.search);
   return queryParams.get(param);
 }
-
-/**
- * Sets up a tooltip for the provided element with the given tooltip content.
- * 
- * @param {HTMLElement} element - The element to attach the tooltip to.
- * @param {string} tooltipContent - The content of the tooltip.
- * @param {string} key - The key associated with the tooltip content.
- * @returns {void}
- */
-export function setupTooltip(element, tooltipContent, key) {
-  const tooltipID = `${key}_info`;
-  element.innerHTML = `<span id="${tooltipID}" tabindex="0" role="tooltip">${key}</span>`;
-
-  // Display help text / info popover
-  const instance = tippy(element, {
-    content: tooltipContent,
-    allowHTML: true,
-    interactive: true,
-    placement: 'bottom',
-    appendTo: document.body,
-    theme: 'tooltip-white',
-  });
-
-  // Access tooltip instance and its ID; use it for aria-controls attribute
-  element.setAttribute('aria-controls', instance.popper.id);
-  element.setAttribute('aria-labelledby', tooltipID); // Set a11y label to the insight’s ID
-}

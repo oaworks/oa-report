@@ -7,7 +7,7 @@
 // Imports
 // =================================================
 
-import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, makeNumberReadable, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, updateURLParams, setupTooltip } from "./utils.js";
+import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, makeNumberReadable, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, updateURLParams } from "./utils.js";
 import { CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, COUNTRY_CODES, LANGUAGE_CODES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { orgDataPromise } from './insights-and-strategies.js';
@@ -498,42 +498,82 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
     tableHeader.removeChild(tableHeader.firstChild);
   }
 
+  // Assuming `records` is an array of objects and we want the keys from the first object
+  // This line seems to be incorrectly placed or based on a misunderstanding; correcting it:
+  // records = records.length > 0 ? Object.keys(records[0]) : []; // Corrected line
   records = Object.keys(records); // Only extract the keys from the records
-  // let headers = prettifyHeaders(records);
 
-  const headerRow = document.createElement('tr'); // Create and add the header row
+  const headerRow = document.createElement('tr');
   records.forEach((key, index) => {
     key = key.replace(/_pct$/, ""); // Remove '_pct' suffix
     key = key.replace(/__.*/, ""); // Remove any suffixes after '__'
     key = key.replace(/supplements./g, ""); // Remove 'supplements.' prefix
     // key = key.replace(/_/g, " "); // Replace underscores with spaces
 
-    let cssClass;
-    if (index === 0) cssClass = DATA_TABLE_HEADER_CLASSES[dataType].firstHeaderCol;
-    else if (index === 1) cssClass = DATA_TABLE_HEADER_CLASSES[dataType].secondHeaderCol;
-    else cssClass = DATA_TABLE_HEADER_CLASSES[dataType].otherHeaderCols;
+    const cssClass = index === 0
+      ? DATA_TABLE_HEADER_CLASSES[dataType].firstHeaderCol
+      : index === 1
+        ? DATA_TABLE_HEADER_CLASSES[dataType].secondHeaderCol
+        : DATA_TABLE_HEADER_CLASSES[dataType].otherHeaderCols;
 
-    const headerCell = createTableCell(key, cssClass, null, null, true);
+    const label = dataType === 'terms'
+      ? EXPLORE_HEADER_TERMS_LABELS[key]?.label || key
+      : EXPLORE_HEADER_ARTICLES_LABELS[key]?.label || key;
 
-    if (EXPLORE_HEADER_TERMS_LABELS[key] && dataType === 'terms') {
-      const hasDetails = !!EXPLORE_HEADER_TERMS_LABELS[key].details;
-      const tooltipContent = `
-        <p class='${hasDetails ? "mb-2" : ""}'>${EXPLORE_HEADER_TERMS_LABELS[key].info}</p>
-        ${hasDetails ? `<details>
-          <summary class='hover:cursor-pointer'>Methodology</summary>
-          <p class='mt-2'>${EXPLORE_HEADER_TERMS_LABELS[key].details}</p>
-        </details>` : ""}
-      `;
-
-      setupTooltip(headerCell, tooltipContent, EXPLORE_HEADER_TERMS_LABELS[key].label);
-    } else if (EXPLORE_HEADER_ARTICLES_LABELS[key] && dataType === 'articles') {
-      const tooltipContent = EXPLORE_HEADER_ARTICLES_LABELS[key].info;
-      setupTooltip(headerCell, tooltipContent, key);
-    }
+    const headerCell = createTableCell('', cssClass, null, null, true); // Create cell without text
+    setupTooltip(headerCell, key, dataType); // Adjusted to call with key & dataType
 
     headerRow.appendChild(headerCell);
   });
   tableHeader.appendChild(headerRow);
+}
+
+/**
+ * Generates the HTML content for a tooltip, including information and optional methodology details.
+ *
+ * @param {Object} labelData - The object containing the label, info, and optionally details for the tooltip.
+ * @returns {string} The generated HTML content for the tooltip.
+ */
+function generateTooltipContent(labelData) {
+  const hasDetails = !!labelData.details;
+  return `
+    <p class='${hasDetails ? "mb-2" : ""}'>${labelData.info}</p>
+    ${hasDetails ? `<details><summary class='hover:cursor-pointer'>Methodology</summary><p class='mt-2'>${labelData.details}</p></details>` : ""}
+  `;
+}
+
+/**
+ * Attaches a tooltip to an HTML element if tooltip content is provided.
+ * Uses the Tippy.js library for tooltip functionality, applying a11y attributes.
+ * Ensures a label is always displayed, falling back to the key itself if no label is defined.
+ *
+ * @param {HTMLElement} element - The element to attach the tooltip to.
+ * @param {string} key - The key associated with the tooltip, used for fallback labeling and to generate IDs for accessibility.
+ * @param {string} dataType - Indicates the type of data ('terms' or 'articles'), which determines the labels configuration to use.
+ */
+function setupTooltip(element, key, dataType) {
+  const labelsConfig = dataType === 'terms' ? EXPLORE_HEADER_TERMS_LABELS : EXPLORE_HEADER_ARTICLES_LABELS;
+  const labelData = labelsConfig[key];
+  const label = labelData && labelData.label ? labelData.label : key;
+  element.innerHTML = `<span>${label}</span>`;
+
+  // Generate and set tooltip if info is present and non-empty
+  if (labelData && labelData.info && labelData.info.trim()) {
+    const tooltipContent = generateTooltipContent(labelData);
+    const tooltipID = `${key}_info`;
+
+    tippy(element, {
+      content: tooltipContent,
+      allowHTML: true,
+      interactive: true,
+      placement: 'bottom',
+      appendTo: document.body,
+      theme: 'tooltip-white',
+    });
+
+    element.setAttribute('aria-controls', tooltipID); // Assuming you manage IDs uniquely
+    element.setAttribute('aria-labelledby', tooltipID);
+  }
 }
 
 /**
