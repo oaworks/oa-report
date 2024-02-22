@@ -208,10 +208,16 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
     info: "Publications that have a copy of the work freely available and discoverable in any repository.",
     details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex."
   },
+  "mean_apc_amount": {
+    label: "Mean APC amount"
+  },
   "mean_citations": {
     label: "Mean citations",
     info: "The mean (i.e. average) number of citations of these publications",
     details: "We used data from OpenAlex's <code>cited_by_count</code>."
+  },
+  "median_apc_amount": {
+    label: "Median APC amount"
   },
   "open_access": {
     label: "Open Access",
@@ -223,6 +229,9 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
     info: "Academic research articles found (including peer-reviewed research, reviews, editorials, etc.)",
     details: "CrossRef, OpenAlex, PubMed, and Europe PMC were searched for articles authored by or funded by IDRC using a variety of IDs (e.g ROR: 0445x0472 Fundref: 10.13039/501100000193) and aliases (International Development Research Centre, International Development Research Center, Centre de recherches pour le développement international) across all of time. An export of the IDRC Digital Library was utilized by the tool. Items with type “Journal Article” or “Abstract” were matched to DOIs. Results were deduplicated and ingested into OA.Report. Results were reviewed by a mix of manual and automated means to remove false positives (e.g mentions in full text, incorrect matches of IDRCs name)."
   },
+  "total_apc_amount": {
+    label: "Total APC amount"
+  },
   "total_citations": {
     label: "Total citations",
     info: "Number of citations the publications received."
@@ -232,6 +241,9 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   },
   "unknown_shared_data_status": {
     label: "Unknown shared data status"
+  },
+  "with_apc": {
+    label: "With APC<span class='lowercase'>s</span>"
   },
   "with_data": {
     label: "With data"
