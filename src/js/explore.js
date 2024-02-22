@@ -525,7 +525,7 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
         </details>` : ""}
       `;
 
-      setupTooltip(headerCell, tooltipContent, key);
+      setupTooltip(headerCell, tooltipContent, EXPLORE_HEADER_TERMS_LABELS[key].label);
     } else if (EXPLORE_HEADER_ARTICLES_LABELS[key] && dataType === 'articles') {
       const tooltipContent = EXPLORE_HEADER_ARTICLES_LABELS[key].info;
       setupTooltip(headerCell, tooltipContent, key);

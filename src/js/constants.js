@@ -191,17 +191,22 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   "compliant": {
     label: "Compliant",
     info: "Publications that comply with the requirements of the Open Access policy, even if they are not covered by said policy. To be compliant, the publication must have the final version or the author accepted manuscript available for free and under a CC BY or CC0 licence on a publisher or repository website.",
-    details: "We use data from Unpaywall, the gold standard for this data, and supplement that with data from Crossref and OpenAlex."
+    details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex."
+  },
+  "covered_by_policy": {
+    label: "Covered by policy",
+    info: "Publications that are covered by the Open Access Policy. To be covered, the publication must have been funded by a grant proposal that was received after the policy took effect on July 2015.",
+    details: "When a grant ID was available, we checked if the grant was covered by the Open Access policy using a list provided by IDRC staff."
   },
   "free_to_read": {
     label: "Free-to-read",
     info: "Publications that are free to read on the publisher’s website or any online repository, including temporarily accessible articles (“bronze Open Access”).",
-    details: "We use data from Unpaywall, the gold standard for this data, and supplement that with data from Crossref and OpenAlex."
+    details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex."
   },
   "in_repository": {
     label: "In repository",
     info: "Publications that have a copy of the work freely available and discoverable in any repository.",
-    details: "We use data from Unpaywall, the gold standard for this data, and supplement that with data from Crossref and OpenAlex."
+    details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex."
   },
   "mean_citations": {
     label: "Mean citations",
@@ -211,32 +216,28 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   "open_access": {
     label: "Open Access",
     info: "Publications that are free and CC BY or CC0 (in the public domain) on the publisher’s website, a repository or a preprint server.",
-    details: "We use data from Unpaywall, the gold standard for this data, and supplement that with data from Crossref, OpenAlex, Europe PMC and manual checks (as required). If a work has the required license at any location it is considered Open Access."
+    details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref, OpenAlex, Europe PMC and manual checks (as required). If a work has the required license at any location it is considered Open Access."
   },
   "publications": {
     label: "Publications",
     info: "Academic research articles found (including peer-reviewed research, reviews, editorials, etc.)",
-    details: "CrossRef, OpenAlex, PubMed, and Europe PMC were searched for articles authored by or funded by IDRC using a variety of IDs (e.g ROR: 0445x0472 Fundref: 10.13039/501100000193) and aliases (International Development Research Centre, International Development Research Center, Centre de recherches pour le développement international) across all of time. An export of the IDRC Digital Library was utilized by the tool. Item’s with type “Journal Article” or “Abstract” were matched to DOIs. Results were deduplicated and ingested into OA.Report. Results were reviewed by a mix of manual and automated means to remove false positives (e.g mentions in full text, incorrect matches of IDRCs name)."
+    details: "CrossRef, OpenAlex, PubMed, and Europe PMC were searched for articles authored by or funded by IDRC using a variety of IDs (e.g ROR: 0445x0472 Fundref: 10.13039/501100000193) and aliases (International Development Research Centre, International Development Research Center, Centre de recherches pour le développement international) across all of time. An export of the IDRC Digital Library was utilized by the tool. Items with type “Journal Article” or “Abstract” were matched to DOIs. Results were deduplicated and ingested into OA.Report. Results were reviewed by a mix of manual and automated means to remove false positives (e.g mentions in full text, incorrect matches of IDRCs name)."
   },
   "total_citations": {
     label: "Total citations",
     info: "Number of citations the publications received."
   },
   "unknown_data_status": {
-    label: "Unknown data status",
-    info: ""
+    label: "Unknown data status"
   },
   "unknown_shared_data_status": {
-    label: "Unknown shared data status",
-    info: ""
+    label: "Unknown shared data status"
   },
   "with_data": {
-    label: "With data",
-    info: ""
+    label: "With data"
   },
   "with_data_accession_number": {
-    label: "With data accession number",
-    info: ""
+    label: "With data accession number"
   },
   "with_data_availability_statement": {
     label: "With data availability statement",
@@ -244,20 +245,16 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
     details: "To check if a paper has a data availability statement, we use data from PubMed’s data availability filter and review articles manually."
   },
   "with_data_dois": {
-    label: "With data DOI<span style='text-transform: lowercase;'>s</span>",
-    info: ""
+    label: "With data DOI<span style='text-transform: lowercase;'>s</span>"
   },
   "with_dois": {
-    label: "With DOI<span style='text-transform: lowercase;'>s</span>",
-    info: ""
+    label: "With DOI<span style='text-transform: lowercase;'>s</span>"
   },
   "with_fundref_dois": {
-    label: "With FundRef DOI<span style='text-transform: lowercase;'>s</span>",
-    info: ""
+    label: "With FundRef DOI<span style='text-transform: lowercase;'>s</span>"
   },
   "with_grant_dois": {
-    label: "With grant DOI<span style='text-transform: lowercase;'>s</span>",
-    info: ""
+    label: "With grant DOI<span style='text-transform: lowercase;'>s</span>"
   },
   "with_grant_id": {
     label: "With grant ID<span style='text-transform: lowercase;'>s</span>",
@@ -265,16 +262,13 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
     details: "We found and normalized data from Crossref to find data provided by publisher. Where this wasn’t possible, we manually collected the funding statement. The grant ID was then extracted & normalized the grant ID using a mix of automated tools and manual review."
   },
   "with_open_data": {
-    label: "With Open Data",
-    info: ""
+    label: "With Open Data"
   },
   "with_open_data_in_repository": {
-    label: "With Open Data in repository",
-    info: ""
+    label: "With Open Data in repository"
   },
   "with_orcids": {
-    label: "With ORC<span style='text-transform: lowercase;'>i</span>D<span style='text-transform: lowercase;'>s</span>",
-    info: ""
+    label: "With ORC<span style='text-transform: lowercase;'>i</span>D<span style='text-transform: lowercase;'>s</span>"
   },
   "with_preprint": {
     label: "With preprint",
@@ -282,28 +276,22 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
     details: "We used data from Unpaywall and Crossref."
   },
   "with_rors": {
-    label: "With ROR<span style='text-transform: lowercase;'>s</span>",
-    info: ""
+    label: "With ROR<span style='text-transform: lowercase;'>s</span>"
   },
   "with_shared_data": {
-    label: "With shared data",
-    info: ""
+    label: "With shared data"
   },
   "with_shared_data_in_repository": {
-    label: "With shared data in repository",
-    info: ""
+    label: "With shared data in repository"
   },
   "without_data": {
-    label: "Without data",
-    info: ""
+    label: "Without data"
   },
   "without_data_availability_statement": {
-    label: "Without data availability statement",
-    info: ""
+    label: "Without data availability statement"
   },
   "without_shared_data": {
-    label: "Without shared data",
-    info: ""
+    label: "Without shared data"
   }
 }
 
@@ -313,152 +301,116 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
  */
 export const EXPLORE_HEADER_ARTICLES_LABELS = {
   "DOI": {
-    label: "DOI",
-    info: ""
+    label: "DOI"
   },
   "PMCID": {
-    label: "PMCID",
-    info: ""
+    label: "PMCID"
   },
   "authorships.author.display_name": {
-    label: "Author(s)",
-    info: ""
+    label: "Author(s)"
   },
   "authorships.institutions.display_name": {
-    label: "Institution(s)",
-    info: ""
+    label: "Institution(s)"
   },
   "can_archive": {
-    label: "Archivable?",
-    info: ""
+    label: "Archivable?"
   },
   "cited_by_count": {
-    label: "“Cited by” count",
-    info: ""
+    label: "“Cited by” count"
   },
   "concepts.display_name": {
-    label: "Concepts",
-    info: ""
+    label: "Concepts"
   },
   "funder.name": {
-    label: "Funder(s)",
-    info: ""
+    label: "Funder(s)"
   },
   "has_oa_locations_embargoed": {
-    label: "",
-    info: ""
+    label: ""
   },
   "has_repository_copy": {
-    label: "",
-    info: ""
+    label: ""
   },
   "is_oa": {
-    label: "Open Access?",
-    info: ""
+    label: "Open Access?"
   },
   "issn": {
-    label: "ISSN",
-    info: ""
+    label: "ISSN"
   },
   "issue": {
-    label: "Issue",
-    info: ""
+    label: "Issue"
   },
   "journal": {
-    label: "Journal",
-    info: ""
+    label: "Journal"
   },
   "journal_oa_type": {
-    label: "Journal OA type",
-    info: ""
+    label: "Journal OA type"
   },
   "oa_status": {
-    label: "OA status",
-    info: ""
+    label: "OA status"
   },
   "openalex": {
-    label: "OpenAlex",
-    info: ""
+    label: "OpenAlex"
   },
   "published_date": {
-    label: "Published date",
-    info: ""
+    label: "Published date"
   },
   "published_year": {
-    label: "Published year",
-    info: ""
+    label: "Published year"
   },
   "publisher": {
-    label: "Publisher",
-    info: ""
+    label: "Publisher"
   },
   "repository_url": {
-    label: "Repository URL",
-    info: ""
+    label: "Repository URL"
   },
   "repository_version": {
-    label: "Repository version",
-    info: ""
+    label: "Repository version"
   },
   "subject": {
-    label: "Subject",
-    info: ""
+    label: "Subject"
   },
   "subtitle": {
-    label: "Subtitle",
-    info: ""
+    label: "Subtitle"
   },
   "supplements.grantid__idrc": {
-    label: "Grant ID",
-    info: ""
+    label: "Grant ID"
   },
   "supplements.has_data_availability_statement": {
-    label: "Data availability statement?",
-    info: ""
+    label: "Data availability statement?"
   },
   "supplements.is_compliant__idrc": {
-    label: "Compliant?",
-    info: ""
+    label: "Compliant?"
   },
   "supplements.is_covered_by_policy__idrc": {
     label: "Covered by policy?",
     info: "Publications that are covered by the Open Access Policy. To be covered, the publication must have been funded by a grant proposal that was received after the policy took effect on July 2015."
   },
   "supplements.is_new__idrc": {
-    label: "New?",
-    info: ""
+    label: "New?"
   },
   "supplements.preprint_doi": {
-    label: "Preprint DOI",
-    info: ""
+    label: "Preprint DOI"
   },
   "supplements.publisher_license_best": {
-    label: "Publisher license",
-    info: ""
+    label: "Publisher license"
   },
   "supplements.repository_license_best": {
-    label: "Repository license",
-    info: ""
+    label: "Repository license"
   },
   "supplements.sheets": {
-    label: "Sheets",
-    info: ""
+    label: "Sheets"
   },
   "supplements_has_preprint_copy": {
-    label: "Preprint copy?",
-    info: ""
+    label: "Preprint copy?"
   },
   "title": {
-    label: "Title",
-    info: ""
+    label: "Title"
   },
   "version": {
-    label: "Version",
-    info: ""
+    label: "Version"
   },
   "volume": {
-    label: "Volume",
-    info: ""
+    label: "Volume"
   }
 }
 
