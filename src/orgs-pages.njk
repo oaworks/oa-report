@@ -9,14 +9,14 @@ permalink: "{{ org._source.objectID | slug }}/"
 
 {%- from "system/component.njk" import component -%}
 
-<main class="bg-carnation-100">
+<main>
   <div class="px-3 md:px-6">
     <div class="grid grid-cols-2 gap-3 sm:gap-6 md:gap-12 py-3 xl:pb-6 xl:pt-12">
       <header class="col-span-2 md:col-span-1">
         <h1 class="flex items-center">
           <div>
             <span class="font-semibold uppercase text-sm md:text-base line-thru">
-              <span class="bg-carnation-100 pr-3">
+              <span class="bg-white pr-3">
                 {% if org._source.policy.has_policy === true %}Put OA policy into practice at {% else %}Advance OA at {% endif %}
               </span>
             </span>
@@ -31,7 +31,7 @@ permalink: "{{ org._source.objectID | slug }}/"
     </div>
   </div>
 
-  <nav class="sticky top-0 pt-3 md:pt-6 z-20 bg-carnation-100 transition-pb-0" id="top_nav">
+  <nav class="sticky top-0 pt-3 md:pt-6 z-20 bg-white transition-pb-0" id="top_nav">
     <h2 class="sr-only">See the report by year or custom dates</h2>
     <div class="flex">
       <div id="year-buttons-container" class="mx-3 md:mx-6 mb-1 md:mb-0 flex flex-wrap space-y-1 md:space-y-0 text-xs md:text-sm lg:text-lg"></div>
@@ -132,7 +132,8 @@ permalink: "{{ org._source.objectID | slug }}/"
               Data exploration
               {{ component("tooltip", {
                 msg: "The <em>Data Exploration</em> section is in beta. We’re working on adding more features. If you have any feedback, please <a href='mailto:joe@oa.works?subject=OA.Report feedback' class='underline underline-offset-2 decoration-1'>get in touch by email</a>.",
-                text: "Beta"
+                text: "Beta",
+                theme: "tooltip-white"
               }) }}
             </span>
           </span>
@@ -362,7 +363,7 @@ permalink: "{{ org._source.objectID | slug }}/"
       <div class="col-span-2 grid md:grid-cols-2 gap-12 text-sm md:text-base lg:text-2xl md:leading-8 md:font-light" id="about">
         <div>
           <h2 class="font-semibold uppercase text-sm md:text-base line-thru">
-            <span class="bg-carnation-100 pr-3">About this report</span>
+            <span class="bg-white pr-3">About this report</span>
           </h2>
           {# PAID USERS #}
           {% if org._source.paid == true %}
@@ -379,7 +380,7 @@ permalink: "{{ org._source.objectID | slug }}/"
           </p>
           <div id="about-free-logged-out">
             <h2 class="font-semibold uppercase text-sm md:text-base line-thru">
-              <span class="bg-carnation-100 pr-3">Unlock your institution’s research</span>
+              <span class="bg-white pr-3">Unlock your institution’s research</span>
             </h2>
             <p class="my-6">
               Sign up to access your institution's Actions for free. Consider a <a href="https://about.oa.report/pricing" target="_blank" class="underline underline-offset-4 decoration-1">paid plan</a> to help <a href="https://about.oa.report/docs/sources" target="_blank" class="underline underline-offset-4 decoration-1">discover all your papers</a> and provide up-to-date, deep insights into the state of open at your institution.
@@ -393,7 +394,7 @@ permalink: "{{ org._source.objectID | slug }}/"
         {# PROMPT TO SEARCH OTHER ORGS #}
         <div>
           <h2 class="font-semibold uppercase text-sm md:text-base line-thru">
-            <span class="bg-carnation-100 pr-3">Find other organizations</span>
+            <span class="bg-white pr-3">Find other organizations</span>
           </h2>
           <div class="my-6">
             {% if page.url != "/" %}
