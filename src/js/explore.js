@@ -505,7 +505,6 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
   // This line seems to be incorrectly placed or based on a misunderstanding; correcting it:
   // records = records.length > 0 ? Object.keys(records[0]) : []; // Corrected line
   records = Object.keys(records); // Only extract the keys from the records
-  console.log(records);
 
   const headerRow = document.createElement('tr');
   records.forEach((key, index) => {
@@ -538,10 +537,11 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
  * @param {Object} labelData - The object containing the label, info, and optionally details for the tooltip.
  * @returns {string} The generated HTML content for the tooltip.
  */
-function generateTooltipContent(labelData) {
+function generateTooltipContent(labelData, additionalHelpText = null) {
   const hasDetails = !!labelData.details;
   return `
     <p class='${hasDetails ? "mb-2" : ""}'>${labelData.info}</p>
+    ${additionalHelpText ? `<p class='mb-2'>${additionalHelpText}</p>` : ""}
     ${hasDetails ? `<details><summary class='hover:cursor-pointer'>Methodology</summary><p class='mt-2'>${labelData.details}</p></details>` : ""}
   `;
 }
@@ -563,7 +563,10 @@ function setupTooltip(element, key, dataType) {
 
   // Generate and set tooltip if info is present and non-empty
   if (labelData && labelData.info && labelData.info.trim()) {
-    const tooltipContent = generateTooltipContent(labelData);
+    // Get additional help text from orgData if available
+    let additionalHelpText = orgData.hits.hits[0]?._source.policy?.help_text?.[key] ?? null;
+
+    const tooltipContent = generateTooltipContent(labelData, additionalHelpText);
     const tooltipID = `${key}_info`;
 
     tippy(element, {

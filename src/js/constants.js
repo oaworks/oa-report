@@ -190,12 +190,12 @@ export const EXPLORE_FILTERS_LABELS = {
 export const EXPLORE_HEADER_TERMS_LABELS = {
   "compliant": {
     label: "Compliant",
-    info: "Publications that comply with the requirements of the Open Access policy, even if they are not covered by said policy. To be compliant, the publication must have the final version or the author accepted manuscript available for free and under a CC BY or CC0 license on a publisher or repository website.",
+    info: "Publications that comply with the requirements of the Open Access policy, even if they are not covered by said policy.",
     details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex."
   },
   "covered_by_policy": {
     label: "Covered by policy",
-    info: "Publications that are covered by the Open Access Policy. To be covered, the publication must have been funded by a grant proposal that was received after the policy took effect on July 2015.",
+    info: "Publications that are covered by the Open Access Policy.",
     details: "When a grant ID was available, we checked if the grant was covered by the Open Access policy using a list provided by IDRC staff."
   },
   "free_to_read": {
