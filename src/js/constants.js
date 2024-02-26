@@ -156,6 +156,18 @@ export const EXPLORE_ITEMS_LABELS = {
     singular: "Article with <span class='uppercase'>APC</span>s",
     plural: "Articles with <span class='uppercase'>APC</span>s"
   },
+  "all_lab_head": {
+    singular: "All lab head",
+    plural: "All lab heads"
+  },
+  "freeman_hrabowski_scholar": {
+    singular: "Freeman Hrabowski scholar",
+    plural: "Freeman Hrabowski scholars"
+  },
+  "janelia_lab_head": {
+    singular: "Janelia lab head",
+    plural: "Janelia lab heads"
+  }
 };
 
 
