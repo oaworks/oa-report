@@ -165,8 +165,8 @@ export const EXPLORE_ITEMS_LABELS = {
     plural: "Freeman Hrabowski scholars"
   },
   "janelia_lab_head": {
-    singular: "Janelia lab head",
-    plural: "Janelia lab heads"
+    singular: "Janelia Lab head",
+    plural: "Janelia Lab heads"
   }
 };
 
