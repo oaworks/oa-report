@@ -1069,3 +1069,57 @@ export const LANGUAGE_CODES = {
   "zh": "Chinese",
   "zu": "Zulu"
 }
+
+/**
+ * Maps custom and Creative Commons license names to their human-readable labels. 
+ */
+export const LICENSE_CODES = {
+  'publisher-specific, author manuscript': {
+    name: 'Publisher-specific Open Access'
+  },
+  'unspecified-oa': {
+    name: 'Unspecified Open Access'
+  },
+  'implied-oa': {
+    name: 'Implied Open Access'
+  },
+  'non-standard-licence': {
+    name: 'Non-standard License'
+  },
+  'cc-by': {
+    name: 'Creative Commons Attribution',
+    url: 'https://creativecommons.org/licenses/by/4.0/'
+  },
+  'cc-by-sa': {
+    name: 'Creative Commons Attribution-ShareAlike',
+    url: 'https://creativecommons.org/licenses/by-sa/4.0/'
+  },
+  'cc-by-nd': {
+    name: 'Creative Commons Attribution-NoDerivs',
+    url: 'https://creativecommons.org/licenses/by-nd/4.0/'
+  },
+  'cc-by-nc': {
+    name: 'Creative Commons Attribution-NonCommercial',
+    url: 'https://creativecommons.org/licenses/by-nc/4.0/'
+  },
+  'cc-by-nc-sa': {
+    name: 'Creative Commons Attribution-NonCommercial-ShareAlike',
+    url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
+  },
+  'cc-by-nc-nd': {
+    name: 'Creative Commons Attribution-NonCommercial-NoDerivs',
+    url: 'https://creativecommons.org/licenses/by-nc-nd/4.0/'
+  },
+  'cc0': {
+    name: 'Creative Commons CC0 1.0 Universal (CC0 1.0) Public Domain Dedication',
+    url: 'https://creativecommons.org/publicdomain/zero/1.0/'
+  },
+  'pd': {
+    name: 'Public Domain',
+    url: 'https://creativecommons.org/publicdomain/mark/1.0/'
+  },
+  'public-domain': {
+    name: 'Public Domain',
+    url: 'https://creativecommons.org/publicdomain/mark/1.0/'
+  }
+}
