@@ -14,20 +14,20 @@ export const orgApiUrl = `${API_BASE_URL}orgs?q=objectID:%22${org}%22`;
 // Fetch and store organisational data in a constant
 export const orgDataPromise = axios.get(orgApiUrl);
 
-// Check if user is logged in
 let orgKey = "",
+    loggedIn = false,
     hasOrgKey = Object.keys(OAKEYS).length !== 0;
 if (hasOrgKey) {
   // logged in
   orgKey = `&orgkey=${Object.values(OAKEYS)}`;
+  loggedIn = true;
   displayNone("about-paid-logged-out");
   displayNone("about-free-logged-out");
 } else {
   // logged out
+  loggedIn = false;
   displayNone("logout");
-  //displayNone("explore");
 }
-
 // Set default sorting order for CSV downloads
 let exportSort = "&sort=published_date:desc"
 
@@ -217,8 +217,8 @@ export function initInsightsAndStrategies(org) {
             }
             tableCountContents.textContent = makeNumberReadable(count);
 
-            // If there’s an orgkey, show full list of strategies
-            if (hasOrgKey && OAKEYS[orgSlug]) {
+            // If user is logged in, show full list of strategies
+            if (loggedIn) {
               // If no actions are available, show message
               if (count === 0) {
                 tableCountContents.textContent = "No ";

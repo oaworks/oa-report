@@ -730,7 +730,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
     cell.textContent = languageName;
   } else if ((exploreItemId === 'publisher_license' && key === 'key') || (exploreItemId === 'repository_license' && key === 'key')) {
     const licenseName = LICENSE_CODES[content].name || "Unknown license";
-    cell.textContent = licenseName;
+    cell.innerHTML = `<strong class='uppercase'>${content}</strong> <br>${licenseName}`;
   } else if (typeof content === 'string' && content.includes('orcid.org')) {
     // Check if content is an ORCiD URL and fetch the full name
     const orcidId = content.split('/').pop();
