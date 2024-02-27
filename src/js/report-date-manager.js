@@ -21,12 +21,14 @@ export const FIRST_YEAR = 2015;
  * @param {number} defaultYear - The default year to be selected.
  */
 export function setDefaultYear(defaultYear) {
-  setTimeout(() => {
-    const startParam = getURLParam('start');
-    const endParam = getURLParam('end');
-    const breakdownParam = getURLParam('breakdown'); 
-    const actionParam = getURLParam('action');
+  const startParam = getURLParam('start');
+  const endParam = getURLParam('end');
+  const breakdownParam = getURLParam('breakdown'); 
+  const actionParam = getURLParam('action');
 
+  // Wait for the DOM + asynchronously loaded page elements to be ready 
+  // before attempting to set report’s selected date range, breakdown, and action 
+  window.onload = function() {
     // Check if there’s a start and end date in the URL
     // TODO: handle start and end date parameters in a separate function and similar to how
     // the breakdown parameter is handled
@@ -41,9 +43,22 @@ export function setDefaultYear(defaultYear) {
       // Trigger any additional logic needed to refresh the report
       handleYearButtonLogic(null, startDate, endDate, `${makeDateReadable(startDate)} &ndash; ${makeDateReadable(endDate)}`);
 
-      // Style the date range form as selected
-      const dateRangeForm = document.getElementById("date_range_form");
-      updateYearButtonStyling(dateRangeForm, true);
+      let elementToUpdate;
+
+      // Check if startDate and endDate correspond to the start and end of the same year
+      if (startDate.getFullYear() === endDate.getFullYear() &&
+          startDate.getMonth() === 0 && // January is 0
+          startDate.getDate() === 1 && // Start of the year
+          endDate.getMonth() === 11 && // December is 11
+          endDate.getDate() === 31) { // End of the year
+          // If true, select &style the button with ID `year-[YYYY]`
+          elementToUpdate = document.getElementById(`year-${startDate.getFullYear()}`);
+      } else {
+          // Otherwise, select & style the date range form
+          elementToUpdate = document.getElementById("date_range_form");
+      }
+      // Style the selected element, whether it’s ayear button or the date range form
+      updateYearButtonStyling(elementToUpdate, true);
     } else {
       // Otherwise, set default dates or years based on user type
       let defaultStartDate, defaultEndDate;
@@ -78,13 +93,12 @@ export function setDefaultYear(defaultYear) {
     // Check if there’s a breakdown (previously named 'explore item') parameter in the URL
     // TODO: this should probably go somewhere else outside of the date management... Maybe in main.js?
     // ...or in the explore.js file. 
+    // or directly invoke the function to process the explore item
+    // or processExploreDataTable(exploreButton, correspondingItemData);
     if (breakdownParam) {
       const exploreButton = document.getElementById(`explore_${breakdownParam}_button`);
       if (exploreButton) {
-        // Simulate a click on the button
         exploreButton.click(); 
-        // or directly invoke the function to process the explore item
-        // or processExploreDataTable(exploreButton, correspondingItemData);
       }
     }
     
@@ -94,7 +108,7 @@ export function setDefaultYear(defaultYear) {
         document.getElementById(`strategy_${actionParam}`)?.click();
       }
     }
-  }, 250); // Delay execution to ensure the DOM is ready to check for URL parameters
+  };
 }
 
 /**

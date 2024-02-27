@@ -82,14 +82,15 @@ export function initInsightsAndStrategies(org) {
         // Select elements to show data
         var percentageContents = document.getElementById(`percent_${numerator}`), // % value
             articlesContents   = document.getElementById(`articles_${numerator}`), // full-text value
-            infoContents       = document.getElementById(`info_${numerator}`); // help text value
+            cardContents       = document.getElementById(contentID); // whole card
 
         // Display help text / info popover
-        const instance = tippy(infoContents, {
+        const instance = tippy(cardContents, {
           allowHTML: true,
           interactive: true,
-          placement: 'top',
+          placement: 'right',
           appendTo: document.body,
+          theme: 'tooltip-pink',
         });
 
         // Set tooltip content
@@ -97,9 +98,9 @@ export function initInsightsAndStrategies(org) {
 
         // Access tooltip instance and its ID; use it for aria-controls attribute
         const tooltipID = instance.popper.id;
-        infoContents.setAttribute('aria-controls', tooltipID);
-        infoContents.setAttribute('aria-labelledby', numerator); // Set a11y label to the insight’s ID
-        infoContents.setAttribute('title', 'More information on this metric'); // Set title 
+        cardContents.setAttribute('aria-controls', tooltipID);
+        cardContents.setAttribute('aria-labelledby', numerator); // Set a11y label to the insight’s ID
+        cardContents.setAttribute('title', 'More information on this metric'); // Set title 
 
         // Get numerator’s count query
         let num = axios.get(countQueryPrefix + orgData.hits.hits[0]._source.analysis[numerator].query);
@@ -158,7 +159,7 @@ export function initInsightsAndStrategies(org) {
       "is_compliant",
       "is_covered_by_policy",
       "articles covered by policy",
-      `<p class='mb-2'>The percentage of articles that are compliant with <a href='${orgData.hits.hits[0]._source.policy.url}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a>.</p> <p>This number is specific to your policy and your requirements.</p>`
+      `<p class='mb-2'>The percentage of articles covered by <a href='${orgData.hits.hits[0]._source.policy.url}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
     );
 
     getInsight(

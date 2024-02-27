@@ -170,7 +170,6 @@ export const EXPLORE_ITEMS_LABELS = {
   }
 };
 
-
 /**
  * Mapping of explore filter IDs to human-readable labels.
  * @type {Object.<string, string>}
@@ -195,6 +194,385 @@ export const EXPLORE_FILTERS_LABELS = {
   "is_under_transitional_agreement": "Paid via transitional agreement",
   "is_funded": "Funded"
 };
+
+/**
+ * Mapping of explore table headers to human-readable labels and their corresponding tooltips.
+ * For terms-based tables
+ */
+export const EXPLORE_HEADER_TERMS_LABELS = {
+  "compliant": {
+    label: "Compliant",
+    info: "Publications that comply with the requirements of the Open Access policy, even if they are not covered by said policy.",
+    details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex."
+  },
+  "covered_by_policy": {
+    label: "Covered by policy",
+    info: "Publications that are covered by the Open Access Policy.",
+    details: "When a grant ID was available, we checked if the grant was covered by the Open Access policy using a list provided by IDRC staff."
+  },
+  "free_to_read": {
+    label: "Free-to-read",
+    info: "Publications that are free to read on the publisher’s website or any online repository, including temporarily accessible articles (“bronze Open Access”).",
+    details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex."
+  },
+  "in_repository": {
+    label: "In repository",
+    info: "Publications that have a copy of the work freely available and discoverable in any repository.",
+    details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex."
+  },
+  "mean_apc_amount": {
+    label: "Mean APC amount"
+  },
+  "mean_citations": {
+    label: "Mean citations",
+    info: "The mean (i.e. average) number of citations of these publications",
+    details: "We used data from OpenAlex's <code>cited_by_count</code>."
+  },
+  "median_apc_amount": {
+    label: "Median APC amount"
+  },
+  "open_access": {
+    label: "Open Access",
+    info: "Publications that are free and CC BY or CC0 (in the public domain) on the publisher’s website, a repository or a preprint server.",
+    details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref, OpenAlex, Europe PMC and manual checks (as required). If a work has the required license at any location it is considered Open Access."
+  },
+  "publications": {
+    label: "Publications",
+    info: "Academic research articles found (including peer-reviewed research, reviews, editorials, etc.)",
+    details: "CrossRef, OpenAlex, PubMed, and Europe PMC were searched for articles authored by or funded by IDRC using a variety of IDs (e.g ROR: 0445x0472 Fundref: 10.13039/501100000193) and aliases (International Development Research Centre, International Development Research Center, Centre de recherches pour le développement international) across all of time. An export of the IDRC Digital Library was utilized by the tool. Items with type “Journal Article” or “Abstract” were matched to DOIs. Results were deduplicated and ingested into OA.Report. Results were reviewed by a mix of manual and automated means to remove false positives (e.g mentions in full text, incorrect matches of IDRCs name)."
+  },
+  "total_apc_amount": {
+    label: "Total APC amount"
+  },
+  "total_citations": {
+    label: "Total citations",
+    info: "Number of citations the publications received."
+  },
+  "unknown_data_status": {
+    label: "Unknown data status"
+  },
+  "unknown_shared_data_status": {
+    label: "Unknown shared data status"
+  },
+  "with_apc": {
+    label: "With APC<span class='lowercase'>s</span>"
+  },
+  "with_data": {
+    label: "With data"
+  },
+  "with_data_accession_number": {
+    label: "With data accession number"
+  },
+  "with_data_availability_statement": {
+    label: "With data availability statement",
+    info: "Publications that have a data availability statement. Data availability statements (or 'data access statement', 'resource availability statements', 'code availability statements') tell a reader where the research data or code associated with a paper is available, and how they can be accessed. This figure doesn’t tell you what type of data availability statement is provided (e.g whether there is Open Data or no data at all).",
+    details: "To check if a paper has a data availability statement, we use data from PubMed’s data availability filter and review articles manually."
+  },
+  "with_data_dois": {
+    label: "With data DOI<span style='text-transform: lowercase;'>s</span>"
+  },
+  "with_dois": {
+    label: "With DOI<span style='text-transform: lowercase;'>s</span>"
+  },
+  "with_fundref_dois": {
+    label: "With FundRef DOI<span style='text-transform: lowercase;'>s</span>"
+  },
+  "with_grant_dois": {
+    label: "With grant DOI<span style='text-transform: lowercase;'>s</span>"
+  },
+  "with_grant_id": {
+    label: "With grant ID<span style='text-transform: lowercase;'>s</span>",
+    info: "Publications that provided the grant ID for the grant you provide them.",
+    details: "We found and normalized data from Crossref to find data provided by publisher. Where this wasn’t possible, we manually collected the funding statement. The grant ID was then extracted & normalized the grant ID using a mix of automated tools and manual review."
+  },
+  "with_open_data": {
+    label: "With Open Data"
+  },
+  "with_open_data_in_repository": {
+    label: "With Open Data in repository"
+  },
+  "with_orcids": {
+    label: "With ORC<span style='text-transform: lowercase;'>i</span>D<span style='text-transform: lowercase;'>s</span>"
+  },
+  "with_preprint": {
+    label: "With preprint",
+    info: "Publications that have a preprint associated with them.",
+    details: "We used data from Unpaywall and Crossref."
+  },
+  "with_rors": {
+    label: "With ROR<span style='text-transform: lowercase;'>s</span>"
+  },
+  "with_shared_data": {
+    label: "With shared data"
+  },
+  "with_shared_data_in_repository": {
+    label: "With shared data in repository"
+  },
+  "without_data": {
+    label: "Without data"
+  },
+  "without_data_availability_statement": {
+    label: "Without data availability statement"
+  },
+  "without_shared_data": {
+    label: "Without shared data"
+  }
+}
+
+/**
+ * Mapping of explore table headers to human-readable labels and their corresponding tooltips.
+ * For articles-based tables
+ */
+export const EXPLORE_HEADER_ARTICLES_LABELS = {
+  "author_email_name": {
+    label: "",
+    info: ""
+  },
+  "authorships.author.display_name": {
+    label: "Author(s)",
+    info: ""
+  },
+  "authorships.author.orcid": {
+    label: "ORCiD<span class='lowercase'>s</span>",
+    info: ""
+  },
+  "authorships.institutions.display_name": {
+    label: "Institution(s)",
+    info: ""
+  },
+  "authorships.institutions.ror": {
+    label: "ROR<span class='lowercase'>s</span>",
+    info: ""
+  },
+  "can_archive": {
+    label: "Archivable?",
+    info: ""
+  },
+  "cited_by_count": {
+    label: "Cited by",
+    info: ""
+  },
+  "concepts.display_name": {
+    label: "Concepts",
+    info: ""
+  },
+  "DOI": {
+    label: "DOI",
+    info: ""
+  },
+  "email": {
+    label: "Email",
+    info: ""
+  },
+  "funder.name": {
+    label: "Funder(s)",
+    info: ""
+  },
+  "has_repository_copy": {
+    label: "In repository?",
+    info: ""
+  },
+  "is_oa": {
+    label: "Open Access?",
+    info: ""
+  },
+  "issn": {
+    label: "ISSN",
+    info: ""
+  },
+  "journal_oa_type": {
+    label: "Journal <span class='uppercase'>OA</span> type",
+    info: ""
+  },
+  "journal": {
+    label: "Journal",
+    info: ""
+  },
+  "oa_status": {
+    label: "OA status",
+    info: ""
+  },
+  "PMCID": {
+    label: "PMCID",
+    info: ""
+  },
+  "published_date": {
+    label: "Published date",
+    info: ""
+  },
+  "published_year": {
+    label: "Published year",
+    info: ""
+  },
+  "publisher": {
+    label: "Publisher",
+    info: ""
+  },
+  "repository_url": {
+    label: "Repository URL",
+    info: ""
+  },
+  "repository_version": {
+    label: "Repository version",
+    info: ""
+  },
+  "subject": {
+    label: "Subject",
+    info: ""
+  },
+  "apc_cost": {
+    label: "APC<span class='lowercase'>s</span>",
+    info: ""
+  },
+  "data_availability_statement_category": {
+    label: "Data availability statement category",
+    info: ""
+  },
+  "dev.code.accession": {
+    label: "Code accession number",
+    info: ""
+  },
+  "dev.code.doi": {
+    label: "Code DOI",
+    info: ""
+  },
+  "dev.code.evidence": {
+    label: "Code evidence",
+    info: ""
+  },
+  "dev.code.has_made_code": {
+    label: "Generated code?",
+    info: ""
+  },
+  "dev.code.has_open_code": {
+    label: "Open code?",
+    info: ""
+  },
+  "dev.code.has_shared_code": {
+    label: "Shared code?",
+    info: ""
+  },
+  "dev.code.licence": {
+    label: "Code license",
+    info: ""
+  },
+  "dev.code.location": {
+    label: "Code location",
+    info: ""
+  },
+  "dev.code.url": {
+    label: "Code URL",
+    info: ""
+  },
+  "dev.data.accession": {
+    label: "Data accession number(s)",
+    info: ""
+  },
+  "dev.data.doi": {
+    label: "Data DOI",
+    info: ""
+  },
+  "dev.data.evidence": {
+    label: "Data evidence",
+    info: ""
+  },
+  "dev.data.has_open_data": {
+    label: "Open data?",
+    info: ""
+  },
+  "dev.data.has_shared_data": {
+    label: "Shared data?",
+    info: ""
+  },
+  "dev.data.licence": {
+    label: "Data license",
+    info: ""
+  },
+  "dev.data.location": {
+    label: "Data location",
+    info: ""
+  },
+  "dev.data.url": {
+    label: "Data URL",
+    info: ""
+  },
+  "grantid": {
+    label: "Grant ID",
+    info: ""
+  },
+  "has_data_availability_statement": {
+    label: "Data availability statement?",
+    info: ""
+  },
+  "invoice_date": {
+    label: "Invoice date",
+    info: ""
+  },
+  "invoice_number": {
+    label: "Invoice number",
+    info: ""
+  },
+  "invoice_year": {
+    label: "Invoice year",
+    info: ""
+  },
+  "is_approved_repository": {
+    label: "Approved repository?",
+    info: ""
+  },
+  "is_compliant": {
+    label: "Compliant?",
+    info: ""
+  },
+  "is_new": {
+    label: "New?",
+    info: ""
+  },
+  "is_original_research": {
+    label: "Original research?",
+    info: ""
+  },
+  "is_preprint_of": {
+    label: "Preprint of",
+    info: ""
+  },
+  "is_preprint": {
+    label: "Preprint?",
+    info: ""
+  },
+  "oasupport.status": {
+    label: "OA.Support status",
+    info: ""
+  },
+  "program": {
+    label: "Program",
+    info: ""
+  },
+  "publisher_license_best": {
+    label: "Publisher license (best)",
+    info: ""
+  },
+  "publisher_simple": {
+    label: "Publisher (simple)",
+    info: ""
+  },
+  "repository_license_best": {
+    label: "Repository license (best)",
+    info: ""
+  },
+  "sheets": {
+    label: "Sheets",
+    info: ""
+  },
+  "title": {
+    label: "Title",
+    info: ""
+  },
+  "version": {
+    label: "Version",
+    info: ""
+  }
+}
 
 /**
  * Class names for table header (<thead>) columns in the data explore section.
@@ -511,4 +889,249 @@ export const COUNTRY_CODES = {
   "SX": "Sint Maarten (Dutch part)",
   "SS": "South Sudan",
   "XK": "Kosovo"
+}
+
+/**
+ * Maps ISO 639-1 Alpha-2 language codes to language names.
+ * @type {Object.<string, string>}
+ */
+export const LANGUAGE_CODES = {
+  "aa": "Afar",
+  "ab": "Abkhazian",
+  "ae": "Avestan",
+  "af": "Afrikaans",
+  "ak": "Akan",
+  "am": "Amharic",
+  "an": "Aragonese",
+  "ar": "Arabic",
+  "as": "Assamese",
+  "av": "Avaric",
+  "ay": "Aymara",
+  "az": "Azerbaijani",
+  "ba": "Bashkir",
+  "be": "Belarusian",
+  "bg": "Bulgarian",
+  "bh": "Bihari languages",
+  "bi": "Bislama",
+  "bm": "Bambara",
+  "bn": "Bengali",
+  "bo": "Tibetan",
+  "br": "Breton",
+  "bs": "Bosnian",
+  "ca": "Catalan",
+  "ce": "Chechen",
+  "ch": "Chamorro",
+  "co": "Corsican",
+  "cr": "Cree",
+  "cs": "Czech",
+  "cu": "Church Slavic",
+  "cv": "Chuvash",
+  "cy": "Welsh",
+  "da": "Danish",
+  "de": "German",
+  "dv": "Maldivian",
+  "dz": "Dzongkha",
+  "ee": "Ewe",
+  "el": "Greek",
+  "en": "English",
+  "eo": "Esperanto",
+  "es": "Spanish",
+  "et": "Estonian",
+  "eu": "Basque",
+  "fa": "Persian",
+  "ff": "Fulah",
+  "fi": "Finnish",
+  "fj": "Fijian",
+  "fo": "Faroese",
+  "fr": "French",
+  "fy": "Western Frisian",
+  "ga": "Irish",
+  "gd": "Gaelic",
+  "gl": "Galician",
+  "gn": "Guarani",
+  "gu": "Gujarati",
+  "gv": "Manx",
+  "ha": "Hausa",
+  "he": "Hebrew",
+  "hi": "Hindi",
+  "ho": "Hiri Motu",
+  "hr": "Croatian",
+  "ht": "Haitian",
+  "hu": "Hungarian",
+  "hy": "Armenian",
+  "hz": "Herero",
+  "ia": "Interlingua",
+  "id": "Indonesian",
+  "ie": "Interlingue",
+  "ig": "Igbo",
+  "ii": "Sichuan Yi",
+  "ik": "Inupiaq",
+  "io": "Ido",
+  "is": "Icelandic",
+  "it": "Italian",
+  "iu": "Inuktitut",
+  "ja": "Japanese",
+  "jv": "Javanese",
+  "ka": "Georgian",
+  "kg": "Kongo",
+  "ki": "Kikuyu",
+  "kj": "Kuanyama",
+  "kk": "Kazakh",
+  "kl": "Kalaallisut",
+  "km": "Central Khmer",
+  "kn": "Kannada",
+  "ko": "Korean",
+  "kr": "Kanuri",
+  "ks": "Kashmiri",
+  "ku": "Kurdish",
+  "kv": "Komi",
+  "kw": "Cornish",
+  "ky": "Kirghiz",
+  "la": "Latin",
+  "lb": "Luxembourgish",
+  "lg": "Ganda",
+  "li": "Limburgan",
+  "ln": "Lingala",
+  "lo": "Lao",
+  "lt": "Lithuanian",
+  "lu": "Luba-Katanga",
+  "lv": "Latvian",
+  "mg": "Malagasy",
+  "mh": "Marshallese",
+  "mi": "Maori",
+  "mk": "Macedonian",
+  "ml": "Malayalam",
+  "mn": "Mongolian",
+  "mr": "Marathi",
+  "ms": "Malay",
+  "mt": "Maltese",
+  "my": "Burmese",
+  "na": "Nauru",
+  "nb": "Norwegian",
+  "nd": "North Ndebele",
+  "ne": "Nepali",
+  "ng": "Ndonga",
+  "nl": "Dutch",
+  "nn": "Norwegian",
+  "no": "Norwegian",
+  "nr": "South Ndebele",
+  "nv": "Navajo",
+  "ny": "Chichewa",
+  "oc": "Occitan",
+  "oj": "Ojibwa",
+  "om": "Oromo",
+  "or": "Oriya",
+  "os": "Ossetic",
+  "pa": "Panjabi",
+  "pi": "Pali",
+  "pl": "Polish",
+  "ps": "Pushto",
+  "pt": "Portuguese",
+  "qu": "Quechua",
+  "rm": "Romansh",
+  "rn": "Rundi",
+  "ro": "Romanian",
+  "ru": "Russian",
+  "rw": "Kinyarwanda",
+  "sa": "Sanskrit",
+  "sc": "Sardinian",
+  "sd": "Sindhi",
+  "se": "Northern Sami",
+  "sg": "Sango",
+  "si": "Sinhala",
+  "sk": "Slovak",
+  "sl": "Slovenian",
+  "sm": "Samoan",
+  "sn": "Shona",
+  "so": "Somali",
+  "sq": "Albanian",
+  "sr": "Serbian",
+  "ss": "Swati",
+  "st": "Sotho, Southern",
+  "su": "Sundanese",
+  "sv": "Swedish",
+  "sw": "Swahili",
+  "ta": "Tamil",
+  "te": "Telugu",
+  "tg": "Tajik",
+  "th": "Thai",
+  "ti": "Tigrinya",
+  "tk": "Turkmen",
+  "tl": "Tagalog",
+  "tn": "Tswana",
+  "to": "Tonga",
+  "tr": "Turkish",
+  "ts": "Tsonga",
+  "tt": "Tatar",
+  "tw": "Twi",
+  "ty": "Tahitian",
+  "ug": "Uighur",
+  "uk": "Ukrainian",
+  "ur": "Urdu",
+  "uz": "Uzbek",
+  "ve": "Venda",
+  "vi": "Vietnamese",
+  "vo": "Volapük",
+  "wa": "Walloon",
+  "wo": "Wolof",
+  "xh": "Xhosa",
+  "yi": "Yiddish",
+  "yo": "Yoruba",
+  "za": "Zhuang",
+  "zh": "Chinese",
+  "zu": "Zulu"
+}
+
+/**
+ * Maps custom and Creative Commons license names to their human-readable labels. 
+ */
+export const LICENSE_CODES = {
+  'publisher-specific, author manuscript': {
+    name: 'Publisher-specific Open Access'
+  },
+  'unspecified-oa': {
+    name: 'Unspecified Open Access'
+  },
+  'implied-oa': {
+    name: 'Implied Open Access'
+  },
+  'non-standard-licence': {
+    name: 'Non-standard License'
+  },
+  'cc-by': {
+    name: 'Creative Commons Attribution',
+    url: 'https://creativecommons.org/licenses/by/4.0/'
+  },
+  'cc-by-sa': {
+    name: 'Creative Commons Attribution-ShareAlike',
+    url: 'https://creativecommons.org/licenses/by-sa/4.0/'
+  },
+  'cc-by-nd': {
+    name: 'Creative Commons Attribution-NoDerivs',
+    url: 'https://creativecommons.org/licenses/by-nd/4.0/'
+  },
+  'cc-by-nc': {
+    name: 'Creative Commons Attribution-NonCommercial',
+    url: 'https://creativecommons.org/licenses/by-nc/4.0/'
+  },
+  'cc-by-nc-sa': {
+    name: 'Creative Commons Attribution-NonCommercial-ShareAlike',
+    url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
+  },
+  'cc-by-nc-nd': {
+    name: 'Creative Commons Attribution-NonCommercial-NoDerivs',
+    url: 'https://creativecommons.org/licenses/by-nc-nd/4.0/'
+  },
+  'cc0': {
+    name: 'Creative Commons CC0 1.0 Universal (CC0 1.0) Public Domain Dedication',
+    url: 'https://creativecommons.org/publicdomain/zero/1.0/'
+  },
+  'pd': {
+    name: 'Public Domain',
+    url: 'https://creativecommons.org/publicdomain/mark/1.0/'
+  },
+  'public-domain': {
+    name: 'Public Domain',
+    url: 'https://creativecommons.org/publicdomain/mark/1.0/'
+  }
 }

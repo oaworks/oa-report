@@ -1,6 +1,7 @@
-var _OAcookie, ck, o;
+var _OAcookie, ck, o, persistentKey;
 
-_OAcookie = function(obj) {
+// Function to manage OAKeys (orgkey) cookies
+_OAcookie = function(obj, persistent) {
   var c, d, domain, expires, i, len, ref, t;
   if (obj != null) {
     domain = '.' + window.location.host;
@@ -9,9 +10,11 @@ _OAcookie = function(obj) {
     }
     t = 'OAKeys=';
     if (obj) {
-      t += encodeURIComponent(JSON.stringify(obj)); // so if values is false or '' this will effectively remove the cookie
-      expires = 365;
+      t += encodeURIComponent(JSON.stringify(obj));
+      // If persistent is true, set a longer expiration, otherwise use provided logic
+      expires = persistent ? 365 : -1; 
     } else {
+      // Set cookie to expire immediately if obj is falsy and not persistent
       expires = -1;
     }
     d = new Date();
@@ -35,28 +38,33 @@ _OAcookie = function(obj) {
   }
 };
 
+// Check for 'persistent=true' in the URL
+persistentKey = window.location.search.includes('persistent=true');
+
+// Retrieve current OAKeys cookie
 ck = _OAcookie();
 
+// Initialise window.OAKEYS
 window.OAKEYS = typeof ck === 'object' ? ck : {};
 
 if (window.location.search.includes('orgkey=')) {
   try {
-    o = window.location.search.split('org=')[1].split('&')[0];
+    o = window.location.search.split('orgkey=')[1].split('&')[0];
+    o = decodeURIComponent(o);
   } catch (error) {}
-  try {
-    if (o == null) {
-      o = window.location.href.split('//')[1].split('/')[1];
-    }
-  } catch (error) {}
+  
   if (o) {
-    window.OAKEYS[decodeURIComponent(o)] = window.location.search.split('orgkey=')[1].split('&')[0];
-    _OAcookie(window.OAKEYS);
-    try { history.pushState(null, null, window.location.href.split('?')[0]); } catch (e) {};
+    window.OAKEYS[o] = true; // Simplified to just mark the key as present
+    _OAcookie(window.OAKEYS, persistentKey); // Pass persistentKey flag to _OAcookie function
+    // If not persistent, remove the parameter from URL, otherwise leave it
+    if (!persistentKey) {
+      try { history.pushState(null, null, window.location.href.split('?')[0]); } catch (e) {};
+    }
   }
 }
 
 if (window.location.search.includes('logout')) {
-  window.OAKEYS = {}; // or work out the org here and only logout of that org?
-  _OAcookie(false);
+  window.OAKEYS = {};
+  _OAcookie(false); // No need for persistent flag here as we're clearing the cookie
   try { history.pushState(null, null, window.location.href.split('?')[0]); } catch (e) {};
 }

@@ -460,6 +460,42 @@ export function bindSmoothScrollLinks() {
 }
 
 /**
+ * Adjusts the navigation bar's style based on the scroll position.
+ * Adds or removes classes to the navigation bar when it reaches the top of the viewport.
+ * Adds a shadow to the nav bar, a border to the bottom of the items, and a transition effect.
+ */
+export function adjustNavOnScroll() {
+  const nav = document.querySelector("#top_nav");
+  const yearButtons = document.querySelectorAll(".js_year_select");
+
+  function adjustNavStyle() {
+    const rect = nav.getBoundingClientRect();
+    
+    if (rect.top <= 0) {
+      yearButtons.forEach((button) => { 
+        button.classList.add("md:border-b");
+        button.classList.remove("md:border-b-0");
+      });
+      nav.classList.add("shadow-lg", "transition-pb-3", "md:transition-pb-6");
+      nav.classList.remove("transition-pb-0");
+    } else {
+      yearButtons.forEach((button) => { 
+        button.classList.remove("md:border-b");
+        button.classList.add("md:border-b-0");
+      });
+      nav.classList.remove("shadow-lg", "transition-pb-3", "md:transition-pb-6");
+      nav.classList.add("transition-pb-0");
+    }
+  }
+
+  // Attach the function to the scroll event
+  document.addEventListener("scroll", adjustNavStyle);
+
+  // Call the function immediately to check the initial scroll position
+  adjustNavStyle();
+}
+
+/**
  * Inserts a 'No results found' message row into a table body.
  * This function clears any existing content in the table body and then
  * adds a single row with one cell that spans all columns.
