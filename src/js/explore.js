@@ -716,7 +716,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
   const cell = document.createElement(isHeader ? 'th' : 'td');
   cell.className = cssClass;
 
-  if (content === 'Key') {
+  if (content === 'key') {
     // Check if content is 'key' and insert a span with class 'explore_type'
     const spanElement = document.createElement('span');
     spanElement.className = 'explore_type';
@@ -730,7 +730,18 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
     cell.textContent = languageName;
   } else if ((exploreItemId === 'publisher_license' && key === 'key') || (exploreItemId === 'repository_license' && key === 'key')) {
     const licenseName = LICENSE_CODES[content].name || "Unknown license";
-    cell.innerHTML = `<strong class='uppercase'>${content}</strong> <br>${licenseName}`;
+    const licenseUrl = LICENSE_CODES[content].url;
+    cell.innerHTML = `
+        <strong class='uppercase'>
+          ${content}
+        </strong> 
+      <br>${licenseUrl ? `
+        <a href="${licenseUrl}" 
+           class="underline underline-offset-2 decoration-1" 
+           rel="noopener noreferrer" 
+           target="_blank">${licenseName}</a>
+      ` : licenseName}
+    `;
   } else if (typeof content === 'string' && content.includes('orcid.org')) {
     // Check if content is an ORCiD URL and fetch the full name
     const orcidId = content.split('/').pop();
