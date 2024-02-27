@@ -9,6 +9,7 @@
   class="tooltip" 
   tabindex="0" 
   data-tippy-content="{{ params.msg }}"
+  {% if params.theme %}data-tippy-theme="{{ params.theme }}"{% endif %}
   {% if params.id %} id="{{ params.id }}"{% endif %} 
   aria-label="
     {% if params.label %}

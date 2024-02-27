@@ -8,7 +8,7 @@
 // =================================================
 
 import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, makeNumberReadable, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, updateURLParams } from "./utils.js";
-import { CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, COUNTRY_CODES } from "./constants.js";
+import { CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { orgDataPromise } from './insights-and-strategies.js';
 import { createPostData } from './api-requests.js';
@@ -400,17 +400,20 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       enableTooltipsForTruncatedCells();
 
       const downloadCSVForm = document.getElementById('download_csv_form');
-      const exploreTableTooltip = document.getElementById('explore_table_tooltip_articles');
+      const exploreArticlesTableHelp = document.getElementById('explore_articles_records_shown_help');
+      const exploreTermsTableHelp = document.getElementById('explore_terms_records_shown_help');
       // Add data download link only if it's an 'articles'-type data table
       if (type === "articles") {
         // addCSVExportLink(); TODO: once we can download the CSV directly from the link, use this
         downloadCSVForm.style.display = "block" // Display download_csv_form if it's an 'articles'-type data table
-        exploreTableTooltip.style.display = "inline"; // Display the tooltip
+        exploreArticlesTableHelp.style.display = "block"; // Display the articles tooltip
+        exploreTermsTableHelp.style.display = "none"; // Hide the terms tooltip
         displayNone("explore_display_style_field"); // No need for the data display style field in article tables
       } else {
         // removeCSVExportLink(); // Remove the CSV export link if there's one
         downloadCSVForm.style.display = "none" // Hide download_csv_form if it's NOT an 'articles'-type data table
-        exploreTableTooltip.style.display = "none"; // Hide the tooltip
+        exploreTermsTableHelp.style.display = "block" // Show the terms tooltip
+        exploreArticlesTableHelp.style.display = "none"; // Hide the articles tooltip
         removeDisplayStyle("explore_display_style_field"); // Display the data display style field
       }
     } else {
@@ -498,20 +501,86 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
     tableHeader.removeChild(tableHeader.firstChild);
   }
 
+  // Assuming `records` is an array of objects and we want the keys from the first object
+  // This line seems to be incorrectly placed or based on a misunderstanding; correcting it:
+  // records = records.length > 0 ? Object.keys(records[0]) : []; // Corrected line
   records = Object.keys(records); // Only extract the keys from the records
-  let headers = prettifyHeaders(records);
 
-  const headerRow = document.createElement('tr'); // Create and add the header row
-  headers.forEach((key, index) => {
-    let cssClass;
-    if (index === 0) cssClass = DATA_TABLE_HEADER_CLASSES[dataType].firstHeaderCol;
-    else if (index === 1) cssClass = DATA_TABLE_HEADER_CLASSES[dataType].secondHeaderCol;
-    else cssClass = DATA_TABLE_HEADER_CLASSES[dataType].otherHeaderCols;
+  const headerRow = document.createElement('tr');
+  records.forEach((key, index) => {
+    key = key.replace(/_pct$/, ""); // Remove '_pct' suffix
+    key = key.replace(/__.*/, ""); // Remove any suffixes after '__', e.g. org short name
+    key = key.replace(/supplements./g, ""); // Remove 'supplements.' prefix
+    // key = key.replace(/_/g, " "); // Replace underscores with spaces
 
-    const headerCell = createTableCell(key, cssClass, null, null, true);
+    const cssClass = index === 0
+      ? DATA_TABLE_HEADER_CLASSES[dataType].firstHeaderCol
+      : index === 1
+        ? DATA_TABLE_HEADER_CLASSES[dataType].secondHeaderCol
+        : DATA_TABLE_HEADER_CLASSES[dataType].otherHeaderCols;
+
+    const label = dataType === 'terms'
+      ? EXPLORE_HEADER_TERMS_LABELS[key]?.label || key
+      : EXPLORE_HEADER_ARTICLES_LABELS[key]?.label || key;
+
+    const headerCell = createTableCell('', cssClass, null, null, true); 
+    setupTooltip(headerCell, key, dataType);
+
     headerRow.appendChild(headerCell);
   });
   tableHeader.appendChild(headerRow);
+}
+
+/**
+ * Generates the HTML content for a tooltip, including information and optional methodology details.
+ *
+ * @param {Object} labelData - The object containing the label, info, and optionally details for the tooltip.
+ * @returns {string} The generated HTML content for the tooltip.
+ */
+function generateTooltipContent(labelData, additionalHelpText = null) {
+  const hasDetails = !!labelData.details;
+  return `
+    <p class='${hasDetails ? "mb-2" : ""}'>${labelData.info}</p>
+    ${additionalHelpText ? `<p class='mb-2'>${additionalHelpText}</p>` : ""}
+    ${hasDetails ? `<details><summary class='hover:cursor-pointer'>Methodology</summary><p class='mt-2'>${labelData.details}</p></details>` : ""}
+  `;
+}
+
+/**
+ * Attaches a tooltip to an HTML element if tooltip content is provided.
+ * Uses the Tippy.js library for tooltip functionality, applying a11y attributes.
+ * Ensures a label is always displayed, falling back to the key itself if no label is defined.
+ *
+ * @param {HTMLElement} element - The element to attach the tooltip to.
+ * @param {string} key - The key associated with the tooltip, used for fallback labeling and to generate IDs for accessibility.
+ * @param {string} dataType - Indicates the type of data ('terms' or 'articles'), which determines the labels configuration to use.
+ */
+function setupTooltip(element, key, dataType) {
+  const labelsConfig = dataType === 'terms' ? EXPLORE_HEADER_TERMS_LABELS : EXPLORE_HEADER_ARTICLES_LABELS;
+  const labelData = labelsConfig[key];
+  const label = labelData && labelData.label ? labelData.label : key;
+  element.innerHTML = `<span>${label}</span>`;
+
+  // Generate and set tooltip if info is present and non-empty
+  if (labelData && labelData.info && labelData.info.trim()) {
+    // Get additional help text from orgData if available
+    let additionalHelpText = orgData.hits.hits[0]?._source.policy?.help_text?.[key] ?? null;
+
+    const tooltipContent = generateTooltipContent(labelData, additionalHelpText);
+    const tooltipID = `${key}_info`;
+
+    tippy(element, {
+      content: tooltipContent,
+      allowHTML: true,
+      interactive: true,
+      placement: 'bottom',
+      appendTo: document.body,
+      theme: 'tooltip-white',
+    });
+
+    element.setAttribute('aria-controls', tooltipID); // Assuming you manage IDs uniquely
+    element.setAttribute('aria-labelledby', tooltipID);
+  }
 }
 
 /**
@@ -575,61 +644,6 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
       }
     });
   }
-}
-
-
-/**
- * Formats headers for display. For headers with a corresponding "_pct" counterpart,
- * only the "_pct" version is retained and the "_pct" suffix is removed. Headers are 
- * also made more human-readable, with specific capitalization rules for known phrases and acronyms.
- * 
- * @param {string[]} headers - The array of headers to be prettified.
- * @returns {string[]} - The prettified headers.
- */
-function prettifyHeaders(headers) {
-  // Define special cases for phrases and acronyms
-  const specialCases = {
-    "open access": "Open Access",
-    "oa": "Open Access",
-    "open data": "Open Data",
-    "apc": "APC<span style='text-transform: lowercase;'>s</span>",
-    "free to read": "Free-to-Read",
-    "doi": "DOI",
-    "dois": "DOI<span style='text-transform: lowercase;'>s</span>",
-    "id": "ID",
-    "rors": "ROR<span style='text-transform: lowercase;'>s</span>",
-    "orcIDs": "ORC<span style='text-transform: lowercase;'>i</span>D<span style='text-transform: lowercase;'>s</span>",
-    "fundref": "FundRef",
-    "supplements.dev.": "",
-    "supplements.": "",
-    "authorships.author.display name": "Authors",
-    "authorships.author.orcid": "ORCiDs",
-    "authorships.institutions.display name": "Institutions",
-    "authorships.institutions.ror": "RORs",
-    "concepts.display name": "Concepts",
-    "funder.name": "Funder",
-    "publisher license best": "Publisher license",
-    "repository license best": "Repository license",
-  };
-
-  return headers
-    .filter(header => header.endsWith("_pct") || !headers.includes(header + "_pct"))
-    .map(header => {
-      header = header.replace(/_pct$/, ""); // Remove '_pct' suffix
-      header = header.replace(/__.*/, ""); // Remove any suffixes after '__'
-      header = header.replace(/_/g, " "); // Replace underscores with spaces
-      header = header.charAt(0).toUpperCase() + header.slice(1).toLowerCase(); // Capitalize only the first letter of the header
-
-      // Check and replace special cases using regex
-      Object.entries(specialCases).forEach(([key, value]) => {
-        const regex = new RegExp(key, "i"); // 'i' flag for case-insensitive match
-        if (regex.test(header)) {
-          header = header.replace(regex, value);
-        }
-      });
-      return header;
-    }
-  );
 }
 
 /**
@@ -711,6 +725,12 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
   } else if (exploreItemId === 'country' && key === 'key') {
     const countryName = COUNTRY_CODES[content]  || "Unknown country";
     cell.textContent = countryName;
+  } else if (exploreItemId === 'language' && key === 'key') {
+    const languageName = LANGUAGE_CODES[content] || "Unknown language";
+    cell.textContent = languageName;
+  } else if ((exploreItemId === 'publisher_license' && key === 'key') || (exploreItemId === 'repository_license' && key === 'key')) {
+    const licenseName = LICENSE_CODES[content].name || "Unknown license";
+    cell.textContent = licenseName;
   } else if (typeof content === 'string' && content.includes('orcid.org')) {
     // Check if content is an ORCiD URL and fetch the full name
     const orcidId = content.split('/').pop();
@@ -841,7 +861,7 @@ function enableTooltipsForTruncatedCells() {
           delay: [500, 0], // 500 ms delay before showing, 0 ms delay before hiding
           trigger: 'mouseenter focus', // Trigger on mouse enter and focus
           hideOnClick: false,
-          theme: 'table-tooltip', // Custom theme defined in 'src/styles/input.css'
+          theme: 'tooltip-white', // Custom theme defined in 'src/styles/input.css'
           onShow(instance) {
               let cellText = cell.textContent;
               // Check if the cell's content is truncated
