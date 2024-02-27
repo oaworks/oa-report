@@ -729,8 +729,12 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
     const languageName = LANGUAGE_CODES[content] || "Unknown language";
     cell.textContent = languageName;
   } else if ((exploreItemId === 'publisher_license' && key === 'key') || (exploreItemId === 'repository_license' && key === 'key')) {
-    const licenseName = LICENSE_CODES[content].name || "Unknown license";
-    const licenseUrl = LICENSE_CODES[content].url;
+    // Check if LICENSE_CODES[content] exists before trying to access its properties
+    const licenseInfo = LICENSE_CODES[content];
+    // Check if licenseInfo is defined before accessing its properties
+    const licenseName = licenseInfo && licenseInfo.name ? licenseInfo.name : "Unknown license";
+    const licenseUrl = licenseInfo && licenseInfo.url ? licenseInfo.url : null;
+
     cell.innerHTML = `
         <strong class='uppercase'>
           ${content}
