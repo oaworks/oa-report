@@ -36,12 +36,6 @@ if (hasOrgKey) {
 }
 
 /**
- * Allows the EXPLORE_HEADER_TERMS_LABELS constant to be accessible via a browser.
- * @global
- */
-window.EXPLORE_HEADER_TERMS_LABELS = EXPLORE_HEADER_TERMS_LABELS;
-
-/**
  * Data object representing metadata on an organization.
  * @global
  */
