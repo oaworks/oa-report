@@ -3,11 +3,17 @@
 // ========================
 
 /**
+ * The API endpoint for the orgindex. 
+ * @type {string}
+ */
+export const ELEVENTY_API_ENDPOINT =  document.body.getAttribute('data-api-endpoint');
+
+/**
  * Base URL for the API endpoint.
  * This serves as the foundational URL upon which all other endpoints are built.
  * @type {string}
  */
-export const API_BASE_URL = `https://${apiEndpoint}.oa.works/report/`;
+export const API_BASE_URL = `https://${ELEVENTY_API_ENDPOINT}.oa.works/report/`;
 
 /**
  * Endpoint for querying works with a default size of 100.

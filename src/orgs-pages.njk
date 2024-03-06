@@ -398,19 +398,6 @@ permalink: "{{ org._source.objectID | slug }}/"
           </div>
           {% endif %}
         </div>
-        {# PROMPT TO SEARCH OTHER ORGS #}
-        <div>
-          <h2 class="font-semibold uppercase text-sm md:text-base line-thru">
-            <span class="bg-white pr-3">Find other organizations</span>
-          </h2>
-          <div class="my-6">
-            {% if page.url != "/" %}
-              {{ component("search-form", {
-                sr_only: true
-              }) }}
-            {% endif %}
-          </div>
-        </div>
       </div>
     </div>
   </section>
