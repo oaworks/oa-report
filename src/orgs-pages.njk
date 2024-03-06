@@ -49,7 +49,7 @@ permalink: "{{ org._source.objectID | slug }}/"
             <p class="mb-4">
               Consider a <a href="https://about.oa.report/pricing" target="_blank" class="underline underline-offset-4 decoration-1">paid plan</a> to help <a href="https://about.oa.report/docs/sources" target="_blank" class="underline underline-offset-4 decoration-1">discover all your papers</a> and provide up-to-date, deep insights into the state of open at your institution.
             </p>
-            <div class="md:flex md:justify-end">
+            <div class="md:flex">
               {% include 'partials/signup-form.njk' %}
             </div>
         </section>
@@ -384,7 +384,7 @@ permalink: "{{ org._source.objectID | slug }}/"
   </section>
 
   {# Dynamic modal #}
-  {# <div id="dynamic-modal" class="fixed inset-0 flex items-center justify-center p-4 bg-neutral-900 bg-opacity-50 hidden transition-opacity duration-300 z-50" aria-hidden="true" tabindex="-1" role="dialog" aria-modal="true">
+  <div id="dynamic-modal" class="fixed inset-0 flex items-center justify-center p-4 bg-neutral-900 bg-opacity-50 hidden transition-opacity duration-300 z-50" aria-hidden="true" tabindex="-1" role="dialog" aria-modal="true">
     <div class="bg-carnation-100 text-neutral-900 p-3 md:p-6 shadow-lg md:w-8/12 overflow-y-auto max-h-[80vh] min-h-0" role="document">
       <div class="flex justify-between items-start">
         <h2 class="modal-title text-2xl font-semibold"></h2>
@@ -395,15 +395,6 @@ permalink: "{{ org._source.objectID | slug }}/"
       </div>
       <div class="modal-content mt-4"></div>
     </div>
-  </div> #}
-
-  {# Container for all export modals’ HTML content #}
-  {# <div id="export_modals">
-    {{ component("modal", {
-      id: "custom_export",
-      title: "Create your own",
-      include: "custom-export-form"
-    }) }}
-  </div> #}
+  </div>
 </main>
 
