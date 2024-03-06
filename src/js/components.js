@@ -98,21 +98,28 @@ class Modal {
   open(title, content) {
     // Generate unique IDs for title and content (a11y requirement)
     const titleId = 'modal-title-' + new Date().getTime();
-    const contentId = 'modal-content-' + new Date().getTime();
+    const contentId = 'modal-body-' + new Date().getTime(); 
+
     this.modalTitle.textContent = title;
-    this.modalTitle.id = titleId; // Set dynamic ID for title
-    this.modalContent.innerHTML = content;
-    this.modalContent.id = contentId; // Set dynamic ID for content
+    this.modalTitle.id = titleId; 
+
+    const modalBody = this.modal.querySelector('.modal-body');
+    modalBody.innerHTML = content;
+    modalBody.id = contentId;
+
+    // Ensure modal background is immediately visible
+    this.modal.classList.remove('hidden');
+
+    // Apply animations for opening
+    this.modal.classList.add('modal-background-animate-in'); // Background fades in
+    this.modal.classList.remove('modal-background-animate-out');
+    this.modalContent.classList.add('modal-animate-in'); // Modal content fades in and up
+    this.modalContent.classList.remove('modal-animate-out');
 
     // Set ARIA attributes for accessibility
     this.modal.setAttribute('aria-labelledby', titleId);
-    this.modal.setAttribute('aria-describedby', contentId);
+    this.modal.setAttribute('aria-describedby', contentId); // Link content area with its description
 
-    // Show the modal with animation
-    this.modal.classList.remove('hidden', 'scale-95');
-    this.modal.classList.add('transition-transform', 'duration-300', 'ease-out', 'transform', 'scale-100');
-
-    this.modal.setAttribute('aria-hidden', 'false');
     document.body.classList.add('overflow-hidden');
     this.closeModalBtn.focus();
   }
@@ -121,9 +128,20 @@ class Modal {
    * Closes the modal window and resets the modal state.
    */
   close() {
-    this.modal.classList.add('hidden');
-    this.modal.setAttribute('aria-hidden', 'true');
-    document.body.classList.remove('overflow-hidden');
+    // Apply reverse animations for closing the modal content
+    this.modalContent.classList.remove('modal-animate-in');
+    this.modalContent.classList.add('modal-animate-out'); // Content fades out and down smoothly
+
+    // Smoothly fade out the background alongside the modal content
+    this.modal.classList.remove('modal-background-animate-in');
+    this.modal.classList.add('modal-background-animate-out'); // Background fades out smoothly
+
+    // Wait for the longest animation to complete before hiding the modal
+    setTimeout(() => {
+        this.modal.classList.add('hidden');
+        this.modal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('overflow-hidden');
+    }, 500);// Match this with the animation duration in input.css (modal-animate-in and modal-animate-out classes)
   }
 }
 
