@@ -22,6 +22,7 @@ if (hasOrgKey) {
   orgKey = `&orgkey=${Object.values(OAKEYS)}`;
   loggedIn = true;
   displayNone("login");;
+  displayNone("about-free-logged-out");
 } else {
   // logged out
   loggedIn = false;
