@@ -91,6 +91,7 @@ class Modal {
 
   /**
    * Opens the modal window with content and title provided.
+   * Adds an animation upon opening.
    * @param {string} title - The title text to display in the modal.
    * @param {string} content - The HTML content to display in the modal.
    */
@@ -103,15 +104,17 @@ class Modal {
     this.modalContent.innerHTML = content;
     this.modalContent.id = contentId; // Set dynamic ID for content
 
-    // Show the modal
-    this.modal.classList.remove('hidden');
-    this.modal.setAttribute('aria-hidden', 'false');
-    document.body.classList.add('overflow-hidden');
-    this.closeModalBtn.focus();
-
     // Set ARIA attributes for accessibility
     this.modal.setAttribute('aria-labelledby', titleId);
     this.modal.setAttribute('aria-describedby', contentId);
+
+    // Show the modal with animation
+    this.modal.classList.remove('hidden', 'scale-95');
+    this.modal.classList.add('transition-transform', 'duration-300', 'ease-out', 'transform', 'scale-100');
+
+    this.modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('overflow-hidden');
+    this.closeModalBtn.focus();
   }
 
   /**
