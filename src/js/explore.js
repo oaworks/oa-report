@@ -26,12 +26,9 @@ if (hasOrgKey) {
   // logged in
   orgKey = `&orgkey=${Object.values(OAKEYS)}`;
   loggedIn = true;
-  displayNone("about-paid-logged-out");
-  displayNone("about-free-logged-out");
 } else {
   // logged out
   loggedIn = false;
-  displayNone("logout");
   //displayNone("explore");
 }
 

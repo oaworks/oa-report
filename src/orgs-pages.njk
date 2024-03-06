@@ -40,7 +40,22 @@ permalink: "{{ org._source.objectID | slug }}/"
 
         <h2 class="text-2xl md:text-4xl font-light report_year">2023</h2>
       </header>
-      <section class="col-span-2 md:col-span-1 md:text-right"></section>
+      <section class="col-span-2 md:col-span-1 md:text-right">
+        {# Free reports’ prompt to sign up #}
+        {% if org._source.paid == false %}
+          <div id="about-free-logged-out">
+            <h2 class="font-semibold uppercase text-sm md:text-base">
+              Sign up to access your institution’s OA.Report for free
+            </h2>
+            <p class="my-6 text-xs md:text-sm">
+              Consider a <a href="https://about.oa.report/pricing" target="_blank" class="underline underline-offset-4 decoration-1">paid plan</a> to help <a href="https://about.oa.report/docs/sources" target="_blank" class="underline underline-offset-4 decoration-1">discover all your papers</a> and provide up-to-date, deep insights into the state of open at your institution.
+            </p>
+            <div class="my-6 w-6/12">
+              {% include 'partials/signup-form.njk' %}
+            </div>
+          </div>
+          {% endif %}
+      </section>
     </div>
   </div>
 
@@ -365,38 +380,6 @@ permalink: "{{ org._source.objectID | slug }}/"
           <div class="sm:hidden text-sm md:text-base mt-6">
             <p>Actions aren’t available on mobile yet. Please head to a desktop computer to take action!</p>
           </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  {# ABOUT #}
-  <section class="px-3 md:px-6 md:py-16">
-    <div class="grid grid-cols-2 gap-3 sm:gap-6 md:gap-12 py-6 xl:py-12"> 
-      <div class="col-span-2 grid md:grid-cols-2 gap-12 text-sm md:text-base lg:text-2xl md:leading-8 md:font-light" id="about">
-        <div>
-          <h2 class="font-semibold uppercase text-sm md:text-base line-thru">
-            <span class="bg-white pr-3">About this report</span>
-          </h2>
-          {# PAID USERS #}
-          {% if org._source.paid == true %}
-          <p class="my-6" id="about-paid-logged-out">
-            <a href="https://about.oa.report/docs/user-accounts" target="_blank" class="underline underline-offset-4 decoration-1">Log in</a> to see the OA.Report.
-          </p>
-          {# FREE USERS #}
-          {% else %}
-          <div id="about-free-logged-out">
-            <h2 class="font-semibold uppercase text-sm md:text-base line-thru">
-              <span class="bg-white pr-3">Unlock your institution’s research</span>
-            </h2>
-            <p class="my-6">
-              Sign up to access your institution's Actions for free. Consider a <a href="https://about.oa.report/pricing" target="_blank" class="underline underline-offset-4 decoration-1">paid plan</a> to help <a href="https://about.oa.report/docs/sources" target="_blank" class="underline underline-offset-4 decoration-1">discover all your papers</a> and provide up-to-date, deep insights into the state of open at your institution.
-            </p>
-            <div class="my-6 w-6/12">
-              {% include 'partials/signup-form.njk' %}
-            </div>
-          </div>
-          {% endif %}
         </div>
       </div>
     </div>
