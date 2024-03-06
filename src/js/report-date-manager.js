@@ -37,8 +37,12 @@ export function setDefaultYear(defaultYear) {
       const startDate = new Date(startParam);
       const endDate = new Date(endParam);
 
-      document.getElementById('start-date').value = startDate.toISOString().split('T')[0];
-      document.getElementById('end-date').value = endDate.toISOString().split('T')[0];
+      // Replace the date range, if present, with the one from the URL
+      const dateRangeForm = document.getElementById("date_range_form");
+      if (dateRangeForm) {
+        document.getElementById('start-date').value = startDate.toISOString().split('T')[0];
+        document.getElementById('end-date').value = endDate.toISOString().split('T')[0];
+      }
 
       // Trigger any additional logic needed to refresh the report
       handleYearButtonLogic(null, startDate, endDate, `${makeDateReadable(startDate)} &ndash; ${makeDateReadable(endDate)}`);
