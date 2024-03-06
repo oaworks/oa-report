@@ -95,12 +95,23 @@ class Modal {
    * @param {string} content - The HTML content to display in the modal.
    */
   open(title, content) {
+    // Generate unique IDs for title and content (a11y requirement)
+    const titleId = 'modal-title-' + new Date().getTime();
+    const contentId = 'modal-content-' + new Date().getTime();
     this.modalTitle.textContent = title;
+    this.modalTitle.id = titleId; // Set dynamic ID for title
     this.modalContent.innerHTML = content;
+    this.modalContent.id = contentId; // Set dynamic ID for content
+
+    // Show the modal
     this.modal.classList.remove('hidden');
     this.modal.setAttribute('aria-hidden', 'false');
     document.body.classList.add('overflow-hidden');
     this.closeModalBtn.focus();
+
+    // Set ARIA attributes for accessibility
+    this.modal.setAttribute('aria-labelledby', titleId);
+    this.modal.setAttribute('aria-describedby', contentId);
   }
 
   /**
