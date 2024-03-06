@@ -14,26 +14,22 @@ permalink: "{{ org._source.objectID | slug }}/"
     <div class="grid grid-cols-2 gap-3 sm:gap-6 md:gap-12 py-3 xl:pb-6 xl:pt-12">
       <header class="col-span-2 md:col-span-1">
         <h1 class="flex items-center">
-          <div>
-            <span class="text-2xl md:text-4xl font-light highlight">
-              {{ org._source.name }}
-              {% if org._source.paid == true %}
-                {{ component("tooltip", {
-                  msg: "<p>This OA.Report uses <a href='https://about.oa.report/docs/sources' target='_blank' class='underline underline-offset-4 decoration-1'>all our data sources</a> and state-of-the-art analysis to provide insights into their publications, impact, and how open their research is.</p>",
-                  id: ""
-                }) }}
-              {% else %}
-                {{ component("tooltip", {
-                  msg: "<p>This OA.Report uses <a href='https://about.oa.report/docs/sources#open-sources' target='_blank' class='underline underline-offset-4 decoration-1'>open data</a> and automated analysis to provide insights into their publication volume and how open their research is.</p>",
-                  id: ""
-                }) }}
-              {% endif %}
-            </span>
+          <div class="text-2xl md:text-4xl font-light">
+            
+            {% if org._source.paid == true %}
+              {{ component("tooltip", {
+                msg: "<p>This OA.Report uses <a href='https://about.oa.report/docs/sources' target='_blank' class='underline underline-offset-4 decoration-1'>all our data sources</a> and state-of-the-art analysis to provide insights into their publications, impact, and how open their research is.</p>",
+                text: "<div class='highlight'>" + org._source.name + "</div><div class='report_year'>2023</div>"
+              }) }}
+            {% else %}
+              {{ component("tooltip", {
+                msg: "<p>This OA.Report uses <a href='https://about.oa.report/docs/sources#open-sources' target='_blank' class='underline underline-offset-4 decoration-1'>open data</a> and automated analysis to provide insights into their publication volume and how open their research is.</p>",
+                text: "<div class='highlight'>" + org._source.name + "</div><div class='report_year'>2023</div>"
+              }) }}
+            {% endif %}
           </div>
           <span class="ml-6 lg:h-14 lg:w-14 rounded-full bg-carnation-500"></span>
         </h1>
-
-        <h2 class="text-2xl md:text-4xl font-light report_year">2023</h2>
       </header>
       {# Free reports’ prompt to sign up #}
       {% if org._source.paid == false %}
@@ -59,6 +55,7 @@ permalink: "{{ org._source.objectID | slug }}/"
       {% if org._source.paid == false %}
         <span class="-ml-6">
           {{ component("tooltip", {
+            sup: true,
             msg: "<strong>Access previous years’ reports</strong><br> Upgrade to a <a href='https://about.oa.report/about/pricing#premium' target='_blank' class='underline underline-offset-2 decoration-1'>premium OA.Report</a> to understand your trends. Start now by <a href='#about-free-logged-out' class='underline underline-offset-2 decoration-1'>signing up</a>."}) 
           }}
         </span>
@@ -75,6 +72,7 @@ permalink: "{{ org._source.objectID | slug }}/"
             <span class="bg-neutral-900">
               Insights on <strong class="font-bold">articles</strong>
               {{ component("tooltip", {
+                sup: true,
                 msg: "The <em>Insights</em> section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/developers/infrastructure/' target='_blank' class='underline underline-offset-2 decoration-1'>infrastructure page</a>."
               }) }}
             </span>
@@ -152,6 +150,7 @@ permalink: "{{ org._source.objectID | slug }}/"
             <span class="bg-neutral-800">
               Data exploration
               {{ component("tooltip", {
+                sup: true,
                 msg: "The <em>Data Exploration</em> section is in beta. We’re working on adding more features. If you have any feedback, please <a href='mailto:joe@oa.works?subject=OA.Report feedback' class='underline underline-offset-2 decoration-1'>get in touch by email</a>.",
                 text: "Beta",
                 theme: "tooltip-white"
@@ -288,6 +287,7 @@ permalink: "{{ org._source.objectID | slug }}/"
             <span class="bg-neutral-700">
               Actions
               {{ component("tooltip", {
+                sup: true,
                 msg: "The <em>Strategy</em> section provides actionable steps for making more of your articles Open Access."
               }) }}
             </span>
