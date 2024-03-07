@@ -19,9 +19,6 @@ function initialise() {
   if (isDataExploreInitialised) {
     return;
   }
-  
-  bindDynamicYearButtons(FIRST_YEAR, currentDate.getFullYear()); 
-
   // Check if the element with id="explore" exists to trigger data explore initialisation
   var exploreElement = document.getElementById("explore");
   if (exploreElement && !isDataExploreInitialised) {
@@ -31,10 +28,15 @@ function initialise() {
 
   setDefaultYear(DEFAULT_YEAR);
 
-  // Add general page interactivity 
+  
+  if (paid) {
+    // Only paid reports display a date navigation
+    bindDynamicYearButtons(FIRST_YEAR, currentDate.getFullYear()); 
+    adjustNavOnScroll();
+    bindSmoothScrollLinks(); 
+  }
+
   initStrategyTabs();
-  adjustNavOnScroll();
-  bindSmoothScrollLinks(); 
 }
 
 // Initialise the report when the DOM is ready

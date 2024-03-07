@@ -15,7 +15,6 @@ permalink: "{{ org._source.objectID | slug }}/"
       <header class="col-span-2 md:col-span-1">
         <h1 class="flex items-center">
           <div class="text-2xl md:text-4xl font-light">
-            
             {% if org._source.paid == true %}
               {{ component("tooltip", {
                 msg: "<p>This OA.Report uses <a href='https://about.oa.report/docs/sources' target='_blank' class='underline underline-offset-4 decoration-1'>all our data sources</a> and state-of-the-art analysis to provide insights into their publications, impact, and how open their research is.</p>",
@@ -48,6 +47,9 @@ permalink: "{{ org._source.objectID | slug }}/"
     </div>
   </div>
 
+  {# TOP NAV #}
+  {# Only shown for paid reports #}
+  {% if org._source.paid == true %}
   <nav class="sticky top-0 pt-3 md:pt-6 z-20 bg-white transition-pb-0" id="top_nav">
     <h2 class="sr-only">See the report by year or custom dates</h2>
     <div class="flex">
@@ -62,6 +64,7 @@ permalink: "{{ org._source.objectID | slug }}/"
       {% endif %}
     </div>
   </nav>
+  {% endif %}
 
   {# INSIGHTS #}
   <section class="bg-neutral-900 text-white scroll-mt-32 js_section" id="insights">
