@@ -146,17 +146,9 @@ export function bindDynamicYearButtons(startYear, endYear, visibleYears = 3) {
 
     if (endYear - year < visibleYears) {
       // Determine if the year button should be active or disabled based on free or paid reports
-      let element;
-      if (paid) {
-        element = createYearButton(buttonId, buttonText, startDate, endDate);
-      } else {
-        element = createDisabledYearElement(buttonId, buttonText);
-        if (year === DEFAULT_YEAR) {
-          updateYearButtonStyling(element);
-        }
-      }
+      let element = createYearButton(buttonId, buttonText, startDate, endDate);
       yearsContainer.appendChild(element);
-    } else if (paid) {
+    } else {
       // For dropdown items (i.e. years outside the visible range)
       const dropdownItem = createDropdownItem(buttonId, buttonText, startDate, endDate, dropdownButton);
       dropdownContent.appendChild(dropdownItem);
@@ -169,12 +161,7 @@ export function bindDynamicYearButtons(startYear, endYear, visibleYears = 3) {
   }
 
   // Create an 'All time' button with a fixed start date and the current date as the end date
-  let allTimeButton
-  if (paid) {
-    allTimeButton = createYearButton("all-time", "All time", createDate(1980, 0, 1), currentDate);
-  } else {
-    allTimeButton = createDisabledYearElement("all-time", "All time");
-  }
+  let allTimeButton = createYearButton("all-time", "All time", createDate(1980, 0, 1), currentDate);
   yearsContainer.appendChild(allTimeButton);
 
   // Create and append the date range form for paid users, initialise the dropdown menu
@@ -183,14 +170,6 @@ export function bindDynamicYearButtons(startYear, endYear, visibleYears = 3) {
     yearsContainer.appendChild(dateRangeForm); // Append the form to the container
     initDropdown(".js_dropdown");
   }
-}
-
-function createDisabledYearElement(id, text) {
-  const element = document.createElement("div");
-  element.className = DATE_SELECTION_BUTTON_CLASSES.disabled + " px-4";
-  element.id = id;
-  element.textContent = text;
-  return element;
 }
 
 /**
