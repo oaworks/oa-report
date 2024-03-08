@@ -19,7 +19,7 @@ let orgKey = "",
     hasOrgKey = Object.keys(OAKEYS).length !== 0;
 if (hasOrgKey) {
   // logged in
-  orgKey = `&orgkey=${getURLParam('orgkey')}`;
+  orgKey = `&orgkey=${Object.keys(OAKEYS)}`;
   loggedIn = true;
   displayNone("about-paid-logged-out");
   displayNone("about-free-logged-out");
@@ -58,16 +58,16 @@ export function initInsightsAndStrategies(org) {
   
       // if email is not undefined and there is an orgkey, try to decrypt the author’s email
       if (email !== 'undefined' && hasOrgKey) {
-        axios.get(`${ARTICLE_EMAIL_BASE + doi}?${orgKey}`)
-          .then(function (response) {
-              let authorEmail = response.data;
-              mailto = mailto.replaceAll("{email}", authorEmail);
-              window.open(`mailto:${mailto}`);
-          })
-          .catch(function (error) { 
-            // On error, use the fallback
-            openEmailClientWithFallback();
-          });
+          axios.get(`${ARTICLE_EMAIL_BASE + doi}?${orgKey}`)
+              .then(function (response) {
+                  let authorEmail = response.data;
+                  mailto = mailto.replaceAll("{email}", authorEmail);
+                  window.open(`mailto:${mailto}`);
+              })
+              .catch(function (error) { 
+                  // On error, use the fallback
+                  openEmailClientWithFallback();
+              });
       } else {
           openEmailClientWithFallback();
       }
