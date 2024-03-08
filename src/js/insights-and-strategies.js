@@ -5,7 +5,7 @@
 // Needs to be completely refactored
 // ================================================
 
-import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable } from './utils.js';
+import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, getURLParam } from './utils.js';
 import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE } from './constants.js';
 
 // Set report org index URL’s base path
@@ -19,7 +19,7 @@ let orgKey = "",
     hasOrgKey = Object.keys(OAKEYS).length !== 0;
 if (hasOrgKey) {
   // logged in
-  orgKey = `&orgkey=${Object.values(OAKEYS)}`;
+  orgKey = `&orgkey=${getURLParam('orgkey')}`;
   loggedIn = true;
   displayNone("about-paid-logged-out");
   displayNone("about-free-logged-out");
@@ -58,6 +58,7 @@ export function initInsightsAndStrategies(org) {
   
       // if email is not undefined and there is an orgkey, try to decrypt the author’s email
       if (email !== 'undefined' && hasOrgKey) {
+        console.log(orgKey);
           axios.get(`${ARTICLE_EMAIL_BASE + doi}?${orgKey}`)
               .then(function (response) {
                   let authorEmail = response.data;
