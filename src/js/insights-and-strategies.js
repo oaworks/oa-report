@@ -58,17 +58,16 @@ export function initInsightsAndStrategies(org) {
   
       // if email is not undefined and there is an orgkey, try to decrypt the author’s email
       if (email !== 'undefined' && hasOrgKey) {
-        console.log(orgKey);
-          axios.get(`${ARTICLE_EMAIL_BASE + doi}?${orgKey}`)
-              .then(function (response) {
-                  let authorEmail = response.data;
-                  mailto = mailto.replaceAll("{email}", authorEmail);
-                  window.open(`mailto:${mailto}`);
-              })
-              .catch(function (error) { 
-                  // On error, use the fallback
-                  openEmailClientWithFallback();
-              });
+        axios.get(`${ARTICLE_EMAIL_BASE + doi}?${orgKey}`)
+          .then(function (response) {
+              let authorEmail = response.data;
+              mailto = mailto.replaceAll("{email}", authorEmail);
+              window.open(`mailto:${mailto}`);
+          })
+          .catch(function (error) { 
+            // On error, use the fallback
+            openEmailClientWithFallback();
+          });
       } else {
           openEmailClientWithFallback();
       }
