@@ -11,10 +11,9 @@ _OAcookie = function(obj, persistent) {
     t = 'OAKeys=';
     if (obj) {
       t += encodeURIComponent(JSON.stringify(obj));
-      // If persistent is true, set a longer expiration, otherwise use provided logic
-      expires = persistent ? 365 : -1; 
+      // Set expiration based on persistent param or default to 365 days for any orgkey
+      expires = persistent ? 365 : 365; // Keep the default expiry to 365, regardless of persistent param
     } else {
-      // Set cookie to expire immediately if obj is falsy and not persistent
       expires = -1;
     }
     d = new Date();
@@ -54,17 +53,20 @@ if (window.location.search.includes('orgkey=')) {
   } catch (error) {}
   
   if (o) {
-    window.OAKEYS[o] = true; // Simplified to just mark the key as present
+    window.OAKEYS[o] = true; // Mark the key as present
     _OAcookie(window.OAKEYS, persistentKey); // Pass persistentKey flag to _OAcookie function
-    // If not persistent, remove the parameter from URL, otherwise leave it
+    // Conditionally remove orgkey from URL based on the persistent param
     if (!persistentKey) {
-      try { history.pushState(null, null, window.location.href.split('?')[0]); } catch (e) {};
+      try { 
+        let newUrl = window.location.href.split('?')[0];
+        history.pushState(null, null, newUrl);
+      } catch (e) {};
     }
   }
 }
 
 if (window.location.search.includes('logout')) {
   window.OAKEYS = {};
-  _OAcookie(false); // No need for persistent flag here as we're clearing the cookie
+  _OAcookie(false); // Clear the cookie
   try { history.pushState(null, null, window.location.href.split('?')[0]); } catch (e) {};
 }
