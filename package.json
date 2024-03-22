@@ -6,7 +6,7 @@
   "scripts": {
     "start": "concurrently \"eleventy --serve --port=8080\" \"npx tailwindcss -i styles/input.css -c styles/tailwind.config.js -o dist/tailwind.css --minify\" \"npm run minify-js -- --watch\"",
     "build": "ELEVENTY_PRODUCTION=true eleventy && NODE_ENV=production npx tailwindcss -i styles/input.css -c styles/tailwind.config.js -o dist/tailwind.css --minify && npm run minify-js",
-    "minify-js": "terser src/js/main.js -o dist/js/main.min.js -c -m && terser src/js/insights-and-strategies.js -o dist/js/insights-and-strategies.min.js -c -m"
+    "minify-js": "mkdir -p dist/js && terser src/js/main.js -o dist/js/main.min.js -c -m && terser src/js/insights-and-strategies.js -o dist/js/insights-and-strategies.min.js -c -m"
   },
   "keywords": [],
   "author": "",
@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "axios": "^1.6.0",
+    "caniuse-lite": "^1.0.30001600",
     "canvas": "^2.11.2",
     "dotenv": "^16.0.3",
     "feather-icons": "^4.28.0",
