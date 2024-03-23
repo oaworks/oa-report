@@ -19,7 +19,7 @@ let orgKey = "",
     hasOrgKey = Object.keys(OAKEYS).length !== 0;
 if (hasOrgKey) {
   // logged in
-  orgKey = `&orgkey=${Object.values(OAKEYS)[0]}`;
+  orgKey = `&orgkey=${OAKEYS[org]}`; // Use org variable to get the correct orgkey value
   loggedIn = true;
   displayNone("about-paid-logged-out");
   displayNone("about-free-logged-out");
