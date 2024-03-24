@@ -5,7 +5,7 @@
 // Needs to be completely refactored
 // ================================================
 
-import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, getURLParam } from './utils.js';
+import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader } from './utils.js';
 import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE } from './constants.js';
 
 // Set report org index URL’s base path
@@ -67,9 +67,14 @@ export function initInsightsAndStrategies(org) {
               .catch(function (error) { 
                   // On error, use the fallback
                   openEmailClientWithFallback();
+                  // and also display the error
+                  displayErrorHeader(`Error decrypting email: ${error}`);
               });
       } else {
+          // If email is undefined or there is no orgkey, use the fallback
           openEmailClientWithFallback();
+          // and display the error
+          displayErrorHeader("We couldn’t find the author’s email address. Please try again later or contact us for help.");
       }
     };
 
