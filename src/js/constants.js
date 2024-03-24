@@ -305,6 +305,11 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
     info: "Publications that have a preprint associated with them.",
     details: "We used data from Unpaywall and Crossref."
   },
+  "with_peer_reviewed_version": {
+    label: "With peer reviewed version",
+    info: "Preprints that have a peer reviewed version associated with them.",
+    details: "We used data from Unpaywall and Crossref."
+  },
   "with_rors": {
     label: "With ROR<span style='text-transform: lowercase;'>s</span>"
   },

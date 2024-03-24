@@ -200,6 +200,22 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
               "script": "params.with_preprint / params.total_count"
             }
           },
+          "with_peer_reviewed_version": {
+            "filter": {
+              "exists": {
+                "field": `supplements.is_preprint_of`
+              }
+            }
+          },
+          "with_peer_reviewed_version_pct": {
+            "bucket_script": {
+              "buckets_path": {
+                "with_peer_reviewed_version": "with_peer_reviewed_version>_count",
+                "total_count": "_count"
+              },
+              "script": "params.with_peer_reviewed_version / params.total_count"
+            }
+          },
           "with_grant_id": {
             "filter": {
               "exists": {
