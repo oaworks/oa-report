@@ -633,3 +633,13 @@ export function getURLParam(param) {
   const queryParams = new URLSearchParams(window.location.search);
   return queryParams.get(param);
 }
+
+/**
+ * Displays an error message in the header of the page.
+ * @param {string} message - The error message to display.
+ */
+export function displayErrorHeader(message) {
+  const alertMsg = document.getElementById("js-alert");
+  alertMsg.textContent = message ? message : "An error occurred.";
+  alertMsg.style.display = "block";
+}
