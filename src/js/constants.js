@@ -257,8 +257,14 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   "unknown_data_status": {
     label: "Unknown data status"
   },
+  "unknown_code_status": {
+    label: "Unknown code status"
+  },
   "unknown_shared_data_status": {
     label: "Unknown shared data status"
+  },
+  "unknown_shared_code_status": {
+    label: "Unknown shared code status"
   },
   "with_apc": {
     label: "With APC<span class='lowercase'>s</span>"
@@ -266,9 +272,15 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   "with_data": {
     label: "With data"
   },
+  "with_code": {
+    label: "With code"
+  },
   "with_data_accession_number": {
     label: "With data accession number"
   },
+  "with_code_accession_number": {
+    label: "With code accession number"
+  }
   "with_data_availability_statement": {
     label: "With data availability statement",
     info: "Publications that have a data availability statement. Data availability statements (or 'data access statement', 'resource availability statements', 'code availability statements') tell a reader where the research data or code associated with a paper is available, and how they can be accessed. This figure doesn’t tell you what type of data availability statement is provided (e.g whether there is Open Data or no data at all).",
@@ -277,6 +289,9 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   "with_data_dois": {
     label: "With data DOI<span style='text-transform: lowercase;'>s</span>"
   },
+  "with_code_dois": {
+    label: "With code DOI<span style='text-transform: lowercase;'>s</span>"
+  }
   "with_dois": {
     label: "With DOI<span style='text-transform: lowercase;'>s</span>"
   },
@@ -294,9 +309,15 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   "with_open_data": {
     label: "With Open Data"
   },
+  "with_open_code": {
+    label: "With Open Code"
+  }
   "with_open_data_in_repository": {
     label: "With Open Data in repository"
   },
+  "with_open_code_in_repository": {
+    label: "With Open Code in repository"
+  }
   "with_orcids": {
     label: "With ORC<span style='text-transform: lowercase;'>i</span>D<span style='text-transform: lowercase;'>s</span>"
   },
@@ -316,17 +337,29 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   "with_shared_data": {
     label: "With shared data"
   },
+  "with_shared_code": {
+    label: "With shared code"
+  },
   "with_shared_data_in_repository": {
     label: "With shared data in repository"
   },
+  "with_shared_code_in_repository": {
+    label: "With shared code in repository"
+  },
   "without_data": {
     label: "Without data"
+  },
+  "without_code": {
+    label: "Without code"
   },
   "without_data_availability_statement": {
     label: "Without data availability statement"
   },
   "without_shared_data": {
     label: "Without shared data"
+  },
+  "without_shared_code": {
+    label: "Without shared code"
   }
 }
 
