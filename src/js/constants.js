@@ -288,7 +288,7 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   },
   "with_code_accession_number": {
     label: "With code accession number"
-  }
+  },
   "with_data_availability_statement": {
     label: "With data availability statement",
     info: "Publications that have a data availability statement. Data availability statements (or 'data access statement', 'resource availability statements', 'code availability statements') tell a reader where the research data or code associated with a paper is available, and how they can be accessed. This figure doesn’t tell you what type of data availability statement is provided (e.g whether there is Open Data or no data at all).",
