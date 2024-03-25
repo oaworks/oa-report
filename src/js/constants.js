@@ -181,6 +181,14 @@ export const EXPLORE_ITEMS_LABELS = {
   "software_license": {
     singular: "Software license",
     plural: "Software licenses"
+  },
+  "dataset_location": {
+    singular: "Dataset location",
+    plural: "Dataset locations"
+  },
+  "software_location": {
+    singular: "Software location",
+    plural: "Software locations"
   }
 };
 
