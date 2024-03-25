@@ -752,7 +752,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
            target="_blank">${licenseName}</a>
       ` : licenseName}
     `;
-  } else if (typeof content === 'string' && content.includes('orcid.org')) {
+  } else if (exploreItemId === 'author' && content.includes('orcid.org')) {
     // Check if content is an ORCiD URL and fetch the full name
     const orcidId = content.split('/').pop();
     cell.textContent = orcidId;
