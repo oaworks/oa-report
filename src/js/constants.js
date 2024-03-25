@@ -179,6 +179,14 @@ export const EXPLORE_ITEMS_LABELS = {
   "janelia_lab_head": {
     singular: "Janelia Lab head",
     plural: "Janelia Lab heads"
+  },
+  "dataset_license": {
+    singular: "Dataset license",
+    plural: "Dataset licenses"
+  },
+  "software_license": {
+    singular: "Software license",
+    plural: "Software licenses"
   }
 };
 
