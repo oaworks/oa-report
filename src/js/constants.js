@@ -216,7 +216,9 @@ export const EXPLORE_FILTERS_LABELS = {
   "is_under_transitional_agreement": "Paid via transitional agreement",
   "is_funded": "Funded",
   "has_shared_data": "Shared data",
-  "has_shared_code": "Shared code"
+  "has_shared_code": "Shared code",
+  "has_data": "With data",
+  "has_code": "With code"
 };
 
 /**
