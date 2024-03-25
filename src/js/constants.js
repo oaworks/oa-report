@@ -212,7 +212,9 @@ export const EXPLORE_FILTERS_LABELS = {
   "has_data_availability_statement": "Has data availability statement",
   "has_apc": "Paid via APC",
   "is_under_transitional_agreement": "Paid via transitional agreement",
-  "is_funded": "Funded"
+  "is_funded": "Funded",
+  "has_shared_data": "Shared data",
+  "has_shared_code": "Shared code"
 };
 
 /**
