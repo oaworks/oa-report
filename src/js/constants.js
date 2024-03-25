@@ -16,6 +16,12 @@ export const ELEVENTY_API_ENDPOINT =  document.body.getAttribute('data-api-endpo
 export const API_BASE_URL = `https://${ELEVENTY_API_ENDPOINT}.oa.works/report/`;
 
 /**
+ * Base URL for the bg API endpoint.
+ * @type {string}
+ */
+export const API_BG_BASE_URL = `https://bg.${apiEndpoint}.oa.works/report/`;
+
+/**
  * Endpoint for querying works with a default size of 100.
  * Utilizes the BASE_URL as its foundational part and appends specific parameters for this endpoint.
  * @type {string}
@@ -41,7 +47,7 @@ export const CSV_EXPORT_BASE = `${API_BASE_URL}works.csv?size=all&`;
  * Utilizes the BASE_URL as its foundational part and appends specific parameters for this endpoint.
  * @type {string}
  */
-export const ARTICLE_EMAIL_BASE = `${API_BASE_URL}email/`;
+export const ARTICLE_EMAIL_BASE = `${API_BG_BASE_URL}email/`;
 
 /**
  * Options for displaying dates in a human-readable format.
@@ -303,6 +309,11 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   "with_preprint": {
     label: "With preprint",
     info: "Publications that have a preprint associated with them.",
+    details: "We used data from Unpaywall and Crossref."
+  },
+  "with_peer_reviewed_version": {
+    label: "With peer reviewed version",
+    info: "Preprints that have a peer reviewed version associated with them.",
     details: "We used data from Unpaywall and Crossref."
   },
   "with_rors": {

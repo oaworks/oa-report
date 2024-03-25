@@ -409,6 +409,7 @@ export function deepCopy(obj) {
 /**
  * Converts URLs in a text string to clickable anchor tags.
  * Optionally force-converts a text to a link using a provided URL prefix.
+ * Handles strings containing either single or multiple URLs.
  * 
  * @param {string} text - The text string to process.
  * @param {boolean} [forceLink=false] - Whether to force convert the text into a link.
@@ -416,16 +417,26 @@ export function deepCopy(obj) {
  * @return {string} The processed string with URLs converted to clickable links.
  */
 export function convertTextToLinks(text, forceLink = false, urlPrefix = '') {
-  // Check if text is null or not a string
-  if (text === null || typeof text !== 'string') {
+  // Validate input is a non-null string
+  if (typeof text !== 'string' || text === null) {
     return 'N/A';
   }
 
-  if (text.startsWith('http://') || text.startsWith('https://') || forceLink) {
-    let url = forceLink ? `${urlPrefix}${text}` : text;
-    return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 decoration-1">${text}</a>`;
+  // Function to create an anchor tag
+  const createAnchor = (url, displayText) => {
+    return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 decoration-1">${displayText}</a>`;
+  };
+
+  // Regex to match URLs
+  const urlRegex = /https?:\/\/[^ ,]+/g;
+
+  // If forcing link without URL detection or no URL present, return single link
+  if (forceLink && !text.match(urlRegex)) {
+    return createAnchor(`${urlPrefix}${text}`, text);
   }
-  return text;
+
+  // Replace all URLs in text with anchor tags
+  return text.replace(urlRegex, match => createAnchor(match, match));
 }
 
 /**
@@ -632,4 +643,14 @@ export function updateURLParams(params) {
 export function getURLParam(param) {
   const queryParams = new URLSearchParams(window.location.search);
   return queryParams.get(param);
+}
+
+/**
+ * Displays an error message in the header of the page.
+ * @param {string} message - The error message to display.
+ */
+export function displayErrorHeader(message) {
+  const alertMsg = document.getElementById("js-alert");
+  alertMsg.textContent = message ? message : "An error occurred.";
+  alertMsg.style.display = "block";
 }

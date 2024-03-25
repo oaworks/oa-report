@@ -48,15 +48,11 @@
   <script>
     window.addEventListener('error', function (event) {
       if (event.message?.includes('404') || event.message?.toLowerCase().includes('error')) {
-        displayErrorHeader();
+        const alertMsg = document.getElementById("js-alert");
+        alertMsg.textContent = "An error has occurred. Please try again later.";
+        alertMsg.style.display = 'block';
       }
     }, true);
-
-    function displayErrorHeader() {
-      const alertMsg = document.getElementById("js-alert");
-      alertMsg.textContent = "An error has occurred. Please try again later.";
-      alertMsg.style.display = 'block';
-    }
   </script>
 
   {# Load UI-related JS for org report pages only #} 
