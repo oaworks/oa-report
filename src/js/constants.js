@@ -305,7 +305,7 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   },
   "with_code_dois": {
     label: "With code DOI<span style='text-transform: lowercase;'>s</span>"
-  }
+  },
   "with_dois": {
     label: "With DOI<span style='text-transform: lowercase;'>s</span>"
   },
@@ -325,13 +325,13 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   },
   "with_open_code": {
     label: "With Open Code"
-  }
+  },
   "with_open_data_in_repository": {
     label: "With Open Data in repository"
   },
   "with_open_code_in_repository": {
     label: "With Open Code in repository"
-  }
+  },
   "with_orcids": {
     label: "With ORC<span style='text-transform: lowercase;'>i</span>D<span style='text-transform: lowercase;'>s</span>"
   },
