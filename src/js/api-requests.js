@@ -674,7 +674,7 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
           "with_code": {
             "filter": {
               "term": {
-                "supplements.is_original_research": true
+                "supplements.dev.code.has_made_code": true
               }
             }
           },
@@ -690,7 +690,7 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
           "without_code": {
             "filter": {
               "term": {
-                "supplements.is_original_research": false
+                "supplements.dev.code.has_made_code": false
               }
             }
           },
@@ -708,7 +708,7 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
               "bool": {
                 "must_not": {
                   "exists": {
-                    "field": "supplements.is_original_research"
+                    "field": "supplements.dev.code.has_made_code"
                   }
                 }
               }
