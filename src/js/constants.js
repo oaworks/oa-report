@@ -19,7 +19,7 @@ export const API_BASE_URL = `https://${ELEVENTY_API_ENDPOINT}.oa.works/report/`;
  * Base URL for the bg API endpoint.
  * @type {string}
  */
-export const API_BG_BASE_URL = `https://bg.${apiEndpoint}.oa.works/report/`;
+export const API_BG_BASE_URL = `https://bg.${ELEVENTY_API_ENDPOINT}.oa.works/report/`;
 
 /**
  * Endpoint for querying works with a default size of 100.
