@@ -20,21 +20,21 @@ export const API_BG_BASE_URL = `https://bg.${apiEndpoint}.oa.works/report/`;
  * Utilizes the BASE_URL as its foundational part and appends specific parameters for this endpoint.
  * @type {string}
  */
-export const QUERY_BASE = `${API_BASE_URL}works?size=100&`;
+export const QUERY_BASE = `${API_BASE_URL}rebuilt?size=100&`;
 
 /**
  * Endpoint for counting the number of works.
  * Utilizes the BASE_URL as its foundational part and appends specific parameters for this endpoint.
  * @type {string}
  */
-export const COUNT_QUERY_BASE = `${API_BASE_URL}works/count?`;
+export const COUNT_QUERY_BASE = `${API_BASE_URL}rebuilt/count?`;
 
 /**
  * Endpoint for exporting works data in CSV format.
  * Utilizes the BASE_URL as its foundational part and appends specific parameters for this endpoint.
  * @type {string}
  */
-export const CSV_EXPORT_BASE = `${API_BASE_URL}works.csv?size=all&`;
+export const CSV_EXPORT_BASE = `${API_BASE_URL}rebuilt.csv?size=all&`;
 
 /**
  * Endpoint for sending articles via email.

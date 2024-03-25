@@ -477,7 +477,7 @@ async function fetchTermBasedData(suffix, query, term, sort, size) {
  * @returns {Promise<Array>} A promise that resolves to an array of article-based records.
  */
 async function fetchArticleBasedData(query, includes, sort, size) {
-  const getDataUrl = `https://${apiEndpoint}.oa.works/report/works/?q=${dateRange}(${query})&size=${size}&include=${includes}&sort=${sort}`;
+  const getDataUrl = `https://${apiEndpoint}.oa.works/report/rebuilt/?q=${dateRange}(${query})&size=${size}&include=${includes}&sort=${sort}`;
   const response = await fetchGetData(getDataUrl); // No need to generate POST request
   // Check nested properties before assigning records
   if (response && response.hits && response.hits.hits) {
