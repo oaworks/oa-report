@@ -19,6 +19,7 @@ function initialise() {
   if (isDataExploreInitialised) {
     return;
   }
+  
   // Check if the element with id="explore" exists to trigger data explore initialisation
   var exploreElement = document.getElementById("explore");
   if (exploreElement && !isDataExploreInitialised) {
@@ -28,7 +29,6 @@ function initialise() {
 
   setDefaultYear(DEFAULT_YEAR);
 
-  
   if (paid) {
     // Only paid reports display a date navigation
     bindDynamicYearButtons(FIRST_YEAR, currentDate.getFullYear()); 

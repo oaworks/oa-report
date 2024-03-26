@@ -85,6 +85,9 @@ export function setDefaultYear(defaultYear) {
       if (defaultButton) {
         handleYearButtonLogic(defaultButton, defaultStartDate, defaultEndDate, `${defaultYear}`);
         updateYearButtonStyling(defaultButton);
+      } else {
+        // TO FIX: free reports don’t have a defaultButton
+        handleYearButtonLogic(null, defaultStartDate, defaultEndDate, `${makeDateReadable(defaultStartDate)} &ndash; ${makeDateReadable(defaultEndDate)}`);
       }
 
       // Update URL with the selected year or date range
