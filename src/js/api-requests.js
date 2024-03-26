@@ -671,8 +671,23 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
           },
           "with_code": {
             "filter": {
-              "term": {
-                "supplements.dev.code.has_made_code": true
+              "bool": {
+                "must": [
+                  {
+                    "term": {
+                      "supplements.dev.code.has_made_code": {
+                        "value": true
+                      }
+                    }
+                  },
+                  {
+                    "term": {
+                      "supplements.is_original_research": {
+                        "value": true
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -687,8 +702,24 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
           },
           "without_code": {
             "filter": {
-              "term": {
-                "supplements.dev.code.has_made_code": false
+              "bool": {
+                "should": [
+                  {
+                    "term": {
+                      "supplements.dev.code.has_made_code": {
+                        "value": false
+                      }
+                    }
+                  },
+                  {
+                    "term": {
+                      "supplements.is_original_research": {
+                        "value": false
+                      }
+                    }
+                  }
+                ],
+                "minimum_should_match": 1
               }
             }
           },
