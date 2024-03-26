@@ -2,7 +2,7 @@
   <input type="hidden" name="form-name" value="signup" />
   <label for="signup-page" class="sr-only" hidden>Signed up from this page</label>
   <input type="hidden" name="signup-page" id="signup-page" value="{{ site.base_url }}/{{ org._source.objectID }} [{{ org._source.name }}]"/>
-  <label for="signup-email" class="text-base">Email</label>
+  <label for="signup-email">Email</label>
   <div class="mt-1 mb-3 relative flex items-stretch flex-grow shadow-md focus-within:z-10">
       <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
         {% icon_small "mail" %}
@@ -13,8 +13,8 @@
       </button>
     </div>
 </form>
-<div class="js-success-message" style="display: none;">
-  <p class="text-xs md:text-base" id="newsletter-msg">Thanks for signing up! We will be in touch.</p>
+<div class="js-success-message" style="display: none;" aria-live="polite">
+  <p id="newsletter-msg">Thanks for signing up! We will be in touch.</p>
 </div>
 
 <script>
