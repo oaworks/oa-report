@@ -3,7 +3,7 @@
 // Utility/helper functions
 // ========================
 
-import { READABLE_DATE_OPTIONS, USER_LOCALE } from './constants.js';
+import { ELEVENTY_API_ENDPOINT, READABLE_DATE_OPTIONS, USER_LOCALE } from './constants.js';
 
 /**
  * Checks if the cached data has expired.
@@ -25,7 +25,7 @@ export function isCacheExpired(timestamp, expiryDuration = 86400000) { // 24 hou
  */
 export async function fetchPostData(postData) {
   try {
-    const response = await axios.post(`https://bg.${apiEndpoint}.oa.works/report/works`, postData);
+    const response = await axios.post(`https://bg.${ELEVENTY_API_ENDPOINT}.oa.works/report/works`, postData);
     return response.data; 
   } catch (error) {
     console.error("There was a problem with the POST request: ", error.message);
@@ -300,11 +300,20 @@ function getNestedPropertyValue(obj, path) {
       return null;
     }
 
-    if (typeof currentObj === 'object' && key in currentObj) {
+    // Check if the current object is an array and the key is numeric (array index)
+    if (Array.isArray(currentObj)) {
+      // Map over the array and return the value of the nested property for each item
+      return currentObj.map(item => {
+        if (typeof item === 'object' && item !== null && key in item) {
+          return item[key];
+        } else {
+          // If the item is an array or doesn't have the key, try to go deeper recursively
+          // or return null if not possible
+          return typeof item === 'object' ? getNestedPropertyValue(item, key) : null;
+        }
+      });
+    } else if (typeof currentObj === 'object' && key in currentObj) {
       return currentObj[key];
-    } else if (Array.isArray(currentObj)) {
-      // Process each element in the array
-      return currentObj.map(item => item && key in item ? item[key] : null);
     }
 
     return null;
@@ -400,6 +409,7 @@ export function deepCopy(obj) {
 /**
  * Converts URLs in a text string to clickable anchor tags.
  * Optionally force-converts a text to a link using a provided URL prefix.
+ * Handles strings containing either single or multiple URLs.
  * 
  * @param {string} text - The text string to process.
  * @param {boolean} [forceLink=false] - Whether to force convert the text into a link.
@@ -407,16 +417,26 @@ export function deepCopy(obj) {
  * @return {string} The processed string with URLs converted to clickable links.
  */
 export function convertTextToLinks(text, forceLink = false, urlPrefix = '') {
-  // Check if text is null or not a string
-  if (text === null || typeof text !== 'string') {
+  // Validate input is a non-null string
+  if (typeof text !== 'string' || text === null) {
     return 'N/A';
   }
 
-  if (text.startsWith('http://') || text.startsWith('https://') || forceLink) {
-    let url = forceLink ? `${urlPrefix}${text}` : text;
-    return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 decoration-1">${text}</a>`;
+  // Function to create an anchor tag
+  const createAnchor = (url, displayText) => {
+    return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 decoration-1">${displayText}</a>`;
+  };
+
+  // Regex to match URLs
+  const urlRegex = /https?:\/\/[^ ,]+/g;
+
+  // If forcing link without URL detection or no URL present, return single link
+  if (forceLink && !text.match(urlRegex)) {
+    return createAnchor(`${urlPrefix}${text}`, text);
   }
-  return text;
+
+  // Replace all URLs in text with anchor tags
+  return text.replace(urlRegex, match => createAnchor(match, match));
 }
 
 /**
@@ -448,6 +468,42 @@ export function bindSmoothScrollLinks() {
       }
     });
   });
+}
+
+/**
+ * Adjusts the navigation bar's style based on the scroll position.
+ * Adds or removes classes to the navigation bar when it reaches the top of the viewport.
+ * Adds a shadow to the nav bar, a border to the bottom of the items, and a transition effect.
+ */
+export function adjustNavOnScroll() {
+  const nav = document.querySelector("#top_nav");
+  const yearButtons = document.querySelectorAll(".js_year_select");
+
+  function adjustNavStyle() {
+    const rect = nav.getBoundingClientRect();
+    
+    if (rect.top <= 0) {
+      yearButtons.forEach((button) => { 
+        button.classList.add("md:border-b");
+        button.classList.remove("md:border-b-0");
+      });
+      nav.classList.add("shadow-lg", "transition-pb-3", "md:transition-pb-6");
+      nav.classList.remove("transition-pb-0");
+    } else {
+      yearButtons.forEach((button) => { 
+        button.classList.remove("md:border-b");
+        button.classList.add("md:border-b-0");
+      });
+      nav.classList.remove("shadow-lg", "transition-pb-3", "md:transition-pb-6");
+      nav.classList.add("transition-pb-0");
+    }
+  }
+
+  // Attach the function to the scroll event
+  document.addEventListener("scroll", adjustNavStyle);
+
+  // Call the function immediately to check the initial scroll position
+  adjustNavStyle();
 }
 
 /**
@@ -567,4 +623,34 @@ export function copyToClipboard(buttonId, elementId) {
   } else {
     console.error('Button not found:', buttonId);
   }
+}
+
+/**
+ * Updates the URL with the provided query parameters without reloading the page.
+ * @param {Object} params - An object where the key is the parameter name and the value is the parameter value.
+ */
+export function updateURLParams(params) {
+  const queryParams = new URLSearchParams(window.location.search);
+  Object.entries(params).forEach(([key, value]) => queryParams.set(key, value));
+  history.pushState(null, '', '?' + queryParams.toString());
+}
+
+/**
+ * Gets the value of a URL query parameter.
+ * @param {string} param - The name of the parameter.
+ * @returns {string|null} - The value of the parameter or null if not found.
+ */
+export function getURLParam(param) {
+  const queryParams = new URLSearchParams(window.location.search);
+  return queryParams.get(param);
+}
+
+/**
+ * Displays an error message in the header of the page.
+ * @param {string} message - The error message to display.
+ */
+export function displayErrorHeader(message) {
+  const alertMsg = document.getElementById("js-alert");
+  alertMsg.textContent = message ? message : "An error occurred.";
+  alertMsg.style.display = "block";
 }

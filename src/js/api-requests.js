@@ -1,8 +1,10 @@
+import { ELEVENTY_API_ENDPOINT } from "./constants.js";
+
 // Dynamically configure POST data 
 export function createPostData(suffix, query, term, startYear, endYear, size = 20, sort = "_count") {
   // Only the term published_year on the live API does not require the .keyword suffix 
   let termField = term;
-  if (!(term === "published_year" && apiEndpoint === "api")) {
+  if (!(term === "published_year" && ELEVENTY_API_ENDPOINT === "api")) {
     termField += ".keyword";
   }
   return {
@@ -198,6 +200,22 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
                 "total_count": "_count"
               },
               "script": "params.with_preprint / params.total_count"
+            }
+          },
+          "with_peer_reviewed_version": {
+            "filter": {
+              "exists": {
+                "field": `supplements.is_preprint_of`
+              }
+            }
+          },
+          "with_peer_reviewed_version_pct": {
+            "bucket_script": {
+              "buckets_path": {
+                "with_peer_reviewed_version": "with_peer_reviewed_version>_count",
+                "total_count": "_count"
+              },
+              "script": "params.with_peer_reviewed_version / params.total_count"
             }
           },
           "with_grant_id": {
