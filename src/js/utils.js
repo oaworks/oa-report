@@ -3,7 +3,7 @@
 // Utility/helper functions
 // ========================
 
-import { READABLE_DATE_OPTIONS, USER_LOCALE } from './constants.js';
+import { ELEVENTY_API_ENDPOINT, READABLE_DATE_OPTIONS, USER_LOCALE } from './constants.js';
 
 /**
  * Checks if the cached data has expired.
@@ -25,7 +25,7 @@ export function isCacheExpired(timestamp, expiryDuration = 86400000) { // 24 hou
  */
 export async function fetchPostData(postData) {
   try {
-    const response = await axios.post(`https://bg.${apiEndpoint}.oa.works/report/rebuilt`, postData);
+    const response = await axios.post(`https://bg.${ELEVENTY_API_ENDPOINT}.oa.works/report/rebuilt`, postData);
     return response.data; 
   } catch (error) {
     console.error("There was a problem with the POST request: ", error.message);

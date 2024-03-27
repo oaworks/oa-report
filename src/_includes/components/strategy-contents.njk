@@ -19,7 +19,8 @@
           <div class="mb-2 text-sm font-semibold uppercase">
             Get this dataset in CSV
             {{ component("tooltip", {
-            msg: "Enter your email address to receive a link to a CSV for download. We do not use email addresses for any purpose other than sending you the CSV file containing OA.Report data when you request it."
+              sup: true,
+              msg: "Enter your email address to receive a link to a CSV for download. We do not use email addresses for any purpose other than sending you the CSV file containing OA.Report data when you request it."
           }) }}
           </div> 
           <div class="text-sm">Download the list of <span class="py-1 px-2 my-1 bg-opacity-10 bg-carnation-200 text-neutral-100 rounded-full lowercase strategy_type">actions</span> for <span class="py-1 px-2 my-1 bg-opacity-10 bg-carnation-200 text-neutral-100 rounded-full"><span class="report_readable_start_date"></span> — <span class="report_readable_end_date"></span></span> 
@@ -47,13 +48,14 @@
           <span id="total_{{ params.id }}">00</span> actions available</span></span>
           {% if params.action_help_txt %}
           {{ component("tooltip", {
+            sup: true,
             msg: "<p class='mb-2'>We tried to remove common errors and articles that are already in a repository (either embargoed or available). This list was produced using Unpaywall, Crossref, and ShareYourPaper Permissions data.</p>"
           }) }}
           {% endif %}
         </p>
       </div>
     </div>
-    <div class="mb-8 overflow-hidden sm:-mx-6 md:mx-0 drop-shadow-lg">
+    <div class="mb-8 overflow-hidden drop-shadow-lg">
       <table class="divide-y divide-neutral-300 table-fixed w-full" id="table_{{ params.id }}">
         <thead class="bg-neutral-800 text-white">
           <tr>

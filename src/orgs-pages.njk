@@ -14,23 +14,42 @@ permalink: "{{ org._source.objectID | slug }}/"
     <div class="grid grid-cols-2 gap-3 sm:gap-6 md:gap-12 py-3 xl:pb-6 xl:pt-12">
       <header class="col-span-2 md:col-span-1">
         <h1 class="flex items-center">
-          <div>
-            <span class="font-semibold uppercase text-sm md:text-base line-thru">
-              <span class="bg-white pr-3">
-                {% if org._source.policy.has_policy === true %}Put OA policy into practice at {% else %}Advance OA at {% endif %}
-              </span>
-            </span>
-            <span class="text-2xl md:text-4xl font-light highlight">{{ org._source.name }}</span>
+          <div class="text-2xl md:text-4xl font-light">
+            {% if org._source.paid == true %}
+              {{ component("tooltip", {
+                msg: "<p>This OA.Report uses <a href='https://about.oa.report/docs/sources' target='_blank' class='underline underline-offset-4 decoration-1'>all our data sources</a> and state-of-the-art analysis to provide insights into their publications, impact, and how open their research is.</p>",
+                text: "<div class='highlight'>" + org._source.name + "</div><div class='report_year'>2023</div>"
+              }) }}
+            {% else %}
+              {{ component("tooltip", {
+                msg: "<p>This OA.Report uses <a href='https://about.oa.report/docs/sources#open-sources' target='_blank' class='underline underline-offset-4 decoration-1'>open data</a> and automated analysis to provide insights into their publication volume and how open their research is.</p>",
+                text: "<div class='highlight'>" + org._source.name + "</div><div class='report_year'>2023</div>"
+              }) }}
+            {% endif %}
           </div>
           <span class="ml-6 lg:h-14 lg:w-14 rounded-full bg-carnation-500"></span>
         </h1>
-
-        <h2 class="text-2xl md:text-4xl font-light report_year">2023</h2>
       </header>
-      <section class="col-span-2 md:col-span-1 md:text-right"></section>
+      {# Free reports’ prompt to sign up #}
+      {% if org._source.paid == false %}
+        <section class="col-span-2 md:col-span-1 p-8 pb-5 rounded-md bg-carnation-100 text-neutral-800 text-xs md:text-sm" id="about-free-logged-out">
+          <h2 class="mb-2 font-semibold uppercase">
+              Sign up to access your institution’s OA.Report for free
+            </h2>
+            <p class="mb-4">
+              Consider a <a href="https://about.oa.report/pricing" target="_blank" class="underline underline-offset-4 decoration-1">paid plan</a> to help <a href="https://about.oa.report/docs/sources" target="_blank" class="underline underline-offset-4 decoration-1">discover all your papers</a> and provide up-to-date, deep insights into the state of open at your institution.
+            </p>
+            <div class="md:flex">
+              {% include 'partials/signup-form.njk' %}
+            </div>
+        </section>
+      {% endif %}
     </div>
   </div>
 
+  {# TOP NAV #}
+  {# Only shown for paid reports #}
+  {% if org._source.paid == true %}
   <nav class="sticky top-0 pt-3 md:pt-6 z-20 bg-white transition-pb-0" id="top_nav">
     <h2 class="sr-only">See the report by year or custom dates</h2>
     <div class="flex">
@@ -38,12 +57,14 @@ permalink: "{{ org._source.objectID | slug }}/"
       {% if org._source.paid == false %}
         <span class="-ml-6">
           {{ component("tooltip", {
+            sup: true,
             msg: "<strong>Access previous years’ reports</strong><br> Upgrade to a <a href='https://about.oa.report/about/pricing#premium' target='_blank' class='underline underline-offset-2 decoration-1'>premium OA.Report</a> to understand your trends. Start now by <a href='#about-free-logged-out' class='underline underline-offset-2 decoration-1'>signing up</a>."}) 
           }}
         </span>
       {% endif %}
     </div>
   </nav>
+  {% endif %}
 
   {# INSIGHTS #}
   <section class="bg-neutral-900 text-white scroll-mt-32 js_section" id="insights">
@@ -54,6 +75,7 @@ permalink: "{{ org._source.objectID | slug }}/"
             <span class="bg-neutral-900">
               Insights on <strong class="font-bold">articles</strong>
               {{ component("tooltip", {
+                sup: true,
                 msg: "The <em>Insights</em> section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/developers/infrastructure/' target='_blank' class='underline underline-offset-2 decoration-1'>infrastructure page</a>."
               }) }}
             </span>
@@ -131,6 +153,7 @@ permalink: "{{ org._source.objectID | slug }}/"
             <span class="bg-neutral-800">
               Data exploration
               {{ component("tooltip", {
+                sup: true,
                 msg: "The <em>Data Exploration</em> section is in beta. We’re working on adding more features. If you have any feedback, please <a href='mailto:joe@oa.works?subject=OA.Report feedback' class='underline underline-offset-2 decoration-1'>get in touch by email</a>.",
                 text: "Beta",
                 theme: "tooltip-white"
@@ -267,6 +290,7 @@ permalink: "{{ org._source.objectID | slug }}/"
             <span class="bg-neutral-700">
               Actions
               {{ component("tooltip", {
+                sup: true,
                 msg: "The <em>Strategy</em> section provides actionable steps for making more of your articles Open Access."
               }) }}
             </span>
@@ -357,78 +381,20 @@ permalink: "{{ org._source.objectID | slug }}/"
     </div>
   </section>
 
-  {# ABOUT #}
-  <section class="px-3 md:px-6 md:py-16">
-    <div class="grid grid-cols-2 gap-3 sm:gap-6 md:gap-12 py-6 xl:py-12"> 
-      <div class="col-span-2 grid md:grid-cols-2 gap-12 text-sm md:text-base lg:text-2xl md:leading-8 md:font-light" id="about">
-        <div>
-          <h2 class="font-semibold uppercase text-sm md:text-base line-thru">
-            <span class="bg-white pr-3">About this report</span>
-          </h2>
-          {# PAID USERS #}
-          {% if org._source.paid == true %}
-          <p class="my-6">
-            <strong class="text-bold">{{ org._source.name }}</strong>’s custom OA.Report uses <a href="https://about.oa.report/docs/sources" target="_blank" class="underline underline-offset-4 decoration-1">all our data sources</a> and state-of-the-art analysis to provide insights into their publications, impact, and how open their research is.
-          </p>
-          <p class="my-6" id="about-paid-logged-out">
-            <a href="https://about.oa.report/docs/user-accounts" target="_blank" class="underline underline-offset-4 decoration-1">Log in</a> to see the OA.Report.
-          </p>
-          {# FREE USERS #}
-          {% else %}
-          <p class="my-6">
-            <strong class="text-bold">{{ org._source.name }}</strong>’s OA.Report uses <a href="https://about.oa.report/docs/sources#open-sources" target="_blank" class="underline underline-offset-4 decoration-1">open data</a> and automated analysis to provide insights into their publication volume and how open their research is.
-          </p>
-          <div id="about-free-logged-out">
-            <h2 class="font-semibold uppercase text-sm md:text-base line-thru">
-              <span class="bg-white pr-3">Unlock your institution’s research</span>
-            </h2>
-            <p class="my-6">
-              Sign up to access your institution's Actions for free. Consider a <a href="https://about.oa.report/pricing" target="_blank" class="underline underline-offset-4 decoration-1">paid plan</a> to help <a href="https://about.oa.report/docs/sources" target="_blank" class="underline underline-offset-4 decoration-1">discover all your papers</a> and provide up-to-date, deep insights into the state of open at your institution.
-            </p>
-            <div class="my-6 w-6/12">
-              {% include 'partials/signup-form.njk' %}
-            </div>
-          </div>
-          {% endif %}
-        </div>
-        {# PROMPT TO SEARCH OTHER ORGS #}
-        <div>
-          <h2 class="font-semibold uppercase text-sm md:text-base line-thru">
-            <span class="bg-white pr-3">Find other organizations</span>
-          </h2>
-          <div class="my-6">
-            {% if page.url != "/" %}
-              {{ component("search-form", {
-                sr_only: true
-              }) }}
-            {% endif %}
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   {# Dynamic modal #}
-  {# <div id="dynamic-modal" class="fixed inset-0 flex items-center justify-center p-4 bg-neutral-900 bg-opacity-50 hidden transition-opacity duration-300 z-50" aria-hidden="true" tabindex="-1" role="dialog" aria-modal="true">
-    <div class="bg-carnation-100 text-neutral-900 p-3 md:p-6 shadow-lg md:w-8/12 overflow-y-auto max-h-[80vh] min-h-0" role="document">
-      <div class="flex justify-between items-start">
-        <h2 class="modal-title text-2xl font-semibold"></h2>
-        <button class="close-modal-btn text-2xl font-semibold text-neutral-700 hover:text-neutral-900">
+  <div id="dynamic-modal" class="fixed inset-0 flex items-center justify-center p-4 bg-neutral-900 bg-opacity-50 hidden z-50" aria-hidden="true" tabindex="-1" role="dialog" aria-modal="true">
+    <div class="modal-content scale-95 transform transition-transform duration-300 ease-out bg-carnation-100 text-neutral-900 shadow-lg md:w-1/3 overflow-y-auto max-h-[80vh] min-h-0" role="document">
+      <div class="flex items-center p-2 bg-white">
+        <div class="flex-grow font-semibold text-neutral-700 text-xs md:text-sm">
+          <h2 class="modal-title text-center"></h2>
+        </div>
+        <button class="close-modal-btn hover:text-neutral-900">
           <span class="sr-only">Close modal</span>
           &times;
         </button>
       </div>
-      <div class="modal-content mt-4"></div>
+      <div class="modal-body p-3 md:p-6 text-xs md:text-lg font-light"></div>
     </div>
-  </div> #}
-
-  {# Container for all export modals’ HTML content #}
-  {# <div id="export_modals">
-    {{ component("modal", {
-      id: "custom_export",
-      title: "Create your own",
-      include: "custom-export-form"
-    }) }}
-  </div> #}
+  </div>
 </main>
 

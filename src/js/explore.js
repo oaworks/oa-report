@@ -8,7 +8,7 @@
 // =================================================
 
 import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, makeNumberReadable, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, updateURLParams } from "./utils.js";
-import { CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES } from "./constants.js";
+import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { orgDataPromise } from './insights-and-strategies.js';
 import { createPostData } from './api-requests.js';
@@ -26,12 +26,9 @@ if (hasOrgKey) {
   // logged in
   orgKey = `&orgkey=${Object.values(OAKEYS)}`;
   loggedIn = true;
-  displayNone("about-paid-logged-out");
-  displayNone("about-free-logged-out");
 } else {
   // logged out
   loggedIn = false;
-  displayNone("logout");
   //displayNone("explore");
 }
 
@@ -477,7 +474,7 @@ async function fetchTermBasedData(suffix, query, term, sort, size) {
  * @returns {Promise<Array>} A promise that resolves to an array of article-based records.
  */
 async function fetchArticleBasedData(query, includes, sort, size) {
-  const getDataUrl = `https://${apiEndpoint}.oa.works/report/rebuilt/?q=${dateRange}(${query})&size=${size}&include=${includes}&sort=${sort}`;
+  const getDataUrl = `https://${ELEVENTY_API_ENDPOINT}.oa.works/report/rebuilt/?q=${dateRange}(${query})&size=${size}&include=${includes}&sort=${sort}`;
   const response = await fetchGetData(getDataUrl); // No need to generate POST request
   // Check nested properties before assigning records
   if (response && response.hits && response.hits.hits) {

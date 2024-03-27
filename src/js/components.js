@@ -48,90 +48,102 @@ export function toggleLoadingIndicator(show, id) {
 
 /**
  * Class representing a modal window.
- * This class handles opening and closing of a modal, as well as setting its title and content.
+ * This class handles opening and closing of a modal, as well as setting its title and content directly from HTML elements using data attributes.
  */
 class Modal {
-  /**
-   * Creates a Modal instance.
-   * @param {string} titleSelector - The CSS selector for the title element of the modal's content.
-   * @param {string} contentSelector - The CSS selector for the content element to display in the modal.
-   */
-  constructor(titleSelector, contentSelector) {
+  constructor() {
     this.modal = document.querySelector('#dynamic-modal');
     this.closeModalBtn = this.modal.querySelector('.close-modal-btn');
     this.modalTitle = this.modal.querySelector('.modal-title');
     this.modalContent = this.modal.querySelector('.modal-content');
 
-    this.titleSelector = titleSelector;
-    this.contentSelector = contentSelector;
-
+    // Bind the close event on the close button
     this.closeModalBtn.addEventListener('click', () => this.close());
+    // Bind the close event on escape key press
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && !this.modal.classList.contains('hidden')) {
         this.close();
       }
     });
-
-    // Adding event listener to close the modal on outside click
+    // Bind the close event on clicking outside the modal content
     this.modal.addEventListener('click', (e) => {
       if (e.target === this.modal) {
         this.close();
       }
     });
+
+    // Automatically attach to trigger elements
+    this.initTriggers();
   }
 
   /**
-   * Opens the modal window with content and title fetched from the specified selectors.
+   * Searches for and initialises all modal trigger elements on the page.
    */
-  open() {
-    const titleElement = document.querySelector(this.titleSelector);
-    const contentElement = document.querySelector(this.contentSelector);
-  
-    if (titleElement && contentElement) {
-      this.modalTitle.textContent = titleElement.textContent;
-  
-      // Clear the current modal content
-      this.modalContent.innerHTML = '';
-  
-      // Clone the content element and append it to the modal content
-      const clonedContent = contentElement.cloneNode(true);
-      clonedContent.classList.remove('hidden');
-      
-      // Update the `for` attribute of labels and `id` of inputs to maintain association
-      // This is necessary to ensure that form inputs are still focussed visually 
-      // when selecting their corresponding labels (for a11y)
-      const labels = clonedContent.querySelectorAll('label');
-      labels.forEach((label) => {
-        const htmlFor = label.getAttribute('for');
-        if (htmlFor) {
-          const input = clonedContent.querySelector(`#${htmlFor}`);
-          if (input) {
-            const newID = `cloned-${htmlFor}`;
-            label.setAttribute('for', newID);
-            input.id = newID;
-          }
-        }
+  initTriggers() {
+    document.querySelectorAll('[data-modal-title][data-modal-content]').forEach(trigger => {
+      trigger.addEventListener('click', () => {
+        const title = trigger.getAttribute('data-modal-title');
+        const content = trigger.getAttribute('data-modal-content');
+        this.open(title, content);
       });
-  
-      this.modalContent.append(clonedContent);
-  
-      this.modal.classList.remove('hidden');
-      this.modal.setAttribute('aria-hidden', 'false');
-      document.body.classList.add('overflow-hidden');
-      this.closeModalBtn.focus();
-    } else {
-      console.error('Title or content element not found.');
-    }
-  }  
+    });
+  }
+
+  /**
+   * Opens the modal window with content and title provided.
+   * Adds an animation upon opening.
+   * @param {string} title - The title text to display in the modal.
+   * @param {string} content - The HTML content to display in the modal.
+   */
+  open(title, content) {
+    // Generate unique IDs for title and content (a11y requirement)
+    const titleId = 'modal-title-' + new Date().getTime();
+    const contentId = 'modal-body-' + new Date().getTime(); 
+
+    this.modalTitle.textContent = title;
+    this.modalTitle.id = titleId; 
+
+    const modalBody = this.modal.querySelector('.modal-body');
+    modalBody.innerHTML = content;
+    modalBody.id = contentId;
+
+    // Ensure modal background is immediately visible
+    this.modal.classList.remove('hidden');
+
+    // Apply animations for opening
+    this.modal.classList.add('modal-background-animate-in'); // Background fades in
+    this.modal.classList.remove('modal-background-animate-out');
+    this.modalContent.classList.add('modal-animate-in'); // Modal content fades in and up
+    this.modalContent.classList.remove('modal-animate-out');
+
+    // Set ARIA attributes for accessibility
+    this.modal.setAttribute('aria-labelledby', titleId);
+    this.modal.setAttribute('aria-describedby', contentId); // Link content area with its description
+
+    document.body.classList.add('overflow-hidden');
+    this.closeModalBtn.focus();
+  }
 
   /**
    * Closes the modal window and resets the modal state.
    */
   close() {
-    this.modal.classList.add('hidden');
-    this.modal.setAttribute('aria-hidden', 'true');
-    document.body.classList.remove('overflow-hidden');
+    // Apply reverse animations for closing the modal content
+    this.modalContent.classList.remove('modal-animate-in');
+    this.modalContent.classList.add('modal-animate-out'); // Content fades out and down smoothly
+
+    // Smoothly fade out the background alongside the modal content
+    this.modal.classList.remove('modal-background-animate-in');
+    this.modal.classList.add('modal-background-animate-out'); // Background fades out smoothly
+
+    // Wait for the longest animation to complete before hiding the modal
+    setTimeout(() => {
+        this.modal.classList.add('hidden');
+        this.modal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('overflow-hidden');
+    }, 500);// Match this with the animation duration in input.css (modal-animate-in and modal-animate-out classes)
   }
 }
 
-let currentModal = null; // Variable to keep track of the current modal instance
+// Initialise the modal system
+new Modal();

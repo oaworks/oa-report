@@ -1,10 +1,14 @@
 {# Tooltip component
 {{ component("tooltip", {
+  sup: false,
   msg: "",
-  id: ""
+  id: "",
+  label: "",
+  text: ""
 }) }}
 #}
 
+{% if params.sup %}
 <sup 
   class="tooltip" 
   tabindex="0" 
@@ -25,3 +29,21 @@
     <span class="py-0.5 px-1 border rounded-full font-semibold uppercase text-xs hover:bg-white hover:text-neutral-900 transition duration-300 ease-in-out">?</span>
   {% endif %}
 </sup>
+{% else %}
+<span 
+  class="tooltip" 
+  tabindex="0" 
+  data-tippy-content="{{ params.msg }}"
+  {% if params.theme %}data-tippy-theme="{{ params.theme }}"{% endif %}
+  {% if params.id %} id="{{ params.id }}"{% endif %} 
+  aria-label="
+    {% if params.label %}
+      {{ params.label }}
+    {% else %}
+      More information
+    {% endif %}
+  "
+>
+  {{ params.text | safe }}
+</span>
+{% endif %}
