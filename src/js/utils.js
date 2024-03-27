@@ -25,7 +25,7 @@ export function isCacheExpired(timestamp, expiryDuration = 86400000) { // 24 hou
  */
 export async function fetchPostData(postData) {
   try {
-    const response = await axios.post(`https://bg.${ELEVENTY_API_ENDPOINT}.oa.works/oareport/rebuilt`, postData);
+    const response = await axios.post(`https://bg.${ELEVENTY_API_ENDPOINT}.oa.works/oareport/works`, postData);
     return response.data; 
   } catch (error) {
     console.error("There was a problem with the POST request: ", error.message);
