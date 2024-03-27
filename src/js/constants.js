@@ -13,13 +13,13 @@ export const ELEVENTY_API_ENDPOINT =  document.body.getAttribute('data-api-endpo
  * This serves as the foundational URL upon which all other endpoints are built.
  * @type {string}
  */
-export const API_BASE_URL = `https://${ELEVENTY_API_ENDPOINT}.oa.works/report/`;
+export const API_BASE_URL = `https://${ELEVENTY_API_ENDPOINT}.oa.works/oareport/`;
 
 /**
  * Base URL for the bg API endpoint.
  * @type {string}
  */
-export const API_BG_BASE_URL = `https://bg.${ELEVENTY_API_ENDPOINT}.oa.works/report/`;
+export const API_BG_BASE_URL = `https://bg.${ELEVENTY_API_ENDPOINT}.oa.works/oareport/`;
 
 /**
  * Endpoint for querying works with a default size of 100.
