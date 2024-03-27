@@ -1021,22 +1021,6 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
               "script": "params.with_code_accession_number / params.total_count"
             }
           },
-          "with_dois": {
-            "filter": {
-              "exists": {
-                "field": "DOI"
-              }
-            }
-          },
-          "with_dois_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "with_dois": "with_dois>_count",
-                "total_count": "_count"
-              },
-              "script": "params.with_dois / params.total_count"
-            }
-          },
           "with_orcids": {
             "filter": {
               "exists": {
