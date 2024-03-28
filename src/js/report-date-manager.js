@@ -387,7 +387,6 @@ function handleYearButtonLogic(button, startDate, endDate, buttonText) {
 
   replaceDateRange(startDate, endDate);
   reportYear.textContent = startDate.getFullYear();
-  if (reportYear) replaceText("report_year", buttonText);
   initInsightsAndStrategies(org);
   if (currentActiveExploreItemButton) {
     processExploreDataTable(currentActiveExploreItemButton, currentActiveExploreItemData);
