@@ -17,7 +17,7 @@ async function fetchSuggestions(searchTerm) {
   }
 
   try {
-    const url = `https://bg.${apiEndpoint}.oa.works/report/orgs/suggest/search/${searchTerm}?include=name,objectID,private`;
+    const url = `https://bg.${apiEndpoint}.oa.works/oareport/orgs_new/suggest/search/${searchTerm}?include=name,objectID,private`;
     const response = await fetch(url);
     const data = await response.json();
 
