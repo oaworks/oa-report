@@ -671,6 +671,356 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
               "script": "params.with_dois / params.total_count"
             }
           },
+          "with_code": {
+            "filter": {
+              "bool": {
+                "must": [
+                  {
+                    "term": {
+                      "supplements.dev.code.has_made_code": {
+                        "value": true
+                      }
+                    }
+                  },
+                  {
+                    "term": {
+                      "supplements.is_original_research": {
+                        "value": true
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "with_code_pct": {
+            "bucket_script": {
+              "buckets_path": {
+                "with_code": "with_code>_count",
+                "total_count": "_count"
+              },
+              "script": "params.with_code / params.total_count"
+            }
+          },
+          "without_code": {
+            "filter": {
+              "bool": {
+                "should": [
+                  {
+                    "term": {
+                      "supplements.dev.code.has_made_code": {
+                        "value": false
+                      }
+                    }
+                  },
+                  {
+                    "term": {
+                      "supplements.is_original_research": {
+                        "value": false
+                      }
+                    }
+                  }
+                ],
+                "minimum_should_match": 1
+              }
+            }
+          },
+          "without_code_pct": {
+            "bucket_script": {
+              "buckets_path": {
+                "without_code": "without_code>_count",
+                "total_count": "_count"
+              },
+              "script": "params.without_code / params.total_count"
+            }
+          },
+          "unknown_code_status": {
+            "filter": {
+              "bool": {
+                "must_not": {
+                  "exists": {
+                    "field": "supplements.dev.code.has_made_code"
+                  }
+                }
+              }
+            }
+          },
+          "unknown_code_status_pct": {
+            "bucket_script": {
+              "buckets_path": {
+                "unknown_code_status": "unknown_code_status>_count",
+                "total_count": "_count"
+              },
+              "script": "params.unknown_code_status / params.total_count"
+            }
+          },
+          "with_shared_code": {
+            "filter": {
+              "bool": {
+                "must": [{
+                    "term": {
+                      "supplements.dev.code.has_shared_code": true
+                    }
+                  },
+                  {
+                    "terms": {
+                      "supplements.dev.code.evidence": [
+                        "da",
+                        "fulltext"
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "with_shared_code_pct": {
+            "bucket_script": {
+              "buckets_path": {
+                "with_shared_code": "with_shared_code>_count",
+                "total_count": "_count"
+              },
+              "script": "params.with_shared_code / params.total_count"
+            }
+          },
+          "without_shared_code": {
+            "filter": {
+              "bool": {
+                "should": [{
+                    "term": {
+                      "supplements.dev.code.with_shared_code": false
+                    }
+                  },
+                  {
+                    "bool": {
+                      "must": [{
+                        "term": {
+                          "supplements.dev.code.evidence": "supplementary"
+                        }
+                      }],
+                      "must_not": [{
+                        "terms": {
+                          "supplements.dev.code.evidence": [
+                            "da",
+                            "fulltext"
+                          ]
+                        }
+                      }]
+                    }
+                  }
+                ],
+                "minimum_should_match": 1
+              }
+            }
+          },
+          "without_shared_code_pct": {
+            "bucket_script": {
+              "buckets_path": {
+                "without_shared_code": "without_shared_code>_count",
+                "total_count": "_count"
+              },
+              "script": "params.without_shared_code / params.total_count"
+            }
+          },
+          "unknown_shared_code_status": {
+            "filter": {
+              "bool": {
+                "must_not": {
+                  "exists": {
+                    "field": "supplements.dev.code.has_shared_code"
+                  }
+                }
+              }
+            }
+          },
+          "unknown_shared_code_status_pct": {
+            "bucket_script": {
+              "buckets_path": {
+                "unknown_shared_code_status": "unknown_shared_code_status>_count",
+                "total_count": "_count"
+              },
+              "script": "params.unknown_shared_code_status / params.total_count"
+            }
+          },
+          "with_shared_code_in_repository": {
+            "filter": {
+              "bool": {
+                "must": [{
+                    "term": {
+                      "supplements.dev.code.has_shared_code": true
+                    }
+                  },
+                  {
+                    "terms": {
+                      "supplements.dev.code.evidence": [
+                        "da",
+                        "fulltext"
+                      ]
+                    }
+                  }
+                ],
+                "should": [{
+                    "exists": {
+                      "field": "supplements.dev.code.doi"
+                    }
+                  },
+                  {
+                    "exists": {
+                      "field": "supplements.dev.code.url"
+                    }
+                  },
+                  {
+                    "exists": {
+                      "field": "supplements.dev.code.accession"
+                    }
+                  }
+                ],
+                "minimum_should_match": 1
+              }
+            }
+          },
+          "with_shared_code_in_repository_pct": {
+            "bucket_script": {
+              "buckets_path": {
+                "with_shared_code_in_repository": "with_shared_code_in_repository>_count",
+                "total_count": "_count"
+              },
+              "script": "params.with_shared_code_in_repository / params.total_count"
+            }
+          },
+          "with_open_code": {
+            "filter": {
+              "bool": {
+                "must": [{
+                    "term": {
+                      "supplements.dev.code.has_open_code": true
+                    }
+                  },
+                  {
+                    "terms": {
+                      "supplements.dev.code.evidence": [
+                        "da",
+                        "fulltext"
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "with_open_code_pct": {
+            "bucket_script": {
+              "buckets_path": {
+                "with_open_code": "with_open_code>_count",
+                "total_count": "_count"
+              },
+              "script": "params.with_open_code / params.total_count"
+            }
+          },
+          "with_open_code_in_repository": {
+            "filter": {
+              "bool": {
+                "must": [{
+                    "term": {
+                      "supplements.dev.code.has_open_code": true
+                    }
+                  },
+                  {
+                    "terms": {
+                      "supplements.dev.code.evidence": [
+                        "da",
+                        "fulltext"
+                      ]
+                    }
+                  }
+                ],
+                "should": [{
+                    "exists": {
+                      "field": "supplements.dev.code.doi"
+                    }
+                  },
+                  {
+                    "exists": {
+                      "field": "supplements.dev.code.url"
+                    }
+                  },
+                  {
+                    "exists": {
+                      "field": "supplements.dev.code.accession"
+                    }
+                  }
+                ],
+                "minimum_should_match": 1
+              }
+            }
+          },
+          "with_open_code_in_repository_pct": {
+            "bucket_script": {
+              "buckets_path": {
+                "with_open_code_in_repository": "with_open_code_in_repository>_count",
+                "total_count": "_count"
+              },
+              "script": "params.with_open_code_in_repository / params.total_count"
+            }
+          },
+          "with_code_dois": {
+            "filter": {
+              "bool": {
+                "must": [{
+                    "terms": {
+                      "supplements.dev.code.evidence": [
+                        "da",
+                        "fulltext"
+                      ]
+                    }
+                  },
+                  {
+                    "exists": {
+                      "field": "supplements.dev.code.doi"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "with_code_dois_pct": {
+            "bucket_script": {
+              "buckets_path": {
+                "with_code_dois": "with_code_dois>_count",
+                "total_count": "_count"
+              },
+              "script": "params.with_code_dois / params.total_count"
+            }
+          },
+          "with_code_accession_number": {
+            "filter": {
+              "bool": {
+                "must": [{
+                    "terms": {
+                      "supplements.dev.code.evidence": [
+                        "da",
+                        "fulltext"
+                      ]
+                    }
+                  },
+                  {
+                    "exists": {
+                      "field": "supplements.dev.code.accession"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "with_code_accession_number_pct": {
+            "bucket_script": {
+              "buckets_path": {
+                "with_code_accession_number": "with_code_accession_number>_count",
+                "total_count": "_count"
+              },
+              "script": "params.with_code_accession_number / params.total_count"
+            }
+          },
           "with_orcids": {
             "filter": {
               "exists": {

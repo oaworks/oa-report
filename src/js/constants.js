@@ -179,6 +179,22 @@ export const EXPLORE_ITEMS_LABELS = {
   "janelia_lab_head": {
     singular: "Janelia Lab head",
     plural: "Janelia Lab heads"
+  },
+  "dataset_license": {
+    singular: "Dataset license",
+    plural: "Dataset licenses"
+  },
+  "software_license": {
+    singular: "Software license",
+    plural: "Software licenses"
+  },
+  "dataset_location": {
+    singular: "Dataset location",
+    plural: "Dataset locations"
+  },
+  "software_location": {
+    singular: "Software location",
+    plural: "Software locations"
   }
 };
 
@@ -204,7 +220,11 @@ export const EXPLORE_FILTERS_LABELS = {
   "has_data_availability_statement": "Has data availability statement",
   "has_apc": "Paid via APC",
   "is_under_transitional_agreement": "Paid via transitional agreement",
-  "is_funded": "Funded"
+  "is_funded": "Funded",
+  "has_shared_data": "Shared data",
+  "has_shared_code": "Shared code",
+  "has_data": "With data",
+  "has_code": "With code"
 };
 
 /**
@@ -263,8 +283,14 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   "unknown_data_status": {
     label: "Unknown data status"
   },
+  "unknown_code_status": {
+    label: "Unknown code status"
+  },
   "unknown_shared_data_status": {
     label: "Unknown shared data status"
+  },
+  "unknown_shared_code_status": {
+    label: "Unknown shared code status"
   },
   "with_apc": {
     label: "With APC<span class='lowercase'>s</span>"
@@ -272,8 +298,14 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   "with_data": {
     label: "With data"
   },
+  "with_code": {
+    label: "With code"
+  },
   "with_data_accession_number": {
     label: "With data accession number"
+  },
+  "with_code_accession_number": {
+    label: "With code accession number"
   },
   "with_data_availability_statement": {
     label: "With data availability statement",
@@ -282,6 +314,9 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   },
   "with_data_dois": {
     label: "With data DOI<span style='text-transform: lowercase;'>s</span>"
+  },
+  "with_code_dois": {
+    label: "With code DOI<span style='text-transform: lowercase;'>s</span>"
   },
   "with_dois": {
     label: "With DOI<span style='text-transform: lowercase;'>s</span>"
@@ -300,8 +335,14 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   "with_open_data": {
     label: "With Open Data"
   },
+  "with_open_code": {
+    label: "With Open Code"
+  },
   "with_open_data_in_repository": {
     label: "With Open Data in repository"
+  },
+  "with_open_code_in_repository": {
+    label: "With Open Code in repository"
   },
   "with_orcids": {
     label: "With ORC<span style='text-transform: lowercase;'>i</span>D<span style='text-transform: lowercase;'>s</span>"
@@ -322,17 +363,29 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   "with_shared_data": {
     label: "With shared data"
   },
+  "with_shared_code": {
+    label: "With shared code"
+  },
   "with_shared_data_in_repository": {
     label: "With shared data in repository"
   },
+  "with_shared_code_in_repository": {
+    label: "With shared code in repository"
+  },
   "without_data": {
     label: "Without data"
+  },
+  "without_code": {
+    label: "Without code"
   },
   "without_data_availability_statement": {
     label: "Without data availability statement"
   },
   "without_shared_data": {
     label: "Without shared data"
+  },
+  "without_shared_code": {
+    label: "Without shared code"
   }
 }
 

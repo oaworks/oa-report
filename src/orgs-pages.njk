@@ -18,12 +18,12 @@ permalink: "{{ org._source.objectID | slug }}/"
             {% if org._source.paid == true %}
               {{ component("tooltip", {
                 msg: "<p>This OA.Report uses <a href='https://about.oa.report/docs/sources' target='_blank' class='underline underline-offset-4 decoration-1'>all our data sources</a> and state-of-the-art analysis to provide insights into their publications, impact, and how open their research is.</p>",
-                text: "<div class='highlight'>" + org._source.name + "</div><div class='report_year'>2023</div>"
+                text: "<div class='highlight'>" + org._source.name + "</div><div><span class='report_readable_start_date'></span> — <span class='report_readable_end_date'></span></div>"
               }) }}
             {% else %}
               {{ component("tooltip", {
                 msg: "<p>This OA.Report uses <a href='https://about.oa.report/docs/sources#open-sources' target='_blank' class='underline underline-offset-4 decoration-1'>open data</a> and automated analysis to provide insights into their publication volume and how open their research is.</p>",
-                text: "<div class='highlight'>" + org._source.name + "</div><div class='report_year'>2023</div>"
+                text: "<div class='highlight'>" + org._source.name + "</div><div><span class='report_readable_start_date'></span> — <span class='report_readable_end_date'></span></div>"
               }) }}
             {% endif %}
           </div>
