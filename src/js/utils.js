@@ -151,15 +151,17 @@ export function replaceDateRange(newStart, newEnd) {
 }
 
 /**
- * Creates a Date object representing a specific date
+ * Creates a UTC Date object representing a specific date.
+ * This ensures consistency across different time zones, interpreting the date as the same calendar day worldwide.
+ * See oaworks/discussion#2744
  *
  * @param {number} year - The full year of the date.
  * @param {number} month - The month of the date (0-11, where 0 corresponds to January).
  * @param {number} day - The day of the month.
- * @returns {Date} The new Date object representing the specific date.
+ * @returns {Date} The new Date object representing the specific date in UTC.
  */
 export function createDate(year, month, day) {
-  return new Date(year, month, day);
+  return new Date(Date.UTC(year, month, day));
 }
 
 /**
