@@ -4,7 +4,7 @@
 // =================================================
 
 import { DATE_SELECTION_BUTTON_CLASSES } from './constants.js';
-import { makeDateReadable, createDate, replaceDateRange, replaceText, initDropdown, getURLParam, updateURLParams } from './utils.js';
+import { makeDateReadable, createDate, replaceDateRange, replaceText, initDropdown, getURLParam, updateURLParams, endDate } from './utils.js';
 import { initInsightsAndStrategies } from './insights-and-strategies.js';
 import { currentActiveExploreItemButton, currentActiveExploreItemData, processExploreDataTable } from './explore.js';
 
@@ -280,7 +280,7 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
  */
 function createDateRangeForm() {
   const form = document.createElement("form");
-  form.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " flex items-center hover:bg-white hover:text-neutral-900"; 
+  form.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " flex items-center hover:text-white"; 
   form.id = "date_range_form";
   form.setAttribute('role', 'form');
   form.setAttribute('aria-labelledby', 'date-range-form-title');
@@ -351,13 +351,13 @@ function createDateInput(id, label) {
   const labelElement = document.createElement("label");
   labelElement.htmlFor = id;
   labelElement.textContent = label;
-  labelElement.className = "mr-1 font-semibold uppercase text-xs text-neutral-600";
+  labelElement.className = "mr-1 font-semibold uppercase text-xs";
   wrapper.appendChild(labelElement);
 
   const input = document.createElement("input");
   input.type = "date";
   input.id = id;
-  input.className = "mr-4 text-xs md:text-sm md:text-center uppercase"; 
+  input.className = "mr-4 text-xs md:text-sm md:text-center uppercase bg-transparent"; 
   input.setAttribute('aria-label', label);
   input.setAttribute('required', true);
   wrapper.appendChild(input);
@@ -436,7 +436,7 @@ function updateYearButtonStyling(selectedElement, isDropdownItem = false) {
 
     // Style form contents if the selected "button" is the date range form
     if (selectedElement.tagName.toLowerCase() === 'form') {
-      selectedElement.classList.remove("hover:bg-white", "hover:text-neutral-900");
+      selectedElement.classList.remove("hover:bg-white", "hover:text-white");
 
       const labels = selectedElement.querySelectorAll('label');
       labels.forEach(label => {
