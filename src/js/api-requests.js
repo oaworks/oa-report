@@ -761,6 +761,11 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
                     }
                   },
                   {
+                    "term": {
+                      "supplements.is_original_research": true
+                    }
+                  },
+                  {
                     "terms": {
                       "supplements.dev.code.evidence": [
                         "da",
@@ -892,6 +897,11 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
                 "must": [{
                     "term": {
                       "supplements.dev.code.has_open_code": true
+                    }
+                  },
+                  {
+                    "term": {
+                      "supplements.is_original_research": true
                     }
                   },
                   {
