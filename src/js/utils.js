@@ -113,18 +113,20 @@ export function formatDateToISO(date) {
  * a date range string formatted for ElasticSearch queries. 
  * The start date is decremented by one day and the end date is incremented by one day, 
  * ensuring that the range includes all times within the start and end dates.
+ * Display the readable start and end dates in the UI.
  *
  * @param {Date} newStart - The date representing the start of the range.
  * @param {Date} newEnd - The date representing the end of the range.
  * @returns {string} The date range string formatted for ElasticSearch query syntax.
  */
 export function replaceDateRange(newStart, newEnd) {
-  startYear = newStart.getFullYear();
-  endYear = newEnd.getFullYear();
+  // Update the year range in a readable format
   replaceText("report_readable_start_date", makeDateReadable(newStart));
   replaceText("report_readable_end_date", makeDateReadable(newEnd));
+
+  // Adjust the date range in ISO format for the API call (-1 day for start date, +1 day for end date)
   const startDateISO = formatDateToISO(changeDays(-1, newStart));
-  const endDateISO = formatDateToISO(changeDays(1, newEnd));
+  const endDateISO = formatDateToISO(changeDays(+1, newEnd));
   dateRange = `(published_date:>${startDateISO}%20AND%20published_date:<${endDateISO})%20AND%20`;
   
   return dateRange;
