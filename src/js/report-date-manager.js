@@ -78,11 +78,6 @@ export function setDefaultYear(defaultYear) {
         defaultEndDate = createDate(DEFAULT_YEAR, 5, 30); // June 30th
       }
 
-      console.log('setDefaultYear() triggered.');
-      console.log('defaultStartDate:', defaultStartDate);
-      console.log('defaultEndDate:', defaultEndDate);
-      console.log('-'.repeat(20));
-
       replaceDateRange(defaultStartDate, defaultEndDate);
       reportYear.textContent = defaultYear;
 
@@ -396,11 +391,6 @@ function handleYearButtonLogic(button, startDate, endDate, buttonText) {
   if (!isDropdownItem && paid) {
     resetDropdown();
   }
-
-  console.log('handleYearButtonLogic() triggered.');
-  console.log('startDate:', startDate); 
-  console.log('endDate:', endDate);
-  console.log('-'.repeat(20));
 
   replaceDateRange(startDate, endDate);
   reportYear.textContent = startDate.getFullYear();
