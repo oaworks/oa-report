@@ -119,33 +119,13 @@ export function formatDateToISO(date) {
  * @returns {string} The date range string formatted for ElasticSearch query syntax.
  */
 export function replaceDateRange(newStart, newEnd) {
-  console.log("newStart: ", newStart);
-  console.log("newEnd: ", newEnd);
-  console.log("--------------------");
-
   startYear = newStart.getFullYear();
   endYear = newEnd.getFullYear();
-
-  console.log("startYear: ", startYear);
-  console.log("endYear: ", endYear);
-  console.log("--------------------");
-  
-  // Update the year range in a readable format
   replaceText("report_readable_start_date", makeDateReadable(newStart));
   replaceText("report_readable_end_date", makeDateReadable(newEnd));
-
-  console.log("makeDateReadable(newStart): ", makeDateReadable(newStart));
-  console.log("makeDateReadable(newStart): ", makeDateReadable(newEnd));
-  console.log("--------------------");
-
-  // Adjust the date range in ISO format for the API call (-1 day for start date, +1 day for end date)
   const startDateISO = formatDateToISO(changeDays(-1, newStart));
   const endDateISO = formatDateToISO(changeDays(+1, newEnd));
   dateRange = `(published_date:>${startDateISO}%20AND%20published_date:<${endDateISO})%20AND%20`;
-
-  console.log("startDateISO: ", startDateISO);
-  console.log("endDateISO: ", endDateISO);
-  console.log("--------------------");
   
   return dateRange;
 }
