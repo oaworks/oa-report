@@ -140,7 +140,7 @@ export function replaceDateRange(newStart, newEnd) {
 
   // Adjust the date range in ISO format for the API call (-1 day for start date, +1 day for end date)
   const startDateISO = formatDateToISO(changeDays(-1, newStart));
-  const endDateISO = formatDateToISO(changeDays(1, newEnd));
+  const endDateISO = formatDateToISO(changeDays(+1, newEnd));
   dateRange = `(published_date:>${startDateISO}%20AND%20published_date:<${endDateISO})%20AND%20`;
 
   console.log("startDateISO: ", startDateISO);
