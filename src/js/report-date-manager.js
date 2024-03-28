@@ -34,8 +34,9 @@ export function setDefaultYear(defaultYear) {
     // the breakdown parameter is handled
     if (startParam && endParam) {
       // Attempt to load date range from URL parameters
-      const startDate = new Date(startParam);
-      const endDate = new Date(endParam);
+      // Interpret both dates as UTC noon to avoid timezone issues, see oaworks/discussion#2744
+      const startDate = new Date(`${startParam}T12:00:00Z`); 
+      const endDate = new Date(`${endParam}T12:00:00Z`);
 
       // Replace the date range, if present, with the one from the URL
       const dateRangeForm = document.getElementById("date_range_form");
@@ -393,7 +394,6 @@ function handleYearButtonLogic(button, startDate, endDate, buttonText) {
 
   replaceDateRange(startDate, endDate);
   reportYear.textContent = startDate.getFullYear();
-  if (reportYear) replaceText("report_year", buttonText);
   initInsightsAndStrategies(org);
   if (currentActiveExploreItemButton) {
     processExploreDataTable(currentActiveExploreItemButton, currentActiveExploreItemData);
