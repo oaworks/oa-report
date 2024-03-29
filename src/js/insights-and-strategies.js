@@ -21,7 +21,7 @@ if (hasOrgKey) {
   // logged in
   orgKey = `&orgkey=${OAKEYS[org]}`; // Use org variable to get the correct orgkey value
   loggedIn = true;
-  displayNone("about-paid-logged-out");
+  displayNone("login");
   displayNone("about-free-logged-out");
 } else {
   // logged out

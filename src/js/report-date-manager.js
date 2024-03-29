@@ -4,7 +4,7 @@
 // =================================================
 
 import { DATE_SELECTION_BUTTON_CLASSES } from './constants.js';
-import { makeDateReadable, createDate, replaceDateRange, replaceText, initDropdown, getURLParam, updateURLParams } from './utils.js';
+import { makeDateReadable, createDate, replaceDateRange, replaceText, initDropdown, getURLParam, updateURLParams, endDate } from './utils.js';
 import { initInsightsAndStrategies } from './insights-and-strategies.js';
 import { currentActiveExploreItemButton, currentActiveExploreItemData, processExploreDataTable } from './explore.js';
 
@@ -34,8 +34,9 @@ export function setDefaultYear(defaultYear) {
     // the breakdown parameter is handled
     if (startParam && endParam) {
       // Attempt to load date range from URL parameters
-      const startDate = new Date(startParam);
-      const endDate = new Date(endParam);
+      // Interpret both dates as UTC noon to avoid timezone issues, see oaworks/discussion#2744
+      const startDate = new Date(`${startParam}T12:00:00Z`); 
+      const endDate = new Date(`${endParam}T12:00:00Z`);
 
       // Replace the date range, if present, with the one from the URL
       const dateRangeForm = document.getElementById("date_range_form");
@@ -85,6 +86,9 @@ export function setDefaultYear(defaultYear) {
       if (defaultButton) {
         handleYearButtonLogic(defaultButton, defaultStartDate, defaultEndDate, `${defaultYear}`);
         updateYearButtonStyling(defaultButton);
+      } else {
+        // TO FIX: free reports don’t have a defaultButton
+        handleYearButtonLogic(null, defaultStartDate, defaultEndDate, `${makeDateReadable(defaultStartDate)} &ndash; ${makeDateReadable(defaultEndDate)}`);
       }
 
       // Update URL with the selected year or date range
@@ -146,17 +150,9 @@ export function bindDynamicYearButtons(startYear, endYear, visibleYears = 3) {
 
     if (endYear - year < visibleYears) {
       // Determine if the year button should be active or disabled based on free or paid reports
-      let element;
-      if (paid) {
-        element = createYearButton(buttonId, buttonText, startDate, endDate);
-      } else {
-        element = createDisabledYearElement(buttonId, buttonText);
-        if (year === DEFAULT_YEAR) {
-          updateYearButtonStyling(element);
-        }
-      }
+      let element = createYearButton(buttonId, buttonText, startDate, endDate);
       yearsContainer.appendChild(element);
-    } else if (paid) {
+    } else {
       // For dropdown items (i.e. years outside the visible range)
       const dropdownItem = createDropdownItem(buttonId, buttonText, startDate, endDate, dropdownButton);
       dropdownContent.appendChild(dropdownItem);
@@ -169,12 +165,7 @@ export function bindDynamicYearButtons(startYear, endYear, visibleYears = 3) {
   }
 
   // Create an 'All time' button with a fixed start date and the current date as the end date
-  let allTimeButton
-  if (paid) {
-    allTimeButton = createYearButton("all-time", "All time", createDate(1980, 0, 1), currentDate);
-  } else {
-    allTimeButton = createDisabledYearElement("all-time", "All time");
-  }
+  let allTimeButton = createYearButton("all-time", "All time", createDate(1980, 0, 1), currentDate);
   yearsContainer.appendChild(allTimeButton);
 
   // Create and append the date range form for paid users, initialise the dropdown menu
@@ -183,14 +174,6 @@ export function bindDynamicYearButtons(startYear, endYear, visibleYears = 3) {
     yearsContainer.appendChild(dateRangeForm); // Append the form to the container
     initDropdown(".js_dropdown");
   }
-}
-
-function createDisabledYearElement(id, text) {
-  const element = document.createElement("div");
-  element.className = DATE_SELECTION_BUTTON_CLASSES.disabled + " px-4";
-  element.id = id;
-  element.textContent = text;
-  return element;
 }
 
 /**
@@ -303,7 +286,7 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
  */
 function createDateRangeForm() {
   const form = document.createElement("form");
-  form.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " flex items-center hover:bg-white hover:text-neutral-900"; 
+  form.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " flex items-center hover:text-white"; 
   form.id = "date_range_form";
   form.setAttribute('role', 'form');
   form.setAttribute('aria-labelledby', 'date-range-form-title');
@@ -374,13 +357,13 @@ function createDateInput(id, label) {
   const labelElement = document.createElement("label");
   labelElement.htmlFor = id;
   labelElement.textContent = label;
-  labelElement.className = "mr-1 font-semibold uppercase text-xs text-neutral-600";
+  labelElement.className = "mr-1 font-semibold uppercase text-xs";
   wrapper.appendChild(labelElement);
 
   const input = document.createElement("input");
   input.type = "date";
   input.id = id;
-  input.className = "mr-4 text-xs md:text-sm md:text-center uppercase"; 
+  input.className = "mr-4 text-xs md:text-sm md:text-center uppercase bg-transparent"; 
   input.setAttribute('aria-label', label);
   input.setAttribute('required', true);
   wrapper.appendChild(input);
@@ -411,7 +394,6 @@ function handleYearButtonLogic(button, startDate, endDate, buttonText) {
 
   replaceDateRange(startDate, endDate);
   reportYear.textContent = startDate.getFullYear();
-  if (reportYear) replaceText("report_year", buttonText);
   initInsightsAndStrategies(org);
   if (currentActiveExploreItemButton) {
     processExploreDataTable(currentActiveExploreItemButton, currentActiveExploreItemData);
@@ -460,7 +442,7 @@ function updateYearButtonStyling(selectedElement, isDropdownItem = false) {
 
     // Style form contents if the selected "button" is the date range form
     if (selectedElement.tagName.toLowerCase() === 'form') {
-      selectedElement.classList.remove("hover:bg-white", "hover:text-neutral-900");
+      selectedElement.classList.remove("hover:bg-white", "hover:text-white");
 
       const labels = selectedElement.querySelectorAll('label');
       labels.forEach(label => {

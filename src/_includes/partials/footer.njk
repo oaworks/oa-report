@@ -73,8 +73,10 @@
 </script>
 {% endif %}
 
-{# For the search tool #}
+{# Only display the search tool on the homepage / index page #}
+{% if page.url == '/' %}
 <script src="../js/search.js"></script>
+{% endif %}
 
 {# Load font #}
 <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
