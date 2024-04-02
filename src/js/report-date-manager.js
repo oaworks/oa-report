@@ -12,7 +12,7 @@ import { currentActiveExploreItemButton, currentActiveExploreItemData, processEx
 const reportYear = document.getElementById("report-year");
 
 export const currentDate = new Date();
-export const DEFAULT_YEAR = 2023;
+export const DEFAULT_YEAR = 2024;
 export const FIRST_YEAR = 2015;
 
 /**
