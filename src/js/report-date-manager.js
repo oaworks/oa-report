@@ -90,6 +90,12 @@ export function setDefaultYear(defaultYear) {
         // TO FIX: free reports don’t have a defaultButton
         handleYearButtonLogic(null, defaultStartDate, defaultEndDate, `${makeDateReadable(defaultStartDate)} &ndash; ${makeDateReadable(defaultEndDate)}`);
       }
+
+      // Update URL with the selected year or date range
+      updateURLParams({ 
+        'start': defaultStartDate.toISOString().split('T')[0], 
+        'end': defaultEndDate.toISOString().split('T')[0] 
+      });
     }
 
     // Check if there’s a breakdown (previously named 'explore item') parameter in the URL
