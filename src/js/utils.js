@@ -58,13 +58,18 @@ export function replaceText(className, parameter) {
 }
 
 /**
- * Format a date object into a human-readable string using the user’s locale.
- * 
+ * Format a date object into a human-readable string using the user’s locale,
+ * explicitly formatted as UTC to ensure consistency across different time zones.
+ * By formatting dates like this, we avoid pitfalls of local timezone adjustments,
+ * ensuring that the date displayed is the same date as intended,
+ * regardless of the user’s local time zone settings.
+ *
  * @param {Date} date - The date object to format.
- * @returns {string} The localised date string.
+ * @returns {string} The localised and UTC-formatted date string.
  */
 export function makeDateReadable(date) {
-  return date.toLocaleDateString(USER_LOCALE, READABLE_DATE_OPTIONS);
+  const optionsWithUTC = { ...READABLE_DATE_OPTIONS, timeZone: 'UTC' };
+  return date.toLocaleDateString(USER_LOCALE, optionsWithUTC);
 }
 
 /**
@@ -146,7 +151,7 @@ export function replaceDateRange(newStart, newEnd) {
  * @returns {Date} The new Date object representing the specific date in UTC.
  */
 export function createDate(year, month, day) {
-  return new Date(Date.UTC(year, month, day));
+  return new Date(Date.UTC(year, month, day));  
 }
 
 /**
