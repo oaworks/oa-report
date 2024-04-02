@@ -129,6 +129,9 @@ export function replaceDateRange(newStart, newEnd) {
   const endDateISO = formatDateToISO(changeDays(+1, newEnd));
   dateRange = `(published_date:>${startDateISO}%20AND%20published_date:<${endDateISO})%20AND%20`;
   
+  startYear = formatDateToISO(newStart);
+  endYear = formatDateToISO(newEnd);
+
   return dateRange;
 }
 
