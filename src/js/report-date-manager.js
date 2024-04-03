@@ -23,7 +23,6 @@ export const DEFAULT_YEAR = 2024;
 /** 
  * The default year for free users, usually set to one year behind the paid users' default.
  * It indicates the latest year for which free users can access reports.
- * See https://github.com/oaworks/discussion/issues/1919#issuecomment-2034231857
  * @constant {number}
  */
 export const DEFAULT_YEAR_FREE = 2023;
@@ -89,7 +88,8 @@ export function setDefaultYear() {
       if (paid) {
         // For paid users, use the full year
         defaultStartDate = createDate(DEFAULT_YEAR, 0, 1); // January 1st
-        defaultEndDate = createDate(DEFAULT_YEAR, 11, 31);
+        defaultEndDate = new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate())); // Today’s date
+        // See https://github.com/oaworks/discussion/issues/1919#issuecomment-2034231857
       } else {
         // For non-paid users, restrict the date range from Jan 1 to Jun 30 of DEFAULT_YEAR_FREE
         defaultStartDate = createDate(DEFAULT_YEAR_FREE, 0, 1); // January 1st
