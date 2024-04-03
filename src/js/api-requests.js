@@ -17,7 +17,7 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
           },
           {
             "range": {
-              "published_year": {
+              "published_date": {
                 "gte": startYear,
                 "lte": endYear
               }
