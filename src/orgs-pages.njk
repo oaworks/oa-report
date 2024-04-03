@@ -299,7 +299,7 @@ permalink: "{{ org._source.objectID | slug }}/"
 
           <nav class="hidden sm:block mt-6 mb-10">
             <h3 class="absolute right-0 bottom-0 text-9xl font-black text-white opacity-20">
-              <span class="sr-only">Actions for </span><span class="export-year" id="report-year">2023</span>
+              <span class="sr-only">Actions for </span><span class='report_readable_start_date'></span> — <span class='report_readable_end_date'></span>
             </h3>
             <ul class="flex flex-wrap space-r-4 space-b-4 items-center" role="tablist" aria-label="Actions Tabs">
               {{ component("strategy-pill", {

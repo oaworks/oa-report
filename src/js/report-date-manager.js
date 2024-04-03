@@ -8,19 +8,37 @@ import { makeDateReadable, createDate, replaceDateRange, replaceText, initDropdo
 import { initInsightsAndStrategies } from './insights-and-strategies.js';
 import { currentActiveExploreItemButton, currentActiveExploreItemData, processExploreDataTable } from './explore.js';
 
-// Capture DOM elements
-const reportYear = document.getElementById("report-year");
-
+/** 
+ * The current date, used across the application to determine the current context or as a default value.
+ * @constant {Date}
+ */
 export const currentDate = new Date();
+
+/** 
+ * The default year for paid users, used as the starting point for reports.
+ * @constant {number}
+ */
 export const DEFAULT_YEAR = 2024;
+
+/** 
+ * The default year for free users, usually set to one year behind the paid users' default.
+ * It indicates the latest year for which free users can access reports.
+ * See https://github.com/oaworks/discussion/issues/1919#issuecomment-2034231857
+ * @constant {number}
+ */
+export const DEFAULT_YEAR_FREE = 2023;
+
+/** 
+ * The first year for which data is available in the application, used to populate year selection options and to limit date range selections.
+ * @constant {number}
+ */
 export const FIRST_YEAR = 2015;
 
 /**
  * Sets up the default year for the application, depending on whether the user is a paid user or not.
  * 
- * @param {number} defaultYear - The default year to be selected.
  */
-export function setDefaultYear(defaultYear) {
+export function setDefaultYear() {
   const startParam = getURLParam('start');
   const endParam = getURLParam('end');
   const breakdownParam = getURLParam('breakdown'); 
@@ -70,21 +88,20 @@ export function setDefaultYear(defaultYear) {
 
       if (paid) {
         // For paid users, use the full year
-        defaultStartDate = createDate(defaultYear, 0, 1);
-        defaultEndDate = createDate(defaultYear, 11, 31);
+        defaultStartDate = createDate(DEFAULT_YEAR, 0, 1); // January 1st
+        defaultEndDate = createDate(DEFAULT_YEAR, 11, 31);
       } else {
-        // For non-paid users, restrict the date range from Jan 1 to Jun 30 of DEFAULT_YEAR
-        defaultStartDate = createDate(DEFAULT_YEAR, 0, 1);
-        defaultEndDate = createDate(DEFAULT_YEAR, 5, 30); // June 30th
+        // For non-paid users, restrict the date range from Jan 1 to Jun 30 of DEFAULT_YEAR_FREE
+        defaultStartDate = createDate(DEFAULT_YEAR_FREE, 0, 1); // January 1st
+        defaultEndDate = createDate(DEFAULT_YEAR_FREE, 5, 30); // June 30th
       }
 
       replaceDateRange(defaultStartDate, defaultEndDate);
-      reportYear.textContent = defaultYear;
 
       // Select the default year button and style it as selected
-      const defaultButton = document.getElementById(`year-${defaultYear}`);
+      const defaultButton = document.getElementById(`year-${DEFAULT_YEAR}`);
       if (defaultButton) {
-        handleYearButtonLogic(defaultButton, defaultStartDate, defaultEndDate, `${defaultYear}`);
+        handleYearButtonLogic(defaultButton, defaultStartDate, defaultEndDate, `${DEFAULT_YEAR}`);
         updateYearButtonStyling(defaultButton);
       } else {
         // TO FIX: free reports don’t have a defaultButton
@@ -387,7 +404,6 @@ function handleYearButtonLogic(button, startDate, endDate, buttonText) {
   }
 
   replaceDateRange(startDate, endDate);
-  reportYear.textContent = startDate.getFullYear();
   initInsightsAndStrategies(org);
   if (currentActiveExploreItemButton) {
     processExploreDataTable(currentActiveExploreItemButton, currentActiveExploreItemData);
