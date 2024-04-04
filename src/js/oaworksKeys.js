@@ -40,18 +40,25 @@ ck = _OAcookie();
 window.OAKEYS = typeof ck === 'object' ? ck : {};
 
 if (window.location.search.includes('orgkey=')) {
-  try {
-    o = window.location.search.split('org=')[1].split('&')[0];
-  } catch (error) {}
-  try {
-    if (o == null) {
-      o = window.location.href.split('//')[1].split('/')[1];
-    }
-  } catch (error) {}
-  if (o) {
-    window.OAKEYS[decodeURIComponent(o)] = window.location.search.split('orgkey=')[1].split('&')[0];
-    _OAcookie(window.OAKEYS);
-    try { history.pushState(null, null, window.location.href.split('?')[0]); } catch (e) {};
+  const url = new URL(window.location.href);
+  const params = url.searchParams;
+  const orgKeyValue = params.get('orgkey');
+
+  // Add orgkey value to window.OAKEYS and update cookie
+  if (orgKeyValue) {
+      window.OAKEYS[decodeURIComponent(orgKeyValue)] = orgKeyValue;
+      _OAcookie(window.OAKEYS);
+
+      // Remove only the orgkey parameter from the URL
+      params.delete('orgkey');
+
+      // Update the URL without reloading the page, preserving other parameters
+      try {
+          const newUrl = `${url.pathname}${params.toString() ? '?' + params.toString() : ''}`;
+          history.pushState(null, null, newUrl);
+      } catch (e) {
+          console.error("Error updating URL:", e);
+      }
   }
 }
 
