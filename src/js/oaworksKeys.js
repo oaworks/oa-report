@@ -1,3 +1,8 @@
+// =================================================
+// oaworksKeys.js
+// Manage the OAKEYS cookie to indicate logged-in status and orgkey
+// =================================================
+
 var _OAcookie, ck, o;
 
 _OAcookie = function(obj) {
@@ -60,6 +65,8 @@ if (window.location.search.includes('orgkey=')) {
           console.error("Error updating URL:", e);
       }
   }
+
+  window.dispatchEvent(new CustomEvent('orgkeyProcessed'));
 }
 
 if (window.location.search.includes('logout')) {

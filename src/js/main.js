@@ -40,4 +40,25 @@ function initialise() {
 }
 
 // Initialise the report when the DOM is ready
-document.addEventListener('DOMContentLoaded', initialise);
+document.addEventListener('DOMContentLoaded', function () {
+  /**
+   * Initialises the application after orgkey processing.
+   * This function acts as a callback for the custom 'orgkeyProcessed' event. It ensures that the application
+   * initialisation proceeds only after any necessary orgkey processing has been completed.
+   * The event listener for 'orgkeyProcessed' is removed to prevent duplicate initialisations.
+   */
+  function initAfterOrgKeyProcessed() {
+    // Remove the event listener to avoid the possibility of the 
+    // initialisation function being called more than once.
+    window.removeEventListener('orgkeyProcessed', initAfterOrgKeyProcessed);
+    initialise();
+  }
+
+  // Attempt to initialise immediately if the 'orgkey' URL parameter is not present.
+  if (!window.location.search.includes('orgkey=')) {
+    initialise();
+  } else {
+    // If 'orgkey' is present, wait for the custom event indicating that 'orgkey' processing is complete.
+    window.addEventListener('orgkeyProcessed', initAfterOrgKeyProcessed);
+  }
+});
