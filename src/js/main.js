@@ -60,5 +60,6 @@ document.addEventListener('DOMContentLoaded', function () {
   } else {
     // If 'orgkey' is present, wait for the custom event indicating that 'orgkey' processing is complete.
     window.addEventListener('orgkeyProcessed', initAfterOrgKeyProcessed);
+    initialise();
   }
 });
