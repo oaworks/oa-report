@@ -237,10 +237,7 @@ async function addExploreFiltersToDOM(query) {
     let id = filters[0].id;
     currentActiveExploreItemQuery = id;
   }
-
-  // Update the text for the active filter
-  replaceText("explore_filter", currentActiveExploreItemQuery === 'is_paper' ? EXPLORE_FILTERS_LABELS[currentActiveExploreItemQuery] : 'articles that are ' + (EXPLORE_FILTERS_LABELS[currentActiveExploreItemQuery] || currentActiveExploreItemQuery));
-
+  
   // Create radio buttons for each filter and append them to the DOM
   filters.forEach((filter, index) => {
     const radioButton = createExploreFilterRadioButton(filter.id, filter.id === currentActiveExploreItemQuery);
@@ -258,11 +255,32 @@ async function addExploreFiltersToDOM(query) {
  * @returns {HTMLDivElement} The div element containing the configured radio button and label.
  */
 function createExploreFilterRadioButton(id, isChecked) {
-  const label = EXPLORE_FILTERS_LABELS[id] || id; // Use label from filters or default to ID
+  const labelData = EXPLORE_FILTERS_LABELS[id];
+  const label = EXPLORE_FILTERS_LABELS[id].label || id; // Use label from filters or default to ID
+
+  // Create dev to contain radio input and label
   const filterRadioButton = document.createElement('div');
   filterRadioButton.className = 'flex items-center mr-3 md:mr-6 mb-3';
 
-  // Creating and appending radio input
+  // Generate and set tooltip if info is present and non-empty
+  if (labelData && labelData.info && labelData.info.trim()) {
+    const tooltipContent = generateTooltipContent(labelData);
+    const tooltipID = `${id}_info`;
+
+    tippy(filterRadioButton, {
+      content: tooltipContent,
+      allowHTML: true,
+      interactive: true,
+      placement: 'bottom',
+      appendTo: document.body,
+      theme: 'tooltip-white',
+    });
+
+    filterRadioButton.setAttribute('aria-controls', tooltipID);
+    filterRadioButton.setAttribute('aria-labelledby', tooltipID);
+  }
+
+  // Create and append radio input
   const radioInput = document.createElement('input');
   Object.assign(radioInput, {
     type: 'radio',
@@ -275,7 +293,7 @@ function createExploreFilterRadioButton(id, isChecked) {
   });
   filterRadioButton.appendChild(radioInput);
 
-  // Creating and appending label
+  // Create and append label
   const labelElement = document.createElement('label');
   Object.assign(labelElement, {
     htmlFor: `filter_${id}`,
@@ -581,7 +599,7 @@ function setupTooltip(element, key, dataType) {
       theme: 'tooltip-white',
     });
 
-    element.setAttribute('aria-controls', tooltipID); // Assuming you manage IDs uniquely
+    element.setAttribute('aria-controls', tooltipID);
     element.setAttribute('aria-labelledby', tooltipID);
   }
 }
