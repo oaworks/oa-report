@@ -206,112 +206,112 @@ export const EXPLORE_ITEMS_LABELS = {
 export const EXPLORE_FILTERS_LABELS = {
   "is_paper": {
     label: "All articles",
-    info: "Short help text",
+    info: "",
     details: ""
   },
   "is_preprint": {
     label: "Preprints",
-    info: "Short help text",
+    info: "",
     details: ""
   },
   "is_authored": {
     label: "Authored",
-    info: "Short help text",
+    info: "",
     details: ""
   },
   "is_covered_by_policy": {
     label: "Covered by <span class='uppercase'>OA</span> policy",
-    info: "Short help text",
+    info: "",
     details: ""
   },
   "is_covered_by_current_policy": {
     label: "Covered by current <span class='uppercase'>OA</span> policy",
-    info: "Short help text",
+    info: "",
     details: ""
   },
   "is_covered_by_old_policy": {
     label: "Covered by old <span class='uppercase'>OA</span> policy",
-    info: "Short help text",
+    info: "",
     details: ""
   },
   "is_compliant": {
     label: "Covered by & compliant with <span class='uppercase'>OA</span> policy",
-    info: "Short help text",
+    info: "",
     details: ""
   },
   "is_compliant_all_works": {
     label: "Compliant with <span class='uppercase'>OA</span> policy",
-    info: "Short help text",
+    info: "",
     details: ""
   },
   "is_original_research": {
     label: "Original research",
-    info: "Short help text",
+    info: "",
     details: ""
   },
   "with_grant_id": {
     label: "With grant <span class='uppercase'>ID</span>",
-    info: "Short help text",
+    info: "",
     details: ""
   },
   "is_found_by_external_sources": {
     label: "Found by external sources",
-    info: "Short help text",
+    info: "",
     details: ""
   },
   "is_found_only_by_external_sources": {
     label: "Found only by external sources",
-    info: "Short help text",
+    info: "",
     details: ""
   },
   "is_found_only_by_oareport": {
     label: "Found only by <span class='uppercase'>OA</span>.<span class='uppercase'>R</span>eport",
-    info: "Short help text",
+    info: "",
     details: ""
   },
   "is_found_by_all_sources": {
     label: "Found by all sources",
-    info: "Short help text",
+    info: "",
     details: ""
   },
   "has_data_availability_statement": {
     label: "Has data availability statement",
-    info: "Short help text",
+    info: "",
     details: ""
   },
   "has_apc": {
     label: "Paid via APC",
-    info: "Short help text",
+    info: "",
     details: ""
   },
   "is_under_transitional_agreement": {
     label: "Paid via transitional agreement",
-    info: "Short help text",
+    info: "",
     details: ""
   },
   "is_funded": {
     label: "Funded",
-    info: "Short help text",
+    info: "",
     details: ""
   },
   "has_shared_data": {
     label: "Shared data",
-    info: "Short help text",
+    info: "",
     details: ""
   },
   "has_shared_code": {
     label: "Shared code",
-    info: "Short help text",
+    info: "",
     details: ""
   },
   "has_data": {
     label: "With data",
-    info: "Short help text",
+    info: "",
     details: ""
   },
   "has_code": {
     label: "With code",
-    info: "Short help text",
+    info: "",
     details: ""
   }
 };
