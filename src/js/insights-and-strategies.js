@@ -458,8 +458,9 @@ window.callGetStrategyExportLink = function(id) {
 */
 export function getStrategyExportLink(id, orgData) {
   let hasCustomExportIncludes = (orgData.hits.hits[0]._source.strategy[id].export_includes),
-      strategyQuery           = (orgData.hits.hits[0]._source.strategy[id].query);
-  
+      strategyQuery           = (orgData.hits.hits[0]._source.strategy[id].query),
+      sort                    = (orgData.hits.hits[0]._source.strategy[id].sort);
+
   Promise.all([hasCustomExportIncludes])
     .then(function (results) {
       hasCustomExportIncludes = results[0].data;
@@ -481,7 +482,7 @@ export function getStrategyExportLink(id, orgData) {
   }
 
   // Build full query
-  query = CSV_EXPORT_BASE + query + include + exportSort + email + orgKey;
+  query = CSV_EXPORT_BASE + query + include + '&sort=' + sort + email + orgKey;
 
   var xhr = new XMLHttpRequest();
   xhr.open("GET", query);
