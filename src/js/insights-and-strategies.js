@@ -28,8 +28,6 @@ if (hasOrgKey) {
   loggedIn = false;
   displayNone("logout");
 }
-// Set default sorting order for CSV downloads
-let exportSort = "&sort=published_date:desc"
 
 // Generate report’s UI for any given date range
 export function initInsightsAndStrategies(org) {
