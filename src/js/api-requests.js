@@ -97,29 +97,11 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
               }
             }
           },
-          "open_access_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "open_access": "open_access>_count",
-                "total_count": "_count"
-              },
-              "script": "params.open_access / params.total_count"
-            }
-          },
           "compliant": {
             "filter": {
               "term": {
                 [`supplements.is_compliant_all_works__${suffix}`]: true
               }
-            }
-          },
-          "compliant_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "compliant": "compliant>_count",
-                "total_count": "_count"
-              },
-              "script": "params.compliant / params.total_count"
             }
           },
           "covered_by_policy": {
@@ -129,29 +111,11 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
               }
             }
           },
-          "covered_by_policy_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "covered_by_policy": "covered_by_policy>_count",
-                "total_count": "_count"
-              },
-              "script": "params.covered_by_policy / params.total_count"
-            }
-          },
           "free_to_read": {
             "filter": {
               "term": {
                 "is_oa": true
               }
-            }
-          },
-          "free_to_read_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "free_to_read": "free_to_read>_count",
-                "total_count": "_count"
-              },
-              "script": "params.free_to_read / params.total_count"
             }
           },
           "in_repository": {
@@ -161,29 +125,11 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
               }
             }
           },
-          "in_repository_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "in_repository": "in_repository>_count",
-                "total_count": "_count"
-              },
-              "script": "params.in_repository / params.total_count"
-            }
-          },
           "in_approved_repository": {
             "filter": {
               "term": {
                 [`supplements.is_approved_repository__${suffix}`]: true
               }
-            }
-          },
-          "in_approved_repository_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "in_approved_repository": "in_approved_repository>_count",
-                "total_count": "_count"
-              },
-              "script": "params.in_approved_repository / params.total_count"
             }
           },
           "with_preprint": {
@@ -193,15 +139,6 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
               }
             }
           },
-          "with_preprint_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "with_preprint": "with_preprint>_count",
-                "total_count": "_count"
-              },
-              "script": "params.with_preprint / params.total_count"
-            }
-          },
           "with_peer_reviewed_version": {
             "filter": {
               "exists": {
@@ -209,29 +146,11 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
               }
             }
           },
-          "with_peer_reviewed_version_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "with_peer_reviewed_version": "with_peer_reviewed_version>_count",
-                "total_count": "_count"
-              },
-              "script": "params.with_peer_reviewed_version / params.total_count"
-            }
-          },
           "with_grant_id": {
             "filter": {
               "exists": {
                 "field": `supplements.grantid__${suffix}`
               }
-            }
-          },
-          "with_grant_id_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "with_grant_id": "with_grant_id>_count",
-                "total_count": "_count"
-              },
-              "script": "params.with_grant_id / params.total_count"
             }
           },
           "with_data_availability_statement": {
@@ -252,15 +171,6 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
                     "minimum_should_match": 1
                 }
             }
-        },
-          "with_data_availability_statement_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "with_data_availability_statement": "with_data_availability_statement>_count",
-                "total_count": "_count"
-              },
-              "script": "params.with_data_availability_statement / params.total_count"
-            }
           },
           "without_data_availability_statement": {
             "filter": {
@@ -280,15 +190,6 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
                     "minimum_should_match": 1
                 }
             }
-        },
-          "without_data_availability_statement_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "without_data_availability_statement": "without_data_availability_statement>_count",
-                "total_count": "_count"
-              },
-              "script": "params.without_data_availability_statement / params.total_count"
-            }
           },
           "total_citations": {
             "sum": {
@@ -307,15 +208,6 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
                   "gt": 0
                 }
               }
-            }
-          },
-          "with_apc_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "with_apc": "with_apc>_count",
-                "total_count": "_count"
-              },
-              "script": "params.with_apc / params.total_count"
             }
           },
           "total_apc_amount": {
@@ -343,29 +235,11 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
               }
             }
           },
-          "with_data_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "with_data": "with_data>_count",
-                "total_count": "_count"
-              },
-              "script": "params.with_data / params.total_count"
-            }
-          },
           "without_data": {
             "filter": {
               "term": {
                 "supplements.is_original_research": false
               }
-            }
-          },
-          "without_data_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "without_data": "without_data>_count",
-                "total_count": "_count"
-              },
-              "script": "params.without_data / params.total_count"
             }
           },
           "unknown_data_status": {
@@ -377,15 +251,6 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
                   }
                 }
               }
-            }
-          },
-          "unknown_data_status_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "unknown_data_status": "unknown_data_status>_count",
-                "total_count": "_count"
-              },
-              "script": "params.unknown_data_status / params.total_count"
             }
           },
           "with_shared_data": {
@@ -406,15 +271,6 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
                   }
                 ]
               }
-            }
-          },
-          "with_shared_data_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "with_shared_data": "with_shared_data>_count",
-                "total_count": "_count"
-              },
-              "script": "params.with_shared_data / params.total_count"
             }
           },
           "without_shared_data": {
@@ -447,15 +303,6 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
               }
             }
           },
-          "without_shared_data_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "without_shared_data": "without_shared_data>_count",
-                "total_count": "_count"
-              },
-              "script": "params.without_shared_data / params.total_count"
-            }
-          },
           "unknown_shared_data_status": {
             "filter": {
               "bool": {
@@ -465,15 +312,6 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
                   }
                 }
               }
-            }
-          },
-          "unknown_shared_data_status_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "unknown_shared_data_status": "unknown_shared_data_status>_count",
-                "total_count": "_count"
-              },
-              "script": "params.unknown_shared_data_status / params.total_count"
             }
           },
           "with_shared_data_in_repository": {
@@ -513,15 +351,6 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
               }
             }
           },
-          "with_shared_data_in_repository_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "with_shared_data_in_repository": "with_shared_data_in_repository>_count",
-                "total_count": "_count"
-              },
-              "script": "params.with_shared_data_in_repository / params.total_count"
-            }
-          },
           "with_open_data": {
             "filter": {
               "bool": {
@@ -540,15 +369,6 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
                   }
                 ]
               }
-            }
-          },
-          "with_open_data_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "with_open_data": "with_open_data>_count",
-                "total_count": "_count"
-              },
-              "script": "params.with_open_data / params.total_count"
             }
           },
           "with_open_data_in_repository": {
@@ -588,15 +408,6 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
               }
             }
           },
-          "with_open_data_in_repository_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "with_open_data_in_repository": "with_open_data_in_repository>_count",
-                "total_count": "_count"
-              },
-              "script": "params.with_open_data_in_repository / params.total_count"
-            }
-          },
           "with_data_dois": {
             "filter": {
               "bool": {
@@ -615,15 +426,6 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
                   }
                 ]
               }
-            }
-          },
-          "with_data_dois_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "with_data_dois": "with_data_dois>_count",
-                "total_count": "_count"
-              },
-              "script": "params.with_data_dois / params.total_count"
             }
           },
           "with_data_accession_number": {
@@ -646,29 +448,11 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
               }
             }
           },
-          "with_data_accession_number_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "with_data_accession_number": "with_data_accession_number>_count",
-                "total_count": "_count"
-              },
-              "script": "params.with_data_accession_number / params.total_count"
-            }
-          },
           "with_dois": {
             "filter": {
               "exists": {
                 "field": "DOI"
               }
-            }
-          },
-          "with_dois_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "with_dois": "with_dois>_count",
-                "total_count": "_count"
-              },
-              "script": "params.with_dois / params.total_count"
             }
           },
           "with_code": {
@@ -691,15 +475,6 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
                   }
                 ]
               }
-            }
-          },
-          "with_code_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "with_code": "with_code>_count",
-                "total_count": "_count"
-              },
-              "script": "params.with_code / params.total_count"
             }
           },
           "without_code": {
@@ -725,15 +500,6 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
               }
             }
           },
-          "without_code_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "without_code": "without_code>_count",
-                "total_count": "_count"
-              },
-              "script": "params.without_code / params.total_count"
-            }
-          },
           "unknown_code_status": {
             "filter": {
               "bool": {
@@ -743,15 +509,6 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
                   }
                 }
               }
-            }
-          },
-          "unknown_code_status_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "unknown_code_status": "unknown_code_status>_count",
-                "total_count": "_count"
-              },
-              "script": "params.unknown_code_status / params.total_count"
             }
           },
           "with_shared_code": {
@@ -772,15 +529,6 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
                   }
                 ]
               }
-            }
-          },
-          "with_shared_code_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "with_shared_code": "with_shared_code>_count",
-                "total_count": "_count"
-              },
-              "script": "params.with_shared_code / params.total_count"
             }
           },
           "without_shared_code": {
@@ -813,15 +561,6 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
               }
             }
           },
-          "without_shared_code_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "without_shared_code": "without_shared_code>_count",
-                "total_count": "_count"
-              },
-              "script": "params.without_shared_code / params.total_count"
-            }
-          },
           "unknown_shared_code_status": {
             "filter": {
               "bool": {
@@ -831,15 +570,6 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
                   }
                 }
               }
-            }
-          },
-          "unknown_shared_code_status_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "unknown_shared_code_status": "unknown_shared_code_status>_count",
-                "total_count": "_count"
-              },
-              "script": "params.unknown_shared_code_status / params.total_count"
             }
           },
           "with_shared_code_in_repository": {
@@ -879,15 +609,6 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
               }
             }
           },
-          "with_shared_code_in_repository_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "with_shared_code_in_repository": "with_shared_code_in_repository>_count",
-                "total_count": "_count"
-              },
-              "script": "params.with_shared_code_in_repository / params.total_count"
-            }
-          },
           "with_open_code": {
             "filter": {
               "bool": {
@@ -906,15 +627,6 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
                   }
                 ]
               }
-            }
-          },
-          "with_open_code_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "with_open_code": "with_open_code>_count",
-                "total_count": "_count"
-              },
-              "script": "params.with_open_code / params.total_count"
             }
           },
           "with_open_code_in_repository": {
@@ -954,15 +666,6 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
               }
             }
           },
-          "with_open_code_in_repository_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "with_open_code_in_repository": "with_open_code_in_repository>_count",
-                "total_count": "_count"
-              },
-              "script": "params.with_open_code_in_repository / params.total_count"
-            }
-          },
           "with_code_dois": {
             "filter": {
               "bool": {
@@ -981,15 +684,6 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
                   }
                 ]
               }
-            }
-          },
-          "with_code_dois_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "with_code_dois": "with_code_dois>_count",
-                "total_count": "_count"
-              },
-              "script": "params.with_code_dois / params.total_count"
             }
           },
           "with_code_accession_number": {
@@ -1012,29 +706,11 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
               }
             }
           },
-          "with_code_accession_number_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "with_code_accession_number": "with_code_accession_number>_count",
-                "total_count": "_count"
-              },
-              "script": "params.with_code_accession_number / params.total_count"
-            }
-          },
           "with_orcids": {
             "filter": {
               "exists": {
                 "field": "authorships.author.orcid"
               }
-            }
-          },
-          "with_orcids_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "with_orcids": "with_orcids>_count",
-                "total_count": "_count"
-              },
-              "script": "params.with_orcids / params.total_count"
             }
           },
           "with_rors": {
@@ -1044,15 +720,6 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
               }
             }
           },
-          "with_rors_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "with_rors": "with_rors>_count",
-                "total_count": "_count"
-              },
-              "script": "params.with_rors / params.total_count"
-            }
-          },
           "with_fundref_dois": {
             "filter": {
               "exists": {
@@ -1060,29 +727,11 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
               }
             }
           },
-          "with_fundref_dois_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "with_fundref_dois": "with_fundref_dois>_count",
-                "total_count": "_count"
-              },
-              "script": "params.with_fundref_dois / params.total_count"
-            }
-          },
           "with_grant_dois": {
             "filter": {
               "prefix": {
                 "funder.award": "10."
               }
-            }
-          },
-          "with_grant_dois_pct": {
-            "bucket_script": {
-              "buckets_path": {
-                "with_grant_dois": "with_grant_dois>_count",
-                "total_count": "_count"
-              },
-              "script": "params.with_grant_dois / params.total_count"
             }
           }
         }
