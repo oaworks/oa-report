@@ -313,6 +313,11 @@ export const EXPLORE_FILTERS_LABELS = {
     label: "With code",
     info: "",
     details: ""
+  },
+  "is_work": {
+    label: "Works",
+    info: "",
+    details: ""
   }
 };
 
