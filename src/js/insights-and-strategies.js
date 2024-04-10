@@ -236,6 +236,7 @@ export function initInsightsAndStrategies(org) {
                   .then(function (listResponse) {
                     var list = listResponse.data.hits.hits,
                         tableRows = ""; // Contents of the list to be displayed in the UI as a table
+                        console.log('list', list);
                 
                     // For each individual action, create a row
                     for (let i = 0; i < count; i++) {
@@ -457,7 +458,7 @@ window.callGetStrategyExportLink = function(id) {
 export function getStrategyExportLink(id, orgData) {
   let hasCustomExportIncludes = (orgData.hits.hits[0]._source.strategy[id].export_includes),
       strategyQuery           = (orgData.hits.hits[0]._source.strategy[id].query),
-      sort                    = (orgData.hits.hits[0]._source.strategy[id].sort);
+      strategySort            = (orgData.hits.hits[0]._source.strategy[id].sort);
 
   Promise.all([hasCustomExportIncludes])
     .then(function (results) {
@@ -480,7 +481,7 @@ export function getStrategyExportLink(id, orgData) {
   }
 
   // Build full query
-  query = CSV_EXPORT_BASE + query + include + '&sort=' + sort + email + orgKey;
+  query = CSV_EXPORT_BASE + query + include + '&sort=' + strategySort + email + orgKey;
 
   var xhr = new XMLHttpRequest();
   xhr.open("GET", query);
