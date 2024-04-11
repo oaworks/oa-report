@@ -236,7 +236,6 @@ export function initInsightsAndStrategies(org) {
                   .then(function (listResponse) {
                     var list = listResponse.data.hits.hits,
                         tableRows = ""; // Contents of the list to be displayed in the UI as a table
-                        console.log('list', list);
                 
                     // For each individual action, create a row
                     for (let i = 0; i < count; i++) {
