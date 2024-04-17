@@ -45,6 +45,11 @@ function initialise() {
 // Initialise the report when the DOM is ready
 document.addEventListener('DOMContentLoaded', initialise);
 
+/**
+ * Manages OAKeys cookies and updates the global OAKEYS based on URL parameters.
+ * This function extracts the 'orgkey' from the URL to manage login sessions
+ * and removes it from the URL for security reasons, preserving other URL parameters.
+ */
 function oaKeys() {
   var _OAcookie, ck, o;
 
