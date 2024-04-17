@@ -115,20 +115,20 @@ function oaKeys() {
  * @param {string} org - The organizatigon key to check for within OAKEYS.
  */
 function updateLoginState(org) {
-  // Define global state properties if not already defined
-  window.appState = window.appState || {};
-  window.appState.orgKey = "";
-  window.appState.loggedIn = false;
-  window.appState.hasOrgKey = Object.keys(OAKEYS).length !== 0;
+  // Init global state variables directly on the window object
+  window.loggedIn = false;
+  window.orgKey = "";
 
-  // Check if the organization key exists within OAKEYS and update state
-  if (window.appState.hasOrgKey && OAKEYS[org]) {
-    window.appState.orgKey = `&orgkey=${OAKEYS[org]}`;
-    window.appState.loggedIn = true;
+  // Assume OAKEYS is always an object (even an empty one), ensure it exists before running this code
+  window.hasOrgKey = Object.keys(OAKEYS).length !== 0;
+
+  if (window.hasOrgKey && OAKEYS[org]) {
+    window.orgKey = `&orgkey=${OAKEYS[org]}`;
+    window.loggedIn = true;
     displayNone("login");
     displayNone("about-free-logged-out");
   } else {
-    window.appState.loggedIn = false;
+    window.loggedIn = false;
     displayNone("logout");
   }
 }
