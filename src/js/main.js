@@ -92,27 +92,26 @@ function oaKeys() {
 
   window.OAKEYS = typeof ck === 'object' ? ck : {};
 
-  const url = new URL(window.location);
-  const params = url.searchParams;
-  const orgKeyValue = params.get('orgkey');
-
-  // Add orgkey value to window.OAKEYS and update cookie
-  if (orgKeyValue) {
-      window.OAKEYS[decodeURIComponent(orgKeyValue)] = orgKeyValue;
+  if (window.location.search.includes('orgkey=')) {
+    try {
+      o = window.location.search.split('org=')[1].split('&')[0];
+    } catch (error) {}
+    try {
+      if (o == null) {
+        o = window.location.href.split('//')[1].split('/')[1];
+      }
+    } catch (error) {}
+    if (o) {
+      window.OAKEYS[decodeURIComponent(o)] = window.location.search.split('orgkey=')[1].split('&')[0];
       _OAcookie(window.OAKEYS);
-
-      // Remove only the orgkey parameter from the URL
-      params.delete('orgkey');
-
-      // Update the URL without reloading the page, preserving other parameters
-      window.history.pushState(null, '', url);
+      try { history.pushState(null, null, window.location.href.split('?')[0]); } catch (e) {};
+    }
   }
 
-  if (params.get('logout')) {
-    window.OAKEYS = {};
+  if (window.location.search.includes('logout')) {
+    window.OAKEYS = {}; // or work out the org here and only logout of that org?
     _OAcookie(false);
-    params.delete('logout');
-    window.history.pushState(null, '', url);
+    try { history.pushState(null, null, window.location.href.split('?')[0]); } catch (e) {};
   }
 }
 
