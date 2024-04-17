@@ -19,9 +19,9 @@ function initialise() {
   if (isDataExploreInitialised) {
     return;
   }
-  
-  updateLoginState();
+
   oaKeys();
+  updateLoginState();
   
   // Check if the element with id="explore" exists to trigger data explore initialisation
   var exploreElement = document.getElementById("explore");
@@ -112,7 +112,7 @@ function oaKeys() {
 
 /**
  * Updates the global login state based on available OAKEYS and manages the visibility of UI elements accordingly.
- * @param {string} org - The organization key to check for within OAKEYS.
+ * @param {string} org - The organizatigon key to check for within OAKEYS.
  */
 function updateLoginState(org) {
   // Define global state properties if not already defined
