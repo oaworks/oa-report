@@ -19,7 +19,8 @@ function initialise() {
   if (isDataExploreInitialised) {
     return;
   }
-
+  
+  updateLoginState();
   oaKeys();
   
   // Check if the element with id="explore" exists to trigger data explore initialisation
@@ -106,5 +107,28 @@ function oaKeys() {
     window.OAKEYS = {}; // or work out the org here and only logout of that org?
     _OAcookie(false);
     try { history.pushState(null, null, window.location.href.split('?')[0]); } catch (e) {};
+  }
+}
+
+/**
+ * Updates the global login state based on available OAKEYS and manages the visibility of UI elements accordingly.
+ * @param {string} org - The organization key to check for within OAKEYS.
+ */
+function updateLoginState(org) {
+  // Define global state properties if not already defined
+  window.appState = window.appState || {};
+  window.appState.orgKey = "";
+  window.appState.loggedIn = false;
+  window.appState.hasOrgKey = Object.keys(OAKEYS).length !== 0;
+
+  // Check if the organization key exists within OAKEYS and update state
+  if (window.appState.hasOrgKey && OAKEYS[org]) {
+    window.appState.orgKey = `&orgkey=${OAKEYS[org]}`;
+    window.appState.loggedIn = true;
+    displayNone("login");
+    displayNone("about-free-logged-out");
+  } else {
+    window.appState.loggedIn = false;
+    displayNone("logout");
   }
 }

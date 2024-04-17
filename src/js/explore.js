@@ -19,19 +19,6 @@ import { createPostData } from './api-requests.js';
 
 const exportSort = "&sort=published_date:desc";
 
-let orgKey = "",
-    loggedIn = false,
-    hasOrgKey = Object.keys(OAKEYS).length !== 0;
-if (hasOrgKey) {
-  // logged in
-  orgKey = `&orgkey=${Object.values(OAKEYS)}`;
-  loggedIn = true;
-} else {
-  // logged out
-  loggedIn = false;
-  //displayNone("explore");
-}
-
 /**
  * Allows the EXPLORE_HEADER_TERMS_LABELS constant to be accessible via a browser.
  * @global
