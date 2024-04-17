@@ -96,10 +96,9 @@ function oaKeys() {
   const params = url.searchParams;
   const orgKeyValue = params.get('orgkey');
 
-  // Add orgkey value to window.OAKEYS using the page's pathname as the key and update cookie
-  if (orgKeyValue) {
-      const pathKey = url.pathname.slice(1); // Remove the leading '/' from pathname
-      window.OAKEYS[decodeURIComponent(pathKey)] = orgKeyValue;
+  // Add orgkey value to window.OAKEYS using the global 'org' variable and update cookie
+  if (orgKeyValue && typeof org !== 'undefined') {
+      window.OAKEYS[org] = orgKeyValue;
       _OAcookie(window.OAKEYS);
 
       // Remove only the orgkey parameter from the URL
@@ -108,7 +107,7 @@ function oaKeys() {
       // Update the URL without reloading the page, preserving other parameters
       window.history.pushState(null, '', url);
   }
-
+ 
   if (params.get('logout')) {
     window.OAKEYS = {};
     _OAcookie(false);
