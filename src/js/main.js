@@ -21,7 +21,7 @@ function initialise() {
   }
 
   oaKeys();
-  updateLoginState();
+  updateLoginState(org);
   
   // Check if the element with id="explore" exists to trigger data explore initialisation
   var exploreElement = document.getElementById("explore");
