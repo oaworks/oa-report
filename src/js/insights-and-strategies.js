@@ -14,23 +14,23 @@ export const orgApiUrl = `${API_BASE_URL}orgs?q=objectID:%22${org}%22`;
 // Fetch and store organisational data in a constant
 export const orgDataPromise = axios.get(orgApiUrl);
 
-let orgKey = "",
-    loggedIn = false,
-    hasOrgKey = Object.keys(OAKEYS).length !== 0;
-if (hasOrgKey) {
-  // logged in
-  orgKey = `&orgkey=${OAKEYS[org]}`; // Use org variable to get the correct orgkey value
-  loggedIn = true;
-  displayNone("login");
-  displayNone("about-free-logged-out");
-} else {
-  // logged out
-  loggedIn = false;
-  displayNone("logout");
-}
-
 // Generate report’s UI for any given date range
 export function initInsightsAndStrategies(org) {
+  let orgKey = "",
+    loggedIn = false,
+    hasOrgKey = Object.keys(OAKEYS).length !== 0;
+  if (hasOrgKey) {
+    // logged in
+    orgKey = `&orgkey=${OAKEYS[org]}`; // Use org variable to get the correct orgkey value
+    loggedIn = true;
+    displayNone("login");
+    displayNone("about-free-logged-out");
+  } else {
+    // logged out
+    loggedIn = false;
+    displayNone("logout");
+  }
+
   // Set paths for orgindex
   let queryPrefix = `${QUERY_BASE}q=${dateRange}`,
       countQueryPrefix = `${COUNT_QUERY_BASE}q=${dateRange}`;
