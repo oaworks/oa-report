@@ -737,65 +737,49 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
   const cell = document.createElement(isHeader ? 'th' : 'td');
   cell.className = cssClass;
 
-  if (content === 'key') {
-    // Check if content is 'key' and insert a span with class 'explore_type'
-    const spanElement = document.createElement('span');
-    spanElement.className = 'explore_type';
-
-    cell.appendChild(spanElement);
-  } else if (exploreItemId === 'country' && key === 'key') {
-    const countryName = COUNTRY_CODES[content]  || "Unknown country";
-    cell.textContent = countryName;
-  } else if (exploreItemId === 'language' && key === 'key') {
-    const languageName = LANGUAGE_CODES[content] || "Unknown language";
-    cell.textContent = languageName;
-  } else if ((exploreItemId === 'publisher_license' && key === 'key') || (exploreItemId === 'repository_license' && key === 'key')) {
-    // Check if LICENSE_CODES[content] exists before trying to access its properties
-    const licenseInfo = LICENSE_CODES[content];
-    // Check if licenseInfo is defined before accessing its properties
-    const licenseName = licenseInfo && licenseInfo.name ? licenseInfo.name : "Unknown license";
-    const licenseUrl = licenseInfo && licenseInfo.url ? licenseInfo.url : null;
-
-    cell.innerHTML = `
-        <strong class='uppercase'>
-          ${content}
-        </strong> 
-      <br>${licenseUrl ? `
-        <a href="${licenseUrl}" 
-           class="underline underline-offset-2 decoration-1" 
-           rel="noopener noreferrer" 
-           target="_blank">${licenseName}</a>
-      ` : licenseName}
-    `;
-  } else if (exploreItemId === 'author' && content.includes('orcid.org')) {
-    // Check if content is an ORCiD URL and fetch the full name
+  // Safely check and process content based on its type and the context
+  if (key === 'key' && content) {
+    let displayContent = "";
+    switch (exploreItemId) {
+      case 'country':
+        // Fetch and display country name using country code
+        displayContent = COUNTRY_CODES[content] || "Unknown country";
+        break;
+      case 'language':
+        // Fetch and display language name using language code
+        displayContent = LANGUAGE_CODES[content] || "Unknown language";
+        break;
+      case 'publisher_license':
+      case 'repository_license':
+        // Check if LICENSE_CODES entry exists and get name and URL
+        const licenseInfo = LICENSE_CODES[content];
+        const licenseName = licenseInfo?.name || "Unknown license";
+        const licenseUrl = licenseInfo?.url;
+        displayContent = `<strong class='uppercase'>${content}</strong><br>` +
+          (licenseUrl ? `<a href="${licenseUrl}" class="underline underline-offset-2 decoration-1" rel="noopener noreferrer" target="_blank">${licenseName}</a>` : licenseName);
+        break;
+      default:
+        displayContent = content;
+    }
+    cell.innerHTML = displayContent;
+  } else if (exploreItemId === 'author' && typeof content === 'string' && content.includes('orcid.org')) {
+    // Handle ORCiD links by fetching full name
     const orcidId = content.split('/').pop();
-    cell.textContent = orcidId;
     getORCiDFullName(orcidId)
-      .then(
-        // Display full name with link to ORCiD profile
-        fullName => cell.innerHTML = 
-        `<a href="${content}" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            class="underline underline-offset-2 decoration-1">
-          ${fullName}
-        </a>`
-      )
-      .catch(() => cell.innerHTML = 
-        `<a href="${content}" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            class="underline underline-offset-2 decoration-1">
-          ${content} (Name not found)
-        </a>`
-      );
+      .then(fullName => {
+        cell.innerHTML = `<a href="${content}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 decoration-1">${fullName}</a>`;
+      })
+      .catch(() => {
+        cell.innerHTML = `<a href="${content}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 decoration-1">${content} (Name not found)</a>`;
+      });
   } else if (typeof content === 'object' && content !== null) {
-    // Check if the content is an object and format its values as a list
+    // If content is an object, format its values as a list
     cell.innerHTML = `<ul>${formatObjectValuesAsList(content, true)}</ul>`;
-  } else if (content === null || content === undefined || content === "'null'" || content === '"null"' || content === "null") {
-    cell.innerHTML = ""; // Replace null values with empty string
+  } else if (!content) {
+    // Replace null, undefined, and similar values with an empty string
+    cell.innerHTML = "";
   } else {
+    // Default case for handling plain content
     cell.innerHTML = content;
   }
 
