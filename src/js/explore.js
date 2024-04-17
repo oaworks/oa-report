@@ -758,6 +758,21 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
         displayContent = `<strong class='uppercase'>${content}</strong><br>` +
           (licenseUrl ? `<a href="${licenseUrl}" class="underline underline-offset-2 decoration-1" rel="noopener noreferrer" target="_blank">${licenseName}</a>` : licenseName);
         break;
+      case 'author':
+        if (typeof content === 'string' && content.includes('orcid.org')) {
+          const orcidId = content.split('/').pop();
+          cell.innerHTML = `<a href="${content}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 decoration-1">Loading ORCiD data...</a>`;
+          getORCiDFullName(orcidId)
+            .then(fullName => {
+              cell.innerHTML = `<a href="${content}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 decoration-1">${fullName || 'Name not found'}</a>`;
+            })
+            .catch(() => {
+              cell.innerHTML = `<a href="${content}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 decoration-1">${content}</a>`;
+            });
+          return cell; // Early return to avoid overriding innerHTML after async operation
+        }
+        displayContent = content;
+        break;
       default:
         displayContent = content;
     }
