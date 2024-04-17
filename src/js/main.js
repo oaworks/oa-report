@@ -126,10 +126,10 @@ function updateLoginState(org) {
   window.orgKey = "";
 
   // Assume OAKEYS is always an object (even an empty one), ensure it exists before running this code
-  window.hasOrgKey = Object.keys(OAKEYS).length !== 0;
+  window.hasOrgKey = Object.keys(window.OAKEYS).length !== 0;
 
-  if (window.hasOrgKey && OAKEYS[org]) {
-    window.orgKey = `&orgkey=${OAKEYS[org]}`;
+  if (window.hasOrgKey && window.OAKEYS[org]) {
+    window.orgKey = `&orgkey=${window.OAKEYS[org]}`;
     window.loggedIn = true;
     displayNone("login");
     displayNone("about-free-logged-out");
