@@ -40,8 +40,6 @@ export const FIRST_YEAR = 2015;
 export function setDefaultYear() {
   const startParam = getURLParam('start');
   const endParam = getURLParam('end');
-  const breakdownParam = getURLParam('breakdown'); 
-  const actionParam = getURLParam('action');
 
   // Wait for the DOM + asynchronously loaded page elements to be ready 
   // before attempting to set report’s selected date range, breakdown, and action 
@@ -106,25 +104,6 @@ export function setDefaultYear() {
       } else {
         // TO FIX: free reports don’t have a defaultButton
         handleYearButtonLogic(null, defaultStartDate, defaultEndDate, `${makeDateReadable(defaultStartDate)} &ndash; ${makeDateReadable(defaultEndDate)}`);
-      }
-    }
-
-    // Check if there’s a breakdown (previously named 'explore item') parameter in the URL
-    // TODO: this should probably go somewhere else outside of the date management... Maybe in main.js?
-    // ...or in the explore.js file. 
-    // or directly invoke the function to process the explore item
-    // or processExploreDataTable(exploreButton, correspondingItemData);
-    if (breakdownParam) {
-      const exploreButton = document.getElementById(`explore_${breakdownParam}_button`);
-      if (exploreButton) {
-        exploreButton.click(); 
-      }
-    }
-    
-    if (actionParam) {
-      const strategyButton = document.getElementById(`strategy_${actionParam}`);
-      if (strategyButton) {
-        document.getElementById(`strategy_${actionParam}`)?.click();
       }
     }
   };

@@ -22,6 +22,7 @@ function initialise() {
 
   oaKeys();
   updateLoginState(org);
+  handleURLParameters();
   
   // Check if the element with id="explore" exists to trigger data explore initialisation
   var exploreElement = document.getElementById("explore");
@@ -136,5 +137,24 @@ function updateLoginState(org) {
   } else {
     window.loggedIn = false;
     displayNone("logout");
+  }
+}
+
+function handleURLParameters() {
+  const breakdownParam = getURLParam('breakdown');
+  const actionParam = getURLParam('action');
+
+  if (breakdownParam) {
+    const exploreButton = document.getElementById(`explore_${breakdownParam}_button`);
+    if (exploreButton) {
+      exploreButton.click();
+    }
+  }
+
+  if (actionParam) {
+    const strategyButton = document.getElementById(`strategy_${actionParam}`);
+    if (strategyButton) {
+      strategyButton.click();
+    }
   }
 }
