@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', initialise);
  * and removes it from the URL for security reasons, preserving other URL parameters.
  */
 function oaKeys() {
-  var _OAcookie, ck, o;
+  var _OAcookie, ck;
 
   _OAcookie = function(obj) {
     var c, d, domain, expires, i, len, ref, t;
@@ -70,7 +70,7 @@ function oaKeys() {
       }
       d = new Date();
       d.setDate(d.getDate() + expires);
-      t += '; expires=' + new Date(d).toUTCString();
+      t += '; expires=' + d.toUTCString();
       t += '; domain=' + domain + '; secure';
       document.cookie = t;
       return t;
@@ -99,16 +99,13 @@ function oaKeys() {
 
   // Add orgkey value to window.OAKEYS using the global 'org' variable and update cookie
   if (orgKeyValue && typeof org !== 'undefined') {
-      window.OAKEYS[org] = orgKeyValue;
-      _OAcookie(window.OAKEYS);
+    window.OAKEYS[org] = orgKeyValue; // Use a known good key
+    _OAcookie(window.OAKEYS);
 
-      // Remove only the orgkey parameter from the URL
-      params.delete('orgkey');
-
-      // Update the URL without reloading the page, preserving other parameters
-      window.history.pushState(null, '', url);
+    params.delete('orgkey');
+    window.history.pushState(null, '', url);
   }
- 
+
   if (params.get('logout')) {
     window.OAKEYS = {};
     _OAcookie(false);
