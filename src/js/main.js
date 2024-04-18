@@ -90,27 +90,35 @@ function oaKeys() {
   };
 
   ck = _OAcookie();
-
   window.OAKEYS = typeof ck === 'object' ? ck : {};
 
   const url = new URL(window.location);
   const params = url.searchParams;
   const orgKeyValue = params.get('orgkey');
 
-  // Add orgkey value to window.OAKEYS using the global 'org' variable and update cookie
+  // Add orgkey value to window.OAKEYS using the global 'org' variable and update cookie 
   if (orgKeyValue && typeof org !== 'undefined') {
     window.OAKEYS[org] = orgKeyValue; // Use a known good key
     _OAcookie(window.OAKEYS);
-
     params.delete('orgkey');
-    window.history.pushState(null, '', url);
+
+    try {
+      window.history.pushState(null, '', url.toString());
+    } catch (e) {
+      console.error("Error with pushState:", e);
+    }
   }
 
   if (params.get('logout')) {
     window.OAKEYS = {};
     _OAcookie(false);
     params.delete('logout');
-    window.history.pushState(null, '', url);
+
+    try {
+      window.history.pushState(null, '', url.toString());
+    } catch (e) {
+      console.error("Error with pushState on logout:", e);
+    }
   }
 }
 
