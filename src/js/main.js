@@ -101,6 +101,10 @@ function oaKeys() {
     window.OAKEYS[org] = orgKeyValue; // Use a known good key
     _OAcookie(window.OAKEYS);
     params.delete('orgkey');
+    
+    // Clean the URL before updating history state
+    url.username = '';
+    url.password = '';
 
     try {
       window.history.pushState(null, '', url.toString());
