@@ -96,32 +96,32 @@ function oaKeys() {
   const params = url.searchParams;
   const orgKeyValue = params.get('orgkey');
 
-  // Add orgkey value to window.OAKEYS using the global 'org' variable and update cookie 
+  // Track whether a state change is needed
+  let stateChangeNeeded = false;
+
+  // Add orgkey value to window.OAKEYS using the global 'org' variable and update cookie
   if (orgKeyValue && typeof org !== 'undefined') {
-    window.OAKEYS[org] = orgKeyValue; // Use a known good key
+    window.OAKEYS[org] = orgKeyValue;
     _OAcookie(window.OAKEYS);
     params.delete('orgkey');
-    
-    // Clean the URL before updating history state
-    url.username = '';
-    url.password = '';
-
-    try {
-      window.history.pushState(null, '', url.toString());
-    } catch (e) {
-      console.error("Error with pushState:", e);
-    }
+    stateChangeNeeded = true;
   }
 
   if (params.get('logout')) {
     window.OAKEYS = {};
     _OAcookie(false);
     params.delete('logout');
+    stateChangeNeeded = true;
+  }
+
+  // If a state change is needed, attempt to update the history state
+  if (stateChangeNeeded) {
+    const cleanUrl = `${url.origin}${url.pathname}${params.toString() ? `?${params.toString()}` : ''}`;
 
     try {
-      window.history.pushState(null, '', url.toString());
+      window.history.pushState(null, '', cleanUrl);
     } catch (e) {
-      console.error("Error with pushState on logout:", e);
+      console.error("Error with pushState:", e);
     }
   }
 }
