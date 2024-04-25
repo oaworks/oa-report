@@ -93,14 +93,14 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
           "compliant": {
             "filter": {
               "term": {
-                "supplements.is_compliant_all_works__bmgf": true
+                [`supplements.is_compliant_all_works__${suffix}`]: true
               }
             }
           },
           "covered_by_policy": {
             "filter": {
               "term": {
-                "supplements.is_covered_by_policy__bmgf": true
+                [`supplements.is_covered_by_policy__${suffix}`]: true
               }
             }
           },
@@ -121,7 +121,7 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
           "in_approved_repository": {
             "filter": {
               "term": {
-                "supplements.is_approved_repository__bmgf": true
+                [`supplements.is_approved_repository__${suffix}`]: true
               }
             }
           },
@@ -142,7 +142,7 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
           "with_grant_id": {
             "filter": {
               "exists": {
-                "field": "supplements.grantid__bmgf"
+                "field": `supplements.grantid__${suffix}`
               }
             }
           },
@@ -823,14 +823,14 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
           "compliant": {
             "filter": {
               "term": {
-                "supplements.is_compliant_all_works__bmgf": true
+                [`supplements.is_compliant_all_works__${suffix}`]: true
               }
             }
           },
           "covered_by_policy": {
             "filter": {
               "term": {
-                "supplements.is_covered_by_policy__bmgf": true
+                [`supplements.is_covered_by_policy__${suffix}`]: true
               }
             }
           },
@@ -851,7 +851,7 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
           "in_approved_repository": {
             "filter": {
               "term": {
-                "supplements.is_approved_repository__bmgf": true
+                [`supplements.is_approved_repository__${suffix}`]: true
               }
             }
           },
@@ -872,7 +872,7 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
           "with_grant_id": {
             "filter": {
               "exists": {
-                "field": "supplements.grantid__bmgf"
+                "field": `supplements.grantid__${suffix}`
               }
             }
           },
@@ -1551,14 +1551,14 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
           "compliant": {
             "filter": {
               "term": {
-                "supplements.is_compliant_all_works__bmgf": true
+                [`supplements.is_compliant_all_works__${suffix}`]: true
               }
             }
           },
           "covered_by_policy": {
             "filter": {
               "term": {
-                "supplements.is_covered_by_policy__bmgf": true
+                [`supplements.is_covered_by_policy__${suffix}`]: true
               }
             }
           },
@@ -1579,7 +1579,7 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
           "in_approved_repository": {
             "filter": {
               "term": {
-                "supplements.is_approved_repository__bmgf": true
+                [`supplements.is_approved_repository__${suffix}`]: true
               }
             }
           },
@@ -1600,7 +1600,7 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
           "with_grant_id": {
             "filter": {
               "exists": {
-                "field": "supplements.grantid__bmgf"
+                "field": `supplements.grantid__${suffix}`
               }
             }
           },
