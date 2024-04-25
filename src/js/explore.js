@@ -385,6 +385,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     if (type === "terms") {
       query = decodeAndReplaceUrlEncodedChars(query); // Decode and replace any URL-encoded characters for JSON
       records = await fetchTermBasedData(suffix, query, term, sort, size);
+      console.log(records);
       records = reorderRecords(records, includes);
 
       // Update the sort text in header
@@ -461,19 +462,20 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 async function fetchTermBasedData(suffix, query, term, sort, size) {
   const postData = createPostData(suffix, query, term, startYear, endYear, size, sort); // Generate POST request
   const response = await fetchPostData(postData);
+  console.log(response);
 
-  if (response && response.aggregations && response.aggregations.key && response.aggregations.key.buckets) {
-    return response.aggregations.key.buckets.map(bucket => {
+  if (response && response.aggregations && response.aggregations.values && response.aggregations.values.buckets) {
+    return response.aggregations.values.buckets.map(bucket => {
       const formattedBucket = {};
-      Object.keys(bucket).forEach(key => {
-        if (key.startsWith("median_")) {
-          formattedBucket[key] = bucket[key].values["50.0"];
-        } else if (bucket[key].doc_count !== undefined) {
-          formattedBucket[key] = bucket[key].doc_count;
-        } else if (bucket[key].value !== undefined) {
-          formattedBucket[key] = bucket[key].value;
+      Object.keys(bucket).forEach(value => {
+        if (value.startsWith("median_")) {
+          formattedBucket[value] = bucket[value].values["50.0"];
+        } else if (bucket[value].doc_count !== undefined) {
+          formattedBucket[value] = bucket[value].doc_count;
+        } else if (bucket[value].value !== undefined) {
+          formattedBucket[value] = bucket[value].value;
         } else {
-          formattedBucket[key] = bucket[key];
+          formattedBucket[value] = bucket[value];
         }
       });
       return formattedBucket;
