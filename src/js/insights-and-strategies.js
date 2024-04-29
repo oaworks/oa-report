@@ -29,7 +29,7 @@ if (hasOrgKey) {
   displayNone("logout");
 }
 // Set default sorting order for CSV downloads
-let exportSort = "&sort=published_date:desc"
+let exportSort = "&sort=openalex.publication_date:desc"
 
 // Generate report’s UI for any given date range
 export function initInsightsAndStrategies(org) {
@@ -268,7 +268,7 @@ export function initInsightsAndStrategies(org) {
                           var value = list[i]._source[key];
                           action[key] = value;
 
-                          if (key === 'published_date') action[key] = makeDateReadable(new Date(action[key]));
+                          if (key === 'openalex.publication_date') action[key] = makeDateReadable(new Date(action[key]));
                         }
 
                         if (value == undefined || value == null) {
@@ -324,9 +324,9 @@ export function initInsightsAndStrategies(org) {
 
     displayStrategy(
       "email_author_vor",
-      ['published_date', 'title', 'journal', 'author_email_name', 'email', 'DOI', 'mailto'],
+      ['openalex.publication_date', 'title', 'journal', 'author_email_name', 'email', 'DOI', 'mailto'],
       "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
+        <div class='mb-1 text-neutral-600'>${action.openalex.publication_date}</div>\
         <div class='mb-1 font-medium text-neutral-900 hover:text-carnation-500'>\
           <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
         </div>\
@@ -349,9 +349,9 @@ export function initInsightsAndStrategies(org) {
 
     displayStrategy(
       "email_author_aam",
-      ['published_date', 'title', 'journal', 'author_email_name', 'email', 'DOI', 'mailto'],
+      ['openalex.publication_date', 'title', 'journal', 'author_email_name', 'email', 'DOI', 'mailto'],
       "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
+        <div class='mb-1 text-neutral-600'>${action.openalex.publication_date}</div>\
         <div class='mb-1 font-medium text-neutral-900 hover:text-carnation-500'>\
           <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
         </div>\
@@ -374,14 +374,14 @@ export function initInsightsAndStrategies(org) {
     
     displayStrategy(
       "apc_followup",
-      ['published_date', 'title', 'journal', 'DOI', 'publisher', 'publisher_license', 'journal_oa_type', 'oa_status', 'supplements.apc_cost', 'supplements.invoice_number', 'supplements.invoice_date'],
+      ['openalex.publication_date', 'title', 'journal', 'DOI', 'publisher', 'publisher_license', 'journal_oa_type', 'oa_status', 'supplements.apc_cost', 'supplements.invoice_number', 'supplements.invoice_date'],
       "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
         <div class='mb-1 font-medium text-neutral-900'>${action.publisher}</div>\
         <div class='mb-3 text-neutral-900'>${action.journal}</div>\
         <div class='text-neutral-600'>OA type: <span class='font-medium'>${action.journal_oa_type}</span></div>\
       </td>\
       <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
+        <div class='mb-1 text-neutral-600'>${action.openalex.publication_date}</div>\
         <div class='mb-1 text-neutral-900 hover:text-carnation-500'>\
           <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
         </div>\

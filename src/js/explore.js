@@ -17,7 +17,7 @@ import { createPostData } from './api-requests.js';
 // Global variables
 // =================================================
 
-const exportSort = "&sort=published_date:desc";
+const exportSort = "&sort=openalex.publication_date:desc";
 
 let orgKey = "",
     loggedIn = false,
@@ -620,7 +620,7 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
       }
 
       // Date
-      if (dataType === 'articles' && key === 'published_date') {
+      if (dataType === 'articles' && key === 'openalex.publication_date') {
         content = makeDateReadable(new Date(content));
       }
 

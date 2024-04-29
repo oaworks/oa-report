@@ -466,7 +466,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
     label: "PMCID",
     info: ""
   },
-  "published_date": {
+  "openalex.publication_date": {
     label: "Published date",
     info: ""
   },
