@@ -470,7 +470,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
     label: "Published date",
     info: ""
   },
-  "published_year": {
+  "openalex.publication_year": {
     label: "Published year",
     info: ""
   },

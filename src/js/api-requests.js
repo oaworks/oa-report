@@ -2,7 +2,7 @@ import { ELEVENTY_API_ENDPOINT } from "./constants.js";
 
 // Dynamically configure POST data 
 export function createPostData(suffix, query, term, startYear, endYear, size = 20, sort = "_count") {
-  // Only the term published_year on the live API does not require the .keyword suffix 
+  // Only the term openalex.publication_year on the live API does not require the .keyword suffix 
   let termField = term;
   if (!(term === "published_year" && ELEVENTY_API_ENDPOINT === "api")) {
     termField += ".keyword";
@@ -17,7 +17,7 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
           },
           {
             "range": {
-              "published_year": {
+              "openalex.publication_year": {
                 "gte": startYear,
                 "lte": endYear
               }
