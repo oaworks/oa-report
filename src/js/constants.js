@@ -206,12 +206,24 @@ export const EXPLORE_ITEMS_LABELS = {
 export const EXPLORE_FILTERS_LABELS = {
   "is_paper": {
     label: "All articles",
-    info: "",
+    info: "<p>Scholarly research articles, <strong>including</strong>:</p>\
+      <ul class='mb-2 list-disc'>\
+        <li>peer-reviewed research</li>\
+        <li>reviews</li>\
+        <li>letters</li>\
+        <li>editorials</li>\
+        <li>methods</li>\
+      </ul>\
+      <p>This <strong>excludes</strong>:</p>\
+      <ul class='list-disc'>\
+        <li>preprints</li>\
+        <li>conference proceedings</li>\
+      </ul>",
     details: ""
   },
   "is_preprint": {
     label: "Preprints",
-    info: "",
+    info: "<p>Scholarly research articles that haven’t been peer-reviewed.</p>",
     details: ""
   },
   "is_authored": {
@@ -231,7 +243,7 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "is_covered_by_old_policy": {
     label: "Covered by old <span class='uppercase'>OA</span> policy",
-    info: "",
+    info: "<p>Scholarly research articles covered by the old Open Access policy.</p>",
     details: ""
   },
   "is_compliant": {
@@ -246,7 +258,17 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "is_original_research": {
     label: "Original research",
-    info: "",
+    info: "<p>Scholarly research articles, <strong>including only</strong>:</p>\
+    <ul class='mb-2 list-disc'>\
+      <li>peer-reviewed research</li>\
+    </ul>\
+    <p>This <strong>excludes</strong>:</p>\
+    <ul class='list-disc'>\
+      <li>reviews</li>\
+      <li>editorials</li>\
+      <li>methods</li>\
+      <li>conference proceedings</li>\
+    </ul>",
     details: ""
   },
   "with_grant_id": {
@@ -276,7 +298,7 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "has_data_availability_statement": {
     label: "Has data availability statement",
-    info: "",
+    info: "<p class='mb-3'>Any scholarly research article that has a data availability statement. Data availability statements (i.e. “data access statement”, “resource availability statements”, “code availability statements”) tell a reader where the research data or code associated with an article is available and how they can be accessed. This doesn’t tell you what type of data availability statement is provided (e.g., there is Open Data VS there is no data).</p><p>To check if an article has a data availability statement, we use data from PubMed’s data availability filter and review articles manually.</p>",
     details: ""
   },
   "has_apc": {
