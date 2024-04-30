@@ -207,7 +207,7 @@ export const EXPLORE_FILTERS_LABELS = {
   "is_paper": {
     label: "All articles",
     info: "<p>Scholarly research articles, <strong>including</strong>:</p>\
-      <ul class='mb-2 list-disc'>\
+      <ul class='mb-2 list-disc list-inside'>\
         <li>peer-reviewed research</li>\
         <li>reviews</li>\
         <li>letters</li>\
@@ -215,7 +215,7 @@ export const EXPLORE_FILTERS_LABELS = {
         <li>methods</li>\
       </ul>\
       <p>This <strong>excludes</strong>:</p>\
-      <ul class='list-disc'>\
+      <ul class='list-disc list-inside'>\
         <li>preprints</li>\
         <li>conference proceedings</li>\
       </ul>",
@@ -259,11 +259,11 @@ export const EXPLORE_FILTERS_LABELS = {
   "is_original_research": {
     label: "Original research",
     info: "<p>Scholarly research articles, <strong>including only</strong>:</p>\
-    <ul class='mb-2 list-disc'>\
+    <ul class='mb-2 list-disc list-inside'>\
       <li>peer-reviewed research</li>\
     </ul>\
     <p>This <strong>excludes</strong>:</p>\
-    <ul class='list-disc'>\
+    <ul class='list-disc list-inside'>\
       <li>reviews</li>\
       <li>editorials</li>\
       <li>methods</li>\
