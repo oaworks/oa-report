@@ -17,8 +17,7 @@ async function fetchSuggestions(searchTerm) {
   }
 
   try {
-    // TEMP switch `beta` back to `${apiEndpoint}` after fixing oaworks/discussion#3110
-    const url = `https://bg.beta.oa.works/report/orgs/suggest/search/${searchTerm}?include=name,objectID,private`;
+    const url = `https://bg.${apiEndpoint}.oa.works/report/orgs/suggest/search/${searchTerm}?include=name,objectID,private`;
     const response = await fetch(url);
     const data = await response.json();
 
