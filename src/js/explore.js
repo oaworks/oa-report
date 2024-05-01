@@ -258,27 +258,33 @@ function createExploreFilterRadioButton(id, isChecked) {
   const labelData = EXPLORE_FILTERS_LABELS[id];
   const label = EXPLORE_FILTERS_LABELS[id].label || id; // Use label from filters or default to ID
 
-  // Create dev to contain radio input and label
+  // Create div to contain radio input and label
   const filterRadioButton = document.createElement('div');
   filterRadioButton.className = 'flex items-center mr-3 md:mr-6 mb-3';
 
-  // Generate and set tooltip if info is present and non-empty
-  if (labelData && labelData.info && labelData.info.trim()) {
-    const tooltipContent = generateTooltipContent(labelData);
-    const tooltipID = `${id}_info`;
+  // Generate initial tooltip content
+  let tooltipContent = generateTooltipContent(labelData);
 
-    tippy(filterRadioButton, {
-      content: tooltipContent,
-      allowHTML: true,
-      interactive: true,
-      placement: 'bottom',
-      appendTo: document.body,
-      theme: 'tooltip-white',
-    });
+  // Initialise Tippy tooltip
+  tippy(filterRadioButton, {
+    content: tooltipContent,
+    allowHTML: true,
+    interactive: true,
+    placement: 'bottom',
+    appendTo: document.body,
+    theme: 'tooltip-white',
+    onShow(instance) {
+        // Set timeout to allow DOM updates
+        setTimeout(() => {
+            replaceText('org-name', orgName);
+            instance.setContent(generateTooltipContent(labelData));
+        }, 0); 
+    }
+  });
 
-    filterRadioButton.setAttribute('aria-controls', tooltipID);
-    filterRadioButton.setAttribute('aria-labelledby', tooltipID);
-  }
+  const tooltipID = `${id}_info`;
+  filterRadioButton.setAttribute('aria-controls', tooltipID);
+  filterRadioButton.setAttribute('aria-labelledby', tooltipID);
 
   // Create and append radio input
   const radioInput = document.createElement('input');
@@ -560,13 +566,13 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
  */
 function generateTooltipContent(labelData, additionalHelpText = null) {
   const hasDetails = !!labelData.details;
-  return `
+  let tooltipHTML = `
     <p class='${hasDetails ? "mb-2" : ""}'>${labelData.info}</p>
     ${additionalHelpText ? `<p class='mb-2'>${additionalHelpText}</p>` : ""}
     ${hasDetails ? `<details><summary class='hover:cursor-pointer'>Methodology</summary><p class='mt-2'>${labelData.details}</p></details>` : ""}
   `;
+  return tooltipHTML;
 }
-
 /**
  * Attaches a tooltip to an HTML element if tooltip content is provided.
  * Uses the Tippy.js library for tooltip functionality, applying a11y attributes.
