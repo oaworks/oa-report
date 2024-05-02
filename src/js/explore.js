@@ -256,35 +256,37 @@ async function addExploreFiltersToDOM(query) {
  */
 function createExploreFilterRadioButton(id, isChecked) {
   const labelData = EXPLORE_FILTERS_LABELS[id];
-  const label = EXPLORE_FILTERS_LABELS[id].label || id; // Use label from filters or default to ID
+  const label = labelData.label || id;  // Use label from filters or default to ID
 
   // Create div to contain radio input and label
   const filterRadioButton = document.createElement('div');
   filterRadioButton.className = 'flex items-center mr-3 md:mr-6 mb-3';
 
-  // Generate initial tooltip content
-  let tooltipContent = generateTooltipContent(labelData);
+  // Generate and set tooltip if info is present and non-empty
+  if (labelData.info && labelData.info.trim()) {
+    const tooltipContent = generateTooltipContent(labelData);
 
-  // Initialise Tippy tooltip
-  tippy(filterRadioButton, {
-    content: tooltipContent,
-    allowHTML: true,
-    interactive: true,
-    placement: 'bottom',
-    appendTo: document.body,
-    theme: 'tooltip-white',
-    onShow(instance) {
-        // Set timeout to allow DOM updates
-        setTimeout(() => {
-            replaceText('org-name', orgName);
-            instance.setContent(generateTooltipContent(labelData));
-        }, 0); 
-    }
-  });
+    // Initialise Tippy tooltip if there is tooltip content
+    tippy(filterRadioButton, {
+      content: tooltipContent,
+      allowHTML: true,
+      interactive: true,
+      placement: 'bottom',
+      appendTo: document.body,
+      theme: 'tooltip-white',
+      onShow(instance) {
+          // Use setTimeout to ensure DOM is ready for updates
+          setTimeout(() => {
+              replaceText('org-name', orgName || 'Default Organization');
+              instance.setContent(generateTooltipContent(labelData));  // Re-generate content to include dynamic replacements
+          }, 0);
+      }
+    });
 
-  const tooltipID = `${id}_info`;
-  filterRadioButton.setAttribute('aria-controls', tooltipID);
-  filterRadioButton.setAttribute('aria-labelledby', tooltipID);
+    const tooltipID = `${id}_info`;
+    filterRadioButton.setAttribute('aria-controls', tooltipID);
+    filterRadioButton.setAttribute('aria-labelledby', tooltipID);
+  }
 
   // Create and append radio input
   const radioInput = document.createElement('input');
