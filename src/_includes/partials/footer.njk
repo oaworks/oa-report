@@ -55,7 +55,9 @@
 {# To get org names/slugs and whether or not they’re paying users #}
 <script>
   const org = ("{{ org._source.objectID | urlencode }}"),
-        orgSlug = ("{{ org._source.objectID | slug }}");
+        orgSlug = ("{{ org._source.objectID | slug }}"),
+        orgName = ("{{ org._source.name|safe }}"),
+        orgPolicyUrl = ("{{ org._source.policy.url }}");
   {% if org._source.paid %}
     const paid = true;
   {% else %}
@@ -66,11 +68,6 @@
 {# To fetch data from the API and display it in the UI #}
 <script src="../js/axios.min.js"></script>
 <script type="module" src="../js/insights-and-strategies.min.js"></script>
-
-{# crappy prototype #}
-<script>
-  const orgName = "{{ org._source.name|safe }}"; // NEEDS TO BE REPLACED WITH ORGID
-</script>
 {% endif %}
 
 {# Only display the search tool on the homepage / index page #}
