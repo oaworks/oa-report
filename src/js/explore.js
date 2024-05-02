@@ -275,14 +275,22 @@ function createExploreFilterRadioButton(id, isChecked) {
       appendTo: document.body,
       theme: 'tooltip-white',
       onShow(instance) {
-          // Use setTimeout to ensure DOM is ready for updates
-          setTimeout(() => {
-              replaceText('org-name', orgName); 
-              replaceText('org-policy-coverage', orgPolicyCoverage); // Update policy coverage
-              replaceText('org-policy-compliance', orgPolicyCompliance); // Update policy compliance
-              document.querySelector('.org-policy-url').href = orgPolicyUrl; // Update policy URL
-              instance.setContent(generateTooltipContent(labelData));  // Re-generate content to include dynamic replacements
-          }, 0);
+        // Use setTimeout to ensure DOM is ready for updates
+        setTimeout(() => {
+          // Safely update text and href using optional chaining and nullish coalescing
+          replaceText('org-name', orgName ?? '');
+          replaceText('org-policy-coverage', orgPolicyCoverage ?? '');
+          replaceText('org-policy-compliance', orgPolicyCompliance ?? '');
+
+          // Safely set the href attribute
+          const policyUrlElement = document.querySelector('.org-policy-url');
+          if (policyUrlElement) {
+              policyUrlElement.href = orgPolicyUrl ?? '#';  // Fallback to '#' if orgPolicyUrl is undefined
+          }
+
+          // Update the tooltip content if labelData exists
+          instance.setContent(generateTooltipContent(labelData));
+        }, 0);
       }
     });
 
