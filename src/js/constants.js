@@ -218,13 +218,11 @@ export const EXPLORE_FILTERS_LABELS = {
       <ul class='list-disc list-inside'>\
         <li>preprints</li>\
         <li>conference proceedings</li>\
-      </ul>",
-    details: ""
+      </ul>"
   },
   "is_preprint": {
     label: "Preprints",
-    info: "<p>Scholarly research articles that haven’t been peer-reviewed.</p>",
-    details: ""
+    info: "<p>Scholarly research articles that haven’t been peer-reviewed.</p>"
   },
   "is_authored": {
     label: "Authored",
@@ -240,33 +238,27 @@ export const EXPLORE_FILTERS_LABELS = {
     <ul class='list-disc list-inside'>\
       <li>preprints</li>\
       <li>conference proceedings</li>\
-    </ul>",
-    details: ""
+    </ul>"
   },
   "is_covered_by_policy": {
     label: "Covered by <span class='uppercase'>OA</span> policy",
-    info: "<p class='mb-2'>Scholarly research articles covered by <span class='org-name'></span>’s Open Access policy.</p><p><span class='org-policy-coverage'></span></p>",
-    details: ""
+    info: "<p class='mb-2'>Scholarly research articles covered by <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p><p><span class='org-policy-coverage'></span></p>"
   },
   "is_covered_by_current_policy": {
     label: "Covered by current <span class='uppercase'>OA</span> policy",
-    info: "<p>Scholarly research articles covered by the most recent <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p>",
-    details: ""
+    info: "<p>Scholarly research articles covered by <span class='org-name'></span>’s most recent <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p>"
   },
   "is_covered_by_old_policy": {
     label: "Covered by old <span class='uppercase'>OA</span> policy",
-    info: "<p>Scholarly research articles covered by an older Open Access policy.</p>",
-    details: ""
+    info: "<p>Scholarly research articles covered by an older <span class='org-name'></span> <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p>"
   },
   "is_compliant": {
     label: "Covered by & compliant with <span class='uppercase'>OA</span> policy",
-    info: "<p>Scholarly research articles covered by <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a> and compliant with its terms.</p><p><span class='org-policy-compliance></span></p><p><span class='org-policy-coverage'></span></p>",
-    details: ""
+    info: "<p>Scholarly research articles covered by <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a> and compliant with its terms.</p><p><span class='org-policy-compliance></span></p><p><span class='org-policy-coverage'></span></p>"
   },
   "is_compliant_all_works": {
     label: "Compliant with <span class='uppercase'>OA</span> policy",
-    info: "<p>Scholarly research articles that comply with the terms of <span class='org-name'></span>’s Open Access Policy, but are not necessarily covered by it.</p><p><span class='org-policy-compliance'></span></p>",
-    details: ""
+    info: "<p>Scholarly research articles that comply with the terms of <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>, but are not necessarily covered by it.</p><p><span class='org-policy-compliance'></span></p>"
   },
   "is_original_research": {
     label: "Original research",
@@ -280,8 +272,7 @@ export const EXPLORE_FILTERS_LABELS = {
       <li>editorials</li>\
       <li>methods</li>\
       <li>conference proceedings</li>\
-    </ul>",
-    details: ""
+    </ul>"
   },
   "with_grant_id": {
     label: "With grant <span class='uppercase'>ID</span>",
@@ -301,39 +292,27 @@ export const EXPLORE_FILTERS_LABELS = {
     details: "We collect data from the publisher using Crossref, and where this isn’t available we manually collect the funding statement and extract the grant ID. Grant ID data is then cleaned using automated tools and manual review."
   },
   "is_found_by_external_sources": {
-    label: "Found by external sources",
-    info: "",
-    details: ""
+    label: "Found by external sources"
   },
   "is_found_only_by_external_sources": {
-    label: "Found only by external sources",
-    info: "",
-    details: ""
+    label: "Found only by external sources"
   },
   "is_found_only_by_oareport": {
-    label: "Found only by <span class='uppercase'>OA</span>.<span class='uppercase'>R</span>eport",
-    info: "",
-    details: ""
+    label: "Found only by <span class='uppercase'>OA</span>.<span class='uppercase'>R</span>eport"
   },
   "is_found_by_all_sources": {
-    label: "Found by all sources",
-    info: "",
-    details: ""
+    label: "Found by all sources"
   },
   "has_data_availability_statement": {
     label: "Has data availability statement",
-    info: "<p class='mb-3'>Any scholarly research article that has a data availability statement. Data availability statements (i.e. “data access statement”, “resource availability statements”, “code availability statements”) tell a reader where the research data or code associated with an article is available and how they can be accessed. This doesn’t tell you what type of data availability statement is provided (e.g., there is Open Data VS there is no data).</p><p>To check if an article has a data availability statement, we use data from PubMed’s data availability filter and review articles manually.</p>",
-    details: ""
+    info: "<p class='mb-3'>Any scholarly research article that has a data availability statement. Data availability statements (i.e. “data access statement”, “resource availability statements”, “code availability statements”) tell a reader where the research data or code associated with an article is available and how they can be accessed. This doesn’t tell you what type of data availability statement is provided (e.g., there is Open Data VS there is no data).</p><p>To check if an article has a data availability statement, we use data from PubMed’s data availability filter and review articles manually.</p>"
   },
   "has_apc": {
     label: "Paid via APC",
-    info: "<p>Scholarly research articles that had an article-processing charge (APC) paid by <span class='org-name'></span></p>",
-    details: ""
+    info: "<p>Scholarly research articles that had an article-processing charge (APC) paid by <span class='org-name'></span></p>"
   },
   "is_under_transitional_agreement": {
-    label: "Paid via transitional agreement",
-    info: "",
-    details: ""
+    label: "Paid via transitional agreement"
   },
   "is_funded": {
     label: "Funded",
@@ -349,33 +328,22 @@ export const EXPLORE_FILTERS_LABELS = {
     <ul class='list-disc list-inside'>\
       <li>preprints</li>\
       <li>conference proceedings</li>\
-    </ul>",
-    details: ""
+    </ul>"
   },
   "has_shared_data": {
-    label: "Shared data",
-    info: "",
-    details: ""
+    label: "Shared data"
   },
   "has_shared_code": {
-    label: "Shared code",
-    info: "",
-    details: ""
+    label: "Shared code"
   },
   "has_data": {
-    label: "With data",
-    info: "",
-    details: ""
+    label: "With data"
   },
   "has_code": {
-    label: "With code",
-    info: "",
-    details: ""
+    label: "With code"
   },
   "is_work": {
-    label: "Works",
-    info: "",
-    details: ""
+    label: "Works"
   }
 };
 
@@ -391,7 +359,7 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   },
   "covered_by_policy": {
     label: "Covered by policy",
-    info: "Publications that are covered by the Open Access Policy.",
+    info: "Publications that are covered by the Open Access policy.",
     details: "When a grant ID was available, we checked if the grant was covered by the Open Access policy using a list provided by IDRC staff."
   },
   "free_to_read": {
