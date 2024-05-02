@@ -228,7 +228,19 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "is_authored": {
     label: "Authored",
-    info: "",
+    info: "<p>Scholarly research articles authored by someone at <span class='org-name'></span>, <strong>including</strong>:</p>\
+    <ul class='mb-2 list-disc list-inside'>\
+      <li>peer-reviewed research</li>\
+      <li>reviews</li>\
+      <li>letters</li>\
+      <li>editorials</li>\
+      <li>methods</li>\
+    </ul>\
+    <p>This <strong>excludes</strong>:</p>\
+    <ul class='list-disc list-inside'>\
+      <li>preprints</li>\
+      <li>conference proceedings</li>\
+    </ul>",
     details: ""
   },
   "is_covered_by_policy": {
@@ -273,8 +285,20 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "with_grant_id": {
     label: "With grant <span class='uppercase'>ID</span>",
-    info: "",
-    details: ""
+    info: "<p>Scholarly research articles with a grant ID from <span class='org-name'></span>, <strong>including</strong>:</p>\
+    <ul class='mb-2 list-disc list-inside'>\
+      <li>peer-reviewed research</li>\
+      <li>reviews</li>\
+      <li>letters</li>\
+      <li>editorials</li>\
+      <li>methods</li>\
+    </ul>\
+    <p>This <strong>excludes</strong>:</p>\
+    <ul class='mb-2 list-disc list-inside'>\
+      <li>preprints</li>\
+      <li>conference proceedings</li>\
+    </ul>",
+    details: "We collect data from the publisher using Crossref, and where this isn’t available we manually collect the funding statement and extract the grant ID. Grant ID data is then cleaned using automated tools and manual review."
   },
   "is_found_by_external_sources": {
     label: "Found by external sources",
@@ -303,7 +327,7 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "has_apc": {
     label: "Paid via APC",
-    info: "",
+    info: "<p>Scholarly research articles that had an article-processing charge (APC) paid by <span class='org-name'></span></p>",
     details: ""
   },
   "is_under_transitional_agreement": {
@@ -313,7 +337,19 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "is_funded": {
     label: "Funded",
-    info: "",
+    info: "<p>Scholarly research articles funded by <span class='org-name'></span>, <strong>including</strong>:</p>\
+    <ul class='mb-2 list-disc list-inside'>\
+      <li>peer-reviewed research</li>\
+      <li>reviews</li>\
+      <li>letters</li>\
+      <li>editorials</li>\
+      <li>methods</li>\
+    </ul>\
+    <p>This <strong>excludes</strong>:</p>\
+    <ul class='list-disc list-inside'>\
+      <li>preprints</li>\
+      <li>conference proceedings</li>\
+    </ul>",
     details: ""
   },
   "has_shared_data": {
@@ -369,15 +405,17 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
     details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex."
   },
   "mean_apc_amount": {
-    label: "Mean APC amount"
+    label: "Mean APC amount",
+    info: "Mean (i.e. average) of article-processing charges (APCs) paid by <span class='org-name'></span>."
   },
   "mean_citations": {
     label: "Mean citations",
-    info: "The mean (i.e. average) number of citations of these publications",
+    info: "The mean (i.e. average) number of citations of these publications.",
     details: "We used data from OpenAlex's <code>cited_by_count</code>."
   },
   "median_apc_amount": {
-    label: "Median APC amount"
+    label: "Median APC amount",
+    info: "Median of article-processing charges (APCs) paid by <span class='org-name'></span>."
   },
   "open_access": {
     label: "Open Access",
@@ -390,7 +428,8 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
     details: "CrossRef, OpenAlex, PubMed, and Europe PMC were searched for articles authored by or funded by IDRC using a variety of IDs (e.g ROR: 0445x0472 Fundref: 10.13039/501100000193) and aliases (International Development Research Centre, International Development Research Center, Centre de recherches pour le développement international) across all of time. An export of the IDRC Digital Library was utilized by the tool. Items with type “Journal Article” or “Abstract” were matched to DOIs. Results were deduplicated and ingested into OA.Report. Results were reviewed by a mix of manual and automated means to remove false positives (e.g mentions in full text, incorrect matches of IDRCs name)."
   },
   "total_apc_amount": {
-    label: "Total APC amount"
+    label: "Total APC amount",
+    info: "Total article-processing charges (APCs) paid by <span class='org-name'></span>."
   },
   "total_citations": {
     label: "Total citations",
