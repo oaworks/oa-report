@@ -415,7 +415,8 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
     label: "Unknown shared code status"
   },
   "with_apc": {
-    label: "With APC<span class='lowercase'>s</span>"
+    label: "With APC<span class='lowercase'>s</span>",
+    info: "Scholarly research articles with an article-processing charge (APC) paid by <span class='org-name'></span>."
   },
   "with_data": {
     label: "With data"
@@ -444,15 +445,17 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
     label: "With DOI<span style='text-transform: lowercase;'>s</span>"
   },
   "with_fundref_dois": {
-    label: "With FundRef DOI<span style='text-transform: lowercase;'>s</span>"
+    label: "With FundRef DOI<span style='text-transform: lowercase;'>s</span>",
+    info: "Scholarly research articles that have at least one ORCID in their Crossref metadata."
   },
   "with_grant_dois": {
-    label: "With grant DOI<span style='text-transform: lowercase;'>s</span>"
+    label: "With grant DOI<span style='text-transform: lowercase;'>s</span>",
+    info: "Scholarly research articles that have at least one grant DOI in their Crossref metadata."
   },
   "with_grant_id": {
     label: "With grant ID<span style='text-transform: lowercase;'>s</span>",
-    info: "Publications that provided the grant ID for the grant you provide them.",
-    details: "We found and normalized data from Crossref to find data provided by publisher. Where this wasn’t possible, we manually collected the funding statement. The grant ID was then extracted & normalized the grant ID using a mix of automated tools and manual review."
+    info: "Scholarly research articles that have a <span class='org-name'></span> grant ID found by OA.Works.",
+    details: "We found and normalized data from Crossref to find data provided by the publisher. Where this wasn't possible, we manually collected the funding statement. The grant ID was then extracted and normalized using a mix of automated tools and manual review."
   },
   "with_open_data": {
     label: "With Open Data"
@@ -467,7 +470,8 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
     label: "With Open Code in repository"
   },
   "with_orcids": {
-    label: "With ORC<span style='text-transform: lowercase;'>i</span>D<span style='text-transform: lowercase;'>s</span>"
+    label: "With ORC<span style='text-transform: lowercase;'>i</span>D<span style='text-transform: lowercase;'>s</span>",
+    info: "Scholarly research articles that have at least one ORCID in their OpenAlex metadata."
   },
   "with_preprint": {
     label: "With preprint",
@@ -480,7 +484,8 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
     details: "We used data from Unpaywall and Crossref."
   },
   "with_rors": {
-    label: "With ROR<span style='text-transform: lowercase;'>s</span>"
+    label: "With ROR<span style='text-transform: lowercase;'>s</span>",
+    info: "Scholarly research articles that have at least one ROR ID in their OpenAlex metadata."
   },
   "with_shared_data": {
     label: "With shared data"
