@@ -245,27 +245,27 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "is_covered_by_policy": {
     label: "Covered by <span class='uppercase'>OA</span> policy",
-    info: "",
+    info: "<p class='mb-2'>Scholarly research articles covered by <span class='org-name'></span>’s Open Access policy.</p><p><span class='org-policy-coverage'></span></p>",
     details: ""
   },
   "is_covered_by_current_policy": {
     label: "Covered by current <span class='uppercase'>OA</span> policy",
-    info: "",
+    info: "<p>Scholarly research articles covered by the most recent <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p>",
     details: ""
   },
   "is_covered_by_old_policy": {
     label: "Covered by old <span class='uppercase'>OA</span> policy",
-    info: "<p>Scholarly research articles covered by the old Open Access policy.</p>",
+    info: "<p>Scholarly research articles covered by an older Open Access policy.</p>",
     details: ""
   },
   "is_compliant": {
     label: "Covered by & compliant with <span class='uppercase'>OA</span> policy",
-    info: "",
+    info: "<p>Scholarly research articles covered by <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a> and compliant with its terms.</p><p><span class='org-policy-compliance></span></p><p><span class='org-policy-coverage'></span></p>",
     details: ""
   },
   "is_compliant_all_works": {
     label: "Compliant with <span class='uppercase'>OA</span> policy",
-    info: "",
+    info: "<p>Scholarly research articles that comply with the terms of <span class='org-name'></span>’s Open Access Policy, but are not necessarily covered by it.</p><p><span class='org-policy-compliance'></span></p>",
     details: ""
   },
   "is_original_research": {
@@ -424,8 +424,7 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   },
   "publications": {
     label: "Publications",
-    info: "Academic research articles found (including peer-reviewed research, reviews, editorials, etc.)",
-    details: "CrossRef, OpenAlex, PubMed, and Europe PMC were searched for articles authored by or funded by IDRC using a variety of IDs (e.g ROR: 0445x0472 Fundref: 10.13039/501100000193) and aliases (International Development Research Centre, International Development Research Center, Centre de recherches pour le développement international) across all of time. An export of the IDRC Digital Library was utilized by the tool. Items with type “Journal Article” or “Abstract” were matched to DOIs. Results were deduplicated and ingested into OA.Report. Results were reviewed by a mix of manual and automated means to remove false positives (e.g mentions in full text, incorrect matches of IDRCs name)."
+    info: "Scholarly research articles found by the current filter."
   },
   "total_apc_amount": {
     label: "Total APC amount",
