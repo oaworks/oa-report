@@ -57,7 +57,9 @@
   const org = ("{{ org._source.objectID | urlencode }}"),
         orgSlug = ("{{ org._source.objectID | slug }}"),
         orgName = ("{{ org._source.name|safe }}"),
-        orgPolicyUrl = ("{{ org._source.policy.url }}");
+        orgPolicyUrl = ("{{ org._source.policy.url }}"),
+        orgPolicyCompliance = ("{{ org._source.policy.help_text.compliant }}"),
+        orgPolicyCoverage = ("{{ org._source.policy.help_text.covered_by_policy }}");
   {% if org._source.paid %}
     const paid = true;
   {% else %}

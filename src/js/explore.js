@@ -277,7 +277,10 @@ function createExploreFilterRadioButton(id, isChecked) {
       onShow(instance) {
           // Use setTimeout to ensure DOM is ready for updates
           setTimeout(() => {
-              replaceText('org-name', orgName || 'Default Organization');
+              replaceText('org-name', orgName); 
+              replaceText('org-policy-coverage', orgPolicyCoverage); // Update policy coverage
+              replaceText('org-policy-compliance', orgPolicyCompliance); // Update policy compliance
+              document.querySelector('.org-policy-url').href = orgPolicyUrl; // Update policy URL
               instance.setContent(generateTooltipContent(labelData));  // Re-generate content to include dynamic replacements
           }, 0);
       }
