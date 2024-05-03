@@ -454,7 +454,7 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   },
   "with_grant_id": {
     label: "With grant ID<span style='text-transform: lowercase;'>s</span>",
-    info: "Scholarly research articles that have a <span class='org-name'></span> grant ID found by OA.Works.",
+    info: "Scholarly research articles with a grant ID from <span class='org-name'></span> found by OA.Works.",
     details: "We found and normalized data from Crossref to find data provided by the publisher. Where this wasn't possible, we manually collected the funding statement. The grant ID was then extracted and normalized using a mix of automated tools and manual review."
   },
   "with_open_data": {

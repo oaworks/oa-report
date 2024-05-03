@@ -564,7 +564,7 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
       : EXPLORE_HEADER_ARTICLES_LABELS[key]?.label || key;
 
     const headerCell = createTableCell('', cssClass, null, null, true); 
-    setupTooltip(headerCell, key, dataType);
+    setupHeaderTooltip(headerCell, key, dataType);
 
     headerRow.appendChild(headerCell);
   });
@@ -595,7 +595,7 @@ function generateTooltipContent(labelData, additionalHelpText = null) {
  * @param {string} key - The key associated with the tooltip, used for fallback labeling and to generate IDs for accessibility.
  * @param {string} dataType - Indicates the type of data ('terms' or 'articles'), which determines the labels configuration to use.
  */
-function setupTooltip(element, key, dataType) {
+function setupHeaderTooltip(element, key, dataType) {
   const labelsConfig = dataType === 'terms' ? EXPLORE_HEADER_TERMS_LABELS : EXPLORE_HEADER_ARTICLES_LABELS;
   const labelData = labelsConfig[key];
   const label = labelData && labelData.label ? labelData.label : key;
@@ -616,6 +616,16 @@ function setupTooltip(element, key, dataType) {
       placement: 'bottom',
       appendTo: document.body,
       theme: 'tooltip-white',
+      onShow(instance) {
+        // Use setTimeout to ensure DOM is ready for updates
+        setTimeout(() => {
+          // Safely update text and href using optional chaining and nullish coalescing
+          replaceText('org-name', orgName ?? '');
+
+          // Update the tooltip content if labelData exists
+          instance.setContent(generateTooltipContent(labelData));
+        }, 0);
+      }
     });
 
     element.setAttribute('aria-controls', tooltipID);
