@@ -250,7 +250,7 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "is_covered_by_old_policy": {
     label: "Covered by old <span class='uppercase'>OA</span> policy",
-    info: "<p>Scholarly research articles covered by an older <span class='org-name'></span> <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p>"
+    info: "<p>Scholarly research articles covered by an older <span class='org-name'></span> Open Access policy.</p>"
   },
   "is_compliant": {
     label: "Covered by & compliant with <span class='uppercase'>OA</span> policy",
@@ -720,6 +720,22 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   "is_compliant": {
     label: "Compliant?",
     info: ""
+  },
+  "is_compliant_with_current_policy": {
+    label: "Compliant with current <span class='uppercase'>OA</span> policy",
+    info: "<p>Scholarly research articles compliant with <span class='org-name'></span>’s most recent <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p>"
+  },
+  "is_compliant_with_old_policy": {
+    label: "Compliant with old <span class='uppercase'>OA</span> policy",
+    info: "<p>Scholarly research articles compliant with an older <span class='org-name'></span> Open Access policy.</p>"
+  },
+  "is_covered_by_current_policy": {
+    label: "Covered by current <span class='uppercase'>OA</span> policy",
+    info: "<p>Scholarly research articles covered by <span class='org-name'></span>’s most recent <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p>"
+  },
+  "is_covered_by_old_policy": {
+    label: "Covered by old <span class='uppercase'>OA</span> policy",
+    info: "<p>Scholarly research articles covered by an older <span class='org-name'></span> Open Access policy.</p>"
   },
   "is_new": {
     label: "New?",
