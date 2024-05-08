@@ -760,6 +760,10 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
         displayContent = `<strong class='uppercase'>${content}</strong><br>` +
           (licenseUrl ? `<a href="${licenseUrl}" class="underline underline-offset-2 decoration-1" rel="noopener noreferrer" target="_blank">${licenseName}</a>` : licenseName);
         break;
+      case 'all_lab_head': // TODO: remove these cases once we settle on a naming convention
+      case 'janelia_lab_head':
+      case 'investigator':
+      case 'freeman_hrabowski_scholar':
       case 'author':
         if (typeof content === 'string' && content.includes('orcid.org')) {
           const orcidId = content.split('/').pop();
