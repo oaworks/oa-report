@@ -305,7 +305,9 @@ export function reorderRecords(records, includes) {
 
 /**
  * Formats records for display, either as raw data or prettified with only percentages for pretty mode.
- * Ensures 'key' and 'publications' are properly labeled and included.
+ * Ensures 'key' and 'doc_count' are properly labeled and included.
+ * Applies numeric formatting for fields starting with 'total_', 'median_', or 'mean_' and
+ * currency formatting for fields ending with '_amount' using a helper function.
  * 
  * @param {Object[]} records - The array of records to be formatted.
  * @param {boolean} [pretty=true] - Flag to determine if data should be displayed in a pretty format.
@@ -316,18 +318,21 @@ export function prettifyRecords(records, pretty = true) {
     const formattedRecord = {};
     Object.keys(record).forEach(key => {
       if (pretty) {
-        // For pretty, include only percentages and always include 'key' and 'doc_count'
+        // Always include 'key' and 'doc_count' without modification
         if (key === 'key' || key === 'doc_count') {
-          formattedRecord[key] = record[key];  // Ensure 'key' and 'doc_count' are always displayed
+          formattedRecord[key] = record[key];
         }
+        // Format percentages
         if (key.endsWith('_pct')) {
-          formattedRecord[key] = parseFloat(record[key]).toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-          });
-        } 
+          formattedRecord[key] = Math.ceil(parseFloat(record[key])).toString() + '%';
+        }
+        // Format numbers starting with 'total_', 'median_', or 'mean_' or ending with '_amount'
+        if (key.startsWith('total_') || key.startsWith('median_') || key.startsWith('mean_') || key.endsWith('_amount')) {
+          const isCurrency = key.endsWith('_amount');
+          formattedRecord[key] = makeNumberReadable(parseFloat(record[key]), isCurrency);
+        }
       } else {
-        // For raw, include all fields except percentages
+        // Include all fields except percentages in raw mode
         if (!key.endsWith('_pct')) {
           formattedRecord[key] = record[key];
         }
