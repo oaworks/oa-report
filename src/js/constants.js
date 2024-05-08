@@ -326,6 +326,9 @@ export const EXPLORE_FILTERS_LABELS = {
  * For terms-based tables
  */
 export const EXPLORE_HEADER_TERMS_LABELS = {
+  "doc_count": {
+    label: "Publications"
+  },
   "compliant": {
     label: "Compliant",
     info: "Publications that comply with the requirements of the Open Access policy, even if they are not covered by said policy.",

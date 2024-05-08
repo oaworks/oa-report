@@ -7,7 +7,7 @@
 // Imports
 // =================================================
 
-import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, makeNumberReadable, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, updateURLParams } from "./utils.js";
+import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, makeNumberReadable, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, updateURLParams } from "./utils.js";
 import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { orgDataPromise } from './insights-and-strategies.js';
@@ -350,7 +350,7 @@ function addRecordsShownSelectToDOM() {
 
 /**
  * Handles the click event for explore items. Fetches data and updates the table 
- * with the results based on the selected filter and display style.
+ * based on the selected filter and display style.
  * 
  * @async
  * @param {Object} itemData - The data object of the explore item.
@@ -360,11 +360,9 @@ function addRecordsShownSelectToDOM() {
  */
 async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 10, pretty = true) {
   try {
-    const { type, id, term, sort, includes } = itemData; // Extract explore item's properties
+    const { type, id, term, sort, includes } = itemData; // Extract properties
 
     document.getElementById("csv_email_msg").innerHTML = ""; // Clear any existing message in CSV download form
-
-    // Show the table
     const exportTable = document.getElementById('export_table');
     exportTable.classList.remove('hidden'); 
 
@@ -379,27 +377,24 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     if (!query || query.trim() === '') {
       showNoResultsRow(10, "export_table_body", "js_export_table"); // Show "No results found."
       toggleLoadingIndicator(false, 'explore_loading'); // Hide loading indicator
-      return; // Stop further processing
+      return;
     }
 
     if (type === "terms") {
-      query = decodeAndReplaceUrlEncodedChars(query); // Decode and replace any URL-encoded characters for JSON
+      query = decodeAndReplaceUrlEncodedChars(query); // Decode and replace URL-encoded characters for JSON parsing
       records = await fetchTermBasedData(suffix, query, term, sort, size);
-      console.log(records);
       records = reorderRecords(records, includes);
 
-      // Update the sort text in header
-      replaceText("explore_sort", "publication count");
-      replaceText("report_sort_adjective", "Top");
-
-      // Format records depending on data display toggler choice 
-      if (pretty === true) {
-        records = formatRecords(records); 
-        records = prettifyRecords(records);
+      if (pretty) {
+        records = prettifyRecords(records, true);
       } else {
         records = prettifyRecords(records, false);
       }
 
+      // Update the sort text in header
+      replaceText("explore_sort", "publication count");
+      replaceText("report_sort_adjective", "Top");
+      removeCSVExportLink(); // Remove the CSV export link
     } else if (type === "articles") {
       records = await fetchArticleBasedData(query, includes, sort, size);
       records = reorderRecords(records, includes);
@@ -407,6 +402,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       // Update the sort text in header
       replaceText("explore_sort", "published date"); 
       replaceText("report_sort_adjective", "Latest");
+      addCSVExportLink(); // Add the CSV export link
     }
 
     if (records.length > 0) {
@@ -416,11 +412,11 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       
       // Update any mentions of the explore data type with .plural version of the ID
       replaceText("explore_type", EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id));
-
+    
       // Add functionalities to the table
       enableExploreTableScroll();
       enableTooltipsForTruncatedCells();
-
+    
       const downloadCSVForm = document.getElementById('download_csv_form');
       const exploreArticlesTableHelp = document.getElementById('explore_articles_records_shown_help');
       const exploreTermsTableHelp = document.getElementById('explore_terms_records_shown_help');
@@ -441,6 +437,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     } else {
       showNoResultsRow(10, "export_table_body", "js_export_table"); // Show "No results found."
     }
+
   } catch (error) {
     console.error('Error fetching and displaying explore data: ', error);
     showNoResultsRow(10, "export_table_body", "js_export_table"); // Show "No results found."
@@ -667,62 +664,6 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
       }
     });
   }
-}
-
-/**
- * Formats the records for display. This includes converting numerical values
- * to human-readable formats such as percentages and currency.
- * 
- * @param {Object[]} records - The records to format.
- */
-function formatRecords(records) {
-  records.forEach(record => {
-    Object.keys(record).forEach(key => {
-      if (typeof record[key] === 'number') {
-        let formattedNumber = record[key].toFixed(2);
-
-        if (formattedNumber.endsWith('.00')) {
-          formattedNumber = formattedNumber.slice(0, -3);
-        }
-
-        if (key.endsWith("_pct")) {
-          record[key] = `${(formattedNumber*100).toFixed()}%`;
-        } else if (key.endsWith("_amount")) {
-          record[key] = `${makeNumberReadable(parseFloat(formattedNumber), true)}`;
-        } else if (key === 'key') {
-           // Do not process key: it can be a year and we don't want to add commas to those
-          record[key] = formattedNumber;
-        } else {
-          record[key] = makeNumberReadable(parseFloat(formattedNumber));
-        }
-      }
-      // Non-numeric values are left unchanged
-    });
-  });
-  return records;
-}
-
-/**
- * Formats records or headers for display. Removes non-percentage counterparts 
- * from records and formats headers to be more human-readable.
- * 
- * @param {Object[]} records - The array of records to be prettified.
- * @param {boolean} [pretty=true] - Flag to determine if data should be displayed in a pretty format.
- * @returns {Object[]|string[]} - The prettified records or headers.
- */
-function prettifyRecords(records, pretty = true) {
-  records.forEach(record => {
-    Object.keys(record).forEach(key => {
-      const pctKey = key + "_pct";
-      if (pretty === true) {
-        if (record.hasOwnProperty(pctKey)) delete record[key]; // Delete non-percentage counterpart
-      } else if (pretty === false) {
-        if (record.hasOwnProperty(pctKey)) delete record[pctKey]; // Delete percentage counterpart
-      }
-    });
-  });
-
-  return records;
 }
 
 /**

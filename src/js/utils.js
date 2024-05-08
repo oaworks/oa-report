@@ -270,66 +270,71 @@ export function formatObjectValuesAsList(object, inline = false) {
 }
 
 /**
- * Reorders the keys of each record in an array based on a specified order.
+ * Reorders the keys of each record based on a specified order, placing 'key' and 'doc_count' 
+ * first if they exist, and calculates percentages where applicable, excluding special handling for 'doc_count'.
  * 
  * @param {Array<Object>} records - The array of records to reorder.
- * @param {string} includes - Comma-separated string of keys in the desired order.
- * @returns {Array<Object>} The reordered array of records.
+ * @param {string} includes - Comma-separated string of keys in the desired order, excluding 'doc_count'.
+ * @returns {Array<Object>} The reordered and enriched array of records.
  */
 export function reorderRecords(records, includes) {
-  const keysOrder = includes.split(',');
+  // Add 'key' and 'doc_count' to the front if they exist in the records
+  const firstKeys = [];
+  if (records.some(record => record.hasOwnProperty('key'))) firstKeys.push('key');
+  if (records.some(record => record.hasOwnProperty('doc_count'))) firstKeys.push('doc_count');
+
+  const keysOrder = firstKeys.concat(includes.split(',').filter(key => !firstKeys.includes(key) && key !== 'doc_count'));
 
   return records.map(record => {
     const reorderedRecord = {};
-
     keysOrder.forEach(key => {
-      let value = getNestedPropertyValue(record, key);
-
-      // Handle arrays and nested properties
-      if (Array.isArray(value)) {
-        value = value.filter(item => item !== null); // Remove null items
-        if (value.length === 0) {
-          value = 'null'; // Set to null if array is empty
+      let value = record[key]; // No aliasing for 'doc_count'
+      if (value !== undefined) {
+        if (typeof value === 'number' && !key.startsWith('mean_') && !key.startsWith('median_') && !key.startsWith('total_') && key !== 'doc_count') {
+          // Calculate and store percentage values for applicable numeric fields using doc_count
+          const pctValue = ((value / record['doc_count']) * 100).toFixed(2);
+          reorderedRecord[key + '_pct'] = pctValue + '%';
         }
+        // Keep raw value for all fields
+        reorderedRecord[key] = value;
       }
-      reorderedRecord[key] = value;
     });
-
     return reorderedRecord;
   });
 }
 
 /**
- * Safely retrieves a nested property value from an object.
+ * Formats records for display, either as raw data or prettified with only percentages for pretty mode.
+ * Ensures 'key' and 'publications' are properly labeled and included.
  * 
- * @param {Object} obj - The object to retrieve the property from.
- * @param {string} path - Path to the property in dot notation.
- * @returns {*} The value of the property, or null if not found.
+ * @param {Object[]} records - The array of records to be formatted.
+ * @param {boolean} [pretty=true] - Flag to determine if data should be displayed in a pretty format.
+ * @returns {Object[]} - The formatted records.
  */
-function getNestedPropertyValue(obj, path) {
-  return path.split('.').reduce((currentObj, key) => {
-    if (currentObj === null) {
-      return null;
-    }
-
-    // Check if the current object is an array and the key is numeric (array index)
-    if (Array.isArray(currentObj)) {
-      // Map over the array and return the value of the nested property for each item
-      return currentObj.map(item => {
-        if (typeof item === 'object' && item !== null && key in item) {
-          return item[key];
-        } else {
-          // If the item is an array or doesn't have the key, try to go deeper recursively
-          // or return null if not possible
-          return typeof item === 'object' ? getNestedPropertyValue(item, key) : null;
+export function prettifyRecords(records, pretty = true) {
+  return records.map(record => {
+    const formattedRecord = {};
+    Object.keys(record).forEach(key => {
+      if (pretty) {
+        // For pretty, include only percentages and always include 'key' and 'doc_count'
+        if (key === 'key' || key === 'doc_count') {
+          formattedRecord[key] = record[key];  // Ensure 'key' and 'doc_count' are always displayed
         }
-      });
-    } else if (typeof currentObj === 'object' && key in currentObj) {
-      return currentObj[key];
-    }
-
-    return null;
-  }, obj);
+        if (key.endsWith('_pct')) {
+          formattedRecord[key] = parseFloat(record[key]).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          });
+        } 
+      } else {
+        // For raw, include all fields except percentages
+        if (!key.endsWith('_pct')) {
+          formattedRecord[key] = record[key];
+        }
+      }
+    });
+    return formattedRecord;
+  });
 }
 
 /**
