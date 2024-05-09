@@ -457,67 +457,49 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
  * @returns {Promise<Array>} A promise that resolves to an array of term-based records.
  */
 async function fetchTermBasedData(suffix, query, term, sort, size) {
-  const postData = createPostData(suffix, query, term, startYear, endYear, size, sort); // Generate POST request
+  const postData = createPostData(suffix, query, term, startYear, endYear, size, sort);
   const response = await fetchPostData(postData);
   console.log(response);
 
   let buckets = [];
 
   if (response && response.aggregations && response.aggregations.values && response.aggregations.values.buckets) {
-      buckets = response.aggregations.values.buckets.map(bucket => {
-          const formattedBucket = {};
-          Object.keys(bucket).forEach(value => {
-              if (value.startsWith("median_")) {
-                  formattedBucket[value] = bucket[value].values["50.0"];
-              } else if (bucket[value].doc_count !== undefined) {
-                  formattedBucket[value] = bucket[value].doc_count;
-              } else if (bucket[value].value !== undefined) {
-                  formattedBucket[value] = bucket[value].value;
-              } else {
-                  formattedBucket[value] = bucket[value];
-              }
-          });
-          return formattedBucket;
-      });
+    buckets = response.aggregations.values.buckets.map(bucket => formatBucket(bucket));
   }
 
-  // Append all_values to the array with a placeholder 'key'
-  if (response && response.aggregations && response.aggregations.all_values) {
-    const allValuesBucket = {'key': 'Total with values'};  // Artificial 'key' added
-    Object.keys(response.aggregations.all_values).forEach(value => {
-        if (value.startsWith("median_")) {
-          allValuesBucket[value] = response.aggregations.all_values[value].values["50.0"];
-        } else if (response.aggregations.all_values[value].doc_count !== undefined) {
-          allValuesBucket[value] = response.aggregations.all_values[value].doc_count;
-        } else if (response.aggregations.all_values[value].value !== undefined) {
-          allValuesBucket[value] = response.aggregations.all_values[value].value;
-        } else {
-          allValuesBucket[value] = response.aggregations.all_values[value];
-        }
-    });
-    buckets.push(allValuesBucket);
-  }
-
-  // Append no_values to the array with a placeholder 'key'
-  if (response && response.aggregations && response.aggregations.no_values) {
-    const noValuesBucket = {'key': 'No values'};  // Artificial 'key' added
-    Object.keys(response.aggregations.no_values).forEach(value => {
-        if (value.startsWith("median_")) {
-          noValuesBucket[value] = response.aggregations.no_values[value].values["50.0"];
-        } else if (response.aggregations.no_values[value].doc_count !== undefined) {
-          noValuesBucket[value] = response.aggregations.no_values[value].doc_count;
-        } else if (response.aggregations.no_values[value].value !== undefined) {
-          noValuesBucket[value] = response.aggregations.no_values[value].value;
-        } else {
-          noValuesBucket[value] = response.aggregations.no_values[value];
-        }
-    });
-    buckets.push(noValuesBucket); 
-  }
+  // Process 'all_values' and 'no_values' similarly using the helper function
+  ['all_values', 'no_values'].forEach(aggregationKey => {
+    if (response && response.aggregations && response.aggregations[aggregationKey]) {
+      const placeholderKey = aggregationKey === 'all_values' ? 'Total with values' : 'No values';
+      const additionalBucket = {'key': placeholderKey, ...formatBucket(response.aggregations[aggregationKey])};
+      buckets.push(additionalBucket);
+    }
+  });
 
   return buckets;
 }
 
+/**
+ * Formats a single bucket or aggregation result for a term-based table.
+ * 
+ * @param {Object} bucket - The raw bucket data from the API response.
+ * @returns {Object} The formatted bucket data.
+ */
+function formatBucket(bucket) {
+  const formattedBucket = {};
+  Object.keys(bucket).forEach(key => {
+      if (key.startsWith("median_")) {
+          formattedBucket[key] = bucket[key].values["50.0"];
+      } else if (bucket[key].doc_count !== undefined) {
+          formattedBucket[key] = bucket[key].doc_count;
+      } else if (bucket[key].value !== undefined) {
+          formattedBucket[key] = bucket[key].value;
+      } else {
+          formattedBucket[key] = bucket[key];
+      }
+  });
+  return formattedBucket;
+}
 
 /**
  * Fetches article-based data using provided parameters.
