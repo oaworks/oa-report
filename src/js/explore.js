@@ -470,7 +470,7 @@ async function fetchTermBasedData(suffix, query, term, sort, size) {
   // Process 'all_values' and 'no_values' similarly using the helper function
   ['all_values', 'no_values'].forEach(aggregationKey => {
     if (response && response.aggregations && response.aggregations[aggregationKey]) {
-      const placeholderKey = aggregationKey === 'all_values' ? 'Total with values' : 'No values';
+      const placeholderKey = aggregationKey === 'all_values' ? 'all_values' : 'no_values';
       const additionalBucket = {'key': placeholderKey, ...formatBucket(response.aggregations[aggregationKey])};
       buckets.push(additionalBucket);
     }
@@ -633,6 +633,8 @@ function setupTooltip(element, key, dataType) {
 function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms') {
   const tableBody = document.getElementById(tableBodyId);
   if (!tableBody || data.length === 0) return;
+
+  console.log('data', data);
 
   // Clear existing table rows
   while (tableBody.firstChild) {
