@@ -11,7 +11,7 @@ import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, r
 import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { orgDataPromise } from './insights-and-strategies.js';
-import { createPostData } from './api-requests.js';
+import { getAggregatedDataQuery } from './aggregated-data-query.js';
 
 // =================================================
 // Global variables
@@ -457,7 +457,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
  * @returns {Promise<Array>} A promise that resolves to an array of term-based records.
  */
 async function fetchTermBasedData(suffix, query, term, sort, size) {
-  const postData = createPostData(suffix, query, term, startYear, endYear, size, sort);
+  const postData = getAggregatedDataQuery(suffix, query, term, startYear, endYear, size, sort);
   const response = await fetchPostData(postData);
   console.log(response);
 
