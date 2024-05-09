@@ -316,28 +316,38 @@ export function reorderRecords(records, includes) {
 export function prettifyRecords(records, pretty = true) {
   return records.map(record => {
     const formattedRecord = {};
+
+    // Always include 'key' without modification
+    if (record.hasOwnProperty('key')) {
+      formattedRecord['key'] = record['key'];
+    }
+
+    // Always process 'doc_count' to make readable
+    if (record.hasOwnProperty('doc_count')) {
+      formattedRecord['doc_count'] = makeNumberReadable(record['doc_count']);
+    }
+
     Object.keys(record).forEach(key => {
-      if (pretty) {
-        // Always include 'key' and 'doc_count' without modification
-        if (key === 'key' || key === 'doc_count') {
-          formattedRecord[key] = record[key];
-        }
-        // Format percentages
-        if (key.endsWith('_pct')) {
-          formattedRecord[key] = Math.round(parseFloat(record[key])).toString() + '%';
-        }
-        // Format numbers starting with 'total_', 'median_', or 'mean_' or ending with '_amount'
-        if (key.startsWith('total_') || key.startsWith('median_') || key.startsWith('mean_') || key.endsWith('_amount')) {
-          const isCurrency = key.endsWith('_amount');
-          formattedRecord[key] = makeNumberReadable(parseFloat(record[key]), isCurrency);
-        }
-      } else {
-        // Include all fields except percentages in raw mode
-        if (!key.endsWith('_pct')) {
-          formattedRecord[key] = record[key];
+      if (key !== 'key' && key !== 'doc_count') { // Avoid reprocessing 'key' and 'doc_count'
+        if (pretty) {
+          // Format percentages
+          if (key.endsWith('_pct')) {
+            formattedRecord[key] = Math.round(parseFloat(record[key])).toString() + '%';
+          }
+          // Format numbers starting with 'total_', 'median_', or 'mean_' or ending with '_amount'
+          if (key.startsWith('total_') || key.startsWith('median_') || key.startsWith('mean_') || key.endsWith('_amount')) {
+            const isCurrency = key.endsWith('_amount');
+            formattedRecord[key] = makeNumberReadable(parseFloat(record[key]), isCurrency);
+          }
+        } else {
+          // Include all fields except percentages in raw mode
+          if (!key.endsWith('_pct')) {
+            formattedRecord[key] = record[key];
+          }
         }
       }
     });
+
     return formattedRecord;
   });
 }
