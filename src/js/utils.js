@@ -324,7 +324,7 @@ export function prettifyRecords(records, pretty = true) {
         }
         // Format percentages
         if (key.endsWith('_pct')) {
-          formattedRecord[key] = Math.ceil(parseFloat(record[key])).toString() + '%';
+          formattedRecord[key] = Math.round(parseFloat(record[key])).toString() + '%';
         }
         // Format numbers starting with 'total_', 'median_', or 'mean_' or ending with '_amount'
         if (key.startsWith('total_') || key.startsWith('median_') || key.startsWith('mean_') || key.endsWith('_amount')) {
