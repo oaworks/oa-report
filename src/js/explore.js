@@ -461,25 +461,63 @@ async function fetchTermBasedData(suffix, query, term, sort, size) {
   const response = await fetchPostData(postData);
   console.log(response);
 
+  let buckets = [];
+
   if (response && response.aggregations && response.aggregations.values && response.aggregations.values.buckets) {
-    return response.aggregations.values.buckets.map(bucket => {
-      const formattedBucket = {};
-      Object.keys(bucket).forEach(value => {
-        if (value.startsWith("median_")) {
-          formattedBucket[value] = bucket[value].values["50.0"];
-        } else if (bucket[value].doc_count !== undefined) {
-          formattedBucket[value] = bucket[value].doc_count;
-        } else if (bucket[value].value !== undefined) {
-          formattedBucket[value] = bucket[value].value;
-        } else {
-          formattedBucket[value] = bucket[value];
-        }
+      buckets = response.aggregations.values.buckets.map(bucket => {
+          const formattedBucket = {};
+          Object.keys(bucket).forEach(value => {
+              if (value.startsWith("median_")) {
+                  formattedBucket[value] = bucket[value].values["50.0"];
+              } else if (bucket[value].doc_count !== undefined) {
+                  formattedBucket[value] = bucket[value].doc_count;
+              } else if (bucket[value].value !== undefined) {
+                  formattedBucket[value] = bucket[value].value;
+              } else {
+                  formattedBucket[value] = bucket[value];
+              }
+          });
+          return formattedBucket;
       });
-      return formattedBucket;
-    });
   }
-  return [];
+
+  // Append all_values to the array with a placeholder 'key'
+  if (response && response.aggregations && response.aggregations.all_values) {
+    const allValuesBucket = {'key': 'Total with values'};  // Artificial 'key' added
+    Object.keys(response.aggregations.all_values).forEach(value => {
+        if (value.startsWith("median_")) {
+          allValuesBucket[value] = response.aggregations.all_values[value].values["50.0"];
+        } else if (response.aggregations.all_values[value].doc_count !== undefined) {
+          allValuesBucket[value] = response.aggregations.all_values[value].doc_count;
+        } else if (response.aggregations.all_values[value].value !== undefined) {
+          allValuesBucket[value] = response.aggregations.all_values[value].value;
+        } else {
+          allValuesBucket[value] = response.aggregations.all_values[value];
+        }
+    });
+    buckets.push(allValuesBucket);
+  }
+
+  // Append no_values to the array with a placeholder 'key'
+  if (response && response.aggregations && response.aggregations.no_values) {
+    const noValuesBucket = {'key': 'No values'};  // Artificial 'key' added
+    Object.keys(response.aggregations.no_values).forEach(value => {
+        if (value.startsWith("median_")) {
+          noValuesBucket[value] = response.aggregations.no_values[value].values["50.0"];
+        } else if (response.aggregations.no_values[value].doc_count !== undefined) {
+          noValuesBucket[value] = response.aggregations.no_values[value].doc_count;
+        } else if (response.aggregations.no_values[value].value !== undefined) {
+          noValuesBucket[value] = response.aggregations.no_values[value].value;
+        } else {
+          noValuesBucket[value] = response.aggregations.no_values[value];
+        }
+    });
+    buckets.push(noValuesBucket); 
+  }
+
+  return buckets;
 }
+
 
 /**
  * Fetches article-based data using provided parameters.
