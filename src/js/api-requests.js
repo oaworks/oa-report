@@ -32,7 +32,7 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
       "all_values": {
         "filter": {
           "exists": {
-            "field": "supplements.program__bmgf.keyword"
+            "field": `supplements.program__${suffix}.keyword`
           }
         },
         "aggs": {
@@ -760,7 +760,7 @@ export function createPostData(suffix, query, term, startYear, endYear, size = 2
           "bool": {
             "must_not": {
               "exists": {
-                "field": "supplements.program__bmgf.keyword"
+                "field": `supplements.program__${suffix}.keyword`
               }
             }
           }
