@@ -256,17 +256,17 @@ async function addExploreFiltersToDOM(query) {
  */
 function createExploreFilterRadioButton(id, isChecked) {
   const labelData = EXPLORE_FILTERS_LABELS[id];
-  const label = EXPLORE_FILTERS_LABELS[id].label || id; // Use label from filters or default to ID
+  const label = labelData.label || id;  // Use label from filters or default to ID
 
-  // Create dev to contain radio input and label
+  // Create div to contain radio input and label
   const filterRadioButton = document.createElement('div');
   filterRadioButton.className = 'flex items-center mr-3 md:mr-6 mb-3';
 
   // Generate and set tooltip if info is present and non-empty
-  if (labelData && labelData.info && labelData.info.trim()) {
+  if (labelData.info && labelData.info.trim()) {
     const tooltipContent = generateTooltipContent(labelData);
-    const tooltipID = `${id}_info`;
 
+    // Initialise Tippy tooltip if there is tooltip content
     tippy(filterRadioButton, {
       content: tooltipContent,
       allowHTML: true,
@@ -274,8 +274,27 @@ function createExploreFilterRadioButton(id, isChecked) {
       placement: 'bottom',
       appendTo: document.body,
       theme: 'tooltip-white',
+      onShow(instance) {
+        // Use setTimeout to ensure DOM is ready for updates
+        setTimeout(() => {
+          // Safely update text and href using optional chaining and nullish coalescing
+          replaceText('org-name', orgName ?? '');
+          replaceText('org-policy-coverage', orgPolicyCoverage ?? '');
+          replaceText('org-policy-compliance', orgPolicyCompliance ?? '');
+
+          // Safely set the href attribute
+          const policyUrlElement = document.querySelector('.org-policy-url');
+          if (policyUrlElement) {
+              policyUrlElement.href = orgPolicyUrl ?? '#';  // Fallback to '#' if orgPolicyUrl is undefined
+          }
+
+          // Update the tooltip content if labelData exists
+          instance.setContent(generateTooltipContent(labelData));
+        }, 0);
+      }
     });
 
+    const tooltipID = `${id}_info`;
     filterRadioButton.setAttribute('aria-controls', tooltipID);
     filterRadioButton.setAttribute('aria-labelledby', tooltipID);
   }
@@ -564,7 +583,7 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
       : EXPLORE_HEADER_ARTICLES_LABELS[key]?.label || key;
 
     const headerCell = createTableCell('', cssClass, null, null, true); 
-    setupTooltip(headerCell, key, dataType);
+    setupHeaderTooltip(headerCell, key, dataType);
 
     headerRow.appendChild(headerCell);
   });
@@ -579,13 +598,13 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
  */
 function generateTooltipContent(labelData, additionalHelpText = null) {
   const hasDetails = !!labelData.details;
-  return `
+  let tooltipHTML = `
     <p class='${hasDetails ? "mb-2" : ""}'>${labelData.info}</p>
     ${additionalHelpText ? `<p class='mb-2'>${additionalHelpText}</p>` : ""}
     ${hasDetails ? `<details><summary class='hover:cursor-pointer'>Methodology</summary><p class='mt-2'>${labelData.details}</p></details>` : ""}
   `;
+  return tooltipHTML;
 }
-
 /**
  * Attaches a tooltip to an HTML element if tooltip content is provided.
  * Uses the Tippy.js library for tooltip functionality, applying a11y attributes.
@@ -595,7 +614,7 @@ function generateTooltipContent(labelData, additionalHelpText = null) {
  * @param {string} key - The key associated with the tooltip, used for fallback labeling and to generate IDs for accessibility.
  * @param {string} dataType - Indicates the type of data ('terms' or 'articles'), which determines the labels configuration to use.
  */
-function setupTooltip(element, key, dataType) {
+function setupHeaderTooltip(element, key, dataType) {
   const labelsConfig = dataType === 'terms' ? EXPLORE_HEADER_TERMS_LABELS : EXPLORE_HEADER_ARTICLES_LABELS;
   const labelData = labelsConfig[key];
   const label = labelData && labelData.label ? labelData.label : key;
@@ -616,6 +635,16 @@ function setupTooltip(element, key, dataType) {
       placement: 'bottom',
       appendTo: document.body,
       theme: 'tooltip-white',
+      onShow(instance) {
+        // Use setTimeout to ensure DOM is ready for updates
+        setTimeout(() => {
+          // Safely update text and href using optional chaining and nullish coalescing
+          replaceText('org-name', orgName ?? '');
+
+          // Update the tooltip content if labelData exists
+          instance.setContent(generateTooltipContent(labelData));
+        }, 0);
+      }
     });
 
     element.setAttribute('aria-controls', tooltipID);

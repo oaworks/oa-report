@@ -206,118 +206,144 @@ export const EXPLORE_ITEMS_LABELS = {
 export const EXPLORE_FILTERS_LABELS = {
   "is_paper": {
     label: "All articles",
-    info: "",
-    details: ""
+    info: "<p>Scholarly research articles, <strong>including</strong>:</p>\
+      <ul class='mb-2 list-disc list-inside'>\
+        <li>peer-reviewed research</li>\
+        <li>reviews</li>\
+        <li>letters</li>\
+        <li>editorials</li>\
+        <li>methods</li>\
+      </ul>\
+      <p>This <strong>excludes</strong>:</p>\
+      <ul class='list-disc list-inside'>\
+        <li>preprints</li>\
+        <li>conference proceedings</li>\
+      </ul>"
   },
   "is_preprint": {
     label: "Preprints",
-    info: "",
-    details: ""
+    info: "<p>Scholarly research articles that haven’t been peer-reviewed.</p>"
   },
   "is_authored": {
     label: "Authored",
-    info: "",
-    details: ""
+    info: "<p>Scholarly research articles authored by someone at <span class='org-name'></span>, <strong>including</strong>:</p>\
+    <ul class='mb-2 list-disc list-inside'>\
+      <li>peer-reviewed research</li>\
+      <li>reviews</li>\
+      <li>letters</li>\
+      <li>editorials</li>\
+      <li>methods</li>\
+    </ul>\
+    <p>This <strong>excludes</strong>:</p>\
+    <ul class='list-disc list-inside'>\
+      <li>preprints</li>\
+      <li>conference proceedings</li>\
+    </ul>"
   },
   "is_covered_by_policy": {
     label: "Covered by <span class='uppercase'>OA</span> policy",
-    info: "",
-    details: ""
+    info: "<p class='mb-2'>Scholarly research articles covered by <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p><p><span class='org-policy-coverage'></span></p>"
   },
   "is_covered_by_current_policy": {
     label: "Covered by current <span class='uppercase'>OA</span> policy",
-    info: "",
-    details: ""
+    info: "<p>Scholarly research articles covered by <span class='org-name'></span>’s most recent <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p>"
   },
   "is_covered_by_old_policy": {
     label: "Covered by old <span class='uppercase'>OA</span> policy",
-    info: "",
-    details: ""
+    info: "<p>Scholarly research articles covered by an older <span class='org-name'></span> Open Access policy.</p>"
   },
   "is_compliant": {
     label: "Covered by & compliant with <span class='uppercase'>OA</span> policy",
-    info: "",
-    details: ""
+    info: "<p>Scholarly research articles covered by <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a> and compliant with its terms.</p><p><span class='org-policy-compliance></span></p><p><span class='org-policy-coverage'></span></p>"
   },
   "is_compliant_all_works": {
     label: "Compliant with <span class='uppercase'>OA</span> policy",
-    info: "",
-    details: ""
+    info: "<p>Scholarly research articles that comply with the terms of <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>, but are not necessarily covered by it.</p><p><span class='org-policy-compliance'></span></p>"
   },
   "is_original_research": {
     label: "Original research",
-    info: "",
-    details: ""
+    info: "<p>Scholarly research articles, <strong>including only</strong>:</p>\
+    <ul class='mb-2 list-disc list-inside'>\
+      <li>peer-reviewed research</li>\
+    </ul>\
+    <p>This <strong>excludes</strong>:</p>\
+    <ul class='list-disc list-inside'>\
+      <li>reviews</li>\
+      <li>editorials</li>\
+      <li>methods</li>\
+      <li>conference proceedings</li>\
+    </ul>"
   },
   "with_grant_id": {
     label: "With grant <span class='uppercase'>ID</span>",
-    info: "",
-    details: ""
+    info: "<p>Scholarly research articles with a grant ID from <span class='org-name'></span>, <strong>including</strong>:</p>\
+    <ul class='mb-2 list-disc list-inside'>\
+      <li>peer-reviewed research</li>\
+      <li>reviews</li>\
+      <li>letters</li>\
+      <li>editorials</li>\
+      <li>methods</li>\
+    </ul>\
+    <p>This <strong>excludes</strong>:</p>\
+    <ul class='mb-2 list-disc list-inside'>\
+      <li>preprints</li>\
+      <li>conference proceedings</li>\
+    </ul>",
+    details: "We collect data from the publisher using Crossref, and where this isn’t available we manually collect the funding statement and extract the grant ID. Grant ID data is then cleaned using automated tools and manual review."
   },
   "is_found_by_external_sources": {
-    label: "Found by external sources",
-    info: "",
-    details: ""
+    label: "Found by external sources"
   },
   "is_found_only_by_external_sources": {
-    label: "Found only by external sources",
-    info: "",
-    details: ""
+    label: "Found only by external sources"
   },
   "is_found_only_by_oareport": {
-    label: "Found only by <span class='uppercase'>OA</span>.<span class='uppercase'>R</span>eport",
-    info: "",
-    details: ""
+    label: "Found only by <span class='uppercase'>OA</span>.<span class='uppercase'>R</span>eport"
   },
   "is_found_by_all_sources": {
-    label: "Found by all sources",
-    info: "",
-    details: ""
+    label: "Found by all sources"
   },
   "has_data_availability_statement": {
     label: "Has data availability statement",
-    info: "",
-    details: ""
+    info: "<p class='mb-3'>Any scholarly research article that has a data availability statement. Data availability statements (i.e. “data access statement”, “resource availability statements”, “code availability statements”) tell a reader where the research data or code associated with an article is available and how they can be accessed. This doesn’t tell you what type of data availability statement is provided (e.g., there is Open Data VS there is no data).</p><p>To check if an article has a data availability statement, we use data from PubMed’s data availability filter and review articles manually.</p>"
   },
   "has_apc": {
     label: "Paid via APC",
-    info: "",
-    details: ""
+    info: "<p>Scholarly research articles that had an article-processing charge (APC) paid by <span class='org-name'></span></p>"
   },
   "is_under_transitional_agreement": {
-    label: "Paid via transitional agreement",
-    info: "",
-    details: ""
+    label: "Paid via transitional agreement"
   },
   "is_funded": {
     label: "Funded",
-    info: "",
-    details: ""
+    info: "<p>Scholarly research articles funded by <span class='org-name'></span>, <strong>including</strong>:</p>\
+    <ul class='mb-2 list-disc list-inside'>\
+      <li>peer-reviewed research</li>\
+      <li>reviews</li>\
+      <li>letters</li>\
+      <li>editorials</li>\
+      <li>methods</li>\
+    </ul>\
+    <p>This <strong>excludes</strong>:</p>\
+    <ul class='list-disc list-inside'>\
+      <li>preprints</li>\
+      <li>conference proceedings</li>\
+    </ul>"
   },
   "has_shared_data": {
-    label: "Shared data",
-    info: "",
-    details: ""
+    label: "Shared data"
   },
   "has_shared_code": {
-    label: "Shared code",
-    info: "",
-    details: ""
+    label: "Shared code"
   },
   "has_data": {
-    label: "With data",
-    info: "",
-    details: ""
+    label: "With data"
   },
   "has_code": {
-    label: "With code",
-    info: "",
-    details: ""
+    label: "With code"
   },
   "is_work": {
-    label: "Works",
-    info: "",
-    details: ""
+    label: "Works"
   }
 };
 
@@ -336,7 +362,7 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   },
   "covered_by_policy": {
     label: "Covered by policy",
-    info: "Publications that are covered by the Open Access Policy.",
+    info: "Publications that are covered by the Open Access policy.",
     details: "When a grant ID was available, we checked if the grant was covered by the Open Access policy using a list provided by IDRC staff."
   },
   "free_to_read": {
@@ -350,15 +376,17 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
     details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex."
   },
   "mean_apc_amount": {
-    label: "Mean APC amount"
+    label: "Mean APC amount",
+    info: "Mean (i.e. average) of article-processing charges (APCs) paid by <span class='org-name'></span>."
   },
   "mean_citations": {
     label: "Mean citations",
-    info: "The mean (i.e. average) number of citations of these publications",
+    info: "The mean (i.e. average) number of citations of these publications.",
     details: "We used data from OpenAlex's <code>cited_by_count</code>."
   },
   "median_apc_amount": {
-    label: "Median APC amount"
+    label: "Median APC amount",
+    info: "Median of article-processing charges (APCs) paid by <span class='org-name'></span>."
   },
   "open_access": {
     label: "Open Access",
@@ -367,11 +395,11 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   },
   "publications": {
     label: "Publications",
-    info: "Academic research articles found (including peer-reviewed research, reviews, editorials, etc.)",
-    details: "CrossRef, OpenAlex, PubMed, and Europe PMC were searched for articles authored by or funded by IDRC using a variety of IDs (e.g ROR: 0445x0472 Fundref: 10.13039/501100000193) and aliases (International Development Research Centre, International Development Research Center, Centre de recherches pour le développement international) across all of time. An export of the IDRC Digital Library was utilized by the tool. Items with type “Journal Article” or “Abstract” were matched to DOIs. Results were deduplicated and ingested into OA.Report. Results were reviewed by a mix of manual and automated means to remove false positives (e.g mentions in full text, incorrect matches of IDRCs name)."
+    info: "Scholarly research articles found by the current filter."
   },
   "total_apc_amount": {
-    label: "Total APC amount"
+    label: "Total APC amount",
+    info: "Total article-processing charges (APCs) paid by <span class='org-name'></span>."
   },
   "total_citations": {
     label: "Total citations",
@@ -390,7 +418,8 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
     label: "Unknown shared code status"
   },
   "with_apc": {
-    label: "With APC<span class='lowercase'>s</span>"
+    label: "With APC<span class='lowercase'>s</span>",
+    info: "Scholarly research articles with an article-processing charge (APC) paid by <span class='org-name'></span>."
   },
   "with_data": {
     label: "With data"
@@ -419,15 +448,17 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
     label: "With DOI<span style='text-transform: lowercase;'>s</span>"
   },
   "with_fundref_dois": {
-    label: "With FundRef DOI<span style='text-transform: lowercase;'>s</span>"
+    label: "With FundRef DOI<span style='text-transform: lowercase;'>s</span>",
+    info: "Scholarly research articles that have at least one ORCID in their Crossref metadata."
   },
   "with_grant_dois": {
-    label: "With grant DOI<span style='text-transform: lowercase;'>s</span>"
+    label: "With grant DOI<span style='text-transform: lowercase;'>s</span>",
+    info: "Scholarly research articles that have at least one grant DOI in their Crossref metadata."
   },
   "with_grant_id": {
     label: "With grant ID<span style='text-transform: lowercase;'>s</span>",
-    info: "Publications that provided the grant ID for the grant you provide them.",
-    details: "We found and normalized data from Crossref to find data provided by publisher. Where this wasn’t possible, we manually collected the funding statement. The grant ID was then extracted & normalized the grant ID using a mix of automated tools and manual review."
+    info: "Scholarly research articles with a grant ID from <span class='org-name'></span> found by OA.Works.",
+    details: "We found and normalized data from Crossref to find data provided by the publisher. Where this wasn't possible, we manually collected the funding statement. The grant ID was then extracted and normalized using a mix of automated tools and manual review."
   },
   "with_open_data": {
     label: "With Open Data"
@@ -442,7 +473,8 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
     label: "With Open Code in repository"
   },
   "with_orcids": {
-    label: "With ORC<span style='text-transform: lowercase;'>i</span>D<span style='text-transform: lowercase;'>s</span>"
+    label: "With ORC<span style='text-transform: lowercase;'>i</span>D<span style='text-transform: lowercase;'>s</span>",
+    info: "Scholarly research articles that have at least one ORCID in their OpenAlex metadata."
   },
   "with_preprint": {
     label: "With preprint",
@@ -455,7 +487,8 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
     details: "We used data from Unpaywall and Crossref."
   },
   "with_rors": {
-    label: "With ROR<span style='text-transform: lowercase;'>s</span>"
+    label: "With ROR<span style='text-transform: lowercase;'>s</span>",
+    info: "Scholarly research articles that have at least one ROR ID in their OpenAlex metadata."
   },
   "with_shared_data": {
     label: "With shared data"
@@ -690,6 +723,22 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   "is_compliant": {
     label: "Compliant?",
     info: ""
+  },
+  "is_compliant_with_current_policy": {
+    label: "Compliant with current <span class='uppercase'>OA</span> policy",
+    info: "<p>Scholarly research articles compliant with <span class='org-name'></span>’s most recent <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p>"
+  },
+  "is_compliant_with_old_policy": {
+    label: "Compliant with old <span class='uppercase'>OA</span> policy",
+    info: "<p>Scholarly research articles compliant with an older <span class='org-name'></span> Open Access policy.</p>"
+  },
+  "is_covered_by_current_policy": {
+    label: "Covered by current <span class='uppercase'>OA</span> policy",
+    info: "<p>Scholarly research articles covered by <span class='org-name'></span>’s most recent <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p>"
+  },
+  "is_covered_by_old_policy": {
+    label: "Covered by old <span class='uppercase'>OA</span> policy",
+    info: "<p>Scholarly research articles covered by an older <span class='org-name'></span> Open Access policy.</p>"
   },
   "is_new": {
     label: "New?",
