@@ -1,6 +1,18 @@
 import { ELEVENTY_API_ENDPOINT } from "./constants.js";
 
-// Dynamically configure POST data 
+/**
+ * Dynamically configures POST data for Elasticsearch queries to handle complex term-based aggregations.
+ * This function constructs the aggregation query including sorting and filtering based on specified parameters.
+ * 
+ * @param {string} suffix - The suffix for the organization-specific data fields in Elasticsearch.
+ * @param {string} query - The main query string for fetching data.
+ * @param {string} term - The field term to aggregate on.
+ * @param {number} startYear - The starting year for filtering the data.
+ * @param {number} endYear - The ending year for filtering the data.
+ * @param {number} size - Number of top records to return in each term aggregation.
+ * @param {string} sort - The field to sort the term aggregations on.
+ * @returns {Object} The POST request body for Elasticsearch.
+ */
 export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, size = 20, sort = "_count") {
   // Only the term published_year on the live API does not require the .keyword suffix 
   let termField = term;
