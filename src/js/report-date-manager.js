@@ -4,9 +4,11 @@
 // =================================================
 
 import { DATE_SELECTION_BUTTON_CLASSES } from './constants.js';
-import { makeDateReadable, createDate, replaceDateRange, replaceText, initDropdown, getURLParam, updateURLParams, endDate } from './utils.js';
+import { makeDateReadable, createDate, replaceDateRange, initDropdown, getURLParam, updateURLParams, getUrlParameters } from './utils.js';
 import { initInsightsAndStrategies } from './insights-and-strategies.js';
 import { currentActiveExploreItemButton, currentActiveExploreItemData, processExploreDataTable } from './explore.js';
+import './oaworksKeys.js';
+
 
 /** 
  * The current date, used across the application to determine the current context or as a default value.
@@ -128,6 +130,35 @@ export function setDefaultYear() {
       }
     }
   };
+}
+
+/**
+ * Initialises date-related parameters and UI elements.
+ */
+export function initDateManager() {
+  const params = getUrlParameters();
+
+  // Process orgkey first
+  const orgkey = getURLParam('orgkey');
+  if (orgkey) {
+    // Example: Set orgkey in session or perform login
+    sessionStorage.setItem('orgkey', orgkey);
+    params.delete('orgkey'); // remove orgkey from params to avoid duplication
+  }
+
+  // Process other parameters
+  const start = params.get('start');
+  const end = params.get('end');
+  if (start && end) {
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    // Update the UI with these dates
+    document.getElementById('start-date').value = startDate.toISOString().split('T')[0];
+    document.getElementById('end-date').value = endDate.toISOString().split('T')[0];
+  }
+
+  // Update the URL without losing parameters
+  updateURLParams(Object.fromEntries(params.entries()));
 }
 
 /**
