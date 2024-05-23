@@ -4,10 +4,9 @@
 // =================================================
 
 import { DATE_SELECTION_BUTTON_CLASSES } from './constants.js';
-import { makeDateReadable, createDate, replaceDateRange, initDropdown, getURLParam, updateURLParams, getUrlParameters } from './utils.js';
+import { makeDateReadable, createDate, replaceDateRange, initDropdown, getAllURLParams, getURLParam, updateURLParams } from './utils.js';
 import { initInsightsAndStrategies } from './insights-and-strategies.js';
 import { currentActiveExploreItemButton, currentActiveExploreItemData, processExploreDataTable } from './explore.js';
-import './oaworksKeys.js';
 
 
 /** 
@@ -136,19 +135,18 @@ export function setDefaultYear() {
  * Initialises date-related parameters and UI elements.
  */
 export function initDateManager() {
-  const params = getUrlParameters();
+  const params = getAllURLParams();
 
   // Process orgkey first
   const orgkey = getURLParam('orgkey');
   if (orgkey) {
-    // Example: Set orgkey in session or perform login
     sessionStorage.setItem('orgkey', orgkey);
-    params.delete('orgkey'); // remove orgkey from params to avoid duplication
+    delete params.orgkey; // remove orgkey from params to avoid duplication
   }
 
   // Process other parameters
-  const start = params.get('start');
-  const end = params.get('end');
+  const start = params.start;
+  const end = params.end;
   if (start && end) {
     const startDate = new Date(start);
     const endDate = new Date(end);
@@ -158,7 +156,7 @@ export function initDateManager() {
   }
 
   // Update the URL without losing parameters
-  updateURLParams(Object.fromEntries(params.entries()));
+  updateURLParams(params);
 }
 
 /**

@@ -1,3 +1,8 @@
+// =================================================
+// oaWorksKeys.js
+// Set and remove the orgkey cookie
+// =================================================
+
 var _OAcookie, ck, o;
 
 _OAcookie = function(obj) {
