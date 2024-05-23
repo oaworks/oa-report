@@ -8,7 +8,6 @@ import { DEFAULT_YEAR, FIRST_YEAR, currentDate, bindDynamicYearButtons, setDefau
 import { initDataExplore } from './explore.js';
 import { initStrategyTabs } from './strategies.js';
 
-
 // Flag to check if initDataExplore has already been initialised
 let isDataExploreInitialised = false;
 

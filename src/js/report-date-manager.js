@@ -150,14 +150,27 @@ export function initDateManager() {
   if (start && end) {
     const startDate = new Date(start);
     const endDate = new Date(end);
-    // Update the UI with these dates
-    document.getElementById('start-date').value = startDate.toISOString().split('T')[0];
-    document.getElementById('end-date').value = endDate.toISOString().split('T')[0];
+
+    // Update the UI with these dates if the elements exist
+    const startDateInput = document.getElementById('start-date');
+    const endDateInput = document.getElementById('end-date');
+    if (startDateInput && endDateInput) {
+      startDateInput.value = startDate.toISOString().split('T')[0];
+      endDateInput.value = endDate.toISOString().split('T')[0];
+    }
   }
 
   // Update the URL without losing parameters
   updateURLParams(params);
+
+  // Remove orgkey from URL after processing
+  if (orgkey) {
+    const newParams = new URLSearchParams(window.location.search);
+    newParams.delete('orgkey');
+    history.replaceState(null, '', '?' + newParams.toString());
+  }
 }
+
 
 /**
  * Binds dynamic year buttons to a container and initializes a dropdown for additional years.
