@@ -4,10 +4,9 @@
 // =================================================
 
 import { bindSmoothScrollLinks, adjustNavOnScroll } from './utils.js';
-import { DEFAULT_YEAR, FIRST_YEAR, currentDate, bindDynamicYearButtons, setDefaultYear } from './report-date-manager.js';
+import { DEFAULT_YEAR, FIRST_YEAR, currentDate, bindDynamicYearButtons, setDefaultYear, initDateManager } from './report-date-manager.js';
 import { initDataExplore } from './explore.js';
 import { initStrategyTabs } from './strategies.js';
-
 
 // Flag to check if initDataExplore has already been initialised
 let isDataExploreInitialised = false;
@@ -19,6 +18,9 @@ function initialise() {
   if (isDataExploreInitialised) {
     return;
   }
+
+  // Initialise date manager to handle orgkey first and then other date parameters
+  initDateManager();
   
   // Check if the element with id="explore" exists to trigger data explore initialisation
   var exploreElement = document.getElementById("explore");

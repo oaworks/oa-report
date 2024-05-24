@@ -4,9 +4,10 @@
 // =================================================
 
 import { DATE_SELECTION_BUTTON_CLASSES } from './constants.js';
-import { makeDateReadable, createDate, replaceDateRange, replaceText, initDropdown, getURLParam, updateURLParams, endDate } from './utils.js';
+import { makeDateReadable, createDate, replaceDateRange, initDropdown, getAllURLParams, getURLParam, updateURLParams } from './utils.js';
 import { initInsightsAndStrategies } from './insights-and-strategies.js';
 import { currentActiveExploreItemButton, currentActiveExploreItemData, processExploreDataTable } from './explore.js';
+
 
 /** 
  * The current date, used across the application to determine the current context or as a default value.
@@ -129,6 +130,47 @@ export function setDefaultYear() {
     }
   };
 }
+
+/**
+ * Initialises date-related parameters and UI elements.
+ */
+export function initDateManager() {
+  const params = getAllURLParams();
+
+  // Process orgkey first
+  const orgkey = getURLParam('orgkey');
+  if (orgkey) {
+    sessionStorage.setItem('orgkey', orgkey);
+    delete params.orgkey; // remove orgkey from params to avoid duplication
+  }
+
+  // Process other parameters
+  const start = params.start;
+  const end = params.end;
+  if (start && end) {
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+
+    // Update the UI with these dates if the elements exist
+    const startDateInput = document.getElementById('start-date');
+    const endDateInput = document.getElementById('end-date');
+    if (startDateInput && endDateInput) {
+      startDateInput.value = startDate.toISOString().split('T')[0];
+      endDateInput.value = endDate.toISOString().split('T')[0];
+    }
+  }
+
+  // Update the URL without losing parameters
+  updateURLParams(params);
+
+  // Remove orgkey from URL after processing
+  if (orgkey) {
+    const newParams = new URLSearchParams(window.location.search);
+    newParams.delete('orgkey');
+    history.replaceState(null, '', '?' + newParams.toString());
+  }
+}
+
 
 /**
  * Binds dynamic year buttons to a container and initializes a dropdown for additional years.
