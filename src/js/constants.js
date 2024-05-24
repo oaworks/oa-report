@@ -136,10 +136,6 @@ export const EXPLORE_ITEMS_LABELS = {
     singular: "Co-funder",
     plural: "Co-funders"
   },
-  "program": {
-    singular: "Program",
-    plural: "Programs"
-  },
   "article_oa_type": {
     singular: "Article <span class='uppercase'>OA</span> type",
     plural: "Article <span class='uppercase'>OA</span> types"
