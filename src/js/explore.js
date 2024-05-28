@@ -487,13 +487,13 @@ async function fetchTermBasedData(suffix, query, term, sort, size) {
   }
 
   // Process 'all_values' and 'no_values' similarly using the helper function
-  ['all_values', 'no_values'].forEach(aggregationKey => {
-    if (response && response.aggregations && response.aggregations[aggregationKey]) {
-      const placeholderKey = aggregationKey === 'all_values' ? 'all_values' : 'no_values';
-      const additionalBucket = {'key': placeholderKey, ...formatBucket(response.aggregations[aggregationKey])};
-      buckets.push(additionalBucket);
-    }
-  });
+  // ['all_values', 'no_values'].forEach(aggregationKey => {
+  //   if (response && response.aggregations && response.aggregations[aggregationKey]) {
+  //     const placeholderKey = aggregationKey === 'all_values' ? 'all_values' : 'no_values';
+  //     const additionalBucket = {'key': placeholderKey, ...formatBucket(response.aggregations[aggregationKey])};
+  //     buckets.push(additionalBucket);
+  //   }
+  // });
 
   return buckets;
 }
