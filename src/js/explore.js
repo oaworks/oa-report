@@ -734,6 +734,14 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
   const cell = document.createElement(isHeader ? 'th' : 'td');
   cell.className = cssClass;
 
+  // Early handling for common 'all_values' and 'no_values' cases in terms-based data
+  // Display either 'All [explore item]]' or 'No [explore item]'
+  if (content === 'all_values' || content === 'no_values') {
+    cell.innerHTML = content === 'all_values' ? 'All ' : 'No ';
+    cell.innerHTML += (EXPLORE_ITEMS_LABELS[exploreItemId]?.plural || pluraliseNoun(exploreItemId)).toLowerCase();
+    return cell;
+  }
+
   // Safely check and process content based on its type and the context
   if (key === 'key' && content) {
     let displayContent = "";
