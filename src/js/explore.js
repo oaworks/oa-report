@@ -493,6 +493,9 @@ async function fetchTermBasedData(suffix, query, term, sort, size) {
     }
   });
 
+  // Filter out buckets with doc_count of 0
+  buckets = buckets.filter(bucket => bucket.doc_count > 0);
+
   // TODO: implement sorting in https://github.com/oaworks/discussion/issues/1917
   // Sort all buckets based on 'doc_count'
   if (sort.includes('_count')) {
