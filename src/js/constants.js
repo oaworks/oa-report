@@ -855,6 +855,27 @@ export const DATA_TABLE_BODY_CLASSES = {
 };
 
 /**
+ * Class names for table footer (<tfoot>) columns in the data explore section.
+ * This constant provides TailwindCSS classes for different types of data tables,
+ * including 'terms' and 'articles', with each type having its own set of classes
+ * for 'firstCol', 'secondCol', and 'otherCols'.
+ * 
+ * @constant
+ * @type {Object}
+ * @property {Object} terms - CSS classes for the 'terms' type tables.
+ * @property {string} terms.firstCol - Class for the first column in 'terms' table.
+ * @property {string} terms.secondCol - Class for the second column in 'terms' table.
+ * @property {string} terms.otherCols - Class for other columns in 'terms' table.
+ */
+export const DATA_TABLE_FOOT_CLASSES = {
+  terms: {
+    firstCol: "border-b border-neutral-500 sticky left-0 bg-neutral-600 p-2 text-left",
+    secondCol: "border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-500 p-2 whitespace-nowrap truncate",
+    otherCols: "border-b border-neutral-500 p-2 whitespace-nowrap truncate text-right hover:bg-neutral-500"
+  }
+};
+
+/**
  * Maps ISO 3166-1 alpha-2 country codes to country names.
  * @type {Object.<string, string>}
  */

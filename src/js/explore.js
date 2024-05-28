@@ -8,7 +8,7 @@
 // =================================================
 
 import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, makeNumberReadable, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, updateURLParams } from "./utils.js";
-import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES } from "./constants.js";
+import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { orgDataPromise } from './insights-and-strategies.js';
 import { getAggregatedDataQuery } from './aggregated-data-query.js';
@@ -666,24 +666,28 @@ function setupHeaderTooltip(element, key, dataType) {
  */
 function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms') {
   const tableBody = document.getElementById(tableBodyId);
+  const tableFooter = document.getElementById('export_table_foot');
   if (!tableBody || data.length === 0) return;
 
   // Clear existing table rows
-  while (tableBody.firstChild) {
-    tableBody.removeChild(tableBody.firstChild);
-  }
+  tableBody.innerHTML = '';
+  tableFooter.innerHTML = '';
 
   // Clear any highlighted rows if user has already interacted with the table
-  clearRowHighlights(); 
+  clearRowHighlights();
 
-  // Add new rows from data
-  data.forEach(record => {
+  // Separate the 'all_values' record from other records
+  const allValuesRecord = data.find(record => record.key === 'all_values');
+  const otherRecords = data.filter(record => record.key !== 'all_values');
+
+  // Add rows from other records to the tbody
+  otherRecords.forEach(record => {
     const row = document.createElement('tr');
     let columnIndex = 0; // Keep track of column index for CSS class assignment
 
     for (const key in record) {
       let content = record[key];
-      
+
       // Special processing for articles data type
       // DOI key
       if (dataType === 'articles' && key === 'DOI') {
@@ -701,14 +705,33 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
       else cssClass = DATA_TABLE_BODY_CLASSES[dataType].otherCols;
 
       row.appendChild(createTableCell(content, cssClass, exploreItemId, key, false));
-      columnIndex++; // Increment the column index
+      columnIndex++;
     }
     tableBody.appendChild(row);
   });
 
+  // Add the 'all_values' record to the tfoot if it exists
+  if (allValuesRecord) {
+    const footerRow = document.createElement('tr');
+    let columnIndex = 0;
+
+    for (const key in allValuesRecord) {
+      let content = allValuesRecord[key];
+
+      let cssClass;
+      if (columnIndex === 0) cssClass = DATA_TABLE_FOOT_CLASSES[dataType].firstCol;
+      else if (columnIndex === 1) cssClass = DATA_TABLE_FOOT_CLASSES[dataType].secondCol;
+      else cssClass = DATA_TABLE_FOOT_CLASSES[dataType].otherCols;
+
+      footerRow.appendChild(createTableCell(content, cssClass, exploreItemId, key, false));
+      columnIndex++;
+    }
+    tableFooter.appendChild(footerRow);
+  }
+
   // Highlight the selected rows if they exist in the new data
   if (selectedRowKeys.length > 0) {
-    data.forEach((record, index) => {
+    otherRecords.forEach((record, index) => {
       if (selectedRowKeys.includes(record.key)) {
         const row = tableBody.children[index]; // Get the corresponding row
         const secondCell = row.children[1]; // Get the second cell in the row
