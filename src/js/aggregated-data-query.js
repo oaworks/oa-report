@@ -19,6 +19,7 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
   if (!(term === "published_year" && ELEVENTY_API_ENDPOINT === "api")) {
     termField += ".keyword";
   }
+  
   return {
     "query": {
       "bool": {
@@ -44,7 +45,7 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
       "all_values": {
         "filter": {
           "exists": {
-            "field": `supplements.program__${suffix}.keyword`
+            "field": `${termField}`
           }
         },
         "aggs": {
@@ -772,7 +773,7 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
           "bool": {
             "must_not": {
               "exists": {
-                "field": `supplements.program__${suffix}.keyword`
+                "field": `${termField}`
               }
             }
           }
