@@ -478,7 +478,6 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 async function fetchTermBasedData(suffix, query, term, sort, size) {
   const postData = getAggregatedDataQuery(suffix, query, term, startYear, endYear, size, sort);
   const response = await fetchPostData(postData);
-  console.log(response);
 
   let buckets = [];
 
@@ -489,14 +488,20 @@ async function fetchTermBasedData(suffix, query, term, sort, size) {
   // Process 'all_values' and 'no_values' similarly using the helper function
   ['all_values', 'no_values'].forEach(aggregationKey => {
     if (response && response.aggregations && response.aggregations[aggregationKey]) {
-      const placeholderKey = aggregationKey === 'all_values' ? 'all_values' : 'no_values';
-      const additionalBucket = {'key': placeholderKey, ...formatBucket(response.aggregations[aggregationKey])};
+      const additionalBucket = {'key': aggregationKey, ...formatBucket(response.aggregations[aggregationKey])};
       buckets.push(additionalBucket);
     }
   });
 
+  // TODO: implement sorting in https://github.com/oaworks/discussion/issues/1917
+  // Sort all buckets based on 'doc_count'
+  if (sort.includes('_count')) {
+    buckets.sort((a, b) => b.doc_count - a.doc_count); // Sort in descending order as default for now
+  }
+
   return buckets;
 }
+
 
 /**
  * Formats a single bucket or aggregation result for a term-based table.
@@ -662,8 +667,6 @@ function setupHeaderTooltip(element, key, dataType) {
 function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms') {
   const tableBody = document.getElementById(tableBodyId);
   if (!tableBody || data.length === 0) return;
-
-  console.log('data', data);
 
   // Clear existing table rows
   while (tableBody.firstChild) {
