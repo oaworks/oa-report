@@ -683,6 +683,9 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
   const allValuesRecord = data.find(record => record.key === 'all_values');
   const otherRecords = data.filter(record => record.key !== 'all_values');
 
+  // Limit the number of rows to the specified size
+  otherRecords.length = Math.min(otherRecords.length, currentActiveExploreItemSize);
+
   // Add rows from other records to the tbody
   otherRecords.forEach(record => {
     const row = document.createElement('tr');
