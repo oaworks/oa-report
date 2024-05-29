@@ -1,3 +1,8 @@
+// =================================================
+// oaWorksKeys.js
+// Set and remove the orgkey cookie
+// =================================================
+
 var _OAcookie, ck, o;
 
 _OAcookie = function(obj) {
@@ -51,7 +56,6 @@ if (window.location.search.includes('orgkey=')) {
   if (o) {
     window.OAKEYS[decodeURIComponent(o)] = window.location.search.split('orgkey=')[1].split('&')[0];
     _OAcookie(window.OAKEYS);
-    try { history.pushState(null, null, window.location.href.split('?')[0]); } catch (e) {};
   }
 }
 

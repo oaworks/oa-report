@@ -58,13 +58,18 @@ export function replaceText(className, parameter) {
 }
 
 /**
- * Format a date object into a human-readable string using the user’s locale.
- * 
+ * Format a date object into a human-readable string using the user’s locale,
+ * explicitly formatted as UTC to ensure consistency across different time zones.
+ * By formatting dates like this, we avoid pitfalls of local timezone adjustments,
+ * ensuring that the date displayed is the same date as intended,
+ * regardless of the user’s local time zone settings.
+ *
  * @param {Date} date - The date object to format.
- * @returns {string} The localised date string.
+ * @returns {string} The localised and UTC-formatted date string.
  */
 export function makeDateReadable(date) {
-  return date.toLocaleDateString(USER_LOCALE, READABLE_DATE_OPTIONS);
+  const optionsWithUTC = { ...READABLE_DATE_OPTIONS, timeZone: 'UTC' };
+  return date.toLocaleDateString(USER_LOCALE, optionsWithUTC);
 }
 
 /**
@@ -113,33 +118,40 @@ export function formatDateToISO(date) {
  * a date range string formatted for ElasticSearch queries. 
  * The start date is decremented by one day and the end date is incremented by one day, 
  * ensuring that the range includes all times within the start and end dates.
+ * Display the readable start and end dates in the UI.
  *
  * @param {Date} newStart - The date representing the start of the range.
  * @param {Date} newEnd - The date representing the end of the range.
  * @returns {string} The date range string formatted for ElasticSearch query syntax.
  */
 export function replaceDateRange(newStart, newEnd) {
-  startYear = newStart.getFullYear();
-  endYear = newEnd.getFullYear();
+  // Update the year range in a readable format
   replaceText("report_readable_start_date", makeDateReadable(newStart));
   replaceText("report_readable_end_date", makeDateReadable(newEnd));
+
+  // Adjust the date range in ISO format for the API call (-1 day for start date, +1 day for end date)
   const startDateISO = formatDateToISO(changeDays(-1, newStart));
-  const endDateISO = formatDateToISO(changeDays(1, newEnd));
+  const endDateISO = formatDateToISO(changeDays(+1, newEnd));
   dateRange = `(published_date:>${startDateISO}%20AND%20published_date:<${endDateISO})%20AND%20`;
   
+  startYear = formatDateToISO(newStart);
+  endYear = formatDateToISO(newEnd);
+
   return dateRange;
 }
 
 /**
- * Creates a Date object representing a specific date
+ * Creates a UTC Date object representing a specific date.
+ * This ensures consistency across different time zones, interpreting the date as the same calendar day worldwide.
+ * See oaworks/discussion#2744
  *
  * @param {number} year - The full year of the date.
  * @param {number} month - The month of the date (0-11, where 0 corresponds to January).
  * @param {number} day - The day of the month.
- * @returns {Date} The new Date object representing the specific date.
+ * @returns {Date} The new Date object representing the specific date in UTC.
  */
 export function createDate(year, month, day) {
-  return new Date(year, month, day);
+  return new Date(Date.UTC(year, month, day));  
 }
 
 /**
@@ -258,66 +270,86 @@ export function formatObjectValuesAsList(object, inline = false) {
 }
 
 /**
- * Reorders the keys of each record in an array based on a specified order.
+ * Reorders the keys of each record based on a specified order, placing 'key' and 'doc_count' 
+ * first if they exist, and calculates percentages where applicable, excluding special handling for 'doc_count'.
  * 
  * @param {Array<Object>} records - The array of records to reorder.
- * @param {string} includes - Comma-separated string of keys in the desired order.
- * @returns {Array<Object>} The reordered array of records.
+ * @param {string} includes - Comma-separated string of keys in the desired order, excluding 'doc_count'.
+ * @returns {Array<Object>} The reordered and enriched array of records.
  */
 export function reorderRecords(records, includes) {
-  const keysOrder = includes.split(',');
+  // Add 'key' and 'doc_count' to the front if they exist in the records
+  const firstKeys = [];
+  if (records.some(record => record.hasOwnProperty('key'))) firstKeys.push('key');
+  if (records.some(record => record.hasOwnProperty('doc_count'))) firstKeys.push('doc_count');
+
+  const keysOrder = firstKeys.concat(includes.split(',').filter(key => !firstKeys.includes(key) && key !== 'doc_count'));
 
   return records.map(record => {
     const reorderedRecord = {};
-
     keysOrder.forEach(key => {
-      let value = getNestedPropertyValue(record, key);
-
-      // Handle arrays and nested properties
-      if (Array.isArray(value)) {
-        value = value.filter(item => item !== null); // Remove null items
-        if (value.length === 0) {
-          value = 'null'; // Set to null if array is empty
+      let value = record[key]; // No aliasing for 'doc_count'
+      if (value !== undefined) {
+        if (typeof value === 'number' && !key.startsWith('mean_') && !key.startsWith('median_') && !key.startsWith('total_') && key !== 'doc_count') {
+          // Calculate and store percentage values for applicable numeric fields using doc_count
+          const pctValue = ((value / record['doc_count']) * 100).toFixed(2);
+          reorderedRecord[key + '_pct'] = pctValue + '%';
         }
+        // Keep raw value for all fields
+        reorderedRecord[key] = value;
       }
-      reorderedRecord[key] = value;
     });
-
     return reorderedRecord;
   });
 }
 
 /**
- * Safely retrieves a nested property value from an object.
+ * Formats records for display, either as raw data or prettified with only percentages for pretty mode.
+ * Ensures 'key' and 'doc_count' are properly labeled and included.
+ * Applies numeric formatting for fields starting with 'total_', 'median_', or 'mean_' and
+ * currency formatting for fields ending with '_amount' using a helper function.
  * 
- * @param {Object} obj - The object to retrieve the property from.
- * @param {string} path - Path to the property in dot notation.
- * @returns {*} The value of the property, or null if not found.
+ * @param {Object[]} records - The array of records to be formatted.
+ * @param {boolean} [pretty=true] - Flag to determine if data should be displayed in a pretty format.
+ * @returns {Object[]} - The formatted records.
  */
-function getNestedPropertyValue(obj, path) {
-  return path.split('.').reduce((currentObj, key) => {
-    if (currentObj === null) {
-      return null;
+export function prettifyRecords(records, pretty = true) {
+  return records.map(record => {
+    const formattedRecord = {};
+
+    // Always include 'key' without modification
+    if (record.hasOwnProperty('key')) {
+      formattedRecord['key'] = record['key'];
     }
 
-    // Check if the current object is an array and the key is numeric (array index)
-    if (Array.isArray(currentObj)) {
-      // Map over the array and return the value of the nested property for each item
-      return currentObj.map(item => {
-        if (typeof item === 'object' && item !== null && key in item) {
-          return item[key];
+    // Always process 'doc_count' to make readable
+    if (record.hasOwnProperty('doc_count')) {
+      formattedRecord['doc_count'] = makeNumberReadable(record['doc_count']);
+    }
+
+    Object.keys(record).forEach(key => {
+      if (key !== 'key' && key !== 'doc_count') { // Avoid reprocessing 'key' and 'doc_count'
+        if (pretty) {
+          // Format percentages
+          if (key.endsWith('_pct')) {
+            formattedRecord[key] = Math.round(parseFloat(record[key])).toString() + '%';
+          }
+          // Format numbers starting with 'total_', 'median_', or 'mean_' or ending with '_amount'
+          if (key.startsWith('total_') || key.startsWith('median_') || key.startsWith('mean_') || key.endsWith('_amount')) {
+            const isCurrency = key.endsWith('_amount');
+            formattedRecord[key] = makeNumberReadable(parseFloat(record[key]), isCurrency);
+          }
         } else {
-          // If the item is an array or doesn't have the key, try to go deeper recursively
-          // or return null if not possible
-          return typeof item === 'object' ? getNestedPropertyValue(item, key) : null;
+          // Include all fields except percentages in raw mode
+          if (!key.endsWith('_pct')) {
+            formattedRecord[key] = record[key];
+          }
         }
-      });
-    } else if (typeof currentObj === 'object' && key in currentObj) {
-      return currentObj[key];
-    }
+      }
+    });
 
-    return null;
-  }, obj);
+    return formattedRecord;
+  });
 }
 
 /**
@@ -626,6 +658,29 @@ export function copyToClipboard(buttonId, elementId) {
 }
 
 /**
+ * Parses all URL parameters into an object.
+ * @returns {Object} URL parameters as key-value pairs.
+ */
+export function getAllURLParams() {
+  const params = new URLSearchParams(window.location.search);
+  let paramObject = {};
+  for (let [key, value] of params.entries()) {
+    paramObject[key] = value;
+  }
+  return paramObject;
+}
+
+/**
+ * Gets the value of a specific URL query parameter.
+ * @param {string} param - The name of the parameter.
+ * @returns {string|null} - The value of the parameter or null if not found.
+ */
+export function getURLParam(param) {
+  const queryParams = new URLSearchParams(window.location.search);
+  return queryParams.get(param);
+}
+
+/**
  * Updates the URL with the provided query parameters without reloading the page.
  * @param {Object} params - An object where the key is the parameter name and the value is the parameter value.
  */
@@ -633,16 +688,6 @@ export function updateURLParams(params) {
   const queryParams = new URLSearchParams(window.location.search);
   Object.entries(params).forEach(([key, value]) => queryParams.set(key, value));
   history.pushState(null, '', '?' + queryParams.toString());
-}
-
-/**
- * Gets the value of a URL query parameter.
- * @param {string} param - The name of the parameter.
- * @returns {string|null} - The value of the parameter or null if not found.
- */
-export function getURLParam(param) {
-  const queryParams = new URLSearchParams(window.location.search);
-  return queryParams.get(param);
 }
 
 /**
