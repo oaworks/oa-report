@@ -480,7 +480,6 @@ async function fetchTermBasedData(suffix, query, term, sort, size) {
   const response = await fetchPostData(postData);
 
   let buckets = [];
-  let allValuesRecord = null;
 
   if (response && response.aggregations && response.aggregations.values && response.aggregations.values.buckets) {
     buckets = response.aggregations.values.buckets.map(bucket => formatBucket(bucket));
@@ -490,11 +489,7 @@ async function fetchTermBasedData(suffix, query, term, sort, size) {
   ['all_values', 'no_values'].forEach(aggregationKey => {
     if (response && response.aggregations && response.aggregations[aggregationKey]) {
       const additionalBucket = {'key': aggregationKey, ...formatBucket(response.aggregations[aggregationKey])};
-      if (aggregationKey === 'all_values') {
-        allValuesRecord = additionalBucket; // Separate out the 'all_values' record
-      } else {
-        buckets.push(additionalBucket);
-      }
+      buckets.push(additionalBucket);
     }
   });
 
@@ -507,11 +502,9 @@ async function fetchTermBasedData(suffix, query, term, sort, size) {
     buckets.sort((a, b) => b.doc_count - a.doc_count); // Sort in descending order as default for now
   }
 
-  // Limit the number of buckets to the requested size
-  buckets = buckets.slice(0, size);
-
-  return { buckets, allValuesRecord };
+  return buckets;
 }
+
 
 /**
  * Formats a single bucket or aggregation result for a term-based table.
