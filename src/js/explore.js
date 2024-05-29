@@ -478,7 +478,6 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 async function fetchTermBasedData(suffix, query, term, sort, size) {
   const postData = getAggregatedDataQuery(suffix, query, term, startYear, endYear, size, sort);
   const response = await fetchPostData(postData);
-  console.log(response);
 
   let buckets = [];
 
@@ -662,8 +661,6 @@ function setupHeaderTooltip(element, key, dataType) {
 function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms') {
   const tableBody = document.getElementById(tableBodyId);
   if (!tableBody || data.length === 0) return;
-
-  console.log('data', data);
 
   // Clear existing table rows
   while (tableBody.firstChild) {
