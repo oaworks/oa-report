@@ -568,9 +568,6 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
     tableHeader.removeChild(tableHeader.firstChild);
   }
 
-  // Assuming `records` is an array of objects and we want the keys from the first object
-  // This line seems to be incorrectly placed or based on a misunderstanding; correcting it:
-  // records = records.length > 0 ? Object.keys(records[0]) : []; // Corrected line
   records = Object.keys(records); // Only extract the keys from the records
 
   const headerRow = document.createElement('tr');
