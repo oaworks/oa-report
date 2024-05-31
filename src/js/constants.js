@@ -347,10 +347,12 @@ export const EXPLORE_FILTERS_LABELS = {
     label: "With code"
   },
   "is_work": {
-    label: "Works"
+    label: "Works",
+    info: "<p>Any research output, including articles, preprints, data, and code</p>"
   },
   "is_removed": {
-    label: "Removed works" 
+    label: "Removed works",
+    info: "<p>Any research output, including articles, preprints, data, and code that has been removed from <span class='org-name'></span>’s OA.Report</p>"
   }
 };
 
