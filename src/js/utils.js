@@ -270,12 +270,12 @@ export function formatObjectValuesAsList(object, inline = false) {
 }
 
 /**
- * Reorders the keys of each record based on a specified order, placing 'key' and 'doc_count' 
- * first if they exist, and calculates percentages where applicable, excluding special handling for 'doc_count'.
+ * Reorders the keys of each record based on a specified order, prioritising 'key' and 'doc_count' 
+ * if they exist, and calculates percentage values for applicable numeric fields (excluding 'doc_count').
  * 
- * @param {Array<Object>} records - The array of records to reorder.
- * @param {string} includes - Comma-separated string of keys in the desired order, excluding 'doc_count'.
- * @returns {Array<Object>} The reordered and enriched array of records.
+ * @param {Array<Object>} records - The array of records to reorder. Each record is an object with various keys.
+ * @param {string} includes - Comma-separated string of keys in the desired order. The 'doc_count' key is excluded from this string.
+ * @returns {Array<Object>} The reordered and enriched array of records, where each record includes the original values and calculated percentage values for applicable fields.
  */
 export function reorderTermRecords(records, includes) {
   // Add 'key' and 'doc_count' to the front if they exist in the records
@@ -290,7 +290,7 @@ export function reorderTermRecords(records, includes) {
     keysOrder.forEach(key => {
       let value = record[key]; // No aliasing for 'doc_count'
       if (value !== undefined) {
-        if (typeof value === 'number' && !key.startsWith('mean_') && !key.startsWith('median_') && !key.startsWith('total_') && key !== 'doc_count') {
+        if (typeof value === 'number' && !key.startsWith('mean_') && !key.startsWith('median_') && !key.startsWith('total_') && key !== 'doc_count' && key !== 'key') {
           // Calculate and store percentage values for applicable numeric fields using doc_count
           const pctValue = ((value / record['doc_count']) * 100).toFixed(2);
           reorderedRecord[key + '_pct'] = pctValue + '%';
