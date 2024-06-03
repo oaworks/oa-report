@@ -7,7 +7,7 @@
 // Imports
 // =================================================
 
-import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, makeNumberReadable, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, updateURLParams } from "./utils.js";
+import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, makeNumberReadable, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, updateURLParams } from "./utils.js";
 import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { orgDataPromise } from './insights-and-strategies.js';
@@ -402,7 +402,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     if (type === "terms") {
       query = decodeAndReplaceUrlEncodedChars(query); // Decode and replace URL-encoded characters for JSON parsing
       records = await fetchTermBasedData(suffix, query, term, sort, size);
-      records = reorderRecords(records, includes);
+      records = reorderTermRecords(records, includes);
 
       if (pretty) {
         records = prettifyRecords(records, true);
@@ -416,7 +416,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       removeCSVExportLink(); // Remove the CSV export link
     } else if (type === "articles") {
       records = await fetchArticleBasedData(query, includes, sort, size);
-      records = reorderRecords(records, includes);
+      records = reorderArticleRecords(records, includes);
 
       // Update the sort text in header
       replaceText("explore_sort", "published date"); 
