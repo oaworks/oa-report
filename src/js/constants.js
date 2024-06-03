@@ -793,13 +793,13 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
     label: "Title",
     info: ""
   },
-  "supplements.financial_disclosures__asap": {
+  "is_fiancial_disclosure": {
     label: "Financial disclosure",
     info: "True if this work's funding statement is actually a financial disclosure"
   },
-  "supplements.removed_from_report": {
-    label: "removed from report",
-    info: "Lists an organizations URL slug if this work should be removed from a report for any reason"
+  "removed_from_report": {
+    label: "Removed from OA.Report",
+    info: "Lists an organizations URL slug if this work should be removed from OA.Report for any reason"
   },
   "version": {
     label: "Version",
