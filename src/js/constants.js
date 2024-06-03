@@ -793,7 +793,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
     label: "Title",
     info: ""
   },
-  "is_fiancial_disclosure": {
+  "is_financial_disclosure": {
     label: "Financial disclosure",
     info: "True if this work's funding statement is actually a financial disclosure"
   },
