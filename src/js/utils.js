@@ -277,7 +277,7 @@ export function formatObjectValuesAsList(object, inline = false) {
  * @param {string} includes - Comma-separated string of keys in the desired order. The 'doc_count' key is excluded from this string.
  * @returns {Array<Object>} The reordered and enriched array of records, where each record includes the original values and calculated percentage values for applicable fields.
  */
-export function reorderRecords(records, includes) {
+export function reorderTermRecords(records, includes) {
   // Add 'key' and 'doc_count' to the front if they exist in the records
   const firstKeys = [];
   if (records.some(record => record.hasOwnProperty('key'))) firstKeys.push('key');
@@ -299,6 +299,36 @@ export function reorderRecords(records, includes) {
         reorderedRecord[key] = value;
       }
     });
+    return reorderedRecord;
+  });
+}
+
+/**
+ * Reorders the keys of each record in an array based on a specified order.
+ * 
+ * @param {Array<Object>} records - The array of records to reorder.
+ * @param {string} includes - Comma-separated string of keys in the desired order.
+ * @returns {Array<Object>} The reordered array of records.
+ */
+export function reorderArticleRecords(records, includes) {
+  const keysOrder = includes.split(',');
+
+  return records.map(record => {
+    const reorderedRecord = {};
+
+    keysOrder.forEach(key => {
+      let value = getNestedPropertyValue(record, key);
+
+      // Handle arrays and nested properties
+      if (Array.isArray(value)) {
+        value = value.filter(item => item !== null); // Remove null items
+        if (value.length === 0) {
+          value = 'null'; // Set to null if array is empty
+        }
+      }
+      reorderedRecord[key] = value;
+    });
+
     return reorderedRecord;
   });
 }
@@ -350,6 +380,40 @@ export function prettifyRecords(records, pretty = true) {
 
     return formattedRecord;
   });
+}
+
+
+/**
+ * Safely retrieves a nested property value from an object.
+ * 
+ * @param {Object} obj - The object to retrieve the property from.
+ * @param {string} path - Path to the property in dot notation.
+ * @returns {*} The value of the property, or null if not found.
+ */
+function getNestedPropertyValue(obj, path) {
+  return path.split('.').reduce((currentObj, key) => {
+    if (currentObj === null) {
+      return null;
+    }
+
+    // Check if the current object is an array and the key is numeric (array index)
+    if (Array.isArray(currentObj)) {
+      // Map over the array and return the value of the nested property for each item
+      return currentObj.map(item => {
+        if (typeof item === 'object' && item !== null && key in item) {
+          return item[key];
+        } else {
+          // If the item is an array or doesn't have the key, try to go deeper recursively
+          // or return null if not possible
+          return typeof item === 'object' ? getNestedPropertyValue(item, key) : null;
+        }
+      });
+    } else if (typeof currentObj === 'object' && key in currentObj) {
+      return currentObj[key];
+    }
+
+    return null;
+  }, obj);
 }
 
 /**
