@@ -1112,10 +1112,11 @@ function removeCSVExportLink() {
 window.getExportLink = function() {
   orgDataPromise.then(function (response) {
     const orgData = response.data;
-     // Only gets includes for 'articles'-type data tables
-     // This was a quick fix because, for now, we only needed to provide CSV downloads for 'articles' only 
-     // TODO: get whatever includes is associated to the explore item for which we’re getting the export link
-    let hasCustomExportIncludes = orgData.hits.hits[0]._source.explore.find(item => item.id === 'articles').includes;
+    const currentId = currentActiveExploreItemData.id;
+
+    // Get the custom includes for the specific item based on the current active explore item ID
+    let activeItem = orgData.hits.hits[0]._source.explore.find(item => item.id === currentId);
+    let hasCustomExportIncludes = activeItem ? activeItem.includes : "";
 
     let queryURL = (dateRange + orgData.hits.hits[0]._source.analysis[currentActiveExploreItemQuery].query);
     let query = `q=${queryURL.replaceAll(" ", "%20")}`,
@@ -1124,7 +1125,7 @@ window.getExportLink = function() {
     var email = `&${new URLSearchParams(form).toString()}`;
 
     var include;
-    if ((hasCustomExportIncludes !== undefined && hasCustomExportIncludes !== "")) {
+    if (hasCustomExportIncludes !== undefined && hasCustomExportIncludes !== "") {
       include = `&include=${hasCustomExportIncludes}`;
     }
     query = CSV_EXPORT_BASE + query + include + exportSort + email + orgKey;
