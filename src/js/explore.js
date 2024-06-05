@@ -7,7 +7,7 @@
 // Imports
 // =================================================
 
-import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, makeNumberReadable, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, updateURLParams } from "./utils.js";
+import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, makeNumberReadable, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, updateURLParams } from "./utils.js";
 import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { orgDataPromise } from './insights-and-strategies.js';
@@ -402,7 +402,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     if (type === "terms") {
       query = decodeAndReplaceUrlEncodedChars(query); // Decode and replace URL-encoded characters for JSON parsing
       records = await fetchTermBasedData(suffix, query, term, sort, size);
-      records = reorderRecords(records, includes);
+      records = reorderTermRecords(records, includes);
 
       if (pretty) {
         records = prettifyRecords(records, true);
@@ -416,7 +416,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       removeCSVExportLink(); // Remove the CSV export link
     } else if (type === "articles") {
       records = await fetchArticleBasedData(query, includes, sort, size);
-      records = reorderRecords(records, includes);
+      records = reorderArticleRecords(records, includes);
 
       // Update the sort text in header
       replaceText("explore_sort", "published date"); 
@@ -568,9 +568,6 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
     tableHeader.removeChild(tableHeader.firstChild);
   }
 
-  // Assuming `records` is an array of objects and we want the keys from the first object
-  // This line seems to be incorrectly placed or based on a misunderstanding; correcting it:
-  // records = records.length > 0 ? Object.keys(records[0]) : []; // Corrected line
   records = Object.keys(records); // Only extract the keys from the records
 
   const headerRow = document.createElement('tr');
@@ -1115,10 +1112,11 @@ function removeCSVExportLink() {
 window.getExportLink = function() {
   orgDataPromise.then(function (response) {
     const orgData = response.data;
-     // Only gets includes for 'articles'-type data tables
-     // This was a quick fix because, for now, we only needed to provide CSV downloads for 'articles' only 
-     // TODO: get whatever includes is associated to the explore item for which we’re getting the export link
-    let hasCustomExportIncludes = orgData.hits.hits[0]._source.explore.find(item => item.id === 'articles').includes;
+    const currentId = currentActiveExploreItemData.id;
+
+    // Get the custom includes for the specific item based on the current active explore item ID
+    let activeItem = orgData.hits.hits[0]._source.explore.find(item => item.id === currentId);
+    let hasCustomExportIncludes = activeItem ? activeItem.includes : "";
 
     let queryURL = (dateRange + orgData.hits.hits[0]._source.analysis[currentActiveExploreItemQuery].query);
     let query = `q=${queryURL.replaceAll(" ", "%20")}`,
@@ -1127,7 +1125,7 @@ window.getExportLink = function() {
     var email = `&${new URLSearchParams(form).toString()}`;
 
     var include;
-    if ((hasCustomExportIncludes !== undefined && hasCustomExportIncludes !== "")) {
+    if (hasCustomExportIncludes !== undefined && hasCustomExportIncludes !== "") {
       include = `&include=${hasCustomExportIncludes}`;
     }
     query = CSV_EXPORT_BASE + query + include + exportSort + email + orgKey;

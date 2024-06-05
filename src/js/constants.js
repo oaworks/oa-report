@@ -348,6 +348,9 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "is_work": {
     label: "Works"
+  },
+  "is_removed": {
+    label: "Removed works" 
   }
 };
 
