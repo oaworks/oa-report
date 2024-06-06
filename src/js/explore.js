@@ -825,9 +825,12 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
   } else if (typeof content === 'object' && content !== null) {
     // If content is an object, format its values as a list
     cell.innerHTML = `<ul>${formatObjectValuesAsList(content, true)}</ul>`;
-  } else if (!content || content === 'null') { // or content is the string 'null'
+  } else if (content === null || content === 'null') {
     // Replace null, undefined, and similar values with an empty string
     cell.innerHTML = "";
+  } else if (typeof content === 'boolean') {
+    // Handle boolean values
+    cell.innerHTML = content.toString();
   } else {
     // Default case for handling plain content
     cell.innerHTML = content;
