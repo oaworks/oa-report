@@ -663,15 +663,15 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "dev.code.has_made_code": {
     label: "Generated code?",
-    info: ""
+    info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article uses code the authors generated in the process of research.</p><p>Source: Dataseer <br>Updated: as requested (premium)</p>"
   },
   "dev.code.has_open_code": {
     label: "Open code?",
-    info: ""
+    info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the authors shared their code and licensed it under a permissive open source licence (e.g MIT).</p><p>Source: OA.Works <br>Updated: as requested (premium)</p>"
   },
   "dev.code.has_shared_code": {
     label: "Shared code?",
-    info: ""
+    info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article shared the code in any location (e.g. in the supplements, the article itself, a code repository, their website).</p><p>Source: Dataseer <br>Updated: as requested (premium)</p>"
   },
   "dev.code.licence": {
     label: "Code license",
@@ -699,11 +699,11 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "dev.data.has_open_data": {
     label: "Open data?",
-    info: ""
+    info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the authors shared their data and licensed it CC-BY or CC-O.</p><p>Source: OA.Works <br>Updated: as requested (premium)</p>"
   },
   "dev.data.has_shared_data": {
     label: "Shared data?",
-    info: ""
+    info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article shared the data in any location (e.g. in the supplements, the article itself, a data repository, their website).</p><p>Source: Dataseer <br>Updated: as requested (premium)</p>"
   },
   "dev.data.licence": {
     label: "Data license",
