@@ -370,7 +370,6 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   "covered_by_policy": {
     label: "Covered by policy",
     info: "Publications that are covered by the Open Access policy.",
-    details: "<span class='org-policy-coverage'></span>"
   },
   "free_to_read": {
     label: "Free-to-read",

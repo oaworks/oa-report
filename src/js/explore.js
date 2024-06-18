@@ -645,7 +645,6 @@ function setupHeaderTooltip(element, key, dataType) {
         setTimeout(() => {
           // Safely update text and href using optional chaining and nullish coalescing
           replaceText('org-name', orgName ?? '');
-          replaceText('org-policy-coverage', orgPolicyCoverage ?? '');
 
           // Update the tooltip content if labelData exists
           instance.setContent(generateTooltipContent(labelData));
