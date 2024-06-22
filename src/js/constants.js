@@ -347,10 +347,12 @@ export const EXPLORE_FILTERS_LABELS = {
     label: "With code"
   },
   "is_work": {
-    label: "Works"
+    label: "Works",
+    info: "<p>Any research output, including articles, preprints, data, and code</p>"
   },
   "is_removed": {
-    label: "Removed works" 
+    label: "Removed works",
+    info: "<p>Any research output, including articles, preprints, data, and code that has been removed from <span class='org-name'></span>’s OA.Report</p>"
   }
 };
 
@@ -875,6 +877,14 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   "title": {
     label: "Title",
     info: ""
+  },
+  "is_financial_disclosure": {
+    label: "Financial disclosure",
+    info: "True if this work's funding statement is actually a financial disclosure"
+  },
+  "removed_from_report": {
+    label: "Removed from OA.Report",
+    info: "Lists an organizations URL slug if this work should be removed from OA.Report for any reason"
   },
   "updated": {
     label: "Updated",
