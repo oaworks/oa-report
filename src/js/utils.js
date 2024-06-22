@@ -763,3 +763,13 @@ export function displayErrorHeader(message) {
   alertMsg.textContent = message ? message : "An error occurred.";
   alertMsg.style.display = "block";
 }
+
+/**
+ * Utility function to remove duplicates from an array.
+ *
+ * @param {Array} array - The array from which to remove duplicates.
+ * @returns {Array} - A new array with duplicates removed.
+ */
+export function removeArrayDuplicates(array) {
+  return Array.from(new Set(array));
+}

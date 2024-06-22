@@ -58,7 +58,18 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
                       "publisher_license.keyword": [
                         "cc-by",
                         "pd",
-                        "cc-0"
+                        "cc-0",
+                        "public-domain"
+                      ]
+                    }
+                  },
+                  {
+                    "terms": {
+                      "publisher_license_v2.keyword": [
+                        "cc-by",
+                        "pd",
+                        "cc-0",
+                        "public-domain"
                       ]
                     }
                   },
@@ -85,7 +96,18 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
                       "repository_license.keyword": [
                         "cc-by",
                         "pd",
-                        "cc-0"
+                        "cc-0",
+                        "public-domain"
+                      ]
+                    }
+                  },
+                  {
+                    "terms": {
+                      "repository_license_v2.keyword": [
+                        "cc-by",
+                        "pd",
+                        "cc-0",
+                        "public-domain"
                       ]
                     }
                   },
@@ -788,7 +810,18 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
                       "publisher_license.keyword": [
                         "cc-by",
                         "pd",
-                        "cc-0"
+                        "cc-0",
+                        "public-domain"
+                      ]
+                    }
+                  },
+                  {
+                    "terms": {
+                      "publisher_license_v2.keyword": [
+                        "cc-by",
+                        "pd",
+                        "cc-0",
+                        "public-domain"
                       ]
                     }
                   },
@@ -815,7 +848,18 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
                       "repository_license.keyword": [
                         "cc-by",
                         "pd",
-                        "cc-0"
+                        "cc-0",
+                        "public-domain"
+                      ]
+                    }
+                  },
+                  {
+                    "terms": {
+                      "repository_license_v2.keyword": [
+                        "cc-by",
+                        "pd",
+                        "cc-0",
+                        "public-domain"
                       ]
                     }
                   },
@@ -1516,7 +1560,18 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
                       "publisher_license.keyword": [
                         "cc-by",
                         "pd",
-                        "cc-0"
+                        "cc-0",
+                        "public-domain"
+                      ]
+                    }
+                  },
+                  {
+                    "terms": {
+                      "publisher_license_v2.keyword": [
+                        "cc-by",
+                        "pd",
+                        "cc-0",
+                        "public-domain"
                       ]
                     }
                   },
@@ -1543,7 +1598,18 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
                       "repository_license.keyword": [
                         "cc-by",
                         "pd",
-                        "cc-0"
+                        "cc-0",
+                        "public-domain"
+                      ]
+                    }
+                  },
+                  {
+                    "terms": {
+                      "repository_license_v2.keyword": [
+                        "cc-by",
+                        "pd",
+                        "cc-0",
+                        "public-domain"
                       ]
                     }
                   },
