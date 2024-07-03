@@ -707,6 +707,7 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
       // Remove duplicates if content is an array
       if (Array.isArray(content)) {
         content = removeArrayDuplicates(content);
+        content = content.join('; '); // Join array elements with a semicolon
       }
 
       let cssClass;
