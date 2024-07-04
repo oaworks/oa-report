@@ -763,3 +763,25 @@ export function displayErrorHeader(message) {
   alertMsg.textContent = message ? message : "An error occurred.";
   alertMsg.style.display = "block";
 }
+
+/**
+ * Utility function to remove duplicates from an array or nested arrays.
+ *
+ * @param {Array} array - The array or nested array from which to remove duplicates.
+ * @returns {Array} - A new array with duplicates removed.
+ */
+export function removeArrayDuplicates(array) {
+  if (!Array.isArray(array)) {
+    return array;
+  }
+
+  // Remove duplicates from the main array
+  const uniqueArray = Array.from(new Set(array.map(item => 
+    Array.isArray(item) ? JSON.stringify(removeArrayDuplicates(item)) : JSON.stringify(item)
+  ))).map(item => JSON.parse(item));
+
+  // Recursively remove duplicates from nested arrays
+  return uniqueArray.map(item => 
+    Array.isArray(item) ? removeArrayDuplicates(item) : item
+  );
+}
