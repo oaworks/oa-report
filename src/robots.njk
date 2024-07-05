@@ -4,5 +4,8 @@ layout: null
 eleventyExcludeFromCollections: true
 ---
 
-User-agent: ChatGPT-User
-Allow: /test
+# Disallow crawling of everything (report pages) except for landing/homepage 
+User-agent: *
+Allow: /$
+Disallow: /
+Sitemap: {{ site.base_url }}/sitemap.xml
