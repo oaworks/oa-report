@@ -140,7 +140,7 @@ export const EXPLORE_ITEMS_LABELS = {
     singular: "Article <span class='uppercase'>OA</span> type",
     plural: "Article <span class='uppercase'>OA</span> types"
   },
-  "journal_oa_type": {
+  "syp_permissions.journal_oa_type": {
     singular: "Journal <span class='uppercase'>OA</span> type",
     plural: "Journal <span class='uppercase'>OA</span> types"
   },
