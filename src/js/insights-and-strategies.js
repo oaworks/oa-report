@@ -282,7 +282,7 @@ export function initInsightsAndStrategies(org) {
 
                         var newMailto = mailto.replaceAll("\'", "’");
                         newMailto = newMailto.replaceAll("{doi}", (action.DOI ? action.DOI : "[No DOI found]"));
-                        newMailto = newMailto.replaceAll("{author_email_name}", (action.author_email_name ? action.author_email_name : "[No author’s name found]"));
+                        newMailto = newMailto.replaceAll("{outreach.author_display_name}", (action.outreach.author_display_name ? action.outreach.author_display_name : "[No author’s name found]"));
                         newMailto = newMailto.replaceAll("{title}", (action.title ? action.title.replaceAll("\'", "’") : "[No title found]"));
 
                         // And add it to the action array
@@ -324,7 +324,7 @@ export function initInsightsAndStrategies(org) {
 
     displayStrategy(
       "email_author_vor",
-      ['openalex.publication_date', 'title', 'journal', 'author_email_name', 'email', 'DOI', 'mailto'],
+      ['openalex.publication_date', 'title', 'journal', 'outreach.author_display_name', 'email', 'DOI', 'mailto'],
       "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
         <div class='mb-1 text-neutral-600'>${action.openalex.publication_date}</div>\
         <div class='mb-1 font-medium text-neutral-900 hover:text-carnation-500'>\
@@ -333,7 +333,7 @@ export function initInsightsAndStrategies(org) {
         <div class='text-neutral-600'>${action.journal}</div>\
       </td>\
       <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
-        <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
+        <div class='mb-1 text-neutral-900'>${action.outreach.author_display_name}</div>\
       </td>\
       <td class='hidden px-3 py-4 text-sm text-center text-neutral-600 align-top break-words sm:table-cell'>\
         <button \
@@ -349,7 +349,7 @@ export function initInsightsAndStrategies(org) {
 
     displayStrategy(
       "email_author_aam",
-      ['openalex.publication_date', 'title', 'journal', 'author_email_name', 'email', 'DOI', 'mailto'],
+      ['openalex.publication_date', 'title', 'journal', 'outreach.author_display_name', 'email', 'DOI', 'mailto'],
       "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
         <div class='mb-1 text-neutral-600'>${action.openalex.publication_date}</div>\
         <div class='mb-1 font-medium text-neutral-900 hover:text-carnation-500'>\
@@ -358,7 +358,7 @@ export function initInsightsAndStrategies(org) {
         <div class='text-neutral-600'>${action.journal}</div>\
       </td>\
       <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
-        <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
+        <div class='mb-1 text-neutral-900'>${action.outreach.author_display_name}</div>\
       </td>\
       <td class='hidden px-3 py-4 text-sm text-center text-neutral-600 align-top break-words sm:table-cell'>\
         <button \
@@ -398,13 +398,13 @@ export function initInsightsAndStrategies(org) {
 
     displayStrategy(
       "unanswered_requests",
-      ['title', 'journal', 'author_email_name', 'email', 'DOI', 'supplements.program__bmgf', 'supplements.grantid__bmgf', 'mailto'],
+      ['title', 'journal', 'outreach.author_display_name', 'email', 'DOI', 'supplements.program__bmgf', 'supplements.grantid__bmgf', 'mailto'],
       "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
         <div class='mb-1 font-medium text-neutral-900'>${action.program__bmgf}</div>\
         <div class='text-neutral-900'>${action.grantid__bmgf}</div>\
       </td>\
       <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 font-medium text-neutral-900'>${action.author_email_name}</div>\
+        <div class='mb-1 font-medium text-neutral-900'>${action.outreach.author_display_name}</div>\
         <div class='mb-1 text-neutral-900'>\
           <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
         </div>\
