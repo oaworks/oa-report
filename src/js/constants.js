@@ -494,7 +494,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
     label: "APC<span class='lowercase'>s</span>",
     info: ""
   },
-  "data_availability_statement_category": {
+  "data_availability_statement.category": {
     label: "Data availability statement category",
     info: ""
   },
