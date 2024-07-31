@@ -172,6 +172,15 @@ async function addExploreButtonsToDOM(exploreData) {
       seeMoreButton.querySelector('span').textContent = moreButtonsVisible ? 'See fewer' : 'See more';
     });
   }
+
+  // Handle breakdown after adding explore buttons
+  const breakdown = params.breakdown;
+  if (breakdown) {
+    const exploreButton = document.getElementById(`explore_${breakdown}_button`);
+    if (exploreButton) {
+      exploreButton.click();
+    }
+  }
 }
 
 /**
