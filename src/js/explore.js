@@ -7,11 +7,11 @@
 // Imports
 // =================================================
 
-import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, makeNumberReadable, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, updateURLParams } from "./utils.js";
-import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES } from "./constants.js";
+import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, makeNumberReadable, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, updateURLParams, removeArrayDuplicates } from "./utils.js";
+import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { orgDataPromise } from './insights-and-strategies.js';
-import { createPostData } from './api-requests.js';
+import { getAggregatedDataQuery } from './aggregated-data-query.js';
 
 // =================================================
 // Global variables
@@ -172,6 +172,15 @@ async function addExploreButtonsToDOM(exploreData) {
       seeMoreButton.querySelector('span').textContent = moreButtonsVisible ? 'See fewer' : 'See more';
     });
   }
+
+  // Handle breakdown after adding explore buttons
+  const breakdown = params.breakdown;
+  if (breakdown) {
+    const exploreButton = document.getElementById(`explore_${breakdown}_button`);
+    if (exploreButton) {
+      exploreButton.click();
+    }
+  }
 }
 
 /**
@@ -237,10 +246,7 @@ async function addExploreFiltersToDOM(query) {
     let id = filters[0].id;
     currentActiveExploreItemQuery = id;
   }
-
-  // Update the text for the active filter
-  replaceText("explore_filter", currentActiveExploreItemQuery === 'is_paper' ? EXPLORE_FILTERS_LABELS[currentActiveExploreItemQuery] : 'articles that are ' + (EXPLORE_FILTERS_LABELS[currentActiveExploreItemQuery] || currentActiveExploreItemQuery));
-
+  
   // Create radio buttons for each filter and append them to the DOM
   filters.forEach((filter, index) => {
     const radioButton = createExploreFilterRadioButton(filter.id, filter.id === currentActiveExploreItemQuery);
@@ -258,11 +264,51 @@ async function addExploreFiltersToDOM(query) {
  * @returns {HTMLDivElement} The div element containing the configured radio button and label.
  */
 function createExploreFilterRadioButton(id, isChecked) {
-  const label = EXPLORE_FILTERS_LABELS[id] || id; // Use label from filters or default to ID
+  const labelData = EXPLORE_FILTERS_LABELS[id];
+  const label = labelData.label || id;  // Use label from filters or default to ID
+
+  // Create div to contain radio input and label
   const filterRadioButton = document.createElement('div');
   filterRadioButton.className = 'flex items-center mr-3 md:mr-6 mb-3';
 
-  // Creating and appending radio input
+  // Generate and set tooltip if info is present and non-empty
+  if (labelData.info && labelData.info.trim()) {
+    const tooltipContent = generateTooltipContent(labelData);
+
+    // Initialise Tippy tooltip if there is tooltip content
+    tippy(filterRadioButton, {
+      content: tooltipContent,
+      allowHTML: true,
+      interactive: true,
+      placement: 'bottom',
+      appendTo: document.body,
+      theme: 'tooltip-white',
+      onShow(instance) {
+        // Use setTimeout to ensure DOM is ready for updates
+        setTimeout(() => {
+          // Safely update text and href using optional chaining and nullish coalescing
+          replaceText('org-name', orgName ?? '');
+          replaceText('org-policy-coverage', orgPolicyCoverage ?? '');
+          replaceText('org-policy-compliance', orgPolicyCompliance ?? '');
+
+          // Safely set the href attribute
+          const policyUrlElement = document.querySelector('.org-policy-url');
+          if (policyUrlElement) {
+              policyUrlElement.href = orgPolicyUrl ?? '#';  // Fallback to '#' if orgPolicyUrl is undefined
+          }
+
+          // Update the tooltip content if labelData exists
+          instance.setContent(generateTooltipContent(labelData));
+        }, 0);
+      }
+    });
+
+    const tooltipID = `${id}_info`;
+    filterRadioButton.setAttribute('aria-controls', tooltipID);
+    filterRadioButton.setAttribute('aria-labelledby', tooltipID);
+  }
+
+  // Create and append radio input
   const radioInput = document.createElement('input');
   Object.assign(radioInput, {
     type: 'radio',
@@ -275,7 +321,7 @@ function createExploreFilterRadioButton(id, isChecked) {
   });
   filterRadioButton.appendChild(radioInput);
 
-  // Creating and appending label
+  // Create and append label
   const labelElement = document.createElement('label');
   Object.assign(labelElement, {
     htmlFor: `filter_${id}`,
@@ -332,7 +378,7 @@ function addRecordsShownSelectToDOM() {
 
 /**
  * Handles the click event for explore items. Fetches data and updates the table 
- * with the results based on the selected filter and display style.
+ * based on the selected filter and display style.
  * 
  * @async
  * @param {Object} itemData - The data object of the explore item.
@@ -342,11 +388,9 @@ function addRecordsShownSelectToDOM() {
  */
 async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 10, pretty = true) {
   try {
-    const { type, id, term, sort, includes } = itemData; // Extract explore item's properties
+    const { type, id, term, sort, includes } = itemData; // Extract properties
 
     document.getElementById("csv_email_msg").innerHTML = ""; // Clear any existing message in CSV download form
-
-    // Show the table
     const exportTable = document.getElementById('export_table');
     exportTable.classList.remove('hidden'); 
 
@@ -361,33 +405,32 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     if (!query || query.trim() === '') {
       showNoResultsRow(10, "export_table_body", "js_export_table"); // Show "No results found."
       toggleLoadingIndicator(false, 'explore_loading'); // Hide loading indicator
-      return; // Stop further processing
+      return;
     }
 
     if (type === "terms") {
-      query = decodeAndReplaceUrlEncodedChars(query); // Decode and replace any URL-encoded characters for JSON
+      query = decodeAndReplaceUrlEncodedChars(query); // Decode and replace URL-encoded characters for JSON parsing
       records = await fetchTermBasedData(suffix, query, term, sort, size);
-      records = reorderRecords(records, includes);
+      records = reorderTermRecords(records, includes);
 
-      // Update the sort text in header
-      replaceText("explore_sort", "publication count");
-      replaceText("report_sort_adjective", "Top");
-
-      // Format records depending on data display toggler choice 
-      if (pretty === true) {
-        records = formatRecords(records); 
-        records = prettifyRecords(records);
+      if (pretty) {
+        records = prettifyRecords(records, true);
       } else {
         records = prettifyRecords(records, false);
       }
 
+      // Update the sort text in header
+      replaceText("explore_sort", "publication count");
+      replaceText("report_sort_adjective", "Top");
+      removeCSVExportLink(); // Remove the CSV export link
     } else if (type === "articles") {
       records = await fetchArticleBasedData(query, includes, sort, size);
-      records = reorderRecords(records, includes);
+      records = reorderArticleRecords(records, includes);
 
       // Update the sort text in header
       replaceText("explore_sort", "published date"); 
       replaceText("report_sort_adjective", "Latest");
+      addCSVExportLink(); // Add the CSV export link
     }
 
     if (records.length > 0) {
@@ -397,11 +440,11 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       
       // Update any mentions of the explore data type with .plural version of the ID
       replaceText("explore_type", EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id));
-
+    
       // Add functionalities to the table
       enableExploreTableScroll();
       enableTooltipsForTruncatedCells();
-
+    
       const downloadCSVForm = document.getElementById('download_csv_form');
       const exploreArticlesTableHelp = document.getElementById('explore_articles_records_shown_help');
       const exploreTermsTableHelp = document.getElementById('explore_terms_records_shown_help');
@@ -422,6 +465,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     } else {
       showNoResultsRow(10, "export_table_body", "js_export_table"); // Show "No results found."
     }
+
   } catch (error) {
     console.error('Error fetching and displaying explore data: ', error);
     showNoResultsRow(10, "export_table_body", "js_export_table"); // Show "No results found."
@@ -441,27 +485,56 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
  * @returns {Promise<Array>} A promise that resolves to an array of term-based records.
  */
 async function fetchTermBasedData(suffix, query, term, sort, size) {
-  const postData = createPostData(suffix, query, term, startYear, endYear, size, sort); // Generate POST request
+  const postData = getAggregatedDataQuery(suffix, query, term, startYear, endYear, size, sort);
   const response = await fetchPostData(postData);
 
-  if (response && response.aggregations && response.aggregations.key && response.aggregations.key.buckets) {
-    return response.aggregations.key.buckets.map(bucket => {
-      const formattedBucket = {};
-      Object.keys(bucket).forEach(key => {
-        if (key.startsWith("median_")) {
-          formattedBucket[key] = bucket[key].values["50.0"];
-        } else if (bucket[key].doc_count !== undefined) {
-          formattedBucket[key] = bucket[key].doc_count;
-        } else if (bucket[key].value !== undefined) {
-          formattedBucket[key] = bucket[key].value;
-        } else {
-          formattedBucket[key] = bucket[key];
-        }
-      });
-      return formattedBucket;
-    });
+  let buckets = [];
+
+  if (response && response.aggregations && response.aggregations.values && response.aggregations.values.buckets) {
+    buckets = response.aggregations.values.buckets.map(bucket => formatBucket(bucket));
   }
-  return [];
+
+  // Process 'all_values' and 'no_values' similarly using the helper function
+  ['all_values', 'no_values'].forEach(aggregationKey => {
+    if (response && response.aggregations && response.aggregations[aggregationKey]) {
+      const additionalBucket = {'key': aggregationKey, ...formatBucket(response.aggregations[aggregationKey])};
+      buckets.push(additionalBucket);
+    }
+  });
+
+  // Filter out buckets with doc_count of 0
+  buckets = buckets.filter(bucket => bucket.doc_count > 0);
+
+  // TODO: implement sorting in https://github.com/oaworks/discussion/issues/1917
+  // Sort all buckets based on 'doc_count'
+  if (sort.includes('_count')) {
+    buckets.sort((a, b) => b.doc_count - a.doc_count); // Sort in descending order as default for now
+  }
+
+  return buckets;
+}
+
+
+/**
+ * Formats a single bucket or aggregation result for a term-based table.
+ * 
+ * @param {Object} bucket - The raw bucket data from the API response.
+ * @returns {Object} The formatted bucket data.
+ */
+function formatBucket(bucket) {
+  const formattedBucket = {};
+  Object.keys(bucket).forEach(key => {
+      if (key.startsWith("median_")) {
+          formattedBucket[key] = bucket[key].values["50.0"];
+      } else if (bucket[key].doc_count !== undefined) {
+          formattedBucket[key] = bucket[key].doc_count;
+      } else if (bucket[key].value !== undefined) {
+          formattedBucket[key] = bucket[key].value;
+      } else {
+          formattedBucket[key] = bucket[key];
+      }
+  });
+  return formattedBucket;
 }
 
 /**
@@ -504,9 +577,6 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
     tableHeader.removeChild(tableHeader.firstChild);
   }
 
-  // Assuming `records` is an array of objects and we want the keys from the first object
-  // This line seems to be incorrectly placed or based on a misunderstanding; correcting it:
-  // records = records.length > 0 ? Object.keys(records[0]) : []; // Corrected line
   records = Object.keys(records); // Only extract the keys from the records
 
   const headerRow = document.createElement('tr');
@@ -527,7 +597,7 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
       : EXPLORE_HEADER_ARTICLES_LABELS[key]?.label || key;
 
     const headerCell = createTableCell('', cssClass, null, null, true); 
-    setupTooltip(headerCell, key, dataType);
+    setupHeaderTooltip(headerCell, key, dataType);
 
     headerRow.appendChild(headerCell);
   });
@@ -542,13 +612,13 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
  */
 function generateTooltipContent(labelData, additionalHelpText = null) {
   const hasDetails = !!labelData.details;
-  return `
+  let tooltipHTML = `
     <p class='${hasDetails ? "mb-2" : ""}'>${labelData.info}</p>
     ${additionalHelpText ? `<p class='mb-2'>${additionalHelpText}</p>` : ""}
     ${hasDetails ? `<details><summary class='hover:cursor-pointer'>Methodology</summary><p class='mt-2'>${labelData.details}</p></details>` : ""}
   `;
+  return tooltipHTML;
 }
-
 /**
  * Attaches a tooltip to an HTML element if tooltip content is provided.
  * Uses the Tippy.js library for tooltip functionality, applying a11y attributes.
@@ -558,7 +628,7 @@ function generateTooltipContent(labelData, additionalHelpText = null) {
  * @param {string} key - The key associated with the tooltip, used for fallback labeling and to generate IDs for accessibility.
  * @param {string} dataType - Indicates the type of data ('terms' or 'articles'), which determines the labels configuration to use.
  */
-function setupTooltip(element, key, dataType) {
+function setupHeaderTooltip(element, key, dataType) {
   const labelsConfig = dataType === 'terms' ? EXPLORE_HEADER_TERMS_LABELS : EXPLORE_HEADER_ARTICLES_LABELS;
   const labelData = labelsConfig[key];
   const label = labelData && labelData.label ? labelData.label : key;
@@ -579,9 +649,20 @@ function setupTooltip(element, key, dataType) {
       placement: 'bottom',
       appendTo: document.body,
       theme: 'tooltip-white',
+      onShow(instance) {
+        // Use setTimeout to ensure DOM is ready for updates
+        setTimeout(() => {
+          // Safely update text and href using optional chaining and nullish coalescing
+          replaceText('org-name', orgName ?? '');
+          replaceText('org-policy-coverage', orgPolicyCoverage ?? '');
+
+          // Update the tooltip content if labelData exists
+          instance.setContent(generateTooltipContent(labelData));
+        }, 0);
+      }
     });
 
-    element.setAttribute('aria-controls', tooltipID); // Assuming you manage IDs uniquely
+    element.setAttribute('aria-controls', tooltipID);
     element.setAttribute('aria-labelledby', tooltipID);
   }
 }
@@ -592,27 +673,35 @@ function setupTooltip(element, key, dataType) {
  * @param {Array<Object>} data - Array of data objects to populate the table with.
  * @param {string} tableBodyId - The ID of the table body to populate.
  * @param {string} exploreItemId - The ID of the selected explore item.
+ * @param {string} [dataType='terms'] - The type of data being populated (e.g., 'terms', 'articles').
  */
 function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms') {
   const tableBody = document.getElementById(tableBodyId);
+  const tableFooter = document.getElementById('export_table_foot');
   if (!tableBody || data.length === 0) return;
 
   // Clear existing table rows
-  while (tableBody.firstChild) {
-    tableBody.removeChild(tableBody.firstChild);
-  }
+  tableBody.innerHTML = '';
+  tableFooter.innerHTML = '';
 
   // Clear any highlighted rows if user has already interacted with the table
-  clearRowHighlights(); 
+  clearRowHighlights();
 
-  // Add new rows from data
-  data.forEach(record => {
+  // Separate the 'all_values' record from other records
+  const allValuesRecord = data.find(record => record.key === 'all_values');
+  const otherRecords = data.filter(record => record.key !== 'all_values');
+
+  // Limit the number of rows to the specified size
+  otherRecords.length = Math.min(otherRecords.length, currentActiveExploreItemSize);
+
+  // Add rows from other records to the tbody
+  otherRecords.forEach(record => {
     const row = document.createElement('tr');
     let columnIndex = 0; // Keep track of column index for CSS class assignment
 
     for (const key in record) {
       let content = record[key];
-      
+
       // Special processing for articles data type
       // DOI key
       if (dataType === 'articles' && key === 'DOI') {
@@ -624,20 +713,44 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
         content = makeDateReadable(new Date(content));
       }
 
+      // Remove duplicates if content is an array
+      if (Array.isArray(content)) {
+        content = removeArrayDuplicates(content);
+      }
+
       let cssClass;
       if (columnIndex === 0) cssClass = DATA_TABLE_BODY_CLASSES[dataType].firstCol;
       else if (columnIndex === 1) cssClass = DATA_TABLE_BODY_CLASSES[dataType].secondCol;
       else cssClass = DATA_TABLE_BODY_CLASSES[dataType].otherCols;
 
       row.appendChild(createTableCell(content, cssClass, exploreItemId, key, false));
-      columnIndex++; // Increment the column index
+      columnIndex++;
     }
     tableBody.appendChild(row);
   });
 
+  // Add the 'all_values' record to the tfoot if it exists
+  if (allValuesRecord) {
+    const footerRow = document.createElement('tr');
+    let columnIndex = 0;
+
+    for (const key in allValuesRecord) {
+      let content = allValuesRecord[key];
+
+      let cssClass;
+      if (columnIndex === 0) cssClass = DATA_TABLE_FOOT_CLASSES[dataType].firstCol;
+      else if (columnIndex === 1) cssClass = DATA_TABLE_FOOT_CLASSES[dataType].secondCol;
+      else cssClass = DATA_TABLE_FOOT_CLASSES[dataType].otherCols;
+
+      footerRow.appendChild(createTableCell(content, cssClass, exploreItemId, key, false));
+      columnIndex++;
+    }
+    tableFooter.appendChild(footerRow);
+  }
+
   // Highlight the selected rows if they exist in the new data
   if (selectedRowKeys.length > 0) {
-    data.forEach((record, index) => {
+    otherRecords.forEach((record, index) => {
       if (selectedRowKeys.includes(record.key)) {
         const row = tableBody.children[index]; // Get the corresponding row
         const secondCell = row.children[1]; // Get the second cell in the row
@@ -647,62 +760,6 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
       }
     });
   }
-}
-
-/**
- * Formats the records for display. This includes converting numerical values
- * to human-readable formats such as percentages and currency.
- * 
- * @param {Object[]} records - The records to format.
- */
-function formatRecords(records) {
-  records.forEach(record => {
-    Object.keys(record).forEach(key => {
-      if (typeof record[key] === 'number') {
-        let formattedNumber = record[key].toFixed(2);
-
-        if (formattedNumber.endsWith('.00')) {
-          formattedNumber = formattedNumber.slice(0, -3);
-        }
-
-        if (key.endsWith("_pct")) {
-          record[key] = `${(formattedNumber*100).toFixed()}%`;
-        } else if (key.endsWith("_amount")) {
-          record[key] = `${makeNumberReadable(parseFloat(formattedNumber), true)}`;
-        } else if (key === 'key') {
-           // Do not process key: it can be a year and we don't want to add commas to those
-          record[key] = formattedNumber;
-        } else {
-          record[key] = makeNumberReadable(parseFloat(formattedNumber));
-        }
-      }
-      // Non-numeric values are left unchanged
-    });
-  });
-  return records;
-}
-
-/**
- * Formats records or headers for display. Removes non-percentage counterparts 
- * from records and formats headers to be more human-readable.
- * 
- * @param {Object[]} records - The array of records to be prettified.
- * @param {boolean} [pretty=true] - Flag to determine if data should be displayed in a pretty format.
- * @returns {Object[]|string[]} - The prettified records or headers.
- */
-function prettifyRecords(records, pretty = true) {
-  records.forEach(record => {
-    Object.keys(record).forEach(key => {
-      const pctKey = key + "_pct";
-      if (pretty === true) {
-        if (record.hasOwnProperty(pctKey)) delete record[key]; // Delete non-percentage counterpart
-      } else if (pretty === false) {
-        if (record.hasOwnProperty(pctKey)) delete record[pctKey]; // Delete percentage counterpart
-      }
-    });
-  });
-
-  return records;
 }
 
 /**
@@ -719,65 +776,79 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
   const cell = document.createElement(isHeader ? 'th' : 'td');
   cell.className = cssClass;
 
-  if (content === 'key') {
-    // Check if content is 'key' and insert a span with class 'explore_type'
-    const spanElement = document.createElement('span');
-    spanElement.className = 'explore_type';
+  // Early handling for common 'all_values' and 'no_values' cases in terms-based data
+  // Display either 'All [explore item]]' or 'No [explore item]'
+  if (content === 'all_values' || content === 'no_values') {
+    cell.innerHTML = content === 'all_values' ? 'All ' : 'No ';
+    cell.innerHTML += (EXPLORE_ITEMS_LABELS[exploreItemId]?.plural || pluraliseNoun(exploreItemId)).toLowerCase();
+    return cell;
+  }
 
-    cell.appendChild(spanElement);
-  } else if (exploreItemId === 'country' && key === 'key') {
-    const countryName = COUNTRY_CODES[content]  || "Unknown country";
-    cell.textContent = countryName;
-  } else if (exploreItemId === 'language' && key === 'key') {
-    const languageName = LANGUAGE_CODES[content] || "Unknown language";
-    cell.textContent = languageName;
-  } else if ((exploreItemId === 'publisher_license' && key === 'key') || (exploreItemId === 'repository_license' && key === 'key')) {
-    // Check if LICENSE_CODES[content] exists before trying to access its properties
-    const licenseInfo = LICENSE_CODES[content];
-    // Check if licenseInfo is defined before accessing its properties
-    const licenseName = licenseInfo && licenseInfo.name ? licenseInfo.name : "Unknown license";
-    const licenseUrl = licenseInfo && licenseInfo.url ? licenseInfo.url : null;
-
-    cell.innerHTML = `
-        <strong class='uppercase'>
-          ${content}
-        </strong> 
-      <br>${licenseUrl ? `
-        <a href="${licenseUrl}" 
-           class="underline underline-offset-2 decoration-1" 
-           rel="noopener noreferrer" 
-           target="_blank">${licenseName}</a>
-      ` : licenseName}
-    `;
-  } else if (exploreItemId === 'author' && content.includes('orcid.org')) {
-    // Check if content is an ORCiD URL and fetch the full name
+  // Safely check and process content based on its type and the context
+  if (key === 'key' && content) {
+    let displayContent = "";
+    switch (exploreItemId) {
+      case 'country':
+        // Fetch and display country name using country code
+        displayContent = COUNTRY_CODES[content] || "Unknown country";
+        break;
+      case 'language':
+        // Fetch and display language name using language code
+        displayContent = LANGUAGE_CODES[content] || "Unknown language";
+        break;
+      case 'publisher_license':
+      case 'repository_license':
+        // Check if LICENSE_CODES entry exists and get name and URL
+        const licenseInfo = LICENSE_CODES[content];
+        const licenseName = licenseInfo?.name || "Unknown license";
+        const licenseUrl = licenseInfo?.url;
+        displayContent = `<strong class='uppercase'>${content}</strong><br>` +
+          (licenseUrl ? `<a href="${licenseUrl}" class="underline underline-offset-2 decoration-1" rel="noopener noreferrer" target="_blank">${licenseName}</a>` : licenseName);
+        break;
+      case 'all_lab_head': // TODO: remove these cases once we settle on a naming convention
+      case 'janelia_lab_head':
+      case 'investigator':
+      case 'freeman_hrabowski_scholar':
+      case 'author':
+        if (typeof content === 'string' && content.includes('orcid.org')) {
+          const orcidId = content.split('/').pop();
+          cell.innerHTML = `<a href="${content}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 decoration-1">Loading ORCiD data...</a>`;
+          getORCiDFullName(orcidId)
+            .then(fullName => {
+              cell.innerHTML = `<a href="${content}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 decoration-1">${fullName || 'Name not found'}</a>`;
+            })
+            .catch(() => {
+              cell.innerHTML = `<a href="${content}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 decoration-1">${content}</a>`;
+            });
+          return cell; // Early return to avoid overriding innerHTML after async operation
+        }
+        displayContent = content;
+        break;
+      default:
+        displayContent = content;
+    }
+    cell.innerHTML = displayContent;
+  } else if (exploreItemId === 'author' && typeof content === 'string' && content.includes('orcid.org')) {
+    // Handle ORCiD links by fetching full name
     const orcidId = content.split('/').pop();
-    cell.textContent = orcidId;
     getORCiDFullName(orcidId)
-      .then(
-        // Display full name with link to ORCiD profile
-        fullName => cell.innerHTML = 
-        `<a href="${content}" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            class="underline underline-offset-2 decoration-1">
-          ${fullName}
-        </a>`
-      )
-      .catch(() => cell.innerHTML = 
-        `<a href="${content}" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            class="underline underline-offset-2 decoration-1">
-          ${content} (Name not found)
-        </a>`
-      );
+      .then(fullName => {
+        cell.innerHTML = `<a href="${content}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 decoration-1">${fullName}</a>`;
+      })
+      .catch(() => {
+        cell.innerHTML = `<a href="${content}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 decoration-1">${content} (Name not found)</a>`;
+      });
   } else if (typeof content === 'object' && content !== null) {
-    // Check if the content is an object and format its values as a list
+    // If content is an object, format its values as a list
     cell.innerHTML = `<ul>${formatObjectValuesAsList(content, true)}</ul>`;
-  } else if (content === null || content === undefined || content === "'null'" || content === '"null"' || content === "null") {
-    cell.innerHTML = ""; // Replace null values with empty string
+  } else if (content === null || content === 'null') {
+    // Replace null, undefined, and similar values with an empty string
+    cell.innerHTML = "";
+  } else if (typeof content === 'boolean') {
+    // Handle boolean values
+    cell.innerHTML = content.toString();
   } else {
+    // Default case for handling plain content
     cell.innerHTML = content;
   }
 
@@ -1060,10 +1131,11 @@ function removeCSVExportLink() {
 window.getExportLink = function() {
   orgDataPromise.then(function (response) {
     const orgData = response.data;
-     // Only gets includes for 'articles'-type data tables
-     // This was a quick fix because, for now, we only needed to provide CSV downloads for 'articles' only 
-     // TODO: get whatever includes is associated to the explore item for which we’re getting the export link
-    let hasCustomExportIncludes = orgData.hits.hits[0]._source.explore.find(item => item.id === 'articles').includes;
+    const currentId = currentActiveExploreItemData.id;
+
+    // Get the custom includes for the specific item based on the current active explore item ID
+    let activeItem = orgData.hits.hits[0]._source.explore.find(item => item.id === currentId);
+    let hasCustomExportIncludes = activeItem ? activeItem.includes : "";
 
     let queryURL = (dateRange + orgData.hits.hits[0]._source.analysis[currentActiveExploreItemQuery].query);
     let query = `q=${queryURL.replaceAll(" ", "%20")}`,
@@ -1072,7 +1144,7 @@ window.getExportLink = function() {
     var email = `&${new URLSearchParams(form).toString()}`;
 
     var include;
-    if ((hasCustomExportIncludes !== undefined && hasCustomExportIncludes !== "")) {
+    if (hasCustomExportIncludes !== undefined && hasCustomExportIncludes !== "") {
       include = `&include=${hasCustomExportIncludes}`;
     }
     query = CSV_EXPORT_BASE + query + include + exportSort + email + orgKey;

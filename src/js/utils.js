@@ -58,13 +58,18 @@ export function replaceText(className, parameter) {
 }
 
 /**
- * Format a date object into a human-readable string using the user’s locale.
- * 
+ * Format a date object into a human-readable string using the user’s locale,
+ * explicitly formatted as UTC to ensure consistency across different time zones.
+ * By formatting dates like this, we avoid pitfalls of local timezone adjustments,
+ * ensuring that the date displayed is the same date as intended,
+ * regardless of the user’s local time zone settings.
+ *
  * @param {Date} date - The date object to format.
- * @returns {string} The localised date string.
+ * @returns {string} The localised and UTC-formatted date string.
  */
 export function makeDateReadable(date) {
-  return date.toLocaleDateString(USER_LOCALE, READABLE_DATE_OPTIONS);
+  const optionsWithUTC = { ...READABLE_DATE_OPTIONS, timeZone: 'UTC' };
+  return date.toLocaleDateString(USER_LOCALE, optionsWithUTC);
 }
 
 /**
@@ -129,6 +134,9 @@ export function replaceDateRange(newStart, newEnd) {
   const endDateISO = formatDateToISO(changeDays(+1, newEnd));
   dateRange = `(openalex.publication_date:>${startDateISO}%20AND%20openalex.publication_date:<${endDateISO})%20AND%20`;
   
+  startYear = formatDateToISO(newStart);
+  endYear = formatDateToISO(newEnd);
+
   return dateRange;
 }
 
@@ -143,7 +151,7 @@ export function replaceDateRange(newStart, newEnd) {
  * @returns {Date} The new Date object representing the specific date in UTC.
  */
 export function createDate(year, month, day) {
-  return new Date(Date.UTC(year, month, day));
+  return new Date(Date.UTC(year, month, day));  
 }
 
 /**
@@ -262,13 +270,47 @@ export function formatObjectValuesAsList(object, inline = false) {
 }
 
 /**
+ * Reorders the keys of each record based on a specified order, prioritising 'key' and 'doc_count' 
+ * if they exist, and calculates percentage values for applicable numeric fields (excluding 'doc_count').
+ * 
+ * @param {Array<Object>} records - The array of records to reorder. Each record is an object with various keys.
+ * @param {string} includes - Comma-separated string of keys in the desired order. The 'doc_count' key is excluded from this string.
+ * @returns {Array<Object>} The reordered and enriched array of records, where each record includes the original values and calculated percentage values for applicable fields.
+ */
+export function reorderTermRecords(records, includes) {
+  // Add 'key' and 'doc_count' to the front if they exist in the records
+  const firstKeys = [];
+  if (records.some(record => record.hasOwnProperty('key'))) firstKeys.push('key');
+  if (records.some(record => record.hasOwnProperty('doc_count'))) firstKeys.push('doc_count');
+
+  const keysOrder = firstKeys.concat(includes.split(',').filter(key => !firstKeys.includes(key) && key !== 'doc_count'));
+
+  return records.map(record => {
+    const reorderedRecord = {};
+    keysOrder.forEach(key => {
+      let value = record[key]; // No aliasing for 'doc_count'
+      if (value !== undefined) {
+        if (typeof value === 'number' && !key.startsWith('mean_') && !key.startsWith('median_') && !key.startsWith('total_') && key !== 'doc_count' && key !== 'key') {
+          // Calculate and store percentage values for applicable numeric fields using doc_count
+          const pctValue = ((value / record['doc_count']) * 100).toFixed(2);
+          reorderedRecord[key + '_pct'] = pctValue + '%';
+        }
+        // Keep raw value for all fields
+        reorderedRecord[key] = value;
+      }
+    });
+    return reorderedRecord;
+  });
+}
+
+/**
  * Reorders the keys of each record in an array based on a specified order.
  * 
  * @param {Array<Object>} records - The array of records to reorder.
  * @param {string} includes - Comma-separated string of keys in the desired order.
  * @returns {Array<Object>} The reordered array of records.
  */
-export function reorderRecords(records, includes) {
+export function reorderArticleRecords(records, includes) {
   const keysOrder = includes.split(',');
 
   return records.map(record => {
@@ -290,6 +332,56 @@ export function reorderRecords(records, includes) {
     return reorderedRecord;
   });
 }
+
+/**
+ * Formats records for display, either as raw data or prettified with only percentages for pretty mode.
+ * Ensures 'key' and 'doc_count' are properly labeled and included.
+ * Applies numeric formatting for fields starting with 'total_', 'median_', or 'mean_' and
+ * currency formatting for fields ending with '_amount' using a helper function.
+ * 
+ * @param {Object[]} records - The array of records to be formatted.
+ * @param {boolean} [pretty=true] - Flag to determine if data should be displayed in a pretty format.
+ * @returns {Object[]} - The formatted records.
+ */
+export function prettifyRecords(records, pretty = true) {
+  return records.map(record => {
+    const formattedRecord = {};
+
+    // Always include 'key' without modification
+    if (record.hasOwnProperty('key')) {
+      formattedRecord['key'] = record['key'];
+    }
+
+    // Always process 'doc_count' to make readable
+    if (record.hasOwnProperty('doc_count')) {
+      formattedRecord['doc_count'] = makeNumberReadable(record['doc_count']);
+    }
+
+    Object.keys(record).forEach(key => {
+      if (key !== 'key' && key !== 'doc_count') { // Avoid reprocessing 'key' and 'doc_count'
+        if (pretty) {
+          // Format percentages
+          if (key.endsWith('_pct')) {
+            formattedRecord[key] = Math.round(parseFloat(record[key])).toString() + '%';
+          }
+          // Format numbers starting with 'total_', 'median_', or 'mean_' or ending with '_amount'
+          if (key.startsWith('total_') || key.startsWith('median_') || key.startsWith('mean_') || key.endsWith('_amount')) {
+            const isCurrency = key.endsWith('_amount');
+            formattedRecord[key] = makeNumberReadable(parseFloat(record[key]), isCurrency);
+          }
+        } else {
+          // Include all fields except percentages in raw mode
+          if (!key.endsWith('_pct')) {
+            formattedRecord[key] = record[key];
+          }
+        }
+      }
+    });
+
+    return formattedRecord;
+  });
+}
+
 
 /**
  * Safely retrieves a nested property value from an object.
@@ -630,6 +722,29 @@ export function copyToClipboard(buttonId, elementId) {
 }
 
 /**
+ * Parses all URL parameters into an object.
+ * @returns {Object} URL parameters as key-value pairs.
+ */
+export function getAllURLParams() {
+  const params = new URLSearchParams(window.location.search);
+  let paramObject = {};
+  for (let [key, value] of params.entries()) {
+    paramObject[key] = value;
+  }
+  return paramObject;
+}
+
+/**
+ * Gets the value of a specific URL query parameter.
+ * @param {string} param - The name of the parameter.
+ * @returns {string|null} - The value of the parameter or null if not found.
+ */
+export function getURLParam(param) {
+  const queryParams = new URLSearchParams(window.location.search);
+  return queryParams.get(param);
+}
+
+/**
  * Updates the URL with the provided query parameters without reloading the page.
  * @param {Object} params - An object where the key is the parameter name and the value is the parameter value.
  */
@@ -640,16 +755,6 @@ export function updateURLParams(params) {
 }
 
 /**
- * Gets the value of a URL query parameter.
- * @param {string} param - The name of the parameter.
- * @returns {string|null} - The value of the parameter or null if not found.
- */
-export function getURLParam(param) {
-  const queryParams = new URLSearchParams(window.location.search);
-  return queryParams.get(param);
-}
-
-/**
  * Displays an error message in the header of the page.
  * @param {string} message - The error message to display.
  */
@@ -657,4 +762,26 @@ export function displayErrorHeader(message) {
   const alertMsg = document.getElementById("js-alert");
   alertMsg.textContent = message ? message : "An error occurred.";
   alertMsg.style.display = "block";
+}
+
+/**
+ * Utility function to remove duplicates from an array or nested arrays.
+ *
+ * @param {Array} array - The array or nested array from which to remove duplicates.
+ * @returns {Array} - A new array with duplicates removed.
+ */
+export function removeArrayDuplicates(array) {
+  if (!Array.isArray(array)) {
+    return array;
+  }
+
+  // Remove duplicates from the main array
+  const uniqueArray = Array.from(new Set(array.map(item => 
+    Array.isArray(item) ? JSON.stringify(removeArrayDuplicates(item)) : JSON.stringify(item)
+  ))).map(item => JSON.parse(item));
+
+  // Recursively remove duplicates from nested arrays
+  return uniqueArray.map(item => 
+    Array.isArray(item) ? removeArrayDuplicates(item) : item
+  );
 }

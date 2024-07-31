@@ -4,23 +4,41 @@
 // =================================================
 
 import { DATE_SELECTION_BUTTON_CLASSES } from './constants.js';
-import { makeDateReadable, createDate, replaceDateRange, replaceText, initDropdown, getURLParam, updateURLParams } from './utils.js';
+import { makeDateReadable, createDate, replaceDateRange, initDropdown, getAllURLParams, getURLParam, updateURLParams } from './utils.js';
 import { initInsightsAndStrategies } from './insights-and-strategies.js';
 import { currentActiveExploreItemButton, currentActiveExploreItemData, processExploreDataTable } from './explore.js';
 
-// Capture DOM elements
-const reportYear = document.getElementById("report-year");
 
+/** 
+ * The current date, used across the application to determine the current context or as a default value.
+ * @constant {Date}
+ */
 export const currentDate = new Date();
-export const DEFAULT_YEAR = 2023;
+
+/** 
+ * The default year for paid users, used as the starting point for reports.
+ * @constant {number}
+ */
+export const DEFAULT_YEAR = 2024;
+
+/** 
+ * The default year for free users, usually set to one year behind the paid users' default.
+ * It indicates the latest year for which free users can access reports.
+ * @constant {number}
+ */
+export const DEFAULT_YEAR_FREE = 2023;
+
+/** 
+ * The first year for which data is available in the application, used to populate year selection options and to limit date range selections.
+ * @constant {number}
+ */
 export const FIRST_YEAR = 2015;
 
 /**
  * Sets up the default year for the application, depending on whether the user is a paid user or not.
  * 
- * @param {number} defaultYear - The default year to be selected.
  */
-export function setDefaultYear(defaultYear) {
+export function setDefaultYear() {
   const startParam = getURLParam('start');
   const endParam = getURLParam('end');
   const breakdownParam = getURLParam('breakdown'); 
@@ -70,32 +88,26 @@ export function setDefaultYear(defaultYear) {
 
       if (paid) {
         // For paid users, use the full year
-        defaultStartDate = createDate(defaultYear, 0, 1);
-        defaultEndDate = createDate(defaultYear, 11, 31);
+        defaultStartDate = createDate(DEFAULT_YEAR, 0, 1); // January 1st
+        defaultEndDate = new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate())); // Today’s date
+        // See https://github.com/oaworks/discussion/issues/1919#issuecomment-2034231857
       } else {
-        // For non-paid users, restrict the date range from Jan 1 to Jun 30 of DEFAULT_YEAR
-        defaultStartDate = createDate(DEFAULT_YEAR, 0, 1);
-        defaultEndDate = createDate(DEFAULT_YEAR, 5, 30); // June 30th
+        // For non-paid users, restrict the date range from Jan 1 to Jun 30 of DEFAULT_YEAR_FREE
+        defaultStartDate = createDate(DEFAULT_YEAR_FREE, 0, 1); // January 1st
+        defaultEndDate = createDate(DEFAULT_YEAR_FREE, 5, 30); // June 30th
       }
 
       replaceDateRange(defaultStartDate, defaultEndDate);
-      reportYear.textContent = defaultYear;
 
       // Select the default year button and style it as selected
-      const defaultButton = document.getElementById(`year-${defaultYear}`);
+      const defaultButton = document.getElementById(`year-${DEFAULT_YEAR}`);
       if (defaultButton) {
-        handleYearButtonLogic(defaultButton, defaultStartDate, defaultEndDate, `${defaultYear}`);
+        handleYearButtonLogic(defaultButton, defaultStartDate, defaultEndDate, `${DEFAULT_YEAR}`);
         updateYearButtonStyling(defaultButton);
       } else {
         // TO FIX: free reports don’t have a defaultButton
         handleYearButtonLogic(null, defaultStartDate, defaultEndDate, `${makeDateReadable(defaultStartDate)} &ndash; ${makeDateReadable(defaultEndDate)}`);
       }
-
-      // Update URL with the selected year or date range
-      updateURLParams({ 
-        'start': defaultStartDate.toISOString().split('T')[0], 
-        'end': defaultEndDate.toISOString().split('T')[0] 
-      });
     }
 
     // Check if there’s a breakdown (previously named 'explore item') parameter in the URL
@@ -118,6 +130,47 @@ export function setDefaultYear(defaultYear) {
     }
   };
 }
+
+/**
+ * Initialises date-related parameters and UI elements.
+ */
+export function initDateManager() {
+  const params = getAllURLParams();
+
+  // Process orgkey first
+  const orgkey = getURLParam('orgkey');
+  if (orgkey) {
+    sessionStorage.setItem('orgkey', orgkey);
+    delete params.orgkey; // remove orgkey from params to avoid duplication
+  }
+
+  // Process other parameters
+  const start = params.start;
+  const end = params.end;
+  if (start && end) {
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+
+    // Update the UI with these dates if the elements exist
+    const startDateInput = document.getElementById('start-date');
+    const endDateInput = document.getElementById('end-date');
+    if (startDateInput && endDateInput) {
+      startDateInput.value = startDate.toISOString().split('T')[0];
+      endDateInput.value = endDate.toISOString().split('T')[0];
+    }
+  }
+
+  // Update the URL without losing parameters
+  updateURLParams(params);
+
+  // Remove orgkey from URL after processing
+  if (orgkey) {
+    const newParams = new URLSearchParams(window.location.search);
+    newParams.delete('orgkey');
+    history.replaceState(null, '', '?' + newParams.toString());
+  }
+}
+
 
 /**
  * Binds dynamic year buttons to a container and initializes a dropdown for additional years.
@@ -286,7 +339,7 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
  */
 function createDateRangeForm() {
   const form = document.createElement("form");
-  form.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " flex items-center hover:bg-white hover:text-neutral-900"; 
+  form.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " flex items-center hover:text-white"; 
   form.id = "date_range_form";
   form.setAttribute('role', 'form');
   form.setAttribute('aria-labelledby', 'date-range-form-title');
@@ -357,13 +410,13 @@ function createDateInput(id, label) {
   const labelElement = document.createElement("label");
   labelElement.htmlFor = id;
   labelElement.textContent = label;
-  labelElement.className = "mr-1 font-semibold uppercase text-xs text-neutral-600";
+  labelElement.className = "mr-1 font-semibold uppercase text-xs";
   wrapper.appendChild(labelElement);
 
   const input = document.createElement("input");
   input.type = "date";
   input.id = id;
-  input.className = "mr-4 text-xs md:text-sm md:text-center uppercase"; 
+  input.className = "mr-4 text-xs md:text-sm md:text-center uppercase bg-transparent"; 
   input.setAttribute('aria-label', label);
   input.setAttribute('required', true);
   wrapper.appendChild(input);
@@ -393,7 +446,6 @@ function handleYearButtonLogic(button, startDate, endDate, buttonText) {
   }
 
   replaceDateRange(startDate, endDate);
-  reportYear.textContent = startDate.getFullYear();
   initInsightsAndStrategies(org);
   if (currentActiveExploreItemButton) {
     processExploreDataTable(currentActiveExploreItemButton, currentActiveExploreItemData);
@@ -442,7 +494,7 @@ function updateYearButtonStyling(selectedElement, isDropdownItem = false) {
 
     // Style form contents if the selected "button" is the date range form
     if (selectedElement.tagName.toLowerCase() === 'form') {
-      selectedElement.classList.remove("hover:bg-white", "hover:text-neutral-900");
+      selectedElement.classList.remove("hover:bg-white", "hover:text-white");
 
       const labels = selectedElement.querySelectorAll('label');
       labels.forEach(label => {

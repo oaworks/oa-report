@@ -25,3 +25,11 @@ Prerequisites:
 | `dev` | `staging` | `main` |
 |---|---|---|
 | [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?ref=dev&repo=360205065&skip_quickstart=true&machine=basicLinux32gb&devcontainer_path=.devcontainer%2Fdev%2Fdevcontainer.json&geo=EuropeWest) | [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?ref=staging&repo=360205065&skip_quickstart=true&machine=basicLinux32gb&devcontainer_path=.devcontainer%2Fstaging%2Fdevcontainer.json&geo=EuropeWest) | [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?ref=main&repo=360205065&skip_quickstart=true&machine=basicLinux32gb&devcontainer_path=.devcontainer%main%2Fdevcontainer.json&geo=EuropeWest) |
+
+
+## Viewing the various servers 
+
+| `dev` (https://dev.oa.report) | `staging` (https://staging.oa.report) | `main`  (https://oa.report) |
+|---|---|---|
+| Uses the `beta` API | Uses the live API | Uses the live API |
+| [![Netlify Status](https://api.netlify.com/api/v1/badges/df11cc41-9d85-4801-95c0-63a9fd3342e3/deploy-status)](https://app.netlify.com/sites/dev-oa-report/deploys) | [![Netlify Status](https://api.netlify.com/api/v1/badges/7c35f45b-9e1b-471e-a307-9ffd7b067b2a/deploy-status)](https://app.netlify.com/sites/staging-oa-report/deploys) | [![Netlify Status](https://api.netlify.com/api/v1/badges/4ef5986a-f5cc-48e9-972e-ddf37eb3a79e/deploy-status)](https://app.netlify.com/sites/oareport/deploys) |

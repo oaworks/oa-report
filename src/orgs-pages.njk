@@ -251,6 +251,7 @@ permalink: "{{ org._source.objectID | slug }}/"
             <table class="border-collapse w-full table-fixed js_export_table" id="explore_table">
               <thead class="border-b border-neutral-200 text-left text-xs font-medium uppercase tracking-wider" id="export_table_head"></thead>
               <tbody class="text-xs md:text-sm" id="export_table_body"></tbody>
+              <tfoot class="text-xs md:text-sm border-t-2 border-neutral-200 bg-neutral-700" id="export_table_foot"></tfoot>
             </table>
           </div>
           <div class="flex justify-end">
@@ -298,9 +299,6 @@ permalink: "{{ org._source.objectID | slug }}/"
           
 
           <nav class="hidden sm:block mt-6 mb-10">
-            <h3 class="absolute right-0 bottom-0 text-9xl font-black text-white opacity-20">
-              <span class="sr-only">Actions for </span><span class="export-year" id="report-year">2023</span>
-            </h3>
             <ul class="flex flex-wrap space-r-4 space-b-4 items-center" role="tablist" aria-label="Actions Tabs">
               {{ component("strategy-pill", {
                 id: "email_author_vor",
