@@ -174,6 +174,7 @@ async function addExploreButtonsToDOM(exploreData) {
   }
 
   // Handle breakdown after adding explore buttons
+  const params = getAllURLParams();
   const breakdown = params.breakdown;
   if (breakdown) {
     const exploreButton = document.getElementById(`explore_${breakdown}_button`);
