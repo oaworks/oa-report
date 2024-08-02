@@ -375,6 +375,20 @@ function addRecordsShownSelectToDOM() {
   // Append the label and select menu to the exploreRecordsShownElement
   exploreRecordsShownElement.appendChild(label);
   exploreRecordsShownElement.appendChild(selectMenu);
+
+  // Handle records shown parameter
+  const params = getAllURLParams();
+  const records = params.records;
+
+  if (records) {
+    const selectElement = document.getElementById("records_shown_select");
+    const recordsShownOption = selectElement.querySelector(`option[value="${records}"]`);
+    if (recordsShownOption) {
+      selectElement.value = records;
+      const event = new Event('change', { bubbles: true });
+      selectElement.dispatchEvent(event);
+    }
+  }
 }
 
 /**
@@ -999,6 +1013,7 @@ async function handleRecordsShownChange(event) {
 
   try {
     await fetchAndDisplayExploreData(currentActiveExploreItemData, currentActiveExploreItemQuery, currentActiveExploreItemSize);
+    updateURLParams({ records: newSize });
   } catch (error) {
     console.error('Error updating records shown: ', error);
   }
