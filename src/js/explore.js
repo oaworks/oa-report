@@ -44,6 +44,8 @@ window.EXPLORE_HEADER_TERMS_LABELS = EXPLORE_HEADER_TERMS_LABELS;
  */
 let orgData;
 
+let isDataExploreInit = false;
+
 /**
  * Tracks the currently active explore item BUTTON for use in processExploreDataTable().
  * @global
@@ -93,6 +95,10 @@ let selectedRowKeys = [];
  * @param {string} org - The organization identifier for the API query.
  */
 export async function initDataExplore(org) {
+  if (isDataExploreInit) {
+    return; // Prevent re-initialisation
+  }
+
   try {
     const response = await orgDataPromise; // Await the promise to resolve
     orgData = response.data;
@@ -108,6 +114,8 @@ export async function initDataExplore(org) {
     } else {
       displayNone("explore"); // Hide the explore section if no data is available
     }
+    isDataExploreInit = true; // Set the flag after successful initialisation
+
   } catch (error) {
     console.error('Error initialising data explore: ', error);
   }
@@ -403,6 +411,12 @@ function addRecordsShownSelectToDOM() {
  */
 async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 10, pretty = true) {
   try {
+    if (!itemData) {
+      showNoResultsRow(10, "export_table_body", "js_export_table");
+      toggleLoadingIndicator(false, 'explore_loading');
+      return;
+    }
+
     const { type, id, term, sort, includes } = itemData; // Extract properties
 
     document.getElementById("csv_email_msg").innerHTML = ""; // Clear any existing message in CSV download form
