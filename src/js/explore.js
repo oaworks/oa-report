@@ -35,50 +35,63 @@ if (hasOrgKey) {
 /**
  * Allows the EXPLORE_HEADER_TERMS_LABELS constant to be accessible via a browser.
  * @global
+ * @type {Object}
  */
 window.EXPLORE_HEADER_TERMS_LABELS = EXPLORE_HEADER_TERMS_LABELS;
 
 /**
  * Data object representing metadata on an organization.
  * @global
+ * @type {Object}
  */
 let orgData;
 
+/**
+ * Flag indicating whether the data explore section has been initialised.
+ * @global
+ * @type {boolean}
+ */
 let isDataExploreInit = false;
 
 /**
  * Tracks the currently active explore item BUTTON for use in processExploreDataTable().
  * @global
+ * @type {HTMLElement|null}
  */
 export let currentActiveExploreItemButton = null;
 
 /** 
- * Tracks currently active explore item DATA for use in processExploreDataTable()
+ * Tracks currently active explore item DATA for use in processExploreDataTable.
  * @global 
-*/
+ * @type {Object|null}
+ */
 export let currentActiveExploreItemData = null;
 
 /** 
- * Tracks currently active explore item QUERY for use in createExploreFilterRadioButton()
+ * Tracks currently active explore item QUERY for use in createExploreFilterRadioButton.
  * @global 
-*/
+ * @type {string|null}
+ */
 export let currentActiveExploreItemQuery = null;
 
 /** 
- * Tracks currently active explore item SIZE for use in handleRecordsShownChange()
+ * Tracks currently active explore item SIZE for use in handleRecordsShownChange.
  * @global 
-*/
+ * @type {number}
+ */
 export let currentActiveExploreItemSize = 10;
 
 /** 
- * Tracks currently active explore item DATA DISPLAY STYLE for use in handleDataDisplayToggle()
+ * Tracks currently active explore item DATA DISPLAY STYLE for use in handleDataDisplayToggle.
  * @global 
-*/
+ * @type {boolean}
+ */
 export let currentActiveDataDisplayToggle = true;
 
 /**
- * Tracks currently selected row keys for use in enableExploreRowHighlighting() 
+ * Tracks currently selected row keys for use in enableExploreRowHighlighting.
  * @global
+ * @type {Array<string>}
  */
 let selectedRowKeys = [];
 
