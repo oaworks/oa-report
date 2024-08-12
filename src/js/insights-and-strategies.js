@@ -192,228 +192,346 @@ export function initInsightsAndStrategies(org) {
       "articles with code",
       "<p class='mb-2'>The percentage of articles that shared any code under a permissive open-source licence, such as MIT.</p> <p class='mb-2'>This figure measures how many articles shared Open Code if they generated code in the first place. It also only measures if <strong>any parts</strong> of the code generated are open, not if <strong>all</strong> of it is open.</p> <p> We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>"
     );
-    
-    /* Get Strategy data and display it  */
-    function displayStrategy(strategy, keys, tableRow) {
-      var shown  = orgData.hits.hits[0]._source.strategy[strategy].show_on_web,
-          sort   = `&sort=${orgData.hits.hits[0]._source.strategy[strategy].sort}`,
-          tabID  = `strategy_${strategy}`;
 
-      if (shown === true) {
-        // Get tab elements
-        var tabCountContents   = document.getElementById(`count_${strategy}`),
-            tableCountContents = document.getElementById(`total_${strategy}`),
-            tableBody          = document.getElementById(`table_${strategy}`).getElementsByTagName('tbody')[0];
-        
-        var countQuery              = countQueryPrefix + orgData.hits.hits[0]._source.strategy[strategy].query,
-            listQuery               = queryPrefix + orgData.hits.hits[0]._source.strategy[strategy].query + sort;
-        
-        // Get total action (article) count for this strategy
-        axios.get(countQuery)
-          .then(function (countResponse) {
-            var count = parseFloat(countResponse.data);
-            
-            // Show total number of actions in tab & above table
-            tabCountContents.textContent = makeNumberReadable(count);
-            if (count > 100) {
-              count = 100; // limit to 100
-            }
-            tableCountContents.textContent = makeNumberReadable(count);
-
-            // If user is logged in, show full list of strategies
-            if (loggedIn) {
-              // If no actions are available, show message
-              if (count === 0) {
-                tableCountContents.textContent = "No ";
-                tableBody.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
-              }
-
-              // Otherwise, generate list of actions
-              else if (count > 0 || count !== null) {
-
-                // Get full list of actions for this strategy 
-                axios.get(listQuery)
-                  .then(function (listResponse) {
-                    var list = listResponse.data.hits.hits,
-                        tableRows = ""; // Contents of the list to be displayed in the UI as a table
-                
-                    // For each individual action, create a row
-                    for (let i = 0; i < count; i++) {
-                      var action = {}; // Create object to store key-value pairs for each action
-                      tableRows += "<tr>";
-
-                      // Populate action array with values for each key
-                      for (var key of keys) {
-                        // If it’s from the supplements array, loop over supplements to access data without index number
-                        if (key.startsWith('supplements.')) {
-                          key = key.replace('supplements.', ''); // Remove prefix 
-                          var suppKey = list[i]._source.supplements.find(
-                            function(i) {
-                              return (i[key]);
-                            }
-                          );
-
-                          if (suppKey == undefined || suppKey == null) {
-                            action[key] = "N/A";
-                          } else {
-                            var value = suppKey[key];
-                            action[key] = value;
-                          }
-                          
-                          if (key.includes('invoice_date')) action[key] = makeDateReadable(new Date(action[key]));
-                          if (key.includes('apc_cost')) action[key] = makeNumberReadable(action[key]);
-                        } else { 
-                          var value = list[i]._source[key];
-                          action[key] = value;
-
-                          if (key === 'openalex.publication_date') action[key] = makeDateReadable(new Date(action[key]));
-                        }
-
-                        if (value == undefined || value == null) {
-                          action[key] = "N/A";
-                        }
-                      };
-                      
-                      // If mailto is included, replace its body’s content with the action’s values
-                      if ("mailto" in action) {
-                        var mailto = orgData.hits.hits[0]._source.strategy[strategy].mailto;
-
-                        var newMailto = mailto.replaceAll("\'", "’");
-                        newMailto = newMailto.replaceAll("{doi}", (action.DOI ? action.DOI : "[No DOI found]"));
-                        newMailto = newMailto.replaceAll("{outreach.author_display_name}", (action.outreach.author_display_name ? action.outreach.author_display_name : "[No author’s name found]"));
-                        newMailto = newMailto.replaceAll("{title}", (action.title ? action.title.replaceAll("\'", "’") : "[No title found]"));
-
-                        // And add it to the action array
-                        action["mailto"] = encodeURI(newMailto);
-                      };
-
-                      var tableRowLiteral = eval('`'+ tableRow +'`'); // Convert given tableRow to template literal
-                      tableRows += tableRowLiteral; // Populate the table with a row w/ replaced placeholders for each action 
-                      tableRows += "</tr>";
-                    }
-
-                    tableBody.innerHTML = tableRows; // Fill table with all actions
-                  }
-                )
-              }
-            }
-
-            // Otherwise, display a message prompting user to log or contact us to access strategies
-            else {
-              tableBody.innerHTML = `<tr><td class='py-4 pl-4 pr-3 text-base text-center align-top break-words' colspan='3'><p class='font-bold'>Strategies help you take action to make your institution’s research more open.</p> <p>Find out more about them by <a href='mailto:hello@oa.works?subject=OA.Report%20&mdash;%20${decodeURIComponent(org)}' class='underline underline-offset-2 decoration-1'>contacting us</a> or <a href='https://about.oa.report/docs/user-accounts' class='underline underline-offset-2 decoration-1' title='Information on user accounts'>logging in to your account</a> to access them.</p></td></tr>`;
-              displayNone(`form_${strategy}`);
-            }
-          })
-          .catch(function (error) { console.log(`${strategy} error: ${error}`); })
-
-        // Once data has loaded, display the card
-        changeOpacity(tabID);
-
-      } else {
-        var tabItem = document.getElementById(tabID),
-            tabContent = document.getElementById(strategy);
-
-        if (tabItem || tabContent) {
-          tabItem.remove();
-          tabContent.remove();
-        }
-      };
+    /**
+     * Maps key names from strategy data to simplified key names for use in strategy tables.
+     * 
+     * @typedef {Object} KeyMapping
+     */
+    const keyMapping = {
+      publication_date: 'openalex.publication_date',
+      title: 'openalex.title',
+      journal: 'openalex.primary_location.source.display_name',
+      author_display_name: 'outreach.author_display_name',
+      email: 'outreach.email_address',
+      DOI: 'DOI',
+      mailto: 'mailto'
     };
 
+    /**
+     * Fetches and displays strategy data in a table format.
+     * 
+     * @param {string} strategy - The strategy name.
+     * @param {Array<string>} keys - The keys to be displayed in the table.
+     * @param {string} tableRow - The HTML template for each table row.
+     */
+    function displayStrategy(strategy, keys, tableRow) {
+      const strategyData = orgData.hits.hits[0]._source.strategy[strategy];
+      const { show_on_web: shown, sort, query, mailto } = strategyData;
+      const tabID = `strategy_${strategy}`;
+
+      if (!shown) {
+        removeTab(tabID, strategy);
+        return;
+      }
+
+      const tabCountContents = document.getElementById(`count_${strategy}`);
+      const tableCountContents = document.getElementById(`total_${strategy}`);
+      const tableBody = document.getElementById(`table_${strategy}`).getElementsByTagName('tbody')[0];
+
+      const countQuery = countQueryPrefix + query;
+      const listQuery = `${queryPrefix + query}&sort=${sort}`;
+
+      axios.get(countQuery)
+        .then(countResponse => {
+          let count = parseFloat(countResponse.data);
+          tabCountContents.textContent = makeNumberReadable(count);
+          if (count > 100) count = 100;
+          tableCountContents.textContent = makeNumberReadable(count);
+
+          if (loggedIn) {
+            handleLoggedInUser(count, listQuery, keys, tableRow, tableBody, tableCountContents, mailto, strategy);
+          } else {
+            promptLogin(tableBody, strategy);
+          }
+
+          changeOpacity(tabID);
+        })
+        .catch(error => {
+          console.error(`${strategy} error: ${error}`);
+        });
+    }
+
+    /**
+     * Handles the case when the user is logged in.
+     * 
+     * @param {number} count - The count of actions.
+     * @param {string} listQuery - The query to fetch the list of actions.
+     * @param {Array<string>} keys - The keys to be displayed in the table.
+     * @param {string} tableRow - The HTML template for each table row.
+     * @param {HTMLElement} tableBody - The table body element.
+     * @param {HTMLElement} tableCountContents - The element to display the total count.
+     * @param {string} mailtoTemplate - The mailto template.
+     * @param {string} strategy - The strategy name.
+     */
+    function handleLoggedInUser(count, listQuery, keys, tableRow, tableBody, tableCountContents, mailtoTemplate, strategy) {
+      if (count === 0) {
+        tableCountContents.textContent = "No";
+        tableBody.innerHTML = `<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>
+          We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.</td></tr>`;
+      } else {
+        axios.get(listQuery)
+          .then(listResponse => {
+            const list = listResponse.data.hits.hits;
+            console.log('List of actions:', list); // Logging the list of actions
+            const tableRows = generateTableRows(list, keys, tableRow, mailtoTemplate);
+            tableBody.innerHTML = tableRows;
+          });
+      }
+    }
+
+    /**
+     * Generates table rows from the list of actions.
+     * 
+     * @param {Array<Object>} list - The list of actions.
+     * @param {Array<string>} keys - The keys to be displayed in the table.
+     * @param {string} tableRow - The HTML template for each table row.
+     * @param {string} mailtoTemplate - The mailto template.
+     * @returns {string} - The generated HTML for the table rows.
+     */
+    function generateTableRows(list, keys, tableRow, mailtoTemplate) {
+      return list.map(item => {
+        const action = {};
+    
+        // Process each key to build the action object
+        keys.forEach(key => {
+          console.log(`Processing key: ${key}`); // Logging each key being processed
+    
+          const keyParts = key.split('.');
+    
+          let value = item._source;
+          for (let part of keyParts) {
+            value = value && value[part] ? value[part] : "N/A";
+          }
+    
+          // Special handling for some specific keys
+          if (key.includes('publication_date') && value !== "N/A") {
+            value = makeDateReadable(new Date(value));
+          }
+    
+          if (key.includes('apc_cost') && value !== "N/A") {
+            value = makeNumberReadable(value);
+          }
+    
+          action[keyParts[keyParts.length - 1]] = value;
+        });
+    
+        if ("mailto" in action) {
+          action["mailto"] = generateMailto(mailtoTemplate, action);
+        }
+    
+        // Substitution for curly quotes and other special characters
+        const specialCharsMap = {
+          "'": "’",
+          "\"": "“", // Replace straight quotes with curly ones
+          "--": "—", // Replace double hyphens with em dash
+        };
+    
+        // Substitute placeholders with actual values and handle special characters
+        let row = tableRow;
+        Object.keys(action).forEach(placeholder => {
+          let value = action[placeholder];
+          
+          // Replace special characters
+          value = value.replace(/['"]/g, match => specialCharsMap[match] || match);
+          value = value.replace(/--/g, specialCharsMap["--"]);
+    
+          const regex = new RegExp(`{${placeholder}}`, 'g');
+          row = row.replace(regex, value);
+        });
+    
+        return `<tr>${row}</tr>`;
+      }).join('');
+    }
+
+    /**
+     * Generates the mailto string by replacing placeholders with actual values.
+     * 
+     * @param {string} template - The mailto template.
+     * @param {Object} action - The action object containing values to replace placeholders.
+     * @returns {string} - The generated mailto string.
+     */
+    function generateMailto(template, action) {
+      return encodeURI(
+          template
+              .replaceAll("{outreach.author_display_name}", action.author_display_name ? action.author_display_name.replaceAll("'", "’") : "[No author’s name found]")
+              .replaceAll("{doi}", action.DOI || "[No DOI found]")
+              .replaceAll("{title}", action.title ? action.title.replaceAll("'", "’") : "[No title found]")
+      );
+    }
+
+
+    /**
+     * Prompts the user to log in if they are not already logged in.
+     * 
+     * @param {HTMLElement} tableBody - The table body element.
+     * @param {string} strategy - The strategy name.
+     */
+    function promptLogin(tableBody, strategy) {
+      tableBody.innerHTML = `<tr><td class='py-4 pl-4 pr-3 text-base text-center align-top break-words' colspan='3'>
+        <p class='font-bold'>Strategies help you take action to make your institution’s research more open.</p>
+        <p>Find out more about them by <a href='mailto:hello@oa.works?subject=OA.Report%20&mdash;%20${decodeURIComponent(org)}' 
+        class='underline underline-offset-2 decoration-1'>contacting us</a> or 
+        <a href='https://about.oa.report/docs/user-accounts' class='underline underline-offset-2 decoration-1' title='Information on user accounts'>logging in to your account</a> to access them.</p></td></tr>`;
+      displayNone(`form_${strategy}`);
+    }
+
+    /**
+     * Removes the tab and its content if the strategy is not to be shown.
+     * 
+     * @param {string} tabID - The ID of the tab to be removed.
+     * @param {string} strategy - The strategy name.
+     */
+    function removeTab(tabID, strategy) {
+      const tabItem = document.getElementById(tabID);
+      const tabContent = document.getElementById(`tab_${strategy}`);
+
+      if (tabItem) tabItem.remove();
+      if (tabContent) tabContent.remove();
+    }
+
+    /**
+     * Changes the opacity of an element to indicate it is active.
+     * 
+     * @param {string} tabID - The ID of the tab to be changed.
+     */
+    function changeOpacity(tabID) {
+      const element = document.getElementById(tabID);
+      if (element) element.classList.remove('opacity-40');
+    }
+
+    // Initialise and display the strategy data for given strategies
     displayStrategy(
-      "email_author_vor",
-      ['openalex.publication_date', 'title', 'journal', 'outreach.author_display_name', 'email', 'DOI', 'mailto'],
+      'email_author_vor', 
+      [
+        'openalex.publication_date',
+        'openalex.title',
+        'openalex.primary_location.source.display_name',
+        'outreach.author_display_name',
+        'outreach.email_address',
+        'DOI',
+        'mailto'
+      ], 
       "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 text-neutral-600'>${action.openalex.publication_date}</div>\
+        <div class='mb-1 text-neutral-600'>{publication_date}</div>\
         <div class='mb-1 font-medium text-neutral-900 hover:text-carnation-500'>\
-          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
+          <a href='https://doi.org/{DOI}' target='_blank' rel='noopener' title='Open article'>{title}</a>\
         </div>\
-        <div class='text-neutral-600'>${action.journal}</div>\
+        <div class='text-neutral-600'>{display_name}</div>\
       </td>\
       <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
-        <div class='mb-1 text-neutral-900'>${action.outreach.author_display_name}</div>\
+        <div class='mb-1 text-neutral-900'>{author_display_name}</div>\
       </td>\
       <td class='hidden px-3 py-4 text-sm text-center text-neutral-600 align-top break-words sm:table-cell'>\
         <button \
           class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
-          data-email='${action.email}'\
-          data-doi='${action.DOI}'\
-          data-mailto='${action.mailto}'\
+          data-email='{email}'\
+          data-doi='{DOI}'\
+          data-mailto='{mailto}'\
           onclick='handleDecryptEmailClick(this)'>\
-          <svg class='h-4 w-4' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-mail inline-block h-4 duration-500'><path d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'></path><polyline points='22,6 12,13 2,6'></polyline></svg>\
+          <svg class='h-4 w-4' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'></path><polyline points='22,6 12,13 2,6'></polyline></svg>\
         </button>\
       </td>"
     );
 
     displayStrategy(
       "email_author_aam",
-      ['openalex.publication_date', 'title', 'journal', 'outreach.author_display_name', 'email', 'DOI', 'mailto'],
+      [
+        'openalex.publication_date', 
+        'openalex.title', 
+        'openalex.primary_location.source.display_name', 
+        'outreach.author_display_name', 
+        'outreach.email_address', 
+        'DOI', 
+        'mailto'
+      ],
       "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 text-neutral-600'>${action.openalex.publication_date}</div>\
+        <div class='mb-1 text-neutral-600'>{publication_date}</div>\
         <div class='mb-1 font-medium text-neutral-900 hover:text-carnation-500'>\
-          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
+          <a href='https://doi.org/{DOI}' target='_blank' rel='noopener' title='Open article'>{title}</a>\
         </div>\
-        <div class='text-neutral-600'>${action.journal}</div>\
+        <div class='text-neutral-600'>{display_name}</div>\
       </td>\
       <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
-        <div class='mb-1 text-neutral-900'>${action.outreach.author_display_name}</div>\
+        <div class='mb-1 text-neutral-900'>{author_display_name}</div>\
       </td>\
       <td class='hidden px-3 py-4 text-sm text-center text-neutral-600 align-top break-words sm:table-cell'>\
         <button \
           class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
-          data-email='${action.email}'\
-          data-doi='${action.DOI}'\
-          data-mailto='${action.mailto}'\
+          data-email='{email}'\
+          data-doi='{DOI}'\
+          data-mailto='{mailto}'\
           onclick='handleDecryptEmailClick(this)'>\
           <svg class='h-4 w-4' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-mail inline-block h-4 duration-500'><path d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'></path><polyline points='22,6 12,13 2,6'></polyline></svg>\
-        </button>\
+      </button>\
       </td>"
     );
-    
+
     displayStrategy(
       "apc_followup",
-      ['openalex.publication_date', 'title', 'journal', 'DOI', 'publisher', 'publisher_license', 'journal_oa_type', 'oa_status', 'supplements.apc_cost', 'supplements.invoice_number', 'supplements.invoice_date'],
+      [
+        'openalex.publication_date', 
+        'openalex.title', 
+        'openalex.primary_location.source.display_name', 
+        'DOI', 
+        'publisher', 
+        'publisher_license', 
+        'journal_oa_type', 
+        'oa_status', 
+        'supplements.apc_cost', 
+        'supplements.invoice_number', 
+        'supplements.invoice_date'
+      ],
       "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 font-medium text-neutral-900'>${action.publisher}</div>\
-        <div class='mb-3 text-neutral-900'>${action.journal}</div>\
-        <div class='text-neutral-600'>OA type: <span class='font-medium'>${action.journal_oa_type}</span></div>\
+        <div class='mb-1 font-medium text-neutral-900'>{publisher}</div>\
+        <div class='mb-3 text-neutral-900'>{display_name}</div>\
+        <div class='text-neutral-600'>OA type: <span class='font-medium'>{journal_oa_type}</span></div>\
       </td>\
       <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 text-neutral-600'>${action.openalex.publication_date}</div>\
+        <div class='mb-1 text-neutral-600'>{publication_date}</div>\
         <div class='mb-1 text-neutral-900 hover:text-carnation-500'>\
-          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
+          <a href='https://doi.org/{DOI}' target='_blank' rel='noopener' title='Open article'>{title}</a>\
         </div>\
-        <div class='mb-3 text-neutral-600'>${action.DOI}</div>\
-        <div class='text-neutral-600'>OA status: <span class='font-medium'>${action.oa_status}<span></div>\
-        <div class='text-neutral-600'>License: <span class='font-medium uppercase'>${action.publisher_license}</span></div>\
+        <div class='mb-3 text-neutral-600'>{DOI}</div>\
+        <div class='text-neutral-600'>OA status: <span class='font-medium'>{oa_status}</span></div>\
+        <div class='text-neutral-600'>License: <span class='font-medium uppercase'>{publisher_license}</span></div>\
       </td>\
       <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-3 text-neutral-600'>${action.invoice_date}</div>\
-        <div class='mb-3 text-neutral-900'>${action.invoice_number}</div>\
-        <div class='text-neutral-600 uppercase'>US$${action.apc_cost}</div>\
+        <div class='mb-3 text-neutral-600'>{invoice_date}</div>\
+        <div class='mb-3 text-neutral-900'>{invoice_number}</div>\
+        <div class='text-neutral-600 uppercase'>US${apc_cost}</div>\
       </td>"
     );
 
     displayStrategy(
       "unanswered_requests",
-      ['title', 'journal', 'outreach.author_display_name', 'email', 'DOI', 'supplements.program__bmgf', 'supplements.grantid__bmgf', 'mailto'],
+      [
+        'openalex.title', 
+        'openalex.primary_location.source.display_name', 
+        'outreach.author_display_name', 
+        'outreach.email_address', 
+        'DOI', 
+        'supplements.program__bmgf', 
+        'supplements.grantid__bmgf', 
+        'mailto'
+      ],
       "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 font-medium text-neutral-900'>${action.program__bmgf}</div>\
-        <div class='text-neutral-900'>${action.grantid__bmgf}</div>\
+        <div class='mb-1 font-medium text-neutral-900'>{program__bmgf}</div>\
+        <div class='text-neutral-900'>{grantid__bmgf}</div>\
       </td>\
       <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 font-medium text-neutral-900'>${action.outreach.author_display_name}</div>\
+        <div class='mb-1 font-medium text-neutral-900'>{author_display_name}</div>\
         <div class='mb-1 text-neutral-900'>\
-          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
+          <a href='https://doi.org/{DOI}' target='_blank' rel='noopener' title='Open article'>{title}</a>\
         </div>\
-        <div class='text-neutral-600'>${action.journal}</div>\
+        <div class='text-neutral-600'>{display_name}</div>\
       </td>\
       <td class='whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium'>\
         <button \
           class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
-          data-email='${action.email}'\
-          data-doi='${action.DOI}'\
-          data-mailto='${action.mailto}'\
+          data-email='{email}'\
+          data-doi='{DOI}'\
+          data-mailto='{mailto}'\
           onclick='handleDecryptEmailClick(this)'>\
           <svg class='h-4 w-4' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-mail inline-block h-4 duration-500'><path d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'></path><polyline points='22,6 12,13 2,6'></polyline></svg>\
         </button>\
@@ -429,7 +547,7 @@ export function initInsightsAndStrategies(org) {
 /**
  * Calls the getStrategyExportLink function with the necessary orgData.
  * This function is designed to be called from HTML templates and handles
- * fetching the organization data before executing getStrategyExportLink.
+ * fetching the organiz1ation data before executing getStrategyExportLink.
  *
  * @param {string} id - The identifier for the strategy export link.
  */
