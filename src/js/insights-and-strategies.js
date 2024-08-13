@@ -192,7 +192,7 @@ export function initInsightsAndStrategies(org) {
     "articles with code",
     "<p class='mb-2'>The percentage of articles that shared any code under a permissive open-source licence, such as MIT.</p> <p class='mb-2'>This figure measures how many articles shared Open Code if they generated code in the first place. It also only measures if <strong>any parts</strong> of the code generated are open, not if <strong>all</strong> of it is open.</p> <p> We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>"
   );
-
+  
   /**
   * Fetches and displays strategy data in a table format.
   * 
@@ -583,31 +583,30 @@ export function getStrategyExportLink(id, orgData) {
   Promise.all([hasCustomExportIncludes])
   .then(function (results) {
     hasCustomExportIncludes = results[0].data;
+  }).catch(function (error) { console.log(`Export error: ${error}`); });
+  
+  // Set up export query
+  let isPaperURL = (dateRange + strategyQuery);
+  let query = `q=${isPaperURL.replaceAll(" ", "%20")}`,
+  form = new FormData(document.getElementById(`form_${id}`));
+  
+  // Get form content — email address input
+  var email = `&${new URLSearchParams(form).toString()}`;
+  
+  // Display export includes if there are any
+  var include;
+  if (hasCustomExportIncludes !== undefined) {
+    include = `&include=${hasCustomExportIncludes}`;
   }
-).catch(function (error) { console.log(`Export error: ${error}`); });
-
-// Set up export query
-let isPaperURL = (dateRange + strategyQuery);
-let query = `q=${isPaperURL.replaceAll(" ", "%20")}`,
-form = new FormData(document.getElementById(`form_${id}`));
-
-// Get form content — email address input
-var email = `&${new URLSearchParams(form).toString()}`;
-
-// Display export includes if there are any
-var include;
-if (hasCustomExportIncludes !== undefined) {
-  include = `&include=${hasCustomExportIncludes}`;
-}
-
-// Build full query
-query = CSV_EXPORT_BASE + query + include + '&sort=' + strategySort + email + orgKey;
-
-var xhr = new XMLHttpRequest();
-xhr.open("GET", query);
-// Display message when server responds
-xhr.onload = function () {
-  document.getElementById(`msg-${id}`).innerHTML = `OA.Report has started building your CSV export at <a href='${this.response}' target='_blank' class='underline underline-offset-2 decoration-1'>this URL</a>. Please check your email to get the full data once it’s ready.`;
-};
-xhr.send();
+  
+  // Build full query
+  query = CSV_EXPORT_BASE + query + include + '&sort=' + strategySort + email + orgKey;
+  
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", query);
+  // Display message when server responds
+  xhr.onload = function () {
+    document.getElementById(`msg-${id}`).innerHTML = `OA.Report has started building your CSV export at <a href='${this.response}' target='_blank' class='underline underline-offset-2 decoration-1'>this URL</a>. Please check your email to get the full data once it’s ready.`;
+  };
+  xhr.send();
 };
