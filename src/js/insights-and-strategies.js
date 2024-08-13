@@ -295,8 +295,6 @@ export function initInsightsAndStrategies(org) {
     
         // Process each key to build the action object
         keys.forEach(key => {
-          console.log(`Processing key: ${key}`); // Logging each key being processed
-    
           const keyParts = key.split('.');
     
           let value = item._source;
@@ -474,9 +472,9 @@ export function initInsightsAndStrategies(org) {
         'openalex.title', 
         'openalex.primary_location.source.display_name', 
         'DOI', 
-        'publisher', 
+        'openalex.primary_location.source.publisher', 
         'publisher_license', 
-        'journal_oa_type', 
+        'syp_permissions.journal_oa_type', 
         'oa_status', 
         'supplements.apc_cost', 
         'supplements.invoice_number', 
