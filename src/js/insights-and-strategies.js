@@ -495,7 +495,7 @@ export function initInsightsAndStrategies(org) {
       'openalex.primary_location.source.host_organization_name', 
       'publisher_license', 
       'syp_permissions.journal_oa_type', 
-      'oa_status', 
+      'openalex.open_access.oa_status', 
       'supplements.apc_cost', 
       'supplements.invoice_number', 
       'supplements.invoice_date'
