@@ -292,52 +292,72 @@ export function initInsightsAndStrategies(org) {
     function generateTableRows(list, keys, tableRow, mailtoTemplate) {
       return list.map(item => {
         const action = {};
-    
+
         // Process each key to build the action object
         keys.forEach(key => {
           const keyParts = key.split('.');
-    
+
           let value = item._source;
           for (let part of keyParts) {
-            value = value && value[part] ? value[part] : "N/A";
+            value = value && value[part] !== undefined ? value[part] : "N/A";
           }
-    
-          // Special handling for some specific keys
-          if (key.includes('publication_date') && value !== "N/A") {
-            value = makeDateReadable(new Date(value));
-          }
-    
-          if (key.includes('apc_cost') && value !== "N/A") {
-            value = makeNumberReadable(value);
-          }
-    
-          action[keyParts[keyParts.length - 1]] = value;
+
+          // Handle extracting values from the 'supplements' array
+          if (key.startsWith('supplements.')) {
+            const supplementKey = keyParts.slice(1).join('.');
+
+            // Iterate through the supplements array to find the first non-N/A value
+            for (let supplement of item._source.supplements) {
+              if (supplement[supplementKey] !== undefined) {
+                  value = supplement[supplementKey];
+                  break;
+                }
+              }
+            }
+
+            // Special handling for some specific keys
+            if (key.includes('publication_date') && value !== "N/A") {
+                value = makeDateReadable(new Date(value));
+            }
+
+            if (key.includes('apc_cost') && value !== "N/A") {
+                value = makeNumberReadable(value);
+            }
+
+            if (key.includes('invoice_date') && value !== "N/A") {
+                value = makeDateReadable(new Date(value));
+            }
+
+            action[keyParts[keyParts.length - 1]] = value;
         });
-    
+
         if ("mailto" in action) {
-          action["mailto"] = generateMailto(mailtoTemplate, action);
+            action["mailto"] = generateMailto(mailtoTemplate, action);
         }
-    
+
         // Substitution for curly quotes and other special characters
         const specialCharsMap = {
-          "'": "’",
-          "\"": "“", // Replace straight quotes with curly ones
-          "--": "—", // Replace double hyphens with em dash
+            "'": "’",
+            "\"": "“", // Replace straight quotes with curly ones
+            "--": "—", // Replace double hyphens with em dash
         };
-    
+
         // Substitute placeholders with actual values and handle special characters
         let row = tableRow;
         Object.keys(action).forEach(placeholder => {
-          let value = action[placeholder];
-          
-          // Replace special characters
-          value = value.replace(/['"]/g, match => specialCharsMap[match] || match);
-          value = value.replace(/--/g, specialCharsMap["--"]);
-    
-          const regex = new RegExp(`{${placeholder}}`, 'g');
-          row = row.replace(regex, value);
+            let value = action[placeholder];
+
+            // Ensure value is a string before applying replace
+            value = (value !== "N/A" && value !== undefined && value !== null) ? String(value) : "N/A";
+
+            // Replace special characters
+            value = value.replace(/['"]/g, match => specialCharsMap[match] || match);
+            value = value.replace(/--/g, specialCharsMap["--"]);
+
+            const regex = new RegExp(`{${placeholder}}`, 'g');
+            row = row.replace(regex, value);
         });
-    
+
         return `<tr>${row}</tr>`;
       }).join('');
     }
@@ -472,7 +492,7 @@ export function initInsightsAndStrategies(org) {
         'openalex.title', 
         'openalex.primary_location.source.display_name', 
         'DOI', 
-        'openalex.primary_location.source.publisher', 
+        'openalex.primary_location.source.host_organization_name', 
         'publisher_license', 
         'syp_permissions.journal_oa_type', 
         'oa_status', 
@@ -481,7 +501,7 @@ export function initInsightsAndStrategies(org) {
         'supplements.invoice_date'
       ],
       "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 font-medium text-neutral-900'>{publisher}</div>\
+        <div class='mb-1 font-medium text-neutral-900'>{host_organization_name}</div>\
         <div class='mb-3 text-neutral-900'>{display_name}</div>\
         <div class='text-neutral-600'>OA type: <span class='font-medium'>{journal_oa_type}</span></div>\
       </td>\
