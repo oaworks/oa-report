@@ -192,22 +192,7 @@ export function initInsightsAndStrategies(org) {
     "articles with code",
     "<p class='mb-2'>The percentage of articles that shared any code under a permissive open-source licence, such as MIT.</p> <p class='mb-2'>This figure measures how many articles shared Open Code if they generated code in the first place. It also only measures if <strong>any parts</strong> of the code generated are open, not if <strong>all</strong> of it is open.</p> <p> We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>"
   );
-  
-  /**
-  * Maps key names from strategy data to simplified key names for use in strategy tables.
-  * 
-  * @typedef {Object} KeyMapping
-  */
-  const keyMapping = {
-    publication_date: 'openalex.publication_date',
-    title: 'openalex.title',
-    journal: 'openalex.primary_location.source.display_name',
-    author_display_name: 'outreach.author_display_name',
-    email: 'outreach.email_address',
-    DOI: 'DOI',
-    mailto: 'mailto'
-  };
-  
+
   /**
   * Fetches and displays strategy data in a table format.
   * 
