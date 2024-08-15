@@ -428,7 +428,7 @@ export function initInsightsAndStrategies(org) {
       <td class='hidden px-3 py-4 text-sm text-center text-neutral-600 align-top break-words sm:table-cell'>\
         <button \
           class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
-          data-email='{email}'\
+          data-email='{email_address}'\
           data-doi='{DOI}'\
           data-mailto='{mailto}'\
           onclick='handleDecryptEmailClick(this)'>\
@@ -461,7 +461,7 @@ export function initInsightsAndStrategies(org) {
       <td class='hidden px-3 py-4 text-sm text-center text-neutral-600 align-top break-words sm:table-cell'>\
         <button \
           class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
-          data-email='{email}'\
+          data-email='{email_address}'\
           data-doi='{DOI}'\
           data-mailto='{mailto}'\
           onclick='handleDecryptEmailClick(this)'>\
@@ -532,7 +532,7 @@ export function initInsightsAndStrategies(org) {
       <td class='whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium'>\
         <button \
           class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
-          data-email='{email}'\
+          data-email='{email_address}'\
           data-doi='{DOI}'\
           data-mailto='{mailto}'\
           onclick='handleDecryptEmailClick(this)'>\
