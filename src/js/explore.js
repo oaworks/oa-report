@@ -35,48 +35,63 @@ if (hasOrgKey) {
 /**
  * Allows the EXPLORE_HEADER_TERMS_LABELS constant to be accessible via a browser.
  * @global
+ * @type {Object}
  */
 window.EXPLORE_HEADER_TERMS_LABELS = EXPLORE_HEADER_TERMS_LABELS;
 
 /**
  * Data object representing metadata on an organization.
  * @global
+ * @type {Object}
  */
 let orgData;
 
 /**
+ * Flag indicating whether the data explore section has been initialised.
+ * @global
+ * @type {boolean}
+ */
+let isDataExploreInit = false;
+
+/**
  * Tracks the currently active explore item BUTTON for use in processExploreDataTable().
  * @global
+ * @type {HTMLElement|null}
  */
 export let currentActiveExploreItemButton = null;
 
 /** 
- * Tracks currently active explore item DATA for use in processExploreDataTable()
+ * Tracks currently active explore item DATA for use in processExploreDataTable.
  * @global 
-*/
+ * @type {Object|null}
+ */
 export let currentActiveExploreItemData = null;
 
 /** 
- * Tracks currently active explore item QUERY for use in createExploreFilterRadioButton()
+ * Tracks currently active explore item QUERY for use in createExploreFilterRadioButton.
  * @global 
-*/
+ * @type {string|null}
+ */
 export let currentActiveExploreItemQuery = null;
 
 /** 
- * Tracks currently active explore item SIZE for use in handleRecordsShownChange()
+ * Tracks currently active explore item SIZE for use in handleRecordsShownChange.
  * @global 
-*/
+ * @type {number}
+ */
 export let currentActiveExploreItemSize = 10;
 
 /** 
- * Tracks currently active explore item DATA DISPLAY STYLE for use in handleDataDisplayToggle()
+ * Tracks currently active explore item DATA DISPLAY STYLE for use in handleDataDisplayToggle.
  * @global 
-*/
+ * @type {boolean}
+ */
 export let currentActiveDataDisplayToggle = true;
 
 /**
- * Tracks currently selected row keys for use in enableExploreRowHighlighting() 
+ * Tracks currently selected row keys for use in enableExploreRowHighlighting.
  * @global
+ * @type {Array<string>}
  */
 let selectedRowKeys = [];
 
@@ -93,6 +108,10 @@ let selectedRowKeys = [];
  * @param {string} org - The organization identifier for the API query.
  */
 export async function initDataExplore(org) {
+  if (isDataExploreInit) {
+    return; // Prevent re-initialisation
+  }
+
   try {
     const response = await orgDataPromise; // Await the promise to resolve
     orgData = response.data;
@@ -108,6 +127,8 @@ export async function initDataExplore(org) {
     } else {
       displayNone("explore"); // Hide the explore section if no data is available
     }
+    isDataExploreInit = true; // Set the flag after successful initialisation
+
   } catch (error) {
     console.error('Error initialising data explore: ', error);
   }
@@ -403,6 +424,12 @@ function addRecordsShownSelectToDOM() {
  */
 async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 10, pretty = true) {
   try {
+    if (!itemData) {
+      showNoResultsRow(10, "export_table_body", "js_export_table");
+      toggleLoadingIndicator(false, 'explore_loading');
+      return;
+    }
+
     const { type, id, term, sort, includes } = itemData; // Extract properties
 
     document.getElementById("csv_email_msg").innerHTML = ""; // Clear any existing message in CSV download form
