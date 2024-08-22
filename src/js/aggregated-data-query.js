@@ -132,7 +132,7 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
               }
             }
           },
-          "covered_by_policy": {
+          "covered_by_policy": { // finding the query
             "filter": {
               "term": {
                 [`supplements.is_covered_by_policy__${suffix}`]: true
