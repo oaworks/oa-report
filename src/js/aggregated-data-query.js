@@ -129,8 +129,8 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
               }
             }
           },
-          "compliant": { 
-            "filter": { 
+          "compliant": { // Corresponds to `analysis.is_compliant.query`, column BO: https://docs.google.com/spreadsheets/d/1OzXJFTedsmvxhpgeAmNHg5Y0sB3ZIXGPk45UUu_a5eE/edit?gid=1261847034#gid=1261847034&range=BO1
+            "filter": { // I'm not sure about this filter - each organization has a custom query, so it is not standardized. The key below (`supplements.is_compliant_all_works__${suffix}`) isn't something I'm familiar with. We only have two sheets that use this/are exporting data under this key: `is_compliant_all_works__idrc` and `is_compliant_all_works__ukri`. Are we going to create a sheet for the other orgs? If so, this can stay as is.
               "term": {
                 [`supplements.is_compliant_all_works__${suffix}`]: true
               }
