@@ -166,24 +166,24 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
               }
             }
           },
-          "covered_by_policy": { // Corresponds to `analysis.is_covered_by_policy.query`, column BT: https://docs.google.com/spreadsheets/d/1OzXJFTedsmvxhpgeAmNHg5Y0sB3ZIXGPk45UUu_a5eE/edit?gid=1261847034#gid=1261847034&range=BT1; note that we also have a couple other, related queries: `analysis.is_compliant_with_current_policy.query` and `analysis.is_compliant_with_old_policy.query`. As you can probably tell, these are more nuanced and provide old/new policies. The main policy query (`is_covered_by_policy`)covers all policies we have for the org (i.e., it amalgomates both old and new policies). I think the first/main one is what we want, but I just wanted to be thorough in my documentation. 
-            "filter": { // We do have `is_covered_by_policy__${suffix}` sheets for each of the orgs, so I think this is fine as is. 
+          "covered_by_policy": { // Corresponds to `analysis.is_covered_by_policy.query`, column BT: https://docs.google.com/spreadsheets/d/1OzXJFTedsmvxhpgeAmNHg5Y0sB3ZIXGPk45UUu_a5eE/edit?gid=1261847034#gid=1261847034&range=BT1
+            "filter": { // This is the same procedure as "compliant" - we're using a data sheet key instead of the query. We do have `is_covered_by_policy__${suffix}` sheets for each of the orgs, so I think this is mostly fine as is. However, I don't think this will work for HHMI because we have separate sheets for the old/current policies, and we therefore export the keys `is_covered_by_old_policy__${suffix}` and `is_covered_by_current_policy__${suffix}`. I'd therefore suggest a similar "bool" filter as above:
               // "bool": {
                 // "should": [
                   // {
                     // "term": {
-                      // [`supplements.is_compliant_all_works__${suffix}`]: true
+                      // [`supplements.is_covered_by_policy__${suffix}`]: true
                     // }
                   // },
                   // {
                     // "term": {
-                      // [`supplements.is_compliant__${suffix}`]: true
+                      // [`supplements.is_covered_by_current_policy__${suffix}`]: true
                     // }
                   // }
                 // ],
                 // {
                   // "term": {
-                    // [`supplements.is_compliant_with_current_policy__${suffix}`]: true
+                    // [`supplements.is_covered_by_old_policy__${suffix}`]: true
                   // }
                 // },
                 // {
