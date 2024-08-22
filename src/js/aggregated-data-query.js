@@ -200,10 +200,10 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
               }
             }
           },
-          "free_to_read": {
-            "filter": {
+          "free_to_read": { // Corresponds to `analysis.is_free_to_read.query`, column O: https://docs.google.com/spreadsheets/d/1OzXJFTedsmvxhpgeAmNHg5Y0sB3ZIXGPk45UUu_a5eE/edit?gid=1261847034#gid=1261847034&range=Q1
+            "filter": { // The query now uses `is_free_to_read` instead of `is_oa`, so I think we just need to change the key.
               "term": {
-                "is_oa": true
+                "is_oa": true // Change to "is_free_to_read": true
               }
             }
           },
