@@ -49,9 +49,13 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
           }
         },
         "aggs": {
-          "open_access": { // See Cell bla bla 
-            "filter": {
-              "bool": {
+          "open_access": { // Corresponds to `analysis.is_oa.query`, column N: https://docs.google.com/spreadsheets/d/1OzXJFTedsmvxhpgeAmNHg5Y0sB3ZIXGPk45UUu_a5eE/edit?gid=1261847034#gid=1261847034&range=N1
+            "filter": { // What we need for the filter: is_open_access:true
+              // I think this will correspond to just using "term" - suggested code below (I'm using "compliant" as a template):
+              // "term": {
+              //  [`is_open_access`]: true
+              // }
+              "bool": { // I'm assuming "bool" = Boolean operator. The old query used a lot of OR operators; the new one doesn't use Booleans. The rest of this section below can likely be deleted.
                 "should": [
                   {
                     "terms": {
@@ -125,8 +129,8 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
               }
             }
           },
-          "compliant": { // See bla bla, make sure to bla bal, 
-            "filter": {
+          "compliant": { 
+            "filter": { 
               "term": {
                 [`supplements.is_compliant_all_works__${suffix}`]: true
               }
