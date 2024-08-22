@@ -49,7 +49,7 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
           }
         },
         "aggs": {
-          "open_access": {
+          "open_access": { // See Cell bla bla 
             "filter": {
               "bool": {
                 "should": [
@@ -125,7 +125,7 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
               }
             }
           },
-          "compliant": {
+          "compliant": { // See bla bla, make sure to bla bal, 
             "filter": {
               "term": {
                 [`supplements.is_compliant_all_works__${suffix}`]: true
