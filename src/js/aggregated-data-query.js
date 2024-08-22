@@ -207,10 +207,10 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
               }
             }
           },
-          "in_repository": {
-            "filter": {
+          "in_repository": { // I don't think there is a corresponding query - I think this is just a key. 
+            "filter": { // It looks like the `has_repository_copy` key doesn't exist in the new schema; I think the closest alternative might be `openalex.open_access.any_repository_has_fulltext: true`. I did some tests with other keys like `repository_version:*`, but they didn't have as many results. Testing old vs new keys, the current system shows 3,336,492 items matching `has_repository_copy:true` and 3,317,359 items matching `openalx.open_access.any_repository_has_fulltext` (note that this key is slightly different - openalx ver openalex, but I assume it's the same key). So they don't totally match up, but it's close.
               "term": {
-                "has_repository_copy": true
+                "has_repository_copy": true // Change to "openalex.open_access.any_repository_has_fulltext": true
               }
             }
           },
