@@ -31,7 +31,7 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
           },
           {
             "range": {
-              "published_date": {
+              "openalex.publication_date": {
                 "gte": startYear,
                 "lte": endYear
               }
