@@ -1600,7 +1600,7 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
       },
       "values": {
         "terms": {
-          "field": term, // previously `${term}.keyword` but this doesn’t work for openalex.publication_year
+          "field": term,
           "size": size,
           "order": {
             [`${sort}`]: "desc"
