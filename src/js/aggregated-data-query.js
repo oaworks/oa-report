@@ -14,12 +14,7 @@ import { ELEVENTY_API_ENDPOINT } from "./constants.js";
  * @returns {Object} The POST request body for Elasticsearch.
  */
 export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, size = 20, sort = "_count") {
-  // Only the term openalex.publication_year on the live API does not require the .keyword suffix 
-  let termField = term;
-  if (!(term === "openalex.publication_year" && ELEVENTY_API_ENDPOINT === "api")) {
-    termField += ".keyword";
-  }
-  
+
   return {
     "query": {
       "bool": {
@@ -45,7 +40,7 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
       "all_values": {
         "filter": {
           "exists": {
-            "field": `${termField}`
+            "field": `${term}`
           }
         },
         "aggs": {
@@ -856,7 +851,7 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
           "bool": {
             "must_not": {
               "exists": {
-                "field": `${termField}`
+                "field": `${term}`
               }
             }
           }
@@ -1605,7 +1600,7 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
       },
       "values": {
         "terms": {
-          "field": termField, // previously `${term}.keyword` but this doesn’t work for openalex.publication_year
+          "field": term, // previously `${term}.keyword` but this doesn’t work for openalex.publication_year
           "size": size,
           "order": {
             [`${sort}`]: "desc"
