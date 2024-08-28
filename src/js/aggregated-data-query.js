@@ -8,9 +8,13 @@
  */
 function createAggregationTemplate(suffix) {
   return {
-    "open_access": {
-      "filter": {
-        "bool": {
+    "open_access": { // Corresponds to `analysis.is_oa.query`, column N
+      "filter": { // What we need for the filter: is_open_access:true
+        // I think this will correspond to just using "term" - suggested code below (I'm using "compliant" as a template):
+        // "term": {
+        //  [`is_open_access`]: true
+        // }
+        "bool": { // I'm assuming "bool" = Boolean operator. The old query used a lot of OR operators; the new one doesn't use Booleans. The rest of this section below can likely be deleted.
           "should": [
             {
               "terms": {
@@ -84,31 +88,33 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
-    "compliant": {
-      "filter": {
+    "compliant": { // Corresponds to `analysis.is_compliant.query`, column BO
+      "filter": { // I think for this one, we're not using the query. Each organization has a custom query, so it is not standardized. Instead, we're using a key from a data sheet where we are exporting ones we know are compliant with the organization's policy. However, the key below (`supplements.is_compliant_all_works__${suffix}`) only corresponds to two sheets that are named in this way/are exporting data under this key: `is_compliant_all_works__idrc` and `is_compliant_all_works__ukri`.
+        // Option 1: We update all of the `is_compliant` sheets to export the key `supplements.is_compliant_all_works__${suffix}` (including BOTH HHMI sheets) - this could replace the old key or be added as a new key.
+        // Option 2: We use "bool" in this filter to capture the other keys we use to export compliance. 
         "term": {
           [`supplements.is_compliant_all_works__${suffix}`]: true
         }
       }
     },
-    "covered_by_policy": {
-      "filter": {
+    "covered_by_policy": { // Corresponds to `analysis.is_covered_by_policy.query`, column BT
+      "filter": { // This is the same procedure as "compliant" - we're using a data sheet key instead of the query.
         "term": {
           [`supplements.is_covered_by_policy__${suffix}`]: true
         }
       }
     },
-    "free_to_read": {
-      "filter": {
+    "free_to_read": { // Corresponds to `analysis.is_free_to_read.query`, column O
+      "filter": { // The query now uses `is_free_to_read` instead of `is_oa`, so I think we just need to change the key.
         "term": {
-          "is_oa": true
+          "is_oa": true // Change to "is_free_to_read": true
         }
       }
     },
-    "in_repository": {
-      "filter": {
+    "in_repository": { // I don't think there is a corresponding query - I think this is just a key.
+      "filter": { // It looks like the `has_repository_copy` key doesn't exist in the new schema; I think the closest alternative might be `openalex.open_access.any_repository_has_fulltext: true`.
         "term": {
-          "has_repository_copy": true
+          "has_repository_copy": true // Change to "openalex.open_access.any_repository_has_fulltext": true
         }
       }
     },
@@ -747,9 +753,8 @@ function createAggregationTemplate(suffix) {
         }
       }
     }
-  }
+  };
 }
-
 
 /**
  * Dynamically configures POST data for Elasticsearch queries to handle complex term-based aggregations.
