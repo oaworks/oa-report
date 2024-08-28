@@ -586,7 +586,7 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
-    "with_code_dois": {
+    "with_code_dois": { // No change - same keys.
       "filter": {
         "bool": {
           "must": [
