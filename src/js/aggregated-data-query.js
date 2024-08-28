@@ -82,20 +82,8 @@ function createAggregationTemplate(suffix) {
     },
     "without_data_availability_statement": {
       "filter": {
-        "bool": {
-          "must_not": [
-            {
-              "term": {
-                "supplements.has_data_availability_statement": true
-              }
-            },
-            {
-              "exists": {
-                "field": "data_availability_statement"
-              }
-            }
-          ],
-          "minimum_should_match": 1
+        "term": {
+          "data_availability_statement.has_data_availability_statement": false
         }
       }
     },
