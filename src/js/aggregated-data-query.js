@@ -73,7 +73,7 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
-    "with_data_availability_statement": {
+    "with_data_availability_statement": { // No change - this already has the new key.
       "filter": {
         "term": {
           "data_availability_statement.has_data_availability_statement": true
