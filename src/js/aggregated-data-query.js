@@ -364,7 +364,7 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
-    "with_code": {
+    "with_code": { // No change - same keys.
       "filter": {
         "bool": {
           "must": [
