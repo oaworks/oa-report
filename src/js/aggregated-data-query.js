@@ -628,10 +628,10 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
-    "with_orcids": {
+    "with_orcids": { // New key: `corresponding_authorships.author.orcid`
       "filter": {
         "exists": {
-          "field": "authorships.author.orcid"
+          "field": "authorships.author.orcid" // "field": "corresponding_authorships.author.orcid"
         }
       }
     },
