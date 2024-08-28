@@ -9,82 +9,9 @@
 function createAggregationTemplate(suffix) {
   return {
     "open_access": { // Corresponds to `analysis.is_oa.query`, column N
-      "filter": { // What we need for the filter: is_open_access:true
-        // I think this will correspond to just using "term" - suggested code below (I'm using "compliant" as a template):
-        // "term": {
-        //  [`is_open_access`]: true
-        // }
-        "bool": { // I'm assuming "bool" = Boolean operator. The old query used a lot of OR operators; the new one doesn't use Booleans. The rest of this section below can likely be deleted.
-          "should": [
-            {
-              "terms": {
-                "publisher_license.keyword": [
-                  "cc-by",
-                  "pd",
-                  "cc-0",
-                  "public-domain"
-                ]
-              }
-            },
-            {
-              "terms": {
-                "publisher_license_v2.keyword": [
-                  "cc-by",
-                  "pd",
-                  "cc-0",
-                  "public-domain"
-                ]
-              }
-            },
-            {
-              "terms": {
-                "supplements.publisher_license_crossref.keyword": [
-                  "cc-by",
-                  "cc0"
-                ]
-              }
-            },
-            {
-              "terms": {
-                "epmc_licence.keyword": [
-                  "cc-by",
-                  "pd",
-                  "cc-zero",
-                  "cc0"
-                ]
-              }
-            },
-            {
-              "terms": {
-                "repository_license.keyword": [
-                  "cc-by",
-                  "pd",
-                  "cc-0",
-                  "public-domain"
-                ]
-              }
-            },
-            {
-              "terms": {
-                "repository_license_v2.keyword": [
-                  "cc-by",
-                  "pd",
-                  "cc-0",
-                  "public-domain"
-                ]
-              }
-            },
-            {
-              "terms": {
-                "supplements.publisher_license_ic.keyword": [
-                  "cc-by",
-                  "pd",
-                  "cc0"
-                ]
-              }
-            }
-          ],
-          "minimum_should_match": 1
+      "filter": {
+        "term": {
+          "is_open_access": true
         }
       }
     },
@@ -105,16 +32,16 @@ function createAggregationTemplate(suffix) {
       }
     },
     "free_to_read": { // Corresponds to `analysis.is_free_to_read.query`, column O
-      "filter": { // The query now uses `is_free_to_read` instead of `is_oa`, so I think we just need to change the key.
+      "filter": {
         "term": {
-          "is_oa": true // Change to "is_free_to_read": true
+          "is_free_to_read": true 
         }
       }
     },
     "in_repository": { // I don't think there is a corresponding query - I think this is just a key.
       "filter": { // It looks like the `has_repository_copy` key doesn't exist in the new schema; I think the closest alternative might be `openalex.open_access.any_repository_has_fulltext: true`.
         "term": {
-          "has_repository_copy": true // Change to "openalex.open_access.any_repository_has_fulltext": true
+          "openalex.open_access.any_repository_has_fulltext": true
         }
       }
     },
