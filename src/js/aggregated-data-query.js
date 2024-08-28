@@ -92,9 +92,9 @@ function createAggregationTemplate(suffix) {
         "field": "cited_by_count" // "field": "openalex.cited_by_count"
       }
     },
-    "mean_citations": {
+    "mean_citations": { // Field corresponds to new key: `openalex.cited_by_count`
       "avg": {
-        "field": "cited_by_count"
+        "field": "cited_by_count" // "field": "openalex.cited_by_count"
       }
     },
     "with_apc": {
