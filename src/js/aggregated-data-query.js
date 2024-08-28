@@ -111,7 +111,7 @@ function createAggregationTemplate(suffix) {
         "field": "supplements.apc_cost"
       }
     },
-    "mean_apc_amount": {
+    "mean_apc_amount": { // No change - same key.
       "avg": {
         "field": "supplements.apc_cost"
       }
