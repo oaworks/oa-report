@@ -216,7 +216,7 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
-    "with_shared_data_in_repository": {
+    "with_shared_data_in_repository": { // No change - same keys.
       "filter": {
         "bool": {
           "must": [
