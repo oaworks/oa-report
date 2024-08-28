@@ -66,7 +66,7 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
-    "with_grant_id": {
+    "with_grant_id": { // No change - same key.
       "filter": {
         "exists": {
           "field": `supplements.grantid__${suffix}`
