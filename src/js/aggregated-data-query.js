@@ -420,7 +420,7 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
-    "with_shared_code": {
+    "with_shared_code": { // No change - same keys.
       "filter": {
         "bool": {
           "must": [
