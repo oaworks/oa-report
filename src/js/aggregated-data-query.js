@@ -547,7 +547,7 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
-    "with_open_code_in_repository": {
+    "with_open_code_in_repository": { // No change - same keys.
       "filter": {
         "bool": {
           "must": [
