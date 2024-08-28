@@ -106,7 +106,7 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
-    "total_apc_amount": {
+    "total_apc_amount": { // No change - same key.
       "sum": {
         "field": "supplements.apc_cost"
       }
