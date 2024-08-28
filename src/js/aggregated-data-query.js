@@ -205,7 +205,7 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
-    "unknown_shared_data_status": {
+    "unknown_shared_data_status": { // No change - same key.
       "filter": {
         "bool": {
           "must_not": {
