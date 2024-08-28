@@ -649,7 +649,7 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
-    "with_grant_dois": {
+    "with_grant_dois": { // The same key, `funder.award`, exists in the new system, but I can't see an example of this actually working to find a grant DOI by searching the api using the filter below. Ask Joe.
       "filter": {
         "prefix": {
           "funder.award": "10."
