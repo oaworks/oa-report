@@ -336,7 +336,7 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
-    "with_data_accession_number": {
+    "with_data_accession_number": { // No change - same keys.
       "filter": {
         "bool": {
           "must": [
