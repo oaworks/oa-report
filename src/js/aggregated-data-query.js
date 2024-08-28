@@ -45,7 +45,7 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
-    "in_approved_repository": {
+    "in_approved_repository": { // No change - same key.
       "filter": {
         "term": {
           [`supplements.is_approved_repository__${suffix}`]: true
