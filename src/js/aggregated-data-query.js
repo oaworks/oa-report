@@ -476,7 +476,7 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
-    "unknown_shared_code_status": {
+    "unknown_shared_code_status": { // No change - same keys.
       "filter": {
         "bool": {
           "must_not": {
