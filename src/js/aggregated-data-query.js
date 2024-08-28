@@ -357,7 +357,7 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
-    "with_dois": {
+    "with_dois": { // No change - same key.
       "filter": {
         "exists": {
           "field": "DOI"
