@@ -642,7 +642,7 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
-    "with_fundref_dois": {
+    "with_fundref_dois": { // Funder DOIs don't seem to exist in the new system. Ask Joe if this is getting replaced with something else (e.g., having openalex funder IDs).
       "filter": {
         "exists": {
           "field": "funder.DOI"
