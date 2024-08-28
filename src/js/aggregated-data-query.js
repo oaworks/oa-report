@@ -87,9 +87,9 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
-    "total_citations": {
+    "total_citations": { // Field corresponds to new key: `openalex.cited_by_count`
       "sum": {
-        "field": "cited_by_count"
+        "field": "cited_by_count" // "field": "openalex.cited_by_count"
       }
     },
     "mean_citations": {
