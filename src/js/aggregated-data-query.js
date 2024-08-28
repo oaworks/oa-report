@@ -635,10 +635,10 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
-    "with_rors": {
+    "with_rors": { // New key: `openalex.authorships.institutions.ror`
       "filter": {
         "exists": {
-          "field": "authorships.institutions.ror"
+          "field": "authorships.institutions.ror" // "field": "openalex.authorships.institutions.ror"
         }
       }
     },
