@@ -20,7 +20,7 @@ function createAggregationTemplate(suffix) {
         // Option 1: We update all of the `is_compliant` sheets to export the key `supplements.is_compliant_all_works__${suffix}` (including BOTH HHMI sheets) - this could replace the old key or be added as a new key.
         // Option 2: We use "bool" in this filter to capture the other keys we use to export compliance. 
         "term": {
-          [`supplements.is_compliant_all_works__${suffix}`]: true
+          [`supplements.is_compliant__${suffix}`]: true
         }
       }
     },
