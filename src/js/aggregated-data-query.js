@@ -607,7 +607,7 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
-    "with_code_accession_number": {
+    "with_code_accession_number": { // No change - same keys.
       "filter": {
         "bool": {
           "must": [
