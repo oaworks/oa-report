@@ -476,7 +476,7 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
-    "unknown_shared_code_status": { // No change - same keys.
+    "unknown_shared_code_status": { // No change - same key.
       "filter": {
         "bool": {
           "must_not": {
@@ -487,7 +487,7 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
-    "with_shared_code_in_repository": {
+    "with_shared_code_in_repository": { // No change - same keys.
       "filter": {
         "bool": {
           "must": [
