@@ -170,7 +170,7 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
-    "without_shared_data": {
+    "without_shared_data": { // No change - same keys.
       "filter": {
         "bool": {
           "should": [
