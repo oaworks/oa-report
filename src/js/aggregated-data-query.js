@@ -149,7 +149,7 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
-    "with_shared_data": {
+    "with_shared_data": { // No change - same keys.
       "filter": {
         "bool": {
           "must": [
