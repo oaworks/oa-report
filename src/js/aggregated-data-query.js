@@ -59,7 +59,7 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
-    "with_peer_reviewed_version": {
+    "with_peer_reviewed_version": { // No change - same key.
       "filter": {
         "exists": {
           "field": "supplements.is_preprint_of"
