@@ -409,7 +409,7 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
-    "unknown_code_status": {
+    "unknown_code_status": { // No change - same keys.
       "filter": {
         "bool": {
           "must_not": {
