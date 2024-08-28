@@ -315,7 +315,7 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
-    "with_data_dois": {
+    "with_data_dois": { // No change - same keys.
       "filter": {
         "bool": {
           "must": [
