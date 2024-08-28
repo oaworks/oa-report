@@ -52,7 +52,7 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
-    "with_preprint": {
+    "with_preprint": { // No change - same key.
       "filter": {
         "term": {
           "supplements.has_preprint_copy": true
