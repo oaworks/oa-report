@@ -138,7 +138,7 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
-    "unknown_data_status": {
+    "unknown_data_status": { // Same as "with_data": The key is the same, but I'm not sure if it's the best one. This key just tells us if it's original research. There are other keys that could tell us if there is data (e.g., `supplements.has_made_data`), but I'm not sure if those options are better than the one here. I'm also not sure what having data means - is it open? Shared? Data availability statement? I'm not sure how this is being used.
       "filter": {
         "bool": {
           "must_not": {
