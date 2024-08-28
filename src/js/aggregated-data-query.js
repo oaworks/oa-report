@@ -97,7 +97,7 @@ function createAggregationTemplate(suffix) {
         "field": "cited_by_count" // "field": "openalex.cited_by_count"
       }
     },
-    "with_apc": {
+    "with_apc": { // No change - same key.
       "filter": {
         "range": {
           "supplements.apc_cost": {
