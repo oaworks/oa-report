@@ -386,7 +386,7 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
-    "without_code": {
+    "without_code": { // No change - same keys.
       "filter": {
         "bool": {
           "should": [
