@@ -87,6 +87,17 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
+    "unknown_data_availability_statement": {
+      "filter": {
+        "bool": {
+          "must_not": {
+            "exists": {
+              "field": "data_availability_statement.has_data_availability_statement"
+            }
+          }
+        }
+      }
+    }
     "total_citations": { // Field corresponds to new key: `openalex.cited_by_count`
       "sum": {
         "field": "cited_by_count" // "field": "openalex.cited_by_count"
