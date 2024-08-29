@@ -524,6 +524,9 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   },
   "without_shared_code": {
     label: "Without shared code"
+  },
+  "unknown_data_availability_statement": {
+    label: "Unknown data availability statement"
   }
 }
 
