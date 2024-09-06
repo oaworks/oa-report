@@ -54,8 +54,7 @@
 
 {# To get org names/slugs and whether or not they’re paying users #}
 <script>
-  const org = ("{{ org._source.objectID | urlencode }}"),
-        orgSlug = ("{{ org._source.objectID | slug }}"),
+  const orgSlug = ("{{ org._source.url_slug }}"),
         orgName = ("{{ org._source.name|safe }}"),
         orgPolicyUrl = ("{{ org._source.policy.url }}"),
         orgPolicyCompliance = ("{{ org._source.policy.help_text.compliant }}"),

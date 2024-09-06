@@ -25,7 +25,7 @@ function initialise() {
   // Check if the element with id="explore" exists to trigger data explore initialisation
   var exploreElement = document.getElementById("explore");
   if (exploreElement && !isDataExploreInitialised) {
-    initDataExplore(org);
+    initDataExplore(orgSlug);
     isDataExploreInitialised = true;
   }
 

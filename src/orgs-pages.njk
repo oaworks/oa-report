@@ -4,7 +4,7 @@ pagination:
     data: orgs.hits.hits
     size: 1
     alias: org
-permalink: "{{ org._source.objectID | slug }}/"
+permalink: "{{ org._source.url_slug }}/"
 ---
 
 {%- from "system/component.njk" import component -%}
