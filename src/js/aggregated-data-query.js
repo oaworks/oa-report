@@ -686,9 +686,6 @@ function createAggregationTemplate(suffix) {
 export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, size = 20, sort = "_count") {
   const aggs = createAggregationTemplate(suffix);
 
-  // append .keyword to `term` 
-  term = `${term}.keyword`;
-
   return {
     "query": {
       "bool": {
