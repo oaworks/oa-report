@@ -356,11 +356,11 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "has_confirmed_ppmi_data_usage": {
     label: "Confirmed PPMI data usage",
-    info: ""
+    info: "Articles that mention PPMI in their data availability statement or acknowledgment/funding statement or have an MJFF/ASAP grant ID including “PPMI”."
   },
   "has_confirmed_ppmi_biosample_usage": {
     label: "Confirmed PPMI biosample usage",
-    info: ""
+    info: "Articles that mention PPMI biospecimen use in their data availability statement or acknowledgment/funding statement."
   }
 };
 
