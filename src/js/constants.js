@@ -353,6 +353,14 @@ export const EXPLORE_FILTERS_LABELS = {
   "is_removed": {
     label: "Removed works",
     info: "<p>Any research output, including articles, preprints, data, and code that has been removed from <span class='org-name'></span>’s OA.Report</p>"
+  },
+  "has_confirmed_ppmi_data_usage": {
+    label: "Confirmed PPMI data usage",
+    info: ""
+  },
+  "has_confirmed_ppmi_biosample_usage": {
+    label: "Confirmed PPMI biosample usage",
+    info: ""
   }
 };
 
