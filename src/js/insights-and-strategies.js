@@ -9,7 +9,7 @@ import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateRead
 import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE } from './constants.js';
 
 // Set report org index URL’s base path
-export const orgApiUrl = `${API_BASE_URL}orgs?q=url_slug:%22${orgSlug}%22`;
+export const orgApiUrl = `${API_BASE_URL}orgs?q=objectID:%22${org}%22`;
 
 // Fetch and store organisational data in a constant
 export const orgDataPromise = axios.get(orgApiUrl);
@@ -19,7 +19,7 @@ loggedIn = false,
 hasOrgKey = Object.keys(OAKEYS).length !== 0;
 if (hasOrgKey) {
   // logged in
-  orgKey = `&orgkey=${OAKEYS[orgSlug]}`; // Use org variable to get the correct orgkey value
+  orgKey = `&orgkey=${OAKEYS[org]}`; // Use org variable to get the correct orgkey value
   loggedIn = true;
   displayNone("login");
   displayNone("about-free-logged-out");
@@ -30,7 +30,7 @@ if (hasOrgKey) {
 }
 
 // Generate report’s UI for any given date range
-export function initInsightsAndStrategies(orgSlug) {
+export function initInsightsAndStrategies(org) {
   // Set paths for orgindex
   let queryPrefix = `${QUERY_BASE}q=${dateRange}`,
   countQueryPrefix = `${COUNT_QUERY_BASE}q=${dateRange}`;
@@ -373,7 +373,7 @@ export function initInsightsAndStrategies(orgSlug) {
   function promptLogin(tableBody, strategy) {
     tableBody.innerHTML = `<tr><td class='py-4 pl-4 pr-3 text-base text-center align-top break-words' colspan='3'>
         <p class='font-bold'>Strategies help you take action to make your institution’s research more open.</p>
-        <p>Find out more about them by <a href='mailto:hello@oa.works?subject=OA.Report%20&mdash;%20${decodeURIComponent(orgSlug)}' 
+        <p>Find out more about them by <a href='mailto:hello@oa.works?subject=OA.Report%20&mdash;%20${decodeURIComponent(org)}' 
         class='underline underline-offset-2 decoration-1'>contacting us</a> or 
         <a href='https://about.oa.report/docs/user-accounts' class='underline underline-offset-2 decoration-1' title='Information on user accounts'>logging in to your account</a> to access them.</p></td></tr>`;
     displayNone(`form_${strategy}`);

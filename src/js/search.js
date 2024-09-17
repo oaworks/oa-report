@@ -17,7 +17,7 @@ async function fetchSuggestions(searchTerm) {
   }
 
   try {
-    const url = `https://bg.${apiEndpoint}.oa.works/oareport/orgs/suggest/search/${searchTerm}?include=name,url_slug,private`;
+    const url = `https://bg.${apiEndpoint}.oa.works/oareport/orgs/suggest/search/${searchTerm}?include=name,objectID,private`;
     const response = await fetch(url);
     const data = await response.json();
 
@@ -26,7 +26,7 @@ async function fetchSuggestions(searchTerm) {
     if (Array.isArray(filteredData) && filteredData.some(item => item.hasOwnProperty('name'))) {
       suggestionsList.innerHTML = filteredData
         .map(
-          result => `<li class="relative cursor-default border-b select-none"><a href="/${result.url_slug}" class="block text-neutral-700 hover:font-semibold hover:text-white hover:bg-neutral-900"><span class="p-3 block truncate">${result.name}</span></a></li>`
+          result => `<li class="relative cursor-default border-b select-none"><a href="/${result.objectID}" class="block text-neutral-700 hover:font-semibold hover:text-white hover:bg-neutral-900"><span class="p-3 block truncate">${result.name}</span></a></li>`
         )
         .join('');
       suggestionsList.style.display = 'block';

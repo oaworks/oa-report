@@ -446,7 +446,7 @@ function handleYearButtonLogic(button, startDate, endDate, buttonText) {
   }
 
   replaceDateRange(startDate, endDate);
-  initInsightsAndStrategies(orgSlug);
+  initInsightsAndStrategies(org);
   if (currentActiveExploreItemButton) {
     processExploreDataTable(currentActiveExploreItemButton, currentActiveExploreItemData);
   }
