@@ -5,7 +5,7 @@
 
     <div class="flex h-screen">
       <!-- Left nav that takes up the full height -->
-      <nav aria-label="Primary" class="bg-white w-52 p-4 text-neutral-800 border-r border-neutral-200 shadow-md flex flex-col justify-between fixed inset-y-0">
+      <nav aria-label="Primary" class="bg-white w-52 p-4 text-neutral-800 border-r border-neutral-200 shadow-md hidden sm:flex flex-col justify-between fixed inset-y-0">
         <div class="space-y-4">
           <div class="text-xs font-semibold text-neutral-500 uppercase">Main menu</div>
           <a href="#insights" class="nav-link p-3 flex items-center space-x-2 font-medium hover:bg-neutral-100 focus:ring-2 focus:ring-carnation-500 transition duration-300 ease-in-out text-sm">
@@ -34,13 +34,14 @@
       </nav>
 
       <!-- Content section and top nav next to the left nav -->
-      <div class="flex-grow ml-52">
+      <div class="flex-grow sm:ml-52">
         <!-- Sticky top navigation bar -->
         <nav aria-label="Secondary" class="bg-white text-neutral-900 border-b border-neutral-200 p-4 shadow-sm sticky top-0 z-50">
           <div class="flex justify-between items-center">
             <div class="flex items-center space-x-6">
-              <div class="text-2xl font-bold">OA.Report</div>
-              <div class="text-xl text-neutral-500 border-l border-neutral-300 pl-8 ml-4 hidden sm:block">Bill & Melinda Gates Foundation</div>
+              <h2 class="text-2xl font-bold">OA.Report</h2>
+              <!-- Bill & Melinda Gates Foundation title aligned with date picker -->
+              <h1 class="text-xl text-neutral-500 border-l border-neutral-300 pl-4 ml-4 hidden sm:block">Bill & Melinda Gates Foundation</h1>
             </div>
             <div class="flex space-x-4 items-center">
               <!-- Accessible buttons for year selection with aria-labels -->
