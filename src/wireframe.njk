@@ -210,6 +210,17 @@
         menuToggle.focus();
       }
 
+      // Toggle the date picker modal
+      function toggleDateRangeModal(event) {
+        const modal = document.getElementById('modal');
+        const isHidden = modal.classList.toggle('hidden');
+        const button = event.currentTarget;
+        const rect = button.getBoundingClientRect();
+        modal.style.top = `${rect.bottom + window.scrollY}px`;
+        modal.style.left = `${rect.left + window.scrollX}px`;
+        button.setAttribute('aria-expanded', !isHidden);
+      }
+
       // Highlight the active section based on the URL hash
       function activateSectionFromHash() {
         const hash = window.location.hash || '#insights'; // Default to 'insights' if no hash is present
