@@ -25,6 +25,7 @@ module.exports = {
       transparent: 'transparent',
       current: 'currentColor',
       'white': '#fff',
+      // Primary brand colour
       'carnation': {
         100: '#f4f0f0',
         200: '#fecfcf',
@@ -43,6 +44,21 @@ module.exports = {
         700: '#5D5E61',
         800: '#464648',
         900: '#2E2E2F',
+      },
+      // Complementary colors
+      'sage': {
+        100: '#eaf5ea',
+        200: '#d0e7d1',
+        300: '#b0d5b0',
+        400: '#8cbf8c',
+        500: '#6aa96a',
+      },
+      'aqua': {
+        100: '#e0f7fa',
+        200: '#b2ebf2',
+        300: '#80deea',
+        400: '#4dd0e1',
+        500: '#26c6da',
       }
     },
   },
