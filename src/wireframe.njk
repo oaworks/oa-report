@@ -4,12 +4,12 @@
   <body class="bg-neutral-50 text-neutral-900 font-sans">
 
     <!-- Overlay to close mobile menu -->
-    <div id="overlay" class="fixed inset-0 bg-black opacity-50 hidden sm:hidden" onclick="closeMobileMenu()"></div>
+    <div id="overlay" class="fixed inset-0 bg-black opacity-50 hidden sm:hidden" onclick="closeMobileMenu()" aria-hidden="true"></div>
 
-    <!-- Top navigation bar for both mobile and desktop -->
-    <nav aria-label="Primary" class="bg-white text-neutral-900 border-b border-neutral-200 p-4 shadow-sm sm:static sm:border-b-0 flex justify-between items-center sm:ml-52">
+    <!-- Top header including report title and menu button for mobile -->
+    <header class="bg-white text-neutral-900 border-b border-neutral-200 p-4 shadow-sm sm:static sm:border-b-0 flex justify-between items-center sm:ml-52">
       <!-- Hamburger menu button for mobile only -->
-      <button id="menu-toggle" aria-label="MENU" class="sm:hidden bg-carnation-500 p-2 text-white focus:outline-none" onclick="toggleMobileMenu()">
+      <button id="menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav" class="sm:hidden bg-carnation-500 p-2 text-white focus:outline-none" onclick="toggleMobileMenu()">
         {% icon_small "menu" %}
         <span class="sr-only">MENU</span>
       </button>
@@ -17,7 +17,7 @@
         <h1 class="text-xl text-neutral-600 ml-4">Bill &amp; Melinda Gates Foundation</h1>
         <span id="selected-year" class="text-xl text-carnation-600 mx-4">2024</span>
       </div>
-    </nav>
+    </header>
 
     <!-- Date selection visible only on mobile, under the top nav -->
     <div class="bg-carnation-100 p-4 flex justify-between items-center sm:hidden">
@@ -45,7 +45,7 @@
     </div>
 
     <!-- Mobile sliding menu (only for mobile) -->
-    <nav id="mobile-nav" aria-label="Secondary" class="bg-white w-64 h-full fixed top-0 left-0 z-50 transform -translate-x-full transition-transform duration-300 ease-in-out shadow-lg sm:hidden">
+    <nav id="mobile-nav" aria-label="Mobile navigation" aria-hidden="true" class="bg-white w-64 h-full fixed top-0 left-0 z-50 transform -translate-x-full transition-transform duration-300 ease-in-out shadow-lg sm:hidden">
       <div class="p-4 space-y-4">
         <h2 class="text-xl font-black mb-4">OA.Report</h2>
         <div class="text-xs font-semibold text-neutral-500 uppercase">Main menu</div>
@@ -76,7 +76,7 @@
 
     <!-- Desktop left nav -->
     <div class="flex h-full">
-      <nav aria-label="Primary" id="left-nav" class="bg-white w-52 text-neutral-800 border-r border-neutral-200 shadow-md hidden sm:flex flex-col justify-between fixed inset-y-0 overflow-y-auto">
+      <nav aria-label="Desktop navigation" id="left-nav" class="bg-white w-52 text-neutral-800 border-r border-neutral-200 shadow-md hidden sm:flex flex-col justify-between fixed inset-y-0 overflow-y-auto">
         <div>
           <h2 class="text-xl font-black p-4">OA.Report</h2>
           <div class="space-y-2">
@@ -167,8 +167,8 @@
         <section id="actions" class="section scroll-mt-16">
           <h2 class="text-2xl font-bold mb-6">Actions</h2>
         </section>
-      </div>
-    </main>
+      </main>
+    </div>
 
     <!-- Modal for date picker -->
     <div id="modal" role="dialog" aria-labelledby="modal-title" aria-hidden="true" class="fixed bg-white border border-neutral-300 p-4 hidden" style="z-index: 100;">
@@ -188,26 +188,37 @@
       function toggleMobileMenu() {
         const mobileNav = document.getElementById('mobile-nav');
         const overlay = document.getElementById('overlay');
-        mobileNav.classList.toggle('-translate-x-full');
-        overlay.classList.toggle('hidden');
+        const menuToggle = document.getElementById('menu-toggle');
+        const isOpen = mobileNav.classList.toggle('-translate-x-full');
+        overlay.classList.toggle('hidden', isOpen);
+        menuToggle.setAttribute('aria-expanded', !isOpen);
+        mobileNav.setAttribute('aria-hidden', isOpen);
+        if (!isOpen) {
+          menuToggle.focus();
+        }
       }
 
       // Close mobile menu when clicking outside
       function closeMobileMenu() {
         const mobileNav = document.getElementById('mobile-nav');
         const overlay = document.getElementById('overlay');
+        const menuToggle = document.getElementById('menu-toggle');
         mobileNav.classList.add('-translate-x-full');
         overlay.classList.add('hidden');
+        menuToggle.setAttribute('aria-expanded', 'false');
+        mobileNav.setAttribute('aria-hidden', 'true');
+        menuToggle.focus();
       }
 
       // Date picker modal toggle
       function toggleDateRangeModal(event) {
         const modal = document.getElementById('modal');
-        modal.classList.toggle('hidden');
+        const isHidden = modal.classList.toggle('hidden');
         const button = event.currentTarget;
         const rect = button.getBoundingClientRect();
         modal.style.top = `${rect.bottom + window.scrollY}px`;
         modal.style.left = `${rect.left + window.scrollX}px`;
+        button.setAttribute('aria-expanded', !isHidden);
       }
 
       function activateSectionFromHash() {
@@ -229,3 +240,4 @@
     </script>
   </body>
 </html>
+g
