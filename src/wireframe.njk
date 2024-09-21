@@ -210,33 +210,41 @@
         menuToggle.focus();
       }
 
-      // Date picker modal toggle
-      function toggleDateRangeModal(event) {
-        const modal = document.getElementById('modal');
-        const isHidden = modal.classList.toggle('hidden');
-        const button = event.currentTarget;
-        const rect = button.getBoundingClientRect();
-        modal.style.top = `${rect.bottom + window.scrollY}px`;
-        modal.style.left = `${rect.left + window.scrollX}px`;
-        button.setAttribute('aria-expanded', !isHidden);
-      }
-
+      // Highlight the active section based on the URL hash
       function activateSectionFromHash() {
-        const hash = window.location.hash || '#insights';
-        const activeLink = document.querySelector(`.nav-link[href="${hash}"]`);
-        if (activeLink) {
-          document.querySelectorAll('.nav-link').forEach(nav => nav.classList.remove('bg-carnation-100', 'font-bold'));
-          activeLink.classList.add('bg-carnation-100', 'font-bold');
-          document.querySelectorAll('.section').forEach(section => section.classList.add('hidden'));
-          const targetSection = document.querySelector(hash);
-          if (targetSection) {
-            targetSection.classList.remove('hidden');
-          }
+        const hash = window.location.hash || '#insights'; // Default to 'insights' if no hash is present
+        
+        // Get both mobile and desktop links
+        const mobileActiveLink = document.querySelector(`#mobile-nav .nav-link[href="${hash}"]`);
+        const desktopActiveLink = document.querySelector(`#left-nav .nav-link[href="${hash}"]`);
+
+        // Reset both mobile and desktop nav links
+        document.querySelectorAll('#mobile-nav .nav-link, #left-nav .nav-link').forEach(nav => {
+          nav.classList.remove('bg-carnation-100', 'font-bold');
+        });
+
+        // Apply the active class to both the mobile and desktop active links if found
+        if (mobileActiveLink) {
+          mobileActiveLink.classList.add('bg-carnation-100', 'font-bold');
+        }
+        if (desktopActiveLink) {
+          desktopActiveLink.classList.add('bg-carnation-100', 'font-bold');
+        }
+
+        // Hide all sections and show the target section
+        document.querySelectorAll('.section').forEach(section => section.classList.add('hidden'));
+        const targetSection = document.querySelector(hash);
+        if (targetSection) {
+          targetSection.classList.remove('hidden');
         }
       }
 
+      // Call the function initially to highlight the correct tab on page load
       activateSectionFromHash();
+
+      // Listen for changes to the URL hash (when clicking links or navigating)
       window.addEventListener('hashchange', activateSectionFromHash);
+
     </script>
   </body>
 </html>
