@@ -47,7 +47,7 @@
     <!-- Mobile sliding menu (only for mobile) -->
     <nav id="mobile-nav" aria-label="Secondary" class="bg-white w-64 h-full fixed top-0 left-0 z-50 transform -translate-x-full transition-transform duration-300 ease-in-out shadow-lg sm:hidden">
       <div class="p-4 space-y-4">
-        <h2 class="text-xl font-bold mb-4">OA.Report</h2>
+        <h2 class="text-xl font-black mb-4">OA.Report</h2>
         <div class="text-xs font-semibold text-neutral-500 uppercase">Main menu</div>
         <a href="#insights" class="nav-link p-3 flex items-center space-x-2 font-medium hover:bg-neutral-100 text-sm">
           {% icon_small "bar-chart" %}
@@ -75,60 +75,61 @@
     </nav>
 
     <!-- Desktop left nav -->
-    <div class="flex h-screen">
+    <div class="flex h-full">
       <nav aria-label="Primary" id="left-nav" class="bg-white w-52 text-neutral-800 border-r border-neutral-200 shadow-md hidden sm:flex flex-col justify-between fixed inset-y-0 overflow-y-auto">
-        <div class="space-y-2">
-          <h2 class="text-2xl font-bold p-4">OA.Report</h2>
-
-          <!-- Add time filter section with dropdown for years -->
-          <div class="bg-carnation-100 space-y-2 p-4">
-            <div class="text-xs font-semibold text-neutral-700 uppercase">Date selection</div>
-            <div class="bg-white hover:bg-carnation-100 focus:outline-none border border-neutral-300 p-2 flex items-center space-x-3 font-medium text-sm w-full text-left relative">
-              {% icon_small "calendar" %}
-              <select id="year-select" aria-label="Select a year" class="appearance-none bg-transparent focus:outline-none w-full pr-6">
-                <option value="2024">2024</option>
-                <option value="2023">2023</option>
-                <option value="2022">2022</option>
-              </select>
-              <div class="absolute inset-y-0 right-2 flex items-center pointer-events-none">
-                {% icon_small "chevron-down" %}
+        <div>
+          <h2 class="text-xl font-black p-4">OA.Report</h2>
+          <div class="space-y-2">
+            <!-- Add time filter section with dropdown for years -->
+            <div class="bg-carnation-100 space-y-2 p-4">
+              <div class="text-xs font-semibold text-neutral-700 uppercase">Date selection</div>
+              <div class="bg-white hover:bg-carnation-100 focus:outline-none border border-neutral-300 p-2 flex items-center space-x-3 font-medium text-sm w-full text-left relative">
+                {% icon_small "calendar" %}
+                <select id="year-select" aria-label="Select a year" class="appearance-none bg-transparent focus:outline-none w-full pr-6">
+                  <option value="2024">2024</option>
+                  <option value="2023">2023</option>
+                  <option value="2022">2022</option>
+                </select>
+                <div class="absolute inset-y-0 right-2 flex items-center pointer-events-none">
+                  {% icon_small "chevron-down" %}
+                </div>
               </div>
+
+              <div class="font-medium text-xs text-center mx-4">OR</div>
+
+              <!-- Date picker button -->
+              <button aria-haspopup="dialog" aria-controls="modal" aria-expanded="false" aria-label="Open date range picker" class="bg-white hover:bg-carnation-100 focus:outline-none border border-neutral-300 p-2 flex items-center space-x-2 font-medium text-sm w-full text-left" onclick="toggleDateRangeModal(event)">
+                {% icon_small "clock" %}
+                <span>Pick date range</span>
+              </button>
             </div>
 
-            <div class="font-medium text-xs text-center mx-4">OR</div>
+            <!-- Main menu -->
+            <div class="text-xs font-semibold text-neutral-700 uppercase p-4">Main menu</div>
+            <a href="#insights" class="nav-link p-3 flex items-center space-x-2 font-medium hover:bg-neutral-100 focus:ring-2 focus:ring-carnation-500 transition duration-300 ease-in-out text-sm">
+              {% icon_small "bar-chart" %}
+              <span>Insights</span>
+            </a>
+            <a href="#data-explore" class="nav-link p-3 flex items-center space-x-2 font-medium hover:bg-neutral-100 focus:ring-2 focus:ring-carnation-500 transition duration-300 ease-in-out text-sm">
+              {% icon_small "grid" %}
+              <span>Data explorer</span>
+            </a>
+            <a href="#actions" class="nav-link p-3 flex items-center space-x-2 font-medium hover:bg-neutral-100 focus:ring-2 focus:ring-carnation-500 transition duration-300 ease-in-out text-sm">
+              {% icon_small "activity" %}
+              <span>Actions</span>
+            </a>
 
-            <!-- Date picker button -->
-            <button aria-haspopup="dialog" aria-controls="modal" aria-expanded="false" aria-label="Open date range picker" class="bg-white hover:bg-carnation-100 focus:outline-none border border-neutral-300 p-2 flex items-center space-x-2 font-medium text-sm w-full text-left" onclick="toggleDateRangeModal(event)">
-              {% icon_small "clock" %}
-              <span>Pick date range</span>
-            </button>
+            <!-- Secondary menu -->
+            <div class="text-xs font-semibold text-neutral-700 uppercase p-4">Secondary</div>
+            <a href="#about" class="nav-link p-3 flex items-center space-x-2 font-medium hover:bg-neutral-100 focus:ring-2 focus:ring-carnation-500 transition duration-300 ease-in-out text-sm">
+              {% icon_small "info" %}
+              <span>About</span>
+            </a>
+            <a href="#logout" class="nav-link p-3 flex items-center space-x-2 font-medium hover:bg-neutral-100 focus:ring-2 focus:ring-carnation-500 transition duration-300 ease-in-out text-sm">
+              {% icon_small "log-out" %}
+              <span>Log out</span>
+            </a>
           </div>
-
-          <!-- Main menu -->
-          <div class="text-xs font-semibold text-neutral-700 uppercase p-4">Main menu</div>
-          <a href="#insights" class="nav-link p-3 flex items-center space-x-2 font-medium hover:bg-neutral-100 focus:ring-2 focus:ring-carnation-500 transition duration-300 ease-in-out text-sm">
-            {% icon_small "bar-chart" %}
-            <span>Insights</span>
-          </a>
-          <a href="#data-explore" class="nav-link p-3 flex items-center space-x-2 font-medium hover:bg-neutral-100 focus:ring-2 focus:ring-carnation-500 transition duration-300 ease-in-out text-sm">
-            {% icon_small "grid" %}
-            <span>Data explorer</span>
-          </a>
-          <a href="#actions" class="nav-link p-3 flex items-center space-x-2 font-medium hover:bg-neutral-100 focus:ring-2 focus:ring-carnation-500 transition duration-300 ease-in-out text-sm">
-            {% icon_small "activity" %}
-            <span>Actions</span>
-          </a>
-
-          <!-- Secondary menu -->
-          <div class="text-xs font-semibold text-neutral-700 uppercase p-4">Secondary</div>
-          <a href="#about" class="nav-link p-3 flex items-center space-x-2 font-medium hover:bg-neutral-100 focus:ring-2 focus:ring-carnation-500 transition duration-300 ease-in-out text-sm">
-            {% icon_small "info" %}
-            <span>About</span>
-          </a>
-          <a href="#logout" class="nav-link p-3 flex items-center space-x-2 font-medium hover:bg-neutral-100 focus:ring-2 focus:ring-carnation-500 transition duration-300 ease-in-out text-sm">
-            {% icon_small "log-out" %}
-            <span>Log out</span>
-          </a>
         </div>
       </nav>
 
