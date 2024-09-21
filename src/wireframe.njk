@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+{% include 'partials/head.njk' %}
+<body class="bg-neutral-50 text-neutral-900 font-sans">
+
+    <!-- Top navigation bar with OA.Report and title aligned -->
+    <nav class="bg-white text-neutral-900 border-b border-neutral-200 p-4 shadow-sm">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center space-x-6">
+                <div class="text-2xl font-bold">OA.Report</div>
+                <div class="text-xl text-neutral-500 border-l border-neutral-300 pl-8 ml-4">Bill & Melinda Gates Foundation</div>
+            </div>
+            <div class="flex space-x-4 items-center">
+                <button class="bg-neutral-100 hover:bg-neutral-200 focus:ring-2 focus:ring-carnation-200 p-2 rounded-sm text-sm shadow-sm">2024</button>
+                <button class="bg-neutral-100 hover:bg-neutral-200 focus:ring-2 focus:ring-carnation-200 p-2 rounded-sm text-sm shadow-sm">2023</button>
+                <button class="bg-neutral-100 hover:bg-neutral-200 focus:ring-2 focus:ring-carnation-200 p-2 rounded-sm text-sm shadow-sm">2022</button>
+                <button class="bg-carnation-500 hover:bg-carnation-600 text-white p-2 rounded-sm text-sm shadow" onclick="toggleDateRangeModal()">Pick date range</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Modal for date picker -->
+    <div id="modal" class="absolute bg-white border border-neutral-300 shadow-lg p-4 hidden" style="top: 60px; right: 10px;">
+        <div class="flex justify-between items-center">
+            <h2 class="text-xl font-semibold">Pick a custom date range</h2>
+            <button id="modal-close-btn" class="text-neutral-600 hover:text-neutral-900">
+                {% icon_small "x" %}
+            </button>
+        </div>
+        <label class="block mb-2">Start Date: <input type="date" class="border p-2 rounded"></label>
+        <label class="block mb-4">End Date: <input type="date" class="border p-2 rounded"></label>
+        <button class="bg-carnation-500 hover:bg-carnation-600 text-white p-2 rounded" onclick="toggleDateRangeModal()">Apply</button>
+    </div>
+
+    <div class="flex h-screen">
+        <nav class="bg-white w-52 p-4 text-neutral-800 border-r border-neutral-200 shadow-md flex flex-col justify-between h-full">
+            <div class="space-y-4">
+                <a href="#insights" class="nav-link p-3 flex items-center space-x-2 font-medium hover:bg-neutral-100 focus:ring-2 focus:ring-carnation-500 transition duration-300 ease-in-out text-sm">
+                    {% icon_small "bar-chart" %}
+                    <span>Insights</span>
+                </a>
+                <a href="#data-explore" class="nav-link p-3 flex items-center space-x-2 font-medium hover:bg-neutral-100 focus:ring-2 focus:ring-carnation-500 transition duration-300 ease-in-out text-sm">
+                    {% icon_small "grid" %}
+                    <span>Data explore</span>
+                </a>
+                <a href="#actions" class="nav-link p-3 flex items-center space-x-2 font-medium hover:bg-neutral-100 focus:ring-2 focus:ring-carnation-500 transition duration-300 ease-in-out text-sm">
+                    {% icon_small "activity" %}
+                    <span>Actions</span>
+                </a>
+            </div>
+
+            <div class="mt-auto pt-4">
+                <a href="#about" class="nav-link p-3 flex items-center space-x-2 font-medium hover:bg-neutral-100 focus:ring-2 focus:ring-carnation-500 transition duration-300 ease-in-out text-sm">
+                    {% icon_small "info" %}
+                    <span>About</span>
+                </a>
+                <a href="#logout" class="nav-link p-3 flex items-center space-x-2 font-medium hover:bg-neutral-100 focus:ring-2 focus:ring-carnation-500 transition duration-300 ease-in-out text-sm">
+                    {% icon_small "log-out" %}
+                    <span>Log out</span>
+                </a>
+            </div>
+        </nav>
+
+        <main class="flex-grow p-6 bg-neutral-50">
+            <!-- Insights section -->
+            <section id="insights" class="section">
+                <h1 class="text-3xl font-bold mb-6">Insights</h1>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-white p-6 border border-neutral-300 rounded shadow-md">
+                        <h2 class="text-xl font-semibold text-neutral-700">Total publications</h2>
+                        <p class="text-4xl mt-2 text-neutral-900">2,365</p>
+                    </div>
+                    <div class="bg-white p-6 border border-neutral-300 rounded shadow-md">
+                        <h2 class="text-xl font-semibold text-neutral-700">Free-to-read</h2>
+                        <p class="text-4xl mt-2 text-neutral-900">90%</p>
+                    </div>
+                    <div class="bg-white p-6 border border-neutral-300 rounded shadow-md">
+                        <h2 class="text-xl font-semibold text-neutral-700">OA policy-compliant</h2>
+                        <p class="text-4xl mt-2 text-neutral-900">83%</p>
+                    </div>
+                    <div class="bg-white p-6 border border-neutral-300 rounded shadow-md">
+                        <h2 class="text-xl font-semibold text-neutral-700">With data availability</h2>
+                        <p class="text-4xl mt-2 text-neutral-900">74%</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Data explore section -->
+            <section id="data-explore" class="section hidden">
+                <h2 class="text-2xl font-bold">Data exploration</h2>
+            </section>
+
+            <!-- Actions section -->
+            <section id="actions" class="section hidden">
+                <h2 class="text-2xl font-bold">Actions</h2>
+            </section>
+
+        </main>
+
+    </div>
+
+    <script>
+        // Function for showing/hiding modal
+        function toggleDateRangeModal() {
+            const modal = document.getElementById('modal');
+            modal.classList.toggle('hidden');
+        }
+
+        // Handle tab navigation via URL hash
+        function activateSectionFromHash() {
+            const hash = window.location.hash || '#insights'; // Default to 'insights' section
+            const activeLink = document.querySelector(`.nav-link[href="${hash}"]`);
+            
+            if (activeLink) {
+                document.querySelectorAll('.nav-link').forEach(nav => nav.classList.remove('bg-neutral-100', 'font-bold'));
+                activeLink.classList.add('bg-neutral-100', 'font-bold');
+
+                document.querySelectorAll('.section').forEach(section => section.classList.add('hidden'));
+                const targetSection = document.querySelector(hash);
+                if (targetSection) {
+                    targetSection.classList.remove('hidden');
+                }
+            }
+        }
+
+        // Initial activation on page load
+        activateSectionFromHash();
+
+        // Handle hash change
+        window.addEventListener('hashchange', activateSectionFromHash);
+
+    </script>
+</body>
+</html>
