@@ -5,18 +5,19 @@
 
     <div class="flex h-screen">
       <!-- Left nav that takes up the full height -->
-      <nav aria-label="Primary" class="bg-white w-52 p-4 text-neutral-800 border-r border-neutral-200 shadow-md hidden sm:flex flex-col justify-between fixed inset-y-0 overflow-y-auto">
+      <nav aria-label="Primary" id="left-nav" class="bg-white w-52 p-4 text-neutral-800 border-r border-neutral-200 shadow-md hidden sm:flex flex-col justify-between fixed inset-y-0 overflow-y-auto">
         <!-- Add time filter section with dropdown for years -->
         <div class="space-y-4">
+          <h2 class="text-2xl font-bold">OA.Report</h2>
           <div class="text-xs font-semibold text-neutral-500 uppercase">Date selection</div>
           <!-- Dropdown for year selection -->
-          <select aria-label="Select a year" class="appearance-none w-full bg-neutral-100 hover:bg-neutral-200 focus:ring-2 focus:ring-carnation-200 p-2 rounded-sm text-sm shadow-sm">
+          <select id="year-select" aria-label="Select a year" class="appearance-none w-full bg-neutral-100 hover:bg-neutral-200 focus:ring-2 focus:ring-carnation-200 p-2 text-sm shadow-sm" onchange="updateYear()">
             <option value="2024">2024</option>
             <option value="2023">2023</option>
             <option value="2022">2022</option>
           </select>
           <!-- Date picker button -->
-          <button aria-haspopup="dialog" aria-controls="modal" aria-expanded="false" aria-label="Open date range picker" class="bg-neutral-100 hover:bg-neutral-200 focus:ring-2 focus:ring-carnation-200 p-2 rounded-sm text-sm shadow-sm w-full" onclick="toggleDateRangeModal()">Pick date range</button>
+          <button aria-haspopup="dialog" aria-controls="modal" aria-expanded="false" aria-label="Open date range picker" class="bg-neutral-100 hover:bg-neutral-200 focus:ring-2 focus:ring-carnation-200 p-2 text-sm shadow-sm w-full" onclick="toggleDateRangeModal()">Pick date range</button>
 
           <div class="text-xs font-semibold text-neutral-500 uppercase">Main menu</div>
           <a href="#insights" class="nav-link p-3 flex items-center space-x-2 font-medium hover:bg-neutral-100 focus:ring-2 focus:ring-carnation-500 transition duration-300 ease-in-out text-sm">
@@ -47,13 +48,57 @@
       <!-- Content section and top nav next to the left nav -->
       <div class="flex-grow sm:ml-52">
         <!-- Sticky top navigation bar -->
-        <nav aria-label="Secondary" class="bg-white text-neutral-900 border-b border-neutral-200 p-4 shadow-sm sticky top-0 z-50">
-          <div class="flex justify-between items-center">
-            <div class="flex items-center space-x-6">
-              <h2 class="text-2xl font-bold">OA.Report</h2>
-              <!-- Bill & Melinda Gates Foundation title aligned with date picker -->
-              <h1 class="text-xl text-neutral-500 border-l border-neutral-300 pl-4 ml-4 hidden sm:block">Bill & Melinda Gates Foundation: 1 Jan 2024 — 31 Dec 2024</h1>
+        <nav aria-label="Secondary" class="bg-white text-neutral-900 border-b border-neutral-200 p-4 shadow-sm sticky top-0 z-50 flex justify-between items-center">
+          <div class="flex items-center space-x-4">
+            <!-- Organization name and selected year/date range -->
+            <div class="flex items-center">
+              <h1 class="text-xl text-neutral-500">Bill & Melinda Gates Foundation</h1>
+              <!-- Date range or year will be displayed here -->
+              <span id="selected-year" class="text-xl text-carnation-600 mx-4">2024</span>
             </div>
+          </div>
+          <!-- Mobile menu button -->
+          <button id="menu-toggle" class="sm:hidden bg-carnation-500 p-2 text-white" onclick="toggleMobileMenu()">
+            {% icon_small "menu" %}
+            Menu
+          </button>
+        </nav>
+
+        <!-- Mobile menu dropdown (initially hidden) -->
+        <nav id="mobile-nav" class="bg-white text-neutral-800 p-4 border-b border-neutral-200 shadow-md hidden sm:hidden">
+          <!-- Same menu items for mobile -->
+          <div class="space-y-4">
+            <div class="text-xs font-semibold text-neutral-500 uppercase">Date selection</div>
+            <select aria-label="Select a year" class="appearance-none w-full bg-neutral-100 hover:bg-neutral-200 focus:ring-2 focus:ring-carnation-200 p-2 text-sm shadow-sm" onchange="updateYear()">
+              <option value="2024">2024</option>
+              <option value="2023">2023</option>
+              <option value="2022">2022</option>
+            </select>
+            <button aria-haspopup="dialog" aria-controls="modal" aria-expanded="false" aria-label="Open date range picker" class="bg-neutral-100 hover:bg-neutral-200 focus:ring-2 focus:ring-carnation-200 p-2 text-sm shadow-sm w-full" onclick="toggleDateRangeModal()">Pick date range</button>
+
+            <div class="text-xs font-semibold text-neutral-500 uppercase">Main menu</div>
+            <a href="#insights" class="nav-link p-3 flex items-center space-x-2 font-medium hover:bg-neutral-100 focus:ring-2 focus:ring-carnation-500 transition duration-300 ease-in-out text-sm">
+              {% icon_small "bar-chart" %}
+              <span>Insights</span>
+            </a>
+            <a href="#data-explore" class="nav-link p-3 flex items-center space-x-2 font-medium hover:bg-neutral-100 focus:ring-2 focus:ring-carnation-500 transition duration-300 ease-in-out text-sm">
+              {% icon_small "grid" %}
+              <span>Data explore</span>
+            </a>
+            <a href="#actions" class="nav-link p-3 flex items-center space-x-2 font-medium hover:bg-neutral-100 focus:ring-2 focus:ring-carnation-500 transition duration-300 ease-in-out text-sm">
+              {% icon_small "activity" %}
+              <span>Actions</span>
+            </a>
+
+            <div class="text-xs font-semibold text-neutral-500 uppercase">Secondary</div>
+            <a href="#about" class="nav-link p-3 flex items-center space-x-2 font-medium hover:bg-neutral-100 focus:ring-2 focus:ring-carnation-500 transition duration-300 ease-in-out text-sm">
+              {% icon_small "info" %}
+              <span>About</span>
+            </a>
+            <a href="#logout" class="nav-link p-3 flex items-center space-x-2 font-medium hover:bg-neutral-100 focus:ring-2 focus:ring-carnation-500 transition duration-300 ease-in-out text-sm">
+              {% icon_small "log-out" %}
+              <span>Log out</span>
+            </a>
           </div>
         </nav>
 
@@ -106,38 +151,42 @@
     </div>
 
     <script>
-      // Function for showing/hiding modal
+      // Function to toggle date range modal
       function toggleDateRangeModal() {
         const modal = document.getElementById('modal');
         modal.classList.toggle('hidden');
         const button = event.currentTarget;
         const rect = button.getBoundingClientRect();
-        modal.style.top = `${rect.bottom + window.scrollY}px`; // Ensures it opens below the button
-        modal.style.left = `${rect.left}px`; // Opens aligned to the button
+        modal.style.top = `${rect.bottom + window.scrollY}px`;
+        modal.style.left = `${rect.left}px`;
         modal.setAttribute('aria-hidden', modal.classList.contains('hidden'));
+      }
+
+      // Function to update selected year and display it
+      function updateYear() {
+        const yearSelect = document.getElementById('year-select');
+        const selectedYear = document.getElementById('selected-year');
+        selectedYear.textContent = yearSelect.value;
       }
 
       // Handle tab navigation via URL hash
       function activateSectionFromHash() {
-        const hash = window.location.hash || '#insights'; // Default to 'insights' section
+        const hash = window.location.hash || '#insights';
         const activeLink = document.querySelector(`.nav-link[href="${hash}"]`);
-        const currentSectionText = document.getElementById('current-section'); // Check if current-section exists
+        const currentSectionText = document.getElementById('current-section');
 
         if (activeLink) {
-          // Remove active state from all links and sections
           document.querySelectorAll('.nav-link').forEach(nav => nav.classList.remove('bg-neutral-100', 'font-bold'));
           activeLink.classList.add('bg-neutral-100', 'font-bold');
 
-          // Hide all sections and show the target section
           document.querySelectorAll('.section').forEach(section => section.classList.add('hidden'));
           const targetSection = document.querySelector(hash);
           if (targetSection) {
             targetSection.classList.remove('hidden');
           }
 
-          // Update the current section text (for mobile navigation only)
           if (currentSectionText) {
-            currentSectionText.textContent = activeLink.textContent.trim(); // Only set if the element exists
+            currentSectionText.textContent = activeLink.textContent.trim();
           }
         }
       }
@@ -148,7 +197,7 @@
       // Handle hash change
       window.addEventListener('hashchange', activateSectionFromHash);
 
-      // Toggle mobile nav
+      // Toggle mobile nav visibility
       function toggleMobileMenu() {
         const mobileNav = document.getElementById('mobile-nav');
         mobileNav.classList.toggle('hidden');
