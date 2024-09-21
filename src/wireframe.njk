@@ -5,21 +5,32 @@
 
     <div class="flex h-screen">
       <!-- Left nav that takes up the full height -->
-      <nav aria-label="Primary" id="left-nav" class="bg-white w-52 p-4 text-neutral-800 border-r border-neutral-200 shadow-md hidden sm:flex flex-col justify-between fixed inset-y-0 overflow-y-auto">
-        <!-- Add time filter section with dropdown for years -->
-        <div class="space-y-4">
-          <h2 class="text-2xl font-bold">OA.Report</h2>
-          <div class="text-xs font-semibold text-neutral-500 uppercase">Date selection</div>
-          <!-- Dropdown for year selection -->
-          <select id="year-select" aria-label="Select a year" class="appearance-none w-full bg-neutral-100 hover:bg-neutral-200 focus:ring-2 focus:ring-carnation-200 p-2 text-sm shadow-sm" onchange="updateYear()">
-            <option value="2024">2024</option>
-            <option value="2023">2023</option>
-            <option value="2022">2022</option>
-          </select>
-          <!-- Date picker button -->
-          <button aria-haspopup="dialog" aria-controls="modal" aria-expanded="false" aria-label="Open date range picker" class="bg-neutral-100 hover:bg-neutral-200 focus:ring-2 focus:ring-carnation-200 p-2 text-sm shadow-sm w-full" onclick="toggleDateRangeModal()">Pick date range</button>
+      <nav aria-label="Primary" id="left-nav" class="bg-white w-52 text-neutral-800 border-r border-neutral-200 shadow-md hidden sm:flex flex-col justify-between fixed inset-y-0 overflow-y-auto">
+        <div class="space-y-2">
+          <h2 class="text-2xl font-bold p-4">OA.Report</h2>
 
-          <div class="text-xs font-semibold text-neutral-500 uppercase">Main menu</div>
+          <!-- Add time filter section with dropdown for years -->
+          <div class="bg-carnation-100 space-y-2 p-4">
+            <div class="text-xs font-semibold text-neutral-700 uppercase">Date selection</div>
+            <!-- Dropdown for year selection (now styled like a button) -->
+            <div class="bg-white hover:bg-carnation-100 focus:outline-none border border-neutral-300 p-2 flex items-center space-x-3 font-medium text-sm w-full text-left">
+              {% icon_small "calendar" %}
+              <select id="year-select" aria-label="Select a year" class="appearance-none bg-transparent focus:outline-none w-full">
+                <option value="2024">2024</option>
+                <option value="2023">2023</option>
+                <option value="2022">2022</option>
+              </select>
+            </div>
+
+            <!-- Date picker button -->
+            <button aria-haspopup="dialog" aria-controls="modal" aria-expanded="false" aria-label="Open date range picker" class="bg-white hover:bg-carnation-100 focus:outline-none border border-neutral-300 p-2 flex items-center space-x-2 font-medium text-sm w-full text-left">
+              {% icon_small "clock" %}
+              <span>Pick date range</span>
+            </button>
+          </div>
+
+          <!-- Main menu -->
+          <div class="text-xs font-semibold text-neutral-700 uppercase p-4">Main menu</div>
           <a href="#insights" class="nav-link p-3 flex items-center space-x-2 font-medium hover:bg-neutral-100 focus:ring-2 focus:ring-carnation-500 transition duration-300 ease-in-out text-sm">
             {% icon_small "bar-chart" %}
             <span>Insights</span>
@@ -33,7 +44,8 @@
             <span>Actions</span>
           </a>
 
-          <div class="text-xs font-semibold text-neutral-500 uppercase mt-6">Secondary</div>
+          <!-- Secondary menu -->
+          <div class="text-xs font-semibold text-neutral-700 uppercase p-4">Secondary</div>
           <a href="#about" class="nav-link p-3 flex items-center space-x-2 font-medium hover:bg-neutral-100 focus:ring-2 focus:ring-carnation-500 transition duration-300 ease-in-out text-sm">
             {% icon_small "info" %}
             <span>About</span>
@@ -52,7 +64,7 @@
           <div class="flex items-center space-x-4">
             <!-- Organization name and selected year/date range -->
             <div class="flex items-center">
-              <h1 class="text-xl text-neutral-500">Bill & Melinda Gates Foundation</h1>
+              <h1 class="text-xl text-neutral-600">Bill & Melinda Gates Foundation</h1>
               <!-- Date range or year will be displayed here -->
               <span id="selected-year" class="text-xl text-carnation-600 mx-4">2024</span>
             </div>
@@ -64,62 +76,24 @@
           </button>
         </nav>
 
-        <!-- Mobile menu dropdown (initially hidden) -->
-        <nav id="mobile-nav" class="bg-white text-neutral-800 p-4 border-b border-neutral-200 shadow-md hidden sm:hidden">
-          <!-- Same menu items for mobile -->
-          <div class="space-y-4">
-            <div class="text-xs font-semibold text-neutral-500 uppercase">Date selection</div>
-            <select aria-label="Select a year" class="appearance-none w-full bg-neutral-100 hover:bg-neutral-200 focus:ring-2 focus:ring-carnation-200 p-2 text-sm shadow-sm" onchange="updateYear()">
-              <option value="2024">2024</option>
-              <option value="2023">2023</option>
-              <option value="2022">2022</option>
-            </select>
-            <button aria-haspopup="dialog" aria-controls="modal" aria-expanded="false" aria-label="Open date range picker" class="bg-neutral-100 hover:bg-neutral-200 focus:ring-2 focus:ring-carnation-200 p-2 text-sm shadow-sm w-full" onclick="toggleDateRangeModal()">Pick date range</button>
-
-            <div class="text-xs font-semibold text-neutral-500 uppercase">Main menu</div>
-            <a href="#insights" class="nav-link p-3 flex items-center space-x-2 font-medium hover:bg-neutral-100 focus:ring-2 focus:ring-carnation-500 transition duration-300 ease-in-out text-sm">
-              {% icon_small "bar-chart" %}
-              <span>Insights</span>
-            </a>
-            <a href="#data-explore" class="nav-link p-3 flex items-center space-x-2 font-medium hover:bg-neutral-100 focus:ring-2 focus:ring-carnation-500 transition duration-300 ease-in-out text-sm">
-              {% icon_small "grid" %}
-              <span>Data explore</span>
-            </a>
-            <a href="#actions" class="nav-link p-3 flex items-center space-x-2 font-medium hover:bg-neutral-100 focus:ring-2 focus:ring-carnation-500 transition duration-300 ease-in-out text-sm">
-              {% icon_small "activity" %}
-              <span>Actions</span>
-            </a>
-
-            <div class="text-xs font-semibold text-neutral-500 uppercase">Secondary</div>
-            <a href="#about" class="nav-link p-3 flex items-center space-x-2 font-medium hover:bg-neutral-100 focus:ring-2 focus:ring-carnation-500 transition duration-300 ease-in-out text-sm">
-              {% icon_small "info" %}
-              <span>About</span>
-            </a>
-            <a href="#logout" class="nav-link p-3 flex items-center space-x-2 font-medium hover:bg-neutral-100 focus:ring-2 focus:ring-carnation-500 transition duration-300 ease-in-out text-sm">
-              {% icon_small "log-out" %}
-              <span>Log out</span>
-            </a>
-          </div>
-        </nav>
-
         <!-- Main content -->
         <main class="p-6 bg-neutral-50">
           <section id="insights" class="section scroll-mt-16">
             <h2 class="text-2xl font-bold mb-6">Insights</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div class="bg-white p-6 border border-neutral-300 rounded shadow-md">
+              <div class="bg-white p-6 border border-neutral-300">
                 <h2 class="text-xl font-semibold text-neutral-700">Total publications</h2>
                 <p class="text-4xl mt-2 text-neutral-900">2,365</p>
               </div>
-              <div class="bg-white p-6 border border-neutral-300 rounded shadow-md">
+              <div class="bg-white p-6 border border-neutral-300">
                 <h2 class="text-xl font-semibold text-neutral-700">Free-to-read</h2>
                 <p class="text-4xl mt-2 text-neutral-900">90%</p>
               </div>
-              <div class="bg-white p-6 border border-neutral-300 rounded shadow-md">
+              <div class="bg-white p-6 border border-neutral-300">
                 <h2 class="text-xl font-semibold text-neutral-700">OA policy-compliant</h2>
                 <p class="text-4xl mt-2 text-neutral-900">83%</p>
               </div>
-              <div class="bg-white p-6 border border-neutral-300 rounded shadow-md">
+              <div class="bg-white p-6 border border-neutral-300">
                 <h2 class="text-xl font-semibold text-neutral-700">With data availability</h2>
                 <p class="text-4xl mt-2 text-neutral-900">74%</p>
               </div>
@@ -138,20 +112,19 @@
     </div>
 
     <!-- Modal for date picker -->
-    <div id="modal" role="dialog" aria-labelledby="modal-title" aria-hidden="true" class="fixed bg-white border border-neutral-300 shadow-lg p-4 hidden" style="z-index: 100;">
+    <div id="modal" role="dialog" aria-labelledby="modal-title" aria-hidden="true" class="fixed bg-white border border-neutral-300 p-4 hidden" style="z-index: 100;">
       <div class="flex justify-between items-center">
         <h2 id="modal-title" class="text-xl font-semibold">Pick a custom date range</h2>
         <button id="modal-close-btn" aria-label="Close date range picker" class="text-neutral-600 hover:text-neutral-900" onclick="toggleDateRangeModal()">
           {% icon_small "x" %}
         </button>
       </div>
-      <label class="block mb-2">Start Date: <input type="date" class="border p-2 rounded"></label>
-      <label class="block mb-4">End Date: <input type="date" class="border p-2 rounded"></label>
-      <button class="bg-carnation-500 hover:bg-carnation-600 text-white p-2 rounded" onclick="toggleDateRangeModal()">Apply</button>
+      <label class="block mb-2">Start Date: <input type="date" class="border p-2"></label>
+      <label class="block mb-4">End Date: <input type="date" class="border p-2"></label>
+      <button class="bg-carnation-500 hover:bg-carnation-600 text-white p-2" onclick="toggleDateRangeModal()">Apply</button>
     </div>
 
     <script>
-      // Function to toggle date range modal
       function toggleDateRangeModal() {
         const modal = document.getElementById('modal');
         modal.classList.toggle('hidden');
@@ -159,45 +132,31 @@
         const rect = button.getBoundingClientRect();
         modal.style.top = `${rect.bottom + window.scrollY}px`;
         modal.style.left = `${rect.left}px`;
-        modal.setAttribute('aria-hidden', modal.classList.contains('hidden'));
       }
 
-      // Function to update selected year and display it
       function updateYear() {
         const yearSelect = document.getElementById('year-select');
         const selectedYear = document.getElementById('selected-year');
         selectedYear.textContent = yearSelect.value;
       }
 
-      // Handle tab navigation via URL hash
       function activateSectionFromHash() {
         const hash = window.location.hash || '#insights';
         const activeLink = document.querySelector(`.nav-link[href="${hash}"]`);
-        const currentSectionText = document.getElementById('current-section');
-
         if (activeLink) {
           document.querySelectorAll('.nav-link').forEach(nav => nav.classList.remove('bg-neutral-100', 'font-bold'));
           activeLink.classList.add('bg-neutral-100', 'font-bold');
-
           document.querySelectorAll('.section').forEach(section => section.classList.add('hidden'));
           const targetSection = document.querySelector(hash);
           if (targetSection) {
             targetSection.classList.remove('hidden');
           }
-
-          if (currentSectionText) {
-            currentSectionText.textContent = activeLink.textContent.trim();
-          }
         }
       }
 
-      // Initial activation on page load
       activateSectionFromHash();
-
-      // Handle hash change
       window.addEventListener('hashchange', activateSectionFromHash);
 
-      // Toggle mobile nav visibility
       function toggleMobileMenu() {
         const mobileNav = document.getElementById('mobile-nav');
         mobileNav.classList.toggle('hidden');
