@@ -136,27 +136,7 @@
       <!-- Main content -->
       <main class="flex-grow sm:ml-52 p-6">
         <!-- Insights section -->
-        <section id="insights" class="section scroll-mt-16">
-          <h2 class="text-2xl font-bold mb-6">Insights</h2>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div class="bg-white p-6 border border-neutral-300">
-              <h2 class="text-xl font-semibold text-neutral-700">Total publications</h2>
-              <p class="text-4xl mt-2 text-neutral-900">2,365</p>
-            </div>
-            <div class="bg-white p-6 border border-neutral-300">
-              <h2 class="text-xl font-semibold text-neutral-700">Free-to-read</h2>
-              <p class="text-4xl mt-2 text-neutral-900">90%</p>
-            </div>
-            <div class="bg-white p-6 border border-neutral-300">
-              <h2 class="text-xl font-semibold text-neutral-700">OA policy-compliant</h2>
-              <p class="text-4xl mt-2 text-neutral-900">83%</p>
-            </div>
-            <div class="bg-white p-6 border border-neutral-300">
-              <h2 class="text-xl font-semibold text-neutral-700">With data availability</h2>
-              <p class="text-4xl mt-2 text-neutral-900">74%</p>
-            </div>
-          </div>
-        </section>
+        {% include '_wireframe-insights.njk' %}
 
         <!-- Data Explorer section -->
         <section id="data-explore" class="section scroll-mt-16">
