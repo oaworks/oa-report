@@ -146,4 +146,4 @@ class Modal {
 }
 
 // Initialise the modal system
-new Modal();
+// new Modal();
