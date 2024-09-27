@@ -1,62 +1,82 @@
-<!-- Insights section -->
+<!-- Insights section with sharp edges, neutral colors, and working animations -->
 <section id="insights" class="section scroll-mt-16">
-  <h2 class="text-2xl font-bold mb-6">Insights</h2>
+  <h2 class="text-2xl font-bold mb-6 text-neutral-900">Insights</h2>
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-    <!-- Card 1: Total publications -->
-    <div class="bg-white p-6 border-4 border-neutral-700 insight-card-total" data-proportion="1" data-label="4,183 Total publications" data-color="bg-neutral-800">
-      <h2 class="text-xl font-semibold text-neutral-700">Total publications</h2>
-      <p class="text-4xl mt-2 text-neutral-900">4,183</p>
+    
+    <!-- Card 1: Total publications (emphasized with sharp edges) -->
+    <div class="bg-neutral-50 p-6 border-2 border-neutral-700 shadow-none insight-card-total" data-proportion="1" data-label="4,183 Total publications" data-color="bg-neutral-800">
+      <div class="flex items-center mb-4">
+        {% icon_small "file-text"%}
+        <h2 class="text-xl font-semibold text-neutral-800 ml-3">Total publications</h2>
+      </div>
+      <p class="text-4xl my-2 text-neutral-900">4,183</p>
     </div>
 
     <!-- Card 2: Free-to-read -->
-    <div class="bg-white p-6 border border-neutral-300 insight-card-total" data-proportion="0.97" data-label="97% Free-to-read" data-color="bg-neutral-600">
-      <h2 class="text-xl font-semibold text-neutral-700">Free-to-read</h2>
-      <p class="text-4xl mt-2 text-neutral-900">97%</p>
+    <div class="bg-neutral-50 p-6 border border-neutral-400 shadow-none insight-card-total" data-proportion="0.97" data-label="97% Free-to-read" data-color="bg-neutral-600">
+      <div class="flex items-center mb-4">
+        {% icon_small "gift"%}
+        <h2 class="text-xl font-semibold text-neutral-700 ml-3">Free-to-read</h2>
+      </div>
+      <p class="text-4xl my-2 text-neutral-900">97%</p>
       <p class="text-sm text-neutral-600">4,042 of 4,183 articles</p>
     </div>
 
     <!-- Card 3: OA policy-compliant -->
-    <div class="bg-white p-6 border border-neutral-300 insight-card-total" data-proportion="0.83" data-label="83% OA policy-compliant" data-color="bg-neutral-600">
-      <h2 class="text-xl font-semibold text-neutral-700">OA policy-compliant</h2>
-      <p class="text-4xl mt-2 text-neutral-900">83%</p>
+    <div class="bg-neutral-50 p-6 border border-neutral-400 shadow-none insight-card-total" data-proportion="0.83" data-label="83% OA policy-compliant" data-color="bg-neutral-600">
+      <div class="flex items-center mb-4">
+        {% icon_small "check-circle"%}
+        <h2 class="text-xl font-semibold text-neutral-700 ml-3">OA policy-compliant</h2>
+      </div>
+      <p class="text-4xl my-2 text-neutral-900">83%</p>
       <p class="text-sm text-neutral-600">3,468 of 4,183 articles</p>
     </div>
   </div>
 
-  <!-- Stacked bar for Total publications insights -->
-  <div class="relative w-full h-6 bg-neutral-300 rounded mt-6">
-    <div id="total-publications-bar" class="absolute left-0 h-full bg-neutral-500 transition-all duration-700 ease-out" style="width: 100%;"></div>
-    <div id="total-publications-label" class="absolute text-xs font-medium text-white inset-y-0 left-1/2 transform -translate-x-1/2 flex items-center justify-center"></div>
+  <!-- Stacked bar for Total publications insights with sharp edges -->
+  <div class="relative w-full h-6 bg-neutral-300 mt-6 border border-neutral-700">
+    <div id="total-publications-bar" class="absolute left-0 h-full bg-neutral-700 transition-all duration-700 ease-out" style="width: 100%;"></div>
+    <div id="total-publications-label" class="absolute text-xs font-medium text-neutral-50 inset-y-0 left-1/2 transform -translate-x-1/2 flex items-center justify-center"></div>
   </div>
 
   <!-- Data-related Group -->
-  <h3 class="text-lg font-semibold mt-8 mb-4">Data-related insights</h3>
+  <h3 class="text-lg font-semibold mt-8 mb-4 text-neutral-900">Data-related insights</h3>
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    
     <!-- Main Card: Total publications with data -->
-    <div class="bg-white p-6 border-4 border-neutral-700 insight-card-data" data-proportion="1" data-label="2,804 Total publications with data" data-color="bg-neutral-800">
-      <h2 class="text-xl font-semibold text-neutral-700">Publications with data</h2>
-      <p class="text-4xl mt-2 text-neutral-900">2,804</p>
+    <div class="bg-neutral-50 p-6 border-2 border-neutral-700 shadow-none insight-card-data" data-proportion="1" data-label="2,804 Total publications with data" data-color="bg-neutral-800">
+      <div class="flex items-center mb-4">
+        {% icon_small "database"%}
+        <h2 class="text-xl font-semibold text-neutral-800 ml-3">Publications with data</h2>
+      </div>
+      <p class="text-4xl my-2 text-neutral-900">2,804</p>
     </div>
 
     <!-- Card 1: With data availability statements -->
-    <div class="bg-white p-6 border border-neutral-300 insight-card-data" data-proportion="0.98" data-label="98% With data availability statements" data-color="bg-neutral-600">
-      <h2 class="text-xl font-semibold text-neutral-700">With data availability statements</h2>
-      <p class="text-4xl mt-2 text-neutral-900">98%</p>
+    <div class="bg-neutral-50 p-6 border border-neutral-400 shadow-none insight-card-data" data-proportion="0.98" data-label="98% With data availability statements" data-color="bg-neutral-600">
+      <div class="flex items-center mb-4">
+        {% icon_small "search"%}
+        <h2 class="text-xl font-semibold text-neutral-700 ml-3">With data availability statements</h2>
+      </div>
+      <p class="text-4xl my-2 text-neutral-900">98%</p>
       <p class="text-sm text-neutral-600">2,758 of 2,804 articles</p>
     </div>
 
     <!-- Card 2: With Open Data -->
-    <div class="bg-white p-6 border border-neutral-300 insight-card-data" data-proportion="0.34" data-label="34% With Open Data" data-color="bg-neutral-600">
-      <h2 class="text-xl font-semibold text-neutral-700">With Open Data</h2>
-      <p class="text-4xl mt-2 text-neutral-900">34%</p>
+    <div class="bg-neutral-50 p-6 border border-neutral-400 shadow-none insight-card-data" data-proportion="0.34" data-label="34% With Open Data" data-color="bg-neutral-600">
+      <div class="flex items-center mb-4">
+        {% icon_small "database"%}
+        <h2 class="text-xl font-semibold text-neutral-700 ml-3">With Open Data</h2>
+      </div>
+      <p class="text-4xl my-2 text-neutral-900">34%</p>
       <p class="text-sm text-neutral-600">961 of 2,804 articles</p>
     </div>
   </div>
 
   <!-- Stacked bar for Data-related insights -->
-  <div class="relative w-full h-6 bg-neutral-300 rounded mt-6">
-    <div id="data-insights-bar" class="absolute left-0 h-full bg-neutral-500 transition-all duration-700 ease-out" style="width: 100%;"></div>
-    <div id="data-insights-label" class="absolute text-xs font-medium text-white inset-y-0 left-1/2 transform -translate-x-1/2 flex items-center justify-center"></div>
+  <div class="relative w-full h-6 bg-neutral-300 mt-6 border border-neutral-700">
+    <div id="data-insights-bar" class="absolute left-0 h-full bg-neutral-700 transition-all duration-700 ease-out" style="width: 100%;"></div>
+    <div id="data-insights-label" class="absolute text-xs font-medium text-neutral-50 inset-y-0 left-1/2 transform -translate-x-1/2 flex items-center justify-center"></div>
   </div>
 </section>
 
@@ -68,9 +88,8 @@
     const bar = document.getElementById(barId);
     const barLabel = document.getElementById(labelId);
 
-    // Ensure the width animation starts from the left
     bar.style.transition = 'width 0.7s ease-out';
-    bar.style.width = `${proportion * 100}%`; // Ensures it fills up from left to right
+    bar.style.width = `${proportion * 100}%`;
     bar.className = `absolute left-0 h-full ${color}`;
     barLabel.innerHTML = label;
   }
@@ -79,9 +98,9 @@
     const bar = document.getElementById(barId);
     const barLabel = document.getElementById(labelId);
 
-    bar.style.width = '100%'; // Reset to neutral full width
-    bar.className = 'absolute left-0 h-full bg-neutral-500'; // Reset to neutral color
-    barLabel.innerHTML = ''; // Clear the label
+    bar.style.width = '100%';
+    bar.className = 'absolute left-0 h-full bg-neutral-700';
+    barLabel.innerHTML = '';
   }
 
   // Event listeners for Total publications section
