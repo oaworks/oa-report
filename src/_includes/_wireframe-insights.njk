@@ -1,157 +1,140 @@
-<!-- Insights section with sharp edges, neutral colors, and working animations -->
+{# Insights section: _wireframe-insights.njk #}
+
 <section id="insights" class="section scroll-mt-16">
-  <h2 class="text-2xl font-bold mb-6 text-neutral-900">Insights</h2>
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+  <h2 class="text-2xl font-semibold mb-6 text-neutral-800">Insights</h2>
+
+  <div class="grid gap-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
     
-    <!-- Card 1: Total publications (emphasized with sharp edges) -->
-    <div class="bg-neutral-50 p-6 border-2 border-neutral-700 shadow-none insight-card-total" data-proportion="1" data-label="4,183 Total publications" data-color="bg-neutral-800">
-      <div class="flex items-center mb-4">
+    {# Total Publications #}
+    <article class="p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 proportional-card">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-medium text-neutral-700">Total publications</h3>
         {% icon_small "file-text"%}
-        <h2 class="text-xl font-semibold text-neutral-800 ml-3">Total publications</h2>
       </div>
-      <p class="text-4xl my-2 text-neutral-900">4,183</p>
-    </div>
+      <p class="mt-6 text-4xl font-bold text-neutral-900">2,402</p>
+      <p class="mt-2 text-xs font-light text-neutral-600">articles</p>
+    </article>
 
-    <!-- Card 2: Free-to-read -->
-    <div class="bg-neutral-50 p-6 border border-neutral-400 shadow-none insight-card-total" data-proportion="0.97" data-label="97% Free-to-read" data-color="bg-neutral-600">
-      <div class="flex items-center mb-4">
+    {# Free-to-read #}
+    <article class="p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 relative proportional-card">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-medium text-neutral-700">Free-to-read</h3>
         {% icon_small "gift"%}
-        <h2 class="text-xl font-semibold text-neutral-700 ml-3">Free-to-read</h2>
       </div>
-      <p class="text-4xl my-2 text-neutral-900">97%</p>
-      <p class="text-sm text-neutral-600">4,042 of 4,183 articles</p>
-    </div>
+      <p class="mt-6 text-3xl font-bold text-neutral-900">2,165 <span class="font-normal text-neutral-700">of 2,402</span></p>
+      <p class="mt-2 text-xs font-light text-neutral-600">articles</p>
+      {# Proportional bar chart #}
+      <div class="mt-4 h-4 bg-neutral-100 rounded-full bar-chart" data-tooltip="90% of total">
+        <div class="h-4 bg-carnation-400 rounded-full" style="width: 90%;"></div>
+      </div>
+    </article>
 
-    <!-- Card 3: OA policy-compliant -->
-    <div class="bg-neutral-50 p-6 border border-neutral-400 shadow-none insight-card-total" data-proportion="0.83" data-label="83% OA policy-compliant" data-color="bg-neutral-600">
-      <div class="flex items-center mb-4">
+    {# OA Policy-Compliant #}
+    <article class="p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 relative proportional-card">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-medium text-neutral-700">OA policy-compliant</h3>
         {% icon_small "check-circle"%}
-        <h2 class="text-xl font-semibold text-neutral-700 ml-3">OA policy-compliant</h2>
       </div>
-      <p class="text-4xl my-2 text-neutral-900">83%</p>
-      <p class="text-sm text-neutral-600">3,468 of 4,183 articles</p>
-    </div>
-  </div>
-
-  <!-- Stacked bar for Total publications insights with sharp edges -->
-  <div class="relative w-full h-6 bg-neutral-300 mt-6 border border-neutral-700">
-    <div id="total-publications-bar" class="absolute left-0 h-full bg-neutral-700 transition-all duration-700 ease-out" style="width: 100%;"></div>
-    <div id="total-publications-label" class="absolute text-xs font-medium text-neutral-50 inset-y-0 left-1/2 transform -translate-x-1/2 flex items-center justify-center"></div>
-  </div>
-
-  <!-- Data-related Group -->
-  <h3 class="text-lg font-semibold mt-8 mb-4 text-neutral-900">Data-related insights</h3>
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-    
-    <!-- Main Card: Total publications with data -->
-    <div class="bg-neutral-50 p-6 border-2 border-neutral-700 shadow-none insight-card-data" data-proportion="1" data-label="2,804 Total publications with data" data-color="bg-neutral-800">
-      <div class="flex items-center mb-4">
-        {% icon_small "database"%}
-        <h2 class="text-xl font-semibold text-neutral-800 ml-3">Publications with data</h2>
+      <p class="mt-6 text-3xl font-bold text-neutral-900">1,986 <span class="font-normal text-neutral-700">of 2,402</span></p>
+      <p class="mt-2 text-xs font-light text-neutral-600">articles covered by policy</p>
+      {# Proportional bar chart #}
+      <div class="mt-4 h-4 bg-neutral-100 rounded-full bar-chart" data-tooltip="83% of total">
+        <div class="h-4 bg-carnation-400 rounded-full" style="width: 83%;"></div>
       </div>
-      <p class="text-4xl my-2 text-neutral-900">2,804</p>
-    </div>
+    </article>
 
-    <!-- Card 1: With data availability statements -->
-    <div class="bg-neutral-50 p-6 border border-neutral-400 shadow-none insight-card-data" data-proportion="0.98" data-label="98% With data availability statements" data-color="bg-neutral-600">
-      <div class="flex items-center mb-4">
+    {# With Data Availability Statements #}
+    <article class="p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 relative proportional-card">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-medium text-neutral-700">With data availability statements</h3>
         {% icon_small "search"%}
-        <h2 class="text-xl font-semibold text-neutral-700 ml-3">With data availability statements</h2>
       </div>
-      <p class="text-4xl my-2 text-neutral-900">98%</p>
-      <p class="text-sm text-neutral-600">2,758 of 2,804 articles</p>
-    </div>
+      <p class="mt-6 text-3xl font-bold text-neutral-900">1,572 <span class="font-normal text-neutral-700">of 2,135</span></p>
+      <p class="mt-2 text-xs font-light text-neutral-600">articles checked</p>
+      {# Proportional bar chart showing both portions #}
+      <div class="mt-4 h-4 bg-neutral-100 rounded-full bar-chart" data-tooltip="66% of checked, 90% of total checked">
+        <div class="h-4 bg-carnation-200 rounded-full" style="width: 90%;"> {# Articles checked proportion #}
+          <div class="h-4 bg-carnation-400 rounded-full" style="width: 66%;"></div> {# Articles with DAS proportion #}
+        </div>
+      </div>
+    </article>
 
-    <!-- Card 2: With Open Data -->
-    <div class="bg-neutral-50 p-6 border border-neutral-400 shadow-none insight-card-data" data-proportion="0.34" data-label="34% With Open Data" data-color="bg-neutral-600">
-      <div class="flex items-center mb-4">
+    {# With Open Data #}
+    <article class="p-4 bg-neutral-100 rounded-lg text-center flex flex-col justify-center shadow-sm">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-medium text-neutral-700">With Open Data</h3>
         {% icon_small "database"%}
-        <h2 class="text-xl font-semibold text-neutral-700 ml-3">With Open Data</h2>
       </div>
-      <p class="text-4xl my-2 text-neutral-900">34%</p>
-      <p class="text-sm text-neutral-600">961 of 2,804 articles</p>
-    </div>
-  </div>
+      <p class="mt-6 text-4xl">
+        {% icon "slash"%}
+      </p>
+      <p class="mt-2 text-xs font-light text-neutral-700">Data unavailable</p>
+    </article>
 
-  <!-- Stacked bar for Data-related insights -->
-  <div class="relative w-full h-6 bg-neutral-300 mt-6 border border-neutral-700">
-    <div id="data-insights-bar" class="absolute left-0 h-full bg-neutral-700 transition-all duration-700 ease-out" style="width: 100%;"></div>
-    <div id="data-insights-label" class="absolute text-xs font-medium text-neutral-50 inset-y-0 left-1/2 transform -translate-x-1/2 flex items-center justify-center"></div>
+    {# With Open Code #}
+    <article class="p-4 bg-neutral-100 rounded-lg text-center flex flex-col justify-center shadow-sm">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-medium text-neutral-700">With Open Code</h3>
+        {% icon_small "code"%}
+      </div>
+      <p class="mt-6 text-4xl">
+        {% icon "slash"%}
+      </p>
+      <p class="mt-2 text-xs font-light text-neutral-700">Data unavailable</p>
+    </article>
+
   </div>
 </section>
 
 <script>
-  let isTotalBarFrozen = false;
-  let isDataBarFrozen = false;
+document.addEventListener('DOMContentLoaded', function() {
+  const bars = document.querySelectorAll('.bar-chart');
 
-  function updateBar(section, proportion, color, label, barId, labelId) {
-    const bar = document.getElementById(barId);
-    const barLabel = document.getElementById(labelId);
+  bars.forEach(bar => {
+    bar.addEventListener('mouseenter', (e) => {
+      const tooltipText = bar.dataset.tooltip;
+      const tooltip = document.createElement('div');
+      tooltip.className = 'tooltip';
+      tooltip.textContent = tooltipText;
 
-    bar.style.transition = 'width 0.7s ease-out';
-    bar.style.width = `${proportion * 100}%`;
-    bar.className = `absolute left-0 h-full ${color}`;
-    barLabel.innerHTML = label;
-  }
+      // Style the tooltip
+      Object.assign(tooltip.style, {
+        position: 'absolute',
+        top: e.clientY + 'px',
+        left: e.clientX + 'px',
+        backgroundColor: '#333',
+        color: '#fff',
+        padding: '5px 10px',
+        borderRadius: '4px',
+        fontSize: '12px',
+        whiteSpace: 'nowrap',
+        zIndex: '1000',
+      });
 
-  function resetBars(barId, labelId) {
-    const bar = document.getElementById(barId);
-    const barLabel = document.getElementById(labelId);
+      document.body.appendChild(tooltip);
 
-    bar.style.width = '100%';
-    bar.className = 'absolute left-0 h-full bg-neutral-700';
-    barLabel.innerHTML = '';
-  }
+      // Follow the mouse movement
+      bar.addEventListener('mousemove', (moveEvent) => {
+        tooltip.style.top = moveEvent.clientY + 'px';
+        tooltip.style.left = moveEvent.clientX + 'px';
+      });
 
-  // Event listeners for Total publications section
-  document.querySelectorAll('.insight-card-total').forEach(card => {
-    card.addEventListener('mouseenter', function() {
-      if (!isTotalBarFrozen) {
-        const proportion = this.getAttribute('data-proportion');
-        const label = this.getAttribute('data-label');
-        const color = this.getAttribute('data-color');
-        updateBar('total', proportion, color, label, 'total-publications-bar', 'total-publications-label');
-      }
-    });
-
-    card.addEventListener('mouseleave', function() {
-      if (!isTotalBarFrozen) {
-        resetBars('total-publications-bar', 'total-publications-label');
-      }
-    });
-
-    card.addEventListener('click', function() {
-      isTotalBarFrozen = !isTotalBarFrozen;
-      const proportion = this.getAttribute('data-proportion');
-      const label = this.getAttribute('data-label');
-      const color = this.getAttribute('data-color');
-      updateBar('total', proportion, color, label, 'total-publications-bar', 'total-publications-label');
+      // Remove the tooltip when mouse leaves
+      bar.addEventListener('mouseleave', () => {
+        tooltip.remove();
+      });
     });
   });
-
-  // Event listeners for Data-related insights section
-  document.querySelectorAll('.insight-card-data').forEach(card => {
-    card.addEventListener('mouseenter', function() {
-      if (!isDataBarFrozen) {
-        const proportion = this.getAttribute('data-proportion');
-        const label = this.getAttribute('data-label');
-        const color = this.getAttribute('data-color');
-        updateBar('data', proportion, color, label, 'data-insights-bar', 'data-insights-label');
-      }
-    });
-
-    card.addEventListener('mouseleave', function() {
-      if (!isDataBarFrozen) {
-        resetBars('data-insights-bar', 'data-insights-label');
-      }
-    });
-
-    card.addEventListener('click', function() {
-      isDataBarFrozen = !isDataBarFrozen;
-      const proportion = this.getAttribute('data-proportion');
-      const label = this.getAttribute('data-label');
-      const color = this.getAttribute('data-color');
-      updateBar('data', proportion, color, label, 'data-insights-bar', 'data-insights-label');
-    });
-  });
+});
 </script>
+
+<style>
+/* Basic styling for the bar-chart */
+.bar-chart {
+  position: relative;
+}
+
+.tooltip {
+  transition: opacity 0.2s ease-in-out;
+}
+</style>
