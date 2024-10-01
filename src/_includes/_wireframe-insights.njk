@@ -4,7 +4,7 @@
   <h2 class="text-2xl font-semibold mb-6 text-neutral-800">Insights</h2>
 
   <div class="grid gap-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-    
+
     {# Total Publications #}
     <article class="p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 proportional-card">
       <div class="flex items-center justify-between">
@@ -12,7 +12,7 @@
         {% icon_small "file-text"%}
       </div>
       <p class="mt-6 text-4xl font-bold text-neutral-900">2,402</p>
-      <p class="mt-2 text-xs font-light text-neutral-600">articles</p>
+      <p class="mt-2 text-xs text-neutral-600">articles</p>
     </article>
 
     {# Free-to-read #}
@@ -22,7 +22,7 @@
         {% icon_small "gift"%}
       </div>
       <p class="mt-6 text-3xl font-bold text-neutral-900">2,165 <span class="font-normal text-neutral-500">of 2,402</span></p>
-      <p class="mt-2 text-xs font-light text-neutral-600">articles</p>
+      <p class="mt-2 text-xs text-neutral-600">articles</p>
       {# Proportional bar chart #}
       <div class="mt-4 h-4 bg-carnation-100 rounded-full bar-chart" data-tooltip="90% of total">
         <div class="h-4 bg-carnation-400 rounded-full" style="width: 90%;"></div>
@@ -36,7 +36,7 @@
         {% icon_small "check-circle"%}
       </div>
       <p class="mt-6 text-3xl font-bold text-neutral-900">1,986 <span class="font-normal text-neutral-500">of 2,402</span></p>
-      <p class="mt-2 text-xs font-light text-neutral-600">articles covered by policy</p>
+      <p class="mt-2 text-xs text-neutral-600">articles covered by policy</p>
       {# Proportional bar chart #}
       <div class="mt-4 h-4 bg-carnation-100 rounded-full bar-chart" data-tooltip="83% of total">
         <div class="h-4 bg-carnation-400 rounded-full" style="width: 83%;"></div>
@@ -49,12 +49,19 @@
         <h3 class="text-sm font-medium text-neutral-700">With data availability statements</h3>
         {% icon_small "search"%}
       </div>
-      <p class="mt-6 text-3xl font-bold text-neutral-900">1,572 <span class="font-normal text-neutral-500">of 2,135</span></p>
-      <p class="mt-2 text-xs font-light text-neutral-600">articles checked</p>
+      <p class="mt-6 text-3xl font-bold text-neutral-900">
+        1,572 <span class="font-normal text-neutral-500">of 2,135</span>
+      </p>
+
+      <p class="mt-2 text-xs text-neutral-600">
+        <span class="text-carnation-500 text-xs">74%</span> of articles checked
+      </p>
       {# Proportional bar chart showing both portions #}
       <div class="mt-4 h-4 bg-carnation-100 rounded-full bar-chart" data-tooltip="66% of checked, 90% of total checked">
-        <div class="h-4 bg-carnation-200 rounded-full" style="width: 90%;"> {# Articles checked proportion #}
-          <div class="h-4 bg-carnation-400 rounded-full" style="width: 66%;"></div> {# Articles with DAS proportion #}
+        <div class="h-4 bg-carnation-200 rounded-full" style="width: 90%;">
+          {# Articles checked proportion #}
+          <div class="h-4 bg-carnation-400 rounded-full" style="width: 66%;"></div>
+          {# Articles with DAS proportion #}
         </div>
       </div>
     </article>
@@ -68,7 +75,7 @@
       <p class="mt-6 text-4xl">
         {% icon "slash"%}
       </p>
-      <p class="mt-2 text-xs font-light text-neutral-700">Data unavailable</p>
+      <p class="mt-2 text-xs text-neutral-700">Data unavailable</p>
     </article>
 
     {# With Open Code #}
@@ -80,61 +87,63 @@
       <p class="mt-6 text-4xl">
         {% icon "slash"%}
       </p>
-      <p class="mt-2 text-xs font-light text-neutral-700">Data unavailable</p>
+      <p class="mt-2 text-xs text-neutral-700">Data unavailable</p>
     </article>
 
   </div>
 </section>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  const bars = document.querySelectorAll('.bar-chart');
+  document.addEventListener('DOMContentLoaded', function () {
+    const bars = document.querySelectorAll('.bar-chart');
 
-  bars.forEach(bar => {
-    bar.addEventListener('mouseenter', (e) => {
-      const tooltipText = bar.dataset.tooltip;
-      const tooltip = document.createElement('div');
-      tooltip.className = 'tooltip';
-      tooltip.textContent = tooltipText;
+    bars.forEach(bar => {
+      bar.addEventListener('mouseenter', (e) => {
+        const tooltipText = bar.dataset.tooltip;
+        const tooltip = document.createElement('div');
+        tooltip.className = 'tooltip';
+        tooltip.textContent = tooltipText;
 
-      // Style the tooltip
-      Object.assign(tooltip.style, {
-        position: 'absolute',
-        top: e.clientY + 'px',
-        left: e.clientX + 'px',
-        backgroundColor: '#333',
-        color: '#fff',
-        padding: '5px 10px',
-        borderRadius: '4px',
-        fontSize: '12px',
-        whiteSpace: 'nowrap',
-        zIndex: '1000',
-      });
+        // Style the tooltip
+        Object.assign(tooltip.style, {
+          position: 'absolute',
+          top: e.clientY + 'px',
+          left: e.clientX + 'px',
+          backgroundColor: '#333',
+          color: '#fff',
+          padding: '5px 10px',
+          borderRadius: '4px',
+          fontSize: '12px',
+          whiteSpace: 'nowrap',
+          zIndex: '1000'
+        });
 
-      document.body.appendChild(tooltip);
+        document
+          .body
+          .appendChild(tooltip);
 
-      // Follow the mouse movement
-      bar.addEventListener('mousemove', (moveEvent) => {
-        tooltip.style.top = moveEvent.clientY + 'px';
-        tooltip.style.left = moveEvent.clientX + 'px';
-      });
+        // Follow the mouse movement
+        bar.addEventListener('mousemove', (moveEvent) => {
+          tooltip.style.top = moveEvent.clientY + 'px';
+          tooltip.style.left = moveEvent.clientX + 'px';
+        });
 
-      // Remove the tooltip when mouse leaves
-      bar.addEventListener('mouseleave', () => {
-        tooltip.remove();
+        // Remove the tooltip when mouse leaves
+        bar.addEventListener('mouseleave', () => {
+          tooltip.remove();
+        });
       });
     });
   });
-});
 </script>
 
 <style>
-/* Basic styling for the bar-chart */
-.bar-chart {
-  position: relative;
-}
+  /* Basic styling for the bar-chart */
+  .bar-chart {
+    position: relative;
+  }
 
-.tooltip {
-  transition: opacity 0.2s ease-in-out;
-}
+  .tooltip {
+    transition: opacity 0.2s ease-in-out;
+  }
 </style>
