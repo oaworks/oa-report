@@ -36,23 +36,8 @@
       </footer>
     </article>
 
-    {# OA Policy-Compliant #}
-    <article class="p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 proportional-card flex flex-col">
-      <header class="flex items-start justify-between min-h-[50px]">
-        <h3 class="text-sm font-medium text-neutral-700">OA policy-compliant</h3>
-        {% icon_small "check-circle"%}
-      </header>
-      <div class="flex-grow flex flex-col justify-start">
-        <p class="mt-6 text-3xl font-bold text-neutral-900">1,986 <span class="font-normal text-neutral-500">of 2,402</span></p>
-        <p class="mt-2 text-xs text-neutral-600">
-          <span class="text-carnation-600 text-xs">83%</span> of articles covered by policy</p>
-      </div>
-      <footer class="mt-4 h-4 bg-carnation-100 rounded-full bar-chart w-full">
-        <div class="h-4 bg-carnation-400 rounded-full" style="width: 83%;"></div>
-      </footer>
-    </article>
-
     {# With Data Availability Statements #}
+    {# Just before the label, below the figure #}
     <article class="p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 proportional-card flex flex-col">
       <header class="flex items-start justify-between min-h-[50px]">
         <h3 class="text-sm font-medium text-neutral-700">With data availability statements</h3>
@@ -70,6 +55,44 @@
         <div class="h-4 bg-carnation-200 rounded-full" style="width: 90%;">
           <div class="h-4 bg-carnation-400 rounded-full" style="width: 66%;"></div>
         </div>
+      </footer>
+    </article>
+
+    {# Styled as superscript after the total #}
+    <article class="p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 relative proportional-card">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-medium text-neutral-700">With data availability statements</h3>
+        {% icon_small "search"%}
+      </div>
+      <div>
+        <p class="mt-6 text-3xl font-bold text-neutral-900">
+          1,572 <span class="font-normal text-neutral-500">of 2,135</span>
+          <span class="relative text-carnation-600 text-xs align-super -top-1">74%</span>
+        </p>
+
+        <p class="mt-2 text-xs text-neutral-600">articles checked</p>
+      </div>
+      {# Proportional bar chart showing both portions #}
+      <div class="mt-4 h-4 bg-carnation-100 rounded-full bar-chart" data-tooltip="66% of checked, 90% of total checked">
+        <div class="h-4 bg-carnation-200 rounded-full" style="width: 90%;"> {# Articles checked proportion #}
+          <div class="h-4 bg-carnation-400 rounded-full" style="width: 66%;"></div> {# Articles with DAS proportion #}
+        </div>
+      </div>
+    </article>
+
+    {# OA Policy-Compliant #}
+    <article class="p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 proportional-card flex flex-col">
+      <header class="flex items-start justify-between min-h-[50px]">
+        <h3 class="text-sm font-medium text-neutral-700">OA policy-compliant</h3>
+        {% icon_small "check-circle"%}
+      </header>
+      <div class="flex-grow flex flex-col justify-start">
+        <p class="mt-6 text-3xl font-bold text-neutral-900">1,986 <span class="font-normal text-neutral-500">of 2,402</span></p>
+        <p class="mt-2 text-xs text-neutral-600">
+          <span class="text-carnation-600 text-xs">83%</span> of articles covered by policy</p>
+      </div>
+      <footer class="mt-4 h-4 bg-carnation-100 rounded-full bar-chart w-full">
+        <div class="h-4 bg-carnation-400 rounded-full" style="width: 83%;"></div>
       </footer>
     </article>
 
