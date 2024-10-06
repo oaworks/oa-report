@@ -1,0 +1,89 @@
+{# Data Explore section: _wireframe-explore.njk #}
+
+<section id="data-explore" class="section scroll-mt-16">
+  <h2 class="text-2xl font-semibold mb-4 text-neutral-800">Data Exploration</h2>
+  <p class="text-sm text-neutral-600 mb-6">Explore the dataset across various categories like Articles, APCs, Preprints, and more. We’re working on adding more features.</p>
+
+  {# Filter buttons #}
+  <div class="flex flex-wrap gap-4 mb-8">
+    <button class="p-2 px-3 rounded-full bg-carnation-300 font-medium text-xs text-neutral-900 transition duration-300 ease-in-out selected" aria-pressed="true">
+      Articles <span class="bg-neutral-900 text-white ml-2 py-0.5 px-2.5 rounded-full">50</span>
+    </button>
+    <button class="p-2 px-3 rounded-full bg-neutral-100 font-medium text-xs text-neutral-800 transition duration-300 ease-in-out hover:bg-neutral-300" aria-pressed="false">
+      Articles with APCs <span class="bg-neutral-700 text-white ml-2 py-0.5 px-2.5 rounded-full">15</span>
+    </button>
+    <button class="p-2 px-3 rounded-full bg-neutral-100 font-medium text-xs text-neutral-800 transition duration-300 ease-in-out hover:bg-neutral-300" aria-pressed="false">
+      Preprints <span class="bg-neutral-700 text-white ml-2 py-0.5 px-2.5 rounded-full">8</span>
+    </button>
+    <button class="p-2 px-3 rounded-full bg-neutral-100 font-medium text-xs text-neutral-800 transition duration-300 ease-in-out hover:bg-neutral-300" aria-pressed="false">
+      Grants <span class="bg-neutral-700 text-white ml-2 py-0.5 px-2.5 rounded-full">12</span>
+    </button>
+  </div>
+
+  <div class="mb-8">
+    <div class="flex justify-between items-start mb-4">
+      <header class="mr-4">
+        <h3 class="text-lg font-semibold text-neutral-800">Articles</h3>
+        <p class="text-sm text-neutral-600 mt-2">
+          Explore all published articles and filter by categories like APCs, preprints, and more.
+        </p>
+      </header>
+    </div>
+  </div>
+
+  <div class="mb-8 overflow-x-auto">
+    <table class="min-w-full text-sm text-left text-neutral-800 border-collapse">
+      <thead class="bg-neutral-800 text-white">
+        <tr>
+          <th class="px-6 py-3">Date</th>
+          <th class="px-6 py-3">Publication</th>
+          <th class="px-6 py-3">Journal</th>
+          <th class="px-6 py-3">Author</th>
+          <th class="px-6 py-3">APC</th>
+          <th class="px-6 py-3">Open Access</th>
+        </tr>
+      </thead>
+      <tbody class="text-neutral-800">
+        <tr class="bg-white hover:bg-neutral-50 transition-all border-t border-neutral-400">
+          <td class="px-6 py-4">15 Jul 2024</td>
+          <td class="px-6 py-4">Monosaccharide Effects on Gut Microbiome</td>
+          <td class="px-6 py-4">Nature Microbiology</td>
+          <td class="px-6 py-4">Dr. Smith</td>
+          <td class="px-6 py-4">£1,500</td>
+          <td class="px-6 py-4">Yes</td>
+        </tr>
+        <tr class="bg-white hover:bg-neutral-50 transition-all border-t border-neutral-400">
+          <td class="px-6 py-4">22 Aug 2024</td>
+          <td class="px-6 py-4">Protein Structure Impact on Cancer Therapy</td>
+          <td class="px-6 py-4">Cell Biology</td>
+          <td class="px-6 py-4">Dr. Taylor</td>
+          <td class="px-6 py-4">£2,000</td>
+          <td class="px-6 py-4">No</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  {# CSV download form #}
+  <div class="flex flex-col items-start">
+    <h2 class="mb-2 text-sm font-semibold uppercase">Get this dataset in CSV</h2>
+    <p class="text-sm text-neutral-600 mb-4">
+      Download the list of 
+      <span class="font-medium">articles</span> for 
+      <span class="font-medium">1 Jan 2024 — 5 Oct 2024</span>.
+    </p>
+
+    <div class="flex items-center">
+      <form id="form_email_articles" onsubmit="return window.getExportLink()" class="flex">
+        <label for="email" class="sr-only">Email address</label>
+        <div class="relative flex items-center">
+          <div class="absolute left-2">
+            {% icon_small "mail" %}
+          </div>
+          <input type="email" id="email-email_articles" class="w-full pl-10 py-2 text-sm border border-neutral-300 focus:ring-carnation-300 focus:border-carnation-500" placeholder="you@example.com" required style="border-radius: 0;">
+        </div>
+        <button type="submit" class="px-4 py-2 text-sm font-medium bg-neutral-800 text-white hover:bg-neutral-600" style="border-radius: 0;">Get CSV</button>
+      </form>
+    </div>
+  </div>
+</section>
