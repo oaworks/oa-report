@@ -25,9 +25,42 @@
       <header class="mr-4">
         <h3 class="text-lg font-semibold text-neutral-800">Articles</h3>
         <p class="text-sm text-neutral-600 mt-2">
-          Explore all published articles and filter by categories like APCs, preprints, and more.
+          This table is a preview of the <strong class="explore_type lowercase">Articles</strong> records sorted by <strong class="explore_sort">published date</strong>.
         </p>
       </header>
+    </div>
+    <div class="gap-3 md:gap-12 flex justify-between">
+      <form class="w-auto">
+        <fieldset id="explore_records_shown_field">
+          <legend class="mb-4 text-xs font-semibold uppercase"><span id="explore_articles_records_shown_help" class="tooltip" role="tooltip" tabindex="0" data-tippy-theme="tooltip-pink" data-tippy-placement="right" data-tippy-content="You can view up to 500 records here. To see all of them, use the <em>Get this dataset in CSV</em> form below." aria-expanded="false" style="display: block;">Records shown </span><span id="explore_terms_records_shown_help" class="tooltip" role="tooltip" tabindex="0" data-tippy-theme="tooltip-pink" data-tippy-placement="right" data-tippy-content="You can view up to 500 records here." aria-expanded="false" style="display: none;">Records shown</span></legend>
+          <div class="bg-white hover:bg-carnation-100 focus:outline-none border border-neutral-300 p-2 flex items-center space-x-3 font-medium text-sm w-full text-left relative">
+            {% icon_small "list" %}
+            <select id="year-select" aria-label="Select a year" class="appearance-none bg-transparent focus:outline-none w-full pr-6">
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+              <option value="500">500</option>
+            </select>
+            <!-- Custom caret for the dropdown -->
+            <div class="absolute inset-y-0 right-2 flex items-center pointer-events-none">
+              {% icon_small "chevron-down" %}
+            </div>
+          </div>
+        </fieldset>
+      </form>
+      <form class="w-auto">
+        <fieldset id="explore_filter_field">
+          <legend class="mb-4 text-xs font-semibold uppercase">Filter by</legend>
+          <div class="flex flex-wrap items-center" id="explore_filters">
+            <div class="flex items-center mr-3 md:mr-6 mb-3" aria-expanded="false" aria-controls="is_paper_info" aria-labelledby="is_paper_info"><input type="radio" id="filter_is_paper" class="mr-1" name="filter_by" value="is_paper"><label for="filter_is_paper" class="text-xs md:text-base cursor-pointer flex items-center whitespace-nowrap"><span>All articles</span></label></div>
+            <div class="flex items-center mr-3 md:mr-6 mb-3" aria-expanded="false" aria-controls="is_authored_info" aria-labelledby="is_authored_info"><input type="radio" id="filter_is_authored" class="mr-1" name="filter_by" value="is_authored"><label for="filter_is_authored" class="text-xs md:text-base cursor-pointer flex items-center whitespace-nowrap"><span>Authored</span></label></div>
+            <div class="flex items-center mr-3 md:mr-6 mb-3" aria-expanded="false" aria-controls="is_original_research_info" aria-labelledby="is_original_research_info"><input type="radio" id="filter_is_original_research" class="mr-1" name="filter_by" value="is_original_research"><label for="filter_is_original_research" class="text-xs md:text-base cursor-pointer flex items-center whitespace-nowrap"><span>Original research</span></label></div>
+            <div class="flex items-center mr-3 md:mr-6 mb-3" aria-expanded="false" aria-controls="is_authored_and_is_original_research_info" aria-labelledby="is_authored_and_is_original_research_info"><input type="radio" id="filter_is_authored_and_is_original_research" class="mr-1" name="filter_by" value="is_authored_and_is_original_research"><label for="filter_is_authored_and_is_original_research" class="text-xs md:text-base cursor-pointer flex items-center whitespace-nowrap"><span>Authored original research</span></label></div>
+          </div>
+        </fieldset>
+      </form>
     </div>
   </div>
 
