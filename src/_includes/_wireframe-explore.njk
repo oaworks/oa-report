@@ -92,7 +92,8 @@
     </p>
   </header>
 
-  <div class="mb-8">
+  {# Record controls #}
+  <div class="mb-4">
     <div class="gap-3 md:gap-12 flex justify-between">
       <form class="w-auto">
         <fieldset id="explore_records_shown_field">
@@ -128,37 +129,45 @@
     </div>
   </div>
 
-  <div class="mb-8 overflow-x-auto">
-    <table class="min-w-full text-sm text-left text-neutral-800 border-collapse">
-      <thead class="bg-neutral-800 text-white">
-        <tr>
-          <th class="px-6 py-3">Date</th>
-          <th class="px-6 py-3">Publication</th>
-          <th class="px-6 py-3">Journal</th>
-          <th class="px-6 py-3">Author</th>
-          <th class="px-6 py-3">APC</th>
-          <th class="px-6 py-3">Open Access</th>
-        </tr>
-      </thead>
-      <tbody class="text-neutral-800">
-        <tr class="bg-white hover:bg-neutral-50 transition-all border-t border-neutral-400">
-          <td class="px-6 py-4">15 Jul 2024</td>
-          <td class="px-6 py-4">Monosaccharide Effects on Gut Microbiome</td>
-          <td class="px-6 py-4">Nature Microbiology</td>
-          <td class="px-6 py-4">Dr. Smith</td>
-          <td class="px-6 py-4">£1,500</td>
-          <td class="px-6 py-4">Yes</td>
-        </tr>
-        <tr class="bg-white hover:bg-neutral-50 transition-all border-t border-neutral-400">
-          <td class="px-6 py-4">22 Aug 2024</td>
-          <td class="px-6 py-4">Protein Structure Impact on Cancer Therapy</td>
-          <td class="px-6 py-4">Cell Biology</td>
-          <td class="px-6 py-4">Dr. Taylor</td>
-          <td class="px-6 py-4">£2,000</td>
-          <td class="px-6 py-4">No</td>
-        </tr>
-      </tbody>
-    </table>
+  {# Data table #}
+  <div class="mb-8 flow-root">
+    <div class="overflow-x-auto">
+      <div class="inline-block min-w-full py-1 align-middle">
+        <div class="overflow-hidden shadow sm:rounded-md" style="max-height: 500px; overflow-y: auto;">
+          <table class="min-w-full divide-y divide-neutral-200">
+            <thead class="bg-neutral-800 text-white text-xs">
+              <tr>
+                {% for column in ['Date', 'Publication', 'Journal', 'Author', 'APC', 'Open Access'] %}
+                <th scope="col" class="sticky top-0 z-20 border-b border-neutral-200 p-3 text-left font-semibold backdrop-blur bg-neutral-800" role="columnheader">
+                  <span>{{ column }}</span>
+                </th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-neutral-100 bg-white text-xs">
+              {% for i in range(10) %}
+              <tr class="even:bg-neutral-50 hover:bg-neutral-100 transition duration-200">
+                <td class="whitespace-nowrap p-3 text-neutral-700" role="cell">15 Jul 2024</td>
+                <td class="whitespace-nowrap p-3 text-neutral-900" role="cell">Monosaccharide Effects on Gut Microbiome</td>
+                <td class="whitespace-nowrap p-3 text-neutral-700" role="cell">Nature Microbiology</td>
+                <td class="whitespace-nowrap p-3 text-neutral-700" role="cell">Dr. Smith</td>
+                <td class="whitespace-nowrap p-3 text-neutral-700" role="cell">£1,500</td>
+                <td class="whitespace-nowrap p-3 text-neutral-700" role="cell">Yes</td>
+              </tr>
+              <tr class="even:bg-neutral-50 hover:bg-neutral-100 transition duration-200">
+                <td class="whitespace-nowrap p-3 text-neutral-700" role="cell">22 Aug 2024</td>
+                <td class="whitespace-nowrap p-3 text-neutral-900" role="cell">Protein Structure Impact on Cancer Therapy</td>
+                <td class="whitespace-nowrap p-3 text-neutral-700" role="cell">Cell Biology</td>
+                <td class="whitespace-nowrap p-3 text-neutral-700" role="cell">Dr. Taylor</td>
+                <td class="whitespace-nowrap p-3 text-neutral-700" role="cell">£2,000</td>
+                <td class="whitespace-nowrap p-3 text-neutral-700" role="cell">No</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
 
   {# CSV download form #}
