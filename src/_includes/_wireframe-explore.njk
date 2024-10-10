@@ -2,26 +2,9 @@
 
 <section id="analysis" class="section scroll-mt-16">
   <header class="border-b border-neutral-200 pb-4 mb-4">
-    <h1 class="text-base font-semibold leading-6 text-neutral-900">Analysis</h1>
-    <p class="mt-2 max-w-4xl text-sm leading-6 text-neutral-500">Explore the dataset across various categories like Articles, APCs, Preprints, and more. The <em>Analysis</em> section is in beta. We’re working on adding more features. If you have any feedback, please <a href='mailto:joe@oa.works?subject=OA.Report feedback' class='underline underline-offset-2 decoration-1'>get in touch by email</a>.</p>
+    <h1 class="text-2xl font-semibold leading-6 text-neutral-900">Analysis</h1>
+    <p class="mt-2 max-w-4xl text-sm leading-6 text-neutral-600">Explore the dataset across various categories like Articles, APCs, Preprints, and more. The <em>Analysis</em> section is in beta. We’re working on adding more features. If you have any feedback, please <a href='mailto:joe@oa.works?subject=OA.Report feedback' class='underline underline-offset-2 decoration-1'>get in touch by email</a>.</p>
   </header>
-
-  {# Tabs: Analysis types #}
-  {# Background, Pills and Rounded Borders  #}
-  <nav class="flex flex-wrap gap-2 bg-neutral-100 p-2 rounded-lg shadow-sm mb-6 text-xs" aria-label="Tabs">
-    <button class="flex items-center gap-2 px-4 py-2 bg-white text-carnation-600 font-semibold rounded-lg shadow-sm transition duration-300 ease-in-out selected" aria-pressed="true" aria-current="page">
-      Articles <span class="py-0.5 px-2 bg-carnation-600 text-carnation-100 rounded-full">50</span>
-    </button>
-    <button class="flex items-center gap-2 px-4 py-2 bg-neutral-100 text-neutral-700 rounded-lg hover:bg-white hover:shadow-sm transition duration-300 ease-in-out" aria-pressed="false">
-      Articles with APCs <span class="py-0.5 px-2 bg-neutral-200 text-neutral-800 rounded-full">15</span>
-    </button>
-    <button class="flex items-center gap-2 px-4 py-2 bg-neutral-100 text-neutral-700 rounded-lg hover:bg-white hover:shadow-sm transition duration-300 ease-in-out" aria-pressed="false">
-      Preprints <span class="py-0.5 px-2 bg-neutral-200 text-neutral-800 rounded-full">8</span>
-    </button>
-    <button class="flex items-center gap-2 px-4 py-2 bg-neutral-100 text-neutral-700 rounded-lg hover:bg-white hover:shadow-sm transition duration-300 ease-in-out" aria-pressed="false">
-      Grants <span class="py-0.5 px-2 bg-neutral-200 text-neutral-800 rounded-full">12</span>
-    </button>
-  </nav>
 
   {# Tabs: Analysis types #}
   {# Pills and Full Rounded Borders #}
@@ -41,8 +24,25 @@
   </nav>
 
   {# Tabs: Analysis types #}
+  {# Background, Pills and Rounded Borders  #}
+  <nav class="flex flex-wrap gap-2 bg-neutral-100 p-2 rounded-lg shadow-sm mb-6 text-xs" aria-label="Tabs">
+    <button class="flex items-center gap-2 px-4 py-2 bg-white text-carnation-600 font-semibold rounded-lg shadow-sm transition duration-300 ease-in-out selected" aria-pressed="true" aria-current="page">
+      Articles <span class="py-0.5 px-2 bg-carnation-600 text-carnation-100 rounded-full">50</span>
+    </button>
+    <button class="flex items-center gap-2 px-4 py-2 bg-neutral-100 text-neutral-700 rounded-lg hover:bg-white hover:shadow-sm transition duration-300 ease-in-out" aria-pressed="false">
+      Articles with APCs <span class="py-0.5 px-2 bg-neutral-200 text-neutral-800 rounded-full">15</span>
+    </button>
+    <button class="flex items-center gap-2 px-4 py-2 bg-neutral-100 text-neutral-700 rounded-lg hover:bg-white hover:shadow-sm transition duration-300 ease-in-out" aria-pressed="false">
+      Preprints <span class="py-0.5 px-2 bg-neutral-200 text-neutral-800 rounded-full">8</span>
+    </button>
+    <button class="flex items-center gap-2 px-4 py-2 bg-neutral-100 text-neutral-700 rounded-lg hover:bg-white hover:shadow-sm transition duration-300 ease-in-out" aria-pressed="false">
+      Grants <span class="py-0.5 px-2 bg-neutral-200 text-neutral-800 rounded-full">12</span>
+    </button>
+  </nav>
+
+  {# Tabs: Analysis types #}
   {# No Pills with Number Badges #}
-  <nav class="flex space-x-4 mb-6" aria-label="Tabs">
+  <nav class="flex flex-wrap space-x-4 mb-6" aria-label="Tabs">
     <button class="rounded-md bg-carnation-100 px-3 py-2 text-sm font-semibold text-carnation-600" aria-pressed="true" aria-current="page">
       Articles
       <span class="ml-3 rounded-full bg-carnation-300 px-2.5 py-0.5 text-xs font-medium text-neutral-900">50</span>
@@ -64,7 +64,7 @@
   {# Tabs: Analysis types #}
   {# Underline and Number Badges #}
   <div class="border-b border-neutral-200 mb-6">
-    <nav class="flex flex-wrap space-x-8" aria-label="Tabs">
+    <nav class="flex flex-wrap space-x-8 text-xs" aria-label="Tabs">
       <button class="border-b-2 border-carnation-500 px-1 py-3 text-sm font-medium text-carnation-600" aria-pressed="true" aria-current="page">
         Articles
         <span class="ml-3 rounded-full bg-carnation-700 px-2.5 py-0.5 text-xs font-medium text-neutral-100">50</span>
@@ -83,6 +83,7 @@
       </button>
     </nav>
   </div>
+
   
   <div class="mb-8">
     <div class="flex justify-between items-start mb-4">

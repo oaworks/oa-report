@@ -1,37 +1,36 @@
-{# Data Explore section: _wireframe-explore.njk #}
+{# Actions section: _wireframe-actions.njk #}
 
-<section id="data-explore" class="section scroll-mt-16">
-  <h2 class="text-2xl font-semibold mb-4 text-neutral-800">Data Exploration</h2>
-  <p class="text-sm text-neutral-600 mb-6">Explore the dataset across various categories like Articles, APCs, Preprints, and more. We’re working on adding more features.</p>
+<section id="actions" class="section scroll-mt-16">
+  <h2 class="text-2xl font-semibold mb-4 text-neutral-800">Actions</h2>
+  <p class="text-sm text-neutral-600 mb-6">Actions empower you to take control of your published output and ensure compliance with your Open Access policy.</p>
 
-  {# Tabs: Action types #}
+  {# Action filter btns #}
   <div class="flex flex-wrap gap-4 mb-8">
     <button class="p-2 px-3 rounded-full bg-carnation-300 font-medium text-xs text-neutral-900 transition duration-300 ease-in-out selected" aria-pressed="true">
-      Articles <span class="bg-neutral-900 text-white ml-2 py-0.5 px-2.5 rounded-full">50</span>
+      Deposit publisher PDFs <span class="bg-neutral-900 text-white ml-2 py-0.5 px-2.5 rounded-full">2</span>
     </button>
     <button class="p-2 px-3 rounded-full bg-neutral-100 font-medium text-xs text-neutral-800 transition duration-300 ease-in-out hover:bg-neutral-300" aria-pressed="false">
-      Articles with APCs <span class="bg-neutral-700 text-white ml-2 py-0.5 px-2.5 rounded-full">15</span>
+      Deposit accepted manuscripts <span class="bg-neutral-700 text-white ml-2 py-0.5 px-2.5 rounded-full">52</span>
     </button>
     <button class="p-2 px-3 rounded-full bg-neutral-100 font-medium text-xs text-neutral-800 transition duration-300 ease-in-out hover:bg-neutral-300" aria-pressed="false">
-      Preprints <span class="bg-neutral-700 text-white ml-2 py-0.5 px-2.5 rounded-full">8</span>
+      Correct publisher errors <span class="bg-neutral-700 text-white ml-2 py-0.5 px-2.5 rounded-full">5</span>
     </button>
     <button class="p-2 px-3 rounded-full bg-neutral-100 font-medium text-xs text-neutral-800 transition duration-300 ease-in-out hover:bg-neutral-300" aria-pressed="false">
-      Grants <span class="bg-neutral-700 text-white ml-2 py-0.5 px-2.5 rounded-full">12</span>
+      Escalate unanswered requests <span class="bg-neutral-700 text-white ml-2 py-0.5 px-2.5 rounded-full">12</span>
     </button>
   </div>
 
   <div class="mb-8">
     <div class="flex justify-between items-start mb-4">
       <header class="mr-4">
-        <h3 class="text-lg font-semibold text-neutral-800">Articles</h3>
+        <h3 class="text-lg font-semibold text-neutral-800">Deposit publisher PDFs</h3>
         <p class="text-sm text-neutral-600 mt-2">
-          Explore all published articles and filter by categories like APCs, preprints, and more.
+          Send emails to authors requesting they make their work open access by depositing publisher PDFs (Version of Record).
         </p>
       </header>
     </div>
   </div>
 
-  {# Table content #}
   <div class="mb-8 overflow-x-auto">
     <table class="min-w-full text-sm text-left text-neutral-800 border-collapse">
       <thead class="bg-neutral-800 text-white">
@@ -40,48 +39,58 @@
           <th class="px-6 py-3">Publication</th>
           <th class="px-6 py-3">Journal</th>
           <th class="px-6 py-3">Author</th>
-          <th class="px-6 py-3">APC</th>
-          <th class="px-6 py-3">Open Access</th>
+          <th class="px-6 py-3">Actions</th>
         </tr>
       </thead>
       <tbody class="text-neutral-800">
         <tr class="bg-white hover:bg-neutral-50 transition-all border-t border-neutral-400">
           <td class="px-6 py-4">15 Jul 2024</td>
-          <td class="px-6 py-4">Monosaccharide Effects on Gut Microbiome</td>
-          <td class="px-6 py-4">Nature Microbiology</td>
-          <td class="px-6 py-4">Dr. Smith</td>
-          <td class="px-6 py-4">£1,500</td>
-          <td class="px-6 py-4">Yes</td>
+          <td class="px-6 py-4">Dietary fiber monosaccharide content alters gut microbiome composition</td>
+          <td class="px-6 py-4">Applied and Environmental Microbiology</td>
+          <td class="px-6 py-4">Dr. Mills</td>
+          <td class="px-6 py-4">
+            <button class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200">
+              <span class="sr-only">Send email</span>
+              {% icon_small "mail" %}
+            </button>
+          </td>
         </tr>
         <tr class="bg-white hover:bg-neutral-50 transition-all border-t border-neutral-400">
           <td class="px-6 py-4">22 Aug 2024</td>
-          <td class="px-6 py-4">Protein Structure Impact on Cancer Therapy</td>
-          <td class="px-6 py-4">Cell Biology</td>
-          <td class="px-6 py-4">Dr. Taylor</td>
-          <td class="px-6 py-4">£2,000</td>
-          <td class="px-6 py-4">No</td>
+          <td class="px-6 py-4">Azithromycin to Reduce Mortality — An Adaptive Cluster-Randomized Trial</td>
+          <td class="px-6 py-4">New England Journal of Medicine</td>
+          <td class="px-6 py-4">Dr. Lietman</td>
+          <td class="px-6 py-4">
+            <button class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200">
+              <span class="sr-only">Send email</span>
+              {% icon_small "mail" %}
+            </button>
+          </td>
         </tr>
       </tbody>
     </table>
   </div>
-
-  {# CSV download form #}
+  
+  {# CSV download form #} 
   <div class="flex flex-col items-start">
     <h2 class="mb-2 text-sm font-semibold uppercase">Get this dataset in CSV</h2>
     <p class="text-sm text-neutral-600 mb-4">
       Download the list of 
-      <span class="font-medium">articles</span> for 
-      <span class="font-medium">1 Jan 2024 — 5 Oct 2024</span>.
+      <span class="font-medium lowercase strategy_type">actions</span> for
+      <span class="font-medium">
+        <span class="report_readable_start_date">1 Jan 2024</span> — 
+        <span class="report_readable_end_date">5 Oct 2024</span>
+      </span>
     </p>
 
     <div class="flex items-center">
-      <form id="form_email_articles" onsubmit="return window.getExportLink()" class="flex">
+      <form id="form_email_author_vor" onsubmit="return window.callGetStrategyExportLink('email_author_vor')" class="flex">
         <label for="email" class="sr-only">Email address</label>
         <div class="relative flex items-center">
           <div class="absolute left-2">
             {% icon_small "mail" %}
           </div>
-          <input type="email" id="email-email_articles" class="w-full pl-10 py-2 text-sm border border-neutral-300 focus:ring-carnation-300 focus:border-carnation-500" placeholder="you@example.com" required style="border-radius: 0;">
+          <input type="email" id="email-email_author_vor" class="w-full pl-10 py-2 text-sm border border-neutral-300 focus:ring-carnation-300 focus:border-carnation-500" placeholder="you@example.com" required style="border-radius: 0;">
         </div>
         <button type="submit" class="px-4 py-2 text-sm font-medium bg-neutral-800 text-white hover:bg-neutral-600" style="border-radius: 0;">Get CSV</button>
       </form>
