@@ -1,23 +1,87 @@
 {# Actions section: _wireframe-actions.njk #}
 
 <section id="actions" class="section scroll-mt-16">
-  <h2 class="text-2xl font-semibold mb-4 text-neutral-800">Actions</h2>
-  <p class="text-sm text-neutral-600 mb-6">Actions empower you to take control of your published output and ensure compliance with your Open Access policy.</p>
+  <header class="border-b border-neutral-200 pb-4 mb-4">
+    <h1 class="text-2xl font-semibold leading-6 text-neutral-900">Actions</h1>
+    <p class="mt-2 max-w-4xl text-sm leading-6 text-neutral-600">Actions empower you to take control of your published output and ensure compliance with your Open Access policy.</p>
+  </header>
 
-  {# Action filter btns #}
-  <div class="flex flex-wrap gap-4 mb-8">
-    <button class="p-2 px-3 rounded-full bg-carnation-300 font-medium text-xs text-neutral-900 transition duration-300 ease-in-out selected" aria-pressed="true">
-      Deposit publisher PDFs <span class="bg-neutral-900 text-white ml-2 py-0.5 px-2.5 rounded-full">2</span>
+  {# Tabs: Action types #}
+  {# Pills and Full Rounded Borders #}
+  <nav class="flex flex-wrap gap-2 mb-6 text-xs" aria-label="Tabs">
+    <button class="flex items-center gap-2 px-4 py-2 bg-carnation-600 text-white font-semibold rounded-full shadow-md transition duration-300 ease-in-out selected" aria-pressed="true" aria-current="page">
+      Deposit publisher PDFs <span class="py-0.5 px-2 bg-neutral-900 text-white rounded-full">2</span>
     </button>
-    <button class="p-2 px-3 rounded-full bg-neutral-100 font-medium text-xs text-neutral-800 transition duration-300 ease-in-out hover:bg-neutral-300" aria-pressed="false">
-      Deposit accepted manuscripts <span class="bg-neutral-700 text-white ml-2 py-0.5 px-2.5 rounded-full">52</span>
+    <button class="flex items-center gap-2 px-4 py-2 bg-neutral-100 text-neutral-700 font-semibold rounded-full hover:bg-neutral-200 shadow-sm transition duration-300 ease-in-out" aria-pressed="false">
+      Deposit accepted manuscripts <span class="py-0.5 px-2 bg-neutral-300 text-neutral-800 rounded-full">52</span>
     </button>
-    <button class="p-2 px-3 rounded-full bg-neutral-100 font-medium text-xs text-neutral-800 transition duration-300 ease-in-out hover:bg-neutral-300" aria-pressed="false">
-      Correct publisher errors <span class="bg-neutral-700 text-white ml-2 py-0.5 px-2.5 rounded-full">5</span>
+    <button class="flex items-center gap-2 px-4 py-2 bg-neutral-100 text-neutral-700 font-semibold rounded-full hover:bg-neutral-200 shadow-sm transition duration-300 ease-in-out" aria-pressed="false">
+      Correct publisher errors <span class="py-0.5 px-2 bg-neutral-300 text-neutral-800 rounded-full">5</span>
     </button>
-    <button class="p-2 px-3 rounded-full bg-neutral-100 font-medium text-xs text-neutral-800 transition duration-300 ease-in-out hover:bg-neutral-300" aria-pressed="false">
-      Escalate unanswered requests <span class="bg-neutral-700 text-white ml-2 py-0.5 px-2.5 rounded-full">12</span>
+    <button class="flex items-center gap-2 px-4 py-2 bg-neutral-100 text-neutral-700 font-semibold rounded-full hover:bg-neutral-200 shadow-sm transition duration-300 ease-in-out" aria-pressed="false">
+      Escalate unanswered requests <span class="py-0.5 px-2 bg-neutral-300 text-neutral-800 rounded-full">12</span>
     </button>
+  </nav>
+
+  {# Tabs: Action types #}
+  {# Background, Pills and Rounded Borders  #}
+  <nav class="flex flex-wrap gap-2 bg-neutral-100 p-2 rounded-lg shadow-sm mb-6 text-xs" aria-label="Tabs">
+    <button class="flex items-center gap-2 px-4 py-2 bg-white text-carnation-600 font-semibold rounded-lg shadow-sm transition duration-300 ease-in-out selected" aria-pressed="true" aria-current="page">
+      Deposit publisher PDFs <span class="py-0.5 px-2 bg-carnation-600 text-carnation-100 rounded-full">2</span>
+    </button>
+    <button class="flex items-center gap-2 px-4 py-2 bg-neutral-100 text-neutral-700 rounded-lg hover:bg-white hover:shadow-sm transition duration-300 ease-in-out" aria-pressed="false">
+      Deposit accepted manuscripts <span class="py-0.5 px-2 bg-neutral-200 text-neutral-800 rounded-full">52</span>
+    </button>
+    <button class="flex items-center gap-2 px-4 py-2 bg-neutral-100 text-neutral-700 rounded-lg hover:bg-white hover:shadow-sm transition duration-300 ease-in-out" aria-pressed="false">
+      Correct publisher errors <span class="py-0.5 px-2 bg-neutral-200 text-neutral-800 rounded-full">5</span>
+    </button>
+    <button class="flex items-center gap-2 px-4 py-2 bg-neutral-100 text-neutral-700 rounded-lg hover:bg-white hover:shadow-sm transition duration-300 ease-in-out" aria-pressed="false">
+      Escalate unanswered requests <span class="py-0.5 px-2 bg-neutral-200 text-neutral-800 rounded-full">12</span>
+    </button>
+  </nav>
+
+  {# Tabs: Action types #}
+  {# No Pills with Number Badges #}
+  <nav class="flex flex-wrap space-x-4 mb-6 text-xs" aria-label="Tabs">
+    <button class="rounded-md bg-carnation-100 px-3 py-2 text-sm font-semibold text-carnation-600" aria-pressed="true" aria-current="page">
+      Deposit publisher PDFs
+      <span class="ml-3 rounded-full bg-carnation-300 px-2.5 py-0.5 text-xs font-medium text-neutral-900">2</span>
+    </button>
+    <button class="rounded-md px-3 py-2 text-sm font-medium text-neutral-500 hover:text-neutral-700" aria-pressed="false">
+      Deposit accepted manuscripts
+      <span class="ml-3 rounded-full bg-neutral-200 px-2.5 py-0.5 text-xs font-medium text-neutral-800">52</span>
+    </button>
+    <button class="rounded-md px-3 py-2 text-sm font-medium text-neutral-500 hover:text-neutral-700" aria-pressed="false">
+      Correct publisher errors
+      <span class="ml-3 rounded-full bg-neutral-200 px-2.5 py-0.5 text-xs font-medium text-neutral-800">5</span>
+    </button>
+    <button class="rounded-md px-3 py-2 text-sm font-medium text-neutral-500 hover:text-neutral-700" aria-pressed="false">
+      Escalate unanswered requests
+      <span class="ml-3 rounded-full bg-neutral-200 px-2.5 py-0.5 text-xs font-medium text-neutral-800">12</span>
+    </button>
+  </nav>
+
+  {# Tabs: Action types #}
+  {# Underline and Number Badges #}
+  <div class="border-b border-neutral-200 mb-6">
+    <nav class="flex flex-wrap space-x-8 text-xs" aria-label="Tabs">
+      <button class="border-b-2 border-carnation-500 px-1 py-3 text-sm font-medium text-carnation-600" aria-pressed="true" aria-current="page">
+        Deposit publisher PDFs
+        <span class="ml-3 rounded-full bg-carnation-700 px-2.5 py-0.5 text-xs font-medium text-neutral-100">2</span>
+      </button>
+      <button class="border-b-2 border-transparent px-1 py-3 text-sm font-medium text-neutral-500 hover:border-neutral-300 hover:text-neutral-700" aria-pressed="false">
+        Deposit accepted manuscripts
+        <span class="ml-3 rounded-full bg-neutral-100 px-2.5 py-0.5 text-xs font-medium text-neutral-800">52</span>
+      </button>
+      <button class="border-b-2 border-transparent px-1 py-3 text-sm font-medium text-neutral-500 hover:border-neutral-300 hover:text-neutral-700" aria-pressed="false">
+        Correct publisher errors
+        <span class="ml-3 rounded-full bg-neutral-100 px-2.5 py-0.5 text-xs font-medium text-neutral-800">5</span>
+      </button>
+      <button class="border-b-2 border-transparent px-1 py-3 text-sm font-medium text-neutral-500 hover:border-neutral-300 hover:text-neutral-700" aria-pressed="false">
+        Escalate unanswered requests
+        <span class="ml-3 rounded-full bg-neutral-100 px-2.5 py-0.5 text-xs font-medium text-neutral-800">12</span>
+      </button>
+    </nav>
   </div>
 
   <div class="mb-8">
