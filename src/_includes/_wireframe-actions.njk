@@ -93,44 +93,50 @@
   </header>
 
   {# Data table #}
-  <div class="mb-8 overflow-x-auto">
-    <table class="min-w-full text-sm text-left text-neutral-800 border-collapse">
-      <thead class="bg-neutral-800 text-white">
-        <tr>
-          <th class="px-6 py-3">Date</th>
-          <th class="px-6 py-3">Publication</th>
-          <th class="px-6 py-3">Journal</th>
-          <th class="px-6 py-3">Author</th>
-          <th class="px-6 py-3">Actions</th>
-        </tr>
-      </thead>
-      <tbody class="text-neutral-800">
-        <tr class="bg-white hover:bg-neutral-50 transition-all border-t border-neutral-400">
-          <td class="px-6 py-4">15 Jul 2024</td>
-          <td class="px-6 py-4">Dietary fiber monosaccharide content alters gut microbiome composition</td>
-          <td class="px-6 py-4">Applied and Environmental Microbiology</td>
-          <td class="px-6 py-4">Dr. Mills</td>
-          <td class="px-6 py-4">
-            <button class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200">
-              <span class="sr-only">Send email</span>
-              {% icon_small "mail" %}
-            </button>
-          </td>
-        </tr>
-        <tr class="bg-white hover:bg-neutral-50 transition-all border-t border-neutral-400">
-          <td class="px-6 py-4">22 Aug 2024</td>
-          <td class="px-6 py-4">Azithromycin to Reduce Mortality — An Adaptive Cluster-Randomized Trial</td>
-          <td class="px-6 py-4">New England Journal of Medicine</td>
-          <td class="px-6 py-4">Dr. Lietman</td>
-          <td class="px-6 py-4">
-            <button class="inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200">
-              <span class="sr-only">Send email</span>
-              {% icon_small "mail" %}
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="mb-8 flow-root">
+    <div class="overflow-x-auto">
+      <div class="inline-block min-w-full py-1 align-middle">
+        <div class="overflow-hidden shadow sm:rounded-md" style="max-height: 500px; overflow-y: auto;">
+          <table class="min-w-full divide-y divide-neutral-200">
+            <thead class="bg-neutral-800 text-white text-xs">
+              <tr>
+                {% for column in ['Date', 'Publication', 'Journal', 'Author', 'Actions'] %}
+                <th scope="col" class="sticky top-0 z-20 border-b border-neutral-200 p-3 text-left font-semibold backdrop-blur bg-neutral-800" role="columnheader">
+                  <span>{{ column }}</span>
+                </th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-neutral-100 bg-white text-xs">
+              <tr class="even:bg-neutral-50 hover:bg-neutral-100 transition duration-200">
+                <td class="whitespace-nowrap p-3 text-neutral-700" role="cell">15 Jul 2024</td>
+                <td class="whitespace-nowrap p-3 text-neutral-900" role="cell">Dietary fiber monosaccharide content alters gut microbiome composition</td>
+                <td class="whitespace-nowrap p-3 text-neutral-700" role="cell">Applied and Environmental Microbiology</td>
+                <td class="whitespace-nowrap p-3 text-neutral-700" role="cell">Dr. Mills</td>
+                <td class="whitespace-nowrap p-3 text-neutral-700" role="cell">
+                  <button class="inline-flex items-center p-1 border border-transparent bg-carnation-500 text-white hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200">
+                    <span class="sr-only">Send email</span>
+                    {% icon_small "mail" %}
+                  </button>
+                </td>
+              </tr>
+              <tr class="even:bg-neutral-50 hover:bg-neutral-100 transition duration-200">
+                <td class="whitespace-nowrap p-3 text-neutral-700" role="cell">22 Aug 2024</td>
+                <td class="whitespace-nowrap p-3 text-neutral-900" role="cell">Azithromycin to Reduce Mortality — An Adaptive Cluster-Randomized Trial</td>
+                <td class="whitespace-nowrap p-3 text-neutral-700" role="cell">New England Journal of Medicine</td>
+                <td class="whitespace-nowrap p-3 text-neutral-700" role="cell">Dr. Lietman</td>
+                <td class="whitespace-nowrap p-3 text-neutral-700" role="cell">
+                  <button class="inline-flex items-center p-1 border border-transparent bg-carnation-500 text-white hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200">
+                    <span class="sr-only">Send email</span>
+                    {% icon_small "mail" %}
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
   
   {# CSV download form #} 
