@@ -59,7 +59,9 @@ layout: layouts/base.njk
       </div>
       <div class="md:w-1/2">
         <div class="w-32 h-auto mx-auto">
-          {% include 'svg/nature.svg' %}
+           <a href="https://www.nature.com/articles/d41586-023-00175-1" target="_blank" rel="noopener" class="block">
+            {% include 'svg/nature.svg' %}
+          </a>
         </div>
       </div>
     </div>
@@ -120,7 +122,7 @@ layout: layouts/base.njk
 <script src="https://cdn.jsdelivr.net/npm/glider-js@1/glider.min.js"></script>
 
 {# Case Studies Section #}
-<section class="bg-carnation-200 pl-8 py-24">
+<section class="bg-carnation-200 px-8 md:pl-8 md:pr-0 py-24">
   <div class="relative overflow-hidden">
     <div class="flex flex-col lg:flex-row items-center lg:items-start"> 
       
@@ -135,7 +137,7 @@ layout: layouts/base.njk
         <div class="glider-contain">
           <div class="glider">
             {% for case in cases %}
-            <div class="p-4">
+            <div class="px-4">
               <div class="relative bg-neutral-100 shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition">
                 <div class="relative w-full h-64">
                   <img src="{{ case.bg }}" alt="Background for {{ case.heading }}" class="w-full h-full object-cover filter grayscale brightness-50">
@@ -152,7 +154,7 @@ layout: layouts/base.njk
           </div>
         </div>
 
-        <div class="flex justify-center gap-4 mt-8"> <!-- Positioned below the carousel images -->
+        <div class="flex justify-center gap-4">
           <button class="glider-prev bg-white text-neutral-600 rounded-full px-4 py-2 shadow-md hover:bg-neutral-100 focus:outline-none">&larr;</button>
           <button class="glider-next bg-white text-neutral-600 rounded-full px-4 py-2 shadow-md hover:bg-neutral-100 focus:outline-none">&rarr;</button>
         </div>
@@ -206,9 +208,6 @@ layout: layouts/base.njk
 }
 .glider-prev:hover, .glider-next:hover {
   background-color: #f5f5f5;
-}
-.glider {
-  padding-bottom: 2rem; /* Ensure padding prevents overlap with arrows */
 }
 </style>
 
