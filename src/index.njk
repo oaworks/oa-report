@@ -27,10 +27,10 @@ layout: layouts/base.njk
 </section>
 
 {# Trusted By Section #}
-<section class="pt-8 pb-16 bg-neutral-900 text-white">
+<section class="pt-8 pb-24 bg-neutral-900 text-white">
   <div class="container mx-auto px-4 py-8">
     <h2 class="text-center text-lg font-semibold text-neutral-200 mb-8">Trusted by leading research funders</h2>
-    <div class="flex justify-center space-x-8">
+    <div class="grid grid-cols-3 gap-8 md:grid-cols-3 lg:grid-cols-6 justify-center items-center">
       {% for user in users %}
         {% if user.logo %}
         <p class="sr-only">{{ user.name }}</p>
@@ -46,13 +46,21 @@ layout: layouts/base.njk
 </section>
 
 {# Testimonial Section #}
-<section class="bg-carnation-100 text-neutral-900 py-16">
+<section class="bg-carnation-100 text-neutral-900 py-24">
   <div class="container mx-auto px-4 flex justify-center items-center">
-    <div class="max-w-2xl">
-      <p class="text-lg text-light mb-4">As seen in <a href="https://www.nature.com/articles/d41586-023-00175-1" target="_blank" rel="noopener">Nature:<br><span class="underline underline-offset-2 md:underline-offset-3 decoration-1">“Confused by open-access policies? These tools can help”</span></a>.</p>
-      <p class="text-2xl text-light">“The Bill & Melinda Gates Foundation in Seattle, Washington, has invested US$1.8 million to support the development of OA.Report, a tool that helps funders to track awardee compliance with foundation open-access policies. Developed by OA.Works in London, OA.Report uses text-mining techniques to match articles with the funder that supported the work, by sifting through academic papers and open-access metadata.”</p>
-      <div class="w-32 h-auto mt-4">
-        {% include 'svg/nature.svg' %}
+    <div class="w-full max-w-6xl flex flex-col md:flex-row items-center gap-12">
+      <div class="md:w-1/2">
+        <p class="text-lg text-light mb-4">
+          As seen in <a href="https://www.nature.com/articles/d41586-023-00175-1" target="_blank" rel="noopener" class="underline underline-offset-2 decoration-1">Nature:<br>“Confused by open-access policies? These tools can help”</a>.
+        </p>
+        <p class="text-2xl text-light">
+          “The Bill & Melinda Gates Foundation in Seattle, Washington, has invested US$1.8 million to support the development of OA.Report, a tool that helps funders to track awardee compliance with foundation open-access policies. Developed by OA.Works in London, OA.Report uses text-mining techniques to match articles with the funder that supported the work, by sifting through academic papers and open-access metadata.”
+        </p>
+      </div>
+      <div class="md:w-1/2">
+        <div class="w-32 h-auto mx-auto">
+          {% include 'svg/nature.svg' %}
+        </div>
       </div>
     </div>
   </div>
@@ -69,7 +77,7 @@ layout: layouts/base.njk
 </section>
 
 {# Features Section #}
-<section class="bg-white py-16">
+<section class="bg-carnation-100 py-24">
   <div class="container mx-auto px-4">
     <h2 class="text-center text-2xl text-light mb-8">
       <span class="font-semibold">OA.Report</span> translates <span class="highlight">policy to practice</span> <br>by helping funders and institutions:
@@ -93,6 +101,29 @@ layout: layouts/base.njk
       <div class="col-span-3 lg:col-span-1 lg:col-start-2">
         <h2 class="text-2xl font-bold mb-8">Sign up for updates</h2>
         {% include 'partials/signup-form.njk' %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{# Partnership Section #}
+<section class="bg-neutral-800 text-white py-24">
+  <div class="container mx-auto px-4 flex justify-center items-center">
+    <div class="w-full max-w-6xl flex flex-col md:flex-row items-center gap-12">
+      <div class="md:w-1/2">
+        <div class="w-64 h-auto mx-auto">
+          <a href="https://www.gatesfoundation.org/" target="_blank" rel="noopener" title="Go to the BMGF website">
+            {% include 'svg/bmgf.svg' %}
+          </a>
+        </div>
+      </div>
+      <div class="md:w-1/2">
+        <h2 class="text-lg text-light mb-4">
+          Our funders
+        </h2>
+        <p class="text-2xl text-light">
+          Built in partnership with the <a href="https://blog.oa.works/grant-to-bolster-oa-policies-from-bmgf/" target="_blank" rel="noopener" class="underline underline-offset-2 md:underline-offset-8 decoration-1">Bill & Melinda Gates Foundation</a> with grant support from the <a href="https://blog.oa.works/grant-from-robert-wood-johnson-foundation/" target="_blank" rel="noopener" class="underline underline-offset-2 md:underline-offset-8 decoration-1">Robert Wood Johnson Foundation</a> & <a href="https://blog.oa.works/arcadia-fund-increases-support-for-our-work/" target="_blank" rel="noopener" class="underline underline-offset-2 md:underline-offset-8 decoration-1">Arcadia</a>.
+        </p>
       </div>
     </div>
   </div>
