@@ -2,122 +2,114 @@
 layout: layouts/base.njk
 ---
 
-{%- from "system/component.njk" import component -%}
-
-<main>      
-  <section class="grid grid-cols-1 md:grid-cols-3 min-h-screen bg-carnation-100">
-    <div class="col-span-2 flex pt-8 items-center justify-center">
-      <div class="container px-12 mx-auto">
-        <h1 class="sr-only">
-          {% include 'partials/app-name.njk' %}
-        </h1>
-        <figure>
-          <p class="mb-8 text-xl md:text-3xl">{{ site.tagline|safe }}</p>
-          <a href="/img/screenshot.png" class="block mb-8 border drop-shadow-lg" target="_blank" title="See screenshot in full size">
-            {% webpImg "/img/screenshot.png", "A screenshot of the OA.Report user interface showing Open Access insights and a list of proposed strategies to open closed-access content.", 1440, 1087 %}
-          </a>
-          <figcaption class="text-base md:text-2xl">{{ site.description|safe }}</figcaption>
-        </figure>
-      </div>
-    </div>
-    <div class="col-span-1 flex flex-col text-center items-center justify-center">
-      <div class="container px-12 mx-auto">
-        <div>
-          {{ component("search-form", {
-            sr_only: false
-          }) }}
-          <div class="mt-2 text-xs md:text-sm font-medium">
-            <p class="mb-24 p-4 bg-carnation-300 ">Or view <a href="bill-and-melinda-gates-foundation/" class="underline underline-offset-1 md:underline-offset-4 decoration-1">an example OA.Report for the Gates Foundation</a></p>
-            <p><a href="#content">Scroll down to learn more <div class="block mb-4">↓</div></a></p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  
-  <div id="content">      
-    <section class="py-12 md:py-24">
-      <div class="container px-4 mx-auto">
-        <div class="grid grid-cols-5 items-center gap-6 md:gap-12">
-          <div class="col-span-1 col-start-2">
-            <a href="https://www.nature.com/articles/d41586-023-00175-1" target="_blank" rel="noopener" class="block" title="Read the article “Confused by open-access policies? These tools can help”">
-              {% include 'svg/nature.svg' %}
-            </a>
-          </div>
-          <p class="col-span-2">
-            As seen in <a href="https://www.nature.com/articles/d41586-023-00175-1" target="_blank" rel="noopener"><span class="highlight">Nature</span>: <br><span class="underline underline-offset-2 md:underline-offset-8 decoration-1">“Confused by open-access policies? These tools can help”</span></a>.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <section class="bg-neutral-900 text-white py-12 md:py-24">
-      <div class="container px-4 mx-auto">
-        <h2 class="mb-4 md:mb-8 font-bold uppercase text-xl md:text-2xl">Our users</h2>      
-        <ul class="grid grid-cols-2 md:grid-cols-3 gap-12 justify-items-center">
-          {% for user in users %}
-          {% if user.logo %}
-          <li class="col-span-1">
-            <p class="sr-only">{{ user.name }}</p>
-            <a href="{{ user.url }}" target="_blank" rel="noopener" class="block" title="Go to the {{ user.acronym }} website">
-              {% set imgFile = "../" + user.logo %}
-              {% set altText = "Logo for " + user.acronym  %}
-              {% webpImg imgFile, altText, user.width, user.height, '', true %}
-            </a>
-          </li>
-          {% endif %}
-          {% endfor %}
-        </ul>
-      </div>
-    </section>
-  
-    <section class="bg-carnation-100 pt-12 pb-6 md:py-24">
-      <div class="container px-4 mx-auto">
-        <div class="grid grid-cols-3 mb-8">
-          <div class="col-span-3 md:col-span-2">
-            <p class="text-xl md:text-2xl"><span class="font-semibold">OA.Report</span> translates <span class="highlight">policy to practice</span> by helping funders and libraries:</p>
-          </div>
-        </div>
-    
-        <ol class="grid grid-cols-1 md:grid-cols-3 gap-12">
-          {% for feature in features %}
-          <li class="col-span-1">
-            <h3 class="pt-4 mb-2 md:mb-4 border-t-2 font-bold uppercase text-xl md:text-2xl">{{ feature.heading }}</h3>
-            <p class="mb-4 text-lg md:text-3xl">{{ feature.subheading }}</p>
-            <div>
-              <div class="mb-2 md:mb-4  bg-neutral-900">{% include feature.img %}</div>
-              <p>{{ feature.p }}</p>
-            </div>
-          </li>
-          {% endfor %}
-        </ol>
-      </div>
-    </section>
-  
-    <section class="bg-carnation-100 pb-12 md:pb-24">
-      <div class="container px-4 mx-auto">
-        <h2 class="pt-4 border-t-2 mb-4 md:mb-8 font-bold uppercase text-2xl">Our funders</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 items-center gap-12">
-          <div class="col-span-1">
-            <p class="text-lg md:text-3xl">Built in partnership with the <a href="https://blog.oa.works/grant-to-bolster-oa-policies-from-bmgf/" target="_blank" rel="noopener" class="underline underline-offset-2 md:underline-offset-8 decoration-1">Bill & Melinda Gates Foundation</a> with grant support from the <a href="https://blog.oa.works/grant-from-robert-wood-johnson-foundation/" target="_blank" rel="noopener" class="underline underline-offset-2 md:underline-offset-8 decoration-1">Robert Wood Johnson Foundation</a> & <a href="https://blog.oa.works/arcadia-fund-increases-support-for-our-work/" target="_blank" rel="noopener" class="underline underline-offset-2 md:underline-offset-8 decoration-1">Arcadia</a>.</p>
-          </div>
-          <div class="col-span-1">
-            <a href="https://www.gatesfoundation.org/" target="_blank" rel="noopener" class="block" title="Go to the BMGF website">{% include 'svg/bmgf.svg' %}</a>
-          </div>
-        </div>
-      </div>
-    </section>
-  
-    <section class="bg-carnation-300 py-20 md:py-32" id="newsletter-signup">
-      <div class="container px-4 mx-auto">
-        <div class="grid grid-cols-3 gap-12">
-          <div class="col-span-3 lg:col-span-1 lg:col-start-2">
-            <h2 class="mb-2 md:mb-4 font-bold uppercase text-lg md:text-3xl">Sign up for updates</h2>
-            {% include 'partials/signup-form.njk' %}
-          </div>
-        </div>
-      </div>
-    </section>
+{# Hero Section #}
+<header class="text-center pt-12 pb-6 bg-carnation-100">
+  <div class="container mx-auto px-4">
+    <h1 class="text-5xl text-light leading-tight mb-6">
+      Unlocking your <br><span id="swapping-text" class="highlight">grantees’</span> <br>research, simply
+    </h1>
+    <p class="text-xl font-light text-neutral-600 mb-8 max-w-lg mx-auto">Find your articles, measure their openness, and take action to increase your OA policy compliance.</p>
+    <a href="https://savvycal.com/Joe/ed52a37f" data-savvycal-embed class="inline-block bg-carnation-600 text-white py-3 px-8 rounded-sm text-lg hover:bg-carnation-700 transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-carnation-300">
+      Schedule a demo →
+    </a>
   </div>
-</main>
+</header>
 
+{# Product Image Section #}
+<section class="relative bg-carnation-100 pt-16 pb-0">
+  <div class="container mx-auto px-4 text-center relative z-10">
+    <div class="relative max-w-4xl mx-auto shadow-lg rounded-lg border border-dotted border-neutral-700 overflow-hidden z-20">
+      <img src="/img/screenshot.png" alt="OA.Report Web Application Screenshot" class="mx-auto">
+    </div>
+  </div>
+  {# Dark Background extension #}
+  <div class="absolute inset-x-0 bottom-0 bg-neutral-900 h-32 z-0 -mt-16"></div>
+</section>
+
+{# Trusted By Section #}
+<section class="pt-8 pb-16 bg-neutral-900 text-white">
+  <div class="container mx-auto px-4 py-8">
+    <h2 class="text-center text-lg font-semibold text-neutral-200 mb-8">Trusted by leading research funders</h2>
+    <div class="flex justify-center space-x-8">
+      {% for user in users %}
+        {% if user.logo %}
+        <p class="sr-only">{{ user.name }}</p>
+        <a href="{{ user.url }}" target="_blank" rel="noopener" class="block h-12" title="Go to the {{ user.acronym }} website">
+          {% set imgFile = "../" + user.logo %}
+          {% set altText = "Logo for " + user.acronym  %}
+          {% webpImg imgFile, altText, user.width, user.height, '', true %}
+        </a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# Testimonial Section #}
+<section class="bg-carnation-100 text-neutral-900 py-16">
+  <div class="container mx-auto px-4 flex justify-center items-center">
+    <div class="max-w-2xl">
+      <p class="text-lg text-light mb-4">As seen in <a href="https://www.nature.com/articles/d41586-023-00175-1" target="_blank" rel="noopener">Nature:<br><span class="underline underline-offset-2 md:underline-offset-3 decoration-1">“Confused by open-access policies? These tools can help”</span></a>.</p>
+      <p class="text-2xl text-light">“The Bill & Melinda Gates Foundation in Seattle, Washington, has invested US$1.8 million to support the development of OA.Report, a tool that helps funders to track awardee compliance with foundation open-access policies. Developed by OA.Works in London, OA.Report uses text-mining techniques to match articles with the funder that supported the work, by sifting through academic papers and open-access metadata.”</p>
+      <div class="w-32 h-auto mt-4">
+        {% include 'svg/nature.svg' %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{# Schedule a Demo Section #}
+<section class="bg-carnation-500 text-white py-24">
+  <div class="container mx-auto text-center">
+    <h2 class="text-2xl font-bold mb-8">Take a free tour of OA.Report</h2>
+    <a href="https://savvycal.com/Joe/ed52a37f" data-savvycal-embed class="inline-block bg-white text-carnation-600 py-3 px-8 rounded-sm text-lg font-medium hover:bg-carnation-100 transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-carnation-300">
+      Get a demo
+    </a>
+  </div>
+</section>
+
+{# Features Section #}
+<section class="bg-white py-16">
+  <div class="container mx-auto px-4">
+    <h2 class="text-center text-2xl text-light mb-8">
+      <span class="font-semibold">OA.Report</span> translates <span class="highlight">policy to practice</span> <br>by helping funders and institutions:
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {% for feature in features %}
+        <div class="p-6 bg-neutral-900 shadow-lg text-center rounded-xl">
+          <div class="mx-auto mb-4">{% include feature.img %}</div>
+          <h3 class="text-xl font-semibold mb-2 text-white">{{ feature.heading }}</h3>
+          <p class="text-neutral-300">{{ feature.subheading }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# Sign Up Section #}
+<section class="bg-carnation-300 px-8 py-24" id="newsletter-signup">
+  <div class="container mx-auto text-center">
+    <div class="grid grid-cols-3 gap-12">
+      <div class="col-span-3 lg:col-span-1 lg:col-start-2">
+        <h2 class="text-2xl font-bold mb-8">Sign up for updates</h2>
+        {% include 'partials/signup-form.njk' %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>window.SavvyCal=window.SavvyCal||function(){(SavvyCal.q=SavvyCal.q||[]).push(arguments)};</script>
+<script async src="https://embed.savvycal.com/v1/embed.js"></script>
+<script>
+  SavvyCal('init');
+</script>
+
+<script>
+  const words = ["grantees’", "authors’", "organization’s"];
+  let index = 0;
+  const swappingText = document.getElementById("swapping-text");
+  setInterval(() => {
+    index = (index + 1) % words.length;
+    swappingText.textContent = words[index];
+  }, 1500);
+</script>

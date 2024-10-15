@@ -164,3 +164,26 @@
   );
 }
 
+/* Custom swapping text animations on homepage */
+.flip-in {
+  transition: transform 0.3s ease-out;
+  transform: rotateX(90deg);
+}
+.flip-out {
+  transition: transform 0.3s ease-in;
+  transform: rotateX(0);
+}
+
+/* Custom CSS for button hover and click animations */
+.bounce-on-hover {
+  transition: transform 0.3s ease-in-out;
+}
+.bounce-on-hover:hover {
+  transform: scale(1.05);
+}
+.click-bounce {
+  transition: transform 0.15s ease-out;
+}
+.click-bounce:active {
+  transform: scale(0.95);
+}
