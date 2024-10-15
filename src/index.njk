@@ -77,7 +77,7 @@ layout: layouts/base.njk
 </section>
 
 {# Features Section #}
-<section class="bg-carnation-100 py-24">
+<section class="bg-carnation-100 pt-24 pb-12">
   <div class="container mx-auto px-4">
     <h2 class="text-center text-2xl text-light mb-8">
       <span class="font-semibold">OA.Report</span> translates <span class="highlight">policy to practice</span> <br>by helping funders and institutions:
@@ -90,6 +90,27 @@ layout: layouts/base.njk
           <p class="text-neutral-300">{{ feature.subheading }}</p>
         </div>
       {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# Testimonial Section #2 #}
+<section class="bg-carnation-100 text-neutral-900 pt-12 pb-24">
+  <div class="container mx-auto px-4 flex justify-center items-center">
+    <div class="w-full max-w-6xl flex flex-col md:flex-row items-center gap-12">
+      <div class="md:w-1/2">
+        <div class="w-72 h-auto mx-auto">
+          <img src="img/users/ashley-farley.webp" alt="Ashley Farley" class="rounded-lg">
+        </div>
+      </div>
+      <div class="md:w-1/2">
+        <p class="text-2xl text-light mb-4">
+         “It’s important to be able to have tools to track compliance. (...) We have a strong ethos that if [research is] open access and openly licensed to reuse, that’ll further [its] impact.”
+        </p>
+        <p class="text-lg text-light">
+          — Ashley Farley<br> Program Officer of Knowledge and Research Services<br> Bill and Melinda Gates Foundation 
+        </p>
+      </div>
     </div>
   </div>
 </section>
