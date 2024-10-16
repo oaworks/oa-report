@@ -1,11 +1,5 @@
 [
   {
-    "heading": "Empowering Foundations with OA.Report",
-    "subheading": "The Bill & Melinda Gates Foundation needed a reliable tool to track open-access compliance among its grantees. OA.Report helped streamline this process by automating the identification of articles that align with the foundation’s open-access policies, leveraging metadata and text-mining techniques.",
-    "img": "img/users/bmgf.png",
-    "bg": "https://oa.works/assets/img/stories/test-tubes.jpg"
-  },
-  {
     "heading": "Increasing Public Access to Health Research",
     "subheading": "OA.Report collaborated with the Howard Hughes Medical Institute to ensure that health research outputs are freely accessible. By integrating compliance tracking and report generation, HHMI now maximizes the global impact of funded research.",
     "img": "img/users/hhmi.png",
@@ -16,5 +10,11 @@
     "subheading": "Templeton’s partnership with OA.Report has allowed them to track compliance across grantees in the humanities and social sciences, supporting the expansion of openly available academic work.",
     "img": "img/users/twcf.png",
     "bg": "https://oa.works/assets/img/stories/classroom.jpg"
+  },
+  {
+    "heading": "Empowering Foundations with OA.Report",
+    "subheading": "The Bill & Melinda Gates Foundation needed a reliable tool to track open-access compliance among its grantees. OA.Report helped streamline this process by automating the identification of articles that align with the foundation’s open-access policies, leveraging metadata and text-mining techniques.",
+    "img": "img/users/bmgf.png",
+    "bg": "https://oa.works/assets/img/stories/test-tubes.jpg"
   }
 ]
