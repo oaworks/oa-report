@@ -61,7 +61,7 @@
 /* Texting highlighting in the style of a marker */
 .highlight {
   border-radius: 0.8em 0.3em;
-  background-image: linear-gradient(to right, rgba(255, 102, 102, 0.095), rgba(255, 102, 102, 0.5) 4%, rgba(255, 102, 102, 0.25));
+  background-image: linear-gradient(to right, rgba(255, 201, 120, 0.095), rgba(255, 201, 120, 0.5) 4%, rgba(255, 201, 120, 0.25));
 }
 
 .highlight--white {

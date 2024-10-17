@@ -1,20 +1,23 @@
 [
   {
-    "heading": "Increasing Public Access to Health Research",
-    "subheading": "OA.Report collaborated with the Howard Hughes Medical Institute to ensure that health research outputs are freely accessible. By integrating compliance tracking and report generation, HHMI now maximizes the global impact of funded research.",
+    "heading": "Maximizing Public Access to Biomedical Research",
+    "subheading": "The Howard Hughes Medical Institute (HHMI) uses OA.Report to implement and measure their open-access policy, ensuring that critical health research is freely accessible. OA.Report automates compliance tracking, helping HHMI optimize the reach of its funded research.",
     "img": "img/users/hhmi.png",
-    "bg": "https://oa.works/assets/img/stories/nurse.jpg"
+    "bg": "img/case-studies/hhmi-cover.jpg",
+    "url": "https://blog.oa.works/hhmi-using-oareport-to-measure-and-improve-oa-policy-compliance/"
   },
   {
-    "heading": "Advancing Open Access in the Humanities",
-    "subheading": "Templeton’s partnership with OA.Report has allowed them to track compliance across grantees in the humanities and social sciences, supporting the expansion of openly available academic work.",
-    "img": "img/users/twcf.png",
-    "bg": "https://oa.works/assets/img/stories/classroom.jpg"
+    "heading": "Ensuring Open Access to Parkinson's Research",
+    "subheading": "The Michael J. Fox Foundation leverages OA.Report to monitor and demonstrate compliance with its Open Access Policy. By tracking funded research and ensuring open data availability, MJFF maximizes its impact on Parkinson's research transparency.",
+    "img": "img/users/mjff.png",
+    "bg": "img/case-studies/mjff-cover.jpg",
+    "url": "https://blog.oa.works/mjff-starts-using-oa-report-to-measure-oa-policy-compliance-demonstrate-its-impact/"
   },
   {
-    "heading": "Empowering Foundations with OA.Report",
-    "subheading": "The Bill & Melinda Gates Foundation needed a reliable tool to track open-access compliance among its grantees. OA.Report helped streamline this process by automating the identification of articles that align with the foundation’s open-access policies, leveraging metadata and text-mining techniques.",
-    "img": "img/users/bmgf.png",
-    "bg": "https://oa.works/assets/img/stories/test-tubes.jpg"
+    "heading": "Advancing Global Health Through Open Access",
+    "subheading": "Wellcome Trust partnered with OA.Report to automate and analyze open-access compliance among its grantees. This collaboration ensures that Wellcome’s funded research outputs remain open, helping to drive global progress in health research.",
+    "img": "img/users/wellcome.png",
+    "bg": "img/case-studies/wellcome-cover.webp",
+    "url": "https://blog.oa.works/wellcome-is-using-oa-report-to-report-oa-policy-compliance/"
   }
 ]
