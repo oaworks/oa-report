@@ -3,8 +3,8 @@
   <label for="signup-page" class="sr-only" hidden>Signed up from this page</label>
   <input type="hidden" name="signup-page" id="signup-page" value="{{ site.base_url }}/{{ org._source.objectID }} [{{ org._source.name }}]"/>
   <label for="signup-email" class="sr-only">Email</label>
-  <div class="mt-1 mb-3 relative flex items-stretch flex-grow shadow-md focus-within:z-10">
-      <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none text-neutral-900">
+  <div class="mt-1 mb-3 relative flex items-stretch flex-grow shadow-md focus-within:z-10 text-neutral-900">
+      <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
         {% icon_small "mail" %}
       </div>
       <input type="email" name="signup-email" id="signup-email" class="focus:ring-carnation-300 focus:border-carnation-500 block w-full pl-10 py-3 sm:text-sm border-1 rounded-l-sm" placeholder="you@example.com" required/>
