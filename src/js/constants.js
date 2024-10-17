@@ -361,6 +361,20 @@ export const EXPLORE_FILTERS_LABELS = {
   "has_confirmed_ppmi_biosample_usage": {
     label: "Confirmed PPMI biosample usage",
     info: "Articles that mention PPMI biospecimen use in their data availability statement or acknowledgment/funding statement."
+  },
+  "is_authored_and_is_original_research": {
+    label: "Authored original research",
+    info: "<p>Scholarly research articles authored by someone at <span class='org-name'></span>, <strong>including only</strong>:</p>\
+    <ul class='mb-2 list-disc list-inside'>\
+      <li>peer-reviewed research</li>\
+    </ul>\
+    <p>This <strong>excludes</strong>:</p>\
+    <ul class='list-disc list-inside'>\
+      <li>reviews</li>\
+      <li>editorials</li>\
+      <li>methods</li>\
+      <li>conference proceedings</li>\
+    </ul>"
   }
 };
 
