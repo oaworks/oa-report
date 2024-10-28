@@ -24,7 +24,7 @@
     "terser": "^5.27.0"
   },
   "dependencies": {
-    "axios": "^1.6.0",
+    "axios": "^1.7.4",
     "caniuse-lite": "^1.0.30001600",
     "canvas": "^2.11.2",
     "dotenv": "^16.0.3",
