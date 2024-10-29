@@ -375,6 +375,10 @@ export const EXPLORE_FILTERS_LABELS = {
       <li>methods</li>\
       <li>conference proceedings</li>\
     </ul>"
+  },
+  "ppmi_biospecimen_users_outputs": {
+    label: "PPMI Biospecimen Users Outputs",
+    info: "Works that include a PPMI biospecimen users grant ID."
   }
 };
 
