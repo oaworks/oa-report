@@ -1,0 +1,23 @@
+[
+  {
+    "heading": "Maximizing Public Access to Biomedical Research",
+    "subheading": "The Howard Hughes Medical Institute (HHMI) uses OA.Report to implement and measure their open-access policy, ensuring that critical health research is freely accessible. OA.Report automates compliance tracking, helping HHMI optimize the reach of its funded research.",
+    "img": "img/users/hhmi.png",
+    "bg": "img/case-studies/hhmi-cover.jpg",
+    "url": "https://blog.oa.works/hhmi-using-oareport-to-measure-and-improve-oa-policy-compliance/"
+  },
+  {
+    "heading": "Ensuring Open Access to Parkinson’s Research",
+    "subheading": "The Michael J. Fox Foundation leverages OA.Report to monitor and demonstrate compliance with its Open Access Policy. By tracking funded research and ensuring open data availability, MJFF maximizes its impact on Parkinson’s research transparency.",
+    "img": "img/users/mjff.png",
+    "bg": "img/case-studies/mjff-cover.jpg",
+    "url": "https://blog.oa.works/mjff-starts-using-oa-report-to-measure-oa-policy-compliance-demonstrate-its-impact/"
+  },
+  {
+    "heading": "Advancing Global Health Through Open Access",
+    "subheading": "Wellcome Trust partnered with OA.Report to automate and analyze open-access compliance among its grantees. This collaboration ensures that Wellcome’s funded research outputs remain open, helping to drive global progress in health research.",
+    "img": "img/users/wellcome.png",
+    "bg": "img/case-studies/wellcome-cover.webp",
+    "url": "https://blog.oa.works/wellcome-is-using-oa-report-to-report-oa-policy-compliance/"
+  }
+]

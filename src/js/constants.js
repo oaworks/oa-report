@@ -353,6 +353,32 @@ export const EXPLORE_FILTERS_LABELS = {
   "is_removed": {
     label: "Removed works",
     info: "<p>Any research output, including articles, preprints, data, and code that has been removed from <span class='org-name'></span>’s OA.Report</p>"
+  },
+  "has_confirmed_ppmi_data_usage": {
+    label: "Confirmed PPMI data usage",
+    info: "Articles that mention PPMI in their data availability statement or acknowledgment/funding statement or have an MJFF/ASAP grant ID including “PPMI”."
+  },
+  "has_confirmed_ppmi_biosample_usage": {
+    label: "Confirmed PPMI biosample usage",
+    info: "Articles that mention PPMI biospecimen use in their data availability statement or acknowledgment/funding statement."
+  },
+  "is_authored_and_is_original_research": {
+    label: "Authored original research",
+    info: "<p>Scholarly research articles authored by someone at <span class='org-name'></span>, <strong>including only</strong>:</p>\
+    <ul class='mb-2 list-disc list-inside'>\
+      <li>peer-reviewed research</li>\
+    </ul>\
+    <p>This <strong>excludes</strong>:</p>\
+    <ul class='list-disc list-inside'>\
+      <li>reviews</li>\
+      <li>editorials</li>\
+      <li>methods</li>\
+      <li>conference proceedings</li>\
+    </ul>"
+  },
+  "ppmi_biospecimen_users_outputs": {
+    label: "PPMI Biospecimen Users Outputs",
+    info: "Works that include a PPMI biospecimen users grant ID."
   }
 };
 

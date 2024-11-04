@@ -2,13 +2,13 @@
   <input type="hidden" name="form-name" value="signup" />
   <label for="signup-page" class="sr-only" hidden>Signed up from this page</label>
   <input type="hidden" name="signup-page" id="signup-page" value="{{ site.base_url }}/{{ org._source.url_slug }} [{{ org._source.name }}]"/>
-  <label for="signup-email">Email</label>
-  <div class="mt-1 mb-3 relative flex items-stretch flex-grow shadow-md focus-within:z-10">
+  <label for="signup-email" class="sr-only">Email</label>
+  <div class="mt-1 mb-3 relative flex items-stretch flex-grow shadow-md focus-within:z-10 text-neutral-900">
       <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
         {% icon_small "mail" %}
       </div>
-      <input type="email" name="signup-email" id="signup-email" class="focus:ring-carnation-300 focus:border-carnation-500 block w-full pl-10 py-3 sm:text-sm border-1" placeholder="you@example.com" required/>
-      <button type="submit" class="-ml-px relative inline-flex items-center space-x-2 px-4 text-xs md:text-sm font-medium text-white bg-neutral-900 hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 border-0 whitespace-nowrap">
+      <input type="email" name="signup-email" id="signup-email" class="focus:ring-carnation-300 focus:border-carnation-500 block w-full pl-10 py-3 sm:text-sm border-1 rounded-l-sm" placeholder="you@example.com" required/>
+      <button type="submit" class="-ml-px relative inline-flex items-center space-x-2 px-4 text-xs md:text-sm font-medium text-white bg-neutral-900 hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 transition-all duration-300 ease-in-out border-0 whitespace-nowrap rounded-r-sm">
         Sign up
       </button>
     </div>

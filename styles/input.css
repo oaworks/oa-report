@@ -61,7 +61,7 @@
 /* Texting highlighting in the style of a marker */
 .highlight {
   border-radius: 0.8em 0.3em;
-  background-image: linear-gradient(to right, rgba(255, 102, 102, 0.095), rgba(255, 102, 102, 0.5) 4%, rgba(255, 102, 102, 0.25));
+  background-image: linear-gradient(to right, rgba(255, 201, 120, 0.095), rgba(255, 201, 120, 0.5) 4%, rgba(255, 201, 120, 0.25));
 }
 
 .highlight--white {
@@ -164,3 +164,26 @@
   );
 }
 
+/* Custom swapping text animations on homepage */
+.flip-in {
+  transition: transform 0.3s ease-out;
+  transform: rotateX(90deg);
+}
+.flip-out {
+  transition: transform 0.3s ease-in;
+  transform: rotateX(0);
+}
+
+/* Custom CSS for button hover and click animations */
+.bounce-on-hover {
+  transition: transform 0.3s ease-in-out;
+}
+.bounce-on-hover:hover {
+  transform: scale(1.05);
+}
+.click-bounce {
+  transition: transform 0.15s ease-out;
+}
+.click-bounce:active {
+  transform: scale(0.95);
+}

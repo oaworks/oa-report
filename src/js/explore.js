@@ -7,7 +7,7 @@
 // Imports
 // =================================================
 
-import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, makeNumberReadable, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, updateURLParams, removeArrayDuplicates } from "./utils.js";
+import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, makeNumberReadable, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeArrayDuplicates } from "./utils.js";
 import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { orgDataPromise } from './insights-and-strategies.js';
@@ -35,48 +35,63 @@ if (hasOrgKey) {
 /**
  * Allows the EXPLORE_HEADER_TERMS_LABELS constant to be accessible via a browser.
  * @global
+ * @type {Object}
  */
 window.EXPLORE_HEADER_TERMS_LABELS = EXPLORE_HEADER_TERMS_LABELS;
 
 /**
  * Data object representing metadata on an organization.
  * @global
+ * @type {Object}
  */
 let orgData;
 
 /**
+ * Flag indicating whether the data explore section has been initialised.
+ * @global
+ * @type {boolean}
+ */
+let isDataExploreInit = false;
+
+/**
  * Tracks the currently active explore item BUTTON for use in processExploreDataTable().
  * @global
+ * @type {HTMLElement|null}
  */
 export let currentActiveExploreItemButton = null;
 
 /** 
- * Tracks currently active explore item DATA for use in processExploreDataTable()
+ * Tracks currently active explore item DATA for use in processExploreDataTable.
  * @global 
-*/
+ * @type {Object|null}
+ */
 export let currentActiveExploreItemData = null;
 
 /** 
- * Tracks currently active explore item QUERY for use in createExploreFilterRadioButton()
+ * Tracks currently active explore item QUERY for use in createExploreFilterRadioButton.
  * @global 
-*/
+ * @type {string|null}
+ */
 export let currentActiveExploreItemQuery = null;
 
 /** 
- * Tracks currently active explore item SIZE for use in handleRecordsShownChange()
+ * Tracks currently active explore item SIZE for use in handleRecordsShownChange.
  * @global 
-*/
+ * @type {number}
+ */
 export let currentActiveExploreItemSize = 10;
 
 /** 
- * Tracks currently active explore item DATA DISPLAY STYLE for use in handleDataDisplayToggle()
+ * Tracks currently active explore item DATA DISPLAY STYLE for use in handleDataDisplayToggle.
  * @global 
-*/
+ * @type {boolean}
+ */
 export let currentActiveDataDisplayToggle = true;
 
 /**
- * Tracks currently selected row keys for use in enableExploreRowHighlighting() 
+ * Tracks currently selected row keys for use in enableExploreRowHighlighting.
  * @global
+ * @type {Array<string>}
  */
 let selectedRowKeys = [];
 
@@ -93,6 +108,10 @@ let selectedRowKeys = [];
  * @param {string} org - The organization identifier for the API query.
  */
 export async function initDataExplore(org) {
+  if (isDataExploreInit) {
+    return; // Prevent re-initialisation
+  }
+
   try {
     const response = await orgDataPromise; // Await the promise to resolve
     orgData = response.data;
@@ -108,6 +127,8 @@ export async function initDataExplore(org) {
     } else {
       displayNone("explore"); // Hide the explore section if no data is available
     }
+    isDataExploreInit = true; // Set the flag after successful initialisation
+
   } catch (error) {
     console.error('Error initialising data explore: ', error);
   }
@@ -171,6 +192,16 @@ async function addExploreButtonsToDOM(exploreData) {
       // Update the text of the button
       seeMoreButton.querySelector('span').textContent = moreButtonsVisible ? 'See fewer' : 'See more';
     });
+  }
+
+  // Handle breakdown after adding explore buttons
+  const params = getAllURLParams();
+  const breakdown = params.breakdown;
+  if (breakdown) {
+    const exploreButton = document.getElementById(`explore_${breakdown}_button`);
+    if (exploreButton) {
+      exploreButton.click();
+    }
   }
 }
 
@@ -351,7 +382,7 @@ function addRecordsShownSelectToDOM() {
   selectMenu.addEventListener("change", handleRecordsShownChange);
 
   // Define options for the select menu
-  const options = [5, 10, 20, 50, 100, 500];
+  const options = [5, 10, 20, 50, 100, 500, 1000];
   options.forEach((optionValue) => {
     const option = document.createElement("option");
     option.value = optionValue;
@@ -365,6 +396,20 @@ function addRecordsShownSelectToDOM() {
   // Append the label and select menu to the exploreRecordsShownElement
   exploreRecordsShownElement.appendChild(label);
   exploreRecordsShownElement.appendChild(selectMenu);
+
+  // Handle records shown parameter
+  const params = getAllURLParams();
+  const records = params.records;
+
+  if (records) {
+    const selectElement = document.getElementById("records_shown_select");
+    const recordsShownOption = selectElement.querySelector(`option[value="${records}"]`);
+    if (recordsShownOption) {
+      selectElement.value = records;
+      const event = new Event('change', { bubbles: true });
+      selectElement.dispatchEvent(event);
+    }
+  }
 }
 
 /**
@@ -379,6 +424,12 @@ function addRecordsShownSelectToDOM() {
  */
 async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 10, pretty = true) {
   try {
+    if (!itemData) {
+      showNoResultsRow(10, "export_table_body", "js_export_table");
+      toggleLoadingIndicator(false, 'explore_loading');
+      return;
+    }
+
     const { type, id, term, sort, includes } = itemData; // Extract properties
 
     document.getElementById("csv_email_msg").innerHTML = ""; // Clear any existing message in CSV download form
@@ -989,6 +1040,7 @@ async function handleRecordsShownChange(event) {
 
   try {
     await fetchAndDisplayExploreData(currentActiveExploreItemData, currentActiveExploreItemQuery, currentActiveExploreItemSize);
+    updateURLParams({ records: newSize });
   } catch (error) {
     console.error('Error updating records shown: ', error);
   }
