@@ -22,7 +22,7 @@ layout: layouts/base.njk
       <span data-sal="fade" data-sal-delay="250">Your data meets Open Data,</span> <span class="md:block" data-sal="fade" data-sal-delay="250">shaped by expert analysis.</span>
     </h2>
     <div class="relative max-w-4xl mx-auto shadow-lg rounded-lg border border-dotted border-neutral-700 overflow-hidden z-20"  data-sal="slide-up" data-sal-delay="350">
-      <img src="/img/screenshot.png" alt="OA.Report Web Application Screenshot" class="mx-auto">
+      {% webpImg "img/screenshot.png", "OA.Report Web Application Screenshot", 2500, 1220, "mx-auto", false %}
     </div>
   </div>
   {# Dark Background extension #}
@@ -109,7 +109,7 @@ layout: layouts/base.njk
     <div class="w-full max-w-6xl flex flex-col md:flex-row items-center gap-12">
       <div class="md:w-1/2">
         <div class="w-full lg:w-72 h-auto mx-auto" data-sal="slide-up">
-          <img src="img/users/ashley-farley.jpg" alt="Ashley Farley" class="rounded-lg">
+          {% webpImg "img/users/ashley-farley.jpg", "Ashley Farley", 1800, 1440, "rounded-lg", true %}
         </div>
       </div>
       <div class="md:w-1/2" data-sal="slide-up" data-sal-delay="50">
@@ -141,10 +141,11 @@ layout: layouts/base.njk
       {% set delay_count = delay_count + 50 %} {# Increase animation delay by 100ms #}
       <div class="relative bg-neutral-100 shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition" data-sal="slide-up" data-sal-delay="{{ delay_count }}">
         <div class="relative w-full h-64">
-          <img src="{{ case.bg }}" alt="Background for {{ case.heading }}" class="w-full h-full object-cover filter grayscale brightness-50">
+          {% webpImg case.bg, case.bg_alt, 600, 400, 'w-full h-full object-cover filter grayscale brightness-50', true %}
           <div class="absolute inset-0 bg-navy-blue-900 opacity-60"></div>
           <a href="{{ case.url }}" target="_blank" class="absolute inset-0 flex flex-col justify-center items-center text-center px-12">
-            <img src="{{ case.img }}" alt="{{ case.heading }}" class="h-8 w-auto object-contain mb-6"> 
+            {% set altText = "Logo for " + case.acronym  %}
+            {% webpImg case.logo, altText, case.width, case.height, 'h-8 w-auto object-contain mb-6', true %}
             <h3 class="text-xl font-semibold text-white">{{ case.heading }}</h3>
           </a>
         </div>
