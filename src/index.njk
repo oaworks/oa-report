@@ -83,20 +83,36 @@ layout: layouts/base.njk
   </div>
 </section>
 
-{# Features Section #}
+{# Benefits Section #}
 <section class="bg-neutral-100 py-12">
   <div class="container mx-auto px-4">
-    <h2 class="text-center text-2xl text-light mb-8" data-sal="fade">
-      <span class="font-semibold">OA.Report</span> translates <span class="md:block"><span class="highlight">policy to practice</span></span> by helping funders and institutions:
-    </h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      {% set delay_count = 0 %} {# Set initial animation delay to 0ms for Sal.js #}
-      {% for feature in features %}
-      {% set delay_count = delay_count + 50 %} {# Increase animation delay by 100ms #}
-        <div class="p-6 bg-neutral-900 shadow-lg text-center rounded-xl" data-sal="slide-up" data-sal-delay="{{ delay_count }}">
-          <div class="mx-auto mb-4">{% include feature.img %}</div>
-          <h3 class="text-xl font-semibold mb-2 text-white">{{ feature.heading }}</h3>
-          <p class="text-neutral-300">{{ feature.subheading }}</p>
+    <div class="text-center mb-10">
+      <h2 class="text-4xl font-light leading-tighter mb-6">
+        Discover, analyze, and comply <br>with Open Access in one place
+      </h2>
+      <p class="text-xl font-light mb-6 max-w-lg mx-auto">
+        With <span class="font-semibold">OA.Report</span>, funders and institutions can <br><span class="highlight">translate policy to practice</span>:
+      </p>
+    </div>
+
+    <div class="space-y-12">
+      {% set delay_count = 0 %} {# Initial delay for Sal.js animations #}
+      {% for benefit in benefits %}
+        {% set delay_count = delay_count + 50 %} {# Increase delay by 50ms for each feature #}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          {% if loop.index is odd %}
+            <div class="{{ benefit.colour }} h-64 rounded-md" data-sal="slide-up" data-sal-delay="{{ delay_count }}"></div>
+            <div data-sal="slide-up" data-sal-delay="{{ delay_count + 50 }}">
+              <h3 class="text-4xl font-light mb-4">{{ benefit.heading }}</h3>
+              <p class="text-lg text-neutral-700">{{ benefit.subheading }}</p>
+            </div>
+          {% else %}
+            <div data-sal="slide-up" data-sal-delay="{{ delay_count + 50 }}">
+              <h3 class="text-4xl font-light mb-4">{{ benefit.heading }}</h3>
+              <p class="text-lg text-neutral-700">{{ benefit.subheading }}</p>
+            </div>
+            <div class="{{ benefit.colour }} h-64 rounded-md" data-sal="slide-up" data-sal-delay="{{ delay_count }}"></div>
+          {% endif %}
         </div>
       {% endfor %}
     </div>
