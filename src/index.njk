@@ -102,15 +102,25 @@ layout: layouts/base.njk
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           {% if loop.index is odd %}
             <div data-sal="slide-up" data-sal-delay="{{ delay_count + 50 }}">
-              <h3 class="text-4xl font-light mb-4">{{ benefit.heading }}</h3>
-              <p class="text-lg text-neutral-700">{{ benefit.subheading }}</p>
+              <h3 class="text-3xl mb-4">{{ benefit.heading }}</h3>
+              <p class="text-base text-neutral-600">{{ benefit.subheading }}</p>
             </div>
-            <div class="{{ benefit.colour }} h-64 rounded-md" data-sal="slide-up" data-sal-delay="{{ delay_count }}"></div>
+            <div 
+              class="h-64 shadow-lg rounded-md bg-cover bg-left-top {{ benefit.colour }}" 
+              style="background-image: url('img/benefits/{{ benefit.img }}');" 
+              data-sal="slide-up" 
+              data-sal-delay="{{ delay_count }}">
+            </div>
           {% else %}
-            <div class="{{ benefit.colour }} h-64 rounded-md" data-sal="slide-up" data-sal-delay="{{ delay_count }}"></div>
+            <div 
+              class="h-64 shadow-lg hover:shadow-xl transition rounded-md bg-cover bg-left-top {{ benefit.colour }}" 
+              style="background-image: url('img/benefits/{{ benefit.img }}');" 
+              data-sal="slide-up" 
+              data-sal-delay="{{ delay_count }}">
+            </div>
             <div data-sal="slide-up" data-sal-delay="{{ delay_count + 50 }}">
-              <h3 class="text-4xl font-light mb-4">{{ benefit.heading }}</h3>
-              <p class="text-lg text-neutral-700">{{ benefit.subheading }}</p>
+              <h3 class="text-3xl mb-4">{{ benefit.heading }}</h3>
+              <p class="text-base text-neutral-600">{{ benefit.subheading }}</p>
             </div>
           {% endif %}
         </div>
@@ -118,6 +128,7 @@ layout: layouts/base.njk
     </div>
   </div>
 </section>
+
 
 {# Testimonial Section #2 #}
 <section class="bg-neutral-100 text-neutral-900 pt-12 pb-24">
