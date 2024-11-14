@@ -167,6 +167,41 @@ layout: layouts/base.njk
   </div>
 </section>
 
+{# Why OA.Report? Section #}
+<section class="bg-neutral-100 px-8 pt-6 pb-24">
+  <div class="container mx-auto text-center">
+    <h2 class="text-4xl font-light mb-8">What sets OA.Report apart</h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+      {% for feature in why_us %}
+        {% if loop.index <= 2 %}
+          <div class="flex flex-col text-left bg-neutral-50 py-10 px-12 rounded-lg shadow-md">
+            <div class="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-yellow-400 to-carnation-500 text-white">
+              {% icon feature.icon %}
+            </div>
+            <h3 class="text-sm font-semibold mt-4">{{ feature.heading }}</h3>
+            <p class="text-sm text-neutral-600 mt-2">{{ feature.description }}</p>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {% for feature in why_us %}
+        {% if loop.index > 2 %}
+          <div class="flex flex-col text-left bg-neutral-50 py-10 px-12 rounded-lg shadow-md">
+            <div class="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-yellow-400 to-carnation-500 text-white">
+              {% icon feature.icon %}
+            </div>
+            <h3 class="text-sm font-semibold mt-4">{{ feature.heading }}</h3>
+            <p class="text-sm text-neutral-600 mt-2">{{ feature.description }}</p>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
 {# Partnership Section #}
 <section class="bg-yellow-200 text-neutral-900 py-24" data-sal="fade" data-sal-delay="100">
   <div class="container mx-auto px-4 flex justify-center items-center">
