@@ -99,36 +99,20 @@ layout: layouts/base.njk
       {% set delay_count = 0 %} {# Initial delay for Sal.js animations #}
       {% for benefit in benefits %}
         {% set delay_count = delay_count + 50 %} {# Increase delay by 50ms for each feature #}
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          {% if loop.index is odd %}
-            <div data-sal="slide-up" data-sal-delay="{{ delay_count + 50 }}">
-              <h3 class="text-3xl mb-4">{{ benefit.heading }}</h3>
-              <p class="text-base text-neutral-600">{{ benefit.subheading }}</p>
-            </div>
-            <div 
-              class="h-64 shadow-lg rounded-md bg-cover bg-left-top {{ benefit.colour }}" 
-              style="background-image: url('img/benefits/{{ benefit.img }}');" 
-              data-sal="slide-up" 
-              data-sal-delay="{{ delay_count }}">
-            </div>
-          {% else %}
-            <div 
-              class="h-64 shadow-lg hover:shadow-xl transition rounded-md bg-cover bg-left-top {{ benefit.colour }}" 
-              style="background-image: url('img/benefits/{{ benefit.img }}');" 
-              data-sal="slide-up" 
-              data-sal-delay="{{ delay_count }}">
-            </div>
-            <div data-sal="slide-up" data-sal-delay="{{ delay_count + 50 }}">
-              <h3 class="text-3xl mb-4">{{ benefit.heading }}</h3>
-              <p class="text-base text-neutral-600">{{ benefit.subheading }}</p>
-            </div>
-          {% endif %}
+        <div class="flex flex-col {% if loop.index is odd %}md:flex-row{% else %}md:flex-row-reverse{% endif %} gap-12 items-center sal-animate" data-sal="slide-up" data-sal-delay="{{ delay_count }}">
+          <div>
+            <h3 class="text-3xl mb-4">{{ benefit.heading }}</h3>
+            <p class="text-base text-neutral-600">{{ benefit.subheading }}</p>
+          </div>
+          <div 
+            class="w-full md:w-3/4 h-64 shadow-lg rounded-md bg-cover bg-top-left {{ benefit.colour }}" 
+            style="background-image: url('img/benefits/{{ benefit.img }}');">
+          </div>
         </div>
       {% endfor %}
     </div>
   </div>
 </section>
-
 
 {# Testimonial Section #2 #}
 <section class="bg-neutral-100 text-neutral-900 pt-12 pb-24">
