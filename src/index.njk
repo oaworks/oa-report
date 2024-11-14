@@ -88,10 +88,10 @@ layout: layouts/base.njk
   <div class="container mx-auto px-4">
     <div class="text-center mb-10">
       <h2 class="text-4xl font-light leading-tighter mb-6">
-        Discover, analyze, and comply <br>with Open Access in one place
+        Discover, analyze, and comply <br>with Open Access all in one place
       </h2>
       <p class="text-xl font-light mb-6 max-w-lg mx-auto">
-        With <span class="font-semibold">OA.Report</span>, funders and institutions can <br><span class="highlight">translate policy to practice</span>:
+        With <span class="font-semibold">OA.Report</span>, funders and institutions benefit from a dashboard that helps <span class="highlight">translate policy to practice</span>:
       </p>
     </div>
 
@@ -101,17 +101,17 @@ layout: layouts/base.njk
         {% set delay_count = delay_count + 50 %} {# Increase delay by 50ms for each feature #}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           {% if loop.index is odd %}
-            <div class="{{ benefit.colour }} h-64 rounded-md" data-sal="slide-up" data-sal-delay="{{ delay_count }}"></div>
             <div data-sal="slide-up" data-sal-delay="{{ delay_count + 50 }}">
               <h3 class="text-4xl font-light mb-4">{{ benefit.heading }}</h3>
               <p class="text-lg text-neutral-700">{{ benefit.subheading }}</p>
             </div>
+            <div class="{{ benefit.colour }} h-64 rounded-md" data-sal="slide-up" data-sal-delay="{{ delay_count }}"></div>
           {% else %}
+            <div class="{{ benefit.colour }} h-64 rounded-md" data-sal="slide-up" data-sal-delay="{{ delay_count }}"></div>
             <div data-sal="slide-up" data-sal-delay="{{ delay_count + 50 }}">
               <h3 class="text-4xl font-light mb-4">{{ benefit.heading }}</h3>
               <p class="text-lg text-neutral-700">{{ benefit.subheading }}</p>
             </div>
-            <div class="{{ benefit.colour }} h-64 rounded-md" data-sal="slide-up" data-sal-delay="{{ delay_count }}"></div>
           {% endif %}
         </div>
       {% endfor %}
