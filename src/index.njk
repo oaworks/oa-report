@@ -76,7 +76,9 @@ layout: layouts/base.njk
 {# Trusted By Section #}
 <section class="pt-8 pb-16 bg-neutral-900 text-neutral-100">
   <div class="container mx-auto px-4 py-8">
-    <h2 class="text-center text-lg font-semibold text-neutral-200 mb-8">Trusted by leading research funders</h2>
+    <h2 class="text-center text-lg font-medium text-neutral-200 leading-relaxed tracking-wide mb-8">
+      Trusted by leading research funders
+    </h2>
     <div class="grid grid-cols-3 gap-8 md:grid-cols-3 lg:grid-cols-6 justify-center items-center">
       {% set delay_count = 0 %}
       {% for user in users %}
@@ -93,7 +95,6 @@ layout: layouts/base.njk
     </div>
   </div>
 </section>
-
 {# Testimonial Section #}
 <section class="bg-neutral-100 text-neutral-900 py-24">
   <div class="container mx-auto px-4 flex justify-center items-center">
