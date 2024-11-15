@@ -58,15 +58,15 @@
   animation: fadeOut 0.5s ease-out forwards;
 }
 
-/* Texting highlighting in the style of a marker */
+/* Text highlighting in the style of a marker */
 .highlight {
   border-radius: 0.8em 0.3em;
-  background-image: linear-gradient(to right, rgba(255, 201, 120, 0.095), rgba(255, 201, 120, 0.5) 4%, rgba(255, 201, 120, 0.25));
+  background-image: linear-gradient(to right, rgba(144, 144, 144, 0.1), rgba(144, 144, 144, 0.3) 4%, rgba(144, 144, 144, 0.2));
 }
 
 .highlight--white {
   border-radius: 0.8em 0.3em;
-  background-image: linear-gradient(to right, rgba(255,255,255, 0.095), rgba(255,255,255, 0.5) 4%, rgba(255,255,255, 0.25));
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.4) 4%, rgba(255, 255, 255, 0.25));
 }
 
 /* Line through text */
