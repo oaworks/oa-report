@@ -10,7 +10,8 @@ module.exports = {
   theme: {
     fontFamily: {
       sans: ['Inter var', 'Inter', 'sans-serif'],
-      serif: ['serif'],
+      serif: ['Redaction', 'serif'],
+      degraded: ["'Redaction 20'", 'serif']  // Redaction 20 (degraded) styles
     },
     letterSpacing: {
       tightest: '-.075em',
