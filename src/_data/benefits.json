@@ -1,30 +1,30 @@
 [
   {
-    "heading": "Boosting visibility of your research impact",
+    "heading": "Boosting <span class='highlight'>visibility</span> of your research impact",
     "subheading": "OA.Report finds more articles funded by your organization than anyone else, giving you a greater view of your research impact.",
     "colour": "bg-carnation-500",
     "img": "impact.png"
   },
   {
-    "heading": "Informed decisions on Open Access",
+    "heading": "<span class='highlight'>Informed</span> decisions on Open Access",
     "subheading": "Gain comprehensive insights across Data Availability Statements (DAS), Open Data, Open Code, preprints, and beyond—empowering you to understand the full scope of openness in your funded research.",
     "colour": "bg-carnation-500",
     "img": "oa-data.png"
   },
   {
-    "heading": "Ensuring accountability and compliance",
+    "heading": "Ensuring <span class='highlight'>accountability</span> and compliance",
     "subheading": "We set everything up to match your Open Access policy, measuring your articles against your specific compliance requirements—so you can be confident that your standards are met.",
     "colour": "bg-carnation-500",
     "img": "compliance.png"
   },
   {
-    "heading": "Customized, granular analysis",
+    "heading": "Customized, <span class='highlight'>granular</span> analysis",
     "subheading": "View tailored breakdowns of your funded articles by grant ID, program, department, and more, structured to your organization’s needs.",
     "colour": "bg-carnation-500",
     "img": "analysis.png"
   },
   {
-    "heading": "Simplifying compliance outreach",
+    "heading": "Simplifying compliance <span class='highlight'>outreach</span>",
     "subheading": "Effortlessly ensure compliance with lists of contactable authors and a one-click email feature right from your dashboard.",
     "colour": "bg-carnation-500",
     "img": "outreach.png"
