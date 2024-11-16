@@ -190,40 +190,6 @@ layout: layouts/base.njk
   </div>
 </section>
 
-{# Case Studies Section #}
-<section class="pt-12 pb-24">
-  <div class="container mx-auto px-4">
-    <div class="mb-12" data-sal="fade" data-sal-delay="100">
-      <h2 class="text-4xl font-serif leading-snug text-neutral-900 mb-6 text-left">
-        See how funders are making <span class="md:block">an impact with OA.Report</span>
-      </h2>
-      <a href="https://savvycal.com/Joe/ed52a37f" data-savvycal-embed class="inline-block bg-neutral-900 text-white py-3 px-6 rounded-sm text-base hover:bg-neutral-800 transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-neutral-300">
-        Schedule demo →
-      </a>
-    </div>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      {% set delay_count = 0 %}
-      {% for case in cases %}
-      {% set delay_count = delay_count + 50 %}
-      <a href="{{ case.url }}" target="_blank" rel="noopener" class="block bg-neutral-900 text-white shadow-md rounded-lg overflow-hidden transition transform hover:scale-105 hover:shadow-lg" data-sal="slide-up" data-sal-delay="{{ delay_count }}">        
-        <div class="flex items-center bg-neutral-900 py-4 px-6">
-          {% webpImg case.logo, "Logo for " + case.acronym, case.width, case.height, 'h-10 w-auto', true %}
-        </div>        
-        <div class="relative">
-          {% webpImg case.bg, case.bg_alt, 600, 400, 'w-full h-64 object-cover', true %}
-          <div class="absolute inset-0 bg-neutral-900 opacity-75"></div>
-          <div class="absolute inset-x-0 bottom-0 px-6 py-4">
-            <p class="text-sm text-neutral-300 mb-1">{{ case.org }}</p>
-            <h3 class="text-lg font-serif text-white leading-snug">{{ case.heading }}</h3>
-          </div>
-        </div>
-        
-      </a>
-      {% endfor %}
-    </div>
-  </div>
-</section>
-
 {# Why OA.Report Section #}
 <section class="pt-12 pb-24">
   <div class="container mx-auto px-4 text-center">
@@ -266,6 +232,40 @@ layout: layouts/base.njk
         </p>
       </div>
       {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# Case Studies Section #}
+<section class="pt-12 pb-24">
+  <div class="container mx-auto px-4">
+    <div class="mb-12" data-sal="fade" data-sal-delay="100">
+      <h2 class="text-4xl font-serif leading-snug text-neutral-900 mb-6 text-left">
+        See how funders are making <span class="md:block">an impact with OA.Report</span>
+      </h2>
+      <a href="https://savvycal.com/Joe/ed52a37f" data-savvycal-embed class="inline-block bg-neutral-900 text-white py-3 px-6 rounded-sm text-base hover:bg-neutral-800 transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-neutral-300">
+        Schedule demo →
+      </a>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {% set delay_count = 0 %}
+      {% for case in cases %}
+      {% set delay_count = delay_count + 50 %}
+      <a href="{{ case.url }}" target="_blank" rel="noopener" class="block bg-neutral-900 text-white shadow-md rounded-lg overflow-hidden transition transform hover:scale-105 hover:shadow-lg" data-sal="slide-up" data-sal-delay="{{ delay_count }}">        
+        <div class="flex items-center bg-neutral-900 py-4 px-6">
+          {% webpImg case.logo, "Logo for " + case.acronym, case.width, case.height, 'h-10 w-auto', true %}
+        </div>        
+        <div class="relative">
+          {% webpImg case.bg, case.bg_alt, 600, 400, 'w-full h-64 object-cover', true %}
+          <div class="absolute inset-0 bg-neutral-900 opacity-75"></div>
+          <div class="absolute inset-x-0 bottom-0 px-6 py-4">
+            <p class="text-sm text-neutral-300 mb-1">{{ case.org }}</p>
+            <h3 class="text-lg font-serif text-white leading-snug">{{ case.heading }}</h3>
+          </div>
+        </div>
+        
+      </a>
       {% endfor %}
     </div>
   </div>
