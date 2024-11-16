@@ -225,18 +225,24 @@ layout: layouts/base.njk
 </section>
 
 {# Why OA.Report Section #}
-<section class="bg-neutral-100 px-8 pt-6 pb-24">
+<section class="bg-neutral-50 px-8 pt-12 pb-24">
   <div class="container mx-auto text-center">
-    <h2 class="text-4xl font-light mb-8 text-neutral-900">What sets OA.Report apart</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+    <h2 class="text-3xl font-normal text-neutral-900 leading-snug mb-12">
+      What sets OA.Report apart
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
       {% for feature in why_us %}
       {% if loop.index <= 2 %}
-      <div class="flex flex-col text-left bg-neutral-50 py-10 px-12 rounded-lg shadow-md">
-        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-neutral-300 text-neutral-900">
+      <div class="flex flex-col text-left bg-neutral-100 py-8 px-10 rounded-lg shadow-md">
+        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-neutral-900 text-white">
           {% icon feature.icon %}
         </div>
-        <h3 class="text-sm font-semibold mt-4">{{ feature.heading }}</h3>
-        <p class="text-sm text-neutral-600 mt-2">{{ feature.description }}</p>
+        <h3 class="text-lg font-serif text-neutral-900 mt-6 leading-snug">
+          {{ feature.heading }}
+        </h3>
+        <p class="text-sm text-neutral-700 mt-4 leading-relaxed">
+          {{ feature.description }}
+        </p>
       </div>
       {% endif %}
       {% endfor %}
@@ -244,12 +250,16 @@ layout: layouts/base.njk
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
       {% for feature in why_us %}
       {% if loop.index > 2 %}
-      <div class="flex flex-col text-left bg-neutral-50 py-10 px-12 rounded-lg shadow-md">
-        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-neutral-300 text-neutral-900">
+      <div class="flex flex-col text-left bg-neutral-100 py-8 px-10 rounded-lg shadow-md">
+        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-neutral-900 text-white">
           {% icon feature.icon %}
         </div>
-        <h3 class="text-sm font-semibold mt-4">{{ feature.heading }}</h3>
-        <p class="text-sm text-neutral-600 mt-2">{{ feature.description }}</p>
+        <h3 class="text-lg font-serif text-neutral-900 mt-6 leading-snug">
+          {{ feature.heading }}
+        </h3>
+        <p class="text-sm text-neutral-700 mt-4 leading-relaxed">
+          {{ feature.description }}
+        </p>
       </div>
       {% endif %}
       {% endfor %}
