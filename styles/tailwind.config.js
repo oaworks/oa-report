@@ -10,7 +10,8 @@ module.exports = {
   theme: {
     fontFamily: {
       sans: ['Inter var', 'Inter', 'sans-serif'],
-      serif: ['serif'],
+      serif: ['Redaction', 'serif'],
+      degraded: ["'Redaction 20'", 'serif']  // Redaction 20 (degraded) styles
     },
     letterSpacing: {
       tightest: '-.075em',
@@ -27,19 +28,19 @@ module.exports = {
       'white': '#fff',
       // Primary brand colour
       'carnation': {
-        100: '#f4f0f0',
-        200: '#fecfcf',
-        300: '#ffaeac',
-        400: '#ff8b89',
-        500: '#ff6666',
-        600: '#e65353',
-        700: '#cc4040',
-        800: '#b32e2e',
-        900: '#992222',
+        100: '#F4F0F0', // Very light, subtle background
+        200: '#F9CFCF',
+        300: '#F79E9E',
+        400: '#F66E6E', // Accent option
+        500: '#E64E4E', // Primary action color
+        600: '#CC4242', // Darker variant for hover
+        700: '#B23636',
+        800: '#992C2C',
+        900: '#802323', // Deepest shade for text or strong accents
       },
       'neutral': {
         50:  '#F9F9FA',
-        100: '#F0F0F1',
+        100: '#F7F7F8',
         200: '#E2E3E5',
         300: '#C8C9CC',
         400: '#ABADB0',
@@ -49,29 +50,30 @@ module.exports = {
         800: '#434446',
         900: '#2E2E2F',
       },
-      // Complementary colors
-      'sage': {
-        100: '#eaf5ea',
-        200: '#d0e7d1',
-        300: '#b0d5b0',
-        400: '#8cbf8c',
-        500: '#6aa96a',
-        600: '#59915a',
-        700: '#477a49',
-        800: '#366339',
-        900: '#2a4f2d',
+      'blue': {
+        100: '#E6F2FF',
+        200: '#D0E7FF',
+        300: '#A9D0FF',
+        400: '#719ECE', // Accent option
+        500: '#5A7FCC',
+        600: '#4A6AB2',
       },
-      'aqua': {
-        100: '#e0f7fa',
-        200: '#b2ebf2',
-        300: '#80deea',
-        400: '#4dd0e1',
-        500: '#26c6da',
-        600: '#20aebf',
-        700: '#1a96a4',
-        800: '#157e89',
-        900: '#116771',
-      }
+      'green': {
+        100: '#E7F2EB',
+        200: '#CCE1D4',
+        300: '#59836A', // Accent option
+        400: '#3D6A51',
+        500: '#2E5441',
+        600: '#243F33',
+      },
+      'yellow': {
+        100: '#FFF7DA',
+        200: '#FFE8AB',
+        300: '#FFD97A',
+        400: '#FFBF60', // Accent option
+        500: '#E69D55',
+        600: '#CC8B4C',
+      },
     },
   },
 }

@@ -34,8 +34,14 @@ module.exports = function(eleventyConfig) {
 
   // Get Axios and place in assets dir to use client-side
   eleventyConfig.addPassthroughCopy({
-        "./node_modules/axios/dist/axios.min.js": "/js/axios.min.js"
-    });
+    "./node_modules/axios/dist/axios.min.js": "/js/axios.min.js"
+  });
+
+  // Get Sal.js (scroll animation library) and place in assets dir to use client-side
+  eleventyConfig.addPassthroughCopy({
+    "./node_modules/sal.js/dist/sal.css": "sal.css",
+    "./node_modules/sal.js/dist/sal.js": "/js/sal.js",
+  });
 
   // Watch tailwindCSS
   eleventyConfig.addWatchTarget('./styles/tailwind.config.js');
@@ -70,6 +76,7 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy('./src/js/');
   eleventyConfig.addPassthroughCopy('./src/css/');
   eleventyConfig.addPassthroughCopy('./src/img/');
+  eleventyConfig.addPassthroughCopy('./src/fonts/');
   eleventyConfig.addPassthroughCopy('./src/favicons/');
   eleventyConfig.addPassthroughCopy('./src/temp/');
   eleventyConfig.addPassthroughCopy("./src/*.xml");

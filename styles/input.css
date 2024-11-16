@@ -58,15 +58,15 @@
   animation: fadeOut 0.5s ease-out forwards;
 }
 
-/* Texting highlighting in the style of a marker */
+/* Text highlighting in the style of a marker */
 .highlight {
   border-radius: 0.8em 0.3em;
-  background-image: linear-gradient(to right, rgba(255, 102, 102, 0.095), rgba(255, 102, 102, 0.5) 4%, rgba(255, 102, 102, 0.25));
+  background-image: linear-gradient(to right, rgba(144, 144, 144, 0.1), rgba(144, 144, 144, 0.3) 4%, rgba(144, 144, 144, 0.2));
 }
 
 .highlight--white {
   border-radius: 0.8em 0.3em;
-  background-image: linear-gradient(to right, rgba(255,255,255, 0.095), rgba(255,255,255, 0.5) 4%, rgba(255,255,255, 0.25));
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.4) 4%, rgba(255, 255, 255, 0.25));
 }
 
 /* Line through text */
@@ -175,4 +175,28 @@
   padding: 2rem;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
   display: none;
+}
+
+/* Custom swapping text animations on homepage */
+.flip-in {
+  transition: transform 0.3s ease-out;
+  transform: rotateX(90deg);
+}
+.flip-out {
+  transition: transform 0.3s ease-in;
+  transform: rotateX(0);
+}
+
+/* Custom CSS for button hover and click animations */
+.bounce-on-hover {
+  transition: transform 0.3s ease-in-out;
+}
+.bounce-on-hover:hover {
+  transform: scale(1.05);
+}
+.click-bounce {
+  transition: transform 0.15s ease-out;
+}
+.click-bounce:active {
+  transform: scale(0.95);
 }
