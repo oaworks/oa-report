@@ -191,29 +191,34 @@ layout: layouts/base.njk
 </section>
 
 {# Case Studies Section #}
-<section class="bg-neutral-100 px-8 pt-12 pb-24">
+<section class="bg-neutral-50 px-8 pt-12 pb-24">
   <div class="container mx-auto">
     <div class="mb-12" data-sal="fade" data-sal-delay="100">
-      <h2 class="text-4xl font-light mb-6 text-neutral-900">See how funders are making an impact <span class="md:block">with OA.Report</span></h2>
-      <a href="https://savvycal.com/Joe/ed52a37f" data-savvycal-embed class="inline-block bg-neutral-900 text-white py-3 px-8 rounded-sm text-lg hover:bg-neutral-800 transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-neutral-300">
-        Schedule a demo →
+      <h2 class="text-3xl leading-snug text-neutral-900 mb-6 text-left">
+        See how funders are making an impact with OA.Report
+      </h2>
+      <a href="https://savvycal.com/Joe/ed52a37f" data-savvycal-embed class="inline-block bg-neutral-900 text-white py-3 px-6 rounded-sm text-base hover:bg-neutral-800 transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-neutral-300">
+        Schedule demo →
       </a>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
       {% set delay_count = 0 %}
       {% for case in cases %}
       {% set delay_count = delay_count + 50 %}
-      <div class="relative bg-neutral-200 shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition" data-sal="slide-up" data-sal-delay="{{ delay_count }}">
-        <div class="relative w-full h-64">
-          {% webpImg case.bg, case.bg_alt, 600, 400, 'w-full h-full object-cover filter grayscale brightness-50', true %}
-          <div class="absolute inset-0 bg-neutral-900 opacity-60"></div>
-          <a href="{{ case.url }}" target="_blank" class="absolute inset-0 flex flex-col justify-center items-center text-center px-12">
-            {% set altText = "Logo for " + case.acronym %}
-            {% webpImg case.logo, altText, case.width, case.height, 'h-8 w-auto object-contain mb-6', true %}
-            <h3 class="text-xl font-semibold text-white">{{ case.heading }}</h3>
-          </a>
+      <a href="{{ case.url }}" target="_blank" rel="noopener" class="block bg-neutral-900 text-white shadow-md rounded-lg overflow-hidden transition transform hover:scale-105 hover:shadow-lg" data-sal="slide-up" data-sal-delay="{{ delay_count }}">        
+        <div class="flex items-center bg-neutral-900 py-4 px-6">
+          {% webpImg case.logo, "Logo for " + case.acronym, case.width, case.height, 'h-10 w-auto', true %}
+        </div>        
+        <div class="relative">
+          {% webpImg case.bg, case.bg_alt, 600, 400, 'w-full h-64 object-cover', true %}
+          <div class="absolute inset-0 bg-neutral-900 opacity-75"></div>
+          <div class="absolute inset-x-0 bottom-0 px-6 py-4">
+            <p class="text-sm text-neutral-300 mb-1">{{ case.org }}</p>
+            <h3 class="text-lg font-serif text-white leading-snug">{{ case.heading }}</h3>
+          </div>
         </div>
-      </div>
+        
+      </a>
       {% endfor %}
     </div>
   </div>
