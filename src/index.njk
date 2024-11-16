@@ -193,9 +193,14 @@ layout: layouts/base.njk
 {# Why OA.Report Section #}
 <section class="pt-12 md:pb-24">
   <div class="container mx-auto px-4 text-center">
-    <h2 class="text-3xl font-normal text-neutral-900 leading-snug mb-12">
-      <span class="highlight">What sets us apart</span>
-    </h2>
+    <div class="mb-12" data-sal="fade" data-sal-delay="100">
+      <h2 class="text-3xl font-normal text-neutral-900 leading-snug mb-6">
+        <span class="highlight">What sets us apart</span>
+      </h2>
+      <a href="https://savvycal.com/Joe/ed52a37f" data-savvycal-embed class="inline-block bg-neutral-900 text-white py-3 px-6 rounded-sm text-base hover:bg-neutral-800 transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-neutral-300">
+        Schedule demo →
+      </a>
+    </div>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
       {% set delay_count = 0 %}
       {% for feature in why_us %}
@@ -244,9 +249,6 @@ layout: layouts/base.njk
       <h2 class="text-4xl font-serif leading-snug text-neutral-900 mb-6 text-left">
         See how funders are making <span class="md:block">an impact with OA.Report</span>
       </h2>
-      <a href="https://savvycal.com/Joe/ed52a37f" data-savvycal-embed class="inline-block bg-neutral-900 text-white py-3 px-6 rounded-sm text-base hover:bg-neutral-800 transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-neutral-300">
-        Schedule demo →
-      </a>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
       {% set delay_count = 0 %}
