@@ -150,7 +150,7 @@ layout: layouts/base.njk
       {% set delay_count = 0 %}
       {% for benefit in benefits %}
       {% set delay_count = delay_count + 50 %}
-      <div class="flex flex-col {% if loop.index is odd %}md:flex-row{% else %}md:flex-row-reverse{% endif %} gap-12 items-center sal-animate" data-sal="slide-up" data-sal-delay="{{ delay_count }}">
+      <div class="flex flex-col {% if loop.index is odd %}md:flex-row{% else %}md:flex-row-reverse{% endif %} gap-12 items-center" data-sal="slide-up" data-sal-delay="{{ delay_count }}">
         <div>
           <h3 class="text-2xl text-neutral-900 leading-snug mb-4">
             {{ benefit.heading }}
@@ -231,9 +231,11 @@ layout: layouts/base.njk
       What sets us apart
     </h2>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+      {% set delay_count = 0 %}
       {% for feature in why_us %}
+      {% set delay_count = delay_count + 50 %}
       {% if loop.index <= 2 %}
-      <div class="flex flex-col text-left bg-neutral-100 py-8 px-10 rounded-lg shadow-md">
+      <div class="flex flex-col text-left bg-neutral-100 py-8 px-10 rounded-lg shadow-md" data-sal="slide-up" data-sal-delay="{{ delay_count }}">
         <div class="flex items-center justify-center w-12 h-12 rounded-full bg-neutral-900 text-white">
           {% icon feature.icon %}
         </div>
@@ -248,9 +250,11 @@ layout: layouts/base.njk
       {% endfor %}
     </div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {% set delay_count = 0 %}
       {% for feature in why_us %}
       {% if loop.index > 2 %}
-      <div class="flex flex-col text-left bg-neutral-100 py-8 px-10 rounded-lg shadow-md">
+      {% set delay_count = delay_count + 50 %}
+      <div class="flex flex-col text-left bg-neutral-100 py-8 px-10 rounded-lg shadow-md" data-sal="slide-up" data-sal-delay="{{ delay_count }}">
         <div class="flex items-center justify-center w-12 h-12 rounded-full bg-neutral-900 text-white">
           {% icon feature.icon %}
         </div>
