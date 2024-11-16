@@ -272,18 +272,18 @@ layout: layouts/base.njk
   <div class="container mx-auto px-4 flex justify-center items-center">
     <div class="w-full max-w-6xl flex flex-col md:flex-row items-center gap-12">
       <div class="md:w-1/2">
-        <div class="w-64 h-auto mx-auto">
-          <a href="https://www.gatesfoundation.org/" target="_blank" rel="noopener" title="Go to the BMGF website">
+        <div class="w-full lg:w-72 h-auto mx-auto" data-sal="slide-up">
+          <a href="https://www.gatesfoundation.org/" target="_blank" rel="noopener" title="Go to the Bill & Melinda Gates Foundation website">
             {% include 'svg/bmgf.svg' %}
           </a>
         </div>
       </div>
-      <div class="md:w-1/2">
-        <h2 class="text-lg font-light mb-4">
+      <div class="md:w-1/2" data-sal="slide-up" data-sal-delay="50">
+        <p class="text-base text-neutral-700 leading-relaxed tracking-wide mb-4">
           Our funders
-        </h2>
-        <p class="text-2xl font-light">
-          Built in partnership with the <a href="https://blog.oa.works/grant-to-bolster-oa-policies-from-bmgf/" target="_blank" rel="noopener" class="underline underline-offset-2">Bill & Melinda Gates Foundation</a> with grant support from the <a href="https://blog.oa.works/grant-from-robert-wood-johnson-foundation/" target="_blank" rel="noopener" class="underline underline-offset-2">Robert Wood Johnson Foundation</a>, <a href="https://blog.oa.works/arcadia-fund-increases-support-for-our-work/" target="_blank" rel="noopener" class="underline underline-offset-2">Arcadia</a>, & <a href="https://www.founderspledge.com/" target="_blank" rel="noopener" class="underline underline-offset-2">Founders Pledge</a>.
+        </p>
+        <p class="text-2xl leading-snug text-neutral-900">
+          Built in partnership with the <a href="https://blog.oa.works/grant-to-bolster-oa-policies-from-bmgf/" target="_blank" rel="noopener" class="underline underline-offset-2 decoration-neutral-600">Bill & Melinda Gates Foundation</a> with grant support from the <a href="https://blog.oa.works/grant-from-robert-wood-johnson-foundation/" target="_blank" rel="noopener" class="underline underline-offset-2 decoration-neutral-600">Robert Wood Johnson Foundation</a>, <a href="https://blog.oa.works/arcadia-fund-increases-support-for-our-work/" target="_blank" rel="noopener" class="underline underline-offset-2 decoration-neutral-600">Arcadia</a>, & <a href="https://www.founderspledge.com/" target="_blank" rel="noopener" class="underline underline-offset-2 decoration-neutral-600">Founders Pledge</a>.
         </p>
       </div>
     </div>
@@ -291,11 +291,16 @@ layout: layouts/base.njk
 </section>
 
 {# Sign Up Section #}
-<section class="bg-neutral-900 text-neutral-100 px-8 py-24" id="newsletter-signup" data-sal="fade" data-sal-delay="100">
+<section class="bg-neutral-800 text-white px-8 py-24" id="newsletter-signup" data-sal="fade" data-sal-delay="100">
   <div class="container mx-auto text-center">
-    <div class="grid grid-cols-3 gap-12">
-      <div class="col-span-3 lg:col-span-1 lg:col-start-2">
-        <h2 class="text-2xl font-light mb-8">Sign up to learn more</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+      <div class="col-span-1 md:col-span-3 lg:col-span-1 lg:col-start-2">
+        <p class="text-base text-neutral-200 mb-2">
+          Stay connected
+        </p>
+        <h2 class="text-3xl font-serif leading-snug mb-8">
+          Sign up to learn more
+        </h2>
         {% include 'partials/signup-form.njk' %}
       </div>
     </div>
