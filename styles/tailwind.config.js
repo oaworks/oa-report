@@ -37,6 +37,27 @@ module.exports = {
         800: '#992C2C',
         900: '#802323', // Deepest shade for text or strong accents
       },
+      // Accent colours 
+      'yellow': {
+        DEFAULT: '#FFC72C',
+        light: '#FFE7A1',
+      },
+      'green': {
+        DEFAULT: '#2CA58D',
+        light: '#A8D7C5',
+      },
+      'blue': {
+        DEFAULT: '#3878FF',
+        light: '#B8D5FF',
+      },
+      'purple': {
+        DEFAULT: '#7D4DD3',
+        light: '#D8BFF7',
+      },
+      'peach': {
+        DEFAULT: '#F8B195',
+        light: '#FFE2D5',
+      },
       'neutral': {
         50:  '#F9F9FA',
         100: '#F7F7F8',
@@ -48,30 +69,6 @@ module.exports = {
         700: '#5A5B5E',
         800: '#434446',
         900: '#2E2E2F',
-      },
-      'blue': {
-        100: '#E6F2FF',
-        200: '#D0E7FF',
-        300: '#A9D0FF',
-        400: '#719ECE', // Accent option
-        500: '#5A7FCC',
-        600: '#4A6AB2',
-      },
-      'green': {
-        100: '#E7F2EB',
-        200: '#CCE1D4',
-        300: '#59836A', // Accent option
-        400: '#3D6A51',
-        500: '#2E5441',
-        600: '#243F33',
-      },
-      'yellow': {
-        100: '#FFF7DA',
-        200: '#FFE8AB',
-        300: '#FFD97A',
-        400: '#FFBF60', // Accent option
-        500: '#E69D55',
-        600: '#CC8B4C',
       },
     },
   },
