@@ -1,3 +1,5 @@
+const plugin = require('tailwindcss/plugin');
+
 module.exports = {
   content: [
     './src/_includes/**/*.{njk,svg}',
@@ -11,7 +13,7 @@ module.exports = {
     fontFamily: {
       sans: ['Inter var', 'Inter', 'sans-serif'],
       serif: ['Redaction', 'serif'],
-      degraded: ["'Redaction 20'", 'serif']  // Redaction 20 (degraded) styles
+      degraded: ["'Redaction 20'", 'serif'] // Redaction 20 (degraded) styles
     },
     letterSpacing: {
       tightest: '-.075em',
@@ -31,13 +33,13 @@ module.exports = {
         200: 'rgb(249, 207, 207)',
         300: 'rgb(247, 158, 158)',
         400: 'rgb(246, 110, 110)', // Accent option
-        500: 'rgb(230, 78, 78)', // Primary action color
+        500: 'rgb(230, 78, 78)', // Primary action colour
         600: 'rgb(204, 66, 66)', // Darker variant for hover
         700: 'rgb(178, 54, 54)',
         800: 'rgb(153, 44, 44)',
         900: 'rgb(128, 35, 35)', // Deepest shade for text or strong accents
       },
-      // Accent colours 
+      // Accent colours
       'yellow': {
         DEFAULT: 'rgb(255, 199, 44)',
         light: 'rgb(255, 231, 161)',
@@ -70,6 +72,45 @@ module.exports = {
         800: 'rgb(67, 68, 70)',
         900: 'rgb(46, 46, 47)',
       },
-    },    
+    },
   },
-}
+  plugins: [
+    plugin(function ({ matchUtilities, theme }) {
+      // Flatten the theme colours and ignore `DEFAULT`
+      const flattenColours = (colors, prefix = '') =>
+        Object.entries(colors).reduce((acc, [key, value]) => {
+          if (typeof value === 'object' && value !== null) {
+            Object.assign(
+              acc,
+              flattenColours(value, `${prefix}${key === 'DEFAULT' ? '' : `${key}-`}`)
+            );
+          } else {
+            acc[`${prefix}${key === 'DEFAULT' ? '' : key}`] = value;
+          }
+          return acc;
+        }, {});
+
+      // Get flattened colours
+      const flattenedColours = flattenColours(theme('colors'));
+
+      // Use matchUtilities to dynamically generate `highlight-{colour}` classes
+      matchUtilities(
+        {
+          highlight: (value) => {
+            const rgbValue = value.match(/\d+, \d+, \d+/)[0]; // Extract the RGB part
+            return {
+              borderRadius: '0.8em 0.3em',
+              backgroundImage: `linear-gradient(
+                to right,
+                rgba(${rgbValue}, 0.1),
+                rgba(${rgbValue}, 0.3) 4%,
+                rgba(${rgbValue}, 0.2)
+              )`,
+            };
+          },
+        },
+        { values: flattenedColours }
+      );
+    })
+  ]
+};
