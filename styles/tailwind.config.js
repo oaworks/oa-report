@@ -25,51 +25,51 @@ module.exports = {
     colors: {
       transparent: 'transparent',
       current: 'currentColor',
-      'white': '#fff',
+      'white': 'rgb(255, 255, 255)',
       'carnation': {
-        100: '#F4F0F0', // Very light, subtle background
-        200: '#F9CFCF',
-        300: '#F79E9E',
-        400: '#F66E6E', // Accent option
-        500: '#E64E4E', // Primary action color
-        600: '#CC4242', // Darker variant for hover
-        700: '#B23636',
-        800: '#992C2C',
-        900: '#802323', // Deepest shade for text or strong accents
+        100: 'rgb(244, 240, 240)', // Very light, subtle background
+        200: 'rgb(249, 207, 207)',
+        300: 'rgb(247, 158, 158)',
+        400: 'rgb(246, 110, 110)', // Accent option
+        500: 'rgb(230, 78, 78)', // Primary action color
+        600: 'rgb(204, 66, 66)', // Darker variant for hover
+        700: 'rgb(178, 54, 54)',
+        800: 'rgb(153, 44, 44)',
+        900: 'rgb(128, 35, 35)', // Deepest shade for text or strong accents
       },
       // Accent colours 
       'yellow': {
-        DEFAULT: '#FFC72C',
-        light: '#FFE7A1',
+        DEFAULT: 'rgb(255, 199, 44)',
+        light: 'rgb(255, 231, 161)',
       },
       'green': {
-        DEFAULT: '#2CA58D',
-        light: '#A8D7C5',
+        DEFAULT: 'rgb(44, 165, 141)',
+        light: 'rgb(168, 215, 197)',
       },
       'blue': {
-        DEFAULT: '#3878FF',
-        light: '#B8D5FF',
+        DEFAULT: 'rgb(56, 120, 255)',
+        light: 'rgb(184, 213, 255)', 
       },
       'purple': {
-        DEFAULT: '#7D4DD3',
-        light: '#D8BFF7',
+        DEFAULT: 'rgb(125, 77, 211)',
+        light: 'rgb(216, 191, 247)',
       },
       'peach': {
-        DEFAULT: '#F8B195',
-        light: '#FFE2D5',
+        DEFAULT: 'rgb(248, 177, 149)',
+        light: 'rgb(255, 226, 213)',
       },
       'neutral': {
-        50:  '#F9F9FA',
-        100: '#F7F7F8',
-        200: '#E2E3E5',
-        300: '#C8C9CC',
-        400: '#ABADB0',
-        500: '#8F9094',
-        600: '#727377',
-        700: '#5A5B5E',
-        800: '#434446',
-        900: '#2E2E2F',
+        50:  'rgb(249, 249, 250)',
+        100: 'rgb(247, 247, 248)',
+        200: 'rgb(226, 227, 229)',
+        300: 'rgb(200, 201, 204)',
+        400: 'rgb(171, 173, 176)',
+        500: 'rgb(143, 144, 148)',
+        600: 'rgb(114, 115, 119)',
+        700: 'rgb(90, 91, 94)',
+        800: 'rgb(67, 68, 70)',
+        900: 'rgb(46, 46, 47)',
       },
-    },
+    },    
   },
 }
