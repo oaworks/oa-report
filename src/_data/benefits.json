@@ -6,7 +6,7 @@
     "img": "impact.png"
   },
   {
-    "heading": "See a <span class='highlight'>complete picture</span> of openness",
+    "heading": "See a complete picture of openness",
     "subheading": "Gain comprehensive insights across Data Availability Statements (DAS), Open Data, Open Code, preprints, and beyond—empowering you to understand the full scope of openness in your funded research.",
     "colour": "bg-carnation-500",
     "img": "oa-data.png"
@@ -18,13 +18,13 @@
     "img": "compliance.png"
   },
   {
-    "heading": "Grant-by-grant breakdowns and analyses <span class='highlight'>tailored to your needs</span>",
+    "heading": "Deep dive into grant-level analyses and insights",
     "subheading": "View tailored breakdowns of your funded articles by grant ID, program, department, and more, structured to your organization’s needs.",
     "colour": "bg-carnation-500",
     "img": "analysis.png"
   },
   {
-    "heading": "Drive <span class='highlight'>change</span> with targeted author outreach",
+    "heading": "Drive change with targeted author outreach",
     "subheading": "Effortlessly ensure compliance with lists of contactable authors and a one-click email feature right from your dashboard.",
     "colour": "bg-carnation-500",
     "img": "outreach.png"
