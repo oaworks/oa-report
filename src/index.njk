@@ -90,7 +90,7 @@ layout: layouts/base.njk
   <div class="container mx-auto px-4">
     <div class="text-center mb-10">
       <h2 class="text-4xl font-serif text-bold leading-tight mb-4 text-neutral-900" data-sal="slide-up">
-        All your Open Access tools <span class="md:block">in one powerful platform</span>
+        Turn Open Access <span class="md:block">insights into action</span> <span class="md:block">all in one place</span>
       </h2>
       {# <p class="text-base leading-relaxed tracking-wide text-neutral-600 mb-6 max-w-md mx-auto" data-sal="slide-up">
         With <span class="font-semibold text-neutral-900">OA.Report</span>, funders and institutions benefit from a dashboard that bridges policy and practice:
@@ -140,7 +140,7 @@ layout: layouts/base.njk
         <span class="highlight">Comprehensive data & trusted insights set us apart</span>
       </h2>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-24">
+    {# <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-24">
       {% set delay_count = 0 %}
       {% for feature in why_us %}
       {% set delay_count = delay_count + 50 %}
@@ -158,52 +158,52 @@ layout: layouts/base.njk
       </div>
       {% endif %}
       {% endfor %}
-    </div>
-    {# <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-      {% set delay_count = 0 %}
-      {% for feature in why_us %}
-      {% set delay_count = delay_count + 50 %}
-      {% if loop.index <= 2 %}
-      <div class="flex flex-col text-left bg-neutral-100 py-8 px-10 rounded-lg shadow-md" data-sal="slide-up" data-sal-delay="{{ delay_count }}">
-        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-neutral-900 text-white">
-          {% icon feature.icon %}
-        </div>
-        <h3 class="text-lg font-serif text-bold text-neutral-900 mt-6 leading-snug">
-          {{ feature.heading }}
-        </h3>
-        <p class="text-sm text-neutral-700 mt-4 leading-relaxed">
-          {{ feature.description }}
-        </p>
-      </div>
-      {% endif %}
-      {% endfor %}
-    </div>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-      {% set delay_count = 0 %}
-      {% for feature in why_us %}
-      {% if loop.index > 2 %}
-      {% set delay_count = delay_count + 50 %}
-      <div class="flex flex-col text-left bg-neutral-100 py-8 px-10 rounded-lg shadow-md" data-sal="slide-up" data-sal-delay="{{ delay_count }}">
-        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-neutral-900 text-white">
-          {% icon feature.icon %}
-        </div>
-        <h3 class="text-lg font-serif text-bold text-neutral-900 mt-6 leading-snug">
-          {{ feature.heading }}
-        </h3>
-        <p class="text-sm text-neutral-700 mt-4 leading-relaxed">
-          {{ feature.description }}
-        </p>
-      </div>
-      {% endif %}
-      {% endfor %}
     </div> #}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+      {% set delay_count = 0 %}
+      {% for feature in why_us %}
+      {% if loop.index <= 3 %}
+      {% set delay_count = delay_count + 50 %}
+      <div class="flex flex-col text-left bg-neutral-100 py-8 px-10 rounded-lg shadow-md" data-sal="slide-up" data-sal-delay="{{ delay_count }}">
+        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-neutral-900 text-white">
+          {% icon feature.icon %}
+        </div>
+        <h3 class="text-lg font-serif text-bold text-neutral-900 mt-6 leading-snug">
+          {{ feature.heading | safe }}
+        </h3>
+        <p class="text-sm text-neutral-700 mt-4 leading-relaxed">
+          {{ feature.description }}
+        </p>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-24">
+      {% set delay_count = 0 %}
+      {% for feature in why_us %}
+      {% set delay_count = delay_count + 50 %}
+      {% if loop.index > 3 %}
+      <div class="flex flex-col text-left bg-neutral-100 py-8 px-10 rounded-lg shadow-md" data-sal="slide-up" data-sal-delay="{{ delay_count }}">
+        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-neutral-900 text-white">
+          {% icon feature.icon %}
+        </div>
+        <h3 class="text-lg font-serif text-bold text-neutral-900 mt-6 leading-snug">
+          {{ feature.heading | safe }}
+        </h3>
+        <p class="text-sm text-neutral-700 mt-4 leading-relaxed">
+          {{ feature.description }}
+        </p>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
     <p class="text-base text-neutral-300 mb-2">
       Ready to see the difference?
     </p>
     <h2 class="text-3xl font-serif text-bold leading-tight mb-8">
       Talk to our co-founder and explore OA.Report
     </h2>
-    <a href="https://savvycal.com/Joe/ed52a37f" data-savvycal-embed class="inline-block bg-neutral-200 text-neutral-900 py-6 px-12 rounded-sm text-lg hover:bg-neutral-100 transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-neutral-300">
+    <a href="https://savvycal.com/Joe/ed52a37f" data-savvycal-embed class="inline-block bg-neutral-200 text-neutral-900 py-3 px-6 rounded-sm text-base hover:bg-neutral-100 transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-neutral-300">
       Schedule demo now →
     </a>
   </div>

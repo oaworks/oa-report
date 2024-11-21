@@ -1,27 +1,27 @@
 [
   {
     "icon": "database",
-    "heading": "Comprehensive data, trusted insights",
-    "description": "Leverage open data, enriched through deep text mining and expert data cleaning for a complete view of your funded research."
+    "heading": "Powered by Open Data",
+    "description": "Every day, we ingest fresh data from best-in-class sources like OpenAlex and Crossref, ensuring your insights are built on the most reliable and comprehensive Open Data available."
   },
   {
-    "icon": "settings",
-    "heading": "Hands-off setup and quality control",
-    "description": "We manage the entire setup process to understand your data and perform rigorous quality checks to provide you with actionable insights."
+    "icon": "layers",
+    "heading": "Built on your data",
+    "description": "We take what you already know—from messy spreadsheets, grant reports, and personal notes—and clean, integrate, and enrich it, turning your data into actionable insights."
   },
   {
-    "icon": "file-text",
-    "heading": "Open data outputs",
-    "description": "Access and share results in open formats like CSV and JSON, for better transparency and reproducibility."
+    "icon": "plus-circle",
+    "heading": "Enhanced by our data",
+    "description": "We collect and curate missing data like Open Code, Grant IDs, and Data Availability Statements (DAS), filling in the gaps to give you unrivaled clarity and a full view on your research output."
   },
   {
-    "icon": "award",
-    "heading": "Non-profit expertise",
-    "description": "Benefit from OA.Works’ decade of experience in advancing Open Access and research transparency in the non-profit space."
+    "icon": "tool",
+    "heading": "Hands-off setup by experts",
+    "description": "With over a decade of expertise in research transparency, we manage your entire report setup and keep your data current, delivering the latest article insights effortlessly. "
   },
   {
-    "icon": "refresh-cw",
-    "heading": "Real-time data updates",
-    "description": "Stay up-to-date with continuous data refreshes on the latest article insights as soon as they become available."
+    "icon": "check-circle",
+    "heading": "Human-driven quality control",
+    "description": "Our experts perform rigorous quality checks, ensuring your data’s accuracy and reliability. We quickly address reported issues with the data, giving you confidence in every insight."
   }
 ]
