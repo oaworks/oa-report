@@ -90,7 +90,7 @@ layout: layouts/base.njk
   <div class="container mx-auto px-4">
     <div class="text-center mb-10">
       <h2 class="text-4xl font-serif text-bold leading-tight mb-4 text-neutral-900" data-sal="slide-up">
-        Discover, analyze, and comply <span class="md:block">with Open Access all in one place</span>
+        All your Open Access tools <span class="md:block">in one powerful platform</span>
       </h2>
       {# <p class="text-base leading-relaxed tracking-wide text-neutral-600 mb-6 max-w-md mx-auto" data-sal="slide-up">
         With <span class="font-semibold text-neutral-900">OA.Report</span>, funders and institutions benefit from a dashboard that bridges policy and practice:
@@ -133,14 +133,33 @@ layout: layouts/base.njk
 </section>
 
 {# Why OA.Report Section #}
-<section class="bg-neutral-900 text-neutral-100 py-12">
+<section class="bg-neutral-900 text-neutral-100 pt-24 pb-12">
   <div class="container mx-auto px-4 text-center">
     <div class="mb-12" data-sal="fade" data-sal-delay="100">
       <h2 class="text-3xl font-normal text-neutral-100 leading-snug mb-6">
-        <span class="highlight">What sets us apart</span>
+        <span class="highlight">Comprehensive data & trusted insights set us apart</span>
       </h2>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+      {% set delay_count = 0 %}
+      {% for feature in why_us %}
+      {% set delay_count = delay_count + 50 %}
+      {% if loop.index > 1 %}
+      <div class="flex flex-col text-left bg-neutral-100 py-8 px-10 rounded-lg shadow-md" data-sal="slide-up" data-sal-delay="{{ delay_count }}">
+        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-neutral-900 text-white">
+          {% icon feature.icon %}
+        </div>
+        <h3 class="text-lg font-serif text-bold text-neutral-900 mt-6 leading-snug">
+          {{ feature.heading }}
+        </h3>
+        <p class="text-sm text-neutral-700 mt-4 leading-relaxed">
+          {{ feature.description }}
+        </p>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+    {# <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
       {% set delay_count = 0 %}
       {% for feature in why_us %}
       {% set delay_count = delay_count + 50 %}
@@ -177,7 +196,7 @@ layout: layouts/base.njk
       </div>
       {% endif %}
       {% endfor %}
-    </div>
+    </div> #}
     <a href="https://savvycal.com/Joe/ed52a37f" data-savvycal-embed class="inline-block bg-neutral-200 text-neutral-900 py-6 px-12 rounded-sm text-lg hover:bg-neutral-100 transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-neutral-300">
       Schedule demo now →
     </a>
