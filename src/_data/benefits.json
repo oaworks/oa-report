@@ -22,7 +22,7 @@
   },
   {
     "heading": "Deep dive into grant-level analyses",
-    "subheading": "View tailored breakdowns of your funded articles by grant ID, program, department, and more, structured to your organization’s needs.",
+    "subheading": "View tailored breakdowns of your funded articles by grant ID, program, and more, structured to your organization’s needs.",
     "colour": "bg-carnation-500",
     "img": "analysis.png",
     "icon": "database"
