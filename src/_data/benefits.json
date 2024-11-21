@@ -3,30 +3,35 @@
     "heading": "Track more of your research output",
     "subheading": "OA.Report finds more articles funded by your organization than anyone else, giving you a greater view of your research impact.",
     "colour": "bg-carnation-500",
-    "img": "impact.png"
+    "img": "impact.png",
+    "icon": "paperclip"
   },
   {
     "heading": "See a complete picture of openness",
     "subheading": "Gain comprehensive insights across Data Availability Statements (DAS), Open Data, Open Code, preprints, and beyond—empowering you to understand the full scope of openness in your funded research.",
     "colour": "bg-carnation-500",
-    "img": "oa-data.png"
+    "img": "oa-data.png",
+    "icon": "book-open"
   },
   {
-    "heading": "Measure OA compliance with confidence",
+    "heading": "Measure policy compliance with confidence",
     "subheading": "We set everything up to match your Open Access policy, measuring your articles against your specific compliance requirements—so you can be confident that your standards are met.",
     "colour": "bg-carnation-500",
-    "img": "compliance.png"
+    "img": "compliance.png",
+    "icon": "check-circle"
   },
   {
-    "heading": "Deep dive into grant-level analyses and insights",
+    "heading": "Deep dive into grant-level analyses",
     "subheading": "View tailored breakdowns of your funded articles by grant ID, program, department, and more, structured to your organization’s needs.",
     "colour": "bg-carnation-500",
-    "img": "analysis.png"
+    "img": "analysis.png",
+    "icon": "database"
   },
   {
     "heading": "Drive change with targeted author outreach",
     "subheading": "Effortlessly ensure compliance with lists of contactable authors and a one-click email feature right from your dashboard.",
     "colour": "bg-carnation-500",
-    "img": "outreach.png"
+    "img": "outreach.png",
+    "icon": "send"
   }
 ]
