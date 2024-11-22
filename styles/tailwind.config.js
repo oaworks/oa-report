@@ -3,6 +3,7 @@ const plugin = require('tailwindcss/plugin');
 module.exports = {
   content: [
     './src/_includes/**/*.{njk,svg}',
+    './src/_data/*.json',
     './src/**/*.njk',
     './src/*.njk',
     './src/js/*.js',
@@ -80,19 +81,31 @@ module.exports = {
       const flattenColours = (colors, prefix = '') =>
         Object.entries(colors).reduce((acc, [key, value]) => {
           if (typeof value === 'object' && value !== null) {
+            // If the current key is `DEFAULT`, don't append a `-`
             Object.assign(
               acc,
-              flattenColours(value, `${prefix}${key === 'DEFAULT' ? '' : `${key}-`}`)
+              flattenColours(value, key === 'DEFAULT' ? prefix : `${prefix}${key}-`)
             );
           } else {
+            // Append the key directly; `DEFAULT` uses the current prefix only
             acc[`${prefix}${key === 'DEFAULT' ? '' : key}`] = value;
           }
           return acc;
         }, {});
-
+      
       // Get flattened colours
       const flattenedColours = flattenColours(theme('colors'));
 
+      // Remove trailing `-` from the colour names
+      Object.keys(flattenedColours).forEach(key => {
+        if (key.endsWith('-')) {
+          flattenedColours[key.slice(0, -1)] = flattenedColours[key];
+          delete flattenedColours[key];
+        }
+      });
+
+      console.log('Flattened Colours:', flattenedColours);
+      
       // Use matchUtilities to dynamically generate `highlight-{colour}` classes
       matchUtilities(
         {
@@ -102,12 +115,12 @@ module.exports = {
               borderRadius: '0.8em 0.3em',
               backgroundImage: `linear-gradient(
                 to right,
-                rgba(${rgbValue}, 0.1),
-                rgba(${rgbValue}, 0.3) 4%,
-                rgba(${rgbValue}, 0.2)
+                rgba(${rgbValue}, 0.2), 
+                rgba(${rgbValue}, 0.5) 4%, 
+                rgba(${rgbValue}, 0.3)
               )`,
             };
-          },
+          },          
         },
         { values: flattenedColours }
       );
