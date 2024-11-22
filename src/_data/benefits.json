@@ -1,34 +1,34 @@
 [
   {
-    "heading": "<span class='highlight-yellow'>Track more</span> of your research output",
+    "heading": "<span class='highlight-carnation-400'>Track more</span> of your research output",
     "subheading": "OA.Report finds more articles funded by your organization than anyone else, giving you a greater view of your research impact.",
     "colour": "bg-carnation-500",
     "img": "impact.png",
     "icon": "paperclip"
   },
   {
-    "heading": "See a <span class='highlight-green'>complete picture</span> of openness",
+    "heading": "See a <span class='highlight-carnation-400'>complete picture</span> of openness",
     "subheading": "Gain comprehensive insights across Data Availability Statements (DAS), Open Data, Open Code, preprints, and beyond—empowering you to understand the full scope of openness in your funded research.",
     "colour": "bg-carnation-500",
     "img": "oa-data.png",
     "icon": "book-open"
   },
   {
-    "heading": "Measure <span class='highlight-blue'>policy compliance</span> with confidence",
+    "heading": "Measure <span class='highlight-carnation-400'>policy compliance</span> with confidence",
     "subheading": "We set everything up to match your Open Access policy, stacking up your articles against your specific compliance requirements—so you can be confident that your standards are met.",
     "colour": "bg-carnation-500",
     "img": "compliance.png",
     "icon": "check-circle"
   },
   {
-    "heading": "<span class='highlight-purple'>Deep dive</span> into grant-level analyses",
+    "heading": "<span class='highlight-carnation-400'>Deep dive</span> into grant-level analyses",
     "subheading": "View tailored breakdowns of your funded articles by grant ID, program, and more, structured to your organization’s needs.",
     "colour": "bg-carnation-500",
     "img": "analysis.png",
     "icon": "database"
   },
   {
-    "heading": "Drive change with targeted <span class='highlight-peach'>author outreach</span>",
+    "heading": "Drive change with targeted <span class='highlight-carnation-400'>author outreach</span>",
     "subheading": "Effortlessly ensure compliance with lists of contactable authors and a one-click email feature right from your dashboard.",
     "colour": "bg-carnation-500",
     "img": "outreach.png",
