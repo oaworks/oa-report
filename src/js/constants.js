@@ -610,6 +610,10 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
     label: "In repository?",
     info: ""
   },
+  "openalx.open_access.oa_status": {
+    label: "Open Access status",
+    info: ""
+  },
   "is_oa": {
     label: "Open Access?",
     info: ""
