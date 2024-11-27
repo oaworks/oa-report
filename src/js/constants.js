@@ -610,8 +610,12 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
     label: "Funder(s)",
     info: ""
   },
-  "has_repository_copy": {
+  "openalx.open_access.any_repository_has_fulltext": {
     label: "In repository?",
+    info: ""
+  },
+  "openalx.open_access.oa_status": {
+    label: "Open Access status",
     info: ""
   },
   "is_oa": {
