@@ -222,7 +222,11 @@ layout: layouts/base.njk
       {% set delay_count = delay_count + 50 %}
       <a href="{{ case.url }}" target="_blank" rel="noopener" class="block bg-neutral-900 text-white shadow-md rounded-lg overflow-hidden transition transform hover:scale-105 hover:shadow-lg" data-sal="slide-up" data-sal-delay="{{ delay_count }}">        
         <div class="flex items-center bg-neutral-900 py-4 px-6">
-          {% webpImg case.logo, "Logo for " + case.acronym, case.width, case.height, 'h-10 w-auto', true %}
+          {% if case.logo %}
+            {% webpImg case.logo, "Logo for " + case.acronym, case.width, case.height, 'h-10 w-auto', true %}
+          {% else %}
+            <p class="h-10 font-bold font-serif">{{ case.org }}</p>
+          {% endif %}
         </div>        
         <div class="relative">
           {% webpImg case.bg, case.bg_alt, 600, 400, 'w-full h-64 object-cover', true %}
@@ -249,7 +253,7 @@ layout: layouts/base.njk
       </div>
       <div class="md:w-2/3" data-sal="slide-up" data-sal-delay="50">
         <p class="text-3xl font-serif text-bold leading-snug mb-4">
-          “As manager of our OA policy, the policy can only be as successful as our ability to spot non-compliance and enact corrections. (...) This is what OA.Report accomplishes.”
+          “As manager of our OA policy, the policy can only be as successful as our ability to spot non-compliance and enact corrections. (&hellip;) This is what OA.Report accomplishes.”
         </p>
         <p class="text-base leading-relaxed tracking-wide text-neutral-600">
           {# Maybe need a link for her to prove credentials? #}
