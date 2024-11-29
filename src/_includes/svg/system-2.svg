@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 680 511">
-  <mask id="system-2" width="680" height="511" x="0" y="0" maskUnits="userSpaceOnUse">
-    <path fill="#fff" d="M0 .5h680v510H0z"/>
-  </mask>
-  <g stroke="#fff" stroke-width="10" mask="url(#system-2)">
-    <path fill="#D666FF" d="M490.3 111.4h70.3v70.3h-70.3zM490.3 271.9h70.3v70.3h-70.3zM490.3 432.4h70.3v70.3h-70.3z"/>
-    <path d="M495.6 137.3l27.3 29 67.8-72M495.6 458.3l27.3 29 67.8-72"/>
-  </g>
-</svg>

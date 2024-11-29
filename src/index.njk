@@ -92,9 +92,6 @@ layout: layouts/base.njk
       <h2 class="text-4xl font-serif font-bold leading-tight mb-4 text-neutral-900" data-sal="slide-up">
         Turn Open Access <span class="md:block">insights into action</span> <span class="md:block">all in one place</span>
       </h2>
-      {# <p class="text-base leading-relaxed tracking-wide text-neutral-600 mb-6 max-w-md mx-auto" data-sal="slide-up">
-        With <span class="font-semibold text-neutral-900">OA.Report</span>, funders and institutions benefit from a dashboard that bridges policy and practice:
-      </p> #}
     </div>
     <div class="space-y-12">
       {% set delay_count = 0 %}
@@ -139,25 +136,6 @@ layout: layouts/base.njk
         <span class="highlight">Comprehensive data & trusted insights set us apart</span>
       </h2>
     </div>
-    {# <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-24">
-      {% set delay_count = 0 %}
-      {% for feature in why_us %}
-      {% set delay_count = delay_count + 50 %}
-      {% if loop.index > 1 %}
-      <div class="flex flex-col text-left bg-neutral-100 py-8 px-10 rounded-lg shadow-md" data-sal="slide-up" data-sal-delay="{{ delay_count }}">
-        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-neutral-900 text-white">
-          {% icon feature.icon %}
-        </div>
-        <h3 class="text-lg font-serif font-bold text-neutral-900 mt-6 leading-snug">
-          {{ feature.heading }}
-        </h3>
-        <p class="text-sm text-neutral-700 mt-4 leading-relaxed">
-          {{ feature.description }}
-        </p>
-      </div>
-      {% endif %}
-      {% endfor %}
-    </div> #}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
       {% set delay_count = 0 %}
       {% for feature in why_us %}
@@ -256,7 +234,6 @@ layout: layouts/base.njk
           “As manager of our OA policy, the policy can only be as successful as our ability to spot non-compliance and enact corrections. (&hellip;) This is what OA.Report accomplishes.”
         </p>
         <p class="text-base leading-relaxed tracking-wide text-neutral-600">
-          {# Maybe need a link for her to prove credentials? #}
           — Ashley Farley<br> 
           Senior Officer of Knowledge and Research Services<br>
           Bill and Melinda Gates Foundation
