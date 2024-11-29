@@ -103,8 +103,6 @@ module.exports = {
           delete flattenedColours[key];
         }
       });
-
-      console.log('Flattened Colours:', flattenedColours);
       
       // Use matchUtilities to dynamically generate `highlight-{colour}` classes
       matchUtilities(
