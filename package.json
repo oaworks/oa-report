@@ -20,7 +20,7 @@
     "html-minifier": "^4.0.0",
     "postcss-cli": "^9.1.0",
     "sass": "^1.49.9",
-    "tailwindcss": "^3.0.24",
+    "tailwindcss": "^3.4.16",
     "terser": "^5.27.0"
   },
   "dependencies": {
