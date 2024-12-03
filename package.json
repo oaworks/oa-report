@@ -19,7 +19,7 @@
     "concurrently": "^7.0.0",
     "html-minifier": "^4.0.0",
     "postcss-cli": "^9.1.0",
-    "sass": "^1.49.9",
+    "sass": "^1.81.1",
     "tailwindcss": "^3.0.24",
     "terser": "^5.27.0"
   },
