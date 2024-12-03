@@ -326,8 +326,6 @@ function createExploreFilterRadioButton(id, isChecked) {
     });
 
     const tooltipID = `${id}_info`;
-    filterRadioButton.setAttribute('aria-controls', tooltipID);
-    filterRadioButton.setAttribute('aria-labelledby', tooltipID);
   }
 
   // Create and append radio input
