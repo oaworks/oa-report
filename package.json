@@ -26,7 +26,7 @@
   "dependencies": {
     "18": "^0.0.0",
     "axios": "^1.7.9",
-    "caniuse-lite": "^1.0.30001600",
+    "caniuse-lite": "^1.0.30001687",
     "canvas": "^2.11.2",
     "dotenv": "^16.0.3",
     "feather-icons": "^4.28.0",
