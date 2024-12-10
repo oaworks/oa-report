@@ -326,8 +326,6 @@ function createExploreFilterRadioButton(id, isChecked) {
     });
 
     const tooltipID = `${id}_info`;
-    filterRadioButton.setAttribute('aria-controls', tooltipID);
-    filterRadioButton.setAttribute('aria-labelledby', tooltipID);
   }
 
   // Create and append radio input
@@ -382,7 +380,7 @@ function addRecordsShownSelectToDOM() {
   selectMenu.addEventListener("change", handleRecordsShownChange);
 
   // Define options for the select menu
-  const options = [5, 10, 20, 50, 100, 500];
+  const options = [5, 10, 20, 50, 100, 500, 1000];
   options.forEach((optionValue) => {
     const option = document.createElement("option");
     option.value = optionValue;

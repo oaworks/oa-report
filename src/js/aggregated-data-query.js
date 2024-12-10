@@ -149,7 +149,7 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
           "in_repository": {
             "filter": {
               "term": {
-                "has_repository_copy": true
+                "openalx.open_access.any_repository_has_fulltext": true
               }
             }
           },
@@ -901,7 +901,7 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
           "in_repository": {
             "filter": {
               "term": {
-                "has_repository_copy": true
+                "openalx.open_access.any_repository_has_fulltext": true
               }
             }
           },
@@ -1651,7 +1651,7 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
           "in_repository": {
             "filter": {
               "term": {
-                "has_repository_copy": true
+                "openalx.open_access.any_repository_has_fulltext": true
               }
             }
           },
