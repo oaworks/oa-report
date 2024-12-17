@@ -310,6 +310,13 @@ permalink: "{{ org._source.objectID | slug }}/"
           <nav class="hidden sm:block mt-6 mb-10">
             <ul class="flex flex-wrap space-r-4 space-b-4 items-center" role="tablist" aria-label="Actions Tabs">
               {{ component("strategy-pill", {
+                id: "email_author_preprint",
+                txt: "Deposit preprints",
+                class: "font-semibold bg-carnation-300",
+                first: true
+              }) }}
+
+              {{ component("strategy-pill", {
                 id: "email_author_vor",
                 txt: "Deposit publisher PDFs",
                 class: "font-semibold bg-carnation-300",
@@ -334,6 +341,17 @@ permalink: "{{ org._source.objectID | slug }}/"
           </nav>
 
           <div class="hidden sm:block js_strategies">
+            {{ component("strategy-contents", {
+              id: "email_author_preprints",
+              heading: "Deposit preprints",
+              desc: "Send emails to authors to request they make their work free to read. In these cases, they can do that by making a <strong>preprint</strong> available in a repository.",
+              table_headings: "<th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-10/12 sm:w-6/12'>Article</th>\
+                              <th scope='col' class='hidden px-3 py-3.5 text-left text-sm font-semibold w-4/12 sm:table-cell'>Corresponding author</th>",
+              draft_btn: true,
+              action_help_txt: true,
+              hidden: false
+            }) }}
+
             {{ component("strategy-contents", {
               id: "email_author_vor",
               heading: "Deposit publisher PDFs",
