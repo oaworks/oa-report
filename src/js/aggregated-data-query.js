@@ -148,8 +148,29 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
           },
           "in_repository": {
             "filter": {
-              "term": {
-                "openalx.open_access.any_repository_has_fulltext": true
+              "bool": {
+                "should": [
+                  {
+                    "term": {
+                      "openalx.open_access.any_repository_has_fulltext": {
+                        "value": true
+                      }
+                    }
+                  },
+                  {
+                    "term": {
+                      "has_repository_copy": {
+                        "value": true
+                      }
+                    }
+                  },
+                  {
+                    "exists": {
+                      "field": "PMCID"
+                    }
+                  }
+                ],
+                "minimum_should_match": 1
               }
             }
           },
