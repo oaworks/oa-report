@@ -27,7 +27,7 @@
     "18": "^0.0.0",
     "axios": "^1.7.9",
     "caniuse-lite": "^1.0.30001689",
-    "canvas": "^2.11.2",
+    "canvas": "^3.0.0",
     "dotenv": "^16.0.3",
     "feather-icons": "^4.28.0",
     "markdown-it-attrs": "^4.3.0",
