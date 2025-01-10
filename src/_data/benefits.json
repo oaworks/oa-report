@@ -1,6 +1,6 @@
 [
   {
-    "heading": "<span class='highlight-carnation-400'>Track more</span> of your research with unmatched accuracy",
+    "heading": "<span class='highlight-carnation-400'>Track more</span> of your research, more accurately",
     "subheading": "OA.Report tracks more of the articles funded by your organization, with greater precision and recall than anyone else, giving you the most complete view of your research output’s impact.",
     "colour": "bg-carnation-500",
     "img": "track-more.png",
@@ -21,7 +21,7 @@
     "icon": "check-circle"
   },
   {
-    "heading": "<span class='highlight-carnation-400'>Deep dive</span> into grant-level analyses",
+    "heading": "<span class='highlight-carnation-400'>Take a deep dive</span> into grant-level analyses",
     "subheading": "View tailored breakdowns of your funded articles by grant ID, program, and more, structured to your organization’s needs.",
     "colour": "bg-carnation-500",
     "img": "deep-dive.png",

@@ -12,7 +12,7 @@
   {
     "icon": "plus-circle",
     "heading": "Enhanced by <span class='italic'>our data</span>",
-    "description": "We collect and curate missing data like Open Code, Grant IDs, and Data Availability Statements (DAS), filling in the gaps to give you unrivaled clarity and a full view on your research output."
+    "description": "We collect and curate missing data like Open Code, Grant IDs, and Data Availability Statements (DAS), filling in the gaps to give you unrivaled clarity and a full view of your research outputs."
   },
   {
     "icon": "tool",
@@ -22,6 +22,6 @@
   {
     "icon": "check-circle",
     "heading": "Human-driven quality control",
-    "description": "Our experts perform rigorous quality checks, ensuring your data’s accuracy and reliability. We quickly address reported issues with the data, giving you confidence in every insight."
+    "description": "Our experts perform rigorous quality checks, ensuring your data’s accuracy and reliability. We quickly address reported issues with the data, so you can be confident in our insights."
   }
 ]
