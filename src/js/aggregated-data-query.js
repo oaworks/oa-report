@@ -6,7 +6,7 @@
  * @param {string} suffix - The suffix for the org-specific data fields in Elasticsearch.
  * @returns {Object} The aggregation template object containing various filters and metrics.
  */
-function createAggregationTemplate(suffix) {
+function createAggregationTemplate(id, suffix) {
   return {
     "open_access": { // Corresponds to `analysis.is_oa.query`, column N
       "filter": {
@@ -15,19 +15,17 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
-    "compliant": { // Corresponds to `analysis.is_compliant.query`, column BO
-      "filter": { // I think for this one, we're not using the query. Each organization has a custom query, so it is not standardized. Instead, we're using a key from a data sheet where we are exporting ones we know are compliant with the organization's policy. However, the key below (`supplements.is_compliant_all_works__${suffix}`) only corresponds to two sheets that are named in this way/are exporting data under this key: `is_compliant_all_works__idrc` and `is_compliant_all_works__ukri`.
-        // Option 1: We update all of the `is_compliant` sheets to export the key `supplements.is_compliant_all_works__${suffix}` (including BOTH HHMI sheets) - this could replace the old key or be added as a new key.
-        // Option 2: We use "bool" in this filter to capture the other keys we use to export compliance. 
+    "compliant": {
+      "filter": {
         "term": {
-          [`supplements.is_compliant__${suffix}`]: true
+          "oa_policy.is_compliant": id
         }
       }
     },
-    "covered_by_policy": { // Corresponds to `analysis.is_covered_by_policy.query`, column BT
-      "filter": { // This is the same procedure as "compliant" - we're using a data sheet key instead of the query.
+    "covered_by_policy": { 
+      "filter": {
         "term": {
-          [`supplements.is_covered_by_policy__${suffix}`]: true
+          "oa_policy.is_covered_by_policy": id
         }
       }
     },
@@ -683,8 +681,8 @@ function createAggregationTemplate(suffix) {
  * @param {string} sort - The field to sort the term aggregations on.
  * @returns {Object} The POST request body for Elasticsearch.
  */
-export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, size = 20, sort = "_count") {
-  const aggs = createAggregationTemplate(suffix);
+export function getAggregatedDataQuery(id, suffix, query, term, startYear, endYear, size = 20, sort = "_count") {
+  const aggs = createAggregationTemplate(id, suffix);
 
   return {
     "query": {
