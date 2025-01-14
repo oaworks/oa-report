@@ -35,25 +35,33 @@ export const DEFAULT_YEAR_FREE = 2023;
 export const FIRST_YEAR = 2015;
 
 /**
+ * Determines if the current date is in Q2 or later of the current year.
+ * @returns {boolean} True if the current date is on or after April 1 of the current year, false otherwise.
+ */
+function isQuarterTwoOrLater() {
+  const currentMonth = currentDate.getMonth();
+  return currentMonth >= 3; // Q2 starts in April (Month 3)
+}
+
+/**
  * Sets up the default year for the application, depending on whether the user is a paid user or not.
- * 
  */
 export function setDefaultYear() {
   const startParam = getURLParam('start');
   const endParam = getURLParam('end');
-  const breakdownParam = getURLParam('breakdown'); 
+  const breakdownParam = getURLParam('breakdown');
   const actionParam = getURLParam('action');
 
-  // Wait for the DOM + asynchronously loaded page elements to be ready 
-  // before attempting to set report’s selected date range, breakdown, and action 
-  window.onload = function() {
+  // Wait for the DOM + asynchronously loaded page elements to be ready
+  // before attempting to set the report’s selected date range, breakdown, and action
+  window.onload = function () {
     // Check if there’s a start and end date in the URL
     // TODO: handle start and end date parameters in a separate function and similar to how
     // the breakdown parameter is handled
     if (startParam && endParam) {
       // Attempt to load date range from URL parameters
       // Interpret both dates as UTC noon to avoid timezone issues, see oaworks/discussion#2744
-      const startDate = new Date(`${startParam}T12:00:00Z`); 
+      const startDate = new Date(`${startParam}T12:00:00Z`);
       const endDate = new Date(`${endParam}T12:00:00Z`);
 
       // Replace the date range, if present, with the one from the URL
@@ -69,28 +77,36 @@ export function setDefaultYear() {
       let elementToUpdate;
 
       // Check if startDate and endDate correspond to the start and end of the same year
-      if (startDate.getFullYear() === endDate.getFullYear() &&
-          startDate.getMonth() === 0 && // January is 0
-          startDate.getDate() === 1 && // Start of the year
-          endDate.getMonth() === 11 && // December is 11
-          endDate.getDate() === 31) { // End of the year
-          // If true, select &style the button with ID `year-[YYYY]`
-          elementToUpdate = document.getElementById(`year-${startDate.getFullYear()}`);
+      if (
+        startDate.getFullYear() === endDate.getFullYear() &&
+        startDate.getMonth() === 0 && // January is 0
+        startDate.getDate() === 1 && // Start of the year
+        endDate.getMonth() === 11 && // December is 11
+        endDate.getDate() === 31 // End of the year
+      ) {
+        // If true, select & style the button with ID `year-[YYYY]`
+        elementToUpdate = document.getElementById(`year-${startDate.getFullYear()}`);
       } else {
-          // Otherwise, select & style the date range form
-          elementToUpdate = document.getElementById("date_range_form");
+        // Otherwise, select & style the date range form
+        elementToUpdate = document.getElementById("date_range_form");
       }
-      // Style the selected element, whether it’s ayear button or the date range form
+      // Style the selected element, whether it’s a year button or the date range form
       updateYearButtonStyling(elementToUpdate, true);
     } else {
       // Otherwise, set default dates or years based on user type
       let defaultStartDate, defaultEndDate;
 
       if (paid) {
-        // For paid users, use the full year
-        defaultStartDate = createDate(DEFAULT_YEAR, 0, 1); // January 1st
-        defaultEndDate = new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate())); // Today’s date
-        // See https://github.com/oaworks/discussion/issues/1919#issuecomment-2034231857
+        // For paid users, use the full year unless it's Q2 or later
+        if (isQuarterTwoOrLater()) {
+          // Switch to the current year for Q2 and beyond
+          defaultStartDate = createDate(currentDate.getFullYear(), 0, 1); // Jan 1 of the current year
+          defaultEndDate = new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate())); // Today’s date
+        } else {
+          // Default to the previous year
+          defaultStartDate = createDate(DEFAULT_YEAR, 0, 1); // January 1st
+          defaultEndDate = createDate(DEFAULT_YEAR, 11, 31); // December 31st
+        }
       } else {
         // For non-paid users, restrict the date range from Jan 1 to Jun 30 of DEFAULT_YEAR_FREE
         defaultStartDate = createDate(DEFAULT_YEAR_FREE, 0, 1); // January 1st
@@ -118,10 +134,10 @@ export function setDefaultYear() {
     if (breakdownParam) {
       const exploreButton = document.getElementById(`explore_${breakdownParam}_button`);
       if (exploreButton) {
-        exploreButton.click(); 
+        exploreButton.click();
       }
     }
-    
+
     if (actionParam) {
       const strategyButton = document.getElementById(`strategy_${actionParam}`);
       if (strategyButton) {
