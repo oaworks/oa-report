@@ -287,14 +287,14 @@ async function addExploreFiltersToDOM(query) {
  */
 function createExploreFilterRadioButton(id, isChecked) {
   const labelData = EXPLORE_FILTERS_LABELS[id];
-  const label = labelData.label || id;  // Use label from filters or default to ID
+  const label = labelData ? labelData.label || id : id; // Use label from filters or default to ID
 
   // Create div to contain radio input and label
   const filterRadioButton = document.createElement('div');
   filterRadioButton.className = 'flex items-center mr-3 md:mr-6 mb-3';
 
   // Generate and set tooltip if info is present and non-empty
-  if (labelData.info && labelData.info.trim()) {
+  if (labelData && labelData.info && labelData.info.trim()) {
     const tooltipContent = generateTooltipContent(labelData);
 
     // Initialise Tippy tooltip if there is tooltip content
