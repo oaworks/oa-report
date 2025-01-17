@@ -14,16 +14,16 @@ permalink: "{{ org._source.objectID | slug }}/"
     <div class="grid grid-cols-2 gap-3 sm:gap-6 md:gap-12 py-3 xl:pb-6 xl:pt-12">
       <header class="col-span-2 md:col-span-1">
         <h1 class="flex items-center">
-          <div class="text-2xl md:text-4xl font-light">
+          <div class="text-2xl md:text-4xl">
             {% if org._source.paid == true %}
               {{ component("tooltip", {
                 msg: "<p>This OA.Report uses <a href='https://about.oa.report/docs/sources' target='_blank' class='underline underline-offset-4 decoration-1'>all our data sources</a> and state-of-the-art analysis to provide insights into their publications, impact, and how open their research is.</p>",
-                text: "<div class='highlight'>" + org._source.name + "</div><div><span class='report_readable_start_date'></span> — <span class='report_readable_end_date'></span></div>"
+                text: "<span class='highlight-carnation-500 font-serif'>" + org._source.name + "</span><div class='mt-2 text-lg'><span class='report_readable_start_date'></span> — <span class='report_readable_end_date'></span></div>"
               }) }}
             {% else %}
               {{ component("tooltip", {
                 msg: "<p>This OA.Report uses <a href='https://about.oa.report/docs/sources#open-sources' target='_blank' class='underline underline-offset-4 decoration-1'>open data</a> and automated analysis to provide insights into their publication volume and how open their research is.</p>",
-                text: "<div class='highlight'>" + org._source.name + "</div><div><span class='report_readable_start_date'></span> — <span class='report_readable_end_date'></span></div>"
+                text: "<span class='highlight-carnation-500 font-serif'>" + org._source.name + "</span><div class='mt-2 text-lg'><span class='report_readable_start_date'></span> — <span class='report_readable_end_date'></span></div>"
               }) }}
             {% endif %}
           </div>
