@@ -3,14 +3,16 @@ layout: layouts/base.njk
 ---
 
 {# Hero Section #}
-<header class="text-center pt-12 pb-6 bg-neutral-100">
+<header class="text-center pt-12 pb-8 bg-neutral-100">
   <div class="container mx-auto px-4" data-sal="fade" data-sal-delay="250">
-    <h1 class="text-4xl font-light leading-tighter mb-6">
-      Unlocking your <span class="md:block"><span id="swapping-text" class="highlight">grantees’</span></span> research, simply
+    <h1 class="text-5xl font-serif font-bold leading-tighter mb-4 text-neutral-900">
+      Unlock your <span class="block"><span id="swapping-text" class="highlight-carnation-500 text-neutral-900">grantees’</span></span> research, simply
     </h1>
-    <p class="text-xl font-light text-neutral-600 mb-6 max-w-lg mx-auto">Find your articles, measure their openness, and take action to increase your OA policy compliance.</p>
-    <a href="https://savvycal.com/Joe/ed52a37f" data-savvycal-embed class="inline-block bg-neutral-900 text-white mb-6 py-3 px-8 rounded-sm text-lg hover:bg-neutral-800 transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-neutral-300">
-      Schedule a demo →
+    <p class="text-base text-neutral-700 mb-6 max-w-md mx-auto leading-relaxed tracking-wide">
+      Find your articles, measure their openness, and take action to increase your Open Access policy compliance.
+    </p>
+    <a href="https://savvycal.com/Joe/ed52a37f" data-savvycal-embed class="inline-block bg-carnation-600 text-white mb-6 py-3 px-6 rounded-sm text-base hover:bg-carnation-500 transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-carnation-200">
+      Schedule demo →
     </a>
   </div>
 </header>
@@ -18,30 +20,32 @@ layout: layouts/base.njk
 {# Product Image Section #}
 <section class="relative bg-neutral-100 pt-4 pb-0">
   <div class="container mx-auto px-4 text-center relative z-10">
-    <h2 class="text-sm font-semibold text-neutral-900 mb-4">
-      <span data-sal="fade" data-sal-delay="250">Your data meets Open Data,</span> <span class="md:block" data-sal="fade" data-sal-delay="250">shaped by expert analysis.</span>
+    <h2 class="text-base font-medium text-neutral-900 leading-relaxed tracking-wide mb-2">
+      <span data-sal="fade" data-sal-delay="250">Your data meets Open Data,</span> 
+      <span class="md:block" data-sal="fade" data-sal-delay="250">shaped by expert analysis.</span>
     </h2>
-    <div class="relative max-w-4xl mx-auto shadow-lg rounded-lg border border-dotted border-neutral-700 overflow-hidden z-20"  data-sal="slide-up" data-sal-delay="350">
+    <div class="relative max-w-4xl mx-auto shadow-lg rounded-lg border border-neutral-300 overflow-hidden z-20" data-sal="slide-up" data-sal-delay="250">
       {% webpImg "img/screenshot.png", "OA.Report Web Application Screenshot", 2500, 1220, "mx-auto", false %}
     </div>
   </div>
-  {# Dark Background extension #}
   <div class="absolute inset-x-0 bottom-0 bg-neutral-900 h-32 z-0 -mt-16"></div>
 </section>
 
 {# Trusted By Section #}
-<section class="pt-8 pb-16 bg-neutral-900 text-white">
+<section class="pt-8 pb-16 bg-neutral-900 text-neutral-100">
   <div class="container mx-auto px-4 py-8">
-    <h2 class="text-center text-lg font-semibold text-neutral-200 mb-8">Trusted by leading research funders</h2>
+    <h2 class="text-center text-lg font-medium text-neutral-200 leading-relaxed tracking-wide mb-8">
+      Trusted by leading research funders
+    </h2>
     <div class="grid grid-cols-3 gap-8 md:grid-cols-3 lg:grid-cols-6 justify-center items-center">
-      {% set delay_count = 0 %} {# Set initial animation delay to 0ms for Sal.js #}
+      {% set delay_count = 0 %}
       {% for user in users %}
-      {% set delay_count = delay_count + 50 %} {# Increase animation delay by 100ms #}
+      {% set delay_count = delay_count + 50 %}
         {% if user.logo %}
         <p class="sr-only">{{ user.name }}</p>
         <a href="{{ user.url }}" target="_blank" rel="noopener" class="block h-12" title="Go to the {{ user.acronym }} website" data-sal="slide-up" data-sal-delay="{{ delay_count }}">
           {% set imgFile = "../" + user.logo %}
-          {% set altText = "Logo for " + user.acronym  %}
+          {% set altText = "Logo for " + user.acronym %}
           {% webpImg imgFile, altText, user.width, user.height, '', true %}
         </a>
         {% endif %}
@@ -51,18 +55,18 @@ layout: layouts/base.njk
 </section>
 
 {# Testimonial Section #}
-<section class="bg-neutral-100 text-neutral-900 py-24">
-  <div class="container mx-auto px-4 flex justify-center items-center">
-    <div class="w-full max-w-6xl flex flex-col md:flex-row items-center gap-12">
-      <div class="md:w-1/2" data-sal="slide-up">
-        <p class="text-lg text-light mb-4">
-          As seen in <a href="https://www.nature.com/articles/d41586-023-00175-1" target="_blank" rel="noopener" class="underline underline-offset-2 decoration-1">Nature:<br>“Confused by open-access policies? These tools can help”</a>.
+<section class="bg-white text-neutral-900 py-24">
+  <div class="container mx-auto px-4">
+    <div class="w-full max-w-6xl flex flex-col md:flex-row justify-center items-start md:items-center gap-12">
+      <div class="md:w-2/3" data-sal="slide-up">
+        <p class="text-base leading-relaxed tracking-wide text-neutral-700 mb-2" data-sal="slide-up">
+          As seen in <a href="https://www.nature.com/articles/d41586-023-00175-1" target="_blank" rel="noopener" class="underline underline-offset-2 decoration-neutral-600">Nature:</a>
         </p>
-        <p class="text-2xl text-light">
-          “The Bill & Melinda Gates Foundation in Seattle, Washington, has invested US$1.8 million to support the development of OA.Report, a tool that helps funders to track awardee compliance with foundation open-access policies. Developed by OA.Works in London, OA.Report uses text-mining techniques to match articles with the funder that supported the work, by sifting through academic papers and open-access metadata.”
+        <p class="text-4xl font-serif font-bold leading-tight text-neutral-900" data-sal="slide-up">
+          <a href="https://www.nature.com/articles/d41586-023-00175-1" target="_blank" rel="noopener">“Confused by open-access policies? <span class="md:block">These tools can help”<span></a>
         </p>
       </div>
-      <div class="md:w-1/2">
+      <div class="md:w-1/3" data-sal="slide-up">
         <div class="w-32 h-auto mx-auto">
            <a href="https://www.nature.com/articles/d41586-023-00175-1" target="_blank" rel="noopener" class="block" aria-label="Read the article on Nature's website">
             <span data-sal="slide-up" data-sal-delay="175">{% include 'svg/nature.svg' %}</span>
@@ -70,109 +74,208 @@ layout: layouts/base.njk
         </div>
       </div>
     </div>
+    <div class="w-full mt-12" data-sal="fade" data-sal-delay="100">
+      <p class="text-base leading-relaxed tracking-wide text-neutral-600 mb-4" data-sal="slide-up">
+        Simplify policy compliance now <span class="md:block">with OA.Report</span>
+      </p>
+      <a href="https://savvycal.com/Joe/ed52a37f" data-savvycal-embed class="inline-block bg-neutral-900 text-white py-3 px-6 rounded-sm text-base hover:bg-neutral-800 transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-neutral-300">
+        Book a demo →
+      </a>
+    </div>
+  </div>
+</section>
+
+{# Benefits Section #}
+<section class="bg-carnation-100 py-24">
+  <div class="container mx-auto px-4">
+    <div class="text-center mb-10">
+      <h2 class="text-4xl font-serif font-bold leading-tight mb-4 text-neutral-900" data-sal="slide-up">
+        Turn Open Access <span class="md:block">insights into action</span> <span class="md:block">—all in one place</span>
+      </h2>
+    </div>
+    <div class="space-y-12">
+      {% set delay_count = 0 %}
+      {% for benefit in benefits %}
+      {% set delay_count = delay_count + 50 %}
+      <div class="flex flex-col {% if loop.index is odd %}md:flex-row{% else %}md:flex-row-reverse{% endif %} gap-12 items-center" data-sal="slide-up" data-sal-delay="{{ delay_count }}">
+        <div>
+          <h3 class="text-2xl text-neutral-900 leading-snug mb-4">
+            {{ benefit.heading | safe }}
+          </h3>
+          <p class="text-base text-neutral-700 leading-relaxed">
+            {{ benefit.subheading }}
+          </p>
+        </div>
+        <div class="w-full md:w-3/4 max-w-lg">
+          <div class="aspect-w-16 aspect-h-9 shadow-lg rounded-lg border border-neutral-300 bg-neutral-200 overflow-hidden">
+            <img src="img/benefits/{{ benefit.img }}" alt="{{ benefit.heading }}" class="w-full h-full object-contain"/>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
   </div>
 </section>
 
 {# Schedule a Demo Section #}
-<section class="bg-neutral-100">
-  <div class="bg-gradient-to-br from-carnation-500 to-yellow-300 text-white py-24 container mx-auto md:rounded-lg text-center"  data-sal="slide-up">
-    <h2 class="text-2xl font-bold mb-8">Take a free tour of OA.Report</h2>
-    <a href="https://savvycal.com/Joe/ed52a37f" data-savvycal-embed class="inline-block bg-white text-neutral-900 py-3 px-8 rounded-sm text-lg font-medium transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-carnation-300">
-      Get a demo
+<section class="bg-carnation-200 text-neutral-900 py-24" data-sal="fade">
+  <div class="container mx-auto md:rounded-lg text-center" data-sal="slide-up" data-sal-delay="100">
+    <p class="text-base text-neutral-700 mb-2">
+      Curious to see OA.Report in action?
+    </p>
+    <h2 class="text-3xl font-serif font-bold leading-tight mb-8">
+      Schedule a free tour
+    </h2>
+    <a href="https://savvycal.com/Joe/ed52a37f" data-savvycal-embed class="inline-block bg-neutral-900 text-white py-3 px-6 rounded-sm text-base hover:bg-neutral-800 transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-neutral-300">
+      Get a demo →
     </a>
   </div>
 </section>
 
-{# Features Section #}
-<section class="bg-neutral-100 py-12">
-  <div class="container mx-auto px-4">
-    <h2 class="text-center text-2xl text-light mb-8" data-sal="fade">
-      <span class="font-semibold">OA.Report</span> translates <span class="md:block"><span class="highlight">policy to practice</span></span> by helping funders and institutions:
-    </h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      {% set delay_count = 0 %} {# Set initial animation delay to 0ms for Sal.js #}
-      {% for feature in features %}
-      {% set delay_count = delay_count + 50 %} {# Increase animation delay by 100ms #}
-        <div class="p-6 bg-neutral-900 shadow-lg text-center rounded-xl" data-sal="slide-up" data-sal-delay="{{ delay_count }}">
-          <div class="mx-auto mb-4">{% include feature.img %}</div>
-          <h3 class="text-xl font-semibold mb-2 text-white">{{ feature.heading }}</h3>
-          <p class="text-neutral-300">{{ feature.subheading }}</p>
+{# Why OA.Report Section #}
+<section class="bg-neutral-900 text-neutral-100 py-24">
+  <div class="container mx-auto px-4 text-center">
+    <div class="mb-12" data-sal="fade" data-sal-delay="100">
+      <h2 class="text-3xl font-normal text-neutral-100 leading-snug mb-6">
+        <span class="highlight">Our comprehensive data and trusted insights set us apart</span>
+      </h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+      {% set delay_count = 0 %}
+      {% for feature in why_us %}
+      {% if loop.index <= 3 %}
+      {% set delay_count = delay_count + 50 %}
+      <div class="flex flex-col text-left bg-neutral-100 py-8 px-10 rounded-lg shadow-md" data-sal="slide-up" data-sal-delay="{{ delay_count }}">
+        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-neutral-900 text-carnation-400">
+          {% icon feature.icon %}
         </div>
+        <h3 class="text-lg font-serif font-bold text-neutral-900 mt-6 leading-snug">
+          {{ feature.heading | safe }}
+        </h3>
+        <p class="text-sm text-neutral-700 mt-4 leading-relaxed">
+          {{ feature.description }}
+        </p>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-24">
+      {% set delay_count = 0 %}
+      {% for feature in why_us %}
+      {% set delay_count = delay_count + 50 %}
+      {% if loop.index > 3 %}
+      <div class="flex flex-col text-left bg-neutral-100 py-8 px-10 rounded-lg shadow-md" data-sal="slide-up" data-sal-delay="{{ delay_count }}">
+        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-neutral-900 text-carnation-400">
+          {% icon feature.icon %}
+        </div>
+        <h3 class="text-lg font-serif font-bold text-neutral-900 mt-6 leading-snug">
+          {{ feature.heading | safe }}
+        </h3>
+        <p class="text-sm text-neutral-700 mt-4 leading-relaxed">
+          {{ feature.description }}
+        </p>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+    <p class="text-base text-neutral-300 mb-2">
+      Ready to see the difference?
+    </p>
+    <h2 class="text-3xl font-serif font-bold leading-tight mb-8">
+      Explore OA.Report with our co-founder
+    </h2>
+    <a href="https://savvycal.com/Joe/ed52a37f" data-savvycal-embed class="inline-block bg-carnation-300 text-neutral-900 py-3 px-6 rounded-sm text-base hover:bg-carnation-200 transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-carnation-300">
+      Schedule demo now →
+    </a>
+  </div>
+</section>
+
+{# Case Studies Section #}
+<section class="pt-24 pb-12">
+  <div class="container mx-auto px-4">
+    <div class="mb-12" data-sal="fade" data-sal-delay="50">
+      <h2 class="text-4xl font-serif font-bold leading-tight mb-6 text-left">
+        See how funders are making <span class="md:block">an impact with OA.Report</span>
+      </h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {% set delay_count = 0 %}
+      {% for case in cases %}
+      {% set delay_count = delay_count + 50 %}
+      <a href="{{ case.url }}" target="_blank" rel="noopener" class="block bg-neutral-900 text-white shadow-md rounded-lg overflow-hidden transition transform hover:scale-105 hover:shadow-lg" data-sal="slide-up" data-sal-delay="{{ delay_count }}">        
+        <div class="flex items-center bg-neutral-900 py-4 px-6">
+          {% if case.logo %}
+            {% webpImg case.logo, "Logo for " + case.acronym, case.width, case.height, 'h-10 w-auto', true %}
+          {% else %}
+            <p class="h-10 font-bold font-serif">{{ case.org }}</p>
+          {% endif %}
+        </div>        
+        <div class="relative">
+          {% webpImg case.bg, case.bg_alt, 600, 400, 'w-full h-64 object-cover', true %}
+          <div class="absolute inset-0 bg-neutral-900 opacity-75"></div>
+          <div class="absolute inset-x-0 bottom-0 px-6 py-4">
+            <p class="text-sm text-neutral-300 mb-1">{{ case.org }}</p>
+            <h3 class="text-lg font-serif font-bold leading-snug">{{ case.heading }}</h3>
+          </div>
+        </div>
+      </a>
       {% endfor %}
     </div>
   </div>
 </section>
 
 {# Testimonial Section #2 #}
-<section class="bg-neutral-100 text-neutral-900 pt-12 pb-24">
+<section class="py-12 md:pb-24"> 
   <div class="container mx-auto px-4 flex justify-center items-center">
     <div class="w-full max-w-6xl flex flex-col md:flex-row items-center gap-12">
-      <div class="md:w-1/2">
+      <div class="md:w-1/3">
         <div class="w-full lg:w-72 h-auto mx-auto" data-sal="slide-up">
           {% webpImg "img/users/ashley-farley.jpg", "Ashley Farley", 1800, 1440, "rounded-lg", true %}
         </div>
       </div>
-      <div class="md:w-1/2" data-sal="slide-up" data-sal-delay="50">
-        <p class="text-2xl text-light mb-4">
-         “Open Access promotes access, transparency, and equity, enabling life-saving ideas to be shared, tested, and built upon globally. Tracking policy compliance is crucial for maximizing impact, which is why partnering with a like-minded mission-driven organization, such as OA.Works, is essential.”
+      <div class="md:w-2/3" data-sal="slide-up" data-sal-delay="50">
+        <p class="text-3xl font-serif font-bold leading-snug mb-4">
+          “As manager of our OA policy, the policy can only be as successful as our ability to spot non-compliance and enact corrections. (&hellip;) This is what OA.Report accomplishes.”
         </p>
-        <p class="text-lg text-light">
-          — Ashley Farley<br> Senior Officer of Knowledge and Research Services<br> Bill and Melinda Gates Foundation 
+        <p class="text-base leading-relaxed tracking-wide text-neutral-600">
+          — <a href="https://twitter.com/ashleydfarley" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 decoration-neutral-600">Ashley Farley</a><br> 
+          Senior Officer of Knowledge and Research Services<br>
+          Bill and Melinda Gates Foundation
         </p>
       </div>
     </div>
   </div>
 </section>
 
-{# Case Studies Section #}
-<section class="bg-neutral-100 px-8 pt-12 pb-24">
+{# Last Schedule a Demo CTA Section #}
+<section class="bg-neutral-100 text-neutral-900 py-24 text-center" data-sal="fade">
   <div class="container mx-auto">
-    
-    <div class="mb-12" data-sal="fade" data-sal-delay="100">
-      <h2 class="text-4xl font-light mb-6">See how funders are making an impact <span class="md:block">with OA.Report</span></h2>
-      <a href="https://savvycal.com/Joe/ed52a37f" data-savvycal-embed class="inline-block bg-carnation-500 text-white py-3 px-8 rounded-sm text-lg hover:bg-carnation-700 transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-carnation-300">
-        Schedule a demo →
-      </a>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-      {% set delay_count = 0 %} {# Set initial animation delay to 0ms for Sal.js #}
-      {% for case in cases %}
-      {% set delay_count = delay_count + 50 %} {# Increase animation delay by 100ms #}
-      <div class="relative bg-neutral-100 shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition" data-sal="slide-up" data-sal-delay="{{ delay_count }}">
-        <div class="relative w-full h-64">
-          {% webpImg case.bg, case.bg_alt, 600, 400, 'w-full h-full object-cover filter grayscale brightness-50', true %}
-          <div class="absolute inset-0 bg-navy-blue-900 opacity-60"></div>
-          <a href="{{ case.url }}" target="_blank" class="absolute inset-0 flex flex-col justify-center items-center text-center px-12">
-            {% set altText = "Logo for " + case.acronym  %}
-            {% webpImg case.logo, altText, case.width, case.height, 'h-8 w-auto object-contain mb-6', true %}
-            <h3 class="text-xl font-semibold text-white">{{ case.heading }}</h3>
-          </a>
-        </div>
-      </div>
-      {% endfor %}
-    </div>
-    
+    <h2 class="text-3xl font-serif font-bold leading-tight mb-8" data-sal="slide-up" data-sal-delay="100">
+      Learn how you can simplify <br>Open Access compliance tracking
+    </h2>
+    <a href="https://savvycal.com/Joe/ed52a37f" data-savvycal-embed class="inline-block bg-neutral-900 text-white py-3 px-6 rounded-sm text-base hover:bg-neutral-800 transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-neutral-300">
+      Schedule demo →
+    </a>
   </div>
 </section>
 
 {# Partnership Section #}
-<section class="bg-yellow-200 text-neutral-900 py-24" data-sal="fade" data-sal-delay="100">
+<section class="bg-neutral-200 text-neutral-900 py-24" data-sal="fade">
   <div class="container mx-auto px-4 flex justify-center items-center">
     <div class="w-full max-w-6xl flex flex-col md:flex-row items-center gap-12">
       <div class="md:w-1/2">
-        <div class="w-64 h-auto mx-auto">
-          <a href="https://www.gatesfoundation.org/" target="_blank" rel="noopener" title="Go to the BMGF website">
+        <div class="w-60 lg:w-72 h-auto mx-auto" data-sal="slide-up" data-sal-delay="50">
+          <a href="https://www.gatesfoundation.org/" target="_blank" rel="noopener" title="Go to the Bill & Melinda Gates Foundation website">
             {% include 'svg/bmgf.svg' %}
           </a>
         </div>
       </div>
-      <div class="md:w-1/2">
-        <h2 class="text-lg text-light mb-4">
+      <div class="md:w-1/2" data-sal="slide-up" data-sal-delay="100">
+        <p class="text-base text-neutral-700 leading-relaxed tracking-wide mb-4">
           Our funders
-        </h2>
-        <p class="text-2xl text-light">
-          Built in partnership with the <a href="https://blog.oa.works/grant-to-bolster-oa-policies-from-bmgf/" target="_blank" rel="noopener" class="underline underline-offset-2 md:underline-offset-8 decoration-1">Bill & Melinda Gates Foundation</a> with grant support from the <a href="https://blog.oa.works/grant-from-robert-wood-johnson-foundation/" target="_blank" rel="noopener" class="underline underline-offset-2 md:underline-offset-8 decoration-1">Robert Wood Johnson Foundation</a>, <a href="https://blog.oa.works/arcadia-fund-increases-support-for-our-work/" target="_blank" rel="noopener" class="underline underline-offset-2 md:underline-offset-8 decoration-1">Arcadia</a>, & <a href="https://www.founderspledge.com/" target="_blank" rel="noopener" class="underline underline-offset-2 md:underline-offset-8 decoration-1">Founders Pledge</a>.
+        </p>
+        <p class="text-2xl leading-snug text-neutral-900">
+          Built in partnership with the <a href="https://blog.oa.works/grant-to-bolster-oa-policies-from-bmgf/" target="_blank" rel="noopener" class="underline underline-offset-2 decoration-neutral-600">Bill & Melinda Gates Foundation</a> with grant support from the <a href="https://blog.oa.works/grant-from-robert-wood-johnson-foundation/" target="_blank" rel="noopener" class="underline underline-offset-2 decoration-neutral-600">Robert Wood Johnson Foundation</a>, <a href="https://blog.oa.works/arcadia-fund-increases-support-for-our-work/" target="_blank" rel="noopener" class="underline underline-offset-2 decoration-neutral-600">Arcadia</a>, & <a href="https://www.founderspledge.com/" target="_blank" rel="noopener" class="underline underline-offset-2 decoration-neutral-600">Founders Pledge</a>.
         </p>
       </div>
     </div>
@@ -180,14 +283,38 @@ layout: layouts/base.njk
 </section>
 
 {# Sign Up Section #}
-<section class="bg-neutral-800 text-white px-8 py-24" id="newsletter-signup" data-sal="fade" data-sal-delay="100">
+<section class="bg-neutral-800 text-white px-8 pt-24 pb-12" id="newsletter-signup" data-sal="fade">
   <div class="container mx-auto text-center">
-    <div class="grid grid-cols-3 gap-12">
-      <div class="col-span-3 lg:col-span-1 lg:col-start-2">
-        <h2 class="text-2xl font-light mb-8">Sign up to learn more</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+      <div class="col-span-1 md:col-span-3 lg:col-span-1 lg:col-start-2" data-sal="slide-up" data-sal-delay="100">
+        <p class="text-base text-neutral-200 mb-2">
+          Stay connected
+        </p>
+        <h2 class="text-3xl font-serif font-bold leading-tight mb-8">
+          Sign up to learn more
+        </h2>
         {% include 'partials/signup-form.njk' %}
       </div>
     </div>
+  </div>
+</section>
+
+{# OA.Works slogan section #}
+<section class="bg-neutral-800 text-white px-8 pt-12 pb-24" data-sal="fade">
+  <div class="container mx-auto text-center">
+    <ul class="font-serif font-bold text-2xl flex justify-center items-center space-x-4">
+      <li data-sal="slide-up" data-sal-delay="200">
+        <a href="https://github.com/oaworks/" target="_blank" rel="noopener" class="transition-all hover:font-degraded hover:text-carnation-500">Open-source</a>
+      </li>
+      <li class="text-neutral-100" aria-hidden="true">•</li>
+      <li data-sal="slide-up" data-sal-delay="300">
+        <a href="https://oa.works/about/values/" target="_blank" class="transition-all hover:font-degraded hover:text-carnation-500">Values-driven</a>
+      </li>
+      <li class="text-neutral-100" aria-hidden="true">•</li>
+      <li data-sal="slide-up" data-sal-delay="400">
+        <a href="https://oa.works/about/governance/" target="_blank" class="transition-all hover:font-degraded hover:text-carnation-500">Non-profit</a>
+      </li>
+    </ul>
   </div>
 </section>
 

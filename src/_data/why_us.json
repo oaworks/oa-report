@@ -1,0 +1,27 @@
+[
+  {
+    "icon": "database",
+    "heading": "Powered by <span class='italic'>Open Data</span>",
+    "description": "Every day, we ingest fresh data from best-in-class sources like OpenAlex and Crossref, ensuring your insights are built on the most reliable and comprehensive Open Data available."
+  },
+  {
+    "icon": "layers",
+    "heading": "Built on <span class='italic'>your data</span>",
+    "description": "We take what you already know—from messy spreadsheets, grant reports, and personal notes—and clean, integrate, and enrich it, turning your data into actionable insights."
+  },
+  {
+    "icon": "plus-circle",
+    "heading": "Enhanced by <span class='italic'>our data</span>",
+    "description": "We collect and curate missing data like Open Code, Grant IDs, and Data Availability Statements (DAS), filling in the gaps to give you unrivaled clarity and a full view of your research outputs."
+  },
+  {
+    "icon": "tool",
+    "heading": "Setup by experts",
+    "description": "With over a decade of expertise in research transparency, we manage your entire report setup and keep your data current, delivering the latest article insights effortlessly. "
+  },
+  {
+    "icon": "check-circle",
+    "heading": "Human-driven quality control",
+    "description": "Our experts perform rigorous quality checks, ensuring your data’s accuracy and reliability. We quickly address reported issues with the data, so you can be confident in our insights."
+  }
+]
