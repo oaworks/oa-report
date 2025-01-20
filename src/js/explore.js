@@ -1140,7 +1140,6 @@ async function generateCSVLinkHref() {
   }
 
   const csvLink = CSV_EXPORT_BASE + query + include + exportSort + orgKey;
-  console.log(csvLink);
 
   try {
     const response = await axios.get(csvLink);
