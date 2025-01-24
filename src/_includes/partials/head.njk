@@ -4,9 +4,24 @@
   {% if org._source.private == true %}
   <meta name="robots" content="noindex">
   {% endif %}
-  <title>{% if org._source.name %}{{ org._source.name }}{% if org._source.acronyms %} ({{ org._source.acronyms }}){% endif %} — {% endif %}OA.Report</title>
+  <title>{% if org._source.name %}{{ org._source.name }}{% if org._source.acronyms %} ({{ org._source.acronyms }}){% endif %} — {% endif %}OA.Report: Unlock your research, simply</title>
+  <meta name="description" content="{% if org._source.name %}Insights and actions for Open Access and OA policies at {{ org._source.name | safe }}{% else %}Find your articles, measure their openness, and take action to increase your Open Access policy compliance{% endif %}.">
 
-  <meta name="description" content="Insights and strategies for Open Access and OA policies{% if org._source.name %} at {{ org._source.name }}{% endif %}.">
+  {# OpenGraph meta tags #}
+  {# Facebook/Meta #}
+  <meta property="og:url" content="https://oa.report">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="OA.Report: Unlock your research, simply">
+  <meta property="og:description" content="Find your articles, measure their openness, and take action to increase your Open Access policy compliance.">
+  <meta property="og:image" content="https://oa.report/img/og_meta.png">
+
+  {# Twitter #}
+  <meta name="twitter:card" content="summary_large_image">
+  <meta property="twitter:domain" content="oa.report">
+  <meta property="twitter:url" content="https://oa.report">
+  <meta name="twitter:title" content="OA.Report: Unlock your research, simply">
+  <meta name="twitter:description" content="Find your articles, measure their openness, and take action to increase your Open Access policy compliance.">
+  <meta name="twitter:image" content="https://oa.report/img/twitter_meta.png">
 
   {# Preconnect to the CDN for our sans-serif font #}
   <link rel="preconnect" href="https://rsms.me/">
