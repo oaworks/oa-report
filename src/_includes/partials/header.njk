@@ -7,22 +7,50 @@
   <nav class="mx-auto flex max-w-10xl items-center justify-between p-6 lg:px-8" aria-label="Global">
     <h3 class="sr-only">Site navigation</h3>
     <div class="flex items-center lg:flex-1">
-      <a href="/" class="-mb-2 p-1.5 flex items-cente">
+      <a href="/" class="-mb-2 p-1.5 flex items-center">
         {% include 'partials/app-name.njk' %}
       </a>
     </div>
-    <div class="flex items-center flex-1 justify-end gap-x-4 sm:gap-x-8 md:gap-x-12">
-      <a href="https://about.oa.report/" class="text-xs md:text-sm font-semibold leading-6 text-gray-900">About</a>
-      {% if page.url != "/" %}
-      <a href="?logout" id="logout" class="text-xs md:text-sm font-semibold leading-6 text-gray-900">Log out <span aria-hidden="true">&rarr;</span></a>
-      <button data-modal-title="Log in to access this OA.Report" data-modal-content="<div class='text-center'><p class='mb-2'>If you work for <strong>{{ org._source.name }}</strong>, search your inbox for an email titled <br><span class='highlight font-normal'>“OA.Report login link”</span><br> to access your report.</p><p class='mb-4'>If you can’t find it, please <a href='mailto:joe@oa.works?subject=I%20can’t%20find%20my%20OA.Report%20login%20link' class='underline underline-offset-2 decoration-1'>contact our helpdesk</a>.</p><hr><p class='pt-4'><small class='text-xs font-normal'>Find out more about <a href='https://about.oa.report/docs/user-accounts' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>OA.Report user accounts</a>.</small></p></div>" class="text-sm font-semibold leading-6 text-gray-900" id="login">Log in <span aria-hidden="true">&larr;</span></button>
-      {% endif %}
-      {% if page.url == '/' %}
-      <a href="https://blog.oa.works/join-the-oa-report-for-libraries-pilot-to-simplify-compliance-checking-for-your-institutional-funders-oa-policies/" target="_blank" class="text-xs md:text-sm font-semibold leading-6 text-gray-900">For libraries</a>
-      <a href="https://savvycal.com/Joe/ed52a37f" data-savvycal-embed class="inline-block bg-carnation-600 text-white text-xs md:text-sm p-2 rounded-sm hover:bg-carnation-500 transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-carnation-200 font-semibold">
-        Schedule a demo
-      </a>
-      {% endif %}
+
+    <!-- Hamburger Button -->
+    <button id="menu-toggle" aria-expanded="false" aria-controls="mobile-menu" class="sm:hidden flex items-center justify-center p-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-carnation-500">
+      {% icon_small "menu" %}
+      <span class="sr-only">Open menu</span>
+    </button>
+
+    <!-- Menu Items -->
+    <div id="mobile-menu" class="hidden absolute top-full left-0 w-full bg-neutral-100 sm:static sm:flex sm:items-center sm:justify-end sm:w-auto sm:bg-transparent sm:p-0">
+      <div class="flex flex-col sm:flex-row sm:items-center gap-x-4 sm:gap-x-8 md:gap-x-12">
+        <a href="https://about.oa.report/" class="text-xs md:text-sm font-semibold leading-6 text-gray-900 px-4 py-2 sm:p-0">About</a>
+        {% if page.url != "/" %}
+        <a href="?logout" id="logout" class="text-xs md:text-sm font-semibold leading-6 text-gray-900 px-4 py-2 sm:p-0">Log out <span aria-hidden="true">&rarr;</span></a>
+        <button data-modal-title="Log in to access this OA.Report" data-modal-content="<div class='text-center'><p class='mb-2'>If you work for <strong>{{ org._source.name }}</strong>, search your inbox for an email titled <br><span class='highlight font-normal'>“OA.Report login link”</span><br> to access your report.</p><p class='mb-4'>If you can’t find it, please <a href='mailto:joe@oa.works?subject=I%20can’t%20find%20my%20OA.Report%20login%20link' class='underline underline-offset-2 decoration-1'>contact our helpdesk</a>.</p><hr><p class='pt-4'><small class='text-xs font-normal'>Find out more about <a href='https://about.oa.report/docs/user-accounts' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>OA.Report user accounts</a>.</small></p></div>" class="text-sm font-semibold leading-6 text-gray-900 px-4 py-2 sm:p-0" id="login">Log in <span aria-hidden="true">&larr;</span></button>
+        {% endif %}
+        {% if page.url == '/' %}
+        <a href="https://blog.oa.works/join-the-oa-report-for-libraries-pilot-to-simplify-compliance-checking-for-your-institutional-funders-oa-policies/" target="_blank" class="text-xs md:text-sm font-semibold leading-6 text-gray-900 px-4 py-2 sm:p-0">For libraries</a>
+        <a href="https://savvycal.com/Joe/ed52a37f" data-savvycal-embed class="inline-block bg-carnation-600 text-white text-xs md:text-sm p-2 md:rounded-sm hover:bg-carnation-500 transition-all duration-300 ease-in-out transform md:hover:scale-105 focus:outline-none focus:ring-4 focus:ring-carnation-200 font-semibold px-4 py-2">
+          Schedule a demo
+        </a>
+        {% endif %}
+      </div>
     </div>
   </nav>
 </header>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    menuToggle.addEventListener('click', function () {
+      const isExpanded = menuToggle.getAttribute('aria-expanded') === 'true';
+      menuToggle.setAttribute('aria-expanded', !isExpanded);
+
+      if (!isExpanded) {
+        mobileMenu.classList.remove('hidden');
+      } else {
+        mobileMenu.classList.add('hidden');
+      }
+    });
+  });
+</script>
