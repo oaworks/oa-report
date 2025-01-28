@@ -88,6 +88,11 @@ export const EXPLORE_ITEMS_LABELS = {
     plural: "Articles",
     tooltip: "Explore various articles"
   },
+    "covered_by_policy": {
+    singular: "Work covered by policy",
+    plural: "Works covered by policy",
+    tooltip: "Explore various works covered by your policy"
+  },
   "grant": {
     singular: "Grant",
     plural: "Grants",
