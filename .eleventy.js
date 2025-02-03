@@ -81,6 +81,7 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy('./src/temp/');
   eleventyConfig.addPassthroughCopy("./src/*.xml");
   eleventyConfig.addPassthroughCopy("./src/*.txt");
+  eleventyConfig.addPassthroughCopy("./_redirects");
 
   // Add NJK template tag for WebP images (and fallback)
   // Image is included this way: {% webpImg "images/image.jpg", "Alt text here", "Optional custom class here" %}
