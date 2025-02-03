@@ -1,0 +1,35 @@
+# Redirect old/unavailable reports to /report-unavailable
+# See https://github.com/oaworks/discussion/issues/3259 
+# Using 302 redirect in the event that any of these reports become available again
+/001aqnf71  /report-unavailable  302
+/01xnsst08  /report-unavailable  302
+/00097mb19  /report-unavailable  302
+/0022v2454  /report-unavailable  302
+/021nxhr62  /report-unavailable  302
+/03y2gwe85  /report-unavailable  302
+/parkinsons-progression-markers-initiative  /report-unavailable  302
+/0009jge67  /report-unavailable  302
+/027754r66  /report-unavailable  302
+/034k14f91  /report-unavailable  302
+/034t30j35  /report-unavailable  302
+/03zp01h17  /report-unavailable  302
+/0420zvk78  /report-unavailable  302
+/0005jpy03  /report-unavailable  302
+/000az4664  /report-unavailable  302
+/006cvnv84  /report-unavailable  302
+/006wxqw41  /report-unavailable  302
+/00arvcr78  /report-unavailable  302
+/00cwrns71  /report-unavailable  302
+/00f2z7n96  /report-unavailable  302
+/00j62qv07  /report-unavailable  302
+/00j8z2m73  /report-unavailable  302
+/00jb20j87  /report-unavailable  302
+/00qxr8t08  /report-unavailable  302
+/0100zbm77  /report-unavailable  302
+/010q4q527  /report-unavailable  302
+/01h531d29  /report-unavailable  302
+/02kv04939  /report-unavailable  302
+/0375f4d26  /report-unavailable  302
+/039570836  /report-unavailable  302
+/03vtskf62  /report-unavailable  302
+/043tgy268  /report-unavailable  302
