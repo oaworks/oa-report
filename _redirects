@@ -1,7 +1,6 @@
 # Redirect old/unavailable reports to /report-unavailable
 # See https://github.com/oaworks/discussion/issues/3259 
 # Using 302 redirect in the event that any of these reports become available again
-/001aqnf71  /report-unavailable  302
 /01xnsst08  /report-unavailable  302
 /00097mb19  /report-unavailable  302
 /0022v2454  /report-unavailable  302
@@ -47,7 +46,6 @@
 /00w3qhf76  /report-unavailable  302
 /00yjd3n13  /report-unavailable  302
 /011kf5r70  /report-unavailable  302
-/013tf3c58  /report-unavailable  302
 /018mejw64  /report-unavailable  302
 /01f80g185  /report-unavailable  302
 /01kd5m353  /report-unavailable  302
@@ -60,13 +58,11 @@
 /02qenvm24  /report-unavailable  302
 /035tnyy05  /report-unavailable  302
 /039z13y21  /report-unavailable  302
-/03ha2q922  /report-unavailable  302
 /03pjs1y45  /report-unavailable  302
 /03qtxy027  /report-unavailable  302
 /040gcmg81  /report-unavailable  302
 /046j7pv84  /report-unavailable  302
 /04jhswv08  /report-unavailable  302
-/04jsz6e67  /report-unavailable  302
 /059bp8k51  /report-unavailable  302
 /05bhjm183  /report-unavailable  302
 /05q60vz69  /report-unavailable  302
