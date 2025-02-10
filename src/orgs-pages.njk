@@ -97,6 +97,12 @@ permalink: "{{ org._source.objectID | slug }}/"
         }) }}
 
         {{ component("card", {
+          id: "is_preprint",
+          title: "Preprint",
+          icon: "edit"
+        }) }}
+
+        {{ component("card", {
           id: "is_free_to_read",
           title: "Free-to-read",
           icon: "gift"

@@ -156,7 +156,7 @@ export function initInsightsAndStrategies(org) {
       null,
       "preprints",
       "<p>Preprints are early versions of research articles that have not yet been peer-reviewed.</p>"
-    )
+    );
 
     getInsight(
       "is_free_to_read",
