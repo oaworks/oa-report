@@ -825,6 +825,10 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
     label: "Compliant?",
     info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the work is compliant with the organization’s Open Access policy.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
   },
+  "is_compliant_all_works": {
+    label: "Compliant?",
+    info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the work is compliant with the organization’s Open Access policy.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
+  },
   "is_compliant_with_current_policy": {
     label: "Compliant with current <span class='uppercase'>OA</span> policy",
     info: "<p>Scholarly research articles compliant with <span class='org-name'></span>’s most recent <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p>"
