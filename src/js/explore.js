@@ -1058,7 +1058,7 @@ async function handleFilterChange(filterId) {
   await fetchAndDisplayExploreData(currentActiveExploreItemData, filterId);
   currentActiveExploreItemQuery = filterId;
   // Update the filter type text in header
-  replaceText("explore_filter", filterId === 'is_paper' ? EXPLORE_FILTERS_LABELS[filterId] : 'articles that are ' + (EXPLORE_FILTERS_LABELS[filterId] || filterId)); 
+  replaceText("explore_filter", filterId === 'is_paper' ? EXPLORE_FILTERS_LABELS[filterId].label : 'articles that are ' + (EXPLORE_FILTERS_LABELS[filterId]?.label || filterId));
   toggleLoadingIndicator(false, 'explore_loading'); // Hide loading indicator once data is loaded
 }
 
