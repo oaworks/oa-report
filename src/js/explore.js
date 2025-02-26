@@ -7,7 +7,7 @@
 // Imports
 // =================================================
 
-import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, makeNumberReadable, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeArrayDuplicates } from "./utils.js";
+import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, makeNumberReadable, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeArrayDuplicates, updateExploreFilterHeader } from "./utils.js";
 import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { orgDataPromise } from './insights-and-strategies.js';
@@ -242,6 +242,7 @@ export async function processExploreDataTable(button, itemData) {
   toggleLoadingIndicator(true, 'explore_loading'); // Display loading indicator on button click
   updateButtonActiveStyles(button.id);
   addExploreFiltersToDOM(itemData.query);
+  updateExploreFilterHeader(currentActiveExploreItemQuery);
 
   // Fetch and display data based on the current state of the data display style toggle
   await fetchAndDisplayExploreData(itemData, currentActiveExploreItemQuery, currentActiveExploreItemSize, currentActiveDataDisplayToggle);
@@ -1049,6 +1050,7 @@ async function handleRecordsShownChange(event) {
 /**
  * Handles the change in filters when a user clicks on a filter radio button. It displays a loading
  * indicator, fetches, and displays the explore data based on the selected filter.
+ * Also updates the header text via the updateExploreFilterHeader helper.
  * 
  * @async
  * @param {string} filterId - The ID of the selected filter.
@@ -1057,8 +1059,7 @@ async function handleFilterChange(filterId) {
   toggleLoadingIndicator(true, 'explore_loading'); // Display loading indicator on filter change
   await fetchAndDisplayExploreData(currentActiveExploreItemData, filterId);
   currentActiveExploreItemQuery = filterId;
-  // Update the filter type text in header
-  replaceText("explore_filter", filterId === 'is_paper' ? EXPLORE_FILTERS_LABELS[filterId].label : 'articles that are ' + (EXPLORE_FILTERS_LABELS[filterId]?.label || filterId));
+  updateExploreFilterHeader(filterId);
   toggleLoadingIndicator(false, 'explore_loading'); // Hide loading indicator once data is loaded
 }
 

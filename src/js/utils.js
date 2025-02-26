@@ -3,7 +3,7 @@
 // Utility/helper functions
 // ========================
 
-import { ELEVENTY_API_ENDPOINT, READABLE_DATE_OPTIONS, USER_LOCALE } from './constants.js';
+import { ELEVENTY_API_ENDPOINT, READABLE_DATE_OPTIONS, USER_LOCALE, EXPLORE_FILTERS_LABELS } from './constants.js';
 
 /**
  * Checks if the cached data has expired.
@@ -765,7 +765,7 @@ export function displayErrorHeader(message) {
 }
 
 /**
- * Utility function to remove duplicates from an array or nested arrays.
+ * Removes duplicates from an array or nested arrays.
  *
  * @param {Array} array - The array or nested array from which to remove duplicates.
  * @returns {Array} - A new array with duplicates removed.
@@ -784,4 +784,20 @@ export function removeArrayDuplicates(array) {
   return uniqueArray.map(item => 
     Array.isArray(item) ? removeArrayDuplicates(item) : item
   );
+}
+
+/**
+ * Updates the header text for the explore filter based on the current active filter query.
+ * If the filter is 'is_paper', it uses the corresponding label from EXPLORE_FILTERS_LABELS.
+ * Otherwise, it prefixes the label with 'articles that are ' with its label from EXPLORE_FILTERS_LABELS.
+ *
+ * @function updateExploreFilterHeader
+ * @returns {void}
+ */
+export function updateExploreFilterHeader(filterId) {
+  const text =
+    filterId === 'is_paper'
+      ? EXPLORE_FILTERS_LABELS[filterId].label
+      : 'articles that are ' + (EXPLORE_FILTERS_LABELS[filterId]?.label || filterId);
+  replaceText("explore_filter", text);
 }
