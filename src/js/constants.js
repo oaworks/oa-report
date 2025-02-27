@@ -625,7 +625,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "openalx.open_access.oa_status": {
     label: "Open Access status",
-    info: ""
+    info: "<p class='mb-2'><strong>String</strong> <br>Using <a href='https://help.openalex.org/hc/en-us/articles/24347035046295-Open-Access-OA' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1'>OpenAlex’s definition</a>, indicates if a free, full-text version of the work is available online and relies on various indicators, like its license, its existence in the <a href='https://doaj.org' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1'>DOAJ</a> or in a repository or its mode of access publisher landing page (toll-access or freely available).</p><p>Source: OpenAlex <br>Updated: weekly (premium)</p>"
   },
   "is_oa": {
     label: "Open Access?",
