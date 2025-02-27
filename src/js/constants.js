@@ -883,7 +883,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "publisher_license_best": {
     label: "Publisher license (best)",
-    info: "<p class='mb-2'><strong>String</strong> <br>The license applied to this work by the publisher, as best as we can determine.</p><p>Source: Data from Unpaywall, CrossRef, and manual collection can be used to support this designation. <br>Updated: weekly (premium), occasionally (free)</p>"
+    info: "<p class='mb-2'><strong>String</strong> <br>The license applied to this work by the publisher, as best as we can determine. It might differ from the Repository License (Best) provided by the repository.</p><p>Source: Data from Unpaywall, CrossRef, and manual collection can be used to support this designation. <br>Updated: weekly (premium), occasionally (free)</p>"
   },
   "publisher_simple": {
     label: "Publisher (simple)",
@@ -895,7 +895,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "repository_license_best": {
     label: "Repository license (best)",
-    info: "<p class='mb-2'><strong>String</strong> <br>The license applied to this work by the repository, as best as we can determine.</p><p>Source: Data from Unpaywall and Europe PMC can be used to support this designation. <br>Updated: weekly (premium), occasionally (free)</p>"
+    info: "<p class='mb-2'><strong>String</strong> <br>The license applied to this work by the repository, as best as we can determine. It might differ from the Publisher License (Best) provided by the publisher.</p><p>Source: Data from Unpaywall and Europe PMC can be used to support this designation. <br>Updated: weekly (premium), occasionally (free)</p>"
   },
   "resource_doi": {
     label: "Resource DOI",
