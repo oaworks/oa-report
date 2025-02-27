@@ -569,11 +569,11 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
 export const EXPLORE_HEADER_ARTICLES_LABELS = {
   "apc_cost": {
     label: "APC<span class='lowercase'>s</span>",
-    info: "<p class='mb-2'><strong>Number</strong> <br>The article processing charge (APC), also known as publication fee, in USD.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>Number</strong> <br>The article processing charge (APC), also known as publication fee, in USD.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
   },
   "author_email_name": {
     label: "Author email name",
-    info: "<p class='mb-2'><strong>String</strong> <br>The corresponding author's name for use in emails.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>String</strong> <br>The corresponding author's name for use in emails.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
   },
   "authorships.author.display_name": {
     label: "Author(s)",
@@ -593,7 +593,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "can_archive": {
     label: "Archivable?",
-    info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the work can be self-archived in a repository.</p><p>Source: <a href='https://shareyourpaper.org/permissions' target='_blank' class='underline underline-offset-1 md:underline-offset-4 decoration-1'>ShareYourPaper Permissions</a> <br>Updated: daily (premium), occasionally (free)</p>"
+    info: "<p class='mb-2'>Data type: <strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the work can be self-archived in a repository.</p><p>Source: <a href='https://shareyourpaper.org/permissions' target='_blank' class='underline underline-offset-1 md:underline-offset-4 decoration-1'>ShareYourPaper Permissions</a> <br>Updated: daily (premium), occasionally (free)</p>"
   },
   "cited_by_count": {
     label: "Cited by",
@@ -605,7 +605,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "crossref_is_oa": {
     label: "Crossref Open Access?",
-    info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if Crossref data suggests the article is free to read.</p><p>Source: <a href='https://shareyourpaper.org/permissions' target='_blank' class='underline underline-offset-1 md:underline-offset-4 decoration-1'>ShareYourPaper Permissions</a> <br>Updated: daily (premium), occasionally (free)</p>"
+    info: "<p class='mb-2'>Data type: <strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if Crossref data suggests the article is free to read.</p><p>Source: <a href='https://shareyourpaper.org/permissions' target='_blank' class='underline underline-offset-1 md:underline-offset-4 decoration-1'>ShareYourPaper Permissions</a> <br>Updated: daily (premium), occasionally (free)</p>"
   },
   "DOI": {
     label: "DOI",
@@ -613,7 +613,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "email": {
     label: "Email",
-    info: "<p class='mb-2'><strong>String</strong> <br>The corresponding author’s email address. Most emails are encrypted if you’re not logged in and viewing emails associated with your organization.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>String</strong> <br>The corresponding author’s email address. Most emails are encrypted if you’re not logged in and viewing emails associated with your organization.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
   },
   "funder.name": {
     label: "Funder(s)",
@@ -625,7 +625,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "openalx.open_access.oa_status": {
     label: "Open Access status",
-    info: "<p class='mb-2'><strong>String</strong> <br>Using <a href='https://help.openalex.org/hc/en-us/articles/24347035046295-Open-Access-OA' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1'>OpenAlex’s definition</a>, indicates if a free, full-text version of the work is available online and relies on various indicators, like its license, its existence in the <a href='https://doaj.org' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1'>DOAJ</a> or in a repository or its mode of access publisher landing page (toll-access or freely available).</p><p>Source: OpenAlex <br>Updated: weekly (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>String</strong> <br>Using <a href='https://help.openalex.org/hc/en-us/articles/24347035046295-Open-Access-OA' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1'>OpenAlex’s definition</a>, indicates if a free, full-text version of the work is available online and relies on various indicators, like its license, its existence in the <a href='https://doaj.org' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1'>DOAJ</a> or in a repository or its mode of access publisher landing page (toll-access or freely available).</p><p>Source: OpenAlex <br>Updated: weekly (premium)</p>"
   },
   "is_oa": {
     label: "Open Access?",
@@ -637,7 +637,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "journal_oa_type": {
     label: "Journal <span class='uppercase'>OA</span> type",
-    info: "<p class='mb-2'><strong>String</strong> <br>Values include:</p>\
+    info: "<p class='mb-2'>Data type: <strong>String</strong> <br>Values include:</p>\
       <ul class='mb-2'>\
         <li><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>gold</code>: The journal’s entire output is published in Open Access.</li> \
         <li><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>hybrid</code>: The journal allows some articles to be published in Open Access.</li> \
@@ -703,15 +703,15 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "dev.code.has_made_code": {
     label: "Generated code?",
-    info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article uses code the authors generated in the process of research.</p><p>Source: Dataseer <br>Updated: as requested (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article uses code the authors generated in the process of research.</p><p>Source: Dataseer <br>Updated: as requested (premium)</p>"
   },
   "dev.code.has_open_code": {
     label: "Open code?",
-    info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the authors shared their code and licensed it under a permissive open source licence (e.g MIT).</p><p>Source: OA.Works <br>Updated: as requested (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the authors shared their code and licensed it under a permissive open source licence (e.g MIT).</p><p>Source: OA.Works <br>Updated: as requested (premium)</p>"
   },
   "dev.code.has_shared_code": {
     label: "Shared code?",
-    info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article shared the code in any location (e.g. in the supplements, the article itself, a code repository, their website).</p><p>Source: Dataseer <br>Updated: as requested (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article shared the code in any location (e.g. in the supplements, the article itself, a code repository, their website).</p><p>Source: Dataseer <br>Updated: as requested (premium)</p>"
   },
   "dev.code.licence": {
     label: "Code license",
@@ -739,11 +739,11 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "dev.data.has_open_data": {
     label: "Open data?",
-    info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the authors shared their data and licensed it CC-BY or CC-O.</p><p>Source: OA.Works <br>Updated: as requested (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the authors shared their data and licensed it CC-BY or CC-O.</p><p>Source: OA.Works <br>Updated: as requested (premium)</p>"
   },
   "dev.data.has_shared_data": {
     label: "Shared data?",
-    info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article shared the data in any location (e.g. in the supplements, the article itself, a data repository, their website).</p><p>Source: Dataseer <br>Updated: as requested (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article shared the data in any location (e.g. in the supplements, the article itself, a data repository, their website).</p><p>Source: Dataseer <br>Updated: as requested (premium)</p>"
   },
   "dev.data.licence": {
     label: "Data license",
@@ -759,75 +759,75 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "financial_disclosures": {
     label: "Financial disclosures",
-    info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if this work’s funding statement is a financial disclosure.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if this work’s funding statement is a financial disclosure.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
   },
   "fundingstatement": {
     label: "Funding statement",
-    info: "<p class='mb-2'><strong>String</strong> <br>The funding statement’s full text.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>String</strong> <br>The funding statement’s full text.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
   },
   "grantid": {
     label: "Grant ID",
-    info: "<p class='mb-2'><strong>String</strong> <br>The identifier(s) for the grant(s) associated with the work.</p><p>Source: OA.Works, Crossref <br>Updated: weekly (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>String</strong> <br>The identifier(s) for the grant(s) associated with the work.</p><p>Source: OA.Works, Crossref <br>Updated: weekly (premium)</p>"
   },
   "has_data_availability_statement": {
     label: "Data availability statement?",
-    info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article has a data availability (or resource availability) statement.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article has a data availability (or resource availability) statement.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
   },
   "has_made_code": {
     label: "Generated code?",
-    info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article uses code the authors generated in the process of research.</p><p>Source: Dataseer <br>Updated: as requested (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article uses code the authors generated in the process of research.</p><p>Source: Dataseer <br>Updated: as requested (premium)</p>"
   },
   "has_made_data": {
     label: "Generated data?",
-    info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article uses data the authors generated in the process of research.</p><p>Source: Dataseer <br>Updated: as requested (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article uses data the authors generated in the process of research.</p><p>Source: Dataseer <br>Updated: as requested (premium)</p>"
   },
   "has_open_code": {
     label: "Open code?",
-    info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the authors shared their code and licensed it under a permissive open source licence (e.g MIT).</p><p>Source: OA.Works <br>Updated: as requested (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the authors shared their code and licensed it under a permissive open source licence (e.g MIT).</p><p>Source: OA.Works <br>Updated: as requested (premium)</p>"
   },
   "has_open_data": {
     label: "Open data?",
-    info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the authors shared their data and licensed it CC-BY or CC-O.</p><p>Source: OA.Works <br>Updated: as requested (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the authors shared their data and licensed it CC-BY or CC-O.</p><p>Source: OA.Works <br>Updated: as requested (premium)</p>"
   },
   "has_preprint_copy": {
     label: "Preprint copy?",
-    info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article has a version on a preprint server.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article has a version on a preprint server.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
   },
   "has_shared_code": {
     label: "Shared code?",
-    info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article shared the code in any location (e.g. in the supplements, the article itself, a code repository, their website).</p><p>Source: Dataseer <br>Updated: as requested (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article shared the code in any location (e.g. in the supplements, the article itself, a code repository, their website).</p><p>Source: Dataseer <br>Updated: as requested (premium)</p>"
   },
   "has_shared_data": {
     label: "Shared data?",
-    info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article shared the data in any location (e.g. in the supplements, the article itself, a data repository, their website).</p><p>Source: Dataseer <br>Updated: as requested (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article shared the data in any location (e.g. in the supplements, the article itself, a data repository, their website).</p><p>Source: Dataseer <br>Updated: as requested (premium)</p>"
   },
   "has_reused_data": {
     label: "Reused data?",
-    info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article uses data not created by the authors or provided by another source.</p><p>Source: Dataseer <br>Updated: as requested (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article uses data not created by the authors or provided by another source.</p><p>Source: Dataseer <br>Updated: as requested (premium)</p>"
   },
   "invoice_date": {
     label: "Invoice date",
-    info: "<p class='mb-2'><strong>String</strong> <br>Date an invoice for an article processing charge (APC), also known as publication fee, was issued.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>String</strong> <br>Date an invoice for an article processing charge (APC), also known as publication fee, was issued.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
   },
   "invoice_number": {
     label: "Invoice number",
-    info: "<p class='mb-2'><strong>String</strong> <br>Number of an invoice for an article processing charge (APC), also known as publication fee.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>String</strong> <br>Number of an invoice for an article processing charge (APC), also known as publication fee.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
   },
   "invoice_year": {
     label: "Invoice year",
-    info: "<p class='mb-2'><strong>String</strong> <br>Year an invoice for an article processing charge (APC), also known as publication fee, was issued.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>String</strong> <br>Year an invoice for an article processing charge (APC), also known as publication fee, was issued.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
   },
   "is_approved_repository": {
     label: "Approved repository?",
-    info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if this work is deposited in an approved repository under the Open Access policy.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if this work is deposited in an approved repository under the Open Access policy.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
   },
   "is_compliant": {
     label: "Compliant?",
-    info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the work is compliant with the organization’s Open Access policy.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the work is compliant with the organization’s Open Access policy.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
   },
   "is_compliant_all_works": {
     label: "Compliant?",
-    info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the work is compliant with the organization’s Open Access policy.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the work is compliant with the organization’s Open Access policy.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
   },
   "is_compliant_with_current_policy": {
     label: "Compliant with current <span class='uppercase'>OA</span> policy",
@@ -847,11 +847,11 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "is_covered_by_policy": {
     label: "Covered by <span class='uppercase'>OA</span> policy",
-    info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the work is covered under the organization’s Open Access policy.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the work is covered under the organization’s Open Access policy.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
   },
   "is_new": {
     label: "New?",
-    info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the work has been added since the last time we sent the user a report.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the work has been added since the last time we sent the user a report.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
   },
   "is_original_research": {
     label: "Original research?",
@@ -863,7 +863,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "is_preprint": {
     label: "Preprint?",
-    info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article is found on a preprint server.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article is found on a preprint server.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
   },
   "oasupport.status": {
     label: "OA.Support status",
@@ -871,19 +871,19 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "pmc_has_data_availability_statement": {
     label: "PMC data availability statement?",
-    info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if PMC reports the article as having a data availability statement.</p><p>Source: PubMed Central (PMC) <br>Updated: weekly (premium), occasionally (free)</p>"
+    info: "<p class='mb-2'>Data type: <strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if PMC reports the article as having a data availability statement.</p><p>Source: PubMed Central (PMC) <br>Updated: weekly (premium), occasionally (free)</p>"
   },
   "preprint_doi": {
     label: "Preprint DOI",
-    info: "<p class='mb-2'><strong>String</strong> <br>The DOI for the article’s preprint, distinct from the article’s DOI.</p><p>Source: OA.Works. <br>Updated: weekly (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>String</strong> <br>The DOI for the article’s preprint, distinct from the article’s DOI.</p><p>Source: OA.Works. <br>Updated: weekly (premium)</p>"
   },
   "program": {
     label: "Program",
-    info: "<p class='mb-2'><strong>String</strong> <br>The grant program the work was supported by.</p><p>Source: OA.Works. <br>Updated: weekly (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>String</strong> <br>The grant program the work was supported by.</p><p>Source: OA.Works. <br>Updated: weekly (premium)</p>"
   },
   "publisher_license_best": {
     label: "Publisher license (best)",
-    info: "<p class='mb-2'><strong>String</strong> <br>The license applied to this work by the publisher, as best as we can determine. It might differ from the Repository License (Best) provided by the repository.</p><p>Source: Data from Unpaywall, CrossRef, and manual collection can be used to support this designation. <br>Updated: weekly (premium), occasionally (free)</p>"
+    info: "<p class='mb-2'>Data type: <strong>String</strong> <br>The license applied to this work by the publisher, as best as we can determine. It might differ from the Repository License (Best) provided by the repository.</p><p>Source: Data from Unpaywall, CrossRef, and manual collection can be used to support this designation. <br>Updated: weekly (premium), occasionally (free)</p>"
   },
   "publisher_simple": {
     label: "Publisher (simple)",
@@ -891,27 +891,27 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "remove": {
     label: "Remove",
-    info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the work should be removed from an organization’s results for any reason.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the work should be removed from an organization’s results for any reason.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
   },
   "repository_license_best": {
     label: "Repository license (best)",
-    info: "<p class='mb-2'><strong>String</strong> <br>The license applied to this work by the repository, as best as we can determine. It might differ from the Publisher License (Best) provided by the publisher.</p><p>Source: Data from Unpaywall and Europe PMC can be used to support this designation. <br>Updated: weekly (premium), occasionally (free)</p>"
+    info: "<p class='mb-2'>Data type: <strong>String</strong> <br>The license applied to this work by the repository, as best as we can determine. It might differ from the Publisher License (Best) provided by the publisher.</p><p>Source: Data from Unpaywall and Europe PMC can be used to support this designation. <br>Updated: weekly (premium), occasionally (free)</p>"
   },
   "resource_doi": {
     label: "Resource DOI",
-    info: "<p class='mb-2'><strong>String</strong> <br>DOI(s) found associated with the work. This could be for a dataset, codebase, or any other supplementary material.</p><p>Source: OA.Works. <br>Updated: as requested (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>String</strong> <br>DOI(s) found associated with the work. This could be for a dataset, codebase, or any other supplementary material.</p><p>Source: OA.Works. <br>Updated: as requested (premium)</p>"
   },
   "resource_licence": {
     label: "Resource license",
-    info: "<p class='mb-2'><strong>String</strong> <br>Licence found associated to supporting resources. This could be for a dataset, codebase, or any other supplementary material.</p><p>Source: OA.Works. <br>Updated: as requested (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>String</strong> <br>Licence found associated to supporting resources. This could be for a dataset, codebase, or any other supplementary material.</p><p>Source: OA.Works. <br>Updated: as requested (premium)</p>"
   },
   "resource_location_name": {
     label: "Resource location name",
-    info: "<p class='mb-2'><strong>String</strong> <br>Location(s) of the supporting resource(s). This could be for a dataset, codebase, or any other supplementary material.</p><p>Source: OA.Works. <br>Updated: as requested (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>String</strong> <br>Location(s) of the supporting resource(s). This could be for a dataset, codebase, or any other supplementary material.</p><p>Source: OA.Works. <br>Updated: as requested (premium)</p>"
   },
   "resource_location_url": {
     label: "Resource location URL",
-    info: "<p class='mb-2'><strong>String</strong> <br>URL(s) of the supporting resource(s). This could be for a dataset, codebase, or any other supplementary material.</p><p>Source: OA.Works. <br>Updated: as requested (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>String</strong> <br>URL(s) of the supporting resource(s). This could be for a dataset, codebase, or any other supplementary material.</p><p>Source: OA.Works. <br>Updated: as requested (premium)</p>"
   },
   "sheets": {
     label: "Sheets",
@@ -931,11 +931,11 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "updated": {
     label: "Updated",
-    info: "<p class='mb-2'><strong>String</strong> <br>Timestamp showing when the record was last updated.</p><p>Source: OA.Works <br>Updated: weekly (premium), occasionally (free)</p>"
+    info: "<p class='mb-2'>Data type: <strong>String</strong> <br>Timestamp showing when the record was last updated.</p><p>Source: OA.Works <br>Updated: weekly (premium), occasionally (free)</p>"
   },
   "version": {
     label: "Version",
-    info: "<p class='mb-2'><strong>String</strong> <br>Version of the article that can be self-archived in a repository. Values are based on the <a href='https://wiki.surfnet.nl/display/DRIVERguidelines/DRIVER-VERSION+Mappings' target='_blank' class='underline underline-offset-1 md:underline-offset-4 decoration-1'>DRIVER Guidelines versioning scheme</a>.</p><p>Source: <a href='https://shareyourpaper.org/permissions' target='_blank' class='underline underline-offset-1 md:underline-offset-4 decoration-1'>ShareYourPaper Permissions</a> <br>Updated: daily (premium), occasionally (free)</p>"
+    info: "<p class='mb-2'>Data type: <strong>String</strong> <br>Version of the article that can be self-archived in a repository. Values are based on the <a href='https://wiki.surfnet.nl/display/DRIVERguidelines/DRIVER-VERSION+Mappings' target='_blank' class='underline underline-offset-1 md:underline-offset-4 decoration-1'>DRIVER Guidelines versioning scheme</a>.</p><p>Source: <a href='https://shareyourpaper.org/permissions' target='_blank' class='underline underline-offset-1 md:underline-offset-4 decoration-1'>ShareYourPaper Permissions</a> <br>Updated: daily (premium), occasionally (free)</p>"
   }
 }
 
