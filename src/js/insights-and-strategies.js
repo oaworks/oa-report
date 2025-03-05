@@ -77,7 +77,7 @@ export function initInsightsAndStrategies(org) {
     };
 
     /** Get Insights data and display it **/
-    // Loop through each Insight card from consstants.js and call getInsight
+    // Loop through each Insight card from constants.js and call getInsight
     INSIGHTS_CARDS.forEach((cardConfig) => {
       if (cardConfig.info.includes("{policyUrl}")) {
         const policyUrl = orgData.hits.hits[0]._source.policy.url;
@@ -103,8 +103,11 @@ export function initInsightsAndStrategies(org) {
 
         // Tippy tooltip for help text
         const instance = tippy(cardContents, {
-          allowHTML: true, interactive: true, placement: 'right',
-          appendTo: document.body, theme: 'tooltip-pink',
+          allowHTML: true,
+          interactive: true,
+          placement: 'right',
+          appendTo: document.body,
+          theme: 'tooltip-pink'
         });
         instance.setContent(info);
 
@@ -131,15 +134,17 @@ export function initInsightsAndStrategies(org) {
                   totalArticlesCount = totalArticlesResult.data;
 
               if (denominatorCount) {
-                // Show big and small text
+                // "X of Y" in #articles_... with some styling
                 articlesContents.innerHTML = `
-                  ${makeNumberReadable(numeratorCount)}
-                  <span class="font-normal text-neutral-500">of ${makeNumberReadable(denominatorCount)}</span>
+                  <span class="font-semibold text-carnation-600">${makeNumberReadable(numeratorCount)}</span>
+                  <span class="font-medium text-neutral-700">
+                    of ${makeNumberReadable(denominatorCount)} ${denominatorText}
+                  </span>
                 `;
+
                 var pct = Math.round((numeratorCount / denominatorCount) * 100);
                 percentageContents.innerHTML = `
-                  <span class="text-carnation-600 font-extrabold">${pct}%</span>
-                  <span class="text-neutral-600 font-medium"> of ${denominatorText}</span>
+                  <span class="font-extrabold">${pct}%</span>
                 `;
 
                 // Set up bar chart visualisation
@@ -160,10 +165,13 @@ export function initInsightsAndStrategies(org) {
             });
 
         } else {
-          // No denominator => just show total
+          // NO DENOMINATOR => single total value
           numPromise.then(function (result) {
-            articlesContents.innerHTML = makeNumberReadable(result.data);
-            percentageContents.innerHTML = "articles";
+            // Insert value in #percent_{numerator}
+            percentageContents.textContent = makeNumberReadable(result.data);
+
+            // Put smaller label "articles" in #articles_{numerator}
+            articlesContents.textContent = "articles";
           }).catch(function (error) {
             console.log(`${numerator} error: ${error}`);
             showUnavailableCard(cardContents);
@@ -172,13 +180,13 @@ export function initInsightsAndStrategies(org) {
 
         // Once data has loaded, display the card
         changeOpacity(contentID);
-
+    
       } else {
         displayNone(contentID);
       }
-    };
-    
-    /* Get Strategy data and display it  */
+    };    
+
+    /* Get Strategy data and display it */
     function displayStrategy(strategy, keys, tableRow) {
       var shown  = orgData.hits.hits[0]._source.strategy[strategy].show_on_web,
           sort   = `&sort=${orgData.hits.hits[0]._source.strategy[strategy].sort}`,
