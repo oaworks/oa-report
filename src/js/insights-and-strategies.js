@@ -6,7 +6,7 @@
 // ================================================
 
 import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, setBarChart } from './utils.js';
-import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE } from './constants.js';
+import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS } from './constants.js';
 
 // Set report org index URL’s base path
 export const orgApiUrl = `${API_BASE_URL}orgs?q=objectID:%22${org}%22`;
@@ -77,6 +77,21 @@ export function initInsightsAndStrategies(org) {
     };
 
     /** Get Insights data and display it **/
+    // Loop through each Insight card from consstants.js and call getInsight
+    INSIGHTS_CARDS.forEach((cardConfig) => {
+      if (cardConfig.info.includes("{policyUrl}")) {
+        const policyUrl = orgData.hits.hits[0]._source.policy.url;
+        cardConfig.info = cardConfig.info.replace("{policyUrl}", policyUrl);
+      }
+
+      getInsight(
+        cardConfig.numerator,
+        cardConfig.denominator,
+        cardConfig.denominatorText,
+        cardConfig.info
+      );
+    });
+
     function getInsight(numerator, denominator, denominatorText, info) {
       var shown = orgData.hits.hits[0]._source.analysis[numerator].show_on_web,
           contentID = numerator,
@@ -161,63 +176,7 @@ export function initInsightsAndStrategies(org) {
       } else {
         displayNone(contentID);
       }
-    }
-
-    getInsight(
-      "is_paper",
-      null,
-      "articles",
-      "<p>The total number of articles published by grantees or authors at your organization.</p>"
-    );
-
-    getInsight(
-      "is_preprint",
-      null,
-      "preprints",
-      "<p>Preprints are early versions of research articles that have not yet been peer-reviewed.</p>"
-    );
-
-    getInsight(
-      "is_free_to_read",
-      "is_paper",
-      "all articles",
-      "<p>Articles that are free to read on the publisher website or any online repository, including temporarily accessible articles (“bronze Open Access”).</p>"
-    );
-
-    getInsight(
-      "is_compliant",
-      "is_covered_by_policy",
-      "articles covered by policy",
-      `<p class='mb-2'>The percentage of articles covered by <a href='${orgData.hits.hits[0]._source.policy.url}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
-    );
-
-    getInsight(
-      "is_oa",
-      "is_paper",
-      "articles",
-      "<p>The number of articles that are free and <a href='https://creativecommons.org/licenses/by/4.0/' class='underline underline-offset-2 decoration-1' target='_blank' rel='noopener'>CC BY</a> <strong class='bold'>or</strong> <a href='https://creativecommons.org/publicdomain/zero/1.0/' class='underline underline-offset-2 decoration-1' target='_blank' rel='noopener'>CC0</a> (in the public domain) on the publisher’s website, a repository or a preprint server.</p>"
-    );
-
-    getInsight(
-      "has_data_availability_statement",
-      "has_checked_data_availability_statement",
-      "articles checked to date",
-      "<p class='mb-2'>This number tells you how many articles that we’ve analyzed have a data availability statement.</p> <p>To check if a paper has a data availability statement, we use data from PubMed and review articles manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data).</p>"
-    );
-  
-    getInsight(
-      "has_open_data",
-      "has_data",
-      "articles with data",
-      "<p class='mb-2'>The percentage of articles that shared any data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>CC-BY</a> license.</p> <p class='mb-2'>This figure only measures how many articles shared Open Data if they generated data in the first place. It also only measures if any of the datasets generated were open, not if all of them were open.</p> <p>We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>"
-    );
-
-    getInsight(
-      "has_open_code",
-      "has_code",
-      "articles with code",
-      "<p class='mb-2'>The percentage of articles that shared any code under a permissive open-source licence, such as MIT.</p> <p class='mb-2'>This figure measures how many articles shared Open Code if they generated code in the first place. It also only measures if <strong>any parts</strong> of the code generated are open, not if <strong>all</strong> of it is open.</p> <p> We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>"
-    );
+    };
     
     /* Get Strategy data and display it  */
     function displayStrategy(strategy, keys, tableRow) {
