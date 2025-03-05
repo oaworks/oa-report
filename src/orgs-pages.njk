@@ -168,6 +168,24 @@ permalink: "{{ org._source.objectID | slug }}/"
           title: "Total preprints",
           icon: "file-plus"
         }) }}
+
+        {{ component("card", {
+          id: "is_free_to_read_preprint",
+          title: "Free-to-read",
+          icon: "gift"
+        }) }}
+
+        {{ component("card", {
+          id: "is_compliant_preprint",
+          title: "OA policy-compliant",
+          icon: "check-circle"
+        }) }}
+
+        {{ component("card", {
+          id: "has_data_availability_statement_preprint",
+          title: "With data availability statements",
+          icon: "search"
+        }) }}
       </div>
     </article>
     {% endif %}
