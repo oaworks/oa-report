@@ -902,11 +902,11 @@ export function setBarChart(cardEl, numeratorCount, denominatorCount, denominato
 
     barContainer.innerHTML = `
       <div 
-        class="h-4 bg-carnation-700 rounded-full" 
+        class="h-3 bg-carnation-500 rounded-full" 
         style="width: ${fractionOuter}%"
       >
         <div 
-          class="h-4 bg-carnation-300 rounded-full" 
+          class="h-3 bg-carnation-300 rounded-full" 
           style="width: ${fractionInner}%"
         ></div>
       </div>
