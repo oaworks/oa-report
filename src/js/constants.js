@@ -107,7 +107,7 @@ export const INSIGHTS_CARDS = [
   {
     numerator: "is_free_to_read",
     denominator: "is_paper",
-    denominatorText: "all articles",
+    denominatorText: "articles",
     info: "<p>Articles that are free to read on the publisher website or any online repository, including temporarily accessible articles (“bronze Open Access”).</p>"
   },
   {

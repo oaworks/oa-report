@@ -137,7 +137,7 @@ export function initInsightsAndStrategies(org) {
                 // "X of Y" in #articles_... with some styling
                 articlesContents.innerHTML = `
                   <span class="font-semibold text-carnation-600">${makeNumberReadable(numeratorCount)}</span>
-                  <span class="font-medium text-neutral-700">
+                  <span class="text-neutral-700">
                     of ${makeNumberReadable(denominatorCount)} ${denominatorText}
                   </span>
                 `;
@@ -171,7 +171,7 @@ export function initInsightsAndStrategies(org) {
             percentageContents.textContent = makeNumberReadable(result.data);
 
             // Put smaller label "articles" in #articles_{numerator}
-            articlesContents.textContent = "articles";
+            articlesContents.textContent = denominatorText;
           }).catch(function (error) {
             console.log(`${numerator} error: ${error}`);
             showUnavailableCard(cardContents);
