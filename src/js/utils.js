@@ -851,7 +851,7 @@ export function showUnavailableCard(cardContents) {
   // replace with default 'Data unavailable' message
   var footerEl = cardContents.querySelector('footer.bar-chart');
   if (footerEl) {
-    footerEl.classList.remove('h-4', 'bg-carnation-900', 'rounded-full', 'bar-chart', 'w-full');
+    footerEl.classList.remove('h-4', 'bg-carnation-800', 'rounded-full', 'bar-chart', 'w-full');
     footerEl.innerHTML = `
       <p class="mt-2 text-xs text-left text-neutral-700">
         Data unavailable
