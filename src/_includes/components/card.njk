@@ -1,4 +1,10 @@
-{# card.njk #}
+{# Card component (to be used for a single piece of data)
+{{ component("card", {
+  id: "",
+  title: "",
+  icon: ""
+}) }}
+#}
 <article
   id="{{ params.id }}"
   class="
