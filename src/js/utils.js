@@ -801,3 +801,116 @@ export function updateExploreFilterHeader(filterId) {
       : 'articles that are ' + (EXPLORE_FILTERS_LABELS[filterId]?.label || filterId);
   replaceText("explore_filter", text);
 }
+
+/**
+ * Switches the default Insights card into greyed-out "Data unavailable" style.
+ */
+export function showUnavailableCard(cardContents) {
+  // Clear existing placeholders
+  var articlesEl = cardContents.querySelector('[id^="articles_"]');
+  var percentEl  = cardContents.querySelector('[id^="percent_"]');
+
+  if (articlesEl) articlesEl.textContent = '';
+  if (percentEl)  percentEl.textContent = '';
+
+  // Remove the default card’s classes
+  cardContents.classList.remove(
+    'bg-white',
+    'hover:shadow-md',
+    'transition-shadow',
+    'duration-200',
+    'proportional-card'
+  );
+
+  // Add grey background + center styling
+  cardContents.classList.add(
+    'bg-carnation-100',
+    'flex',
+    'flex-col',
+    'justify-center'
+  );
+
+  // Overwrite the body with slash icon
+  var bodyEl = cardContents.querySelector('.flex-grow');
+  if (bodyEl) {
+    bodyEl.innerHTML = `
+      <p class="mt-6 text-4xl">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="24" height="24" fill="none"
+             stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round"
+             class="feather feather-slash inline-block">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+        </svg>
+      </p>
+    `;
+  }
+
+  // Clear the bar chart so it no longer displays and 
+  // replace with default 'Data unavailable' message
+  var footerEl = cardContents.querySelector('footer.bar-chart');
+  if (footerEl) {
+    footerEl.classList.remove('h-4', 'bg-carnation-900', 'rounded-full', 'bar-chart', 'w-full');
+    footerEl.innerHTML = `
+      <p class="mt-2 text-xs text-left text-neutral-700">
+        Data unavailable
+      </p>
+    `;
+  }
+}
+
+/**
+ * Render a bar (or two stacked bars) in the .bar-chart footer,
+ * depending on the denominator vs total articles.
+ *
+ * @param {HTMLElement} cardEl         The <article> identifier for this insight
+ * @param {number} numeratorCount      e.g. 2652
+ * @param {number} denominatorCount    e.g. 3431
+ * @param {string} denominatorID       e.g. "is_articles" or "has_data_availability_statement"
+ * @param {number} totalArticlesCount  e.g. 3821
+ */
+export function setBarChart(cardEl, numeratorCount, denominatorCount, denominatorID, totalArticlesCount) {
+  if (!cardEl) return;
+  const barContainer = cardEl.querySelector('.bar-chart');
+  if (!barContainer) return;
+
+  // Clear any existing bars
+  barContainer.innerHTML = '';
+
+  // If denominator is missing or zero, do nothing
+  if (!denominatorCount) return;
+ 
+  if (denominatorID === 'is_articles') {  // If denominator is the entire articles set => single bar 
+    let fraction = Math.round((numeratorCount / denominatorCount) * 100);
+    barContainer.innerHTML = `
+      <div
+        class="h-4 bg-carnation-400 rounded-full"
+        style="width: ${fraction}%"
+      ></div>
+    `;
+
+  } else { // If denominator is a subset of the entire articles set => two bars
+    // Outer bar fraction = subset / total
+    let fractionOuter = 0;
+    if (totalArticlesCount) {
+      fractionOuter = Math.round((denominatorCount / totalArticlesCount) * 100);
+    }
+
+    // Inner bar fraction = numerator / subset
+    let fractionInner = Math.round((numeratorCount / denominatorCount) * 100);
+
+    barContainer.innerHTML = `
+      <div 
+        class="h-4 bg-carnation-700 rounded-full" 
+        style="width: ${fractionOuter}%"
+      >
+        <div 
+          class="h-4 bg-carnation-300 rounded-full" 
+          style="width: ${fractionInner}%"
+        ></div>
+      </div>
+    `;
+  }
+}
+

@@ -5,7 +5,7 @@
 // Needs to be completely refactored
 // ================================================
 
-import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader } from './utils.js';
+import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, setBarChart } from './utils.js';
 import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE } from './constants.js';
 
 // Set report org index URL’s base path
@@ -78,71 +78,90 @@ export function initInsightsAndStrategies(org) {
 
     /** Get Insights data and display it **/
     function getInsight(numerator, denominator, denominatorText, info) {
-      var shown     = orgData.hits.hits[0]._source.analysis[numerator].show_on_web,
-          contentID = `${numerator}`; // the whole insight’s data card
+      var shown = orgData.hits.hits[0]._source.analysis[numerator].show_on_web,
+          contentID = numerator,
+          cardContents = document.getElementById(contentID);
 
       if (shown === true) {
-        // Select elements to show data
-        var percentageContents = document.getElementById(`percent_${numerator}`), // % value
-            articlesContents   = document.getElementById(`articles_${numerator}`), // full-text value
-            cardContents       = document.getElementById(contentID); // whole card
+        var percentageContents = document.getElementById(`percent_${numerator}`),
+            articlesContents   = document.getElementById(`articles_${numerator}`);
 
-        // Display help text / info popover
+        // Tippy tooltip for help text
         const instance = tippy(cardContents, {
-          allowHTML: true,
-          interactive: true,
-          placement: 'right',
-          appendTo: document.body,
-          theme: 'tooltip-pink',
+          allowHTML: true, interactive: true, placement: 'right',
+          appendTo: document.body, theme: 'tooltip-pink',
         });
-
-        // Set tooltip content
         instance.setContent(info);
 
-        // Access tooltip instance and its ID; use it for aria-controls attribute
         const tooltipID = instance.popper.id;
         cardContents.setAttribute('aria-controls', tooltipID);
-        cardContents.setAttribute('aria-labelledby', numerator); // Set a11y label to the insight’s ID
-        cardContents.setAttribute('title', 'More information on this metric'); // Set title 
+        cardContents.setAttribute('aria-labelledby', numerator);
+        cardContents.setAttribute('title', 'More information on this metric');
 
         // Get numerator’s count query
-        let num = axios.get(countQueryPrefix + orgData.hits.hits[0]._source.analysis[numerator].query);
+        let numPromise = axios.get(countQueryPrefix + orgData.hits.hits[0]._source.analysis[numerator].query);
 
-        // Display data in UI if both a numerator & denominator were defined
+        // If we have a denominator param
         if (numerator && denominator) {
           // Get denominator’s count query
-          let denom = axios.get(countQueryPrefix + orgData.hits.hits[0]._source.analysis[denominator].query);
+          let denomPromise = axios.get(countQueryPrefix + orgData.hits.hits[0]._source.analysis[denominator].query);
 
-          Promise.all([num, denom])
-            .then(function (results) {
-              var numeratorCount   = results[0].data,
-                  denominatorCount = results[1].data;
+          // Get total articles count for the bar chart
+          let totalArticlesPromise = axios.get(countQueryPrefix + orgData.hits.hits[0]._source.analysis.is_paper.query);
+
+          Promise.all([numPromise, denomPromise, totalArticlesPromise])
+            .then(function ([numResult, denomResult, totalArticlesResult]) {
+              var numeratorCount     = numResult.data,
+                  denominatorCount   = denomResult.data,
+                  totalArticlesCount = totalArticlesResult.data;
 
               if (denominatorCount) {
-                articlesContents.textContent = `${makeNumberReadable(numeratorCount)} of ${makeNumberReadable(denominatorCount)} ${denominatorText}`;
-                percentageContents.textContent = `${Math.round(((numeratorCount / denominatorCount) * 100))}%`;
-              } else {
-                articlesContents.innerHTML = `<span class="invisible" aria-hidden="true">---</span>`;
-                percentageContents.textContent = "N/A";
-              };
-            }
-          ).catch(function (error) { console.log(`error: ${error}`); });
+                // Show big and small text
+                articlesContents.innerHTML = `
+                  ${makeNumberReadable(numeratorCount)}
+                  <span class="font-normal text-neutral-500">of ${makeNumberReadable(denominatorCount)}</span>
+                `;
+                var pct = Math.round((numeratorCount / denominatorCount) * 100);
+                percentageContents.innerHTML = `
+                  <span class="text-carnation-600 font-extrabold">${pct}%</span>
+                  <span class="text-neutral-600 font-medium"> of ${denominatorText}</span>
+                `;
 
-        // Display plain number when it’s just a numerator
+                // Set up bar chart visualisation
+                setBarChart(
+                  cardContents,
+                  numeratorCount,
+                  denominatorCount,
+                  denominator,
+                  totalArticlesCount
+                );
+              } else {
+                showUnavailableCard(cardContents);
+              }
+            })
+            .catch(function (error) {
+              console.log(`error: ${error}`);
+              showUnavailableCard(cardContents);
+            });
+
         } else {
-          num.then(function (result) {
-            percentageContents.textContent = makeNumberReadable(result.data);
-          }).catch(function (error) { console.log(`${numerator} error: ${error}`); });
-        };
+          // No denominator => just show total
+          numPromise.then(function (result) {
+            articlesContents.innerHTML = makeNumberReadable(result.data);
+            percentageContents.innerHTML = "articles";
+          }).catch(function (error) {
+            console.log(`${numerator} error: ${error}`);
+            showUnavailableCard(cardContents);
+          });
+        }
 
         // Once data has loaded, display the card
         changeOpacity(contentID);
 
       } else {
         displayNone(contentID);
-      };
-
-    };
+      }
+    }
 
     getInsight(
       "is_paper",
@@ -161,7 +180,7 @@ export function initInsightsAndStrategies(org) {
     getInsight(
       "is_free_to_read",
       "is_paper",
-      "articles",
+      "all articles",
       "<p>Articles that are free to read on the publisher website or any online repository, including temporarily accessible articles (“bronze Open Access”).</p>"
     );
 
@@ -182,7 +201,7 @@ export function initInsightsAndStrategies(org) {
     getInsight(
       "has_data_availability_statement",
       "has_checked_data_availability_statement",
-      "articles checked",
+      "articles checked to date",
       "<p class='mb-2'>This number tells you how many articles that we’ve analyzed have a data availability statement.</p> <p>To check if a paper has a data availability statement, we use data from PubMed and review articles manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data).</p>"
     );
   
