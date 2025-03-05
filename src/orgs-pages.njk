@@ -99,11 +99,14 @@ permalink: "{{ org._source.objectID | slug }}/"
           icon: "file-text"
         }) }}
 
+        {# Hide for Gates only since it’s displayed in a separate section #}
+        {% if org._source.objectID != "gates-foundation" %}
         {{ component("card", {
           id: "is_preprint",
           title: "Preprint",
           icon: "edit"
         }) }}
+        {% endif %}
 
         {{ component("card", {
           id: "is_free_to_read",
@@ -165,42 +168,6 @@ permalink: "{{ org._source.objectID | slug }}/"
           id: "is_preprint",
           title: "Total preprints",
           icon: "file-plus"
-        }) }}
-
-        {{ component("card", {
-          id: "is_free_to_read",
-          title: "Free-to-read",
-          icon: "gift"
-        }) }}
-
-        {{ component("card", {
-          id: "is_compliant",
-          title: "OA policy-compliant",
-          icon: "check-circle"
-        }) }}
-
-        {{ component("card", {
-          id: "is_oa",
-          title: "Open Access",
-          icon: "unlock"
-        }) }}
-
-        {{ component("card", {
-          id: "has_data_availability_statement",
-          title: "With data availability statements",
-          icon: "search"
-        }) }}
-
-        {{ component("card", {
-          id: "has_open_data",
-          title: "With Open Data",
-          icon: "database"
-        }) }}
-
-        {{ component("card", {
-          id: "has_open_code",
-          title: "With Open Code",
-          icon: "code"
         }) }}
       </div>
     </article>
