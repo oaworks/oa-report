@@ -625,7 +625,16 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "openalx.open_access.oa_status": {
     label: "Open Access status",
-    info: "<p class='mb-2'>Data type: <strong>String</strong> <br>Using <a href='https://help.openalex.org/hc/en-us/articles/24347035046295-Open-Access-OA' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1'>OpenAlex’s definition</a>, indicates if a free, full-text version of the work is available online and relies on various indicators, like its license, its existence in the <a href='https://doaj.org' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1'>DOAJ</a> or in a repository or its mode of access publisher landing page (toll-access or freely available).</p><p>Source: OpenAlex</p>"
+    info: "<p class='mb-2'>Data type: <strong>String</strong> <br>Values include:</p>\
+      <ul class='mb-2'>\
+        <li><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>gold</code>: The journal’s entire output is published in Open Access.</li> \
+        <li><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>hybrid</code>: The journal allows some articles to be published in Open Access.</li> \
+        <li><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>transformative</code>: The journal allows some articles to be published in Open Access and is listed by Coalition S as a transformative journal.</li> \
+        <li><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>diamond</code>: The journal’s entire output is published in Open Access without APCs.</li> \
+        <li><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>closed</code>: The journal’s output is entirely behind a paywall, or bronze.</li> \
+        <li><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>not applicable</code>: The work is not in a journal (typically, a pre-print).</li> \
+      </ul>\
+      <p class='mb-2'>Uses <a href='https://help.openalex.org/hc/en-us/articles/24347035046295-Open-Access-OA' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1'>OpenAlex’s definition of Open Access</a>.</p><p>Source: OpenAlex</p>"
   },
   "is_oa": {
     label: "Open Access?",
