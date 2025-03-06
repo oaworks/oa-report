@@ -806,14 +806,30 @@ export function updateExploreFilterHeader(filterId) {
  * Switches the default Insights card into greyed-out "Data unavailable" style.
  */
 export function showUnavailableCard(cardContents) {
-  // Clear existing placeholders
-  var articlesEl = cardContents.querySelector('[id^="articles_"]');
-  var percentEl  = cardContents.querySelector('[id^="percent_"]');
+  // Locate the "articles" and "percent" elements
+  const articlesEl = cardContents.querySelector('[id^="articles_"]');
+  const percentEl  = cardContents.querySelector('[id^="percent_"]');
 
-  if (articlesEl) articlesEl.textContent = '';
-  if (percentEl)  percentEl.textContent = '';
+  // Clear the text for #articles_...
+  if (articlesEl) {
+    articlesEl.textContent = '';
+  }
 
-  // Remove the default card’s classes
+  // Replace the text in #percent_... with the slash icon
+  if (percentEl) {
+    percentEl.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg"
+           width="24" height="24" fill="none"
+           stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round"
+           class="feather feather-slash inline-block">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+      </svg>
+    `;
+  }
+
+  // Remove the default white card styling
   cardContents.classList.remove(
     'bg-white',
     'hover:shadow-md',
@@ -822,7 +838,7 @@ export function showUnavailableCard(cardContents) {
     'proportional-card'
   );
 
-  // Add grey background + center styling
+  // Add grey background & center layout
   cardContents.classList.add(
     'bg-carnation-100',
     'flex',
@@ -830,28 +846,16 @@ export function showUnavailableCard(cardContents) {
     'justify-center'
   );
 
-  // Overwrite the body with slash icon
-  var bodyEl = cardContents.querySelector('.flex-grow');
-  if (bodyEl) {
-    bodyEl.innerHTML = `
-      <p class="mt-6 text-4xl">
-        <svg xmlns="http://www.w3.org/2000/svg"
-             width="24" height="24" fill="none"
-             stroke="currentColor" stroke-width="2"
-             stroke-linecap="round" stroke-linejoin="round"
-             class="feather feather-slash inline-block">
-          <circle cx="12" cy="12" r="10"></circle>
-          <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
-        </svg>
-      </p>
-    `;
-  }
-
-  // Clear the bar chart so it no longer displays and 
-  // replace with default 'Data unavailable' message
-  var footerEl = cardContents.querySelector('footer.bar-chart');
+  // Clear or replace the bar chart area with "Data unavailable"
+  const footerEl = cardContents.querySelector('footer.bar-chart');
   if (footerEl) {
-    footerEl.classList.remove('h-3', 'bg-carnation-800', 'rounded-full', 'bar-chart', 'w-full');
+    footerEl.classList.remove(
+      'h-3',
+      'bg-carnation-800',
+      'rounded-full',
+      'bar-chart',
+      'w-full'
+    );
     footerEl.innerHTML = `
       <p class="mt-2 text-xs text-left text-neutral-700">
         Data unavailable
@@ -859,6 +863,7 @@ export function showUnavailableCard(cardContents) {
     `;
   }
 }
+
 
 /**
  * Render a bar (or two stacked bars) in the .bar-chart footer,
