@@ -107,7 +107,7 @@ export function initInsightsAndStrategies(org) {
           interactive: true,
           placement: 'right',
           appendTo: document.body,
-          theme: 'tooltip-pink'
+          theme: 'tooltip-white'
         });
         instance.setContent(info);
 

@@ -75,23 +75,23 @@ permalink: "{{ org._source.objectID | slug }}/"
         <div class="loader ease-linear rounded-full border-8 border-t-8 border-carnation-200 border-t-carnation-500 h-12 w-12 absolute mt-6 mx-auto inset-x-0 z-10 bg-opacity-50 justify-center items-center"></div>
       </div>
     </div>
+    <header class="col-span-3">
+      <h2 class="mb-4 text-base md:text-lg leading-6">
+        <span class="font-semibold uppercase text-sm md:text-base line-thru">
+          <span class="bg-neutral-900">
+            Insights
+            {{ component("tooltip", {
+              sup: true,
+              msg: "The <em>Insights</em> section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/developers/infrastructure/' target='_blank' class='underline underline-offset-2 decoration-1'>infrastructure page</a>."
+            }) }}
+          </span>
+        </span>
+      </h2>
+    </header>
 
     {# ARTICLE INSIGHTS #}
     <article>
-      <header class="col-span-3">
-        <h2 class="mb-4 text-base md:text-lg leading-6">
-          <span class="font-semibold uppercase text-sm md:text-base line-thru">
-            <span class="bg-neutral-900">
-              Insights on <strong class="font-bold">articles</strong>
-              {{ component("tooltip", {
-                sup: true,
-                msg: "The <em>Insights</em> section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/developers/infrastructure/' target='_blank' class='underline underline-offset-2 decoration-1'>infrastructure page</a>."
-              }) }}
-            </span>
-          </span>
-        </h2>
-      </header>
-
+      <h3 class="mb-2 text-2xl">Articles</h3> 
       <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6" id="insights_articles">
         {{ component("card", {
           id: "is_paper",
@@ -149,20 +149,7 @@ permalink: "{{ org._source.objectID | slug }}/"
     {# PREPRINT INSIGHTS — SEPARATED FOR GATES ONLY #}
     {% if org._source.objectID === "gates-foundation" %}
     <article class="mt-12">
-      <header class="col-span-3">
-        <h2 class="mb-4 text-base md:text-lg leading-6">
-          <span class="font-semibold uppercase text-sm md:text-base line-thru">
-            <span class="bg-neutral-900">
-              Insights on <strong class="font-bold">preprints</strong>
-              {{ component("tooltip", {
-                sup: true,
-                msg: "The <em>Insights</em> section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/developers/infrastructure/' target='_blank' class='underline underline-offset-2 decoration-1'>infrastructure page</a>."
-              }) }}
-            </span>
-          </span>
-        </h2>
-      </header>
-
+      <h3 class="mb-2 text-2xl">Preprints</h3> 
       <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6" id="insights_preprints">
         {{ component("card", {
           id: "is_preprint",
