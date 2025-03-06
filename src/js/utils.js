@@ -862,43 +862,59 @@ export function showUnavailableCard(cardContents) {
 
 /**
  * Render a bar (or two stacked bars) in the .bar-chart footer,
- * depending on the denominator vs total articles.
+ * depending on whether the denominator is the full set of publications
+ * or just a subset.
  *
- * @param {HTMLElement} cardEl         The <article> identifier for this insight
+ * @param {HTMLElement} cardEl         The <article> element for this insight
  * @param {number} numeratorCount      e.g. 2652
  * @param {number} denominatorCount    e.g. 3431
- * @param {string} denominatorID       e.g. "is_articles" or "has_data_availability_statement"
- * @param {number} totalArticlesCount  e.g. 3821
+ * @param {string} denominatorID       e.g. "is_paper" or something else
+ * @param {number} totalArticlesCount  e.g. 3821 (the full set of articles)
  */
-export function setBarChart(cardEl, numeratorCount, denominatorCount, denominatorID, totalArticlesCount) {
+export function setBarChart(
+  cardEl,
+  numeratorCount,
+  denominatorCount,
+  denominatorID,
+  totalArticlesCount
+) {
   if (!cardEl) return;
   const barContainer = cardEl.querySelector('.bar-chart');
   if (!barContainer) return;
 
-  // Clear any existing bars
+  // Clear any existing bar(s)
   barContainer.innerHTML = '';
 
-  // If denominator is missing or zero, do nothing
+  // If the denominator is missing or zero, skip
   if (!denominatorCount) return;
- 
-  if (denominatorID === 'is_articles') {  // If denominator is the entire articles set => single bar 
-    let fraction = Math.round((numeratorCount / denominatorCount) * 100);
+
+  // ----- CASE 1: Denominator is the full set => Single bar -----
+  // The <footer> has 'bg-carnation-800' to represent the full set
+  // We overlay one bar for the numerator portion in carnation-300
+  if  (
+    denominatorID === 'is_paper' ||
+    denominatorID === 'is_preprint' ||
+    (denominatorCount && totalArticlesCount && denominatorCount === totalArticlesCount) // if the total amount is the same as the denominator
+  ) {
+    const fraction = Math.round((numeratorCount / denominatorCount) * 100);
     barContainer.innerHTML = `
       <div
-        class="h-4 bg-carnation-400 rounded-full"
+        class="h-3 bg-carnation-300 rounded-full"
         style="width: ${fraction}%"
       ></div>
     `;
+  } 
 
-  } else { // If denominator is a subset of the entire articles set => two bars
-    // Outer bar fraction = subset / total
+  // ----- CASE 2: Denominator is a subset => Two stacked bars -----
+  // The footer is still 'bg-carnation-800' overall, but we
+  // insert an outer bar in carnation-500 for "subset vs. total"
+  // and an inner bar in carnation-300 for "numerator vs. that subset".
+  else {
     let fractionOuter = 0;
     if (totalArticlesCount) {
       fractionOuter = Math.round((denominatorCount / totalArticlesCount) * 100);
     }
-
-    // Inner bar fraction = numerator / subset
-    let fractionInner = Math.round((numeratorCount / denominatorCount) * 100);
+    const fractionInner = Math.round((numeratorCount / denominatorCount) * 100);
 
     barContainer.innerHTML = `
       <div 
@@ -912,5 +928,4 @@ export function setBarChart(cardEl, numeratorCount, denominatorCount, denominato
       </div>
     `;
   }
-}
-
+};
