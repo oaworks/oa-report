@@ -93,15 +93,29 @@ export function initInsightsAndStrategies(org) {
     });
 
     function getInsight(numerator, denominator, denominatorText, info) {
-      var shown = orgData.hits.hits[0]._source.analysis[numerator].show_on_web,
-          contentID = numerator,
-          cardContents = document.getElementById(contentID);
+      // Check if the data for this "numerator" (i.e. Insights data card) exists in orgData
+      const analysisEntry = orgData.hits.hits[0]._source.analysis[numerator];
+
+      // If there is no analysis for this ID (placeholder card), show "Data unavailable" and stop
+      if (!analysisEntry) {
+        const placeholderCard = document.getElementById(numerator);
+        if (placeholderCard) {
+          showUnavailableCard(placeholderCard);
+        }
+        return;
+      }
+
+      // If the analysis entry does exist, proceed as usual
+      const shown     = analysisEntry.show_on_web,
+            contentID = numerator,
+            cardContents = document.getElementById(contentID);
 
       if (shown === true) {
-        var percentageContents = document.getElementById(`percent_${numerator}`),
-            articlesContents   = document.getElementById(`articles_${numerator}`);
+        // Locate placeholders
+        const percentageContents = document.getElementById(`percent_${numerator}`);
+        const articlesContents   = document.getElementById(`articles_${numerator}`);
 
-        // Tippy tooltip for help text
+        // Create tippy tooltip
         const instance = tippy(cardContents, {
           allowHTML: true,
           interactive: true,
@@ -111,13 +125,14 @@ export function initInsightsAndStrategies(org) {
         });
         instance.setContent(info);
 
+        // Accessibility / tooltip IDs
         const tooltipID = instance.popper.id;
         cardContents.setAttribute('aria-controls', tooltipID);
         cardContents.setAttribute('aria-labelledby', numerator);
         cardContents.setAttribute('title', 'More information on this metric');
 
         // Get numerator’s count query
-        let numPromise = axios.get(countQueryPrefix + orgData.hits.hits[0]._source.analysis[numerator].query);
+        let numPromise = axios.get(countQueryPrefix + analysisEntry.query);
 
         // If we have a denominator param
         if (numerator && denominator) {
@@ -129,12 +144,12 @@ export function initInsightsAndStrategies(org) {
 
           Promise.all([numPromise, denomPromise, totalArticlesPromise])
             .then(function ([numResult, denomResult, totalArticlesResult]) {
-              var numeratorCount     = numResult.data,
-                  denominatorCount   = denomResult.data,
-                  totalArticlesCount = totalArticlesResult.data;
+              const numeratorCount     = numResult.data,
+                    denominatorCount   = denomResult.data,
+                    totalArticlesCount = totalArticlesResult.data;
 
               if (denominatorCount) {
-                // "X of Y" in #articles_... with some styling
+                // Show "X of Y" in #articles_... with some styling
                 articlesContents.innerHTML = `
                   <span class="font-semibold text-carnation-600">${makeNumberReadable(numeratorCount)}</span>
                   <span class="text-neutral-700">
@@ -142,7 +157,8 @@ export function initInsightsAndStrategies(org) {
                   </span>
                 `;
 
-                var pct = Math.round((numeratorCount / denominatorCount) * 100);
+                // Show percentage in #percent_...
+                const pct = Math.round((numeratorCount / denominatorCount) * 100);
                 percentageContents.innerHTML = `
                   <span class="font-extrabold">${pct}%</span>
                 `;
@@ -166,25 +182,27 @@ export function initInsightsAndStrategies(org) {
 
         } else {
           // NO DENOMINATOR => single total value
-          numPromise.then(function (result) {
-            // Insert value in #percent_{numerator}
-            percentageContents.textContent = makeNumberReadable(result.data);
+          numPromise
+            .then(function (result) {
+              // Insert value in #percent_{numerator}
+              percentageContents.textContent = makeNumberReadable(result.data);
 
-            // Put smaller label "articles" in #articles_{numerator}
-            articlesContents.textContent = denominatorText;
-          }).catch(function (error) {
-            console.log(`${numerator} error: ${error}`);
-            showUnavailableCard(cardContents);
-          });
+              // Put smaller label "articles" (or denominatorText) in #articles_{numerator}
+              articlesContents.textContent = denominatorText;
+            })
+            .catch(function (error) {
+              console.log(`${numerator} error: ${error}`);
+              showUnavailableCard(cardContents);
+            });
         }
 
         // Once data has loaded, display the card
         changeOpacity(contentID);
-    
+
       } else {
         displayNone(contentID);
       }
-    };    
+    };
 
     /* Get Strategy data and display it */
     function displayStrategy(strategy, keys, tableRow) {

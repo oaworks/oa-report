@@ -110,24 +110,24 @@ export const INSIGHTS_CARDS = [
     denominatorText: "articles",
     info: "<p>Articles that are free to read on the publisher website or any online repository, including temporarily accessible articles (“bronze Open Access”).</p>"
   },
-  // {
-  //   numerator: "is_free_to_read_preprint",
-  //   denominator: "is_preprint",
-  //   denominatorText: "preprints",
-  //   info: "<p>Preprints that are free to read on the publisher website or any online repository, including temporarily accessible articles (“bronze Open Access”).</p>"
-  // },
+  {
+    numerator: "is_free_to_read_preprint",
+    denominator: "is_preprint",
+    denominatorText: "preprints",
+    info: "<p>Preprints that are free to read on the publisher website or any online repository, including temporarily accessible articles (“bronze Open Access”).</p>"
+  },
   {
     numerator: "is_compliant",
     denominator: "is_covered_by_policy",
     denominatorText: "articles covered by policy",
     info: `<p class='mb-2'>The percentage of articles covered by <a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
   },
-  // {
-  //   numerator: "is_compliant_preprint",
-  //   denominator: "is_covered_by_policy_preprint",
-  //   denominatorText: "preprints covered by policy",
-  //   info: `<p class='mb-2'>The percentage of preprints covered by <a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
-  // },
+  {
+    numerator: "is_compliant_preprint",
+    denominator: "is_covered_by_policy_preprint",
+    denominatorText: "preprints covered by policy",
+    info: `<p class='mb-2'>The percentage of preprints covered by <a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
+  },
   {
     numerator: "is_oa",
     denominator: "is_paper",
@@ -140,12 +140,12 @@ export const INSIGHTS_CARDS = [
     denominatorText: "articles checked to date",
     info: `<p class='mb-2'>This number tells you how many articles that we’ve analyzed have a data availability statement.</p> <p>To check if a paper has a data availability statement, we use data from PubMed and review articles manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data).</p>`
   },
-  // {
-  //   numerator: "has_data_availability_statement_preprint",
-  //   denominator: "has_checked_data_availability_statement_preprint",
-  //   denominatorText: "preprints checked to date",
-  //   info: `<p class='mb-2'>This number tells you how many preprints that we’ve analyzed have a data availability statement.</p> <p>To check if a paper has a data availability statement, we use data from PubMed and review preprints manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data).</p>`
-  // },
+  {
+    numerator: "has_data_availability_statement_preprint",
+    denominator: "has_checked_data_availability_statement_preprint",
+    denominatorText: "preprints checked to date",
+    info: `<p class='mb-2'>This number tells you how many preprints that we’ve analyzed have a data availability statement.</p> <p>To check if a paper has a data availability statement, we use data from PubMed and review preprints manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data).</p>`
+  },
   {
     numerator: "has_open_data",
     denominator: "has_data",
