@@ -1,23 +1,38 @@
 [
   {
-    "heading": "Maximizing Public Access to Biomedical Research",
+    "org": "Howard Hughes Medical Institute",
+    "heading": "Maximizing public access to biomedical research",
     "subheading": "The Howard Hughes Medical Institute (HHMI) uses OA.Report to implement and measure their open-access policy, ensuring that critical health research is freely accessible. OA.Report automates compliance tracking, helping HHMI optimize the reach of its funded research.",
-    "img": "img/users/hhmi.png",
+    "acronym": "HHMI",
+    "logo": "img/users/hhmi.png",
+    "width": 400,
+    "height": 67,
     "bg": "img/case-studies/hhmi-cover.jpg",
+    "bg_alt": "A scientist in a lab coat pipetting a liquid into a test tube.",
     "url": "https://blog.oa.works/hhmi-using-oareport-to-measure-and-improve-oa-policy-compliance/"
   },
   {
-    "heading": "Ensuring Open Access to Parkinson’s Research",
+    "org": "Michael J. Fox Foundation",
+    "heading": "Ensuring Open Access to Parkinson’s research",
     "subheading": "The Michael J. Fox Foundation leverages OA.Report to monitor and demonstrate compliance with its Open Access Policy. By tracking funded research and ensuring open data availability, MJFF maximizes its impact on Parkinson’s research transparency.",
-    "img": "img/users/mjff.png",
+    "acronym": "MJFF",
+    "logo": "img/users/mjff.png",
+    "width": 400,
+    "height": 61,
     "bg": "img/case-studies/mjff-cover.jpg",
+    "bg_alt": "Magnification of alpha-synuclein intraneuronal inclusions, strand-like neurites & rounded Lewy bodies of various sizes",
     "url": "https://blog.oa.works/mjff-starts-using-oa-report-to-measure-oa-policy-compliance-demonstrate-its-impact/"
   },
   {
-    "heading": "Advancing Global Health Through Open Access",
+    "org": "Wellcome Trust",
+    "heading": "Advancing global health through Open Access",
     "subheading": "Wellcome Trust partnered with OA.Report to automate and analyze open-access compliance among its grantees. This collaboration ensures that Wellcome’s funded research outputs remain open, helping to drive global progress in health research.",
-    "img": "img/users/wellcome.png",
+    "acronym": "Wellcome",
+    "logo": "img/users/wellcome.png",
+    "width": 75,
+    "height": 75,
     "bg": "img/case-studies/wellcome-cover.webp",
+    "bg_alt": "Six vials of blood in test tubes alternating purple and orange tops.",
     "url": "https://blog.oa.works/wellcome-is-using-oa-report-to-report-oa-policy-compliance/"
   }
 ]

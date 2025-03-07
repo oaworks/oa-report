@@ -88,6 +88,11 @@ export const EXPLORE_ITEMS_LABELS = {
     plural: "Articles",
     tooltip: "Explore various articles"
   },
+    "covered_by_policy": {
+    singular: "Work covered by policy",
+    plural: "Works covered by policy",
+    tooltip: "Explore various works covered by your policy"
+  },
   "grant": {
     singular: "Grant",
     plural: "Grants",
@@ -263,6 +268,10 @@ export const EXPLORE_FILTERS_LABELS = {
   "is_compliant_all_works": {
     label: "Compliant with <span class='uppercase'>OA</span> policy",
     info: "<p>Scholarly research articles that comply with the terms of <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>, but are not necessarily covered by it.</p><p><span class='org-policy-compliance'></span></p>"
+  },
+    "is_not_compliant": {
+    label: "Not compliant with <span class='uppercase'>OA</span> policy",
+    info: "<p>Works that do not comply with the terms of <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p><p><span class='org-policy-compliance'></span></p>"
   },
   "is_original_research": {
     label: "Original research",
@@ -613,8 +622,12 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
     label: "Funder(s)",
     info: ""
   },
-  "has_repository_copy": {
+  "openalx.open_access.any_repository_has_fulltext": {
     label: "In repository?",
+    info: ""
+  },
+  "openalx.open_access.oa_status": {
+    label: "Open Access status",
     info: ""
   },
   "is_oa": {
@@ -816,6 +829,10 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
     info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if this work is deposited in an approved repository under the Open Access policy.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
   },
   "is_compliant": {
+    label: "Compliant?",
+    info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the work is compliant with the organization’s Open Access policy.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
+  },
+  "is_compliant_all_works": {
     label: "Compliant?",
     info: "<p class='mb-2'><strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the work is compliant with the organization’s Open Access policy.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
   },

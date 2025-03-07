@@ -14,16 +14,16 @@ permalink: "{{ org._source.url_slug }}/"
     <div class="grid grid-cols-2 gap-3 sm:gap-6 md:gap-12 py-3 xl:pb-6 xl:pt-12">
       <header class="col-span-2 md:col-span-1">
         <h1 class="flex items-center">
-          <div class="text-2xl md:text-4xl font-light">
+          <div class="text-2xl md:text-4xl">
             {% if org._source.paid == true %}
               {{ component("tooltip", {
                 msg: "<p>This OA.Report uses <a href='https://about.oa.report/docs/sources' target='_blank' class='underline underline-offset-4 decoration-1'>all our data sources</a> and state-of-the-art analysis to provide insights into their publications, impact, and how open their research is.</p>",
-                text: "<div class='highlight'>" + org._source.name + "</div><div><span class='report_readable_start_date'></span> — <span class='report_readable_end_date'></span></div>"
+                text: "<span class='highlight-carnation-500 font-serif'>" + org._source.name + "</span><div class='mt-2 text-lg'><span class='report_readable_start_date'></span> — <span class='report_readable_end_date'></span></div>"
               }) }}
             {% else %}
               {{ component("tooltip", {
                 msg: "<p>This OA.Report uses <a href='https://about.oa.report/docs/sources#open-sources' target='_blank' class='underline underline-offset-4 decoration-1'>open data</a> and automated analysis to provide insights into their publication volume and how open their research is.</p>",
-                text: "<div class='highlight'>" + org._source.name + "</div><div><span class='report_readable_start_date'></span> — <span class='report_readable_end_date'></span></div>"
+                text: "<span class='highlight-carnation-500 font-serif'>" + org._source.name + "</span><div class='mt-2 text-lg'><span class='report_readable_start_date'></span> — <span class='report_readable_end_date'></span></div>"
               }) }}
             {% endif %}
           </div>
@@ -94,6 +94,12 @@ permalink: "{{ org._source.url_slug }}/"
           id: "is_paper",
           title: "Total publications",
           icon: "file-text"
+        }) }}
+
+        {{ component("card", {
+          id: "is_preprint",
+          title: "Preprint",
+          icon: "edit"
         }) }}
 
         {{ component("card", {
@@ -227,17 +233,26 @@ permalink: "{{ org._source.url_slug }}/"
           </div>
           <form class="w-auto block" id="explore_display_style_field">        
             <fieldset>   
-              <legend class="mb-4 text-xs font-semibold uppercase text-right" for="toggler-data-view">Data display style</legend>
+              <legend id="legend-data-view" class="mb-4 text-xs font-semibold uppercase text-right" for="toggler-data-view">
+                Data display style
+              </legend>
               <div class="flex items-center">
                 <span class="mr-2 text-xs">{% icon_small "percent" %} Pretty</span>
-                  <button id="toggle-data-view" type="button" class="relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-carnation-500 focus:ring-offset-2" role="switch" aria-checked="true">
-                    <span aria-hidden="true" class="bg-carnation-500 pointer-events-none absolute mx-auto h-4 w-9 rounded-full transition-colors duration-200 ease-in-out"></span>
-                    <span aria-hidden="true" class="translate-x-100 pointer-events-none absolute left-0 inline-block h-5 w-5 transform rounded-full border border-neutral-500 bg-neutral-800 shadow ring-0 transition-transform duration-200 ease-in-out"></span>
-                  </button>
+                <button 
+                  id="toggle-data-view" 
+                  type="button" 
+                  class="relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-carnation-500 focus:ring-offset-2" 
+                  role="switch" 
+                  aria-checked="true" 
+                  aria-labelledby="legend-data-view button-instructions">
+                  <span aria-hidden="true" class="bg-carnation-500 pointer-events-none absolute mx-auto h-4 w-9 rounded-full transition-colors duration-200 ease-in-out"></span>
+                  <span aria-hidden="true" class="translate-x-100 pointer-events-none absolute left-0 inline-block h-5 w-5 transform rounded-full border border-neutral-500 bg-neutral-800 shadow ring-0 transition-transform duration-200 ease-in-out"></span>
+                </button>
+                <span id="button-instructions" class="sr-only">Toggle between Pretty and Raw data display</span>
                 <span class="ml-2 text-xs">Raw {% icon_small "hash" %}</span>
               </div>
             </fieldset>
-          </form>     
+          </form>
         </div>
         <div class="relative mb-12">
           <button

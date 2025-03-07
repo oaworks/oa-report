@@ -1,85 +1,56 @@
 {%- from "system/component.njk" import component -%}
 
-<header class="bg-carnation-100 drop-shadow-md z-50{% if page.url == '/' %} h-auto sticky top-0{% endif %}">
+<header class="bg-neutral-100 drop-shadow-md z-50{% if page.url == '/' %} h-auto sticky top-0{% endif %}">
   <h2 class="sr-only">
     OA.Report
   </h2>
   <nav class="mx-auto flex max-w-10xl items-center justify-between p-6 lg:px-8" aria-label="Global">
     <h3 class="sr-only">Site navigation</h3>
     <div class="flex items-center lg:flex-1">
-      <a href="/" class="-m-1.5 -mb-4 sm:-mb-8 p-1.5">
+      <a href="/" class="-mb-2 p-1.5 flex items-center">
         {% include 'partials/app-name.njk' %}
       </a>
     </div>
-    <div class="flex items-center flex-1 justify-end gap-x-4 sm:gap-x-8 md:gap-x-12">
-      <a href="https://about.oa.report/" class="text-sm font-semibold leading-6 text-gray-900">About</a>
-      {% if page.url != "/" %}
-      <a href="?logout" id="logout" class="text-sm font-semibold leading-6 text-gray-900">Log out <span aria-hidden="true">&rarr;</span></a>
-      <button data-modal-title="Log in to access this OA.Report" data-modal-content="<div class='text-center'><p class='mb-2'>If you work for <strong>{{ org._source.name }}</strong>, search your inbox for an email titled <br><span class='highlight font-normal'>“OA.Report login link”</span><br> to access your report.</p><p class='mb-4'>If you can’t find it, please <a href='mailto:joe@oa.works?subject=I%20can’t%20find%20my%20OA.Report%20login%20link' class='underline underline-offset-2 decoration-1'>contact our helpdesk</a>.</p><hr><p class='pt-4'><small class='text-xs font-normal'>Find out more about <a href='https://about.oa.report/docs/user-accounts' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>OA.Report user accounts</a>.</small></p></div>" class="text-sm font-semibold leading-6 text-gray-900" id="login">Log in <span aria-hidden="true">&larr;</span></button>
-      {% endif %}
-      {% if page.url == '/' %}
-      <a href="https://savvycal.com/Joe/ed52a37f" data-savvycal-embed class="inline-block bg-carnation-600 text-white text-xs p-2 rounded-sm hover:bg-carnation-700 transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-carnation-300 font-semibold">
-        Schedule a demo
-      </a>
-      {% endif %}
+
+    <!-- Hamburger Button -->
+    <button id="menu-toggle" aria-expanded="false" aria-controls="mobile-menu" class="sm:hidden flex items-center justify-center p-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-carnation-500">
+      {% icon_small "menu" %}
+      <span class="sr-only">Open menu</span>
+    </button>
+
+    <!-- Menu Items -->
+    <div id="mobile-menu" class="hidden absolute top-full left-0 w-full bg-neutral-100 sm:static sm:flex sm:items-center sm:justify-end sm:w-auto sm:bg-transparent sm:p-0">
+      <div class="flex flex-col sm:flex-row sm:items-center gap-x-4 sm:gap-x-8 md:gap-x-12">
+        <a href="https://about.oa.report/" class="text-xs md:text-sm font-semibold leading-6 text-gray-900 px-4 py-2 sm:p-0">About</a>
+        {% if page.url != "/" %}
+        <a href="?logout" id="logout" class="text-xs md:text-sm font-semibold leading-6 text-gray-900 px-4 py-2 sm:p-0">Log out <span aria-hidden="true">&rarr;</span></a>
+        <button data-modal-title="Log in to access this OA.Report" data-modal-content="<div class='text-center'><p class='mb-2'>If you work for <strong>{{ org._source.name }}</strong>, search your inbox for an email titled <br><span class='highlight font-normal'>“OA.Report login link”</span><br> to access your report.</p><p class='mb-4'>If you can’t find it, please <a href='mailto:joe@oa.works?subject=I%20can’t%20find%20my%20OA.Report%20login%20link' class='underline underline-offset-2 decoration-1'>contact our helpdesk</a>.</p><hr><p class='pt-4'><small class='text-xs font-normal'>Find out more about <a href='https://about.oa.report/docs/user-accounts' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>OA.Report user accounts</a>.</small></p></div>" class="text-sm font-semibold leading-6 text-gray-900 px-4 py-2 sm:p-0" id="login">Log in <span aria-hidden="true">&larr;</span></button>
+        {% endif %}
+        {% if page.url == '/' %}
+        <a href="https://blog.oa.works/join-the-oa-report-for-libraries-pilot-to-simplify-compliance-checking-for-your-institutional-funders-oa-policies/" target="_blank" class="text-xs md:text-sm font-semibold leading-6 text-gray-900 px-4 py-2 sm:p-0">For libraries</a>
+        <a href="https://savvycal.com/Joe/ed52a37f" data-savvycal-embed class="inline-block bg-carnation-600 text-white text-xs md:text-sm p-2 md:rounded-sm hover:bg-carnation-500 transition-all duration-300 ease-in-out transform md:hover:scale-105 focus:outline-none focus:ring-4 focus:ring-carnation-200 font-semibold px-4 py-2">
+          Schedule a demo
+        </a>
+        {% endif %}
+      </div>
     </div>
   </nav>
 </header>
 
-{# TODO as part of Gates#465 #}
-{# <header class="bg-white">
-  <nav class="mx-auto flex max-w-10xl items-center justify-between p-6 lg:px-8" aria-label="Global">
-    <div class="flex lg:flex-1">
-      <a href="/" class="-m-1.5 p-1.5">
-        {% include 'partials/app-name.njk' %}
-      </a>
-    </div>
-    <div class="flex lg:hidden">
-      <button type="button" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700">
-        <span class="sr-only">Open main menu</span>
-        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-        </svg>
-      </button>
-    </div>
-    {% if page.url != "/" %}
-    <div class="hidden lg:flex lg:gap-x-12">
-      {% include 'partials/search-form.njk' %}
-    </div>
-    {% endif %}
-    <div class="hidden lg:flex lg:flex-1 lg:justify-end lg:gap-x-12">
-      <a href="#" class="text-sm font-semibold leading-6 text-gray-900">About</a>
-      <a href="#" class="text-sm font-semibold leading-6 text-gray-900">Log in <span aria-hidden="true">&rarr;</span></a>
-    </div>
-  </nav> #}
-  <!-- Mobile menu, show/hide based on menu open state. -->
-  {# <div class="lg:hidden" role="dialog" aria-modal="true">
-    <!-- Background backdrop, show/hide based on slide-over state. -->
-    <div class="fixed inset-0 z-10"></div>
-    <div class="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
-      <div class="flex items-center justify-between">
-        <a href=/"" class="-m-1.5 p-1.5">
-          {% include 'partials/app-name.njk' %}
-        </a>
-        <button type="button" class="-m-2.5 rounded-md p-2.5 text-gray-700">
-          <span class="sr-only">Close menu</span>
-          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-      <div class="mt-6 flow-root">
-        <div class="-my-6 divide-y divide-gray-500/10">
-          {% if page.url != "/" %}
-          <div class="space-y-2 py-6">
-            {% include 'partials/search-form.njk' %}
-          </div>
-          {% endif %}
-          <div class="py-6">
-            <a href="#" class="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Log in</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</header> #}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    menuToggle.addEventListener('click', function () {
+      const isExpanded = menuToggle.getAttribute('aria-expanded') === 'true';
+      menuToggle.setAttribute('aria-expanded', !isExpanded);
+
+      if (!isExpanded) {
+        mobileMenu.classList.remove('hidden');
+      } else {
+        mobileMenu.classList.add('hidden');
+      }
+    });
+  });
+</script>
