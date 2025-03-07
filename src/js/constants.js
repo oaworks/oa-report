@@ -625,16 +625,16 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "openalx.open_access.oa_status": {
     label: "Open Access status",
-    info: "<p class='mb-2'>Data type: <strong>String</strong> <br>Values include:</p>\
+    info: "<p class='mb-2'>Data type: <strong>String</strong> <p class='mb-2'>Uses <a href='https://help.openalex.org/hc/en-us/articles/24347035046295-Open-Access-OA' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1'>OpenAlex’s definition of Open Access</a>. Values include:</p>\
       <ul class='mb-2'>\
-        <li><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>gold</code>: The journal’s entire output is published in Open Access.</li> \
-        <li><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>hybrid</code>: The journal allows some articles to be published in Open Access.</li> \
-        <li><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>transformative</code>: The journal allows some articles to be published in Open Access and is listed by Coalition S as a transformative journal.</li> \
-        <li><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>diamond</code>: The journal’s entire output is published in Open Access without APCs.</li> \
-        <li><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>closed</code>: The journal’s output is entirely behind a paywall, or bronze.</li> \
-        <li><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>not applicable</code>: The work is not in a journal (typically, a pre-print).</li> \
+        <li><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>diamond</code>: Published in a fully OA journal—one that is indexed by the DOAJ or that we have determined to be OA—with no article processing charges (i.e., free for both readers and authors).</li> \
+        <li><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>gold</code>: Published in a fully OA journal.</li> \
+        <li><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>green</code>: Toll-access on the publisher landing page, but there is a free copy in an OA repository.</li> \
+        <li><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>hybrid</code>: Free under an open license in a toll-access journal.</li> \
+        <li><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>bronze</code>: Free to read on the publisher landing page, but without any identifiable license.</li> \
+        <li><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>closed</code>: All other articles.</li> \
       </ul>\
-      <p class='mb-2'>Uses <a href='https://help.openalex.org/hc/en-us/articles/24347035046295-Open-Access-OA' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1'>OpenAlex’s definition of Open Access</a>.</p><p>Source: OpenAlex</p>"
+      <p>Source: OpenAlex</p>"
   },
   "is_oa": {
     label: "Open Access?",
