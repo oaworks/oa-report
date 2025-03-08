@@ -247,7 +247,8 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
           },
           "mean_citations": {
             "avg": {
-              "field": "cited_by_count"
+              "field": "cited_by_count",
+              "missing": 0
             }
           },
           "with_apc": {
@@ -266,7 +267,8 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
           },
           "mean_apc_amount": {
             "avg": {
-              "field": "supplements.apc_cost"
+              "field": "supplements.apc_cost",
+              "missing": 0
             }
           },
           "median_apc_amount": {
@@ -274,7 +276,8 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
               "field": "supplements.apc_cost",
               "percents": [
                 50
-              ]
+              ],
+              "missing": 0
             }
           },
           "with_data": {
@@ -1020,7 +1023,8 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
           },
           "mean_citations": {
             "avg": {
-              "field": "cited_by_count"
+              "field": "cited_by_count",
+              "missing": 0
             }
           },
           "with_apc": {
@@ -1039,7 +1043,8 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
           },
           "mean_apc_amount": {
             "avg": {
-              "field": "supplements.apc_cost"
+              "field": "supplements.apc_cost",
+              "missing": 0
             }
           },
           "median_apc_amount": {
@@ -1047,7 +1052,8 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
               "field": "supplements.apc_cost",
               "percents": [
                 50
-              ]
+              ],
+              "missing": 0
             }
           },
           "with_data": {
@@ -1791,7 +1797,8 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
           },
           "mean_citations": {
             "avg": {
-              "field": "cited_by_count"
+              "field": "cited_by_count",
+              "missing": 0
             }
           },
           "with_apc": {
@@ -1810,7 +1817,8 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
           },
           "mean_apc_amount": {
             "avg": {
-              "field": "supplements.apc_cost"
+              "field": "supplements.apc_cost",
+              "missing": 0
             }
           },
           "median_apc_amount": {
@@ -1818,7 +1826,8 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
               "field": "supplements.apc_cost",
               "percents": [
                 50
-              ]
+              ],
+              "missing": 0
             }
           },
           "with_data": {
