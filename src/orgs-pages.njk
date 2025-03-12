@@ -100,13 +100,13 @@ permalink: "{{ org._source.objectID | slug }}/"
         }) }}
 
         {# Hide for Gates only since it’s displayed in a separate section #}
-        {% if org._source.objectID != "gates-foundation" %}
+        {# {% if org._source.objectID != "gates-foundation" %} #}
         {{ component("card", {
           id: "is_preprint",
           title: "Preprint",
           icon: "edit"
         }) }}
-        {% endif %}
+        {# {% endif %} #}
 
         {{ component("card", {
           id: "is_free_to_read",
