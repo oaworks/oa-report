@@ -92,7 +92,7 @@ permalink: "{{ org._source.objectID | slug }}/"
     {# ARTICLE INSIGHTS #}
     <article>
       <h3 class="mb-2 text-2xl">Articles</h3> 
-      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6" id="insights_articles">
+      <div class="grid gap-6 grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6" id="insights_articles">
         {{ component("card", {
           id: "is_paper",
           title: "Total publications",
@@ -150,7 +150,7 @@ permalink: "{{ org._source.objectID | slug }}/"
     {% if org._source.objectID === "gates-foundation" %}
     <article class="mt-12">
       <h3 class="mb-2 text-2xl">Preprints</h3> 
-      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6" id="insights_preprints">
+      <div class="grid gap-6 grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6" id="insights_preprints">
         {{ component("card", {
           id: "is_preprint",
           title: "Total preprints",
