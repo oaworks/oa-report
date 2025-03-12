@@ -5,8 +5,8 @@
 // Needs to be completely refactored
 // ================================================
 
-import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader } from './utils.js';
-import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE } from './constants.js';
+import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, setBarChart } from './utils.js';
+import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS } from './constants.js';
 
 // Set report org index URL’s base path
 export const orgApiUrl = `${API_BASE_URL}orgs?q=objectID:%22${org}%22`;
@@ -77,130 +77,134 @@ export function initInsightsAndStrategies(org) {
     };
 
     /** Get Insights data and display it **/
+    // Loop through each Insight card from constants.js and call getInsight
+    INSIGHTS_CARDS.forEach((cardConfig) => {
+      if (cardConfig.info.includes("{policyUrl}")) {
+        const policyUrl = orgData.hits.hits[0]._source.policy.url;
+        cardConfig.info = cardConfig.info.replace("{policyUrl}", policyUrl);
+      }
+
+      getInsight(
+        cardConfig.numerator,
+        cardConfig.denominator,
+        cardConfig.denominatorText,
+        cardConfig.info
+      );
+    });
+
     function getInsight(numerator, denominator, denominatorText, info) {
-      var shown     = orgData.hits.hits[0]._source.analysis[numerator].show_on_web,
-          contentID = `${numerator}`; // the whole insight’s data card
+      // Check if the data for this "numerator" (i.e. Insights data card) exists in orgData
+      const analysisEntry = orgData.hits.hits[0]._source.analysis[numerator];
+
+      // If there is no analysis for this ID (placeholder card), show "Data unavailable" and stop
+      if (!analysisEntry) {
+        const placeholderCard = document.getElementById(numerator);
+        if (placeholderCard) {
+          showUnavailableCard(placeholderCard);
+        }
+        return;
+      }
+
+      // If the analysis entry does exist, proceed as usual
+      const shown     = analysisEntry.show_on_web,
+            contentID = numerator,
+            cardContents = document.getElementById(contentID);
 
       if (shown === true) {
-        // Select elements to show data
-        var percentageContents = document.getElementById(`percent_${numerator}`), // % value
-            articlesContents   = document.getElementById(`articles_${numerator}`), // full-text value
-            cardContents       = document.getElementById(contentID); // whole card
+        // Locate placeholders
+        const percentageContents = document.getElementById(`percent_${numerator}`);
+        const articlesContents   = document.getElementById(`articles_${numerator}`);
 
-        // Display help text / info popover
+        // Create tippy tooltip
         const instance = tippy(cardContents, {
           allowHTML: true,
           interactive: true,
           placement: 'right',
           appendTo: document.body,
-          theme: 'tooltip-pink',
+          theme: 'tooltip-white'
         });
-
-        // Set tooltip content
         instance.setContent(info);
 
-        // Access tooltip instance and its ID; use it for aria-controls attribute
+        // Accessibility / tooltip IDs
         const tooltipID = instance.popper.id;
         cardContents.setAttribute('aria-controls', tooltipID);
-        cardContents.setAttribute('aria-labelledby', numerator); // Set a11y label to the insight’s ID
-        cardContents.setAttribute('title', 'More information on this metric'); // Set title 
+        cardContents.setAttribute('aria-labelledby', numerator);
+        cardContents.setAttribute('title', 'More information on this metric');
 
         // Get numerator’s count query
-        let num = axios.get(countQueryPrefix + orgData.hits.hits[0]._source.analysis[numerator].query);
+        let numPromise = axios.get(countQueryPrefix + analysisEntry.query);
 
-        // Display data in UI if both a numerator & denominator were defined
+        // If we have a denominator param
         if (numerator && denominator) {
           // Get denominator’s count query
-          let denom = axios.get(countQueryPrefix + orgData.hits.hits[0]._source.analysis[denominator].query);
+          let denomPromise = axios.get(countQueryPrefix + orgData.hits.hits[0]._source.analysis[denominator].query);
 
-          Promise.all([num, denom])
-            .then(function (results) {
-              var numeratorCount   = results[0].data,
-                  denominatorCount = results[1].data;
+          // Get total articles count for the bar chart
+          let totalArticlesPromise = axios.get(countQueryPrefix + orgData.hits.hits[0]._source.analysis.is_paper.query);
+
+          Promise.all([numPromise, denomPromise, totalArticlesPromise])
+            .then(function ([numResult, denomResult, totalArticlesResult]) {
+              const numeratorCount     = numResult.data,
+                    denominatorCount   = denomResult.data,
+                    totalArticlesCount = totalArticlesResult.data;
 
               if (denominatorCount) {
-                articlesContents.textContent = `${makeNumberReadable(numeratorCount)} of ${makeNumberReadable(denominatorCount)} ${denominatorText}`;
-                percentageContents.textContent = `${Math.round(((numeratorCount / denominatorCount) * 100))}%`;
-              } else {
-                articlesContents.innerHTML = `<span class="invisible" aria-hidden="true">---</span>`;
-                percentageContents.textContent = "N/A";
-              };
-            }
-          ).catch(function (error) { console.log(`error: ${error}`); });
+                // Show "X of Y" in #articles_... with some styling
+                articlesContents.innerHTML = `
+                  <span class="font-semibold text-carnation-600">${makeNumberReadable(numeratorCount)}</span>
+                  <span class="text-neutral-700">
+                    of ${makeNumberReadable(denominatorCount)} ${denominatorText}
+                  </span>
+                `;
 
-        // Display plain number when it’s just a numerator
+                // Show percentage in #percent_...
+                const pct = Math.round((numeratorCount / denominatorCount) * 100);
+                percentageContents.innerHTML = `
+                  <span class="font-extrabold">${pct}%</span>
+                `;
+
+                // Set up bar chart visualisation
+                setBarChart(
+                  cardContents,
+                  numeratorCount,
+                  denominatorCount,
+                  denominator,
+                  totalArticlesCount
+                );
+              } else {
+                showUnavailableCard(cardContents);
+              }
+            })
+            .catch(function (error) {
+              console.log(`error: ${error}`);
+              showUnavailableCard(cardContents);
+            });
+
         } else {
-          num.then(function (result) {
-            percentageContents.textContent = makeNumberReadable(result.data);
-          }).catch(function (error) { console.log(`${numerator} error: ${error}`); });
-        };
+          // NO DENOMINATOR => single total value
+          numPromise
+            .then(function (result) {
+              // Insert value in #percent_{numerator}
+              percentageContents.textContent = makeNumberReadable(result.data);
+
+              // Put smaller label "articles" (or denominatorText) in #articles_{numerator}
+              articlesContents.textContent = denominatorText;
+            })
+            .catch(function (error) {
+              console.log(`${numerator} error: ${error}`);
+              showUnavailableCard(cardContents);
+            });
+        }
 
         // Once data has loaded, display the card
         changeOpacity(contentID);
 
       } else {
         displayNone(contentID);
-      };
-
+      }
     };
 
-    getInsight(
-      "is_paper",
-      null,
-      "articles",
-      "<p>The total number of articles published by grantees or authors at your organization.</p>"
-    );
-
-    getInsight(
-      "is_preprint",
-      null,
-      "preprints",
-      "<p>Preprints are early versions of research articles that have not yet been peer-reviewed.</p>"
-    );
-
-    getInsight(
-      "is_free_to_read",
-      "is_paper",
-      "articles",
-      "<p>Articles that are free to read on the publisher website or any online repository, including temporarily accessible articles (“bronze Open Access”).</p>"
-    );
-
-    getInsight(
-      "is_compliant",
-      "is_covered_by_policy",
-      "articles covered by policy",
-      `<p class='mb-2'>The percentage of articles covered by <a href='${orgData.hits.hits[0]._source.policy.url}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
-    );
-
-    getInsight(
-      "is_oa",
-      "is_paper",
-      "articles",
-      "<p>The number of articles that are free and <a href='https://creativecommons.org/licenses/by/4.0/' class='underline underline-offset-2 decoration-1' target='_blank' rel='noopener'>CC BY</a> <strong class='bold'>or</strong> <a href='https://creativecommons.org/publicdomain/zero/1.0/' class='underline underline-offset-2 decoration-1' target='_blank' rel='noopener'>CC0</a> (in the public domain) on the publisher’s website, a repository or a preprint server.</p>"
-    );
-
-    getInsight(
-      "has_data_availability_statement",
-      "has_checked_data_availability_statement",
-      "articles checked",
-      "<p class='mb-2'>This number tells you how many articles that we’ve analyzed have a data availability statement.</p> <p>To check if a paper has a data availability statement, we use data from PubMed and review articles manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data).</p>"
-    );
-  
-    getInsight(
-      "has_open_data",
-      "has_data",
-      "articles with data",
-      "<p class='mb-2'>The percentage of articles that shared any data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>CC-BY</a> license.</p> <p class='mb-2'>This figure only measures how many articles shared Open Data if they generated data in the first place. It also only measures if any of the datasets generated were open, not if all of them were open.</p> <p>We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>"
-    );
-
-    getInsight(
-      "has_open_code",
-      "has_code",
-      "articles with code",
-      "<p class='mb-2'>The percentage of articles that shared any code under a permissive open-source licence, such as MIT.</p> <p class='mb-2'>This figure measures how many articles shared Open Code if they generated code in the first place. It also only measures if <strong>any parts</strong> of the code generated are open, not if <strong>all</strong> of it is open.</p> <p> We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>"
-    );
-    
-    /* Get Strategy data and display it  */
+    /* Get Strategy data and display it */
     function displayStrategy(strategy, keys, tableRow) {
       var shown  = orgData.hits.hits[0]._source.strategy[strategy].show_on_web,
           sort   = `&sort=${orgData.hits.hits[0]._source.strategy[strategy].sort}`,

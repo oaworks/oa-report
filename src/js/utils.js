@@ -801,3 +801,136 @@ export function updateExploreFilterHeader(filterId) {
       : 'articles that are ' + (EXPLORE_FILTERS_LABELS[filterId]?.label || filterId);
   replaceText("explore_filter", text);
 }
+
+/**
+ * Switches the default Insights card into greyed-out "Data unavailable" style.
+ */
+export function showUnavailableCard(cardContents) {
+  // Locate the "articles" and "percent" elements
+  const articlesEl = cardContents.querySelector('[id^="articles_"]');
+  const percentEl  = cardContents.querySelector('[id^="percent_"]');
+
+  // Clear the text for #articles_...
+  if (articlesEl) {
+    articlesEl.textContent = '';
+  }
+
+  // Replace the text in #percent_... with the slash icon
+  if (percentEl) {
+    percentEl.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg"
+           width="24" height="24" fill="none"
+           stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round"
+           class="feather feather-slash inline-block">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+      </svg>
+    `;
+  }
+
+  // Remove the default white card styling
+  cardContents.classList.remove(
+    'bg-white',
+    'hover:shadow-md',
+    'transition-shadow',
+    'duration-200',
+    'proportional-card'
+  );
+
+  // Add grey background & center layout
+  cardContents.classList.add(
+    'bg-carnation-100',
+    'flex',
+    'flex-col',
+    'justify-center'
+  );
+
+  // Clear or replace the bar chart area with "Data unavailable"
+  const footerEl = cardContents.querySelector('footer.bar-chart');
+  if (footerEl) {
+    footerEl.classList.remove(
+      'h-3',
+      'bg-carnation-800',
+      'rounded-full',
+      'bar-chart',
+      'w-full'
+    );
+    footerEl.innerHTML = `
+      <p class="mt-2 text-xs text-left text-neutral-700">
+        Data unavailable
+      </p>
+    `;
+  }
+}
+
+
+/**
+ * Render a bar (or two stacked bars) in the .bar-chart footer,
+ * depending on whether the denominator is the full set of publications
+ * or just a subset.
+ *
+ * @param {HTMLElement} cardEl         The <article> element for this insight
+ * @param {number} numeratorCount      e.g. 2652
+ * @param {number} denominatorCount    e.g. 3431
+ * @param {string} denominatorID       e.g. "is_paper" or something else
+ * @param {number} totalArticlesCount  e.g. 3821 (the full set of articles)
+ */
+export function setBarChart(
+  cardEl,
+  numeratorCount,
+  denominatorCount,
+  denominatorID,
+  totalArticlesCount
+) {
+  if (!cardEl) return;
+  const barContainer = cardEl.querySelector('.bar-chart');
+  if (!barContainer) return;
+
+  // Clear any existing bar(s)
+  barContainer.innerHTML = '';
+
+  // If the denominator is missing or zero, skip
+  if (!denominatorCount) return;
+
+  // ----- CASE 1: Denominator is the full set => Single bar -----
+  // The <footer> has 'bg-carnation-800' to represent the full set
+  // We overlay one bar for the numerator portion in carnation-300
+  if  (
+    denominatorID === 'is_paper' ||
+    denominatorID === 'is_preprint' ||
+    (denominatorCount && totalArticlesCount && denominatorCount === totalArticlesCount) // if the total amount is the same as the denominator
+  ) {
+    const fraction = Math.round((numeratorCount / denominatorCount) * 100);
+    barContainer.innerHTML = `
+      <div
+        class="h-3 bg-carnation-300 rounded-full"
+        style="width: ${fraction}%"
+      ></div>
+    `;
+  } 
+
+  // ----- CASE 2: Denominator is a subset => Two stacked bars -----
+  // The footer is still 'bg-carnation-800' overall, but we
+  // insert an outer bar in carnation-500 for "subset vs. total"
+  // and an inner bar in carnation-300 for "numerator vs. that subset".
+  else {
+    let fractionOuter = 0;
+    if (totalArticlesCount) {
+      fractionOuter = Math.round((denominatorCount / totalArticlesCount) * 100);
+    }
+    const fractionInner = Math.round((numeratorCount / denominatorCount) * 100);
+
+    barContainer.innerHTML = `
+      <div 
+        class="h-3 bg-carnation-500 rounded-full" 
+        style="width: ${fractionOuter}%"
+      >
+        <div 
+          class="h-3 bg-carnation-300 rounded-full" 
+          style="width: ${fractionInner}%"
+        ></div>
+      </div>
+    `;
+  }
+};
