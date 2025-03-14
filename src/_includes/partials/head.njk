@@ -1,7 +1,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  {% if org._source.private == true or page.fileSlug == 'report-unavailable' %}
+  {% if org._source.private == true or page.fileSlug == 'report-unavailable' or page.fileSlug == 'report-list' %}
   <meta name="robots" content="noindex">
   {% endif %}
   <title>{% if org._source.name %}{{ org._source.name }} — {% endif %}OA.Report: Unlock your research, simply</title>
