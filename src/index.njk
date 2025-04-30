@@ -247,8 +247,47 @@ layout: layouts/base.njk
   </div>
 </section>
 
+{# Latest OA.Report-tagged blog posts from https://blog.oa.works #}
+{% if blog.length %}
+<section class="bg-neutral-100 text-neutral-900 pt-24 pb-12" data-sal="fade">
+  <div class="container mx-auto px-4">
+    <h2 class="text-4xl font-serif font-bold leading-tight mb-12 text-neutral-900" data-sal="slide-up">
+      Latest news
+    </h2>
+
+    <div class="grid gap-8 md:grid-cols-3">
+      {% set delay = 0 %}
+      {% for post in blog %}
+      {% set delay = delay + 50 %}
+      <article class="flex flex-col bg-neutral-100 rounded-lg shadow-md overflow-hidden"
+               data-sal="slide-up" data-sal-delay="{{ delay }}">
+        {% if post.feature_image %}
+          <a href="{{ post.url }}" target="_blank" rel="noopener" class="block">
+            <img src="{{ post.feature_image }}" alt="{{ post.title }}" class="w-full h-48 object-cover">
+          </a>
+        {% endif %}
+
+        <div class="flex flex-col flex-grow p-6 bg-neutral-900">
+          <h3 class="text-lg font-serif font-bold mb-2">
+            <a href="{{ post.url }}" target="_blank" rel="noopener"
+               class="text-neutral-100 hover:text-neutral-300 transition-all">
+              {{ post.title }}
+            </a>
+          </h3>
+
+          <span class="text-xs text-neutral-200 mt-auto">
+            {{ post.published_at | date("MMM d, yyyy") }}
+          </span>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
 {# Last Schedule a Demo CTA Section #}
-<section class="bg-neutral-100 text-neutral-900 py-24 text-center" data-sal="fade">
+<section class="bg-neutral-100 text-neutral-900 pt-12 pb-24 text-center" data-sal="fade">
   <div class="container mx-auto">
     <h2 class="text-3xl font-serif font-bold leading-tight mb-8" data-sal="slide-up" data-sal-delay="100">
       Learn how you can simplify <br>Open Access compliance tracking
