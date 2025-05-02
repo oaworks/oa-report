@@ -40,7 +40,7 @@ export const FIRST_YEAR = 2015;
  */
 function isQuarterTwoOrLater() {
   const currentMonth = currentDate.getMonth();
-  return currentMonth >= 3; // Q2 starts in April (Month 3)
+  return currentMonth >= 4; // Q2 starts in April (Month 3)
 }
 
 /**
