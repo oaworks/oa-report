@@ -19,7 +19,7 @@ export const currentDate = new Date();
  * The default year for paid users, used as the starting point for reports.
  * @constant {number}
  */
-export const DEFAULT_YEAR = 2024;
+export const DEFAULT_YEAR = 2025;
 
 /** 
  * The default year for free users, usually set to one year behind the paid users' default.
