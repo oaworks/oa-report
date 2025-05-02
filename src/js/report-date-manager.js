@@ -19,7 +19,7 @@ export const currentDate = new Date();
  * The default year for paid users, used as the starting point for reports.
  * @constant {number}
  */
-export const DEFAULT_YEAR = 2024;
+export const DEFAULT_YEAR = 2025;
 
 /** 
  * The default year for free users, usually set to one year behind the paid users' default.
@@ -40,7 +40,7 @@ export const FIRST_YEAR = 2015;
  */
 function isQuarterTwoOrLater() {
   const currentMonth = currentDate.getMonth();
-  return currentMonth >= 4; // Q2 starts in April (Month 3)
+  return currentMonth >= 3; // Q2 starts in April (Month 3)
 }
 
 /**
