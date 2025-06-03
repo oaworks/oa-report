@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "18": "^0.0.0",
-    "@tryghost/content-api": "^1.11.22",
+    "@tryghost/content-api": "^1.11.25",
     "axios": "^1.9.0",
     "caniuse-lite": "^1.0.30001716",
     "canvas": "^3.1.0",
