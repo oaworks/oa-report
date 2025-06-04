@@ -194,11 +194,14 @@ layout: layouts/base.njk
 <section class="pt-24 pb-12">
   <div class="container mx-auto px-4">
     <div class="mb-12" data-sal="fade" data-sal-delay="50">
+      <p class="text-base text-neutral-700 mb-2">
+        Case studies
+      </p>
       <h2 class="text-4xl font-serif font-bold leading-tight mb-6 text-left">
-        See how funders are making <span class="md:block">an impact with OA.Report</span>
+        See how research leaders are making <span class="md:block">an impact with OA.Report</span>
       </h2>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
       {% set delay_count = 0 %}
       {% for case in cases %}
       {% set delay_count = delay_count + 50 %}
@@ -214,7 +217,7 @@ layout: layouts/base.njk
           {% webpImg case.bg, case.bg_alt, 600, 400, 'w-full h-64 object-cover', true %}
           <div class="absolute inset-0 bg-neutral-900 opacity-75"></div>
           <div class="absolute inset-x-0 bottom-0 px-6 py-4">
-            <p class="text-sm text-neutral-300 mb-1">{{ case.org }}</p>
+            <p class="text-sm text-neutral-300 mb-1">{{ case.org | safe }}</p>
             <h3 class="text-lg font-serif font-bold leading-snug">{{ case.heading }}</h3>
           </div>
         </div>
@@ -286,7 +289,6 @@ layout: layouts/base.njk
   </div>
 </section>
 {% endif %}
-
 
 {# Last Schedule a Demo CTA Section #}
 <section class="bg-neutral-100 text-neutral-900 pt-12 pb-24 text-center" data-sal="fade">

@@ -1,6 +1,18 @@
 [
   {
-    "org": "Howard Hughes Medical Institute",
+    "org": "Research Organization Registry <br>(ROR)",
+    "heading": "Leveraging and supporting persistent identifiers",
+    "subheading": "ROR is a free, open, and sustainable registry of persistent identifiers for research organizations. OA.Report uses ROR to identify institutions and their research outputs, ensuring accurate tracking and reporting of open-access compliance.",
+    "acronym": "ROR",
+    "logo": "img/users/ror.png",
+    "width": 400,
+    "height": 67,
+    "bg": "img/case-studies/ror-cover.jpg",
+    "bg_alt": "A scientist in a lab coat pipetting a liquid into a test tube.",
+    "url": "https://ror.org/blog/2025-05-01-oareport/"
+  },
+  {
+    "org": "Howard Hughes Medical Institute <br>(HHMI)",
     "heading": "Maximizing public access to biomedical research",
     "subheading": "The Howard Hughes Medical Institute (HHMI) uses OA.Report to implement and measure their open-access policy, ensuring that critical health research is freely accessible. OA.Report automates compliance tracking, helping HHMI optimize the reach of its funded research.",
     "acronym": "HHMI",
@@ -9,7 +21,7 @@
     "height": 67,
     "bg": "img/case-studies/hhmi-cover.jpg",
     "bg_alt": "A scientist in a lab coat pipetting a liquid into a test tube.",
-    "url": "https://ror.org/blog/2025-05-01-oareport/"
+    "url": "https://blog.oa.works/hhmi-using-oareport-to-measure-and-improve-oa-policy-compliance/"
   },
   {
     "org": "Michael J. Fox Foundation",
