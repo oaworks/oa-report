@@ -201,7 +201,10 @@ layout: layouts/base.njk
         See how research leaders are making <span class="md:block">an impact with OA.Report</span>
       </h2>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+  </div>
+  {# Almost-full-bleed card layout #}
+  <div class="mx-auto max-w-none px-4 sm:px-6 lg:px-4 xl:px-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
       {% set delay_count = 0 %}
       {% for case in cases %}
       {% set delay_count = delay_count + 50 %}
