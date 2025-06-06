@@ -148,7 +148,7 @@ permalink: "{{ org._source.objectID | slug }}/"
 
     {# PREPRINT INSIGHTS — SEPARATED FOR GATES ONLY #}
     {# Temporarily disabled while preprint queries are a WIP, see https://github.com/oaworks/discussion/issues/3331 #}
-    {% if org._source.objectID === "gates-foundation" %}
+    {# {% if org._source.objectID === "gates-foundation" %}
     <article class="mt-12">
       <h3 class="mb-2 text-2xl">Preprints</h3> 
       <div class="grid gap-6 grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6" id="insights_preprints">
@@ -177,7 +177,7 @@ permalink: "{{ org._source.objectID | slug }}/"
         }) }}
       </div>
     </article>
-    {% endif %}
+    {% endif %} #}
   </section>
 
   {# EXPLORE #}
