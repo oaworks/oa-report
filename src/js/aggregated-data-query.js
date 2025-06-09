@@ -267,8 +267,7 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
           },
           "mean_apc_amount": {
             "avg": {
-              "field": "supplements.apc_cost",
-              "missing": 0
+              "field": "supplements.apc_cost"
             }
           },
           "median_apc_amount": {
@@ -1042,8 +1041,7 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
           },
           "mean_apc_amount": {
             "avg": {
-              "field": "supplements.apc_cost",
-              "missing": 0
+              "field": "supplements.apc_cost"
             }
           },
           "median_apc_amount": {
@@ -1815,8 +1813,7 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
           },
           "mean_apc_amount": {
             "avg": {
-              "field": "supplements.apc_cost",
-              "missing": 0
+              "field": "supplements.apc_cost"
             }
           },
           "median_apc_amount": {
