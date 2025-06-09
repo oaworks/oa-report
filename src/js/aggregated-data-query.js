@@ -276,8 +276,7 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
               "field": "supplements.apc_cost",
               "percents": [
                 50
-              ],
-              "missing": 0
+              ]
             }
           },
           "with_data": {
@@ -1052,8 +1051,7 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
               "field": "supplements.apc_cost",
               "percents": [
                 50
-              ],
-              "missing": 0
+              ]
             }
           },
           "with_data": {
@@ -1826,8 +1824,7 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
               "field": "supplements.apc_cost",
               "percents": [
                 50
-              ],
-              "missing": 0
+              ]
             }
           },
           "with_data": {
