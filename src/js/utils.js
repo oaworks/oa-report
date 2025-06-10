@@ -803,6 +803,42 @@ export function updateExploreFilterHeader(filterId) {
 }
 
 /**
+ * Resets the <footer> bar-chart area of an Insights card back to its default state.
+ * Undoes any "Data unavailable" content and styling applied by showUnavailableCard().
+ *
+ * @param {HTMLElement} cardContents - The <article> element representing the insight card.
+ */
+export function resetBarChart(cardContents) {
+  if (!cardContents) return;
+
+  // Restore the default white card styling
+  cardContents.classList.add(
+    'bg-white',
+    'hover:shadow-md',
+    'transition-shadow',
+    'duration-200',
+    'proportional-card'
+  );
+
+  // Remove the "unavailable" card styling
+  cardContents.classList.remove(
+    'bg-carnation-100',
+    'flex',
+    'flex-col',
+    'justify-center'
+  );
+
+  // Remove all existing <footer> children (including "Data unavailable")
+  const footerEls = cardContents.querySelectorAll('footer');
+  footerEls.forEach(el => el.remove());
+
+  // Append a fresh bar-chart footer
+  const footerEl = document.createElement('footer');
+  footerEl.className = 'bar-chart w-full h-3 bg-carnation-800 rounded-full mt-4';
+  cardContents.appendChild(footerEl);
+}
+
+/**
  * Switches the default Insights card into greyed-out "Data unavailable" style.
  */
 export function showUnavailableCard(cardContents) {
@@ -857,13 +893,12 @@ export function showUnavailableCard(cardContents) {
       'w-full'
     );
     footerEl.innerHTML = `
-      <p class="mt-2 text-xs text-left text-neutral-700">
+      <p class="mt-4 text-xs text-left text-neutral-700">
         Data unavailable
       </p>
     `;
   }
 }
-
 
 /**
  * Render a bar (or two stacked bars) in the .bar-chart footer,

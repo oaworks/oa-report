@@ -5,7 +5,7 @@
 // Needs to be completely refactored
 // ================================================
 
-import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, setBarChart } from './utils.js';
+import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart } from './utils.js';
 import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS } from './constants.js';
 
 // Set report org index URL’s base path
@@ -163,7 +163,8 @@ export function initInsightsAndStrategies(org) {
                   <span class="font-extrabold">${pct}%</span>
                 `;
 
-                // Set up bar chart visualisation
+                // Clear any existing bar chart and set up new bar chart visualisation
+                resetBarChart(cardContents);
                 setBarChart(
                   cardContents,
                   numeratorCount,
