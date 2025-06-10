@@ -879,6 +879,8 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
       .catch(() => {
         cell.innerHTML = `<a href="${content}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 decoration-1">${content} (Name not found)</a>`;
       });
+  } else if (content == 'US$NaN'){
+    cell.innerHTML = "N/A"; // Display NaN as the more user-friendly "N/A"
   } else if (typeof content === 'object' && content !== null) {
     // If content is an object, format its values as a list
     cell.innerHTML = `<ul>${formatObjectValuesAsList(content, true)}</ul>`;
