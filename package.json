@@ -27,7 +27,7 @@
     "18": "^0.0.0",
     "@tryghost/content-api": "^1.11.26",
     "axios": "^1.9.0",
-    "caniuse-lite": "^1.0.30001723",
+    "caniuse-lite": "^1.0.30001726",
     "canvas": "^3.1.0",
     "dotenv": "^16.5.0",
     "feather-icons": "^4.28.0",
