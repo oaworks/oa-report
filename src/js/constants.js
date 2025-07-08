@@ -530,11 +530,14 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
     label: "Total citations",
     info: "Number of citations the publications received."
   },
-  "unknown_data_status": {
-    label: "Unknown data status"
-  },
   "unknown_code_status": {
     label: "Unknown code status"
+  },
+  "unknown_data_availability_statement": {
+    label: "Unknown data availability statement",
+  },
+    "unknown_data_status": {
+    label: "Unknown data status"
   },
   "unknown_shared_data_status": {
     label: "Unknown shared data status"
