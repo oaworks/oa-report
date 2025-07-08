@@ -240,6 +240,16 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
               }
             }
           },
+          "unknown_data_availability_statement": {
+            "filter": {
+              "bool": {
+                "must_not": [
+                  { "exists": { "field": "supplements.has_data_availability_statement" } },
+                  { "exists": { "field": "data_availability_statement" } }
+                ]
+              }
+            }
+          },
           "total_citations": {
             "sum": {
               "field": "cited_by_count"
@@ -1013,6 +1023,16 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
               }
             }
           },
+          "unknown_data_availability_statement": {
+            "filter": {
+              "bool": {
+                "must_not": [
+                  { "exists": { "field": "supplements.has_data_availability_statement" } },
+                  { "exists": { "field": "data_availability_statement" } }
+                ]
+              }
+            }
+          },
           "total_citations": {
             "sum": {
               "field": "cited_by_count"
@@ -1781,6 +1801,16 @@ export function getAggregatedDataQuery(suffix, query, term, startYear, endYear, 
                   }
                 ],
                 "minimum_should_match": 1
+              }
+            }
+          },
+          "unknown_data_availability_statement": {
+            "filter": {
+              "bool": {
+                "must_not": [
+                  { "exists": { "field": "supplements.has_data_availability_statement" } },
+                  { "exists": { "field": "data_availability_statement" } }
+                ]
               }
             }
           },
