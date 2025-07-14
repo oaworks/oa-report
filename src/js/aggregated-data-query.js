@@ -161,25 +161,28 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
-    without_data_availability_statement: {
-      filter: {
-        bool: {
-          must_not: [
-            {
-              term: {
-                "supplements.has_data_availability_statement": true
-              }
-            },
-            {
-              exists: {
-                field: "data_availability_statement"
-              }
-            }
-          ],
-          minimum_should_match: 1
-        }
+    "without_data_availability_statement": {
+      "filter": {
+          "bool": {
+              "must": [
+                  {
+                      "term": {
+                          "supplements.has_data_availability_statement": false
+                      }
+                  },
+                  {
+                      "bool": {
+                          "must_not": {
+                              "exists": {
+                                  "field": "data_availability_statement"
+                              }
+                          }
+                      }
+                  }
+              ]
+          }
       }
-    },
+  },
     unknown_data_availability_statement: {
       filter: {
         bool: {
