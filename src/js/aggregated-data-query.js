@@ -161,20 +161,20 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
-    "without_data_availability_statement": {
-      "filter": {
-          "bool": {
-              "must": [
+    without_data_availability_statement: {
+      filter: {
+          bool: {
+              must: [
                   {
-                      "term": {
+                      term: {
                           "supplements.has_data_availability_statement": false
                       }
                   },
                   {
-                      "bool": {
-                          "must_not": {
-                              "exists": {
-                                  "field": "data_availability_statement"
+                      bool: {
+                          must_not: {
+                              exists: {
+                                  field: "data_availability_statement"
                               }
                           }
                       }
