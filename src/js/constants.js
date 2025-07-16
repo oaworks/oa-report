@@ -530,11 +530,16 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
     label: "Total citations",
     info: "Number of citations the publications received."
   },
-  "unknown_data_status": {
-    label: "Unknown data status"
-  },
   "unknown_code_status": {
     label: "Unknown code status"
+  },
+  "unknown_data_availability_statement": {
+    label: "Unknown data availability statement",
+    info: "Publications where we have not confirmed if they have a data availability statement. Data availability statements (or 'data access statement', 'resource availability statements', 'code availability statements') tell a reader where the research data or code associated with a paper is available, and how they can be accessed.",
+    details: "To check if a paper has a data availability statement, we use data from PubMed’s data availability filter and review articles manually. This process can take up to six months in some cases as we wait for external sources before collecting ourselves."
+  },
+    "unknown_data_status": {
+    label: "Unknown data status"
   },
   "unknown_shared_data_status": {
     label: "Unknown shared data status"
@@ -634,7 +639,9 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
     label: "Without code"
   },
   "without_data_availability_statement": {
-    label: "Without data availability statement"
+    label: "Without data availability statement",
+    info: "Publications that do not have a data availability statement. Data availability statements (or 'data access statement', 'resource availability statements', 'code availability statements') tell a reader where the research data or code associated with a paper is available, and how they can be accessed. This figure doesn’t tell you what type of data availability statement is provided (e.g whether there is Open Data or no data at all).",
+    details: "To check if a paper has a data availability statement, we use data from PubMed’s data availability filter and review articles manually."
   },
   "without_shared_data": {
     label: "Without shared data"
@@ -762,6 +769,22 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "publisher": {
     label: "Publisher",
+    info: ""
+  },
+  "relation.has-preprint.id": {
+    label: "Preprint DOI(s)",
+    info: ""
+  },
+  "relation.has-version.id": {
+    label: "Subsequent version(s)",
+    info: ""
+  },
+  "relation.is-same-as.id": {
+    label: "Is the same version as",
+    info: ""
+  },
+  "relation.is-version-of.id": {
+    label: "Earlier version(s)",
     info: ""
   },
   "repository_url": {
