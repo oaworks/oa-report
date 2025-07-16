@@ -535,6 +535,8 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   },
   "unknown_data_availability_statement": {
     label: "Unknown data availability statement",
+    info: "Publications where we have not confirmed if they have a data availability statement. Data availability statements (or 'data access statement', 'resource availability statements', 'code availability statements') tell a reader where the research data or code associated with a paper is available, and how they can be accessed.",
+    details: "To check if a paper has a data availability statement, we use data from PubMed’s data availability filter and review articles manually. This process can take up to six months in some cases as we wait for external sources before collecting ourselves."
   },
     "unknown_data_status": {
     label: "Unknown data status"
@@ -637,7 +639,9 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
     label: "Without code"
   },
   "without_data_availability_statement": {
-    label: "Without data availability statement"
+    label: "Without data availability statement",
+    info: "Publications that do not have a data availability statement. Data availability statements (or 'data access statement', 'resource availability statements', 'code availability statements') tell a reader where the research data or code associated with a paper is available, and how they can be accessed. This figure doesn’t tell you what type of data availability statement is provided (e.g whether there is Open Data or no data at all).",
+    details: "To check if a paper has a data availability statement, we use data from PubMed’s data availability filter and review articles manually."
   },
   "without_shared_data": {
     label: "Without shared data"
