@@ -359,7 +359,7 @@ export const EXPLORE_FILTERS_LABELS = {
     label: "Original research",
     info: "<p>Scholarly research articles, <strong>including only</strong>:</p>\
     <ul class='mb-2 list-disc list-inside'>\
-      <li>peer-reviewed research</li>\
+      <li>peer-reviewed research (that present new findings)</li>\
     </ul>\
     <p>This <strong>excludes</strong>:</p>\
     <ul class='list-disc list-inside'>\
@@ -953,7 +953,17 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "is_original_research": {
     label: "Original research?",
-    info: ""
+    info: "<p>Scholarly research articles, <strong>including only</strong>:</p>\
+    <ul class='mb-2 list-disc list-inside'>\
+      <li>peer-reviewed research (that present new findings)</li>\
+    </ul>\
+    <p>This <strong>excludes</strong>:</p>\
+    <ul class='list-disc list-inside'>\
+      <li>reviews</li>\
+      <li>editorials</li>\
+      <li>methods</li>\
+      <li>conference proceedings</li>\
+    </ul>"
   },
   "is_preprint_of": {
     label: "Preprint of",
