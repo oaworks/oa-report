@@ -85,8 +85,25 @@ function createAggregationTemplate(suffix) {
     },
     free_to_read: {
       filter: {
-        term: {
-          is_oa: true
+        bool: {
+          should: [
+            {
+              term: {
+                "is_oa": true
+              }
+            },
+            {
+              term: {
+                crossref_is_oa: true
+              }
+            },
+            {
+              exists: {
+                field: "PMCID"
+              }
+            }
+          ],
+          minimum_should_match: 1
         }
       }
     },
