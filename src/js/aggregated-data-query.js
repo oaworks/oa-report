@@ -98,6 +98,11 @@ function createAggregationTemplate(suffix) {
               }
             },
             {
+              term: {
+                supplements.has_preprint_copy: true
+              }
+            },
+            {
               exists: {
                 field: "PMCID"
               }
