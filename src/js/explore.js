@@ -17,7 +17,7 @@ import { getAggregatedDataQuery } from './aggregated-data-query.js';
 // Global variables
 // =================================================
 
-const exportSort = "&sort=published_date:desc";
+const exportSort = "&sort=openalex.publication_date:desc";
 
 let orgKey = "",
     loggedIn = false,
@@ -429,7 +429,9 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       return;
     }
 
+    console.log('itemData', itemData);
     const { type, id, term, sort, includes } = itemData; // Extract properties
+    // id here means the explore item ID (e.g. 'articles'), not the org ID
 
     document.getElementById("csv_email_msg").innerHTML = ""; // Clear any existing message in CSV download form
     const exportTable = document.getElementById('export_table');
@@ -437,6 +439,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 
     let query = orgData.hits.hits[0]._source.analysis[filter]?.query; // Get the query string for the selected filter
     let suffix = orgData.hits.hits[0]._source.key_suffix; // Get the suffix for the org
+    let orgId = orgData.hits.hits[0]._source.id; // Get the identifier for the org
     let records = [];
 
     pretty = currentActiveDataDisplayToggle;
@@ -451,7 +454,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 
     if (type === "terms") {
       query = decodeAndReplaceUrlEncodedChars(query); // Decode and replace URL-encoded characters for JSON parsing
-      records = await fetchTermBasedData(suffix, query, term, sort, size);
+      records = await fetchTermBasedData(orgId, suffix, query, term, sort, size);
       records = reorderTermRecords(records, includes);
 
       if (pretty) {
@@ -525,8 +528,8 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
  * @param {number} size - The number of records to fetch.
  * @returns {Promise<Array>} A promise that resolves to an array of term-based records.
  */
-async function fetchTermBasedData(suffix, query, term, sort, size) {
-  const postData = getAggregatedDataQuery(suffix, query, term, startYear, endYear, size, sort);
+async function fetchTermBasedData(orgId, suffix, query, term, sort, size) {
+  const postData = getAggregatedDataQuery(orgId, suffix, query, term, startYear, endYear, size, sort);
   const response = await fetchPostData(postData);
 
   let buckets = [];
@@ -588,7 +591,7 @@ function formatBucket(bucket) {
  * @returns {Promise<Array>} A promise that resolves to an array of article-based records.
  */
 async function fetchArticleBasedData(query, includes, sort, size) {
-  const getDataUrl = `https://${ELEVENTY_API_ENDPOINT}.oa.works/report/works/?q=${dateRange}(${query})&size=${size}&include=${includes}&sort=${sort}`;
+  const getDataUrl = `https://${ELEVENTY_API_ENDPOINT}.oa.works/oareport/works/?q=${dateRange}(${query})&size=${size}&include=${includes}&sort=${sort}`;
   const response = await fetchGetData(getDataUrl); // No need to generate POST request
   // Check nested properties before assigning records
   if (response && response.hits && response.hits.hits) {
@@ -750,7 +753,7 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
       }
 
       // Date
-      if (dataType === 'articles' && key === 'published_date') {
+      if (dataType === 'articles' && key === 'openalex.publication_date') {
         content = makeDateReadable(new Date(content));
       }
 

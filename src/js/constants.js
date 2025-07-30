@@ -13,13 +13,13 @@ export const ELEVENTY_API_ENDPOINT =  document.body.getAttribute('data-api-endpo
  * This serves as the foundational URL upon which all other endpoints are built.
  * @type {string}
  */
-export const API_BASE_URL = `https://${ELEVENTY_API_ENDPOINT}.oa.works/report/`;
+export const API_BASE_URL = `https://${ELEVENTY_API_ENDPOINT}.oa.works/oareport/`;
 
 /**
  * Base URL for the bg API endpoint.
  * @type {string}
  */
-export const API_BG_BASE_URL = `https://bg.${ELEVENTY_API_ENDPOINT}.oa.works/report/`;
+export const API_BG_BASE_URL = `https://bg.${ELEVENTY_API_ENDPOINT}.oa.works/oareport/`;
 
 /**
  * Endpoint for querying works with a default size of 100.
@@ -231,7 +231,7 @@ export const EXPLORE_ITEMS_LABELS = {
     singular: "Article <span class='uppercase'>OA</span> type",
     plural: "Article <span class='uppercase'>OA</span> types"
   },
-  "journal_oa_type": {
+  "syp_permissions.journal_oa_type": {
     singular: "Journal <span class='uppercase'>OA</span> type",
     plural: "Journal <span class='uppercase'>OA</span> types"
   },
@@ -243,11 +243,11 @@ export const EXPLORE_ITEMS_LABELS = {
     singular: "Article (<span class='uppercase'>CIE</span>)",
     plural: "Articles (<span class='uppercase'>CIE</span>)"
   },
-  "publisher_license": {
+  "publisher.license": {
     singular: "Publisher license",
     plural: "Publisher licenses"
   },
-  "repository_license": {
+  "repository.license": {
     singular: "Repository license",
     plural: "Repository licenses"
   },
@@ -648,6 +648,9 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   },
   "without_shared_code": {
     label: "Without shared code"
+  },
+  "unknown_data_availability_statement": {
+    label: "Unknown data availability statement"
   }
 }
 
@@ -759,11 +762,11 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
     label: "PMCID",
     info: ""
   },
-  "published_date": {
+  "openalex.publication_date": {
     label: "Published date",
     info: ""
   },
-  "published_year": {
+  "openalex.publication_year": {
     label: "Published year",
     info: ""
   },
@@ -799,7 +802,11 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
     label: "Subject",
     info: ""
   },
-  "data_availability_statement_category": {
+  "apc_cost": {
+    label: "APC<span class='lowercase'>s</span>",
+    info: ""
+  },
+  "data_availability_statement.category": {
     label: "Data availability statement category",
     info: ""
   },

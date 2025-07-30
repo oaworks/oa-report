@@ -1,5 +1,3 @@
-import { ELEVENTY_API_ENDPOINT } from "./constants.js";
-
 /**
  * Generates the aggregation buckets template for Elasticsearch queries.
  * This function returns a set of common aggregations used in the Data Explore breakdowns.
@@ -13,104 +11,124 @@ function createAggregationTemplate(suffix) {
   return {
     open_access: {
       filter: {
-        bool: {
-          should: [
-            {
-              terms: {
-                "publisher_license.keyword": [
-                  "cc-by", "pd", "cc-0", "public-domain"
-                ]
-              }
-            },
-            {
-              terms: {
-                "publisher_license_v2.keyword": [
-                  "cc-by", "pd", "cc-0", "public-domain"
-                ]
-              }
-            },
-            {
-              terms: {
-                "supplements.publisher_license_crossref.keyword": [
-                  "cc-by", "cc0"
-                ]
-              }
-            },
-            {
-              terms: {
-                "epmc_licence.keyword": [
-                  "cc-by", "pd", "cc-zero", "cc0"
-                ]
-              }
-            },
-            {
-              terms: {
-                "repository_license.keyword": [
-                  "cc-by", "pd", "cc-0", "public-domain"
-                ]
-              }
-            },
-            {
-              terms: {
-                "repository_license_v2.keyword": [
-                  "cc-by", "pd", "cc-0", "public-domain"
-                ]
-              }
-            },
-            {
-              terms: {
-                "supplements.publisher_license_ic.keyword": [
-                  "cc-by", "pd", "cc0"
-                ]
-              }
-            }
-          ],
-          minimum_should_match: 1
+        // This is the logic that’s on main currently
+        // bool: {
+        //   should: [
+        //     {
+        //       terms: {
+        //         "publisher_license.keyword": [
+        //           "cc-by", "pd", "cc-0", "public-domain"
+        //         ]
+        //       }
+        //     },
+        //     {
+        //       terms: {
+        //         "publisher_license_v2.keyword": [
+        //           "cc-by", "pd", "cc-0", "public-domain"
+        //         ]
+        //       }
+        //     },
+        //     {
+        //       terms: {
+        //         "supplements.publisher_license_crossref.keyword": [
+        //           "cc-by", "cc0"
+        //         ]
+        //       }
+        //     },
+        //     {
+        //       terms: {
+        //         "epmc_licence.keyword": [
+        //           "cc-by", "pd", "cc-zero", "cc0"
+        //         ]
+        //       }
+        //     },
+        //     {
+        //       terms: {
+        //         "repository_license.keyword": [
+        //           "cc-by", "pd", "cc-0", "public-domain"
+        //         ]
+        //       }
+        //     },
+        //     {
+        //       terms: {
+        //         "repository_license_v2.keyword": [
+        //           "cc-by", "pd", "cc-0", "public-domain"
+        //         ]
+        //       }
+        //     },
+        //     {
+        //       terms: {
+        //         "supplements.publisher_license_ic.keyword": [
+        //           "cc-by", "pd", "cc0"
+        //         ]
+        //       }
+        //     }
+        //   ],
+        //   minimum_should_match: 1
+        // }
+        term: {
+          is_open_access: true
         }
       }
     },
     compliant: {
       filter: {
+        // This is the logic that’s on main currently
+        // term: {
+        //   [`supplements.is_compliant_all_works__${suffix}`]: true
+        // }
         term: {
-          [`supplements.is_compliant_all_works__${suffix}`]: true
+          "oa_policy.is_compliant": id
         }
       }
     },
     covered_by_policy: {
       filter: {
+        // This is the logic that’s on main currently
+        // term: {
+        //   [`supplements.is_covered_by_policy__${suffix}`]: true
+        // }
         term: {
-          [`supplements.is_covered_by_policy__${suffix}`]: true
+          "oa_policy.is_covered_by_policy": id
         }
       }
     },
     free_to_read: {
       filter: {
+        // This is the logic that’s on main currently
+        // term: {
+        //   is_oa: true
+        // }
         term: {
-          is_oa: true
+          is_free_to_read: true 
         }
       }
     },
     in_repository: {
       filter: {
-        bool: {
-          should: [
-            {
-              term: {
-                "openalx.open_access.any_repository_has_fulltext": true
-              }
-            },
-            {
-              term: {
-                has_repository_copy: true
-              }
-            },
-            {
-              exists: {
-                field: "PMCID"
-              }
-            }
-          ],
-          minimum_should_match: 1
+        // This is the logic that’s on main currently
+        // bool: {
+        //   should: [
+        //     {
+        //       term: {
+        //         "openalx.open_access.any_repository_has_fulltext": true
+        //       }
+        //     },
+        //     {
+        //       term: {
+        //         has_repository_copy: true
+        //       }
+        //     },
+        //     {
+        //       exists: {
+        //         field: "PMCID"
+        //       }
+        //     }
+        //   ],
+        //   minimum_should_match: 1
+        // }
+        term: {
+          "openalex.open_access.any_repository_has_fulltext": true
         }
       }
     },
@@ -144,45 +162,53 @@ function createAggregationTemplate(suffix) {
     },
     with_data_availability_statement: {
       filter: {
-        bool: {
-          should: [
-            {
-              term: {
-                "supplements.has_data_availability_statement": true
-              }
-            },
-            {
-              exists: {
-                field: "data_availability_statement"
-              }
-            }
-          ],
-          minimum_should_match: 1
+        // This is the logic that’s on main currently
+        // bool: {
+        //   should: [
+        //     {
+        //       term: {
+        //         "supplements.has_data_availability_statement": true
+        //       }
+        //     },
+        //     {
+        //       exists: {
+        //         field: "data_availability_statement"
+        //       }
+        //     }
+        //   ],
+        //   minimum_should_match: 1
+        // }
+        term: {
+          "data_availability_statement.has_data_availability_statement": true
         }
       }
     },
     without_data_availability_statement: {
       filter: {
-          bool: {
-              must: [
-                  {
-                      term: {
-                          "supplements.has_data_availability_statement": false
-                      }
-                  },
-                  {
-                      bool: {
-                          must_not: {
-                              exists: {
-                                  field: "data_availability_statement"
-                              }
-                          }
-                      }
-                  }
-              ]
-          }
+        // This is the logic that’s on main currently
+        // bool: {
+        //   must: [
+        //     {
+        //       term: {
+        //         "supplements.has_data_availability_statement": false
+        //       }
+        //     },
+        //     {
+        //       bool: {
+        //         must_not: {
+        //           exists: {
+        //             field: "data_availability_statement"
+        //           }
+        //         }
+        //       }
+        //     }
+        //   ]
+        // }
+        term: {
+          "data_availability_statement.has_data_availability_statement": false
+        }
       }
-  },
+    },
     unknown_data_availability_statement: {
       filter: {
         bool: {
@@ -199,13 +225,25 @@ function createAggregationTemplate(suffix) {
             }
           ]
         }
+        // This is the one from the original 1879-new-structure-merged branch
+        // bool: {
+        //   must_not: {
+        //     exists: {
+        //       field: "data_availability_statement.has_data_availability_statement"
+        //     }
+        //   }
+        // }
       }
     },
     total_citations: {
-      sum: { field: "cited_by_count" }
+      // This is the logic that’s on main currently
+      // sum: { field: "cited_by_count" }
+      sum: { field: "openalex.cited_by_count" }
     },
     mean_citations: {
-      avg: { field: "cited_by_count" }
+      // This is the logic that’s on main currently
+      // avg: { field: "cited_by_count" }
+      avg: { field: "openalex.cited_by_count" }
     },
     with_apc: {
       filter: {
@@ -228,6 +266,7 @@ function createAggregationTemplate(suffix) {
     },
     with_data: {
       filter: {
+        // This hasn’t changed but seems confusing... It just tells us if it’s original research, not that it contains data at all?
         term: {
           "supplements.is_original_research": true
         }
@@ -617,12 +656,18 @@ function createAggregationTemplate(suffix) {
       }
     },
     with_orcids: {
-      filter: { exists: { field: "authorships.author.orcid" } }
+      // This is the logic that’s on main currently
+      // filter: { exists: { field: "authorships.author.orcid" } }
+      filter: { exists: { field: "openalex.authorships.author.orcid" } }
     },
     with_rors: {
-      filter: { exists: { field: "authorships.institutions.ror" } }
+      // This is the logic that’s on main currently
+      // filter: { exists: { field: "authorships.institutions.ror" } }
+      filter: { exists: { field: "openalex.authorships.institutions.ror" } }
     },
     with_fundref_dois: {
+      // This is the logic that’s on main currently
+      // Funder DOIs don’t seem to exist in the new endpoint
       filter: { exists: { field: "funder.DOI" } }
     },
     with_grant_dois: {
@@ -667,7 +712,7 @@ export function getAggregatedDataQuery(
       bool: {
         must: [
           { query_string: { query } },
-          { range: { published_date: { gte: startYear, lte: endYear } } },
+          { range: { "openalex.publication_date": { gte: startYear, lte: endYear } } },
         ],
       },
     },

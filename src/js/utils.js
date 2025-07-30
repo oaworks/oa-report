@@ -25,7 +25,7 @@ export function isCacheExpired(timestamp, expiryDuration = 86400000) { // 24 hou
  */
 export async function fetchPostData(postData) {
   try {
-    const response = await axios.post(`https://bg.${ELEVENTY_API_ENDPOINT}.oa.works/report/works`, postData);
+    const response = await axios.post(`https://bg.${ELEVENTY_API_ENDPOINT}.oa.works/oareport/works`, postData);
     return response.data; 
   } catch (error) {
     console.error("There was a problem with the POST request: ", error.message);
@@ -132,7 +132,7 @@ export function replaceDateRange(newStart, newEnd) {
   // Adjust the date range in ISO format for the API call (-1 day for start date, +1 day for end date)
   const startDateISO = formatDateToISO(changeDays(-1, newStart));
   const endDateISO = formatDateToISO(changeDays(+1, newEnd));
-  dateRange = `(published_date:>${startDateISO}%20AND%20published_date:<${endDateISO})%20AND%20`;
+  dateRange = `(openalex.publication_date:>${startDateISO}%20AND%20openalex.publication_date:<${endDateISO})%20AND%20`;
   
   startYear = formatDateToISO(newStart);
   endYear = formatDateToISO(newEnd);

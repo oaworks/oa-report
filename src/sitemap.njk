@@ -11,7 +11,7 @@ permalink: /sitemap.xml
   {% for org in orgs.hits.hits %}
   {% if org._source.private == false %}
   <url>
-    <loc>{{ site.base_url }}/{{ org._source.objectID | slug }}/</loc>
+    <loc>{{ site.base_url }}/{{ org._source.url_slug }}/</loc>
     <priority>0.9</priority>
   </url>
   {% endif %}
