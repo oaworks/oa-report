@@ -31,6 +31,9 @@ if (hasOrgKey) {
 
 // Generate report’s UI for any given date range
 export function initInsightsAndStrategies(org) {
+  console.log("org variable at module load:", org);
+  console.log("GET-ting", orgApiUrl);
+
   // Set paths for orgindex
   let queryPrefix = `${QUERY_BASE}q=${dateRange}`,
       countQueryPrefix = `${COUNT_QUERY_BASE}q=${dateRange}`;
