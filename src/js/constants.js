@@ -771,6 +771,22 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
     label: "Publisher",
     info: ""
   },
+  "relation.has-preprint.id": {
+    label: "Preprint DOI(s)",
+    info: ""
+  },
+  "relation.has-version.id": {
+    label: "Subsequent version(s)",
+    info: ""
+  },
+  "relation.is-same-as.id": {
+    label: "Is the same version as",
+    info: ""
+  },
+  "relation.is-version-of.id": {
+    label: "Earlier version(s)",
+    info: ""
+  },
   "repository_url": {
     label: "Repository URL",
     info: ""
