@@ -103,8 +103,18 @@ function createAggregationTemplate(suffix) {
               }
             },
             {
+              term: {
+                openalx.open_access.is_oa: true
+              }
+            },
+            {
               exists: {
                 field: "PMCID"
+              }
+            },
+            {
+              exists: {
+                field: "openalx.open_access.oa_url"
               }
             }
           ],
