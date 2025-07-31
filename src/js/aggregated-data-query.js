@@ -85,8 +85,40 @@ function createAggregationTemplate(suffix) {
     },
     free_to_read: {
       filter: {
-        term: {
-          is_oa: true
+        bool: {
+          should: [
+            {
+              term: {
+                "is_oa": true
+              }
+            },
+            {
+              term: {
+                crossref_is_oa: true
+              }
+            },
+            {
+              term: {
+                "supplements.has_preprint_copy": true
+              }
+            },
+            {
+              term: {
+                "openalx.open_access.is_oa": true
+              }
+            },
+            {
+              exists: {
+                field: "PMCID"
+              }
+            },
+            {
+              exists: {
+                field: "openalx.open_access.oa_url"
+              }
+            }
+          ],
+          minimum_should_match: 1
         }
       }
     },
