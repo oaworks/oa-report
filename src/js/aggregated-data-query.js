@@ -99,12 +99,12 @@ function createAggregationTemplate(suffix) {
             },
             {
               term: {
-                supplements.has_preprint_copy: true
+                "supplements.has_preprint_copy": true
               }
             },
             {
               term: {
-                openalx.open_access.is_oa: true
+                "openalx.open_access.is_oa": true
               }
             },
             {
