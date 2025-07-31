@@ -275,6 +275,7 @@ export function initInsightsAndStrategies(org) {
                           if (key.includes('invoice_date')) action[key] = makeDateReadable(new Date(action[key]));
                           if (key.includes('apc_cost')) action[key] = makeNumberReadable(action[key]);
                         } else { 
+                          console.log('DEBUG orgData right before crash', JSON.stringify(orgData, null, 2));
                           var value = list[i]._source[key];
                           action[key] = value;
 
