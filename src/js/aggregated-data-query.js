@@ -96,12 +96,43 @@ function createAggregationTemplate(suffix) {
     free_to_read: {
       filter: {
         // This is the logic that’s on main currently
-        // term: {
-        //   is_oa: true
+        // bool: {
+        //   should: [
+        //     {
+        //       term: {
+        //         "is_oa": true
+        //       }
+        //     },
+        //     {
+        //       term: {
+        //         crossref_is_oa: true
+        //       }
+        //     },
+        //     {
+        //       term: {
+        //         "supplements.has_preprint_copy": true
+        //       }
+        //     },
+        //     {
+        //       term: {
+        //         "openalx.open_access.is_oa": true
+        //       }
+        //     },
+        //     {
+        //       exists: {
+        //         field: "PMCID"
+        //       }
+        //     },
+        //     {
+        //       exists: {
+        //         field: "openalx.open_access.oa_url"
+        //       }
+        //     }
+        //   ],
+        //   minimum_should_match: 1
         // }
         term: {
-          is_free_to_read: true 
-        }
+          is_free_to_read: true
       }
     },
     in_repository: {
