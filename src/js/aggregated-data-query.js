@@ -1,13 +1,18 @@
+import { ELEVENTY_API_ENDPOINT } from "./constants.js";
+
 /**
  * Generates the aggregation buckets template for Elasticsearch queries.
  * This function returns a set of common aggregations used in the Data Explore breakdowns.
  * based on the provided suffix (identifier for an organisation).
  *
- * @param {string} suffix – Organisation-specific suffix used in dynamic field
- *                          names (e.g. "bmgf" for Gates Foundation).
- * @returns {Object}       Map of Elasticsearch aggregation definitions.
+ * @param {string} id     – Organisation identifier used in the compliance &
+ *                          coverage filters.
+ * @param {string} suffix – Organisation-specific suffix for dynamic field
+ *                          names used in some of the supplements sheets 
+ *                          (e.g. "bmgf" for Gates Foundation).
+ * @returns {Object}      Elasticsearch aggregation definitions.
  */
-function createAggregationTemplate(suffix) {
+function createAggregationTemplate(id, suffix) {
   return {
     open_access: {
       filter: {
@@ -133,6 +138,7 @@ function createAggregationTemplate(suffix) {
         // }
         term: {
           is_free_to_read: true
+        }
       }
     },
     in_repository: {
@@ -708,59 +714,61 @@ function createAggregationTemplate(suffix) {
 }
 
 /**
- * Dynamically constructs the POST body for Elasticsearch queries 
+ * Dynamically constructs the POST body for Elasticsearch queries
  * to handle complex term-based aggregations.
- * This includes sorting and filtering based on specified parameters.
  *
- * @param {string}   suffix     – Organisation-specific suffix.
- * @param {string}   query      – Main query string.
- * @param {string}   term       – Field whose values will form the row labels.
- * @param {number}   startYear  – Start year (inclusive) for `published_date`.
- * @param {number}   endYear    – End year (inclusive) for `published_date`.
- * @param {number}   [size=20]  – Max buckets to return.
- * @param {string}   [sort="_count"] – Sort field (`_count` or a metric name).
- * @returns {Object} POST body suitable for `/_search`.
+ * @param {string} id         – Organisation identifier (first parameter for historical compatibility).
+ * @param {string} suffix     – Organisation-specific suffix.
+ * @param {string} query      – Main query string.
+ * @param {string} term       – Field whose values will form the row labels.
+ * @param {number} startYear  – Start year (inclusive) for `publication_date`.
+ * @param {number} endYear    – End year (inclusive) for `publication_date`.
+ * @param {number} [size=20]  – Max buckets to return.
+ * @param {string} [sort="_count"] – Sort field (`_count` or a metric name).
+ * @returns {Object}          – POST body suitable for `/_search`.
  */
 export function getAggregatedDataQuery(
+  id,
   suffix,
   query,
   term,
   startYear,
   endYear,
   size = 20,
-  sort = "_count",
+  sort = "_count"
 ) {
-  // `published_year` on the live API is already keyword-type; others need `.keyword`.
+  // If we’re querying the live API, `published_year` is already keyword-type;
+  // for everything else we need the .keyword version.
   let termField = term;
   if (!(term === "published_year" && ELEVENTY_API_ENDPOINT === "api")) {
     termField += ".keyword";
   }
 
-  const aggs = createAggregationTemplate(suffix);
+  const aggs = createAggregationTemplate(id, suffix);
 
   return {
     query: {
       bool: {
         must: [
           { query_string: { query } },
-          { range: { "openalex.publication_date": { gte: startYear, lte: endYear } } },
-        ],
-      },
+          { range: { "openalex.publication_date": { gte: startYear, lte: endYear } } }
+        ]
+      }
     },
     size: 0,
     aggs: {
       all_values: {
         filter: { exists: { field: termField } },
-        aggs,
+        aggs
       },
       no_values: {
         filter: { bool: { must_not: { exists: { field: termField } } } },
-        aggs,
+        aggs
       },
       values: {
         terms: { field: termField, size, order: { [sort]: "desc" } },
-        aggs,
-      },
-    },
+        aggs
+      }
+    }
   };
 }

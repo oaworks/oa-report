@@ -95,7 +95,6 @@ export let currentActiveDataDisplayToggle = true;
  */
 let selectedRowKeys = [];
 
-
 // =================================================
 // DOM Manipulation functions
 // =================================================
@@ -454,7 +453,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 
     if (type === "terms") {
       query = decodeAndReplaceUrlEncodedChars(query); // Decode and replace URL-encoded characters for JSON parsing
-      records = await fetchTermBasedData(orgId, suffix, query, term, sort, size);
+      records = await fetchTermBasedData(suffix, query, term, sort, size);
       records = reorderTermRecords(records, includes);
 
       if (pretty) {
@@ -528,8 +527,8 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
  * @param {number} size - The number of records to fetch.
  * @returns {Promise<Array>} A promise that resolves to an array of term-based records.
  */
-async function fetchTermBasedData(orgId, suffix, query, term, sort, size) {
-  const postData = getAggregatedDataQuery(orgId, suffix, query, term, startYear, endYear, size, sort);
+async function fetchTermBasedData(suffix, query, term, sort, size) {
+  const postData = getAggregatedDataQuery(suffix, query, term, startYear, endYear, size, sort);
   const response = await fetchPostData(postData);
 
   let buckets = [];
