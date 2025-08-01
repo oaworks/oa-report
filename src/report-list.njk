@@ -8,11 +8,11 @@ permalink: "report-list/"
   <ol class="border-t border-neutral-300 divide-y divide-neutral-300">
     {% for org in orgs.hits.hits %}
       <li>
-        <a href="{{ site.base_url }}/{{ org._source.objectID }}" class="flex items-center gap-4 px-4 py-3 hover:bg-carnation-100 transition block w-full">
+        <a href="{{ site.base_url }}/{{ org._source.url_slug }}" class="flex items-center gap-4 px-4 py-3 hover:bg-carnation-100 transition block w-full">
           <span class="text-lg md:text-xl font-serif">{{ loop.index }}.</span>
           <div class="flex-1">
             {{ org._source.name }}
-            <span class="text-sm text-neutral-600">({{ org._source.objectID }})</span>
+            <span class="text-sm text-neutral-600">({{ org._source.id }})</span>
           </div>
         </a>
       </li>
