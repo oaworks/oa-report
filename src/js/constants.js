@@ -771,21 +771,17 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
     label: "Publisher",
     info: ""
   },
-  "relation.has-preprint.id": {
-    label: "Preprint DOI(s)",
-    info: ""
-  },
   "relation.has-version.id": {
     label: "Subsequent version(s)",
-    info: ""
+    info: "<p class='mb-2'>Data type: <strong>String</strong> <br>The DOIs of any subsequent versions of this work.</p><p>Source: CrossRef</p>"
   },
   "relation.is-same-as.id": {
     label: "Is the same version as",
-    info: ""
+    info: "<p class='mb-2'>Data type: <strong>String</strong> <br>Any DOIs that are considered to be the same version of this work.</p><p>Source: CrossRef</p>"
   },
   "relation.is-version-of.id": {
     label: "Earlier version(s)",
-    info: ""
+    info: "<p class='mb-2'>Data type: <strong>String</strong> <br>The DOIs of any previous versions of this work.</p><p>Source: CrossRef</p>"
   },
   "repository_url": {
     label: "Repository URL",
@@ -983,7 +979,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "is_preprint_of": {
     label: "Preprint of",
-    info: ""
+    info: "<p class='mb-2'>Data type: <strong>String</strong> <br>The DOI of the published article with which this preprint is associated.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
   },
   "is_preprint": {
     label: "Preprint?",
