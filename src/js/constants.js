@@ -535,8 +535,8 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   },
   "unknown_data_availability_statement": {
     label: "Unknown data availability statement",
-    info: "Publications where we have not confirmed if they have a data availability statement. Data availability statements (or 'data access statement', 'resource availability statements', 'code availability statements') tell a reader where the research data or code associated with a paper is available, and how they can be accessed.",
-    details: "To check if a paper has a data availability statement, we use data from PubMed’s data availability filter and review articles manually. This process can take up to six months in some cases as we wait for external sources before collecting ourselves."
+    info: "Publications where we have not yet confirmed whether they include a data availability statement. These statements (also called ‘data access’, ‘resource availability’ or ‘code availability’ statements) tell readers where the underlying data or code can be found and how to access it.",
+    details: "To confirm whether a paper has a data availability statement, we first use PubMed’s data availability filter and then review articles manually. Because we wait for external sources to update before collectinf these data ourselves, this process can take up to six months."
   },
     "unknown_data_status": {
     label: "Unknown data status"
@@ -565,8 +565,8 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   },
   "with_data_availability_statement": {
     label: "With data availability statement",
-    info: "Publications that have a data availability statement. Data availability statements (or 'data access statement', 'resource availability statements', 'code availability statements') tell a reader where the research data or code associated with a paper is available, and how they can be accessed. This figure doesn’t tell you what type of data availability statement is provided (e.g whether there is Open Data or no data at all).",
-    details: "To check if a paper has a data availability statement, we use data from PubMed’s data availability filter and review articles manually."
+    info: "Publications that include a data availability statement. These statements (also called ‘data access’, ‘resource availability’ or ‘code availability’ statements) tell readers where the underlying data or code can be found and how to access it. This figure doesn’t specify the kind of statement provided (e.g., whether the data are openly available or not)",
+    details: "To confirm that a paper has a data availability statement, we first use PubMed’s data availability filter and then review articles manually."
   },
   "with_data_dois": {
     label: "With data DOI<span style='text-transform: lowercase;'>s</span>"
@@ -771,21 +771,17 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
     label: "Publisher",
     info: ""
   },
-  "relation.has-preprint.id": {
-    label: "Preprint DOI(s)",
-    info: ""
-  },
   "relation.has-version.id": {
     label: "Subsequent version(s)",
-    info: ""
+    info: "<p class='mb-2'>Data type: <strong>String</strong> <br>The DOIs of any subsequent versions of this work.</p><p>Source: CrossRef</p>"
   },
   "relation.is-same-as.id": {
     label: "Is the same version as",
-    info: ""
+    info: "<p class='mb-2'>Data type: <strong>String</strong> <br>Any DOIs that are considered to be the same version of this work.</p><p>Source: CrossRef</p>"
   },
   "relation.is-version-of.id": {
     label: "Earlier version(s)",
-    info: ""
+    info: "<p class='mb-2'>Data type: <strong>String</strong> <br>The DOIs of any previous versions of this work.</p><p>Source: CrossRef</p>"
   },
   "repository_url": {
     label: "Repository URL",
@@ -983,7 +979,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "is_preprint_of": {
     label: "Preprint of",
-    info: ""
+    info: "<p class='mb-2'>Data type: <strong>String</strong> <br>The DOI of the published article with which this preprint is associated.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
   },
   "is_preprint": {
     label: "Preprint?",
