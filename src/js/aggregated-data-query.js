@@ -63,6 +63,13 @@ function createAggregationTemplate(suffix) {
                   "cc-by", "pd", "cc0"
                 ]
               }
+            },
+            {
+              terms: {
+                "supplements.preprint_license.keyword": [
+                  "cc-by", "pd", "cc-0", "public-domain"
+                ]
+              }
             }
           ],
           minimum_should_match: 1
