@@ -251,6 +251,10 @@ export const EXPLORE_ITEMS_LABELS = {
     singular: "Repository license",
     plural: "Repository licenses"
   },
+  "preprint_license": {
+    singular: "Preprint license",
+    plural: "Preprint licenses"
+  },
   "preprint_server": {
     singular: "Preprint server",
     plural: "Preprint servers"
@@ -996,6 +1000,10 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   "preprint_doi": {
     label: "Preprint DOI",
     info: "<p class='mb-2'>Data type: <strong>String</strong> <br>The DOI for the article’s preprint, distinct from the article’s DOI.</p><p>Source: OA.Works. <br>Updated: weekly (premium)</p>"
+  },
+  "preprint_license": {
+    label: "Preprint license",
+    info: "<p class='mb-2'>Data type: <strong>String</strong> <br>The license applied to the preprint version of the work. The preprint license may differ from the publisher license (as seen in <em>Publisher License (Best)</em>).</p><p>Source: Data from OpenAlex and CrossRef. <br>Updated: weekly (premium), occasionally (free)</p>"
   },
   "program": {
     label: "Program",
