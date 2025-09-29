@@ -70,6 +70,13 @@ function createAggregationTemplate(suffix) {
                   "cc-by", "pd", "cc-0", "public-domain"
                 ]
               }
+            },
+            {
+              terms: {
+                "supplements.oasupport.status.keyword": [
+                  "Successful"
+                ]
+              }
             }
           ],
           minimum_should_match: 1
