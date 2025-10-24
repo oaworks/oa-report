@@ -988,3 +988,17 @@ export function getDecodedUrlQuery() {
   const plusAsSpace = raw.replace(/\+/g, ' ');
   return decodeAndReplaceUrlEncodedChars(plusAsSpace);
 }
+
+/**
+ * Combine two Elasticsearch query strings with an AND.
+ *
+ * @param {string} base
+ * @param {string} extra
+ * @returns {string}
+ */
+export function andQueryStrings(base, extra) {
+  const a = base && base.trim() ? `(${base.trim()})` : '';
+  const b = extra && extra.trim() ? `(${extra.trim()})` : '';
+  if (a && b) return `${a} AND ${b}`;
+  return a || b || '';
+}
