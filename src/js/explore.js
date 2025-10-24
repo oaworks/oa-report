@@ -466,8 +466,10 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       replaceText("report_sort_adjective", "Top");
       removeCSVExportLink(); // Remove the CSV export link
     } else if (type === "articles") {
-      records = await fetchArticleBasedData(query, includes, sort, size);
-      records = reorderArticleRecords(records, includes);
+        query = decodeAndReplaceUrlEncodedChars(query); // Decode and replace URL-encoded characters for JSON parsing
+        query = andQueryStrings(query, getDecodedUrlQuery()); // Combine with additional query strings from URL params
+        records = await fetchArticleBasedData(query, includes, sort, size);
+        records = reorderArticleRecords(records, includes);
 
       // Update the sort text in header
       replaceText("explore_sort", "published date"); 
@@ -589,7 +591,9 @@ function formatBucket(bucket) {
  * @returns {Promise<Array>} A promise that resolves to an array of article-based records.
  */
 async function fetchArticleBasedData(query, includes, sort, size) {
-  const getDataUrl = `https://${ELEVENTY_API_ENDPOINT}.oa.works/report/works/?q=${dateRange}(${query})&size=${size}&include=${includes}&sort=${sort}`;
+  const qParam = encodeURIComponent(`${dateRange}(${query})`); // Encode the query with date range
+  const getDataUrl = `https://${ELEVENTY_API_ENDPOINT}.oa.works/report/works/?q=${qParam}&size=${size}&include=${includes}&sort=${sort}`;
+
   const response = await fetchGetData(getDataUrl); // No need to generate POST request
   // Check nested properties before assigning records
   if (response && response.hits && response.hits.hits) {
