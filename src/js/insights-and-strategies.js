@@ -5,7 +5,7 @@
 // Needs to be completely refactored
 // ================================================
 
-import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart } from './utils.js';
+import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter } from './utils.js';
 import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS } from './constants.js';
 
 // Set report org index URL’s base path
@@ -132,15 +132,15 @@ export function initInsightsAndStrategies(org) {
         cardContents.setAttribute('title', 'More information on this metric');
 
         // Get numerator’s count query
-        let numPromise = axios.get(countQueryPrefix + analysisEntry.query);
+        let numPromise = axios.get(countQueryPrefix + buildEncodedQueryWithUrlFilter(analysisEntry.query));
 
         // If we have a denominator param
         if (numerator && denominator) {
           // Get denominator’s count query
-          let denomPromise = axios.get(countQueryPrefix + orgData.hits.hits[0]._source.analysis[denominator].query);
+          let denomPromise = axios.get(countQueryPrefix + buildEncodedQueryWithUrlFilter(orgData.hits.hits[0]._source.analysis[denominator].query));
 
           // Get total articles count for the bar chart
-          let totalArticlesPromise = axios.get(countQueryPrefix + orgData.hits.hits[0]._source.analysis.is_paper.query);
+          let totalArticlesPromise = axios.get(countQueryPrefix + buildEncodedQueryWithUrlFilter(orgData.hits.hits[0]._source.analysis.is_paper.query));
 
           Promise.all([numPromise, denomPromise, totalArticlesPromise])
             .then(function ([numResult, denomResult, totalArticlesResult]) {
@@ -217,8 +217,13 @@ export function initInsightsAndStrategies(org) {
             tableCountContents = document.getElementById(`total_${strategy}`),
             tableBody          = document.getElementById(`table_${strategy}`).getElementsByTagName('tbody')[0];
         
-        var countQuery              = countQueryPrefix + orgData.hits.hits[0]._source.strategy[strategy].query,
-            listQuery               = queryPrefix + orgData.hits.hits[0]._source.strategy[strategy].query + sort;
+        // Store original query + build encoded query with URL filters, if any
+        const strategyQuery = orgData.hits.hits[0]._source.strategy[strategy].query,
+              encodedQuery = buildEncodedQueryWithUrlFilter(strategyQuery);
+        
+        // Build full count + works queries
+        var countQuery = countQueryPrefix + encodedQuery;
+            listQuery  = queryPrefix + encodedQuery + sort + orgKey;
         
         // Get total action (article) count for this strategy
         axios.get(countQuery)

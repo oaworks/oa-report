@@ -1002,3 +1002,16 @@ export function andQueryStrings(base, extra) {
   if (a && b) return `${a} AND ${b}`;
   return a || b || '';
 }
+
+/**
+ * Build an encoded `?q=` value by combining the existing query string
+ * with the URL `?q=` filter.
+ *
+ * @param {string} baseQuery
+ * @returns {string}
+ */
+export function buildEncodedQueryWithUrlFilter(baseQuery) {
+  const base = decodeAndReplaceUrlEncodedChars(baseQuery);
+  const combined = andQueryStrings(base, getDecodedUrlQuery());
+  return encodeURIComponent(combined);
+}
