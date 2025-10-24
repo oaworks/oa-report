@@ -969,3 +969,22 @@ export function setBarChart(
     `;
   }
 };
+
+/**
+ * Get the admin-provided `?q=` from the page URL and normalise it
+ * to a plain Elasticsearch query string.
+ *
+ * - Returns '' when absent.
+ * - Converts '+' to spaces (URL forms may use '+').
+ * - Decodes percent-encoded characters (e.g., %22 → ").
+ * 
+ * @returns {string} Normalised query string from the URL.
+ */
+export function getDecodedUrlQuery() {
+  const params = new URLSearchParams(window.location.search);
+  const raw = params.get('q');
+  if (!raw || !raw.trim()) return '';
+  // Normalise '+' (often used for spaces), then decode %xx sequences.
+  const plusAsSpace = raw.replace(/\+/g, ' ');
+  return decodeAndReplaceUrlEncodedChars(plusAsSpace);
+}
