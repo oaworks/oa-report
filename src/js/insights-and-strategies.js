@@ -222,7 +222,7 @@ export function initInsightsAndStrategies(org) {
               encodedQuery = buildEncodedQueryWithUrlFilter(strategyQuery);
         
         // Build full count + works queries
-        var countQuery = countQueryPrefix + encodedQuery;
+        var countQuery = countQueryPrefix + encodedQuery,
             listQuery  = queryPrefix + encodedQuery + sort + orgKey;
         
         // Get total action (article) count for this strategy
