@@ -483,9 +483,9 @@ export function getStrategyExportLink(id, orgData) {
     ).catch(function (error) { console.log(`Export error: ${error}`); });
 
   // Set up export query
-  let isPaperURL = (dateRange + strategyQuery);
-  let query = `q=${isPaperURL.replaceAll(" ", "%20")}`,
-      form = new FormData(document.getElementById(`form_${id}`));
+  const isPaperURL = dateRange + strategyQuery,
+        query = `q=${buildEncodedQueryWithUrlFilter(isPaperURL)}`,
+        form = new FormData(document.getElementById(`form_${id}`));
 
   // Get form content — email address input
   var email = `&${new URLSearchParams(form).toString()}`;
