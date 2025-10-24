@@ -20,20 +20,20 @@
     "html-minifier": "^4.0.0",
     "postcss-cli": "^11.0.1",
     "sass": "^1.93.2",
-    "tailwindcss": "^3.4.17",
+    "tailwindcss": "^3.4.18",
     "terser": "^5.44.0"
   },
   "dependencies": {
     "18": "^0.0.0",
     "@tryghost/content-api": "^1.12.0",
     "axios": "^1.12.2",
-    "caniuse-lite": "^1.0.30001746",
+    "caniuse-lite": "^1.0.30001751",
     "canvas": "^3.2.0",
-    "dotenv": "^17.2.2",
+    "dotenv": "^17.2.3",
     "feather-icons": "^4.28.0",
     "markdown-it-attrs": "^4.3.1",
     "sal.js": "^0.8.5",
-    "sass-loader": "^16.0.5",
+    "sass-loader": "^16.0.6",
     "tailwindcss-font-inter": "^4.0.0"
   }
 }
