@@ -462,6 +462,7 @@ window.callGetStrategyExportLink = function(id) {
   return false;
 };
 
+
 /**
 * Handles the creation and sending of a strategy export link request.
 * This function is called with organizational data and an identifier to
@@ -472,38 +473,39 @@ window.callGetStrategyExportLink = function(id) {
 * @returns {boolean} - Always returns false to prevent default form submission.
 */
 export function getStrategyExportLink(id, orgData) {
-  let hasCustomExportIncludes = (orgData.hits.hits[0]._source.strategy[id].export_includes),
-      strategyQuery           = (orgData.hits.hits[0]._source.strategy[id].query),
-      strategySort            = (orgData.hits.hits[0]._source.strategy[id].sort);
+  let hasCustomExportIncludes = orgData.hits.hits[0]._source.strategy[id].export_includes,
+      strategyQuery           = orgData.hits.hits[0]._source.strategy[id].query,
+      strategySort            = orgData.hits.hits[0]._source.strategy[id].sort;
 
   Promise.all([hasCustomExportIncludes])
     .then(function (results) {
       hasCustomExportIncludes = results[0].data;
-      }
-    ).catch(function (error) { console.log(`Export error: ${error}`); });
+    })
+    .catch(function (error) {
+      console.log(`Export error: ${error}`);
+    });
 
-  // Set up export query
-  const isPaperURL = dateRange + strategyQuery,
-        query = `q=${buildEncodedQueryWithUrlFilter(isPaperURL)}`,
-        form = new FormData(document.getElementById(`form_${id}`));
+  // Build the export query
+  const isPaperURL = dateRange + strategyQuery;
+  const query = `q=${isPaperURL.replaceAll(" ", "%20")}`;
 
   // Get form content — email address input
-  var email = `&${new URLSearchParams(form).toString()}`;
+  const form = new FormData(document.getElementById(`form_${id}`));
+  const email = `&${new URLSearchParams(form).toString()}`;
 
-  // Display export includes if there are any
-  var include;
-  if (hasCustomExportIncludes !== undefined) {
-    include = `&include=${hasCustomExportIncludes}`;
-  }
+  // Include custom export fields if any
+  const include =
+    hasCustomExportIncludes !== undefined
+      ? `&include=${hasCustomExportIncludes}`
+      : "";
 
-  // Build full query
-  query = CSV_EXPORT_BASE + query + include + '&sort=' + strategySort + email + orgKey;
+  // Build final URL
+  const exportUrl = `${CSV_EXPORT_BASE}${query}${include}&sort=${strategySort}${email}`;
 
-  var xhr = new XMLHttpRequest();
-  xhr.open("GET", query);
-  // Display message when server responds
+  const xhr = new XMLHttpRequest();
+  xhr.open("GET", exportUrl);
   xhr.onload = function () {
     document.getElementById(`msg-${id}`).innerHTML = `OA.Report has started building your CSV export at <a href='${this.response}' target='_blank' class='underline underline-offset-2 decoration-1'>this URL</a>. Please check your email to get the full data once it’s ready.`;
   };
   xhr.send();
-};
+}
