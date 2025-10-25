@@ -223,7 +223,7 @@ export function initInsightsAndStrategies(org) {
         
         // Build full count + works queries
         var countQuery = countQueryPrefix + encodedQuery,
-            listQuery  = queryPrefix + encodedQuery + sort + orgKey;
+            listQuery  = queryPrefix + encodedQuery + sort;
         
         // Get total action (article) count for this strategy
         axios.get(countQuery)
