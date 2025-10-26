@@ -31,10 +31,6 @@ if (hasOrgKey) {
 
 // Generate report’s UI for any given date range
 export function initInsightsAndStrategies(org) {
-  // Set paths for orgindex
-  let queryPrefix = `${QUERY_BASE}q=${dateRange}`,
-      countQueryPrefix = `${COUNT_QUERY_BASE}q=${dateRange}`;
-
   orgDataPromise.then(function (response) {
     const orgData = response.data; // Storing the fetched data in a constant
 
@@ -131,16 +127,22 @@ export function initInsightsAndStrategies(org) {
         cardContents.setAttribute('aria-labelledby', numerator);
         cardContents.setAttribute('title', 'More information on this metric');
 
-        // Get numerator’s count query
-        let numPromise = axios.get(countQueryPrefix + buildEncodedQueryWithUrlFilter(analysisEntry.query));
+        // Get numerator’s count query 
+        let numPromise = axios.get(
+          `${COUNT_QUERY_BASE}q=${buildEncodedQueryWithUrlFilter(analysisEntry.query)}`
+        );
 
         // If we have a denominator param
         if (numerator && denominator) {
-          // Get denominator’s count query
-          let denomPromise = axios.get(countQueryPrefix + buildEncodedQueryWithUrlFilter(orgData.hits.hits[0]._source.analysis[denominator].query));
+          // Denominator count
+          let denomPromise = axios.get(
+            `${COUNT_QUERY_BASE}q=${buildEncodedQueryWithUrlFilter(orgData.hits.hits[0]._source.analysis[denominator].query)}`
+          );
 
-          // Get total articles count for the bar chart
-          let totalArticlesPromise = axios.get(countQueryPrefix + buildEncodedQueryWithUrlFilter(orgData.hits.hits[0]._source.analysis.is_paper.query));
+          // Total articles count
+          let totalArticlesPromise = axios.get(
+            `${COUNT_QUERY_BASE}q=${buildEncodedQueryWithUrlFilter(orgData.hits.hits[0]._source.analysis.is_paper.query)}`
+          );
 
           Promise.all([numPromise, denomPromise, totalArticlesPromise])
             .then(function ([numResult, denomResult, totalArticlesResult]) {
@@ -216,14 +218,14 @@ export function initInsightsAndStrategies(org) {
         var tabCountContents   = document.getElementById(`count_${strategy}`),
             tableCountContents = document.getElementById(`total_${strategy}`),
             tableBody          = document.getElementById(`table_${strategy}`).getElementsByTagName('tbody')[0];
-        
-        // Store original query + build encoded query with URL filters, if any
-        const strategyQuery = orgData.hits.hits[0]._source.strategy[strategy].query,
-              encodedQuery = buildEncodedQueryWithUrlFilter(strategyQuery);
-        
-        // Build full count + works queries
-        var countQuery = countQueryPrefix + encodedQuery,
-            listQuery  = queryPrefix + encodedQuery + sort;
+
+        // Build encoded q with live dateRange + URL filter (no snapshot)
+        const strategyQuery = orgData.hits.hits[0]._source.strategy[strategy].query;
+        const encodedQuery = buildEncodedQueryWithUrlFilter(strategyQuery);
+
+        // Build full count + works queries at call time
+        const countQuery = `${COUNT_QUERY_BASE}q=${encodedQuery}`;
+        const listQuery  = `${QUERY_BASE}q=${encodedQuery}${sort}`;
         
         // Get total action (article) count for this strategy
         axios.get(countQuery)
