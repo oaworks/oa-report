@@ -487,17 +487,16 @@ export function getStrategyExportLink(id, orgData) {
 
   // Build the export query
   const isPaperURL = dateRange + strategyQuery;
-  const query = `q=${isPaperURL.replaceAll(" ", "%20")}`;
+  const query = `q=${buildEncodedQueryWithUrlFilter(isPaperURL)}`;
 
   // Get form content — email address input
   const form = new FormData(document.getElementById(`form_${id}`));
   const email = `&${new URLSearchParams(form).toString()}`;
 
   // Include custom export fields if any
-  const include =
-    hasCustomExportIncludes !== undefined
-      ? `&include=${hasCustomExportIncludes}`
-      : "";
+  const include = (typeof hasCustomExportIncludes === 'string' && hasCustomExportIncludes.trim())
+    ? `&include=${hasCustomExportIncludes.trim()}`
+    : "";
 
   // Build final URL
   const exportUrl = `${CSV_EXPORT_BASE}${query}${include}&sort=${strategySort}${email}`;
