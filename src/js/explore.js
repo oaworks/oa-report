@@ -1215,20 +1215,6 @@ window.getExportLink = function() {
 }
 
 /**
- * Function to display default 'articles' type data on page load.
- */
-// function displayDefaultArticlesData() {
-//   if (orgData.hits.hits.length > 0 && orgData.hits.hits[0]._source.explore) {
-//     const exploreData = orgData.hits.hits[0]._source.explore;
-//     const articlesData = exploreData.find(item => item.id === 'articles');
-//     if (articlesData) {
-//       const button = document.getElementById(`explore_${articlesData.id}_button`);
-//       processExploreDataTable(button, articlesData);
-//     }
-//   }
-// }
-
-/**
  * Displays the default 'articles' dataset on page load.
  * Defers by two animation frames so that the date range and any URL
  * query filters (`?q=`) are initialised before the first network request,
