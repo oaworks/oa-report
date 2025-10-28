@@ -919,7 +919,7 @@ async function displayDefaultArticlesData() {
     // Continue only if Explore config exists
     if (orgData?.hits?.hits?.length > 0 && orgData.hits.hits[0]?._source?.explore) {
       const exploreData  = orgData.hits.hits[0]._source.explore;
-      const articlesData = exploreData.find(item => item.id === 'articles');
+      const articlesData = exploreData[0]; // Default to the first explore item (usually 'articles' type, but not always)
       if (!articlesData) return;
 
       const button = document.getElementById(`explore_${articlesData.id}_button`);
