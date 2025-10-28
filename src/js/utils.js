@@ -137,9 +137,9 @@ export function replaceDateRange(newStart, newEnd) {
   startYear = formatDateToISO(newStart);
   endYear = formatDateToISO(newEnd);
 
-  return dateRange;
+  emitDateRangeReady(); // Signal that date range has been updated
 
-  emitDateRangeReady();
+  return dateRange;
 }
 
 /**
