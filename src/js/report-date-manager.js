@@ -4,7 +4,7 @@
 // =================================================
 
 import { DATE_SELECTION_BUTTON_CLASSES } from './constants.js';
-import { makeDateReadable, createDate, replaceDateRange, initDropdown, getAllURLParams, getURLParam, updateURLParams } from './utils.js';
+import { makeDateReadable, createDate, replaceDateRange, initDropdown, getAllURLParams, getURLParam, updateURLParams, dateRange } from './utils.js';
 import { initInsightsAndStrategies } from './insights-and-strategies.js';
 import { currentActiveExploreItemButton, currentActiveExploreItemData, processExploreDataTable } from './explore.js';
 
@@ -572,40 +572,49 @@ function resetDropdown() {
  * Returns true if `dateRange` is usable in queries.
  * @returns {boolean}
  */
-export function isDateRangeValid() {
-  return typeof dateRange === 'string'
-      && dateRange.length > 0
-      && dateRange.includes('published_date');
+function isDateRangeReady() {
+  return typeof dateRange === 'string' && dateRange.includes('published_date');
 }
 
 /**
- * Fire once whenever `dateRange` has just been set/updated and is valid.
- * Make sure to keep this as the *last* line inside replaceDateRange(...).
- * @returns {void}
+ * Resolves once a usable `dateRange` is available.
+ * 
+ * Listens for the `oar:dateRangeReady` event, which signals that the
+ * range has been set. If the event was already sent before this function
+ * started listening, also checks at short intervals to avoid missing it.
+ *
+ * @param {number} [timeoutMs=1500] - Maximum time to wait before rejecting.
+ * @returns {Promise<string>} The final dateRange string.
  */
-export function emitDateRangeReady() {
-  if (!isDateRangeValid()) return;
-  window.dispatchEvent(new CustomEvent('dateRange:ready', { detail: { dateRange } }));
-}
-
-/**
- * Resolves immediately if `dateRange` is valid; otherwise resolves on the
- * next `dateRange:ready`.
- * @param {number} [timeoutMs=3000] Safety timeout.
- * @returns {Promise<string>} The ready `dateRange`.
- */
-export function awaitDateRange(timeoutMs = 3000) {
+export function awaitDateRange(timeoutMs = 1500) {
   return new Promise((resolve, reject) => {
-    if (isDateRangeValid()) return resolve(dateRange);
+    if (isDateRangeReady()) return resolve(dateRange);
 
-    const onReady = (e) => resolve(e?.detail?.dateRange ?? dateRange);
-    window.addEventListener('dateRange:ready', onReady, { once: true });
+    let settled = false;
+    const onReady = (e) => {
+      if (settled) return;
+      settled = true;
+      window.removeEventListener('oar:dateRangeReady', onReady);
+      resolve(e?.detail?.dateRange ?? dateRange);
+    };
 
-    const t = setTimeout(() => {
-      // If it became valid meanwhile, resolve; else reject.
-      window.removeEventListener('dateRange:ready', onReady);
-      if (isDateRangeValid()) resolve(dateRange);
-      else reject(new Error('awaitDateRange: timed out'));
-    }, timeoutMs);
+    window.addEventListener('oar:dateRangeReady', onReady, { once: true });
+
+    // Safety net: light polling in case we missed the event.
+    const start = performance.now();
+    (function tick() {
+      if (settled) return;
+      if (isDateRangeReady()) {
+        settled = true;
+        window.removeEventListener('oar:dateRangeReady', onReady);
+        return resolve(dateRange);
+      }
+      if (performance.now() - start >= timeoutMs) {
+        window.removeEventListener('oar:dateRangeReady', onReady);
+        return reject(new Error('awaitDateRange: timed out'));
+      }
+      setTimeout(tick, 50);
+    })();
   });
 }
+

@@ -4,7 +4,7 @@
 // ========================
 
 import { ELEVENTY_API_ENDPOINT, READABLE_DATE_OPTIONS, USER_LOCALE, EXPLORE_FILTERS_LABELS } from './constants.js';
-import { emitDateRangeReady } from './report-date-manager.js';
+
 /**
  * Checks if the cached data has expired.
  * 
@@ -114,30 +114,33 @@ export function formatDateToISO(date) {
 }
 
 /**
- * Adjusts global `startYear` and `endYear` to the years of the new start and end dates and constructs
- * a date range string formatted for ElasticSearch queries. 
- * The start date is decremented by one day and the end date is incremented by one day, 
- * ensuring that the range includes all times within the start and end dates.
- * Display the readable start and end dates in the UI.
+ * Updates the global date range used in queries, refreshes readable dates in the UI,
+ * and emits an event signalling the range is ready.
  *
- * @param {Date} newStart - The date representing the start of the range.
- * @param {Date} newEnd - The date representing the end of the range.
- * @returns {string} The date range string formatted for ElasticSearch query syntax.
+ * Event: `oar:dateRangeReady` with `detail.dateRange` carrying the final fragment,
+ * e.g. `(published_date:>YYYY-MM-DD AND published_date:<YYYY-MM-DD) AND `.
+ *
+ * @param {Date} newStart - The start of the range.
+ * @param {Date} newEnd   - The end of the range.
+ * @returns {string} The ElasticSearch date-range fragment.
  */
 export function replaceDateRange(newStart, newEnd) {
   // Update the year range in a readable format
   replaceText("report_readable_start_date", makeDateReadable(newStart));
-  replaceText("report_readable_end_date", makeDateReadable(newEnd));
+  replaceText("report_readable_end_date",   makeDateReadable(newEnd));
 
   // Adjust the date range in ISO format for the API call (-1 day for start date, +1 day for end date)
   const startDateISO = formatDateToISO(changeDays(-1, newStart));
-  const endDateISO = formatDateToISO(changeDays(+1, newEnd));
-  dateRange = `(published_date:>${startDateISO}%20AND%20published_date:<${endDateISO})%20AND%20`;
-  
-  startYear = formatDateToISO(newStart);
-  endYear = formatDateToISO(newEnd);
+  const endDateISO   = formatDateToISO(changeDays(+1, newEnd));
 
-  emitDateRangeReady(); // Signal that date range has been updated
+  // Persist globals
+  dateRange = `(published_date:>${startDateISO}%20AND%20published_date:<${endDateISO})%20AND%20`;
+  startYear = formatDateToISO(newStart);
+  endYear   = formatDateToISO(newEnd);
+
+  // Tell listeners the range is ready
+  const evt = new CustomEvent('oar:dateRangeReady', { detail: { dateRange } });
+  window.dispatchEvent(evt);
 
   return dateRange;
 }
