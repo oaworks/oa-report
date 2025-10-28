@@ -567,3 +567,45 @@ function resetDropdown() {
     input.classList.remove("text-white", "bg-neutral-900", "border-neutral-900");
   });
 }
+
+/**
+ * Returns true if `dateRange` is usable in queries.
+ * @returns {boolean}
+ */
+export function isDateRangeValid() {
+  return typeof dateRange === 'string'
+      && dateRange.length > 0
+      && dateRange.includes('published_date');
+}
+
+/**
+ * Fire once whenever `dateRange` has just been set/updated and is valid.
+ * Make sure to keep this as the *last* line inside replaceDateRange(...).
+ * @returns {void}
+ */
+export function emitDateRangeReady() {
+  if (!isDateRangeValid()) return;
+  window.dispatchEvent(new CustomEvent('dateRange:ready', { detail: { dateRange } }));
+}
+
+/**
+ * Resolves immediately if `dateRange` is valid; otherwise resolves on the
+ * next `dateRange:ready`.
+ * @param {number} [timeoutMs=3000] Safety timeout.
+ * @returns {Promise<string>} The ready `dateRange`.
+ */
+export function awaitDateRange(timeoutMs = 3000) {
+  return new Promise((resolve, reject) => {
+    if (isDateRangeValid()) return resolve(dateRange);
+
+    const onReady = (e) => resolve(e?.detail?.dateRange ?? dateRange);
+    window.addEventListener('dateRange:ready', onReady, { once: true });
+
+    const t = setTimeout(() => {
+      // If it became valid meanwhile, resolve; else reject.
+      window.removeEventListener('dateRange:ready', onReady);
+      if (isDateRangeValid()) resolve(dateRange);
+      else reject(new Error('awaitDateRange: timed out'));
+    }, timeoutMs);
+  });
+}

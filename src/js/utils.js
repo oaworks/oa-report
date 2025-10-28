@@ -4,7 +4,7 @@
 // ========================
 
 import { ELEVENTY_API_ENDPOINT, READABLE_DATE_OPTIONS, USER_LOCALE, EXPLORE_FILTERS_LABELS } from './constants.js';
-
+import { emitDateRangeReady } from './report-date-manager.js';
 /**
  * Checks if the cached data has expired.
  * 
@@ -138,6 +138,8 @@ export function replaceDateRange(newStart, newEnd) {
   endYear = formatDateToISO(newEnd);
 
   return dateRange;
+
+  emitDateRangeReady();
 }
 
 /**

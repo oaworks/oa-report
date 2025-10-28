@@ -10,6 +10,7 @@
 import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, makeNumberReadable, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter } from "./utils.js";
 import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
+import { awaitDateRange } from './report-date-manager.js';
 import { orgDataPromise } from './insights-and-strategies.js';
 import { getAggregatedDataQuery } from './aggregated-data-query.js';
 
@@ -665,6 +666,7 @@ function generateTooltipContent(labelData, additionalHelpText = null) {
   `;
   return tooltipHTML;
 }
+
 /**
  * Attaches a tooltip to an HTML element if tooltip content is provided.
  * Uses the Tippy.js library for tooltip functionality, applying a11y attributes.
@@ -901,6 +903,31 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
   }
 
   return cell;
+}
+
+/**
+ * Displays the default 'articles' dataset on page load.
+ * Waits for the top-level date range (and any `?q=`) before the first request.
+ *
+ * @async
+ * @returns {Promise<void>}
+ */
+async function displayDefaultArticlesData() {
+  try {
+    await awaitDateRange(); 
+
+    // Continue only if Explore config exists
+    if (orgData?.hits?.hits?.length > 0 && orgData.hits.hits[0]?._source?.explore) {
+      const exploreData  = orgData.hits.hits[0]._source.explore;
+      const articlesData = exploreData.find(item => item.id === 'articles');
+      if (!articlesData) return;
+
+      const button = document.getElementById(`explore_${articlesData.id}_button`);
+      await processExploreDataTable(button, articlesData);
+    }
+  } catch (err) {
+    console.warn('displayDefaultArticlesData: skipped initial render:', err?.message || err);
+  }
 }
 
 // =================================================
@@ -1212,36 +1239,4 @@ window.getExportLink = function() {
   });
 
   return false; // Prevent default form submission
-}
-
-/**
- * Displays the default 'articles' dataset on page load.
- * Defers by two animation frames so that the date range and any URL
- * query filters (`?q=`) are initialised before the first network request,
- * preventing `undefined` queries.
- *
- * @async
- * @returns {Promise<void>} Resolves once the default 'articles' data
- *          have been rendered, or returns early if none are available.
- */
-async function displayDefaultArticlesData() {
-  // Defer twice to allow setDefaultYear/replaceDateRange + URL parsing to complete
-  await new Promise(requestAnimationFrame);
-  await new Promise(requestAnimationFrame);
-
-  // Bail if we still don’t have a usable dateRange
-  if (!dateRange || typeof dateRange !== 'string' || !dateRange.includes('published_date')) {
-    return;
-  }
-
-  // Continue only if organisational Explore data are available
-  if (orgData?.hits?.hits?.length > 0 && orgData.hits.hits[0]?._source?.explore) {
-    const exploreData  = orgData.hits.hits[0]._source.explore;
-    const articlesData = exploreData.find(item => item.id === 'articles');
-
-    if (articlesData) {
-      const button = document.getElementById(`explore_${articlesData.id}_button`);
-      await processExploreDataTable(button, articlesData);
-    }
-  }
 }
