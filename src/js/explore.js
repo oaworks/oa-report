@@ -482,9 +482,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       replaceText("explore_sort", "published date");
       replaceText("report_sort_adjective", "Latest");
 
-      // Only allow CSV export for logged-in users
-      if (loggedIn) addCSVExportLink();
-      else removeCSVExportLink();
+      addCSVExportLink();
     }
 
     if (records.length > 0) {
