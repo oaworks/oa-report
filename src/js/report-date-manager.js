@@ -218,6 +218,8 @@ export function bindDynamicYearButtons(startYear, endYear, visibleYears = 3) {
     yearsContainer.appendChild(dateRangeForm); // Append the form to the container
     initDropdown(".js_dropdown");
   }
+
+  setDefaultYear();
 }
 
 /**
