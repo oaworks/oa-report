@@ -503,13 +503,11 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 
       if (type === "articles") {
         // Only show CSV form and help if logged in
-        downloadCSVForm.style.display = loggedIn ? "block" : "none";
         exploreArticlesTableHelp.style.display = loggedIn ? "block" : "none";
         exploreTermsTableHelp.style.display = "none";
         displayNone("explore_display_style_field");
       } else {
         // Show display-style toggle and terms tooltip
-        downloadCSVForm.style.display = "none";
         exploreTermsTableHelp.style.display = "block";
         exploreArticlesTableHelp.style.display = "none";
         removeDisplayStyle("explore_display_style_field");
