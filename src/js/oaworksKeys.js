@@ -22,7 +22,7 @@ _OAcookie = function(obj) {
     d = new Date();
     d.setDate(d.getDate() + expires);
     t += '; expires=' + new Date(d).toUTCString();
-    t += '; domain=' + domain + '; secure';
+    t += '; domain=' + domain + '; path=/; secure'; // Reliably clear cookie across subdomains
     document.cookie = t;
     return t;
   } else {
