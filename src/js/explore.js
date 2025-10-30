@@ -123,7 +123,6 @@ export async function initDataExplore(org) {
       addRecordsShownSelectToDOM();
       handleDataDisplayToggle();
       enableExploreRowHighlighting();
-      displayDefaultArticlesData();
       copyToClipboard('explore_copy_clipboard', 'explore_table');
     } else {
       displayNone("explore"); // Hide the explore section if no data is available
@@ -149,7 +148,7 @@ async function addExploreButtonsToDOM(exploreData) {
   let featuredButtonsCount = 6; // Count of featured buttons
   const seeMoreButton = document.getElementById('explore_see_more_button');
 
-  // Filter exploreData if not logged in
+  // Only show 'articles' Explore list when logged out
   if (!loggedIn) {
     exploreData = exploreData.filter(item => item.id === 'articles');
   }
@@ -195,15 +194,26 @@ async function addExploreButtonsToDOM(exploreData) {
     });
   }
 
-  // Handle breakdown after adding explore buttons
+  // Ensure one Explore item is activated (URL breakdown if present, else fallback)
+  await applyURLSelectionsOrDefault();
+}
+
+/**
+ * Applies URL-driven breakdown or falls back to the first Explore button
+ * so that at least one render always happens.
+ * @returns {Promise<void>}
+ */
+async function applyURLSelectionsOrDefault() {
+  try {
+    await awaitDateRange(3000);
+  } catch (_) {
+    // Continue; we’ll still try to render something
+  }
   const params = getAllURLParams();
   const breakdown = params.breakdown;
-  if (breakdown) {
-    const exploreButton = document.getElementById(`explore_${breakdown}_button`);
-    if (exploreButton) {
-      exploreButton.click();
-    }
-  }
+  const preferred = breakdown && document.getElementById(`explore_${breakdown}_button`);
+  const fallback = document.querySelector('[id^="explore_"][id$="_button"]');
+  (preferred || fallback)?.click();
 }
 
 /**
@@ -413,14 +423,14 @@ function addRecordsShownSelectToDOM() {
 }
 
 /**
- * Handles the click event for explore items. Fetches data and updates the table 
- * based on the selected filter and display style.
- * 
+ * Fetches and displays Explore data for the selected item.
+ * Handles login state (e.g. hides CSV export for logged-out users).
+ *
  * @async
- * @param {Object} itemData - The data object of the explore item.
- * @param {string} [filter="is_paper"] - The filter to use for fetching data.
- * @param {number} [size=10] - The number of records to fetch.
- * @param {boolean} [pretty=true] - Flag to determine if data should be displayed in a pretty format.
+ * @param {Object} itemData - The Explore item’s configuration.
+ * @param {string} [filter="is_paper"] - Active filter to apply.
+ * @param {number} [size=10] - Number of records to display.
+ * @param {boolean} [pretty=true] - Whether to prettify the table output.
  */
 async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 10, pretty = true) {
   try {
@@ -430,52 +440,51 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       return;
     }
 
-    const { type, id, term, sort, includes } = itemData; // Extract properties
-
+    const { type, id, term, sort, includes } = itemData;
     document.getElementById("csv_email_msg").innerHTML = ""; // Clear any existing message in CSV download form
     const exportTable = document.getElementById('export_table');
-    exportTable.classList.remove('hidden'); 
+    exportTable.classList.remove('hidden');
 
     let query = orgData.hits.hits[0]._source.analysis[filter]?.query; // Get the query string for the selected filter
     let suffix = orgData.hits.hits[0]._source.key_suffix; // Get the suffix for the org
     let records = [];
 
     pretty = currentActiveDataDisplayToggle;
-    size = currentActiveExploreItemSize; 
+    size = currentActiveExploreItemSize;
 
-    // Check if query is blank or undefined
+    // Check if query is blank or undefined and abort if so
     if (!query || query.trim() === '') {
-      showNoResultsRow(10, "export_table_body", "js_export_table"); // Show "No results found."
-      toggleLoadingIndicator(false, 'explore_loading'); // Hide loading indicator
+      showNoResultsRow(10, "export_table_body", "js_export_table");
+      toggleLoadingIndicator(false, 'explore_loading');
       return;
     }
 
+    // Terms-based data
     if (type === "terms") {
-      query = decodeAndReplaceUrlEncodedChars(query); // Decode and replace URL-encoded characters for JSON parsing
+      query = decodeAndReplaceUrlEncodedChars(query);
       query = andQueryStrings(query, getDecodedUrlQuery()); // Combine with additional query strings from URL params
       records = await fetchTermBasedData(suffix, query, term, sort, size);
       records = reorderTermRecords(records, includes);
+      records = prettifyRecords(records, pretty);
 
-      if (pretty) {
-        records = prettifyRecords(records, true);
-      } else {
-        records = prettifyRecords(records, false);
-      }
-
-      // Update the sort text in header
       replaceText("explore_sort", "publication count");
       replaceText("report_sort_adjective", "Top");
-      removeCSVExportLink(); // Remove the CSV export link
-    } else if (type === "articles") {
-        query = decodeAndReplaceUrlEncodedChars(query); // Decode and replace URL-encoded characters for JSON parsing
-        query = andQueryStrings(query, getDecodedUrlQuery()); // Combine with additional query strings from URL params
-        records = await fetchArticleBasedData(query, includes, sort, size);
-        records = reorderArticleRecords(records, includes);
+      removeCSVExportLink(); // no CSV export for term-based tables
+    }
 
-      // Update the sort text in header
-      replaceText("explore_sort", "published date"); 
+    // Article-based data
+    else if (type === "articles") {
+      query = decodeAndReplaceUrlEncodedChars(query); // Decode and replace URL-encoded characters for JSON parsing
+      query = andQueryStrings(query, getDecodedUrlQuery()); // Combine with additional query strings from URL params
+      records = await fetchArticleBasedData(query, includes, sort, size);
+      records = reorderArticleRecords(records, includes);
+
+      replaceText("explore_sort", "published date");
       replaceText("report_sort_adjective", "Latest");
-      addCSVExportLink(); // Add the CSV export link
+
+      // Only allow CSV export for logged-in users
+      if (loggedIn) addCSVExportLink();
+      else removeCSVExportLink();
     }
 
     if (records.length > 0) {
@@ -483,39 +492,40 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       populateTableHeader(records[0], 'export_table_head', type);
       populateTableBody(records, 'export_table_body', id, type);
       
-      // Update any mentions of the explore data type with .plural version of the ID
+      // Update any mentions of the explore data type with plural version of the ID
       replaceText("explore_type", EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id));
     
       // Add functionalities to the table
       enableExploreTableScroll();
       enableTooltipsForTruncatedCells();
-    
+
       const downloadCSVForm = document.getElementById('download_csv_form');
       const exploreArticlesTableHelp = document.getElementById('explore_articles_records_shown_help');
       const exploreTermsTableHelp = document.getElementById('explore_terms_records_shown_help');
-      // Add data download link only if it's an 'articles'-type data table
+
       if (type === "articles") {
-        // addCSVExportLink(); TODO: once we can download the CSV directly from the link, use this
-        downloadCSVForm.style.display = "block" // Display download_csv_form if it's an 'articles'-type data table
-        exploreArticlesTableHelp.style.display = "block"; // Display the articles tooltip
-        exploreTermsTableHelp.style.display = "none"; // Hide the terms tooltip
-        displayNone("explore_display_style_field"); // No need for the data display style field in article tables
+        // Only show CSV form and help if logged in
+        downloadCSVForm.style.display = loggedIn ? "block" : "none";
+        exploreArticlesTableHelp.style.display = loggedIn ? "block" : "none";
+        exploreTermsTableHelp.style.display = "none";
+        displayNone("explore_display_style_field");
       } else {
-        // removeCSVExportLink(); // Remove the CSV export link if there's one
-        downloadCSVForm.style.display = "none" // Hide download_csv_form if it's NOT an 'articles'-type data table
-        exploreTermsTableHelp.style.display = "block" // Show the terms tooltip
-        exploreArticlesTableHelp.style.display = "none"; // Hide the articles tooltip
-        removeDisplayStyle("explore_display_style_field"); // Display the data display style field
+        // Show display-style toggle and terms tooltip
+        downloadCSVForm.style.display = "none";
+        exploreTermsTableHelp.style.display = "block";
+        exploreArticlesTableHelp.style.display = "none";
+        removeDisplayStyle("explore_display_style_field");
       }
     } else {
-      showNoResultsRow(10, "export_table_body", "js_export_table"); // Show "No results found."
+      showNoResultsRow(10, "export_table_body", "js_export_table");
     }
 
   } catch (error) {
-    console.error('Error fetching and displaying explore data: ', error);
-    showNoResultsRow(10, "export_table_body", "js_export_table"); // Show "No results found."
+    console.error('Error fetching and displaying explore data:', error);
+    showNoResultsRow(10, "export_table_body", "js_export_table");
   } finally {
-    toggleLoadingIndicator(false, 'explore_loading'); // Ensure loading indicator is always hidden after processing
+    // Always hide loader once finished
+    toggleLoadingIndicator(false, 'explore_loading');
   }
 }
 
@@ -1068,17 +1078,25 @@ function updateButtonActiveStyles(buttonId) {
  */
 async function handleRecordsShownChange(event) {
   const newSize = event.target.value;
-  currentActiveExploreItemSize = newSize; // Update the currently active explore item sizes
-  toggleLoadingIndicator(true, 'explore_loading'); // Show loading indicator
+  currentActiveExploreItemSize = newSize;
 
+  // No active Explore item yet? Defer gracefully.
+  if (!currentActiveExploreItemData) {
+    return;
+  }
+
+  toggleLoadingIndicator(true, 'explore_loading');
   try {
-    await fetchAndDisplayExploreData(currentActiveExploreItemData, currentActiveExploreItemQuery, currentActiveExploreItemSize);
+    await fetchAndDisplayExploreData(
+      currentActiveExploreItemData,
+      currentActiveExploreItemQuery,
+      currentActiveExploreItemSize
+    );
     updateURLParams({ records: newSize });
   } catch (error) {
     console.error('Error updating records shown: ', error);
   }
-
-  toggleLoadingIndicator(false, 'explore_loading'); // Hide loading indicator
+  toggleLoadingIndicator(false, 'explore_loading');
 }
 
 /**

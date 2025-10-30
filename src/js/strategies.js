@@ -3,7 +3,7 @@
 // State & DOM manipulation specific to Strategies
 // ================================================
 
-import { updateURLParams } from './utils.js';
+import { updateURLParams, getAllURLParams } from './utils.js';
 
 /**
  * Initialises event listeners for strategy tab buttons.
@@ -14,6 +14,13 @@ export function initStrategyTabs() {
   strategyTabBtns.forEach((tabBtn) => {
     tabBtn.addEventListener("click", updateStrategyButtonStyling);
   });
+
+  // Apply ?action=... on load (after buttons exist)
+  const params = getAllURLParams();
+  const action = params.action;
+  if (action) {
+    document.getElementById(`strategy_${action}`)?.click();
+  }
 }
 
 /**
