@@ -1035,19 +1035,3 @@ export function buildEncodedQueryWithUrlFilter(baseQuery) {
   const combined = andQueryStrings(base, getDecodedUrlQuery());
   return encodeURIComponent(combined);
 }
-
-/**
- * Deletes a cookie by name for both host-only and dotted-domain scopes.
- * This keeps implementation simple while covering the common cases.
- *
- * @param {string} name - Cookie name to delete.
- */
-export function deleteCookieEverywhere(name) {
-  try {
-    const past = 'Thu, 01 Jan 1970 00:00:00 GMT';
-    // Host-only
-    document.cookie = `${name}=; expires=${past}; path=/; secure`;
-    // Dotted domain (subdomains)
-    document.cookie = `${name}=; expires=${past}; domain=.${window.location.host}; path=/; secure`;
-  } catch (_) {}
-}
