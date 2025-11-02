@@ -4,7 +4,7 @@
 // =================================================
 
 import { DATE_SELECTION_BUTTON_CLASSES } from './constants.js';
-import { makeDateReadable, createDate, replaceDateRange, initDropdown, getAllURLParams, getURLParam, updateURLParams, dateRange } from './utils.js';
+import { makeDateReadable, createDate, replaceDateRange, initDropdown, getAllURLParams, getURLParam, updateURLParams, removeURLParams, dateRange } from './utils.js';
 import { initInsightsAndStrategies } from './insights-and-strategies.js';
 import { currentActiveExploreItemButton, currentActiveExploreItemData, processExploreDataTable } from './explore.js';
 
@@ -128,6 +128,11 @@ export function setDefaultYear() {
 export function initDateManager() {
   const params = getAllURLParams();
 
+  // Early logout guard (in case scripts load in a different order)
+  if (getURLParam('logout')) {
+    try { sessionStorage.removeItem('orgkey'); } catch (_) {}
+  }
+
   // Process orgkey first
   const orgkey = getURLParam('orgkey');
   if (orgkey) {
@@ -155,11 +160,7 @@ export function initDateManager() {
   updateURLParams(params);
 
   // Remove orgkey from URL after processing
-  if (orgkey) {
-    const newParams = new URLSearchParams(window.location.search);
-    newParams.delete('orgkey');
-    history.replaceState(null, '', '?' + newParams.toString());
-  }
+  if (orgkey) removeURLParams('orgkey');
 }
 
 

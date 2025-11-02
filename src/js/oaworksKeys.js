@@ -6,12 +6,10 @@
 var _OAcookie, ck, o;
 
 _OAcookie = function(obj) {
-  var c, d, domain, expires, i, len, ref, t;
+  var c, d, expires, i, len, ref, t;
+  const hostname = window.location.hostname;
+  const domain = '.' + hostname;
   if (obj != null) {
-    domain = '.' + window.location.host;
-    if (domain.startsWith('.bg.')) {
-      domain = domain.replace('.bg.', '.');
-    }
     t = 'OAKeys=';
     if (obj) {
       t += encodeURIComponent(JSON.stringify(obj)); // so if values is false or '' this will effectively remove the cookie
@@ -21,19 +19,21 @@ _OAcookie = function(obj) {
     }
     d = new Date();
     d.setDate(d.getDate() + expires);
-    t += '; expires=' + new Date(d).toUTCString();
-    t += '; domain=' + domain + '; path=/; secure'; // Reliably clear cookie across subdomains
-    document.cookie = t;
+    const expiry = new Date(d).toUTCString();
+
+    // Set both variants of the cookie for compatibility (per-org path)
+    document.cookie = `OAKeys=${encodeURIComponent(JSON.stringify(obj))}; expires=${expiry}; secure`;
+    document.cookie = `OAKeys=${encodeURIComponent(JSON.stringify(obj))}; expires=${expiry}; domain=${domain}; secure`;
+
     return t;
   } else {
     ref = document.cookie.split(';');
     for (i = 0, len = ref.length; i < len; i++) {
-      c = ref[i];
-      while (c.charAt(0) === ' ') {
-        c = c.substring(1);
-      }
-      if (c.indexOf('OAKeys=') !== -1) {
-        return JSON.parse(decodeURIComponent(c.substring(7, c.length)));
+      c = ref[i].trim();
+      if (c.startsWith('OAKeys=')) {
+        try {
+          return JSON.parse(decodeURIComponent(c.substring(7)));
+        } catch (e) { return false; }
       }
     }
     return false;
@@ -56,11 +56,39 @@ if (window.location.search.includes('orgkey=')) {
   if (o) {
     window.OAKEYS[decodeURIComponent(o)] = window.location.search.split('orgkey=')[1].split('&')[0];
     _OAcookie(window.OAKEYS);
+    
+    // Remove orgkey from the URL immediately after consuming it (avoid accidental sharing)
+    try {
+      const params = new URLSearchParams(window.location.search);
+      params.delete('orgkey');
+      const newQuery = params.toString();
+      const newUrl = newQuery ? `?${newQuery}` : window.location.pathname;
+      history.replaceState(null, '', newUrl);
+    } catch (e) {}
   }
 }
 
 if (window.location.search.includes('logout')) {
-  window.OAKEYS = {}; // or work out the org here and only logout of that org?
-  _OAcookie(false);
-  try { history.pushState(null, null, window.location.href.split('?')[0]); } catch (e) {};
+  window.OAKEYS = {};
+  sessionStorage.removeItem('orgkey');
+
+  const hostname = window.location.hostname;
+  const domain = '.' + hostname;
+  const expired = 'Thu, 01 Jan 1970 00:00:00 GMT';
+
+  // Delete at current path
+  document.cookie = `OAKeys=; expires=${expired}; secure`;
+  document.cookie = `OAKeys=; expires=${expired}; domain=${domain}; secure`;
+
+  // Also delete any legacy site-wide variants
+  document.cookie = `OAKeys=; expires=${expired}; path=/; secure`;
+  document.cookie = `OAKeys=; expires=${expired}; domain=${domain}; path=/; secure`;
+
+  // Remove ?logout from URL
+  try {
+    const params = new URLSearchParams(window.location.search);
+    params.delete('logout');
+    const newUrl = params.toString() ? `?${params}` : window.location.pathname;
+    history.replaceState(null, '', newUrl);
+  } catch (_) {}
 }
