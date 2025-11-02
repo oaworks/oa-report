@@ -89,6 +89,12 @@ export let currentActiveExploreItemSize = 10;
  */
 export let currentActiveDataDisplayToggle = true;
 
+/** 
+ * Map of explore button id -> its data object, used to render without synthesising a click.
+ * @type {Map<string, Object>}
+ */
+let exploreItemDataById = new Map();
+
 /**
  * Tracks currently selected row keys for use in enableExploreRowHighlighting.
  * @global
@@ -199,21 +205,41 @@ async function addExploreButtonsToDOM(exploreData) {
 }
 
 /**
- * Applies URL-driven breakdown or falls back to the first Explore button
- * so that at least one render always happens.
- * @returns {Promise<void>}
+ * Applies URL-driven breakdown or renders the first Explore item without
+ * mutating the URL when no breakdown parameter is present.
+ * 
+ * Render the default in-place without synthesising a button click. 
+ * Only explicit user clicks should update the URL.
  */
 async function applyURLSelectionsOrDefault() {
   try {
     await awaitDateRange(3000);
   } catch (_) {
-    // Continue; we’ll still try to render something
+    // Continue; still render something
   }
+
   const params = getAllURLParams();
   const breakdown = params.breakdown;
-  const preferred = breakdown && document.getElementById(`explore_${breakdown}_button`);
-  const fallback = document.querySelector('[id^="explore_"][id$="_button"]');
-  (preferred || fallback)?.click();
+
+  if (breakdown) {
+    // Honour the user/bookmarked URL
+    const preferredBtn = document.getElementById(`explore_${breakdown}_button`);
+    preferredBtn?.click();
+    return;
+  }
+
+  // No breakdown in URL: render the first button's dataset WITHOUT changing the URL
+  const fallbackBtn = document.querySelector('[id^="explore_"][id$="_button"]');
+  if (fallbackBtn) {
+    const data = exploreItemDataById.get(fallbackBtn.id);
+    if (data) {
+      // Do NOT call updateURLParams here; render directly
+      await processExploreDataTable(fallbackBtn, data);
+    } else {
+      // If for any reason the registry isn't populated yet, fall back gracefully
+      fallbackBtn.click(); // last-resort behaviour
+    }
+  }
 }
 
 /**
@@ -234,6 +260,9 @@ function createExploreButton(exploreDataItem) {
     updateURLParams({ 'breakdown': exploreDataItem.id });
     processExploreDataTable(button, exploreDataItem);
   }, 500));
+
+  // Register each button’s data when created
+  exploreItemDataById.set(button.id, exploreDataItem); 
 
   return button;
 }
