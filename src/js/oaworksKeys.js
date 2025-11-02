@@ -56,11 +56,29 @@ if (window.location.search.includes('orgkey=')) {
   if (o) {
     window.OAKEYS[decodeURIComponent(o)] = window.location.search.split('orgkey=')[1].split('&')[0];
     _OAcookie(window.OAKEYS);
+    
+    // Remove orgkey from the URL immediately after consuming it (avoid accidental sharing)
+    try {
+      const params = new URLSearchParams(window.location.search);
+      params.delete('orgkey');
+      const newQuery = params.toString();
+      const newUrl = newQuery ? `?${newQuery}` : window.location.pathname;
+      history.replaceState(null, '', newUrl);
+    } catch (e) {}
   }
 }
 
 if (window.location.search.includes('logout')) {
   window.OAKEYS = {}; // or work out the org here and only logout of that org?
   _OAcookie(false);
-  try { history.pushState(null, null, window.location.href.split('?')[0]); } catch (e) {};
+  try {
+    // Also clear any session-scoped key remnants to prevent silent re-login on refresh
+    sessionStorage.removeItem('orgkey');
+    // Remove only ?logout so other filters (start/end/breakdown, etc.) remain
+    const params = new URLSearchParams(window.location.search);
+    params.delete('logout');
+    const newQuery = params.toString();
+    const newUrl = newQuery ? `?${newQuery}` : window.location.pathname;
+    history.replaceState(null, '', newUrl);
+  } catch (e) {};
 }

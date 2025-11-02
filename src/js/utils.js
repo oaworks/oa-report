@@ -760,6 +760,21 @@ export function updateURLParams(params) {
 }
 
 /**
+ * Removes one or more query parameters from the current URL without reloading the page.
+ * Uses history.replaceState so it doesn’t add a new history entry.
+ *
+ * @param {string|string[]} keys - One key or an array of keys to remove.
+ * @returns {void}
+ */
+export function removeURLParams(keys) {
+  const params = new URLSearchParams(window.location.search);
+  (Array.isArray(keys) ? keys : [keys]).forEach(k => params.delete(k));
+  const newQuery = params.toString();
+  const newUrl = newQuery ? `?${newQuery}` : window.location.pathname;
+  history.replaceState(null, '', newUrl);
+}
+
+/**
  * Displays an error message in the header of the page.
  * @param {string} message - The error message to display.
  */
