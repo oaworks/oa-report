@@ -5,23 +5,6 @@
 
 var _OAcookie, ck, o;
 
-/**
- * Deletes a cookie across common scope variants to ensure removal.
- *
- * @param {string} name - Cookie name, e.g. "OAKeys".
- */
-function _OAdeleteAllScopes(name) {
-  try {
-    const host = window.location.host;           // e.g. dev.oa.report
-    const dotted = '.' + host;                   // e.g. .dev.oa.report
-    const past = 'Thu, 01 Jan 1970 00:00:00 GMT';
-    // Host-only (no Domain=)
-    document.cookie = `${name}=; expires=${past}; path=/; secure`;
-    // Subdomain-scoped (.host)
-    document.cookie = `${name}=; expires=${past}; domain=${dotted}; path=/; secure`;
-  } catch (e) {}
-}
-
 _OAcookie = function(obj) {
   var c, d, domain, expires, i, len, ref, t;
   if (obj != null) {
@@ -88,7 +71,6 @@ if (window.location.search.includes('orgkey=')) {
 if (window.location.search.includes('logout')) {
   window.OAKEYS = {}; // or work out the org here and only logout of that org?
   _OAcookie(false);
-  _OAdeleteAllScopes('OAKeys');
   try {
     // Also clear any session-scoped key remnants to prevent silent re-login on refresh
     sessionStorage.removeItem('orgkey');
