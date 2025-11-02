@@ -6,7 +6,6 @@
 import { deleteCookieEverywhere } from './utils.js';
 
 var _OAcookie, ck, o;
-var OAKEYS = window.OAKEYS;
 
 _OAcookie = function(obj) {
   var c, d, domain, expires, i, len, ref, t;
