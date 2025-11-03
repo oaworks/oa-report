@@ -21,9 +21,9 @@ _OAcookie = function(obj) {
     d.setDate(d.getDate() + expires);
     const expiry = new Date(d).toUTCString();
 
-    // Write both host-only and domain cookies
-    document.cookie = `OAKeys=${encodeURIComponent(JSON.stringify(obj))}; expires=${expiry}; path=/; secure`;
-    document.cookie = `OAKeys=${encodeURIComponent(JSON.stringify(obj))}; expires=${expiry}; domain=${domain}; path=/; secure`;
+    // Set both variants of the cookie for compatibility (per-org path)
+    document.cookie = `OAKeys=${encodeURIComponent(JSON.stringify(obj))}; expires=${expiry}; secure`;
+    document.cookie = `OAKeys=${encodeURIComponent(JSON.stringify(obj))}; expires=${expiry}; domain=${domain}; secure`;
 
     return t;
   } else {
@@ -76,7 +76,11 @@ if (window.location.search.includes('logout')) {
   const domain = '.' + hostname;
   const expired = 'Thu, 01 Jan 1970 00:00:00 GMT';
 
-  // Delete both variants explicitly
+  // Delete at current path
+  document.cookie = `OAKeys=; expires=${expired}; secure`;
+  document.cookie = `OAKeys=; expires=${expired}; domain=${domain}; secure`;
+
+  // Also delete any legacy site-wide variants
   document.cookie = `OAKeys=; expires=${expired}; path=/; secure`;
   document.cookie = `OAKeys=; expires=${expired}; domain=${domain}; path=/; secure`;
 
