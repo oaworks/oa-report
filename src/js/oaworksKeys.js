@@ -6,34 +6,34 @@
 var _OAcookie, ck, o;
 
 _OAcookie = function(obj) {
-  var c, d, domain, expires, i, len, ref, t;
+  var c, d, expires, i, len, ref, t;
+  const hostname = window.location.hostname;
+  const domain = '.' + hostname;
   if (obj != null) {
-    domain = '.' + window.location.hostname;
-    if (domain.startsWith('.bg.')) {
-      domain = domain.replace('.bg.', '.');
-    }
     t = 'OAKeys=';
     if (obj) {
-      t += encodeURIComponent(JSON.stringify(obj)); // so if values is false or '' this will effectively remove the cookie
+      t += encodeURIComponent(JSON.stringify(obj));
       expires = 365;
     } else {
       expires = -1;
     }
     d = new Date();
     d.setDate(d.getDate() + expires);
-    t += '; expires=' + new Date(d).toUTCString();
-    t += '; domain=' + domain + '; path=/; secure'; // Reliably clear cookie across subdomains
-    document.cookie = t;
+    const expiry = new Date(d).toUTCString();
+
+    // Write both host-only and domain cookies
+    document.cookie = `OAKeys=${encodeURIComponent(JSON.stringify(obj))}; expires=${expiry}; path=/; secure`;
+    document.cookie = `OAKeys=${encodeURIComponent(JSON.stringify(obj))}; expires=${expiry}; domain=${domain}; path=/; secure`;
+
     return t;
   } else {
     ref = document.cookie.split(';');
     for (i = 0, len = ref.length; i < len; i++) {
-      c = ref[i];
-      while (c.charAt(0) === ' ') {
-        c = c.substring(1);
-      }
-      if (c.indexOf('OAKeys=') !== -1) {
-        return JSON.parse(decodeURIComponent(c.substring(7, c.length)));
+      c = ref[i].trim();
+      if (c.startsWith('OAKeys=')) {
+        try {
+          return JSON.parse(decodeURIComponent(c.substring(7)));
+        } catch (e) { return false; }
       }
     }
     return false;
@@ -70,55 +70,21 @@ if (window.location.search.includes('orgkey=')) {
 
 if (window.location.search.includes('logout')) {
   window.OAKEYS = {};
-  _OAcookie(false);
+  sessionStorage.removeItem('orgkey');
 
-  // Helper to expire a cookie for a given domain and path
-  const expireCookie = (domain, path) => {
-    const domainPart = domain ? `; domain=${domain}` : '';
-    // expires= in the past
-    document.cookie = `OAKeys=; expires=Thu, 01 Jan 1970 00:00:00 GMT${domainPart}; path=${path}; secure`;
-    // Max-Age=0 for good measure
-    document.cookie = `OAKeys=; Max-Age=0${domainPart}; path=${path}; secure`;
-  };
+  const hostname = window.location.hostname;
+  const domain = '.' + hostname;
+  const expired = 'Thu, 01 Jan 1970 00:00:00 GMT';
 
+  // Delete both variants explicitly
+  document.cookie = `OAKeys=; expires=${expired}; path=/; secure`;
+  document.cookie = `OAKeys=; expires=${expired}; domain=${domain}; path=/; secure`;
+
+  // Remove ?logout from URL
   try {
-    // Delete for host-only and parent domain at root
-    expireCookie('', '/');
-
-    const hostParts = window.location.hostname.split('.');
-    if (hostParts.length > 2) {
-      const parent = '.' + hostParts.slice(1).join('.');
-      expireCookie(parent, '/');
-    }
-
-    // Delete for all path prefixes (e.g. /gates-foundation, /gates-foundation/)
-    const segs = window.location.pathname.split('/').filter(Boolean);
-    const paths = new Set(['/']);
-    let acc = '';
-    for (const s of segs) {
-      acc += '/' + s;
-      paths.add(acc);
-      paths.add(acc + '/');
-    }
-
-    // Delete host-only cookies for all paths
-    paths.forEach(p => expireCookie('', p));
-
-    // Delete parent-domain cookies for all paths
-    if (hostParts.length > 2) {
-      const parent = '.' + hostParts.slice(1).join('.');
-      paths.forEach(p => expireCookie(parent, p));
-    }
-  } catch (_) {}
-
-  try {
-    // Also clear any session-scoped key remnants to prevent silent re-login on refresh
-    sessionStorage.removeItem('orgkey');
-    // Remove only ?logout so other filters (start/end/breakdown, etc.) remain
     const params = new URLSearchParams(window.location.search);
     params.delete('logout');
-    const newQuery = params.toString();
-    const newUrl = newQuery ? `?${newQuery}` : window.location.pathname;
+    const newUrl = params.toString() ? `?${params}` : window.location.pathname;
     history.replaceState(null, '', newUrl);
   } catch (_) {}
 }
