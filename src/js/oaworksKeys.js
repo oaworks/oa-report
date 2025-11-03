@@ -69,8 +69,21 @@ if (window.location.search.includes('orgkey=')) {
 }
 
 if (window.location.search.includes('logout')) {
-  window.OAKEYS = {}; // or work out the org here and only logout of that org?
+  window.OAKEYS = {};
   _OAcookie(false);
+
+  // Delete any host-only cookie
+  document.cookie = 'OAKeys=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; secure';
+
+  // Delete cookie also on parent domain (e.g. .oa.report)
+  try {
+    const parts = window.location.host.split('.');
+    if (parts.length > 2) {
+      const parent = '.' + parts.slice(1).join('.');
+      document.cookie = `OAKeys=; expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=${parent}; path=/; secure`;
+    }
+  } catch (_) {}
+
   try {
     // Also clear any session-scoped key remnants to prevent silent re-login on refresh
     sessionStorage.removeItem('orgkey');
@@ -80,5 +93,5 @@ if (window.location.search.includes('logout')) {
     const newQuery = params.toString();
     const newUrl = newQuery ? `?${newQuery}` : window.location.pathname;
     history.replaceState(null, '', newUrl);
-  } catch (e) {};
+  } catch (_) {}
 }
