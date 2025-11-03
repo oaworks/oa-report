@@ -14,12 +14,13 @@ export const orgApiUrl = `${API_BASE_URL}orgs?q=objectID:%22${org}%22`;
 // Fetch and store organisational data in a constant
 export const orgDataPromise = axios.get(orgApiUrl);
 
-let orgKey = "",
-    loggedIn = false,
-    hasOrgKey = Object.keys(OAKEYS).length !== 0;
+let orgKey = "";
+let loggedIn = false;
+const hasOrgKey = typeof window.OAKEYS === 'object' && Object.keys(window.OAKEYS || {}).length !== 0;
+
 if (hasOrgKey) {
   // logged in
-  orgKey = `&orgkey=${OAKEYS[org]}`; // Use org variable to get the correct orgkey value
+  orgKey = `&orgkey=${(window.OAKEYS || {})[org] ?? ''}`;
   loggedIn = true;
   displayNone("login");
   displayNone("about-free-logged-out");

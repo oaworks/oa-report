@@ -20,17 +20,17 @@ import { getAggregatedDataQuery } from './aggregated-data-query.js';
 
 const exportSort = "&sort=published_date:desc";
 
-let orgKey = "",
-    loggedIn = false,
-    hasOrgKey = Object.keys(OAKEYS).length !== 0;
+let orgKey = "";
+let loggedIn = false;
+const hasOrgKey = typeof window.OAKEYS === 'object' && Object.keys(window.OAKEYS || {}).length !== 0;
+
 if (hasOrgKey) {
   // logged in
-  orgKey = `&orgkey=${Object.values(OAKEYS)}`;
+  orgKey = `&orgkey=${Object.values(window.OAKEYS)[0] ?? ''}`;
   loggedIn = true;
 } else {
   // logged out
   loggedIn = false;
-  //displayNone("explore");
 }
 
 /**
