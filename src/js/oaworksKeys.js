@@ -95,3 +95,8 @@ if (window.location.search.includes('logout')) {
     history.replaceState(null, '', newUrl);
   } catch (_) {}
 }
+
+
+// Also delete legacy path-scoped cookies
+document.cookie = 'OAKeys=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/report; secure';
+document.cookie = 'OAKeys=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/oareport; secure';
