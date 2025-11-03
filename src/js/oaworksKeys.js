@@ -8,7 +8,7 @@ var _OAcookie, ck, o;
 _OAcookie = function(obj) {
   var c, d, domain, expires, i, len, ref, t;
   if (obj != null) {
-    domain = '.' + window.location.host;
+    domain = '.' + window.location.hostname;
     if (domain.startsWith('.bg.')) {
       domain = domain.replace('.bg.', '.');
     }
@@ -75,14 +75,17 @@ if (window.location.search.includes('logout')) {
   // Helper to expire a cookie for a given domain and path
   const expireCookie = (domain, path) => {
     const domainPart = domain ? `; domain=${domain}` : '';
+    // expires= in the past
     document.cookie = `OAKeys=; expires=Thu, 01 Jan 1970 00:00:00 GMT${domainPart}; path=${path}; secure`;
+    // Max-Age=0 for good measure
+    document.cookie = `OAKeys=; Max-Age=0${domainPart}; path=${path}; secure`;
   };
 
   try {
     // Delete for host-only and parent domain at root
     expireCookie('', '/');
 
-    const hostParts = window.location.host.split('.');
+    const hostParts = window.location.hostname.split('.');
     if (hostParts.length > 2) {
       const parent = '.' + hostParts.slice(1).join('.');
       expireCookie(parent, '/');
