@@ -72,15 +72,39 @@ if (window.location.search.includes('logout')) {
   window.OAKEYS = {};
   _OAcookie(false);
 
-  // Delete any host-only cookie
-  document.cookie = 'OAKeys=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; secure';
+  // Helper to expire a cookie for a given domain and path
+  const expireCookie = (domain, path) => {
+    const domainPart = domain ? `; domain=${domain}` : '';
+    document.cookie = `OAKeys=; expires=Thu, 01 Jan 1970 00:00:00 GMT${domainPart}; path=${path}; secure`;
+  };
 
-  // Delete cookie also on parent domain (e.g. .oa.report)
   try {
-    const parts = window.location.host.split('.');
-    if (parts.length > 2) {
-      const parent = '.' + parts.slice(1).join('.');
-      document.cookie = `OAKeys=; expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=${parent}; path=/; secure`;
+    // Delete for host-only and parent domain at root
+    expireCookie('', '/');
+
+    const hostParts = window.location.host.split('.');
+    if (hostParts.length > 2) {
+      const parent = '.' + hostParts.slice(1).join('.');
+      expireCookie(parent, '/');
+    }
+
+    // Delete for all path prefixes (e.g. /gates-foundation, /gates-foundation/)
+    const segs = window.location.pathname.split('/').filter(Boolean);
+    const paths = new Set(['/']);
+    let acc = '';
+    for (const s of segs) {
+      acc += '/' + s;
+      paths.add(acc);
+      paths.add(acc + '/');
+    }
+
+    // Delete host-only cookies for all paths
+    paths.forEach(p => expireCookie('', p));
+
+    // Delete parent-domain cookies for all paths
+    if (hostParts.length > 2) {
+      const parent = '.' + hostParts.slice(1).join('.');
+      paths.forEach(p => expireCookie(parent, p));
     }
   } catch (_) {}
 
@@ -95,8 +119,3 @@ if (window.location.search.includes('logout')) {
     history.replaceState(null, '', newUrl);
   } catch (_) {}
 }
-
-
-// Also delete legacy path-scoped cookies
-document.cookie = 'OAKeys=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/report; secure';
-document.cookie = 'OAKeys=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/oareport; secure';
