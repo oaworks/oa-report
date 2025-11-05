@@ -90,6 +90,13 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
+    compliant_and_covered_by_policy: {
+      filter: {
+        term: {
+          [`supplements.is_compliant__${suffix}`]: true
+        }
+      }
+    },
     covered_by_policy: {
       filter: {
         term: {
