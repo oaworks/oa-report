@@ -487,7 +487,12 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   },
   "compliant": {
     label: "Compliant",
-    info: "Publications that comply with the requirements of the Open Access policy, even if they are not covered by said policy.",
+    info: "Publications that comply with the requirements of the Open Access policy and are covered by the policy.",
+    details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex."
+  },
+  "compliant_and_covered_by_policy": {
+    label: "Compliant (all)",
+    info: "All publications that comply with the requirements of the Open Access policy, even if they are not covered by said policy.",
     details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex."
   },
   "covered_by_policy": {

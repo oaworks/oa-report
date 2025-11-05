@@ -86,6 +86,13 @@ function createAggregationTemplate(suffix) {
     compliant: {
       filter: {
         term: {
+        [`supplements.is_compliant__${suffix}`]: true  
+        }
+      }
+    },
+    compliant_and_covered_by_policy: {
+      filter: {
+        term: {
           [`supplements.is_compliant_all_works__${suffix}`]: true
         }
       }
