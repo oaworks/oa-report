@@ -1346,7 +1346,7 @@ function renderActiveFiltersBanner() {
 
   const list = pairs.map(({ label, value }) =>
     `<div class="mr-4 mb-1">
-       <dt class="inline text-neutral-600">${label}:</dt>
+       <dt class="inline text-neutral-600">${label}</dt>
        <dd class="inline ml-1 font-semibold">${value}</dd>
      </div>`
   ).join('');
