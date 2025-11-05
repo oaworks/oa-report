@@ -11,8 +11,8 @@ permalink: "{{ org._source.objectID | slug }}/"
 
 <main>
   <div class="px-3 md:px-6">
-    <div class="grid grid-cols-2 gap-3 sm:gap-6 md:gap-12 py-3 xl:pb-6 xl:pt-12">
-      <header class="{% if org._source.paid %}col-span-2{% else %}col-span-2 md:col-span-1{% endif %}">
+    <div class="grid grid-cols-2 md:grid-cols-12 gap-3 sm:gap-6 md:gap-12 py-3 xl:pb-6 xl:pt-12">
+      <header class="col-span-2 md:col-span-8">
         <h1 class="flex items-center">
           <div class="text-xl md:text-3xl font-serif">
             {% if org._source.paid %}
@@ -32,7 +32,7 @@ permalink: "{{ org._source.objectID | slug }}/"
 
       {# Free reports’ prompt to sign up #}
       {% if org._source.paid == false %}
-        <section class="col-span-2 md:col-span-1 p-8 pb-5 rounded-md bg-carnation-100 text-neutral-800 text-xs md:text-sm" id="about-free-logged-out">
+        <section class="col-span-2 md:col-span-4 p-3 rounded-md bg-carnation-100 text-neutral-800 text-xs md:text-sm" id="about-free-logged-out">
           <h2 class="mb-2 font-semibold uppercase">
             Sign up to access your institution’s OA.Report for free
           </h2>
@@ -43,6 +43,20 @@ permalink: "{{ org._source.objectID | slug }}/"
             {% include 'partials/signup-form.njk' %}
           </div>
         </section>
+      {% else %}
+        {# Temp UI for query filters. See https://github.com/oaworks/discussion/issues/3591 #}
+        <div class="col-span-2 md:col-span-4 p-3 rounded-md bg-carnation-100 text-neutral-800 text-xs md:text-sm">
+          <h2>
+            Filters active
+            {{ component("tooltip", {
+              sup: true,
+              msg: "This is an experimental feature, which we are working on integrating to OA.Report. If you have any feedback, please <a href='mailto:joe@oa.works?subject=OA.Report feedback' class='underline underline-offset-2 decoration-1'>get in touch by email</a>.",
+              text: "Beta",
+              theme: "tooltip-black"
+            }) }}
+          </h1>
+          <div id="js-active-filters"></div>
+        </div>
       {% endif %}
     </div>
   </div>

@@ -58,6 +58,23 @@ export function replaceText(className, parameter) {
 }
 
 /**
+ * Normalises ES field IDs to the human-friendly keys used for labels.
+ * - strips "supplements." prefix
+ * - removes any org suffix after "__"
+ * - removes trailing "_pct"
+ * @param {string} id
+ * @returns {string}
+ */
+export function normaliseFieldId(id) {
+  if (!id) return '';
+  return String(id)
+    .replace(/^supplements\./, '')
+    .replace(/__.*/, '')
+    .replace(/_pct$/, '');
+}
+
+
+/**
  * Format a date object into a human-readable string using the user’s locale,
  * explicitly formatted as UTC to ensure consistency across different time zones.
  * By formatting dates like this, we avoid pitfalls of local timezone adjustments,

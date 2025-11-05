@@ -7,11 +7,11 @@
 // Imports
 // =================================================
 
-import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, makeNumberReadable, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter } from "./utils.js";
+import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, normaliseFieldId } from "./utils.js";
 import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
-import { orgDataPromise } from './insights-and-strategies.js';
+import { orgDataPromise, initInsightsAndStrategies } from './insights-and-strategies.js';
 import { getAggregatedDataQuery } from './aggregated-data-query.js';
 
 // =================================================
@@ -126,6 +126,7 @@ export async function initDataExplore(org) {
     // Check if explore data exists and is not empty
     if (orgData.hits.hits.length > 0 && orgData.hits.hits[0]._source.explore && orgData.hits.hits[0]._source.explore.length > 0) {
       addExploreButtonsToDOM(orgData.hits.hits[0]._source.explore);
+      renderActiveFiltersBanner();
       addRecordsShownSelectToDOM();
       handleDataDisplayToggle();
       enableExploreRowHighlighting();
@@ -663,10 +664,7 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
 
   const headerRow = document.createElement('tr');
   records.forEach((key, index) => {
-    key = key.replace(/_pct$/, ""); // Remove '_pct' suffix
-    key = key.replace(/__.*/, ""); // Remove any suffixes after '__', e.g. org short name
-    key = key.replace(/supplements./g, ""); // Remove 'supplements.' prefix
-    // key = key.replace(/_/g, " "); // Replace underscores with spaces
+    key = normaliseFieldId(key);
 
     const cssClass = index === 0
       ? DATA_TABLE_HEADER_CLASSES[dataType].firstHeaderCol
@@ -1282,4 +1280,95 @@ window.getExportLink = function() {
   });
 
   return false; // Prevent default form submission
+}
+
+/**
+ * Parses the decoded ?q= string into [{label, value}] pairs.
+ * Uses the same normalisation as table headers for consistent labels.
+ * Falls back to raw keys if no constant label is found.
+ * 
+ * @param {string} q
+ * @returns {{label:string,value:string}[]}
+ */
+function parseEsQueryToPairs(q) {
+  if (!q) return [];
+  const re = /([A-Za-z0-9._]+):"([^"]+)"|([A-Za-z0-9._]+):([^\s]+)/g;
+  const out = [];
+  let m;
+  while ((m = re.exec(q)) !== null) {
+    const rawKey = m[1] || m[3];
+    const rawVal = m[2] || m[4];
+
+    const key = normaliseFieldId(rawKey);
+
+    // Try article → terms → items → filters; else fall back to prettified key
+    const label =
+      (EXPLORE_HEADER_ARTICLES_LABELS[key] && EXPLORE_HEADER_ARTICLES_LABELS[key].label) ||
+      (EXPLORE_HEADER_TERMS_LABELS[key] && EXPLORE_HEADER_TERMS_LABELS[key].label) ||
+      (EXPLORE_ITEMS_LABELS[key] && (EXPLORE_ITEMS_LABELS[key].label || EXPLORE_ITEMS_LABELS[key].singular)) ||
+      (EXPLORE_FILTERS_LABELS[key] && EXPLORE_FILTERS_LABELS[key].label) ||
+      key.replace(/_/g, ' ');
+
+    // Optional prettification (example: country codes)
+    const value =
+      (/country(_code)?$/i.test(key) && COUNTRY_CODES[rawVal]) ? COUNTRY_CODES[rawVal] : rawVal;
+
+    out.push({ label, value });
+  }
+  console.log('parseEsQueryToPairs output:', out);
+  return out;
+}
+
+/**
+ * Renders a small banner above Explore showing active ?q= filters as a <dl>.
+ * Hidden when no ?q=. "Clear filter" removes only q (keeps everything else).
+ */
+function renderActiveFiltersBanner() {
+  const mountId = 'js-active-filters';
+  let mount = document.getElementById(mountId);
+  if (!mount) {
+    mount = document.createElement('div');
+    mount.id = mountId;
+    mount.className = 'mb-3 text-xs md:text-sm';
+    const exploreHeader = document.getElementById('explore_buttons');
+    exploreHeader?.parentNode.insertBefore(mount, exploreHeader);
+  }
+
+  const q = getDecodedUrlQuery();
+  const pairs = parseEsQueryToPairs(q);
+
+  if (!pairs.length) {
+    mount.innerHTML = '';
+    mount.style.display = 'none';
+    mount.closest('.bg-carnation-100')?.remove(); // fully remove container when empty
+    return;
+  }
+
+  const list = pairs.map(({ label, value }) =>
+    `<div class="mr-4 mb-1">
+       <dt class="inline text-neutral-600">${label}</dt>
+       <dd class="inline ml-1 font-semibold">${value}</dd>
+     </div>`
+  ).join('');
+
+  mount.innerHTML = `
+    <div role="status" aria-live="polite" class="py-2">
+      <dl class="flex flex-wrap">${list}</dl>
+      <button id="js-clear-q" type="button" class="underline underline-offset-2 decoration-1 hover:opacity-80 mt-1">
+        Clear filter
+      </button>
+    </div>
+  `;
+  mount.style.display = '';
+
+  document.getElementById('js-clear-q')?.addEventListener('click', () => {
+    removeURLParams('q'); // keep breakdown, start/end, etc.
+    renderActiveFiltersBanner(); // refresh banner
+    initInsightsAndStrategies(org); // re-init insights & actions 
+    if (currentActiveExploreItemButton && currentActiveExploreItemData) {
+      processExploreDataTable(currentActiveExploreItemButton, currentActiveExploreItemData);
+    } else {
+      displayDefaultArticlesData();
+    }
+  });
 }
