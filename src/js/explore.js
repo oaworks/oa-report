@@ -1340,24 +1340,24 @@ function renderActiveFiltersBanner() {
   if (!pairs.length) {
     mount.innerHTML = '';
     mount.style.display = 'none';
+    mount.closest('.bg-carnation-100')?.remove(); // fully remove container when empty
     return;
   }
 
   const list = pairs.map(({ label, value }) =>
     `<div class="mr-4 mb-1">
-       <dt class="inline text-neutral-400">${label}:</dt>
+       <dt class="inline text-neutral-600">${label}:</dt>
        <dd class="inline ml-1 font-semibold">${value}</dd>
      </div>`
   ).join('');
 
   mount.innerHTML = `
-    <section role="status" aria-live="polite" class="py-2">
-      <p class="mb-1">Filters active:</p>
+    <div role="status" aria-live="polite" class="py-2">
       <dl class="flex flex-wrap">${list}</dl>
       <button id="js-clear-q" type="button" class="underline underline-offset-2 decoration-1 hover:opacity-80 mt-1">
         Clear filter
       </button>
-    </section>
+    </div>
   `;
   mount.style.display = '';
 
