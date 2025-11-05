@@ -7,7 +7,7 @@
 // Imports
 // =================================================
 
-import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, makeNumberReadable, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter } from "./utils.js";
+import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, normaliseFieldId } from "./utils.js";
 import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
@@ -663,11 +663,8 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
 
   const headerRow = document.createElement('tr');
   records.forEach((key, index) => {
-    key = key.replace(/_pct$/, ""); // Remove '_pct' suffix
-    key = key.replace(/__.*/, ""); // Remove any suffixes after '__', e.g. org short name
-    key = key.replace(/supplements./g, ""); // Remove 'supplements.' prefix
-    // key = key.replace(/_/g, " "); // Replace underscores with spaces
-
+    key = normaliseFieldId(key);
+    
     const cssClass = index === 0
       ? DATA_TABLE_HEADER_CLASSES[dataType].firstHeaderCol
       : index === 1
