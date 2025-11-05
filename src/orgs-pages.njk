@@ -28,6 +28,8 @@ permalink: "{{ org._source.objectID | slug }}/"
             {% endif %}
           </div>
         </h1>
+        {# Temp UI for query filters. See https://github.com/oaworks/discussion/issues/3591 #}
+        <div id="js-active-filters" class="mb-3 text-xs md:text-sm"></div>
       </header>
 
       {# Free reports’ prompt to sign up #}
