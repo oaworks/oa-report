@@ -869,11 +869,18 @@ export function resetBarChart(cardContents) {
   const footerEls = cardContents.querySelectorAll('footer');
   footerEls.forEach(el => el.remove());
 
-  // Append a fresh bar-chart footer
-  const footerEl = document.createElement('footer');
-  footerEl.className = 'bar-chart w-full h-3 bg-carnation-800 rounded-full mt-4';
-  cardContents.appendChild(footerEl);
+  // Only re-create the bar-chart if it existed originally
+  const hadBarChart = cardContents.dataset.hasBarChart === 'true' ||
+                      cardContents.querySelector('.bar-chart') !== null;
+
+  if (hadBarChart) {
+    // Append a fresh bar-chart footer
+    const footerEl = document.createElement('footer');
+    footerEl.className = 'bar-chart w-full h-3 bg-carnation-800 rounded-full mt-4';
+    cardContents.appendChild(footerEl);
+  }
 }
+
 
 /**
  * Switches the default Insights card into greyed-out "Data unavailable" style.
