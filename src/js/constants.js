@@ -479,6 +479,10 @@ export const EXPLORE_FILTERS_LABELS = {
   "ppmi_biospecimen_users_outputs": {
     label: "PPMI Biospecimen Users Outputs",
     info: "Works that include a PPMI biospecimen users grant ID."
+  },
+  "is_unique_publication": {
+  label: "Unique publication",
+  info: "Explore journal articles and preprints without a corresponding journal article"
   }
 };
 
