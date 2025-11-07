@@ -19,15 +19,15 @@
     "concurrently": "^9.2.1",
     "html-minifier": "^4.0.0",
     "postcss-cli": "^11.0.1",
-    "sass": "^1.93.2",
+    "sass": "^1.93.3",
     "tailwindcss": "^3.4.18",
-    "terser": "^5.44.0"
+    "terser": "^5.44.1"
   },
   "dependencies": {
     "18": "^0.0.0",
     "@tryghost/content-api": "^1.12.0",
-    "axios": "^1.12.2",
-    "caniuse-lite": "^1.0.30001751",
+    "axios": "^1.13.2",
+    "caniuse-lite": "^1.0.30001754",
     "canvas": "^3.2.0",
     "dotenv": "^17.2.3",
     "feather-icons": "^4.28.0",
