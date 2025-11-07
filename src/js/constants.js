@@ -481,7 +481,7 @@ export const EXPLORE_FILTERS_LABELS = {
     info: "Works that include a PPMI biospecimen users grant ID."
   },
   "is_unique_publication": {
-  label: "Unique publication",
+  label: "Unique publications",
   info: "Explore journal articles and preprints without a corresponding journal article"
   }
 };
