@@ -535,6 +535,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
         // Only show CSV form and help if logged in
         exploreArticlesTableHelp.style.display = loggedIn ? "block" : "none";
         exploreTermsTableHelp.style.display = "none";
+        downloadCSVForm.style.display = loggedIn ? "block" : "none"; // Hide CSV form for logged-out users
         displayNone("explore_display_style_field");
       } else {
         // Show display-style toggle and terms tooltip
