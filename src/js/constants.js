@@ -92,7 +92,7 @@ export const DATE_SELECTION_BUTTON_CLASSES = {
  */
 export const INSIGHTS_CARDS = [
   {
-    // For the total publications card
+    // For the total journal articles card
     numerator: "is_paper",
     denominator: null,
     denominatorText: "articles",

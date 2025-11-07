@@ -7,7 +7,7 @@ pagination:
 permalink: "{{ org._source.objectID | slug }}/"
 ---
 
-{%- from "system/component.njk" import component -%}
+{%- from "system/component.njk" import component with context -%}
 
 <main>
   <div class="px-3 md:px-6">
@@ -109,7 +109,7 @@ permalink: "{{ org._source.objectID | slug }}/"
       <div class="grid gap-6 grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6" id="insights_articles">
         {{ component("card", {
           id: "is_paper",
-          title: "Total publications",
+          title: "Total journal articles",
           icon: "file-text"
         }) }}
 
