@@ -92,11 +92,11 @@ export const DATE_SELECTION_BUTTON_CLASSES = {
  */
 export const INSIGHTS_CARDS = [
   {
-    // For the total publications card
+    // For the total journal articles card
     numerator: "is_paper",
     denominator: null,
     denominatorText: "articles",
-    info: "<p>The total number of articles published by grantees or authors at your organization.</p>"
+    info: "<p>The total number of journal articles published by grantees or authors at your organization.</p>"
   },
   {
     numerator: "is_preprint",
@@ -108,7 +108,7 @@ export const INSIGHTS_CARDS = [
     numerator: "is_free_to_read",
     denominator: "is_paper",
     denominatorText: "articles",
-    info: "<p>Articles that are free to read on the publisher website or any online repository, including temporarily accessible articles (“bronze Open Access”).</p>"
+    info: "<p>Journal articles that are free to read on the publisher website or any online repository, including temporarily accessible articles (“bronze Open Access”).</p>"
   },
   {
     numerator: "is_free_to_read_preprint",
@@ -120,7 +120,7 @@ export const INSIGHTS_CARDS = [
     numerator: "is_compliant",
     denominator: "is_covered_by_policy",
     denominatorText: "articles covered by policy",
-    info: `<p class='mb-2'>The percentage of articles covered by <a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
+    info: `<p class='mb-2'>The percentage of journal articles covered by <a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
   },
   {
     numerator: "is_compliant_preprint",
@@ -132,13 +132,13 @@ export const INSIGHTS_CARDS = [
     numerator: "is_oa",
     denominator: "is_paper",
     denominatorText: "articles",
-    info: "<p>The number of articles that are free and <a href='https://creativecommons.org/licenses/by/4.0/' class='underline underline-offset-2 decoration-1' target='_blank' rel='noopener'>CC BY</a> <strong class='bold'>or</strong> <a href='https://creativecommons.org/publicdomain/zero/1.0/' class='underline underline-offset-2 decoration-1' target='_blank' rel='noopener'>CC0</a> (in the public domain) on the publisher’s website, a repository or a preprint server.</p>"
+    info: "<p>The number of journal articles that are free and <a href='https://creativecommons.org/licenses/by/4.0/' class='underline underline-offset-2 decoration-1' target='_blank' rel='noopener'>CC BY</a> <strong class='bold'>or</strong> <a href='https://creativecommons.org/publicdomain/zero/1.0/' class='underline underline-offset-2 decoration-1' target='_blank' rel='noopener'>CC0</a> (in the public domain) on the publisher’s website, a repository or a preprint server.</p>"
   },
   {
     numerator: "has_data_availability_statement",
     denominator: "has_checked_data_availability_statement",
     denominatorText: "articles checked to date",
-    info: `<p class='mb-2'>This number tells you how many articles that we’ve analyzed have a data availability statement.</p> <p>To check if a paper has a data availability statement, we use data from PubMed and review articles manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data).</p>`
+    info: `<p class='mb-2'>This number tells you how many journal articles that we’ve analyzed have a data availability statement.</p> <p>To check if a paper has a data availability statement, we use data from PubMed and review articles manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data).</p>`
   },
   {
     numerator: "has_data_availability_statement_preprint",
@@ -150,13 +150,13 @@ export const INSIGHTS_CARDS = [
     numerator: "has_open_data",
     denominator: "has_data",
     denominatorText: "articles with data",
-    info: "<p class='mb-2'>The percentage of articles that shared any data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>CC-BY</a> license.</p> <p class='mb-2'>This figure only measures how many articles shared Open Data if they generated data in the first place. It also only measures if any of the datasets generated were open, not if all of them were open.</p> <p>We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>"
+    info: "<p class='mb-2'>The percentage of journal articles that shared any data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>CC-BY</a> license.</p> <p class='mb-2'>This figure only measures how many articles shared Open Data if they generated data in the first place. It also only measures if any of the datasets generated were open, not if all of them were open.</p> <p>We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>"
   },
   {
     numerator: "has_open_code",
     denominator: "has_code",
     denominatorText: "articles with code",
-    info: "<p class='mb-2'>The percentage of articles that shared any code under a permissive open-source licence, such as MIT.</p> <p class='mb-2'>This figure measures how many articles shared Open Code if they generated code in the first place. It also only measures if <strong>any parts</strong> of the code generated are open, not if <strong>all</strong> of it is open.</p> <p> We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>"
+    info: "<p class='mb-2'>The percentage of journal articles that shared any code under a permissive open-source licence, such as MIT.</p> <p class='mb-2'>This figure measures how many articles shared Open Code if they generated code in the first place. It also only measures if <strong>any parts</strong> of the code generated are open, not if <strong>all</strong> of it is open.</p> <p> We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>"
   }
 ];
 
@@ -166,9 +166,9 @@ export const INSIGHTS_CARDS = [
  */
 export const EXPLORE_ITEMS_LABELS = {
   "articles": {
-    singular: "Article",
-    plural: "Articles",
-    tooltip: "Explore various articles"
+    singular: "Journal article",
+    plural: "Journal articles",
+    tooltip: "Explore various journal articles"
   },
     "covered_by_policy": {
     singular: "Work covered by policy",
@@ -228,8 +228,8 @@ export const EXPLORE_ITEMS_LABELS = {
     plural: "Programs"
   },
   "article_oa_type": {
-    singular: "Article <span class='uppercase'>OA</span> type",
-    plural: "Article <span class='uppercase'>OA</span> types"
+    singular: "Journal article <span class='uppercase'>OA</span> type",
+    plural: "Journal article <span class='uppercase'>OA</span> types"
   },
   "journal_oa_type": {
     singular: "Journal <span class='uppercase'>OA</span> type",
@@ -260,8 +260,8 @@ export const EXPLORE_ITEMS_LABELS = {
     plural: "Preprint servers"
   },
   "articles_with_apcs": {
-    singular: "Article with <span class='uppercase'>APC</span>s",
-    plural: "Articles with <span class='uppercase'>APC</span>s"
+    singular: "Journal article with <span class='uppercase'>APC</span>s",
+    plural: "Journal articles with <span class='uppercase'>APC</span>s"
   },
   "all_lab_head": {
     singular: "All lab head",
@@ -300,8 +300,8 @@ export const EXPLORE_ITEMS_LABELS = {
  */
 export const EXPLORE_FILTERS_LABELS = {
   "is_paper": {
-    label: "All articles",
-    info: "<p>Scholarly research articles, <strong>including</strong>:</p>\
+    label: "All journal articles",
+    info: "<p>Scholarly research articles published in journals <strong>including</strong>:</p>\
       <ul class='mb-2 list-disc list-inside'>\
         <li>peer-reviewed research</li>\
         <li>reviews</li>\
