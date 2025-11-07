@@ -540,6 +540,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
         // Show display-style toggle and terms tooltip
         exploreTermsTableHelp.style.display = "block";
         exploreArticlesTableHelp.style.display = "none";
+        downloadCSVForm.style.display = "none"; // Hide CSV form for terms-based tables
         removeDisplayStyle("explore_display_style_field");
       }
     } else {
