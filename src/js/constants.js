@@ -290,6 +290,11 @@ export const EXPLORE_ITEMS_LABELS = {
   "software_location": {
     singular: "Software location",
     plural: "Software locations"
+  },
+  "is_unique_publication": {
+  singular: "Publication",
+  plural: "Publications",
+  tooltip: "Explore journal articles and preprints without a corresponding journal article"
   }
 };
 
