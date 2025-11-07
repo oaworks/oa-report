@@ -1287,21 +1287,26 @@ window.getExportLink = function() {
  * Uses the same normalisation as table headers for consistent labels.
  * Falls back to raw keys if no constant label is found.
  * 
+ * Handles parenthesised OR groups, e.g.
+ *   supplements.grantid__bmgf:("INV-1" OR "INV-2")
+ *
  * @param {string} q
  * @returns {{label:string,value:string}[]}
  */
 function parseEsQueryToPairs(q) {
   if (!q) return [];
-  const re = /([A-Za-z0-9._]+):"([^"]+)"|([A-Za-z0-9._]+):([^\s]+)/g;
+  const re = /([A-Za-z0-9._]+):"([^"]+)"|([A-Za-z0-9._]+):\(([^)]+)\)|([A-Za-z0-9._]+):([^\s]+)/g;
+
   const out = [];
   let m;
   while ((m = re.exec(q)) !== null) {
-    const rawKey = m[1] || m[3];
-    const rawVal = m[2] || m[4];
+    const rawKey = m[1] || m[3] || m[5];
+    let rawVal   = m[2] || m[4] || m[6];
 
     const key = normaliseFieldId(rawKey);
 
-    // Try article → terms → items → filters; else fall back to prettified key
+    // Try looking for human-readable label in article → terms → items → filters
+    // Else fall back to prettified key
     const label =
       (EXPLORE_HEADER_ARTICLES_LABELS[key] && EXPLORE_HEADER_ARTICLES_LABELS[key].label) ||
       (EXPLORE_HEADER_TERMS_LABELS[key] && EXPLORE_HEADER_TERMS_LABELS[key].label) ||
@@ -1309,15 +1314,24 @@ function parseEsQueryToPairs(q) {
       (EXPLORE_FILTERS_LABELS[key] && EXPLORE_FILTERS_LABELS[key].label) ||
       key.replace(/_/g, ' ');
 
-    // Optional prettification (example: country codes)
+    // If this was a parenthesised OR group, render as a comma-separated list
+    if (m[4]) {
+      // m[4] looks like: `"INV-029392" OR "INV-005210" OR "INV-010680"`
+      const parts = m[4]
+        .split(/\s+OR\s+/i)
+        .map(s => s.replace(/^"+|"+$/g, ''));
+      rawVal = parts.join(', ');
+    }
+
     const value =
       (/country(_code)?$/i.test(key) && COUNTRY_CODES[rawVal]) ? COUNTRY_CODES[rawVal] : rawVal;
 
     out.push({ label, value });
   }
-  console.log('parseEsQueryToPairs output:', out);
+
   return out;
 }
+
 
 /**
  * Renders a small banner above Explore showing active ?q= filters as a <dl>.
