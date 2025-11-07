@@ -175,6 +175,11 @@ export const EXPLORE_ITEMS_LABELS = {
     plural: "Works covered by policy",
     tooltip: "Explore various works covered by your policy"
   },
+    "unique_publication": {
+    singular: "Publication",
+    plural: "Publications",
+    tooltip: "Explore journal articles, plus preprints without an associated peer-reviewed journal publication"
+  },
   "grant": {
     singular: "Grant",
     plural: "Grants",
@@ -290,11 +295,6 @@ export const EXPLORE_ITEMS_LABELS = {
   "software_location": {
     singular: "Software location",
     plural: "Software locations"
-  },
-  "is_unique_publication": {
-  singular: "Publication",
-  plural: "Publications",
-  tooltip: "Explore journal articles and preprints without a corresponding journal article"
   }
 };
 
@@ -479,6 +479,10 @@ export const EXPLORE_FILTERS_LABELS = {
   "ppmi_biospecimen_users_outputs": {
     label: "PPMI Biospecimen Users Outputs",
     info: "Works that include a PPMI biospecimen users grant ID."
+  },
+    "is_unique_publication": {
+    label: "Unique publications",
+    info: "Journal articles, plus preprints without an associated peer-reviewed journal publication."
   }
 };
 
