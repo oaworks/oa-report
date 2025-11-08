@@ -92,7 +92,7 @@ export const DATE_SELECTION_BUTTON_CLASSES = {
  */
 export const INSIGHTS_CARDS = [
   {
-    // For the total publications card
+    // For the total journal articles card
     numerator: "is_paper",
     denominator: null,
     denominatorText: "articles",
@@ -174,6 +174,11 @@ export const EXPLORE_ITEMS_LABELS = {
     singular: "Work covered by policy",
     plural: "Works covered by policy",
     tooltip: "Explore various works covered by your policy"
+  },
+    "unique_publication": {
+    singular: "Publication",
+    plural: "Publications",
+    tooltip: "Explore journal articles, plus preprints without an associated peer-reviewed journal publication"
   },
   "grant": {
     singular: "Grant",
@@ -474,6 +479,10 @@ export const EXPLORE_FILTERS_LABELS = {
   "ppmi_biospecimen_users_outputs": {
     label: "PPMI Biospecimen Users Outputs",
     info: "Works that include a PPMI biospecimen users grant ID."
+  },
+    "is_unique_publication": {
+    label: "Unique publications",
+    info: "Journal articles, plus preprints without an associated peer-reviewed journal publication."
   }
 };
 
@@ -487,7 +496,12 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   },
   "compliant": {
     label: "Compliant",
-    info: "Publications that comply with the requirements of the Open Access policy, even if they are not covered by said policy.",
+    info: "Publications that comply with the requirements of the Open Access policy and are covered by the policy.",
+    details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex."
+  },
+  "compliant_and_covered_by_policy": {
+    label: "Compliant (all)",
+    info: "All publications that comply with the requirements of the Open Access policy, even if they are not covered by said policy.",
     details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex."
   },
   "covered_by_policy": {

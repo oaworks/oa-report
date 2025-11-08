@@ -58,6 +58,23 @@ export function replaceText(className, parameter) {
 }
 
 /**
+ * Normalises ES field IDs to the human-friendly keys used for labels.
+ * - strips "supplements." prefix
+ * - removes any org suffix after "__"
+ * - removes trailing "_pct"
+ * @param {string} id
+ * @returns {string}
+ */
+export function normaliseFieldId(id) {
+  if (!id) return '';
+  return String(id)
+    .replace(/^supplements\./, '')
+    .replace(/__.*/, '')
+    .replace(/_pct$/, '');
+}
+
+
+/**
  * Format a date object into a human-readable string using the user’s locale,
  * explicitly formatted as UTC to ensure consistency across different time zones.
  * By formatting dates like this, we avoid pitfalls of local timezone adjustments,
@@ -114,28 +131,33 @@ export function formatDateToISO(date) {
 }
 
 /**
- * Adjusts global `startYear` and `endYear` to the years of the new start and end dates and constructs
- * a date range string formatted for ElasticSearch queries. 
- * The start date is decremented by one day and the end date is incremented by one day, 
- * ensuring that the range includes all times within the start and end dates.
- * Display the readable start and end dates in the UI.
+ * Updates the global date range used in queries, refreshes readable dates in the UI,
+ * and emits an event signalling the range is ready.
  *
- * @param {Date} newStart - The date representing the start of the range.
- * @param {Date} newEnd - The date representing the end of the range.
- * @returns {string} The date range string formatted for ElasticSearch query syntax.
+ * Event: `oar:dateRangeReady` with `detail.dateRange` carrying the final fragment,
+ * e.g. `(published_date:>YYYY-MM-DD AND published_date:<YYYY-MM-DD) AND `.
+ *
+ * @param {Date} newStart - The start of the range.
+ * @param {Date} newEnd   - The end of the range.
+ * @returns {string} The ElasticSearch date-range fragment.
  */
 export function replaceDateRange(newStart, newEnd) {
   // Update the year range in a readable format
   replaceText("report_readable_start_date", makeDateReadable(newStart));
-  replaceText("report_readable_end_date", makeDateReadable(newEnd));
+  replaceText("report_readable_end_date",   makeDateReadable(newEnd));
 
   // Adjust the date range in ISO format for the API call (-1 day for start date, +1 day for end date)
   const startDateISO = formatDateToISO(changeDays(-1, newStart));
-  const endDateISO = formatDateToISO(changeDays(+1, newEnd));
+  const endDateISO   = formatDateToISO(changeDays(+1, newEnd));
+
+  // Persist globals
   dateRange = `(published_date:>${startDateISO}%20AND%20published_date:<${endDateISO})%20AND%20`;
-  
   startYear = formatDateToISO(newStart);
-  endYear = formatDateToISO(newEnd);
+  endYear   = formatDateToISO(newEnd);
+
+  // Tell listeners the range is ready
+  const evt = new CustomEvent('oar:dateRangeReady', { detail: { dateRange } });
+  window.dispatchEvent(evt);
 
   return dateRange;
 }
@@ -755,6 +777,21 @@ export function updateURLParams(params) {
 }
 
 /**
+ * Removes one or more query parameters from the current URL without reloading the page.
+ * Uses history.replaceState so it doesn’t add a new history entry.
+ *
+ * @param {string|string[]} keys - One key or an array of keys to remove.
+ * @returns {void}
+ */
+export function removeURLParams(keys) {
+  const params = new URLSearchParams(window.location.search);
+  (Array.isArray(keys) ? keys : [keys]).forEach(k => params.delete(k));
+  const newQuery = params.toString();
+  const newUrl = newQuery ? `?${newQuery}` : window.location.pathname;
+  history.replaceState(null, '', newUrl);
+}
+
+/**
  * Displays an error message in the header of the page.
  * @param {string} message - The error message to display.
  */
@@ -832,11 +869,18 @@ export function resetBarChart(cardContents) {
   const footerEls = cardContents.querySelectorAll('footer');
   footerEls.forEach(el => el.remove());
 
-  // Append a fresh bar-chart footer
-  const footerEl = document.createElement('footer');
-  footerEl.className = 'bar-chart w-full h-3 bg-carnation-800 rounded-full mt-4';
-  cardContents.appendChild(footerEl);
+  // Only re-create the bar-chart if it existed originally
+  const hadBarChart = cardContents.dataset.hasBarChart === 'true' ||
+                      cardContents.querySelector('.bar-chart') !== null;
+
+  if (hadBarChart) {
+    // Append a fresh bar-chart footer
+    const footerEl = document.createElement('footer');
+    footerEl.className = 'bar-chart w-full h-3 bg-carnation-800 rounded-full mt-4';
+    cardContents.appendChild(footerEl);
+  }
 }
+
 
 /**
  * Switches the default Insights card into greyed-out "Data unavailable" style.
@@ -969,3 +1013,49 @@ export function setBarChart(
     `;
   }
 };
+
+/**
+ * Get the admin-provided `?q=` from the page URL and normalise it
+ * to a plain Elasticsearch query string.
+ *
+ * - Returns '' when absent.
+ * - Converts '+' to spaces (URL forms may use '+').
+ * - Decodes percent-encoded characters (e.g., %22 → ").
+ * 
+ * @returns {string} Normalised query string from the URL.
+ */
+export function getDecodedUrlQuery() {
+  const params = new URLSearchParams(window.location.search);
+  const raw = params.get('q');
+  if (!raw || !raw.trim()) return '';
+  // Normalise '+' (often used for spaces), then decode %xx sequences.
+  const plusAsSpace = raw.replace(/\+/g, ' ');
+  return decodeAndReplaceUrlEncodedChars(plusAsSpace);
+}
+
+/**
+ * Combine two Elasticsearch query strings with an AND.
+ *
+ * @param {string} base
+ * @param {string} extra
+ * @returns {string}
+ */
+export function andQueryStrings(base, extra) {
+  const a = base && base.trim() ? `(${base.trim()})` : '';
+  const b = extra && extra.trim() ? `(${extra.trim()})` : '';
+  if (a && b) return `${a} AND ${b}`;
+  return a || b || '';
+}
+
+/**
+ * Build an encoded `?q=` value by combining the existing query string
+ * with the URL `?q=` filter.
+ *
+ * @param {string} baseQuery
+ * @returns {string}
+ */
+export function buildEncodedQueryWithUrlFilter(baseQuery) {
+  const base = decodeAndReplaceUrlEncodedChars(baseQuery);
+  const combined = andQueryStrings(base, getDecodedUrlQuery());
+  return encodeURIComponent(combined);
+}

@@ -5,7 +5,7 @@
 // Needs to be completely refactored
 // ================================================
 
-import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart } from './utils.js';
+import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter } from './utils.js';
 import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS } from './constants.js';
 
 // Set report org index URL’s base path
@@ -14,12 +14,13 @@ export const orgApiUrl = `${API_BASE_URL}orgs?q=objectID:%22${org}%22`;
 // Fetch and store organisational data in a constant
 export const orgDataPromise = axios.get(orgApiUrl);
 
-let orgKey = "",
-    loggedIn = false,
-    hasOrgKey = Object.keys(OAKEYS).length !== 0;
+let orgKey = "";
+let loggedIn = false;
+const hasOrgKey = typeof window.OAKEYS === 'object' && Object.keys(window.OAKEYS || {}).length !== 0;
+
 if (hasOrgKey) {
   // logged in
-  orgKey = `&orgkey=${OAKEYS[org]}`; // Use org variable to get the correct orgkey value
+  orgKey = `&orgkey=${(window.OAKEYS || {})[org] ?? ''}`;
   loggedIn = true;
   displayNone("login");
   displayNone("about-free-logged-out");
@@ -132,15 +133,15 @@ export function initInsightsAndStrategies(org) {
         cardContents.setAttribute('title', 'More information on this metric');
 
         // Get numerator’s count query
-        let numPromise = axios.get(countQueryPrefix + analysisEntry.query);
+        let numPromise = axios.get(countQueryPrefix + buildEncodedQueryWithUrlFilter(analysisEntry.query));
 
         // If we have a denominator param
         if (numerator && denominator) {
           // Get denominator’s count query
-          let denomPromise = axios.get(countQueryPrefix + orgData.hits.hits[0]._source.analysis[denominator].query);
+          let denomPromise = axios.get(countQueryPrefix + buildEncodedQueryWithUrlFilter(orgData.hits.hits[0]._source.analysis[denominator].query));
 
           // Get total articles count for the bar chart
-          let totalArticlesPromise = axios.get(countQueryPrefix + orgData.hits.hits[0]._source.analysis.is_paper.query);
+          let totalArticlesPromise = axios.get(countQueryPrefix + buildEncodedQueryWithUrlFilter(orgData.hits.hits[0]._source.analysis.is_paper.query));
 
           Promise.all([numPromise, denomPromise, totalArticlesPromise])
             .then(function ([numResult, denomResult, totalArticlesResult]) {
@@ -217,8 +218,13 @@ export function initInsightsAndStrategies(org) {
             tableCountContents = document.getElementById(`total_${strategy}`),
             tableBody          = document.getElementById(`table_${strategy}`).getElementsByTagName('tbody')[0];
         
-        var countQuery              = countQueryPrefix + orgData.hits.hits[0]._source.strategy[strategy].query,
-            listQuery               = queryPrefix + orgData.hits.hits[0]._source.strategy[strategy].query + sort;
+        // Store original query + build encoded query with URL filters, if any
+        const strategyQuery = orgData.hits.hits[0]._source.strategy[strategy].query,
+              encodedQuery = buildEncodedQueryWithUrlFilter(strategyQuery);
+        
+        // Build full count + works queries
+        var countQuery = countQueryPrefix + encodedQuery,
+            listQuery  = queryPrefix + encodedQuery + sort;
         
         // Get total action (article) count for this strategy
         axios.get(countQuery)
@@ -457,6 +463,7 @@ window.callGetStrategyExportLink = function(id) {
   return false;
 };
 
+
 /**
 * Handles the creation and sending of a strategy export link request.
 * This function is called with organizational data and an identifier to
@@ -467,38 +474,38 @@ window.callGetStrategyExportLink = function(id) {
 * @returns {boolean} - Always returns false to prevent default form submission.
 */
 export function getStrategyExportLink(id, orgData) {
-  let hasCustomExportIncludes = (orgData.hits.hits[0]._source.strategy[id].export_includes),
-      strategyQuery           = (orgData.hits.hits[0]._source.strategy[id].query),
-      strategySort            = (orgData.hits.hits[0]._source.strategy[id].sort);
+  let hasCustomExportIncludes = orgData.hits.hits[0]._source.strategy[id].export_includes,
+      strategyQuery           = orgData.hits.hits[0]._source.strategy[id].query,
+      strategySort            = orgData.hits.hits[0]._source.strategy[id].sort;
 
   Promise.all([hasCustomExportIncludes])
     .then(function (results) {
       hasCustomExportIncludes = results[0].data;
-      }
-    ).catch(function (error) { console.log(`Export error: ${error}`); });
+    })
+    .catch(function (error) {
+      console.log(`Export error: ${error}`);
+    });
 
-  // Set up export query
-  let isPaperURL = (dateRange + strategyQuery);
-  let query = `q=${isPaperURL.replaceAll(" ", "%20")}`,
-      form = new FormData(document.getElementById(`form_${id}`));
+  // Build the export query
+  const isPaperURL = dateRange + strategyQuery;
+  const query = `q=${buildEncodedQueryWithUrlFilter(isPaperURL)}`;
 
   // Get form content — email address input
-  var email = `&${new URLSearchParams(form).toString()}`;
+  const form = new FormData(document.getElementById(`form_${id}`));
+  const email = `&${new URLSearchParams(form).toString()}`;
 
-  // Display export includes if there are any
-  var include;
-  if (hasCustomExportIncludes !== undefined) {
-    include = `&include=${hasCustomExportIncludes}`;
-  }
+  // Include custom export fields if any
+  const include = (typeof hasCustomExportIncludes === 'string' && hasCustomExportIncludes.trim())
+    ? `&include=${hasCustomExportIncludes.trim()}`
+    : "";
 
-  // Build full query
-  query = CSV_EXPORT_BASE + query + include + '&sort=' + strategySort + email + orgKey;
+  // Build final URL
+  const exportUrl = `${CSV_EXPORT_BASE}${query}${include}&sort=${strategySort}${email}`;
 
-  var xhr = new XMLHttpRequest();
-  xhr.open("GET", query);
-  // Display message when server responds
+  const xhr = new XMLHttpRequest();
+  xhr.open("GET", exportUrl);
   xhr.onload = function () {
     document.getElementById(`msg-${id}`).innerHTML = `OA.Report has started building your CSV export at <a href='${this.response}' target='_blank' class='underline underline-offset-2 decoration-1'>this URL</a>. Please check your email to get the full data once it’s ready.`;
   };
   xhr.send();
-};
+}
