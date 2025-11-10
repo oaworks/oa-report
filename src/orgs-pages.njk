@@ -184,6 +184,19 @@ permalink: "{{ org._source.objectID | slug }}/"
         }) }}
       </div>
     </article>
+
+    {# UNIQUE PUBLICATIONS INSIGHTS #}
+    <article class="mt-12">
+      <h3 class="mb-2 text-2xl">Unique publications</h3> 
+      <div class="grid gap-6 grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6" id="insights_unique_publications">
+        {# NOTE FOR JOE: Could we switch the name of this to is_unique_publication for clarity? #}
+        {{ component("card", {
+          id: "is_publication", 
+          title: "Total unique publications",
+          icon: "file-plus"
+        }) }}
+      </div>
+    </article>
     {% endif %}
   </section>
 

@@ -105,6 +105,12 @@ export const INSIGHTS_CARDS = [
     info: "<p>The total number of preprints published by grantees or authors at your organization.</p>"
   },
   {
+    numerator: "is_publication",
+    denominator: null,
+    denominatorText: "unique publications",
+    info: "<p>The total number of unique publications, including journal articles and preprints without an associated peer-reviewed journal publication.</p>"
+  },
+  {
     numerator: "is_free_to_read",
     denominator: "is_paper",
     denominatorText: "articles",
