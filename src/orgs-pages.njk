@@ -129,6 +129,12 @@ permalink: "{{ org._source.objectID | slug }}/"
         }) }}
 
         {{ component("card", {
+          id: "is_compliant_article", 
+          title: "OA policy-compliant",
+          icon: "check-circle"
+        }) }}
+
+        {{ component("card", {
           id: "is_compliant",
           title: "OA policy-compliant",
           icon: "check-circle"
@@ -193,6 +199,12 @@ permalink: "{{ org._source.objectID | slug }}/"
           id: "is_unique_publication", 
           title: "Total unique publications",
           icon: "file-plus"
+        }) }}
+
+        {{ component("card", {
+          id: "is_compliant_article", 
+          title: "OA policy-compliant",
+          icon: "check-circle"
         }) }}
       </div>
     </article>
