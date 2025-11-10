@@ -354,7 +354,7 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "is_compliant": {
     label: "Covered by & compliant with <span class='uppercase'>OA</span> policy",
-    info: "<p>Scholarly research articles covered by <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a> and compliant with its terms.</p><p><span class='org-policy-compliance></span></p><p><span class='org-policy-coverage'></span></p>"
+    info: "<p>Scholarly research articles covered by <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a> and compliant with its terms.</p><p><span class='org-policy-compliance'></span></p><p><span class='org-policy-coverage'></span></p>"
   },
   "is_compliant_all_works": {
     label: "Compliant with <span class='uppercase'>OA</span> policy",
@@ -496,12 +496,12 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   },
   "compliant": {
     label: "Compliant",
-    info: "Publications that comply with the requirements of the Open Access policy and are covered by the policy.",
+    info: "Publications that comply with the requirements of the Open Access policy and are covered by the policy. <span class='org-policy-compliance'></span>",
     details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex."
   },
   "compliant_and_covered_by_policy": {
     label: "Compliant (all)",
-    info: "All publications that comply with the requirements of the Open Access policy, even if they are not covered by said policy.",
+    info: "All publications that comply with the requirements of the Open Access policy, even if they are not covered by said policy. <p><span class='org-policy-compliance'></span></p>",
     details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex."
   },
   "covered_by_policy": {
