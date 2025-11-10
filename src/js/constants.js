@@ -756,7 +756,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
       <p>Source: OpenAlex</p>"
   },
   "is_oa": {
-    label: "Open Access?",
+    label: "Free-to-read?",
     info: ""
   },
   "issn": {
@@ -1013,7 +1013,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "is_preprint": {
     label: "Preprint?",
-    info: "<p class='mb-2'>Data type: <strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article is found on a preprint server.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
+    info: "<p class='mb-2'>Data type: <strong>Boolean</strong> <br><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the publication is a preprint.</p><p>Source: OA.Works <br>Updated: weekly (premium)</p>"
   },
   "oasupport.status": {
     label: "OA.Support status",
