@@ -496,7 +496,7 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   },
   "compliant": {
     label: "Compliant",
-    info: "Publications that comply with the requirements of the Open Access policy and are covered by the policy. <p><span class='org-policy-compliance'></span></p>",
+    info: "Publications that comply with the requirements of the Open Access policy and are covered by the policy. <span class='org-policy-compliance'></span>",
     details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex."
   },
   "compliant_and_covered_by_policy": {
