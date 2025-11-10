@@ -169,6 +169,12 @@ export const INSIGHTS_CARDS = [
     denominator: "has_code",
     denominatorText: "articles with code",
     info: "<p class='mb-2'>The percentage of articles that shared any code under a permissive open-source licence, such as MIT.</p> <p class='mb-2'>This figure measures how many articles shared Open Code if they generated code in the first place. It also only measures if <strong>any parts</strong> of the code generated are open, not if <strong>all</strong> of it is open.</p> <p> We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>"
+  },
+  {
+    numerator: "is_compliant_publication",
+    denominator: "is_covered_by_policy",
+    denominatorText: "unique publications covered by policy",
+    info: `<p class='mb-2'>The percentage of unique publications covered by <a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
   }
 ];
 
