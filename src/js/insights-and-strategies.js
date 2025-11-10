@@ -39,6 +39,11 @@ export function initInsightsAndStrategies(org) {
   orgDataPromise.then(function (response) {
     const orgData = response.data; // Storing the fetched data in a constant
 
+    // Show/hide Preprints section based on orgData
+    const showPreprints = orgData?.hits?.hits?.[0]?._source?.analysis?.is_preprint?.show_on_web === true;
+    const preprintsSection = document.getElementById('preprints-section');
+    if (preprintsSection) preprintsSection.classList.toggle('hidden', !showPreprints);
+
     /** Decrypt emails if user has an orgKey **/
     window.handleDecryptEmailClick = function(buttonElement) {
       const email = buttonElement.getAttribute('data-email');
@@ -110,6 +115,9 @@ export function initInsightsAndStrategies(org) {
       const shown     = analysisEntry.show_on_web,
             contentID = numerator,
             cardContents = document.getElementById(contentID);
+      
+      // Exit if the card element is not found
+      if (!cardContents) return; 
 
       if (shown === true) {
         // Locate placeholders
