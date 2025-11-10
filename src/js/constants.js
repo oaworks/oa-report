@@ -135,6 +135,12 @@ export const INSIGHTS_CARDS = [
     info: `<p class='mb-2'>The percentage of preprints covered by <a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
   },
   {
+    numerator: "is_compliant_article",
+    denominator: "article",
+    denominatorText: "articles covered by policy",
+    info: `<p class='mb-2'>The percentage of articles covered by <a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
+  },
+  {
     numerator: "is_oa",
     denominator: "is_paper",
     denominatorText: "articles",
