@@ -161,7 +161,7 @@ permalink: "{{ org._source.objectID | slug }}/"
     </article>
 
     {# PREPRINT INSIGHTS — SEPARATED FOR GATES ONLY #}
-    {% if org._source.objectID === "gates-foundation" %}
+    {% if org._source.objectID == "gates-foundation" and org._source.analysis.is_preprint.show_on_web == true %}
     <article class="mt-12">
       <h3 class="mb-2 text-2xl">Preprints</h3> 
       <div class="grid gap-6 grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6" id="insights_preprints">

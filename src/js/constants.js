@@ -102,7 +102,7 @@ export const INSIGHTS_CARDS = [
     numerator: "is_preprint",
     denominator: null,
     denominatorText: "preprints",
-    info: "<p>Preprints are early versions of research articles that have not yet been peer-reviewed.</p>"
+    info: "<p>The total number of preprints published by grantees or authors at your organization.</p>"
   },
   {
     numerator: "is_free_to_read",
@@ -1078,6 +1078,10 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   "version": {
     label: "Version",
     info: "<p class='mb-2'>Data type: <strong>String</strong> <br>Version of the article that can be self-archived in a repository. Values are based on the <a href='https://wiki.surfnet.nl/display/DRIVERguidelines/DRIVER-VERSION+Mappings' target='_blank' class='underline underline-offset-1 md:underline-offset-4 decoration-1'>DRIVER Guidelines versioning scheme</a>.</p><p>Source: <a href='https://shareyourpaper.org/permissions' target='_blank' class='underline underline-offset-1 md:underline-offset-4 decoration-1'>ShareYourPaper Permissions</a> <br>Updated: daily (premium), occasionally (free)</p>"
+  },
+  "host_venue.display_name": {
+    label: "Preprint server",
+    info: ""
   }
 }
 
