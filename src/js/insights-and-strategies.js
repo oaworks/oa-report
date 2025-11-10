@@ -41,7 +41,7 @@ export function initInsightsAndStrategies(org) {
 
     // Show/hide Preprints section based on orgData
     const showPreprints = orgData?.hits?.hits?.[0]?._source?.analysis?.is_preprint?.show_on_web === true;
-    const preprintsSection = document.getElementById('preprints-section');
+    const preprintsSection = document.getElementById('insights_preprints');
     if (preprintsSection) preprintsSection.classList.toggle('hidden', !showPreprints);
 
     /** Decrypt emails if user has an orgKey **/
