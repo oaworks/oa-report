@@ -102,7 +102,7 @@ export const INSIGHTS_CARDS = [
     numerator: "is_preprint",
     denominator: null,
     denominatorText: "preprints",
-    info: "<p>Preprints are early versions of research articles that have not yet been peer-reviewed.</p>"
+    info: "<p>The total number of preprints published by grantees or authors at your organization.</p>"
   },
   {
     numerator: "is_free_to_read",
