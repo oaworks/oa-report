@@ -1078,6 +1078,10 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   "version": {
     label: "Version",
     info: "<p class='mb-2'>Data type: <strong>String</strong> <br>Version of the article that can be self-archived in a repository. Values are based on the <a href='https://wiki.surfnet.nl/display/DRIVERguidelines/DRIVER-VERSION+Mappings' target='_blank' class='underline underline-offset-1 md:underline-offset-4 decoration-1'>DRIVER Guidelines versioning scheme</a>.</p><p>Source: <a href='https://shareyourpaper.org/permissions' target='_blank' class='underline underline-offset-1 md:underline-offset-4 decoration-1'>ShareYourPaper Permissions</a> <br>Updated: daily (premium), occasionally (free)</p>"
+  },
+  "supplements.host_venue_display_name": {
+    label: "Preprint server",
+    info: ""
   }
 }
 
