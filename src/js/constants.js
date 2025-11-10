@@ -326,7 +326,7 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "is_authored": {
     label: "Authored",
-    info: "<p>Scholarly research articles authored by someone at <span class='org-name'></span>, <strong>including</strong>:</p>\
+    info: "<p>Scholarly research articles authored by someone at <span class='name'></span>, <strong>including</strong>:</p>\
     <ul class='mb-2 list-disc list-inside'>\
       <li>peer-reviewed research</li>\
       <li>reviews</li>\
@@ -342,7 +342,7 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "is_covered_by_policy": {
     label: "Covered by <span class='uppercase'>OA</span> policy",
-    info: "<p class='mb-2'>Scholarly research articles covered by <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p><p><span class='org-policy-coverage'></span></p>"
+    info: "<p class='mb-2'>Scholarly research articles covered by <span class='name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 policy-url'>Open Access policy</a>.</p><p><span class='policy-coverage'></span></p>"
   },
   "is_covered_by_current_policy": {
     label: "Covered by current <span class='uppercase'>OA</span> policy",
@@ -354,7 +354,7 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "is_compliant": {
     label: "Covered by & compliant with <span class='uppercase'>OA</span> policy",
-    info: "<p>Scholarly research articles covered by <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a> and compliant with its terms.</p><p><span class='org-policy-compliance></span></p><p><span class='org-policy-coverage'></span></p>"
+    info: "<p>Scholarly research articles covered by <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a> and compliant with its terms.</p><p><span class='org-policy-compliance'></span></p><p><span class='org-policy-coverage'></span></p>"
   },
   "is_compliant_all_works": {
     label: "Compliant with <span class='uppercase'>OA</span> policy",
