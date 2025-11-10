@@ -120,13 +120,13 @@ export const INSIGHTS_CARDS = [
     numerator: "is_compliant",
     denominator: "is_covered_by_policy",
     denominatorText: "articles covered by policy",
-    info: `<p class='mb-2'>The percentage of articles covered by <a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
+    info: `<p class='mb-2'>The percentage of articles covered by <a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p><p><span class='org-policy-compliance></span></p><p><span class='org-policy-coverage'></span></p>`
   },
   {
     numerator: "is_compliant_preprint",
     denominator: "is_covered_by_policy_preprint",
     denominatorText: "preprints covered by policy",
-    info: `<p class='mb-2'>The percentage of preprints covered by <a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
+    info: `<p class='mb-2'>The percentage of preprints covered by <a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p><p><span class='org-policy-compliance></span></p><p><span class='org-policy-coverage'></span></p>`
   },
   {
     numerator: "is_oa",
