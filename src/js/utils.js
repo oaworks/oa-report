@@ -835,7 +835,7 @@ export function updateExploreFilterHeader(filterId) {
   const text =
     filterId === 'is_paper'
       ? EXPLORE_FILTERS_LABELS[filterId].label
-      : 'articles that are ' + (EXPLORE_FILTERS_LABELS[filterId]?.label || filterId);
+      : (EXPLORE_FILTERS_LABELS[filterId]?.label || filterId);
   replaceText("explore_filter", text);
 }
 

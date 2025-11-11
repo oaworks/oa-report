@@ -343,7 +343,7 @@ export const EXPLORE_FILTERS_LABELS = {
     info: "<p>Publications that haven’t been peer-reviewed.</p>"
   },
   "is_authored": {
-    label: "Authored",
+    label: "Authored journal articles",
     info: "<p>Journal articles authored by someone at <span class='org-name'></span>, <strong>including</strong>:</p>\
     <ul class='mb-2 list-disc list-inside'>\
       <li>peer-reviewed research</li>\
@@ -430,7 +430,7 @@ export const EXPLORE_FILTERS_LABELS = {
     info: "<p class='mb-2'>Any scholarly research article that has a data availability statement. Data availability statements (i.e. “data access statement”, “resource availability statements”, “code availability statements”) tell a reader where the research data or code associated with an article is available and how they can be accessed. This doesn’t tell you what type of data availability statement is provided (e.g., there is Open Data VS there is no data).</p><p>To check if an article has a data availability statement, we use data from PubMed’s data availability filter and review articles manually.</p>"
   },
   "has_apc": {
-    label: "Paid via APC",
+    label: "APC-funded journal articles",
     info: "<p>Journal articles that had an article-processing charge (APC) paid by <span class='org-name'></span></p>"
   },
   "is_under_transitional_agreement": {
