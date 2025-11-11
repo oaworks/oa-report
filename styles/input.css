@@ -2,6 +2,59 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Default sans-serif body font, Inter */
+:root { font-family: 'Inter', sans-serif; }
+
+@supports (font-variation-settings: normal) {
+  :root { font-family: 'Inter var', sans-serif; }
+}
+
+/* Serif font used for some headings, Redaction */
+@font-face {
+  font-family: 'Redaction';
+  src: url('fonts/redaction/Redaction-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Redaction';
+  src: url('fonts/redaction/Redaction-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: bold;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Redaction';
+  src: url('fonts/redaction/Redaction-Italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Redaction 20 (Degraded) Styles */
+@font-face {
+  font-family: 'Redaction 20';
+  src: url('fonts/redaction/Redaction_20-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Redaction 20';
+  src: url('fonts/redaction/Redaction_20-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: bold;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Redaction 20';
+  src: url('fonts/redaction/Redaction_20-Italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
 /* Spinner/loader */
 @layer utilities {
   .loader {
@@ -56,17 +109,6 @@
 
 .modal-background-animate-out {
   animation: fadeOut 0.5s ease-out forwards;
-}
-
-/* Texting highlighting in the style of a marker */
-.highlight {
-  border-radius: 0.8em 0.3em;
-  background-image: linear-gradient(to right, rgba(255, 102, 102, 0.095), rgba(255, 102, 102, 0.5) 4%, rgba(255, 102, 102, 0.25));
-}
-
-.highlight--white {
-  border-radius: 0.8em 0.3em;
-  background-image: linear-gradient(to right, rgba(255,255,255, 0.095), rgba(255,255,255, 0.5) 4%, rgba(255,255,255, 0.25));
 }
 
 /* Line through text */
@@ -131,12 +173,6 @@
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
-:root { font-family: 'Inter', sans-serif; }
-
-@supports (font-variation-settings: normal) {
-  :root { font-family: 'Inter var', sans-serif; }
-}
-
 .transition-pb-0 {
   padding-bottom: 0;
   transition: padding-bottom 0.3s ease;
@@ -164,3 +200,26 @@
   );
 }
 
+/* Custom swapping text animations on homepage */
+.flip-in {
+  transition: transform 0.3s ease-out;
+  transform: rotateX(90deg);
+}
+.flip-out {
+  transition: transform 0.3s ease-in;
+  transform: rotateX(0);
+}
+
+/* Custom CSS for button hover and click animations */
+.bounce-on-hover {
+  transition: transform 0.3s ease-in-out;
+}
+.bounce-on-hover:hover {
+  transform: scale(1.05);
+}
+.click-bounce {
+  transition: transform 0.15s ease-out;
+}
+.click-bounce:active {
+  transform: scale(0.95);
+}

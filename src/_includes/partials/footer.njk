@@ -72,9 +72,34 @@
 <script type="module" src="../js/insights-and-strategies.min.js"></script>
 {% endif %}
 
-{# Only display the search tool on the homepage / index page #}
+{# Load homepage-specific JS #}
 {% if page.url == '/' %}
-<script src="../js/search.js"></script>
+<script src="../js/search.js"></script> {# Search bar #}
+
+<script src="../js/sal.js"></script> {# Scroll animations #}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    sal();
+  });
+</script>
+
+<noscript>
+  <style type="text/css">
+    [data-sal|='fade'] {
+      opacity: 1;
+    }
+
+    [data-sal|='slide'],
+    [data-sal|='zoom'] {
+      opacity: 1;
+      transform: none;
+    }
+
+    [data-sal|='flip'] {
+      transform: none;
+    }
+  </style>
+</noscript>
 {% endif %}
 
 {# Load font #}

@@ -1,0 +1,50 @@
+[
+  {
+    "org": "Research Organization Registry <br>(ROR)",
+    "heading": "Leveraging and supporting persistent identifiers",
+    "subheading": "ROR is a free, open, and sustainable registry of persistent identifiers for research organizations. OA.Report uses ROR to identify institutions and their research outputs, ensuring accurate tracking and reporting of open-access compliance.",
+    "acronym": "ROR",
+    "logo": "img/users/ror.png",
+    "width": 400,
+    "height": 67,
+    "bg": "img/case-studies/ror-cover.jpg",
+    "bg_alt": "A scientist in a lab coat pipetting a liquid into a test tube.",
+    "url": "https://ror.org/blog/2025-05-01-oareport/"
+  },
+  {
+    "org": "Howard Hughes Medical Institute <br>(HHMI)",
+    "heading": "Maximizing public access to biomedical research",
+    "subheading": "The Howard Hughes Medical Institute (HHMI) uses OA.Report to implement and measure their open-access policy, ensuring that critical health research is freely accessible. OA.Report automates compliance tracking, helping HHMI optimize the reach of its funded research.",
+    "acronym": "HHMI",
+    "logo": "img/users/hhmi.png",
+    "width": 400,
+    "height": 67,
+    "bg": "img/case-studies/hhmi-cover.jpg",
+    "bg_alt": "A scientist in a lab coat pipetting a liquid into a test tube.",
+    "url": "https://blog.oa.works/hhmi-using-oareport-to-measure-and-improve-oa-policy-compliance/"
+  },
+  {
+    "org": "Michael J. Fox Foundation",
+    "heading": "Ensuring Open Access to Parkinson’s research",
+    "subheading": "The Michael J. Fox Foundation leverages OA.Report to monitor and demonstrate compliance with its Open Access Policy. By tracking funded research and ensuring open data availability, MJFF maximizes its impact on Parkinson’s research transparency.",
+    "acronym": "MJFF",
+    "logo": "img/users/mjff.png",
+    "width": 400,
+    "height": 61,
+    "bg": "img/case-studies/mjff-cover.jpg",
+    "bg_alt": "Magnification of alpha-synuclein intraneuronal inclusions, strand-like neurites & rounded Lewy bodies of various sizes",
+    "url": "https://blog.oa.works/mjff-starts-using-oa-report-to-measure-oa-policy-compliance-demonstrate-its-impact/"
+  },
+  {
+    "org": "Wellcome Trust",
+    "heading": "Advancing global health through Open Access",
+    "subheading": "Wellcome Trust partnered with OA.Report to automate and analyze open-access compliance among its grantees. This collaboration ensures that Wellcome’s funded research outputs remain open, helping to drive global progress in health research.",
+    "acronym": "Wellcome",
+    "logo": "img/users/wellcome.png",
+    "width": 75,
+    "height": 75,
+    "bg": "img/case-studies/wellcome-cover.webp",
+    "bg_alt": "Six vials of blood in test tubes alternating purple and orange tops.",
+    "url": "https://blog.oa.works/wellcome-is-using-oa-report-to-report-oa-policy-compliance/"
+  }
+]

@@ -1,18 +1,43 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  {% if org._source.private == true %}
+  {% if org._source.private == true or page.fileSlug == 'report-unavailable' or page.fileSlug == 'report-list' %}
   <meta name="robots" content="noindex">
   {% endif %}
-  <title>{% if org._source.name %}{{ org._source.name }}{% if org._source.acronyms %} ({{ org._source.acronyms }}){% endif %} — {% endif %}OA.Report</title>
+  <title>{% if org._source.name %}{{ org._source.name }} — {% endif %}OA.Report: Unlock your research, simply</title>
+  <meta name="description" content="{% if org._source.name %}Insights and actions for Open Access and OA policies at {{ org._source.name | safe }}{% else %}Find your articles, measure their openness, and take action to increase your Open Access policy compliance{% endif %}.">
 
-  <meta name="description" content="Insights and strategies for Open Access and OA policies{% if org._source.name %} at {{ org._source.name }}{% endif %}.">
+  {# OpenGraph meta tags #}
+  {# Facebook/Meta #}
+  <meta property="og:url" content="https://oa.report">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="OA.Report: Unlock your research, simply">
+  <meta property="og:description" content="{% if org._source.name %}Insights and actions for Open Access and OA policies at {{ org._source.name | safe }}{% else %}Find your articles, measure their openness, and take action to increase your Open Access policy compliance{% endif %}.">
+  <meta property="og:image" content="https://oa.report/img/og_meta.png">
+
+  {# Twitter #}
+  <meta name="twitter:card" content="summary_large_image">
+  <meta property="twitter:domain" content="oa.report">
+  <meta property="twitter:url" content="https://oa.report">
+  <meta name="twitter:title" content="OA.Report: Unlock your research, simply">
+  <meta name="twitter:description" content="{% if org._source.name %}Insights and actions for Open Access and OA policies at {{ org._source.name | safe }}{% else %}Find your articles, measure their openness, and take action to increase your Open Access policy compliance{% endif %}.">
+  <meta name="twitter:image" content="https://oa.report/img/twitter_meta.png">
 
   {# Preconnect to the CDN for our sans-serif font #}
   <link rel="preconnect" href="https://rsms.me/">
 
+  {# Preload self-hosted font files, Redaction #}
+  <link rel="preload" href="../fonts/redaction/Redaction-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="../fonts/redaction/Redaction-Bold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="../fonts/redaction/Redaction-Italic.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+
   {# Load TailwindCSS #}
   <link rel="stylesheet" href="../tailwind.css">
+
+  {# Load homepage-specific CSS and JS for Sal.js #}
+  {% if page.url == '/' %}
+  <link rel="stylesheet" href="../sal.css">
+  {% endif %}
 
   {# Favicons #}
   <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png">
@@ -21,24 +46,6 @@
   <link rel="mask-icon" href="/favicons/safari-pinned-tab.svg" color="#ff6666">
   <meta name="msapplication-TileColor" content="#ff6666">
   <meta name="theme-color" content="#25201E">
-
-  {# OpenGraph #}
-  <meta property="og:url" content="{{ site.base_url }}{{ page.url }}">
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="{% if page.fileSlug == 'orgs-pages' %}{{ org._source.name | safe }}’s report{% else %}{{ page.title }}{% endif %}">
-  <meta property="og:image" content="{{ site.base_url }}/img/og_meta.png">
-  <meta property="og:image:alt" content="The OA.Report wordmark is shown alongside three small illustrations. Those illustrations include a simplified table displaying the status of paper, checkboxes, and a button that says unlock.">
-  <meta property="og:description" content="{{ site.description }}">
-  <meta property="og:site_name" content="{{ site.name }}">
-  <meta property="og:locale" content="en_US">
-
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:site" content="{{ site.twitter }}">
-  <meta name="twitter:url" content="{{ site.base_url }}{{ page.url }}">
-  <meta name="twitter:title" content="{% if page.fileSlug == 'orgs-pages' %}{{ org._source.name | safe }}’s report{% else %}{% endif %}">
-  <meta name="twitter:description" content="{{ site.description }}">
-  <meta name="twitter:image" content="{{ site.base_url }}/img/twitter_meta.png">
-  <meta name="twitter:image:alt" content="The OA.Report wordmark is shown alongside three small illustrations. Those illustrations include a simplified table displaying the status of paper, checkboxes, and a button that says unlock.">
 
   {# SimpleAnalytics tracking code #}
   <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
