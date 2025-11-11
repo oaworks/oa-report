@@ -469,6 +469,18 @@ export function initInsightsAndStrategies(org) {
         </button>\
       </td>"
     );
+
+    displayStrategy(
+      "email_author_unpublished_preprint_not_ccby",
+      ['title', 'journal', 'author_email_name', 'DOI'],
+      "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
+        <div class='mb-1 font-medium text-neutral-900'>${action.author_email_name}</div>\
+        <div class='mb-1 text-neutral-900'>\
+          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
+        </div>\
+        <div class='text-neutral-600'>${action.journal}</div>\
+      </td>"
+    );
     
   }).catch(error => {
     console.log(`Report ERROR: ${error}`);
