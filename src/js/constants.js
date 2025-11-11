@@ -188,15 +188,15 @@ export const EXPLORE_ITEMS_LABELS = {
     plural: "Journal articles",
     tooltip: "Explore various journal articles"
   },
-    "covered_by_policy": {
+  "covered_by_policy": {
     singular: "Work covered by policy",
     plural: "Works covered by policy",
     tooltip: "Explore various works covered by your policy"
   },
-    "unique_publication": {
+  "unique_publication": {
     singular: "Publication",
     plural: "Publications",
-    tooltip: "Explore journal articles, plus preprints without an associated peer-reviewed journal publication"
+    tooltip: "Explore unique publications, i.e., journal articles and preprints without an associated journal article"
   },
   "grant": {
     singular: "Grant",
@@ -340,7 +340,7 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "is_preprint": {
     label: "Preprints",
-    info: "<p>Scholarly research articles that haven’t been peer-reviewed.</p>"
+    info: "<p>Publications that haven’t been peer-reviewed.</p>"
   },
   "is_authored": {
     label: "Authored",
@@ -360,23 +360,23 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "is_covered_by_policy": {
     label: "Covered by <span class='uppercase'>OA</span> policy",
-    info: "<p class='mb-2'>Scholarly research articles covered by <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p><p><span class='org-policy-coverage'></span></p>"
+    info: "<p class='mb-2'>Publications covered by <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p><p><span class='org-policy-coverage'></span></p>"
   },
   "is_covered_by_current_policy": {
     label: "Covered by current <span class='uppercase'>OA</span> policy",
-    info: "<p>Scholarly research articles covered by <span class='org-name'></span>’s most recent <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p>"
+    info: "<p>Publications covered by <span class='org-name'></span>’s most recent <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p>"
   },
   "is_covered_by_old_policy": {
     label: "Covered by old <span class='uppercase'>OA</span> policy",
-    info: "<p>Scholarly research articles covered by an older <span class='org-name'></span> Open Access policy.</p>"
+    info: "<p>Publications covered by an older <span class='org-name'></span> Open Access policy.</p>"
   },
   "is_compliant": {
     label: "Covered by & compliant with <span class='uppercase'>OA</span> policy",
-    info: "<p>Scholarly research articles covered by <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a> and compliant with its terms.</p><p><span class='org-policy-compliance'></span></p><p><span class='org-policy-coverage'></span></p>"
+    info: "<p>Publications covered by <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a> and compliant with its terms.</p><p><span class='org-policy-compliance'></span></p><p><span class='org-policy-coverage'></span></p>"
   },
   "is_compliant_all_works": {
     label: "Compliant with <span class='uppercase'>OA</span> policy",
-    info: "<p>Scholarly research articles that comply with the terms of <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>, but are not necessarily covered by it.</p><p><span class='org-policy-compliance'></span></p>"
+    info: "<p>Publications that comply with the terms of <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>, but are not necessarily covered by it.</p><p><span class='org-policy-compliance'></span></p>"
   },
     "is_not_compliant": {
     label: "Not compliant with <span class='uppercase'>OA</span> policy",
@@ -398,7 +398,7 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "with_grant_id": {
     label: "With grant <span class='uppercase'>ID</span>",
-    info: "<p>Scholarly research articles with a grant ID from <span class='org-name'></span>, <strong>including</strong>:</p>\
+    info: "<p>Publications with a grant ID from <span class='org-name'></span>, <strong>including</strong>:</p>\
     <ul class='mb-2 list-disc list-inside'>\
       <li>peer-reviewed research</li>\
       <li>reviews</li>\
@@ -438,7 +438,7 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "is_funded": {
     label: "Funded",
-    info: "<p>Scholarly research articles funded by <span class='org-name'></span>, <strong>including</strong>:</p>\
+    info: "<p>Publications funded by <span class='org-name'></span>, <strong>including</strong>:</p>\
     <ul class='mb-2 list-disc list-inside'>\
       <li>peer-reviewed research</li>\
       <li>reviews</li>\
@@ -500,7 +500,7 @@ export const EXPLORE_FILTERS_LABELS = {
   },
     "is_unique_publication": {
     label: "Unique publications",
-    info: "Journal articles, plus preprints without an associated peer-reviewed journal publication."
+    info: "Journal articles and preprints without an associated journal article."
   }
 };
 
@@ -555,8 +555,7 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
     details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref, OpenAlex, Europe PMC and manual checks (as required). If a work has the required license at any location it is considered Open Access."
   },
   "publications": {
-    label: "Publications",
-    info: "Scholarly research articles found by the current filter."
+    label: "Publications"
   },
   "total_apc_amount": {
     label: "Total APC amount",
@@ -615,15 +614,15 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   },
   "with_fundref_dois": {
     label: "With FundRef DOI<span style='text-transform: lowercase;'>s</span>",
-    info: "Scholarly research articles that have at least one ORCID in their Crossref metadata."
+    info: "Publications that have at least one ORCID in their Crossref metadata."
   },
   "with_grant_dois": {
     label: "With grant DOI<span style='text-transform: lowercase;'>s</span>",
-    info: "Scholarly research articles that have at least one grant DOI in their Crossref metadata."
+    info: "Publications that have at least one grant DOI in their Crossref metadata."
   },
   "with_grant_id": {
     label: "With grant ID<span style='text-transform: lowercase;'>s</span>",
-    info: "Scholarly research articles with a grant ID from <span class='org-name'></span> found by OA.Works.",
+    info: "Publications with a grant ID from <span class='org-name'></span> found by OA.Works.",
     details: "We found and normalized data from Crossref to find data provided by the publisher. Where this wasn't possible, we manually collected the funding statement. The grant ID was then extracted and normalized using a mix of automated tools and manual review."
   },
   "with_open_data": {
@@ -640,7 +639,7 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   },
   "with_orcids": {
     label: "With ORC<span style='text-transform: lowercase;'>i</span>D<span style='text-transform: lowercase;'>s</span>",
-    info: "Scholarly research articles that have at least one ORCID in their OpenAlex metadata."
+    info: "Publications that have at least one ORCID in their OpenAlex metadata."
   },
   "with_preprint": {
     label: "With preprint",
@@ -654,7 +653,7 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   },
   "with_rors": {
     label: "With ROR<span style='text-transform: lowercase;'>s</span>",
-    info: "Scholarly research articles that have at least one ROR ID in their OpenAlex metadata."
+    info: "Publications that have at least one ROR ID in their OpenAlex metadata."
   },
   "with_shared_data": {
     label: "With shared data"
@@ -977,19 +976,19 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "is_compliant_with_current_policy": {
     label: "Compliant with current <span class='uppercase'>OA</span> policy",
-    info: "<p>Scholarly research articles compliant with <span class='org-name'></span>’s most recent <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p>"
+    info: "<p>Publications compliant with <span class='org-name'></span>’s most recent <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p>"
   },
   "is_compliant_with_old_policy": {
     label: "Compliant with old <span class='uppercase'>OA</span> policy",
-    info: "<p>Scholarly research articles compliant with an older <span class='org-name'></span> Open Access policy.</p>"
+    info: "<p>Publications compliant with an older <span class='org-name'></span> Open Access policy.</p>"
   },
   "is_covered_by_current_policy": {
     label: "Covered by current <span class='uppercase'>OA</span> policy",
-    info: "<p>Scholarly research articles covered by <span class='org-name'></span>’s most recent <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p>"
+    info: "<p>Publications covered by <span class='org-name'></span>’s most recent <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p>"
   },
   "is_covered_by_old_policy": {
     label: "Covered by old <span class='uppercase'>OA</span> policy",
-    info: "<p>Scholarly research articles covered by an older <span class='org-name'></span> Open Access policy.</p>"
+    info: "<p>Publications covered by an older <span class='org-name'></span> Open Access policy.</p>"
   },
   "is_covered_by_policy": {
     label: "Covered by <span class='uppercase'>OA</span> policy",
