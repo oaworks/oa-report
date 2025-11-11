@@ -472,13 +472,26 @@ export function initInsightsAndStrategies(org) {
 
     displayStrategy(
       "email_author_unpublished_preprint_not_ccby",
-      ['title', 'journal', 'author_email_name', 'DOI'],
+      ['published_date', 'title', 'journal', 'author_email_name', 'email', 'DOI', 'mailto'],
       "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 font-medium text-neutral-900'>${action.author_email_name}</div>\
-        <div class='mb-1 text-neutral-900'>\
+        <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
+        <div class='mb-1 font-medium text-neutral-900 hover:text-carnation-500'>\
           <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
         </div>\
         <div class='text-neutral-600'>${action.journal}</div>\
+      </td>\
+      <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
+        <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
+      </td>\
+      <td class='hidden px-3 py-4 text-sm text-center text-neutral-600 align-top break-words sm:table-cell'>\
+        <button \
+          class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
+          data-email='${action.email}'\
+          data-doi='${action.DOI}'\
+          data-mailto='${action.mailto}'\
+          onclick='handleDecryptEmailClick(this)'>\
+          <svg class='h-4 w-4' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-mail inline-block h-4 duration-500'><path d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'></path><polyline points='22,6 12,13 2,6'></polyline></svg>\
+        </button>\
       </td>"
     );
     
