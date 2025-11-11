@@ -840,7 +840,7 @@ export function updateExploreFilterHeader(filterId) {
 }
 
 /**
- * Resets the <footer> bar-chart area of an Insights card back to its default state.
+ * Resets the <footer> js_bar_chart area of an Insights card back to its default state.
  * Undoes any "Data unavailable" content and styling applied by showUnavailableCard().
  *
  * @param {HTMLElement} cardContents - The <article> element representing the insight card.
@@ -865,11 +865,11 @@ export function resetBarChart(cardContents) {
     'justify-center'
   );
   
-  // Ensure one <footer.bar-chart> exists
-  let footerEl = cardContents.querySelector('footer.bar-chart');
+  // Ensure one <footer.js_bar_chart> exists
+  let footerEl = cardContents.querySelector('footer.js_bar_chart');
   if (!footerEl) {
     footerEl = document.createElement('footer');
-    footerEl.className = 'bar-chart w-full mt-4';
+    footerEl.className = 'js_bar_chart w-full mt-4';
     cardContents.appendChild(footerEl);
   }
   // If it was in "unavailable" mode, restore for drawing bars
@@ -924,7 +924,7 @@ export function showUnavailableCard(cardContents) {
   );
 
   // Clear or replace the bar chart area with "Data unavailable"
-  const footerEl = cardContents.querySelector('footer.bar-chart');
+  const footerEl = cardContents.querySelector('footer.js_bar_chart');
   if (footerEl) {
     footerEl.classList.remove('h-3', 'bg-carnation-800', 'rounded-full');
     footerEl.setAttribute('data-unavailable', 'true');
@@ -937,7 +937,7 @@ export function showUnavailableCard(cardContents) {
 }
 
 /**
- * Render a bar (or two stacked bars) in the .bar-chart footer,
+ * Render a bar (or two stacked bars) in the .js_bar_chart footer,
  * depending on whether the denominator is the full set of publications
  * or just a subset.
  *
@@ -955,7 +955,7 @@ export function setBarChart(
   totalArticlesCount
 ) {
   if (!cardEl) return;
-  const barContainer = cardEl.querySelector('.bar-chart');
+  const barContainer = cardEl.querySelector('.js_bar_chart');
   if (!barContainer) return;
 
   // Clear any existing bar(s)
