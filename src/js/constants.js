@@ -96,7 +96,7 @@ export const INSIGHTS_CARDS = [
     numerator: "is_paper",
     denominator: null,
     denominatorText: "articles",
-    info: "<p>The total number of peer-reviewed articles published by grantees or authors at your organization in journals.</p>"
+    info: "<p>The total number of journal articles published by grantees or authors at your organization.</p>"
   },
   {
     numerator: "is_preprint",
