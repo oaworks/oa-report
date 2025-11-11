@@ -104,7 +104,7 @@ permalink: "{{ org._source.objectID | slug }}/"
     </header>
 
     {# ARTICLE INSIGHTS #}
-    <article>
+    <article id="insights_articles">
       <h3 class="mb-2 text-2xl{% if org._source.objectID != 'gates-foundation' %} sr-only{% endif %}">Articles</h3> 
       <div class="grid gap-6 grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6" id="insights_articles">
         {{ component("card", {
@@ -195,7 +195,7 @@ permalink: "{{ org._source.objectID | slug }}/"
     </article>
 
     {# UNIQUE PUBLICATIONS INSIGHTS #}
-    <article class="mt-12">
+    <article class="mt-12" id="insights_unique_publications">
       <h3 class="mb-2 text-2xl">Unique publications</h3> 
       <div class="grid gap-6 grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6" id="insights_unique_publications">
         {{ component("card", {
