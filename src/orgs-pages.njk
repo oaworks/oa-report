@@ -7,42 +7,56 @@ pagination:
 permalink: "{{ org._source.url_slug }}/"
 ---
 
-{%- from "system/component.njk" import component -%}
+{%- from "system/component.njk" import component with context -%}
 
 <main>
   <div class="px-3 md:px-6">
-    <div class="grid grid-cols-2 gap-3 sm:gap-6 md:gap-12 py-3 xl:pb-6 xl:pt-12">
-      <header class="col-span-2 md:col-span-1">
+    <div class="grid grid-cols-2 md:grid-cols-12 gap-3 sm:gap-6 md:gap-12 py-3 xl:pb-6 xl:pt-12">
+      <header class="col-span-2 md:col-span-8">
         <h1 class="flex items-center">
-          <div class="text-2xl md:text-4xl">
-            {% if org._source.paid == true %}
+          <div class="text-xl md:text-3xl font-serif">
+            {% if org._source.paid %}
               {{ component("tooltip", {
                 msg: "<p>This OA.Report uses <a href='https://about.oa.report/docs/sources' target='_blank' class='underline underline-offset-4 decoration-1'>all our data sources</a> and state-of-the-art analysis to provide insights into their publications, impact, and how open their research is.</p>",
-                text: "<span class='highlight-carnation-500 font-serif'>" + org._source.name + "</span><div class='mt-2 text-lg'><span class='report_readable_start_date'></span> — <span class='report_readable_end_date'></span></div>"
+                text: "<span class='highlight-carnation-500'>" + org._source.name + "</span><span class='block md:inline text-neutral-700'><span class='md:ml-3 report_readable_start_date'></span> — <span class='report_readable_end_date'></span></span>"
               }) }}
             {% else %}
               {{ component("tooltip", {
                 msg: "<p>This OA.Report uses <a href='https://about.oa.report/docs/sources#open-sources' target='_blank' class='underline underline-offset-4 decoration-1'>open data</a> and automated analysis to provide insights into their publication volume and how open their research is.</p>",
-                text: "<span class='highlight-carnation-500 font-serif'>" + org._source.name + "</span><div class='mt-2 text-lg'><span class='report_readable_start_date'></span> — <span class='report_readable_end_date'></span></div>"
+                text: "<span class='highlight-carnation-500 font-serif'>" + org._source.name + "</span><div class='mt-2 text-neutral-700'><span class='report_readable_start_date'></span> — <span class='report_readable_end_date'></span></div>"
               }) }}
             {% endif %}
           </div>
-          <span class="ml-6 lg:h-14 lg:w-14 rounded-full bg-carnation-500"></span>
         </h1>
       </header>
+
       {# Free reports’ prompt to sign up #}
       {% if org._source.paid == false %}
-        <section class="col-span-2 md:col-span-1 p-8 pb-5 rounded-md bg-carnation-100 text-neutral-800 text-xs md:text-sm" id="about-free-logged-out">
+        <section class="col-span-2 md:col-span-4 p-3 rounded-md bg-carnation-100 text-neutral-800 text-xs md:text-sm" id="about-free-logged-out">
           <h2 class="mb-2 font-semibold uppercase">
-              Sign up to access your institution’s OA.Report for free
-            </h2>
-            <p class="mb-4">
-              Consider a <a href="https://about.oa.report/pricing" target="_blank" class="underline underline-offset-4 decoration-1">paid plan</a> to help <a href="https://about.oa.report/docs/sources" target="_blank" class="underline underline-offset-4 decoration-1">discover all your papers</a> and provide up-to-date, deep insights into the state of open at your institution.
-            </p>
-            <div class="md:flex">
-              {% include 'partials/signup-form.njk' %}
-            </div>
+            Sign up to access your institution’s OA.Report for free
+          </h2>
+          <p class="mb-4">
+            Consider a <a href="https://about.oa.report/pricing" target="_blank" class="underline underline-offset-4 decoration-1">paid plan</a> to help <a href="https://about.oa.report/docs/sources" target="_blank" class="underline underline-offset-4 decoration-1">discover all your papers</a> and provide up-to-date, deep insights into the state of open at your institution.
+          </p>
+          <div class="md:flex">
+            {% include 'partials/signup-form.njk' %}
+          </div>
         </section>
+      {% else %}
+        {# Temp UI for query filters. See https://github.com/oaworks/discussion/issues/3591 #}
+        <div class="col-span-2 md:col-span-4 p-3 rounded-md bg-carnation-100 text-neutral-800 text-xs md:text-sm">
+          <h2>
+            Filters active
+            {{ component("tooltip", {
+              sup: true,
+              msg: "This is an experimental feature, which we are working on integrating to OA.Report. If you have any feedback, please <a href='mailto:joe@oa.works?subject=OA.Report feedback' class='underline underline-offset-2 decoration-1'>get in touch by email</a>.",
+              text: "Beta",
+              theme: "tooltip-black"
+            }) }}
+          </h1>
+          <div id="js-active-filters"></div>
+        </div>
       {% endif %}
     </div>
   </div>
@@ -67,46 +81,61 @@ permalink: "{{ org._source.url_slug }}/"
   {% endif %}
 
   {# INSIGHTS #}
-  <section class="bg-neutral-900 text-white scroll-mt-32 js_section" id="insights">
-    <div class="p-3 md:px-6 md:py-16">
-      <header class="col-span-3">
-        <h2 class="mb-4 text-base md:text-lg leading-6">
-          <span class="font-semibold uppercase text-sm md:text-base line-thru">
-            <span class="bg-neutral-900">
-              Insights on <strong class="font-bold">articles</strong>
-              {{ component("tooltip", {
-                sup: true,
-                msg: "The <em>Insights</em> section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/developers/infrastructure/' target='_blank' class='underline underline-offset-2 decoration-1'>infrastructure page</a>."
-              }) }}
-            </span>
-          </span>
-        </h2>
-      </header>
+  <section class="p-3 md:px-6 md:py-16 bg-neutral-900 text-white scroll-mt-32 js_section" id="insights">
 
-      <div class="relative">
-        <div class="hidden" id="insights_loading">
-          <div class="loader ease-linear rounded-full border-8 border-t-8 border-carnation-200 border-t-carnation-500 h-12 w-12 absolute mt-6 mx-auto inset-x-0 z-10 bg-opacity-50 justify-center items-center"></div>
-        </div>
+    {# Loading spinning icon #}
+    <div class="relative">
+      <div class="hidden" id="insights_loading">
+        <div class="loader ease-linear rounded-full border-8 border-t-8 border-carnation-200 border-t-carnation-500 h-12 w-12 absolute mt-6 mx-auto inset-x-0 z-10 bg-opacity-50 justify-center items-center"></div>
       </div>
+    </div>
+    <header class="col-span-3">
+      <h2 class="mb-4 text-base md:text-lg leading-6">
+        <span class="font-semibold uppercase text-sm md:text-base line-thru">
+          <span class="bg-neutral-900">
+            Insights
+            {{ component("tooltip", {
+              sup: true,
+              msg: "The <em>Insights</em> section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/developers/infrastructure/' target='_blank' class='underline underline-offset-2 decoration-1'>infrastructure page</a>."
+            }) }}
+          </span>
+        </span>
+      </h2>
+    </header>
 
-      <div class="grid gap-3 md:gap-6 grid-cols-2 md:grid-cols-4 lg:grid-cols-none lg:grid-flow-col xl:auto-cols-fr">
+    {# ARTICLE INSIGHTS #}
+    <article id="insights_articles">
+      <h3 class="mb-2 text-2xl{% if org._source.objectID != 'gates-foundation' %} sr-only{% endif %}">Articles</h3> 
+      <div class="grid gap-6 grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6" id="insights_articles">
         {{ component("card", {
           id: "is_paper",
-          title: "Total publications",
+          title: "Total journal articles",
           icon: "file-text"
         }) }}
 
+        {# Hide for Gates only since it’s displayed in a separate section #}
+        {% if org._source.objectID != "gates-foundation" %}
         {{ component("card", {
           id: "is_preprint",
           title: "Preprint",
           icon: "edit"
         }) }}
+        {% endif %}
 
         {{ component("card", {
           id: "is_free_to_read",
           title: "Free-to-read",
           icon: "gift"
         }) }}
+
+        {# Article-specific compliance displayed for Gates only #}
+        {% if org._source.objectID == "gates-foundation" %}
+        {{ component("card", {
+          id: "is_compliant_article", 
+          title: "OA policy-compliant",
+          icon: "check-circle"
+        }) }}
+        {% endif %}
 
         {{ component("card", {
           id: "is_compliant",
@@ -138,15 +167,52 @@ permalink: "{{ org._source.url_slug }}/"
           icon: "code"
         }) }}
       </div>
+    </article>
 
-      {# <div class="sticky bottom-3 md:bottom-6 md:static mt-6 col-span-3 shadow-lg" id="insights_bar_container">
-        <div class="bg-carnation-100 h-10 relative transition-all duration-1000" id="insights_bar">
-          <span class="absolute inset-0 flex items-center justify-center text-neutral-800 text-xs md:text-sm font-semibold uppercase z-10 p-1" id="insights_text">Click on an Insight to visualise it</span>
-          <div class="bg-carnation-300 h-10 transition-all duration-1000 absolute top-0 left-0" style="width: 0%;" id="insights_superset"></div>
-          <div class="bg-carnation-500 h-10 transition-all duration-1000 absolute top-0 left-0" style="width: 0%;" id="insights_subset"></div>
-        </div>
-      </div> #}
-    </div>
+    {# PREPRINT INSIGHTS — SEPARATED FOR GATES ONLY #}
+    {% if org._source.objectID == "gates-foundation" %}
+    <article class="mt-12" id="insights_preprints">
+      <h3 class="mb-2 text-2xl">Preprints</h3> 
+      <div class="grid gap-6 grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6">
+        {{ component("card", {
+          id: "is_preprint",
+          title: "Total preprints",
+          icon: "file-plus"
+        }) }}
+
+        {{ component("card", {
+          id: "is_compliant_preprint",
+          title: "OA policy-compliant",
+          icon: "check-circle"
+        }) }}
+
+        {{ component("card", {
+          id: "has_data_availability_statement_preprint",
+          title: "With data availability statements",
+          icon: "search"
+        }) }}
+      </div>
+    </article>
+
+    {# UNIQUE PUBLICATIONS INSIGHTS #}
+    <article class="mt-12" id="insights_unique_publications">
+      <h3 class="mb-2 text-2xl">Unique publications</h3> 
+      <div class="grid gap-6 grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6" id="insights_unique_publications">
+        {{ component("card", {
+          id: "is_unique_publication", 
+          title: "Total unique publications",
+          icon: "file-plus"
+        }) }}
+
+        {{ component("card", {
+          id: "is_compliant_publication",
+          title: "OA policy-compliant",
+          icon: "check-circle"
+        }) }}
+
+      </div>
+    </article>
+    {% endif %}
   </section>
 
   {# EXPLORE #}
@@ -314,7 +380,7 @@ permalink: "{{ org._source.url_slug }}/"
           
 
           <nav class="hidden sm:block mt-6 mb-10">
-            <ul class="flex flex-wrap space-r-4 space-b-4 items-center" role="tablist" aria-label="Actions Tabs">
+            <ul class="flex flex-wrap space-r-4 space-b-4 items-center" role="tablist" aria-label="Actions Tabs" id="actions_buttons">
               {{ component("strategy-pill", {
                 id: "email_author_vor",
                 txt: "Deposit publisher PDFs",

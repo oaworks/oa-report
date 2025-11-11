@@ -7,10 +7,11 @@
 // Imports
 // =================================================
 
-import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, makeNumberReadable, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeArrayDuplicates, updateExploreFilterHeader } from "./utils.js";
+import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, normaliseFieldId } from "./utils.js";
 import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
-import { orgDataPromise } from './insights-and-strategies.js';
+import { awaitDateRange } from './report-date-manager.js';
+import { orgDataPromise, initInsightsAndStrategies } from './insights-and-strategies.js';
 import { getAggregatedDataQuery } from './aggregated-data-query.js';
 
 // =================================================
@@ -19,17 +20,17 @@ import { getAggregatedDataQuery } from './aggregated-data-query.js';
 
 const exportSort = "&sort=openalex.publication_date:desc";
 
-let orgKey = "",
-    loggedIn = false,
-    hasOrgKey = Object.keys(OAKEYS).length !== 0;
+let orgKey = "";
+let loggedIn = false;
+const hasOrgKey = typeof window.OAKEYS === 'object' && Object.keys(window.OAKEYS || {}).length !== 0;
+
 if (hasOrgKey) {
   // logged in
-  orgKey = `&orgkey=${Object.values(OAKEYS)}`;
+  orgKey = `&orgkey=${Object.values(window.OAKEYS)[0] ?? ''}`;
   loggedIn = true;
 } else {
   // logged out
   loggedIn = false;
-  //displayNone("explore");
 }
 
 /**
@@ -88,6 +89,12 @@ export let currentActiveExploreItemSize = 10;
  */
 export let currentActiveDataDisplayToggle = true;
 
+/** 
+ * Map of explore button id -> its data object, used to render without synthesising a click.
+ * @type {Map<string, Object>}
+ */
+let exploreItemDataById = new Map();
+
 /**
  * Tracks currently selected row keys for use in enableExploreRowHighlighting.
  * @global
@@ -119,10 +126,10 @@ export async function initDataExplore(org) {
     // Check if explore data exists and is not empty
     if (orgData.hits.hits.length > 0 && orgData.hits.hits[0]._source.explore && orgData.hits.hits[0]._source.explore.length > 0) {
       addExploreButtonsToDOM(orgData.hits.hits[0]._source.explore);
+      renderActiveFiltersBanner();
       addRecordsShownSelectToDOM();
       handleDataDisplayToggle();
       enableExploreRowHighlighting();
-      displayDefaultArticlesData();
       copyToClipboard('explore_copy_clipboard', 'explore_table');
     } else {
       displayNone("explore"); // Hide the explore section if no data is available
@@ -148,7 +155,7 @@ async function addExploreButtonsToDOM(exploreData) {
   let featuredButtonsCount = 6; // Count of featured buttons
   const seeMoreButton = document.getElementById('explore_see_more_button');
 
-  // Filter exploreData if not logged in
+  // Only show 'articles' Explore list when logged out
   if (!loggedIn) {
     exploreData = exploreData.filter(item => item.id === 'articles');
   }
@@ -194,13 +201,44 @@ async function addExploreButtonsToDOM(exploreData) {
     });
   }
 
-  // Handle breakdown after adding explore buttons
+  // Ensure one Explore item is activated (URL breakdown if present, else fallback)
+  await applyURLSelectionsOrDefault();
+}
+
+/**
+ * Applies URL-driven breakdown or renders the first Explore item without
+ * mutating the URL when no breakdown parameter is present.
+ * 
+ * Render the default in-place without synthesising a button click. 
+ * Only explicit user clicks should update the URL.
+ */
+async function applyURLSelectionsOrDefault() {
+  try {
+    await awaitDateRange(3000);
+  } catch (_) {
+    // Continue; still render something
+  }
+
   const params = getAllURLParams();
   const breakdown = params.breakdown;
+
   if (breakdown) {
-    const exploreButton = document.getElementById(`explore_${breakdown}_button`);
-    if (exploreButton) {
-      exploreButton.click();
+    // Honour the user/bookmarked URL
+    const preferredBtn = document.getElementById(`explore_${breakdown}_button`);
+    preferredBtn?.click();
+    return;
+  }
+
+  // No breakdown in URL: render the first button's dataset WITHOUT changing the URL
+  const fallbackBtn = document.querySelector('[id^="explore_"][id$="_button"]');
+  if (fallbackBtn) {
+    const data = exploreItemDataById.get(fallbackBtn.id);
+    if (data) {
+      // Do NOT call updateURLParams here; render directly
+      await processExploreDataTable(fallbackBtn, data);
+    } else {
+      // If for any reason the registry isn't populated yet, fall back gracefully
+      fallbackBtn.click(); // last-resort behaviour
     }
   }
 }
@@ -223,6 +261,9 @@ function createExploreButton(exploreDataItem) {
     updateURLParams({ 'breakdown': exploreDataItem.id });
     processExploreDataTable(button, exploreDataItem);
   }, 500));
+
+  // Register each button’s data when created
+  exploreItemDataById.set(button.id, exploreDataItem); 
 
   return button;
 }
@@ -412,14 +453,14 @@ function addRecordsShownSelectToDOM() {
 }
 
 /**
- * Handles the click event for explore items. Fetches data and updates the table 
- * based on the selected filter and display style.
- * 
+ * Fetches and displays Explore data for the selected item.
+ * Handles login state (e.g. hides CSV export for logged-out users).
+ *
  * @async
- * @param {Object} itemData - The data object of the explore item.
- * @param {string} [filter="is_paper"] - The filter to use for fetching data.
- * @param {number} [size=10] - The number of records to fetch.
- * @param {boolean} [pretty=true] - Flag to determine if data should be displayed in a pretty format.
+ * @param {Object} itemData - The Explore item’s configuration.
+ * @param {string} [filter="is_paper"] - Active filter to apply.
+ * @param {number} [size=10] - Number of records to display.
+ * @param {boolean} [pretty=true] - Whether to prettify the table output.
  */
 async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 10, pretty = true) {
   try {
@@ -429,13 +470,10 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       return;
     }
 
-    console.log('itemData', itemData);
-    const { type, id, term, sort, includes } = itemData; // Extract properties
-    // id here means the explore item ID (e.g. 'articles'), not the org ID
-
+    const { type, id, term, sort, includes } = itemData;
     document.getElementById("csv_email_msg").innerHTML = ""; // Clear any existing message in CSV download form
     const exportTable = document.getElementById('export_table');
-    exportTable.classList.remove('hidden'); 
+    exportTable.classList.remove('hidden');
 
     let query = orgData.hits.hits[0]._source.analysis[filter]?.query; // Get the query string for the selected filter
     let suffix = orgData.hits.hits[0]._source.key_suffix; // Get the suffix for the org
@@ -443,38 +481,39 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     let records = [];
 
     pretty = currentActiveDataDisplayToggle;
-    size = currentActiveExploreItemSize; 
+    size = currentActiveExploreItemSize;
 
-    // Check if query is blank or undefined
+    // Check if query is blank or undefined and abort if so
     if (!query || query.trim() === '') {
-      showNoResultsRow(10, "export_table_body", "js_export_table"); // Show "No results found."
-      toggleLoadingIndicator(false, 'explore_loading'); // Hide loading indicator
+      showNoResultsRow(10, "export_table_body", "js_export_table");
+      toggleLoadingIndicator(false, 'explore_loading');
       return;
     }
 
+    // Terms-based data
     if (type === "terms") {
-      query = decodeAndReplaceUrlEncodedChars(query); // Decode and replace URL-encoded characters for JSON parsing
-      records = await fetchTermBasedData(orgId, suffix, query, term, sort, size);
+      query = decodeAndReplaceUrlEncodedChars(query);
+      query = andQueryStrings(query, getDecodedUrlQuery()); // Combine with additional query strings from URL params
+      records = await fetchTermBasedData(suffix, query, term, sort, size);
       records = reorderTermRecords(records, includes);
+      records = prettifyRecords(records, pretty);
 
-      if (pretty) {
-        records = prettifyRecords(records, true);
-      } else {
-        records = prettifyRecords(records, false);
-      }
-
-      // Update the sort text in header
       replaceText("explore_sort", "publication count");
       replaceText("report_sort_adjective", "Top");
-      removeCSVExportLink(); // Remove the CSV export link
-    } else if (type === "articles") {
+      removeCSVExportLink(); // no CSV export for term-based tables
+    }
+
+    // Article-based data
+    else if (type === "articles") {
+      query = decodeAndReplaceUrlEncodedChars(query); // Decode and replace URL-encoded characters for JSON parsing
+      query = andQueryStrings(query, getDecodedUrlQuery()); // Combine with additional query strings from URL params
       records = await fetchArticleBasedData(query, includes, sort, size);
       records = reorderArticleRecords(records, includes);
 
-      // Update the sort text in header
-      replaceText("explore_sort", "published date"); 
+      replaceText("explore_sort", "published date");
       replaceText("report_sort_adjective", "Latest");
-      addCSVExportLink(); // Add the CSV export link
+
+      addCSVExportLink();
     }
 
     if (records.length > 0) {
@@ -482,39 +521,40 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       populateTableHeader(records[0], 'export_table_head', type);
       populateTableBody(records, 'export_table_body', id, type);
       
-      // Update any mentions of the explore data type with .plural version of the ID
+      // Update any mentions of the explore data type with plural version of the ID
       replaceText("explore_type", EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id));
     
       // Add functionalities to the table
       enableExploreTableScroll();
       enableTooltipsForTruncatedCells();
-    
+
       const downloadCSVForm = document.getElementById('download_csv_form');
       const exploreArticlesTableHelp = document.getElementById('explore_articles_records_shown_help');
       const exploreTermsTableHelp = document.getElementById('explore_terms_records_shown_help');
-      // Add data download link only if it's an 'articles'-type data table
+
       if (type === "articles") {
-        // addCSVExportLink(); TODO: once we can download the CSV directly from the link, use this
-        downloadCSVForm.style.display = "block" // Display download_csv_form if it's an 'articles'-type data table
-        exploreArticlesTableHelp.style.display = "block"; // Display the articles tooltip
-        exploreTermsTableHelp.style.display = "none"; // Hide the terms tooltip
-        displayNone("explore_display_style_field"); // No need for the data display style field in article tables
+        // Only show CSV form and help if logged in
+        exploreArticlesTableHelp.style.display = loggedIn ? "block" : "none";
+        exploreTermsTableHelp.style.display = "none";
+        downloadCSVForm.style.display = "block"; // Show CSV form for article-based tables
+        displayNone("explore_display_style_field");
       } else {
-        // removeCSVExportLink(); // Remove the CSV export link if there's one
-        downloadCSVForm.style.display = "none" // Hide download_csv_form if it's NOT an 'articles'-type data table
-        exploreTermsTableHelp.style.display = "block" // Show the terms tooltip
-        exploreArticlesTableHelp.style.display = "none"; // Hide the articles tooltip
-        removeDisplayStyle("explore_display_style_field"); // Display the data display style field
+        // Show display-style toggle and terms tooltip
+        exploreTermsTableHelp.style.display = "block";
+        exploreArticlesTableHelp.style.display = "none";
+        downloadCSVForm.style.display = "none"; // Hide CSV form for terms-based tables
+        removeDisplayStyle("explore_display_style_field");
       }
     } else {
-      showNoResultsRow(10, "export_table_body", "js_export_table"); // Show "No results found."
+      showNoResultsRow(10, "export_table_body", "js_export_table");
     }
 
   } catch (error) {
-    console.error('Error fetching and displaying explore data: ', error);
-    showNoResultsRow(10, "export_table_body", "js_export_table"); // Show "No results found."
+    console.error('Error fetching and displaying explore data:', error);
+    showNoResultsRow(10, "export_table_body", "js_export_table");
   } finally {
-    toggleLoadingIndicator(false, 'explore_loading'); // Ensure loading indicator is always hidden after processing
+    // Always hide loader once finished
+    toggleLoadingIndicator(false, 'explore_loading');
   }
 }
 
@@ -591,7 +631,9 @@ function formatBucket(bucket) {
  * @returns {Promise<Array>} A promise that resolves to an array of article-based records.
  */
 async function fetchArticleBasedData(query, includes, sort, size) {
-  const getDataUrl = `https://${ELEVENTY_API_ENDPOINT}.oa.works/oareport/works/?q=${dateRange}(${query})&size=${size}&include=${includes}&sort=${sort}`;
+  const qParam = encodeURIComponent(`${dateRange}(${query})`); // Encode the query with date range
+  const getDataUrl = `https://${ELEVENTY_API_ENDPOINT}.oa.works/report/works/?q=${qParam}&size=${size}&include=${includes}&sort=${sort}`;
+
   const response = await fetchGetData(getDataUrl); // No need to generate POST request
   // Check nested properties before assigning records
   if (response && response.hits && response.hits.hits) {
@@ -625,10 +667,7 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
 
   const headerRow = document.createElement('tr');
   records.forEach((key, index) => {
-    key = key.replace(/_pct$/, ""); // Remove '_pct' suffix
-    key = key.replace(/__.*/, ""); // Remove any suffixes after '__', e.g. org short name
-    key = key.replace(/supplements./g, ""); // Remove 'supplements.' prefix
-    // key = key.replace(/_/g, " "); // Replace underscores with spaces
+    key = normaliseFieldId(key);
 
     const cssClass = index === 0
       ? DATA_TABLE_HEADER_CLASSES[dataType].firstHeaderCol
@@ -663,6 +702,7 @@ function generateTooltipContent(labelData, additionalHelpText = null) {
   `;
   return tooltipHTML;
 }
+
 /**
  * Attaches a tooltip to an HTML element if tooltip content is provided.
  * Uses the Tippy.js library for tooltip functionality, applying a11y attributes.
@@ -882,6 +922,8 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
       .catch(() => {
         cell.innerHTML = `<a href="${content}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 decoration-1">${content} (Name not found)</a>`;
       });
+  } else if (content == 'US$NaN'){
+    cell.innerHTML = "N/A"; // Display NaN as the more user-friendly "N/A"
   } else if (typeof content === 'object' && content !== null) {
     // If content is an object, format its values as a list
     cell.innerHTML = `<ul>${formatObjectValuesAsList(content, true)}</ul>`;
@@ -897,6 +939,31 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
   }
 
   return cell;
+}
+
+/**
+ * Displays the default 'articles' dataset on page load.
+ * Waits for the top-level date range (and any `?q=`) before the first request.
+ *
+ * @async
+ * @returns {Promise<void>}
+ */
+async function displayDefaultArticlesData() {
+  try {
+    await awaitDateRange(); 
+
+    // Continue only if Explore config exists
+    if (orgData?.hits?.hits?.length > 0 && orgData.hits.hits[0]?._source?.explore) {
+      const exploreData  = orgData.hits.hits[0]._source.explore;
+      const articlesData = exploreData[0]; // Default to the first explore item (usually 'articles' type, but not always)
+      if (!articlesData) return;
+
+      const button = document.getElementById(`explore_${articlesData.id}_button`);
+      await processExploreDataTable(button, articlesData);
+    }
+  } catch (err) {
+    console.warn('displayDefaultArticlesData: skipped initial render:', err?.message || err);
+  }
 }
 
 // =================================================
@@ -1037,17 +1104,25 @@ function updateButtonActiveStyles(buttonId) {
  */
 async function handleRecordsShownChange(event) {
   const newSize = event.target.value;
-  currentActiveExploreItemSize = newSize; // Update the currently active explore item sizes
-  toggleLoadingIndicator(true, 'explore_loading'); // Show loading indicator
+  currentActiveExploreItemSize = newSize;
 
+  // No active Explore item yet? Defer gracefully.
+  if (!currentActiveExploreItemData) {
+    return;
+  }
+
+  toggleLoadingIndicator(true, 'explore_loading');
   try {
-    await fetchAndDisplayExploreData(currentActiveExploreItemData, currentActiveExploreItemQuery, currentActiveExploreItemSize);
+    await fetchAndDisplayExploreData(
+      currentActiveExploreItemData,
+      currentActiveExploreItemQuery,
+      currentActiveExploreItemSize
+    );
     updateURLParams({ records: newSize });
   } catch (error) {
     console.error('Error updating records shown: ', error);
   }
-
-  toggleLoadingIndicator(false, 'explore_loading'); // Hide loading indicator
+  toggleLoadingIndicator(false, 'explore_loading');
 }
 
 /**
@@ -1136,7 +1211,7 @@ async function generateCSVLinkHref() {
 
   removeCSVExportLink(); // Remove CSV export link when this function is called
 
-  let query = `q=${encodeURIComponent(isPaperURL)}`;
+  let query = `q=${buildEncodedQueryWithUrlFilter(isPaperURL)}`
 
   let include;
   if (hasCustomExportIncludes) {
@@ -1181,9 +1256,9 @@ window.getExportLink = function() {
     let activeItem = orgData.hits.hits[0]._source.explore.find(item => item.id === currentId);
     let hasCustomExportIncludes = activeItem ? activeItem.includes : "";
 
-    let queryURL = (dateRange + orgData.hits.hits[0]._source.analysis[currentActiveExploreItemQuery].query);
-    let query = `q=${queryURL.replaceAll(" ", "%20")}`,
-        form = new FormData(document.getElementById("download_csv_form"));
+    let queryURL = dateRange + orgData.hits.hits[0]._source.analysis[currentActiveExploreItemQuery].query;
+    let query = `q=${buildEncodedQueryWithUrlFilter(queryURL)}`;
+    let form = new FormData(document.getElementById("download_csv_form"));
 
     var email = `&${new URLSearchParams(form).toString()}`;
 
@@ -1211,15 +1286,106 @@ window.getExportLink = function() {
 }
 
 /**
- * Function to display default 'articles' type data on page load.
+ * Parses the decoded ?q= string into [{label, value}] pairs.
+ * Uses the same normalisation as table headers for consistent labels.
+ * Falls back to raw keys if no constant label is found.
+ * 
+ * Handles parenthesised OR groups, e.g.
+ *   supplements.grantid__bmgf:("INV-1" OR "INV-2")
+ *
+ * @param {string} q
+ * @returns {{label:string,value:string}[]}
  */
-function displayDefaultArticlesData() {
-  if (orgData.hits.hits.length > 0 && orgData.hits.hits[0]._source.explore) {
-    const exploreData = orgData.hits.hits[0]._source.explore;
-    const articlesData = exploreData.find(item => item.id === 'articles');
-    if (articlesData) {
-      const button = document.getElementById(`explore_${articlesData.id}_button`);
-      processExploreDataTable(button, articlesData);
+function parseEsQueryToPairs(q) {
+  if (!q) return [];
+  const re = /([A-Za-z0-9._]+):"([^"]+)"|([A-Za-z0-9._]+):\(([^)]+)\)|([A-Za-z0-9._]+):([^\s]+)/g;
+
+  const out = [];
+  let m;
+  while ((m = re.exec(q)) !== null) {
+    const rawKey = m[1] || m[3] || m[5];
+    let rawVal   = m[2] || m[4] || m[6];
+
+    const key = normaliseFieldId(rawKey);
+
+    // Try looking for human-readable label in article → terms → items → filters
+    // Else fall back to prettified key
+    const label =
+      (EXPLORE_HEADER_ARTICLES_LABELS[key] && EXPLORE_HEADER_ARTICLES_LABELS[key].label) ||
+      (EXPLORE_HEADER_TERMS_LABELS[key] && EXPLORE_HEADER_TERMS_LABELS[key].label) ||
+      (EXPLORE_ITEMS_LABELS[key] && (EXPLORE_ITEMS_LABELS[key].label || EXPLORE_ITEMS_LABELS[key].singular)) ||
+      (EXPLORE_FILTERS_LABELS[key] && EXPLORE_FILTERS_LABELS[key].label) ||
+      key.replace(/_/g, ' ');
+
+    // If this was a parenthesised OR group, render as a comma-separated list
+    if (m[4]) {
+      // m[4] looks like: `"INV-029392" OR "INV-005210" OR "INV-010680"`
+      const parts = m[4]
+        .split(/\s+OR\s+/i)
+        .map(s => s.replace(/^"+|"+$/g, ''));
+      rawVal = parts.join(', ');
     }
+
+    const value =
+      (/country(_code)?$/i.test(key) && COUNTRY_CODES[rawVal]) ? COUNTRY_CODES[rawVal] : rawVal;
+
+    out.push({ label, value });
   }
+
+  return out;
+}
+
+
+/**
+ * Renders a small banner above Explore showing active ?q= filters as a <dl>.
+ * Hidden when no ?q=. "Clear filter" removes only q (keeps everything else).
+ */
+function renderActiveFiltersBanner() {
+  const mountId = 'js-active-filters';
+  let mount = document.getElementById(mountId);
+  if (!mount) {
+    mount = document.createElement('div');
+    mount.id = mountId;
+    mount.className = 'mb-3 text-xs md:text-sm';
+    const exploreHeader = document.getElementById('explore_buttons');
+    exploreHeader?.parentNode.insertBefore(mount, exploreHeader);
+  }
+
+  const q = getDecodedUrlQuery();
+  const pairs = parseEsQueryToPairs(q);
+
+  if (!pairs.length) {
+    mount.innerHTML = '';
+    mount.style.display = 'none';
+    mount.closest('.bg-carnation-100')?.remove(); // fully remove container when empty
+    return;
+  }
+
+  const list = pairs.map(({ label, value }) =>
+    `<div class="mr-4 mb-1">
+       <dt class="inline text-neutral-600">${label}</dt>
+       <dd class="inline ml-1 font-semibold">${value}</dd>
+     </div>`
+  ).join('');
+
+  mount.innerHTML = `
+    <div role="status" aria-live="polite" class="py-2">
+      <dl class="flex flex-wrap">${list}</dl>
+      <button id="js-clear-q" type="button" class="underline underline-offset-2 decoration-1 hover:opacity-80 mt-1">
+        Clear filter
+      </button>
+    </div>
+  `;
+  mount.style.display = '';
+
+  document.getElementById('js-clear-q')?.addEventListener('click', () => {
+    removeURLParams('q'); // keep breakdown, start/end, etc.
+    renderActiveFiltersBanner(); // refresh banner
+    initInsightsAndStrategies(org); // re-init insights & actions 
+    if (currentActiveExploreItemButton && currentActiveExploreItemData) {
+      processExploreDataTable(currentActiveExploreItemButton, currentActiveExploreItemData);
+    } else {
+      displayDefaultArticlesData();
+    }
+  });
 }

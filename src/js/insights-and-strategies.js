@@ -5,8 +5,8 @@
 // Needs to be completely refactored
 // ================================================
 
-import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader } from './utils.js';
-import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE } from './constants.js';
+import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter } from './utils.js';
+import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS } from './constants.js';
 
 // Set report org index URL’s base path
 export const orgApiUrl = `${API_BASE_URL}orgs?q=id:%22${org}%22`;
@@ -14,12 +14,13 @@ export const orgApiUrl = `${API_BASE_URL}orgs?q=id:%22${org}%22`;
 // Fetch and store organisational data in a constant
 export const orgDataPromise = axios.get(orgApiUrl);
 
-let orgKey = "",
-loggedIn = false,
-hasOrgKey = Object.keys(OAKEYS).length !== 0;
+let orgKey = "";
+let loggedIn = false;
+const hasOrgKey = typeof window.OAKEYS === 'object' && Object.keys(window.OAKEYS || {}).length !== 0;
+
 if (hasOrgKey) {
   // logged in
-  orgKey = `&orgkey=${OAKEYS[orgSlug]}`; // Use orgSlug variable to get the correct orgkey value
+  orgKey = `&orgkey=${(window.OAKEYS || {})[org] ?? ''}`;
   loggedIn = true;
   displayNone("login");
   displayNone("about-free-logged-out");
@@ -37,7 +38,12 @@ export function initInsightsAndStrategies(org) {
   
   orgDataPromise.then(function (response) {
     const orgData = response.data; // Storing the fetched data in a constant
-    
+
+    // Show/hide Preprints section based on orgData
+    const showPreprints = orgData?.hits?.hits?.[0]?._source?.analysis?.is_preprint?.show_on_web === true;
+    const preprintsSection = document.getElementById('insights_preprints');
+    if (preprintsSection) preprintsSection.classList.toggle('hidden', !showPreprints);
+
     /** Decrypt emails if user has an orgKey **/
     window.handleDecryptEmailClick = function(buttonElement) {
       const email = buttonElement.getAttribute('data-email');
@@ -77,256 +83,180 @@ export function initInsightsAndStrategies(org) {
     };
     
     /** Get Insights data and display it **/
+    // Loop through each Insight card from constants.js and call getInsight
+    INSIGHTS_CARDS.forEach((cardConfig) => {
+      if (cardConfig.info.includes("{policyUrl}")) {
+        const policyUrl = orgData.hits.hits[0]._source.policy.url;
+        cardConfig.info = cardConfig.info.replace("{policyUrl}", policyUrl);
+      }
+
+      getInsight(
+        cardConfig.numerator,
+        cardConfig.denominator,
+        cardConfig.denominatorText,
+        cardConfig.info
+      );
+    });
+
     function getInsight(numerator, denominator, denominatorText, info) {
-      var shown     = orgData.hits.hits[0]._source.analysis[numerator].show_on_web,
-      contentID = `${numerator}`; // the whole insight’s data card
+      // Check if the data for this "numerator" (i.e. Insights data card) exists in orgData
+      const analysisEntry = orgData.hits.hits[0]._source.analysis[numerator];
+
+      // If there is no analysis for this ID (placeholder card), show "Data unavailable" and stop
+      if (!analysisEntry) {
+        const placeholderCard = document.getElementById(numerator);
+        if (placeholderCard) {
+          showUnavailableCard(placeholderCard);
+        }
+        return;
+      }
+
+      // If the analysis entry does exist, proceed as usual
+      const shown     = analysisEntry.show_on_web,
+            contentID = numerator,
+            cardContents = document.getElementById(contentID);
       
+      // Exit if the card element is not found
+      if (!cardContents) return; 
+
       if (shown === true) {
-        // Select elements to show data
-        var percentageContents = document.getElementById(`percent_${numerator}`), // % value
-        articlesContents   = document.getElementById(`articles_${numerator}`), // full-text value
-        cardContents       = document.getElementById(contentID); // whole card
-        
-        // Display help text / info popover
+        // Locate placeholders
+        const percentageContents = document.getElementById(`percent_${numerator}`);
+        const articlesContents   = document.getElementById(`articles_${numerator}`);
+
+        // Create tippy tooltip
         const instance = tippy(cardContents, {
           allowHTML: true,
           interactive: true,
           placement: 'right',
           appendTo: document.body,
-          theme: 'tooltip-pink',
+          theme: 'tooltip-white'
         });
-        
-        // Set tooltip content
         instance.setContent(info);
-        
-        // Access tooltip instance and its ID; use it for aria-controls attribute
+
+        // Accessibility / tooltip IDs
         const tooltipID = instance.popper.id;
         cardContents.setAttribute('aria-controls', tooltipID);
-        cardContents.setAttribute('aria-labelledby', numerator); // Set a11y label to the insight’s ID
-        cardContents.setAttribute('title', 'More information on this metric'); // Set title 
-        
+        cardContents.setAttribute('aria-labelledby', numerator);
+        cardContents.setAttribute('title', 'More information on this metric');
+
         // Get numerator’s count query
-        let num = axios.get(countQueryPrefix + orgData.hits.hits[0]._source.analysis[numerator].query);
-        
-        // Display data in UI if both a numerator & denominator were defined
+        let numPromise = axios.get(countQueryPrefix + buildEncodedQueryWithUrlFilter(analysisEntry.query));
+
+        // If we have a denominator param
         if (numerator && denominator) {
           // Get denominator’s count query
-          let denom = axios.get(countQueryPrefix + orgData.hits.hits[0]._source.analysis[denominator].query);
-          
-          Promise.all([num, denom])
-          .then(function (results) {
-            var numeratorCount   = results[0].data,
-            denominatorCount = results[1].data;
-            
-            if (denominatorCount) {
-              articlesContents.textContent = `${makeNumberReadable(numeratorCount)} of ${makeNumberReadable(denominatorCount)} ${denominatorText}`;
-              percentageContents.textContent = `${Math.round(((numeratorCount / denominatorCount) * 100))}%`;
-            } else {
-              articlesContents.innerHTML = `<span class="invisible" aria-hidden="true">---</span>`;
-              percentageContents.textContent = "N/A";
-            };
+          let denomPromise = axios.get(
+            countQueryPrefix + buildEncodedQueryWithUrlFilter(
+              orgData.hits.hits[0]._source.analysis[denominator].query
+            )
+          );
+
+          // Pick the correct "total" key for the bar chart (articles / preprints / publications)
+          const analysis = orgData.hits.hits[0]._source.analysis;
+
+          // Pick the appropriate total for the bar background
+          let totalKey = 'is_paper';
+          if (denominator === 'is_preprint' || /_preprint$/.test(numerator) || /_preprint$/.test(denominator)) {
+            totalKey = 'is_preprint';
+          } else if (/publication/.test(numerator) || /publication/.test(denominator)) {
+            totalKey = analysis.is_unique_publication
+              ? 'is_unique_publication'
+              : analysis.is_publication
+                ? 'is_publication'
+                : 'is_paper';
           }
-        ).catch(function (error) { console.log(`error: ${error}`); });
-        
-        // Display plain number when it’s just a numerator
-      } else {
-        num.then(function (result) {
-          percentageContents.textContent = makeNumberReadable(result.data);
-        }).catch(function (error) { console.log(`${numerator} error: ${error}`); });
-      };
-      
-      // Once data has loaded, display the card
-      changeOpacity(contentID);
-      
-    } else {
-      displayNone(contentID);
-    };
-    };
 
-    getInsight(
-      "is_paper",
-      null,
-      "articles",
-      "<p>The total number of articles published by grantees or authors at your organization.</p>"
-    );
+          // Reuse the denominator request if it’s the same as the total
+          const totalArticlesPromise =
+            totalKey === denominator
+              ? denomPromise
+              : axios.get(
+                  countQueryPrefix + buildEncodedQueryWithUrlFilter(analysis[totalKey].query)
+                );
 
-    getInsight(
-      "is_preprint",
-      null,
-      "preprints",
-      "<p>Preprints are early versions of research articles that have not yet been peer-reviewed.</p>"
-    );
+          Promise.all([numPromise, denomPromise, totalArticlesPromise])
+            .then(function ([numResult, denomResult, totalArticlesResult]) {
+              const numeratorCount     = numResult.data,
+                    denominatorCount   = denomResult.data,
+                    totalArticlesCount = totalArticlesResult.data;
 
-    getInsight(
-      "is_free_to_read",
-      "is_paper",
-      "articles",
-      "<p>Articles that are free to read on the publisher website or any online repository, including temporarily accessible articles (“bronze Open Access”).</p>"
-    );
+              if (denominatorCount) {
+                // Show "X of Y" in #articles_... with some styling
+                articlesContents.innerHTML = `
+                  <span class="font-semibold text-carnation-600">${makeNumberReadable(numeratorCount)}</span>
+                  <span class="text-neutral-700">
+                    of ${makeNumberReadable(denominatorCount)} ${denominatorText}
+                  </span>
+                `;
 
-    getInsight(
-      "is_compliant",
-      "is_covered_by_policy",
-      "articles covered by policy",
-      `<p class='mb-2'>The percentage of articles covered by <a href='${orgData.hits.hits[0]._source.policy.url}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
-    );
+                // Show percentage in #percent_...
+                const pct = Math.round((numeratorCount / denominatorCount) * 100);
+                percentageContents.innerHTML = `
+                  <span class="font-extrabold">${pct}%</span>
+                `;
 
-    getInsight(
-      "is_oa",
-      "is_paper",
-      "articles",
-      "<p>The number of articles that are free and <a href='https://creativecommons.org/licenses/by/4.0/' class='underline underline-offset-2 decoration-1' target='_blank' rel='noopener'>CC BY</a> <strong class='bold'>or</strong> <a href='https://creativecommons.org/publicdomain/zero/1.0/' class='underline underline-offset-2 decoration-1' target='_blank' rel='noopener'>CC0</a> (in the public domain) on the publisher’s website, a repository or a preprint server.</p>"
-    );
+                // Clear any existing bar chart and set up new bar chart visualisation
+                resetBarChart(cardContents);
+                setBarChart(
+                  cardContents,
+                  numeratorCount,
+                  denominatorCount,
+                  denominator,
+                  totalArticlesCount
+                );
+              } else {
+                showUnavailableCard(cardContents);
+              }
+            })
+            .catch(function (error) {
+              console.log(`error: ${error}`);
+              showUnavailableCard(cardContents);
+            });
 
-    getInsight(
-      "has_data_availability_statement",
-      "has_checked_data_availability_statement",
-      "articles checked",
-      "<p class='mb-2'>This number tells you how many articles that we’ve analyzed have a data availability statement.</p> <p>To check if a paper has a data availability statement, we use data from PubMed and review articles manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data).</p>"
-    );
-  
-  getInsight(
-    "is_paper",
-    null,
-    "articles",
-    "<p>The total number of articles published by grantees or authors at your organization.</p>"
-  );
-  
-  getInsight(
-    "is_free_to_read",
-    "is_paper",
-    "articles",
-    "<p>Articles that are free to read on the publisher website or any online repository, including temporarily accessible articles (“bronze Open Access”).</p>"
-  );
-  
-  getInsight(
-    "is_compliant",
-    "is_covered_by_policy",
-    "articles covered by policy",
-    `<p class='mb-2'>The percentage of articles covered by <a href='${orgData.hits.hits[0]._source.policy.url}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
-  );
-  
-  getInsight(
-    "is_oa",
-    "is_paper",
-    "articles",
-    "<p>The number of articles that are free and <a href='https://creativecommons.org/licenses/by/4.0/' class='underline underline-offset-2 decoration-1' target='_blank' rel='noopener'>CC BY</a> <strong class='bold'>or</strong> <a href='https://creativecommons.org/publicdomain/zero/1.0/' class='underline underline-offset-2 decoration-1' target='_blank' rel='noopener'>CC0</a> (in the public domain) on the publisher’s website, a repository or a preprint server.</p>"
-  );
-  
-  getInsight(
-    "has_data_availability_statement",
-    "has_checked_data_availability_statement",
-    "articles checked",
-    "<p class='mb-2'>This number tells you how many articles that we’ve analyzed have a data availability statement.</p> <p>To check if a paper has a data availability statement, we use data from PubMed and review articles manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data).</p>"
-  );
-  
-  getInsight(
-    "has_open_data",
-    "has_data",
-    "articles with data",
-    "<p class='mb-2'>The percentage of articles that shared any data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>CC-BY</a> license.</p> <p class='mb-2'>This figure only measures how many articles shared Open Data if they generated data in the first place. It also only measures if any of the datasets generated were open, not if all of them were open.</p> <p>We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>"
-  );
-  
-  getInsight(
-    "has_open_code",
-    "has_code",
-    "articles with code",
-    "<p class='mb-2'>The percentage of articles that shared any code under a permissive open-source licence, such as MIT.</p> <p class='mb-2'>This figure measures how many articles shared Open Code if they generated code in the first place. It also only measures if <strong>any parts</strong> of the code generated are open, not if <strong>all</strong> of it is open.</p> <p> We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>"
-  );
-  
-  /**
-  * Fetches and displays strategy data in a table format.
-  * 
-  * @param {string} strategy - The strategy name.
-  * @param {Array<string>} keys - The keys to be displayed in the table.
-  * @param {string} tableRow - The HTML template for each table row.
-  */
-  function displayStrategy(strategy, keys, tableRow) {
-    const strategyData = orgData.hits.hits[0]._source.strategy[strategy];
-    const { show_on_web: shown, sort, query, mailto } = strategyData;
-    const tabID = `strategy_${strategy}`;
-    
-    if (!shown) {
-      removeTab(tabID, strategy);
-      return;
-    }
-    
-    const tabCountContents = document.getElementById(`count_${strategy}`);
-    const tableCountContents = document.getElementById(`total_${strategy}`);
-    const tableBody = document.getElementById(`table_${strategy}`).getElementsByTagName('tbody')[0];
-    
-    const countQuery = countQueryPrefix + query;
-    const listQuery = `${queryPrefix + query}&sort=${sort}`;
-    
-    axios.get(countQuery)
-    .then(countResponse => {
-      let count = parseFloat(countResponse.data);
-      tabCountContents.textContent = makeNumberReadable(count);
-      if (count > 100) count = 100;
-      tableCountContents.textContent = makeNumberReadable(count);
-      
-      if (loggedIn) {
-        handleLoggedInUser(count, listQuery, keys, tableRow, tableBody, tableCountContents, mailto, strategy);
-      } else {
-        promptLogin(tableBody, strategy);
-      }
-      
-      changeOpacity(tabID);
-    })
-    .catch(error => {
-      console.error(`${strategy} error: ${error}`);
-    });
-  }
-  
-  /**
-  * Handles the case when the user is logged in.
-  * 
-  * @param {number} count - The count of actions.
-  * @param {string} listQuery - The query to fetch the list of actions.
-  * @param {Array<string>} keys - The keys to be displayed in the table.
-  * @param {string} tableRow - The HTML template for each table row.
-  * @param {HTMLElement} tableBody - The table body element.
-  * @param {HTMLElement} tableCountContents - The element to display the total count.
-  * @param {string} mailtoTemplate - The mailto template.
-  * @param {string} strategy - The strategy name.
-  */
-  function handleLoggedInUser(count, listQuery, keys, tableRow, tableBody, tableCountContents, mailtoTemplate, strategy) {
-    if (count === 0) {
-      tableCountContents.textContent = "No";
-      tableBody.innerHTML = `<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>
-          We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.</td></tr>`;
-    } else {
-      axios.get(listQuery)
-      .then(listResponse => {
-        const list = listResponse.data.hits.hits;
-        console.log('List of actions:', list); // Logging the list of actions
-        const tableRows = generateTableRows(list, keys, tableRow, mailtoTemplate);
-        tableBody.innerHTML = tableRows;
-      });
-    }
-  }
-  
-  /**
-  * Generates table rows from the list of actions.
-  * 
-  * @param {Array<Object>} list - The list of actions.
-  * @param {Array<string>} keys - The keys to be displayed in the table.
-  * @param {string} tableRow - The HTML template for each table row.
-  * @param {string} mailtoTemplate - The mailto template.
-  * @returns {string} - The generated HTML for the table rows.
-  */
-  function generateTableRows(list, keys, tableRow, mailtoTemplate) {
-    return list.map(item => {
-      const action = {};
-      
-      // Process each key to build the action object
-      keys.forEach(key => {
-        const keyParts = key.split('.');
-        
-        let value = item._source;
-        for (let part of keyParts) {
-          value = value && value[part] !== undefined ? value[part] : "N/A";
+        } else {
+          // NO DENOMINATOR => single total value
+          numPromise
+            .then(function (result) {
+              // Insert value in #percent_{numerator}
+              percentageContents.textContent = makeNumberReadable(result.data);
+
+              // Put smaller label "articles" (or denominatorText) in #articles_{numerator}
+              articlesContents.textContent = denominatorText;
+            })
+            .catch(function (error) {
+              console.log(`${numerator} error: ${error}`);
+              showUnavailableCard(cardContents);
+            });
         }
+
+        // Once data has loaded, display the card
+        changeOpacity(contentID);
+
+      } else {
+        displayNone(contentID);
+      }
+    };
+
+    /* Get Strategy data and display it */
+    function displayStrategy(strategy, keys, tableRow) {
+      var shown  = orgData.hits.hits[0]._source.strategy[strategy].show_on_web,
+          sort   = `&sort=${orgData.hits.hits[0]._source.strategy[strategy].sort}`,
+          tabID  = `strategy_${strategy}`;
+
+      if (shown === true) {
+        // Get tab elements
+        var tabCountContents   = document.getElementById(`count_${strategy}`),
+            tableCountContents = document.getElementById(`total_${strategy}`),
+            tableBody          = document.getElementById(`table_${strategy}`).getElementsByTagName('tbody')[0];
+        
+        // Store original query + build encoded query with URL filters, if any
+        const strategyQuery = orgData.hits.hits[0]._source.strategy[strategy].query,
+              encodedQuery = buildEncodedQueryWithUrlFilter(strategyQuery);
+        
+        // Build full count + works queries
+        var countQuery = countQueryPrefix + encodedQuery,
+            listQuery  = queryPrefix + encodedQuery + sort;
         
         // Handle extracting values from the 'supplements' array
         if (key.startsWith('supplements.')) {
@@ -607,6 +537,7 @@ window.callGetStrategyExportLink = function(id) {
   return false;
 };
 
+
 /**
 * Handles the creation and sending of a strategy export link request.
 * This function is called with organizational data and an identifier to
@@ -617,37 +548,38 @@ window.callGetStrategyExportLink = function(id) {
 * @returns {boolean} - Always returns false to prevent default form submission.
 */
 export function getStrategyExportLink(id, orgData) {
-  let hasCustomExportIncludes = (orgData.hits.hits[0]._source.strategy[id].export_includes),
-  strategyQuery           = (orgData.hits.hits[0]._source.strategy[id].query),
-  strategySort            = (orgData.hits.hits[0]._source.strategy[id].sort);
-  
+  let hasCustomExportIncludes = orgData.hits.hits[0]._source.strategy[id].export_includes,
+      strategyQuery           = orgData.hits.hits[0]._source.strategy[id].query,
+      strategySort            = orgData.hits.hits[0]._source.strategy[id].sort;
+
   Promise.all([hasCustomExportIncludes])
-  .then(function (results) {
-    hasCustomExportIncludes = results[0].data;
-  }).catch(function (error) { console.log(`Export error: ${error}`); });
-  
-  // Set up export query
-  let isPaperURL = (dateRange + strategyQuery);
-  let query = `q=${isPaperURL.replaceAll(" ", "%20")}`,
-  form = new FormData(document.getElementById(`form_${id}`));
-  
+    .then(function (results) {
+      hasCustomExportIncludes = results[0].data;
+    })
+    .catch(function (error) {
+      console.log(`Export error: ${error}`);
+    });
+
+  // Build the export query
+  const isPaperURL = dateRange + strategyQuery;
+  const query = `q=${buildEncodedQueryWithUrlFilter(isPaperURL)}`;
+
   // Get form content — email address input
-  var email = `&${new URLSearchParams(form).toString()}`;
-  
-  // Display export includes if there are any
-  var include;
-  if (hasCustomExportIncludes !== undefined) {
-    include = `&include=${hasCustomExportIncludes}`;
-  }
-  
-  // Build full query
-  query = CSV_EXPORT_BASE + query + include + '&sort=' + strategySort + email + orgKey;
-  
-  var xhr = new XMLHttpRequest();
-  xhr.open("GET", query);
-  // Display message when server responds
+  const form = new FormData(document.getElementById(`form_${id}`));
+  const email = `&${new URLSearchParams(form).toString()}`;
+
+  // Include custom export fields if any
+  const include = (typeof hasCustomExportIncludes === 'string' && hasCustomExportIncludes.trim())
+    ? `&include=${hasCustomExportIncludes.trim()}`
+    : "";
+
+  // Build final URL
+  const exportUrl = `${CSV_EXPORT_BASE}${query}${include}&sort=${strategySort}${email}`;
+
+  const xhr = new XMLHttpRequest();
+  xhr.open("GET", exportUrl);
   xhr.onload = function () {
     document.getElementById(`msg-${id}`).innerHTML = `OA.Report has started building your CSV export at <a href='${this.response}' target='_blank' class='underline underline-offset-2 decoration-1'>this URL</a>. Please check your email to get the full data once it’s ready.`;
   };
   xhr.send();
-};
+}

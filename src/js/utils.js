@@ -58,6 +58,23 @@ export function replaceText(className, parameter) {
 }
 
 /**
+ * Normalises ES field IDs to the human-friendly keys used for labels.
+ * - strips "supplements." prefix
+ * - removes any org suffix after "__"
+ * - removes trailing "_pct"
+ * @param {string} id
+ * @returns {string}
+ */
+export function normaliseFieldId(id) {
+  if (!id) return '';
+  return String(id)
+    .replace(/^supplements\./, '')
+    .replace(/__.*/, '')
+    .replace(/_pct$/, '');
+}
+
+
+/**
  * Format a date object into a human-readable string using the user’s locale,
  * explicitly formatted as UTC to ensure consistency across different time zones.
  * By formatting dates like this, we avoid pitfalls of local timezone adjustments,
@@ -114,28 +131,33 @@ export function formatDateToISO(date) {
 }
 
 /**
- * Adjusts global `startYear` and `endYear` to the years of the new start and end dates and constructs
- * a date range string formatted for ElasticSearch queries. 
- * The start date is decremented by one day and the end date is incremented by one day, 
- * ensuring that the range includes all times within the start and end dates.
- * Display the readable start and end dates in the UI.
+ * Updates the global date range used in queries, refreshes readable dates in the UI,
+ * and emits an event signalling the range is ready.
  *
- * @param {Date} newStart - The date representing the start of the range.
- * @param {Date} newEnd - The date representing the end of the range.
- * @returns {string} The date range string formatted for ElasticSearch query syntax.
+ * Event: `oar:dateRangeReady` with `detail.dateRange` carrying the final fragment,
+ * e.g. `(published_date:>YYYY-MM-DD AND published_date:<YYYY-MM-DD) AND `.
+ *
+ * @param {Date} newStart - The start of the range.
+ * @param {Date} newEnd   - The end of the range.
+ * @returns {string} The ElasticSearch date-range fragment.
  */
 export function replaceDateRange(newStart, newEnd) {
   // Update the year range in a readable format
   replaceText("report_readable_start_date", makeDateReadable(newStart));
-  replaceText("report_readable_end_date", makeDateReadable(newEnd));
+  replaceText("report_readable_end_date",   makeDateReadable(newEnd));
 
   // Adjust the date range in ISO format for the API call (-1 day for start date, +1 day for end date)
   const startDateISO = formatDateToISO(changeDays(-1, newStart));
-  const endDateISO = formatDateToISO(changeDays(+1, newEnd));
-  dateRange = `(openalex.publication_date:>${startDateISO}%20AND%20openalex.publication_date:<${endDateISO})%20AND%20`;
-  
+  const endDateISO   = formatDateToISO(changeDays(+1, newEnd));
+
+  // Persist globals
+  dateRange = `(published_date:>${startDateISO}%20AND%20published_date:<${endDateISO})%20AND%20`;
   startYear = formatDateToISO(newStart);
-  endYear = formatDateToISO(newEnd);
+  endYear   = formatDateToISO(newEnd);
+
+  // Tell listeners the range is ready
+  const evt = new CustomEvent('oar:dateRangeReady', { detail: { dateRange } });
+  window.dispatchEvent(evt);
 
   return dateRange;
 }
@@ -755,6 +777,21 @@ export function updateURLParams(params) {
 }
 
 /**
+ * Removes one or more query parameters from the current URL without reloading the page.
+ * Uses history.replaceState so it doesn’t add a new history entry.
+ *
+ * @param {string|string[]} keys - One key or an array of keys to remove.
+ * @returns {void}
+ */
+export function removeURLParams(keys) {
+  const params = new URLSearchParams(window.location.search);
+  (Array.isArray(keys) ? keys : [keys]).forEach(k => params.delete(k));
+  const newQuery = params.toString();
+  const newUrl = newQuery ? `?${newQuery}` : window.location.pathname;
+  history.replaceState(null, '', newUrl);
+}
+
+/**
  * Displays an error message in the header of the page.
  * @param {string} message - The error message to display.
  */
@@ -800,4 +837,217 @@ export function updateExploreFilterHeader(filterId) {
       ? EXPLORE_FILTERS_LABELS[filterId].label
       : 'articles that are ' + (EXPLORE_FILTERS_LABELS[filterId]?.label || filterId);
   replaceText("explore_filter", text);
+}
+
+/**
+ * Resets the <footer> bar-chart area of an Insights card back to its default state.
+ * Undoes any "Data unavailable" content and styling applied by showUnavailableCard().
+ *
+ * @param {HTMLElement} cardContents - The <article> element representing the insight card.
+ */
+export function resetBarChart(cardContents) {
+  if (!cardContents) return;
+
+  // Restore the default white card styling
+  cardContents.classList.add(
+    'bg-white',
+    'hover:shadow-md',
+    'transition-shadow',
+    'duration-200',
+    'proportional-card'
+  );
+
+  // Remove the "unavailable" card styling
+  cardContents.classList.remove(
+    'bg-carnation-100',
+    'flex',
+    'flex-col',
+    'justify-center'
+  );
+  
+  // Ensure one <footer.bar-chart> exists
+  let footerEl = cardContents.querySelector('footer.bar-chart');
+  if (!footerEl) {
+    footerEl = document.createElement('footer');
+    footerEl.className = 'bar-chart w-full mt-4';
+    cardContents.appendChild(footerEl);
+  }
+  // If it was in "unavailable" mode, restore for drawing bars
+  footerEl.removeAttribute('data-unavailable');
+  footerEl.innerHTML = '';
+  footerEl.classList.add('w-full', 'h-3', 'bg-carnation-800', 'rounded-full', 'mt-4');
+}
+
+
+/**
+ * Switches the default Insights card into greyed-out "Data unavailable" style.
+ */
+export function showUnavailableCard(cardContents) {
+  // Locate the "articles" and "percent" elements
+  const articlesEl = cardContents.querySelector('[id^="articles_"]');
+  const percentEl  = cardContents.querySelector('[id^="percent_"]');
+
+  // Clear the text for #articles_...
+  if (articlesEl) {
+    articlesEl.textContent = '';
+  }
+
+  // Replace the text in #percent_... with the slash icon
+  if (percentEl) {
+    percentEl.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg"
+           width="24" height="24" fill="none"
+           stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round"
+           class="feather feather-slash inline-block">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+      </svg>
+    `;
+  }
+
+  // Remove the default white card styling
+  cardContents.classList.remove(
+    'bg-white',
+    'hover:shadow-md',
+    'transition-shadow',
+    'duration-200',
+    'proportional-card'
+  );
+
+  // Add grey background & center layout
+  cardContents.classList.add(
+    'bg-carnation-100',
+    'flex',
+    'flex-col',
+    'justify-center'
+  );
+
+  // Clear or replace the bar chart area with "Data unavailable"
+  const footerEl = cardContents.querySelector('footer.bar-chart');
+  if (footerEl) {
+    footerEl.classList.remove('h-3', 'bg-carnation-800', 'rounded-full');
+    footerEl.setAttribute('data-unavailable', 'true');
+    footerEl.innerHTML = `
+      <p class="mt-4 text-xs text-left text-neutral-700">
+        Data unavailable
+      </p>
+    `;
+  }
+}
+
+/**
+ * Render a bar (or two stacked bars) in the .bar-chart footer,
+ * depending on whether the denominator is the full set of publications
+ * or just a subset.
+ *
+ * @param {HTMLElement} cardEl         The <article> element for this insight
+ * @param {number} numeratorCount      e.g. 2652
+ * @param {number} denominatorCount    e.g. 3431
+ * @param {string} denominatorID       e.g. "is_paper" or something else
+ * @param {number} totalArticlesCount  e.g. 3821 (the full set of articles)
+ */
+export function setBarChart(
+  cardEl,
+  numeratorCount,
+  denominatorCount,
+  denominatorID,
+  totalArticlesCount
+) {
+  if (!cardEl) return;
+  const barContainer = cardEl.querySelector('.bar-chart');
+  if (!barContainer) return;
+
+  // Clear any existing bar(s)
+  barContainer.innerHTML = '';
+
+  // If the denominator is missing or zero, skip
+  if (!denominatorCount) return;
+
+  // ----- CASE 1: Denominator is the full set => Single bar -----
+  // The <footer> has 'bg-carnation-800' to represent the full set
+  // We overlay one bar for the numerator portion in carnation-300
+  if  (
+    denominatorID === 'is_paper' ||
+    denominatorID === 'is_preprint' ||
+    (denominatorCount && totalArticlesCount && denominatorCount === totalArticlesCount) // if the total amount is the same as the denominator
+  ) {
+    const fraction = Math.round((numeratorCount / denominatorCount) * 100);
+    barContainer.innerHTML = `
+      <div
+        class="h-3 bg-carnation-300 rounded-full"
+        style="width: ${fraction}%"
+      ></div>
+    `;
+  } 
+
+  // ----- CASE 2: Denominator is a subset => Two stacked bars -----
+  // The footer is still 'bg-carnation-800' overall, but we
+  // insert an outer bar in carnation-500 for "subset vs. total"
+  // and an inner bar in carnation-300 for "numerator vs. that subset".
+  else {
+    let fractionOuter = 0;
+    if (totalArticlesCount) {
+      fractionOuter = Math.round((denominatorCount / totalArticlesCount) * 100);
+    }
+    const fractionInner = Math.round((numeratorCount / denominatorCount) * 100);
+
+    barContainer.innerHTML = `
+      <div 
+        class="h-3 bg-carnation-500 rounded-full" 
+        style="width: ${fractionOuter}%"
+      >
+        <div 
+          class="h-3 bg-carnation-300 rounded-full" 
+          style="width: ${fractionInner}%"
+        ></div>
+      </div>
+    `;
+  }
+};
+
+/**
+ * Get the admin-provided `?q=` from the page URL and normalise it
+ * to a plain Elasticsearch query string.
+ *
+ * - Returns '' when absent.
+ * - Converts '+' to spaces (URL forms may use '+').
+ * - Decodes percent-encoded characters (e.g., %22 → ").
+ * 
+ * @returns {string} Normalised query string from the URL.
+ */
+export function getDecodedUrlQuery() {
+  const params = new URLSearchParams(window.location.search);
+  const raw = params.get('q');
+  if (!raw || !raw.trim()) return '';
+  // Normalise '+' (often used for spaces), then decode %xx sequences.
+  const plusAsSpace = raw.replace(/\+/g, ' ');
+  return decodeAndReplaceUrlEncodedChars(plusAsSpace);
+}
+
+/**
+ * Combine two Elasticsearch query strings with an AND.
+ *
+ * @param {string} base
+ * @param {string} extra
+ * @returns {string}
+ */
+export function andQueryStrings(base, extra) {
+  const a = base && base.trim() ? `(${base.trim()})` : '';
+  const b = extra && extra.trim() ? `(${extra.trim()})` : '';
+  if (a && b) return `${a} AND ${b}`;
+  return a || b || '';
+}
+
+/**
+ * Build an encoded `?q=` value by combining the existing query string
+ * with the URL `?q=` filter.
+ *
+ * @param {string} baseQuery
+ * @returns {string}
+ */
+export function buildEncodedQueryWithUrlFilter(baseQuery) {
+  const base = decodeAndReplaceUrlEncodedChars(baseQuery);
+  const combined = andQueryStrings(base, getDecodedUrlQuery());
+  return encodeURIComponent(combined);
 }

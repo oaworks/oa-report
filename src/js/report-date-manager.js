@@ -4,7 +4,7 @@
 // =================================================
 
 import { DATE_SELECTION_BUTTON_CLASSES } from './constants.js';
-import { makeDateReadable, createDate, replaceDateRange, initDropdown, getAllURLParams, getURLParam, updateURLParams } from './utils.js';
+import { makeDateReadable, createDate, replaceDateRange, initDropdown, getAllURLParams, getURLParam, updateURLParams, removeURLParams, dateRange } from './utils.js';
 import { initInsightsAndStrategies } from './insights-and-strategies.js';
 import { currentActiveExploreItemButton, currentActiveExploreItemData, processExploreDataTable } from './explore.js';
 
@@ -19,7 +19,7 @@ export const currentDate = new Date();
  * The default year for paid users, used as the starting point for reports.
  * @constant {number}
  */
-export const DEFAULT_YEAR = 2024;
+export const DEFAULT_YEAR = 2025;
 
 /** 
  * The default year for free users, usually set to one year behind the paid users' default.
@@ -49,102 +49,77 @@ function isQuarterTwoOrLater() {
 export function setDefaultYear() {
   const startParam = getURLParam('start');
   const endParam = getURLParam('end');
-  const breakdownParam = getURLParam('breakdown');
-  const actionParam = getURLParam('action');
 
-  // Wait for the DOM + asynchronously loaded page elements to be ready
-  // before attempting to set the report’s selected date range, breakdown, and action
-  window.onload = function () {
-    // Check if there’s a start and end date in the URL
-    // TODO: handle start and end date parameters in a separate function and similar to how
-    // the breakdown parameter is handled
-    if (startParam && endParam) {
-      // Attempt to load date range from URL parameters
-      // Interpret both dates as UTC noon to avoid timezone issues, see oaworks/discussion#2744
-      const startDate = new Date(`${startParam}T12:00:00Z`);
-      const endDate = new Date(`${endParam}T12:00:00Z`);
+  // Check if there’s a start and end date in the URL
+  // TODO: handle start and end date parameters in a separate function and similar to how
+  // the breakdown parameter is handled
+  if (startParam && endParam) {
+    // Attempt to load date range from URL parameters
+    // Interpret both dates as UTC noon to avoid timezone issues, see oaworks/discussion#2744
+    const startDate = new Date(`${startParam}T12:00:00Z`);
+    const endDate = new Date(`${endParam}T12:00:00Z`);
 
-      // Replace the date range, if present, with the one from the URL
-      const dateRangeForm = document.getElementById("date_range_form");
-      if (dateRangeForm) {
-        document.getElementById('start-date').value = startDate.toISOString().split('T')[0];
-        document.getElementById('end-date').value = endDate.toISOString().split('T')[0];
-      }
+    // Replace the date range, if present, with the one from the URL
+    const dateRangeForm = document.getElementById("date_range_form");
+    if (dateRangeForm) {
+      document.getElementById('start-date').value = startDate.toISOString().split('T')[0];
+      document.getElementById('end-date').value = endDate.toISOString().split('T')[0];
+    }
 
-      // Trigger any additional logic needed to refresh the report
-      handleYearButtonLogic(null, startDate, endDate, `${makeDateReadable(startDate)} &ndash; ${makeDateReadable(endDate)}`);
+    // Trigger any additional logic needed to refresh the report
+    handleYearButtonLogic(null, startDate, endDate, `${makeDateReadable(startDate)} &ndash; ${makeDateReadable(endDate)}`);
 
-      let elementToUpdate;
+    let elementToUpdate;
 
-      // Check if startDate and endDate correspond to the start and end of the same year
-      if (
-        startDate.getFullYear() === endDate.getFullYear() &&
-        startDate.getMonth() === 0 && // January is 0
-        startDate.getDate() === 1 && // Start of the year
-        endDate.getMonth() === 11 && // December is 11
-        endDate.getDate() === 31 // End of the year
-      ) {
-        // If true, select & style the button with ID `year-[YYYY]`
-        elementToUpdate = document.getElementById(`year-${startDate.getFullYear()}`);
-      } else {
-        // Otherwise, select & style the date range form
-        elementToUpdate = document.getElementById("date_range_form");
-      }
-      // Style the selected element, whether it’s a year button or the date range form
-      updateYearButtonStyling(elementToUpdate, true);
+    // Check if startDate and endDate correspond to the start and end of the same year
+    if (
+      startDate.getFullYear() === endDate.getFullYear() &&
+      startDate.getMonth() === 0 && // January is 0
+      startDate.getDate() === 1 && // Start of the year
+      endDate.getMonth() === 11 && // December is 11
+      endDate.getDate() === 31 // End of the year
+    ) {
+      // If true, select & style the button with ID `year-[YYYY]`
+      elementToUpdate = document.getElementById(`year-${startDate.getFullYear()}`);
     } else {
-      // Otherwise, set default dates or years based on user type
-      let defaultStartDate, defaultEndDate;
+      // Otherwise, select & style the date range form
+      elementToUpdate = document.getElementById("date_range_form");
+    }
+    // Style the selected element, whether it’s a year button or the date range form
+    updateYearButtonStyling(elementToUpdate, true);
+  } else {
+    // Otherwise, set default dates or years based on user type
+    let defaultStartDate, defaultEndDate;
 
-      if (paid) {
-        // For paid users, use the full year unless it's Q2 or later
-        if (isQuarterTwoOrLater()) {
-          // Switch to the current year for Q2 and beyond
-          defaultStartDate = createDate(currentDate.getFullYear(), 0, 1); // Jan 1 of the current year
-          defaultEndDate = new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate())); // Today’s date
-        } else {
-          // Default to the previous year
-          defaultStartDate = createDate(DEFAULT_YEAR, 0, 1); // January 1st
-          defaultEndDate = createDate(DEFAULT_YEAR, 11, 31); // December 31st
-        }
+    if (paid) {
+      // For paid users, use the full year unless it's Q2 or later
+      if (isQuarterTwoOrLater()) {
+        // Switch to the current year for Q2 and beyond
+        defaultStartDate = createDate(currentDate.getFullYear(), 0, 1); // Jan 1 of the current year
+        defaultEndDate = new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate())); // Today’s date
       } else {
-        // For non-paid users, restrict the date range from Jan 1 to Jun 30 of DEFAULT_YEAR_FREE
-        defaultStartDate = createDate(DEFAULT_YEAR_FREE, 0, 1); // January 1st
-        defaultEndDate = createDate(DEFAULT_YEAR_FREE, 5, 30); // June 30th
+        // Default to the previous year
+        defaultStartDate = createDate(DEFAULT_YEAR, 0, 1); // January 1st
+        defaultEndDate = createDate(DEFAULT_YEAR, 11, 31); // December 31st
       }
-
-      replaceDateRange(defaultStartDate, defaultEndDate);
-
-      // Select the default year button and style it as selected
-      const defaultButton = document.getElementById(`year-${DEFAULT_YEAR}`);
-      if (defaultButton) {
-        handleYearButtonLogic(defaultButton, defaultStartDate, defaultEndDate, `${DEFAULT_YEAR}`);
-        updateYearButtonStyling(defaultButton);
-      } else {
-        // TO FIX: free reports don’t have a defaultButton
-        handleYearButtonLogic(null, defaultStartDate, defaultEndDate, `${makeDateReadable(defaultStartDate)} &ndash; ${makeDateReadable(defaultEndDate)}`);
-      }
+    } else {
+      // For non-paid users, restrict the date range from Jan 1 to Jun 30 of DEFAULT_YEAR_FREE
+      defaultStartDate = createDate(DEFAULT_YEAR_FREE, 0, 1); // January 1st
+      defaultEndDate = createDate(DEFAULT_YEAR_FREE, 5, 30); // June 30th
     }
 
-    // Check if there’s a breakdown (previously named 'explore item') parameter in the URL
-    // TODO: this should probably go somewhere else outside of the date management... Maybe in main.js?
-    // ...or in the explore.js file. 
-    // or directly invoke the function to process the explore item
-    // or processExploreDataTable(exploreButton, correspondingItemData);
-    if (breakdownParam) {
-      const exploreButton = document.getElementById(`explore_${breakdownParam}_button`);
-      if (exploreButton) {
-        exploreButton.click();
-      }
-    }
+    replaceDateRange(defaultStartDate, defaultEndDate);
 
-    if (actionParam) {
-      const strategyButton = document.getElementById(`strategy_${actionParam}`);
-      if (strategyButton) {
-        document.getElementById(`strategy_${actionParam}`)?.click();
-      }
+    // Select the default year button and style it as selected
+    const defaultButton = document.getElementById(`year-${DEFAULT_YEAR}`);
+    if (defaultButton) {
+      handleYearButtonLogic(defaultButton, defaultStartDate, defaultEndDate, `${DEFAULT_YEAR}`);
+      updateYearButtonStyling(defaultButton);
+    } else {
+      // TO FIX: free reports don’t have a defaultButton
+      handleYearButtonLogic(null, defaultStartDate, defaultEndDate, `${makeDateReadable(defaultStartDate)} &ndash; ${makeDateReadable(defaultEndDate)}`);
     }
-  };
+  }
 }
 
 /**
@@ -152,6 +127,11 @@ export function setDefaultYear() {
  */
 export function initDateManager() {
   const params = getAllURLParams();
+
+  // Early logout guard (in case scripts load in a different order)
+  if (getURLParam('logout')) {
+    try { sessionStorage.removeItem('orgkey'); } catch (_) {}
+  }
 
   // Process orgkey first
   const orgkey = getURLParam('orgkey');
@@ -180,11 +160,7 @@ export function initDateManager() {
   updateURLParams(params);
 
   // Remove orgkey from URL after processing
-  if (orgkey) {
-    const newParams = new URLSearchParams(window.location.search);
-    newParams.delete('orgkey');
-    history.replaceState(null, '', '?' + newParams.toString());
-  }
+  if (orgkey) removeURLParams('orgkey');
 }
 
 
@@ -243,6 +219,8 @@ export function bindDynamicYearButtons(startYear, endYear, visibleYears = 3) {
     yearsContainer.appendChild(dateRangeForm); // Append the form to the container
     initDropdown(".js_dropdown");
   }
+
+  setDefaultYear();
 }
 
 /**
@@ -549,21 +527,73 @@ function resetDropdown() {
 
   // Reset styling for all dropdown items to their original state
   const dropdownItems = document.querySelectorAll('.js_dropdown_item');
-  dropdownItems.forEach(item => {
-    // Assuming these are the TailwindCSS classes you initially use for dropdown items
+  dropdownItems.forEach((item) => {
     item.classList.remove("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
     item.classList.add("bg-white", "text-neutral-900");
   });
 
-  // Reset styling for the date range form
+  // The date range form may not exist yet depending on init order
   const dateRangeForm = document.getElementById("date_range_form");
+  if (!dateRangeForm) return;
+
   const labels = dateRangeForm.querySelectorAll('label');
-  labels.forEach(label => {
+  labels.forEach((label) => {
     label.classList.remove("text-white");
   });
 
   const inputs = dateRangeForm.querySelectorAll('input');
-  inputs.forEach(input => {
+  inputs.forEach((input) => {
     input.classList.remove("text-white", "bg-neutral-900", "border-neutral-900");
   });
 }
+
+/**
+ * Returns true if `dateRange` is usable in queries.
+ * @returns {boolean}
+ */
+function isDateRangeReady() {
+  return typeof dateRange === 'string' && dateRange.includes('published_date');
+}
+
+/**
+ * Resolves once a usable `dateRange` is available.
+ * 
+ * Listens for the `oar:dateRangeReady` event, which signals that the
+ * range has been set. If the event was already sent before this function
+ * started listening, also checks at short intervals to avoid missing it.
+ *
+ * @param {number} [timeoutMs=1500] - Maximum time to wait before rejecting.
+ * @returns {Promise<string>} The final dateRange string.
+ */
+export function awaitDateRange(timeoutMs = 3000) {
+  return new Promise((resolve, reject) => {
+    if (isDateRangeReady()) return resolve(dateRange);
+
+    let settled = false;
+    const onReady = (e) => {
+      if (settled) return;
+      settled = true;
+      window.removeEventListener('oar:dateRangeReady', onReady);
+      resolve(e?.detail?.dateRange ?? dateRange);
+    };
+
+    window.addEventListener('oar:dateRangeReady', onReady, { once: true });
+
+    // Safety net: light polling in case we missed the event.
+    const start = performance.now();
+    (function tick() {
+      if (settled) return;
+      if (isDateRangeReady()) {
+        settled = true;
+        window.removeEventListener('oar:dateRangeReady', onReady);
+        return resolve(dateRange);
+      }
+      if (performance.now() - start >= timeoutMs) {
+        window.removeEventListener('oar:dateRangeReady', onReady);
+        return reject(new Error('awaitDateRange: timed out'));
+      }
+      setTimeout(tick, 50);
+    })();
+  });
+}
+
