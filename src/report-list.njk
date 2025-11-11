@@ -1,0 +1,21 @@
+---
+layout: layouts/base.njk
+permalink: "report-list/"
+---
+
+<div class="px-4 py-6 md:px-8 md:py-10 max-w-3xl mx-auto">
+  <h1 class="text-xl md:text-3xl font-serif mb-6">Available OA.Reports</h1>
+  <ol class="border-t border-neutral-300 divide-y divide-neutral-300">
+    {% for org in orgs.hits.hits %}
+      <li>
+        <a href="{{ site.base_url }}/{{ org._source.objectID }}" class="flex items-center gap-4 px-4 py-3 hover:bg-carnation-100 transition block w-full">
+          <span class="text-lg md:text-xl font-serif">{{ loop.index }}.</span>
+          <div class="flex-1">
+            {{ org._source.name }}
+            <span class="text-sm text-neutral-600">({{ org._source.objectID }})</span>
+          </div>
+        </a>
+      </li>
+    {% endfor %}
+  </ol>
+</div>
