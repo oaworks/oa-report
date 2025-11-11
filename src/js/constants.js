@@ -324,7 +324,7 @@ export const EXPLORE_ITEMS_LABELS = {
 export const EXPLORE_FILTERS_LABELS = {
   "is_paper": {
     label: "All journal articles",
-    info: "<p>Scholarly research articles published in journals, <strong>including</strong>:</p>\
+    info: "<p>Journal articles, <strong>including</strong>:</p>\
       <ul class='mb-2 list-disc list-inside'>\
         <li>peer-reviewed research</li>\
         <li>reviews</li>\
@@ -344,7 +344,7 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "is_authored": {
     label: "Authored",
-    info: "<p>Scholarly research articles authored by someone at <span class='org-name'></span>, <strong>including</strong>:</p>\
+    info: "<p>Journal articles authored by someone at <span class='org-name'></span>, <strong>including</strong>:</p>\
     <ul class='mb-2 list-disc list-inside'>\
       <li>peer-reviewed research</li>\
       <li>reviews</li>\
@@ -384,7 +384,7 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "is_original_research": {
     label: "Original research",
-    info: "<p>Scholarly research articles, <strong>including only</strong>:</p>\
+    info: "<p>Journal articles, <strong>including only</strong>:</p>\
     <ul class='mb-2 list-disc list-inside'>\
       <li>peer-reviewed research (that present new findings)</li>\
     </ul>\
@@ -431,7 +431,7 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "has_apc": {
     label: "Paid via APC",
-    info: "<p>Scholarly research articles that had an article-processing charge (APC) paid by <span class='org-name'></span></p>"
+    info: "<p>Journal articles that had an article-processing charge (APC) paid by <span class='org-name'></span></p>"
   },
   "is_under_transitional_agreement": {
     label: "Paid via transitional agreement"
@@ -482,7 +482,7 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "is_authored_and_is_original_research": {
     label: "Authored original research",
-    info: "<p>Scholarly research articles authored by someone at <span class='org-name'></span>, <strong>including only</strong>:</p>\
+    info: "<p>Journal articles authored by someone at <span class='org-name'></span>, <strong>including only</strong>:</p>\
     <ul class='mb-2 list-disc list-inside'>\
       <li>peer-reviewed research</li>\
     </ul>\
@@ -584,7 +584,7 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   },
   "with_apc": {
     label: "With APC<span class='lowercase'>s</span>",
-    info: "Scholarly research articles with an article-processing charge (APC) paid by <span class='org-name'></span>."
+    info: "Journal articles with an article-processing charge (APC) paid by <span class='org-name'></span>."
   },
   "with_data": {
     label: "With data"
@@ -1000,7 +1000,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "is_original_research": {
     label: "Original research?",
-    info: "<p>Scholarly research articles, <strong>including only</strong>:</p>\
+    info: "<p>Journal articles, <strong>including only</strong>:</p>\
     <ul class='mb-2 list-disc list-inside'>\
       <li>peer-reviewed research (that present new findings)</li>\
     </ul>\
