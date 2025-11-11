@@ -15,3 +15,6 @@
   # audit the test report
   [[plugins.inputs.audits]]
     path = "test/index.html"
+  
+[build]
+  node_version = "18"

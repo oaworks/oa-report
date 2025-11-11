@@ -18,18 +18,20 @@ function initialise() {
   if (isDataExploreInitialised) {
     return;
   }
-
-  // Initialise date manager to handle orgkey first and then other date parameters
-  initDateManager();
   
-  // Check if the element with id="explore" exists to trigger data explore initialisation
-  var exploreElement = document.getElementById("explore");
+  // 1) Process URL params and orgkey first
+  initDateManager();
+
+  // 2) Establish the initial dateRange (this calls replaceDateRange)
+  setDefaultYear(DEFAULT_YEAR);
+
+  // 3) Safely initialise Explore now that dateRange is defined
+  const exploreElement = document.getElementById("explore");
+  // Check if id="explore" exists to trigger data explore initialisation
   if (exploreElement && !isDataExploreInitialised) {
     initDataExplore(org);
     isDataExploreInitialised = true;
   }
-
-  setDefaultYear(DEFAULT_YEAR);
 
   if (paid) {
     // Only paid reports display a date navigation

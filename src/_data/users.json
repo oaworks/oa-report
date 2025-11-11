@@ -1,8 +1,8 @@
 [
   {
-    "name": "the Bill & Melinda Gates Foundation",
-    "acronym": "BMGF",
-    "logo": "img/users/bmgf.png",
+    "name": "the Gates Foundation",
+    "acronym": "GF",
+    "logo": "img/users/gf.png",
     "width": 400,
     "height": 80,
     "url": "https://www.gatesfoundation.org/"
