@@ -146,10 +146,34 @@ export function initInsightsAndStrategies(org) {
         // If we have a denominator param
         if (numerator && denominator) {
           // Get denominator’s count query
-          let denomPromise = axios.get(countQueryPrefix + buildEncodedQueryWithUrlFilter(orgData.hits.hits[0]._source.analysis[denominator].query));
+          let denomPromise = axios.get(
+            countQueryPrefix + buildEncodedQueryWithUrlFilter(
+              orgData.hits.hits[0]._source.analysis[denominator].query
+            )
+          );
 
-          // Get total articles count for the bar chart
-          let totalArticlesPromise = axios.get(countQueryPrefix + buildEncodedQueryWithUrlFilter(orgData.hits.hits[0]._source.analysis.is_paper.query));
+          // Pick the correct "total" key for the bar chart (articles / preprints / publications)
+          const analysis = orgData.hits.hits[0]._source.analysis;
+
+          // Pick the appropriate total for the bar background
+          let totalKey = 'is_paper';
+          if (denominator === 'is_preprint' || /_preprint$/.test(numerator) || /_preprint$/.test(denominator)) {
+            totalKey = 'is_preprint';
+          } else if (/publication/.test(numerator) || /publication/.test(denominator)) {
+            totalKey = analysis.is_unique_publication
+              ? 'is_unique_publication'
+              : analysis.is_publication
+                ? 'is_publication'
+                : 'is_paper';
+          }
+
+          // Reuse the denominator request if it’s the same as the total
+          const totalArticlesPromise =
+            totalKey === denominator
+              ? denomPromise
+              : axios.get(
+                  countQueryPrefix + buildEncodedQueryWithUrlFilter(analysis[totalKey].query)
+                );
 
           Promise.all([numPromise, denomPromise, totalArticlesPromise])
             .then(function ([numResult, denomResult, totalArticlesResult]) {
