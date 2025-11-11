@@ -864,21 +864,18 @@ export function resetBarChart(cardContents) {
     'flex-col',
     'justify-center'
   );
-
-  // Remove all existing <footer> children (including "Data unavailable")
-  const footerEls = cardContents.querySelectorAll('footer');
-  footerEls.forEach(el => el.remove());
-
-  // Only re-create the bar-chart if it existed originally
-  const hadBarChart = cardContents.dataset.hasBarChart === 'true' ||
-                      cardContents.querySelector('.bar-chart') !== null;
-
-  if (hadBarChart) {
-    // Append a fresh bar-chart footer
-    const footerEl = document.createElement('footer');
-    footerEl.className = 'bar-chart w-full h-3 bg-carnation-800 rounded-full mt-4';
+  
+  // Ensure one <footer.bar-chart> exists
+  let footerEl = cardContents.querySelector('footer.bar-chart');
+  if (!footerEl) {
+    footerEl = document.createElement('footer');
+    footerEl.className = 'bar-chart w-full mt-4';
     cardContents.appendChild(footerEl);
   }
+  // If it was in "unavailable" mode, restore for drawing bars
+  footerEl.removeAttribute('data-unavailable');
+  footerEl.innerHTML = '';
+  footerEl.classList.add('w-full', 'h-3', 'bg-carnation-800', 'rounded-full', 'mt-4');
 }
 
 
@@ -929,13 +926,8 @@ export function showUnavailableCard(cardContents) {
   // Clear or replace the bar chart area with "Data unavailable"
   const footerEl = cardContents.querySelector('footer.bar-chart');
   if (footerEl) {
-    footerEl.classList.remove(
-      'h-3',
-      'bg-carnation-800',
-      'rounded-full',
-      'bar-chart',
-      'w-full'
-    );
+    footerEl.classList.remove('h-3', 'bg-carnation-800', 'rounded-full');
+    footerEl.setAttribute('data-unavailable', 'true');
     footerEl.innerHTML = `
       <p class="mt-4 text-xs text-left text-neutral-700">
         Data unavailable
