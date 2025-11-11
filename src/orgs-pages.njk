@@ -128,11 +128,14 @@ permalink: "{{ org._source.objectID | slug }}/"
           icon: "gift"
         }) }}
 
+        {# Article-specific compliance displayed for Gates only #}
+        {% if org._source.objectID == "gates-foundation" %}
         {{ component("card", {
           id: "is_compliant_article", 
           title: "OA policy-compliant",
           icon: "check-circle"
         }) }}
+        {% endif %}
 
         {{ component("card", {
           id: "is_compliant",
