@@ -330,63 +330,128 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
  * ensuring a11y compliance.
  * 
  * @returns {HTMLElement} The created form element with date inputs and a submit button.
+ *
  */
 function createDateRangeForm() {
+  // Form container
   const form = document.createElement("form");
-  form.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " flex items-center hover:text-white"; 
   form.id = "date_range_form";
-  form.setAttribute('role', 'form');
-  form.setAttribute('aria-labelledby', 'date-range-form-title');
+  form.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " flex items-center whitespace-nowrap hover:text-white";
+  form.setAttribute("aria-labelledby", "date-range-form-title");
 
-  // Title for the form (for a11y)
-  const formTitle = document.createElement('h2');
-  formTitle.id = 'date-range-form-title';
-  formTitle.textContent = 'Select custom date range';
-  formTitle.className = 'sr-only';
+  // Title for the form (for screen readers)
+  const formTitle = document.createElement("h2");
+  formTitle.id = "date-range-form-title";
+  formTitle.textContent = "Select custom date range";
+  formTitle.className = "sr-only";
   form.appendChild(formTitle);
 
-  // Create the start date input
-  const startDateInput = createDateInput("start-date", "Start Date");
-  form.appendChild(startDateInput);
+  // Hidden inputs kept for compatibility
+  const hiddenStart = document.createElement("input");
+  hiddenStart.type = "hidden";
+  hiddenStart.id = "start-date";
+  hiddenStart.name = "start";
+  form.appendChild(hiddenStart);
 
-  // Create the end date input
-  const endDateInput = createDateInput("end-date", "End Date");
-  form.appendChild(endDateInput);
+  const hiddenEnd = document.createElement("input");
+  hiddenEnd.type = "hidden";
+  hiddenEnd.id = "end-date";
+  hiddenEnd.name = "end";
+  form.appendChild(hiddenEnd);
 
-  // Create and append a submit button
-  const submitButton = document.createElement("button");
-  submitButton.type = "submit";
-  submitButton.className = "text-xs uppercase md:text-center py-2 px-3 bg-neutral-200 hover:bg-neutral-800 hover:text-white";
-  submitButton.textContent = "Submit";
-  form.appendChild(submitButton);
+  // Trigger button to open the popover
+  const triggerBtn = document.createElement("button");
+  triggerBtn.type = "button";
+  triggerBtn.textContent = "Custom date";
+  triggerBtn.setAttribute("aria-haspopup", "dialog");
+  triggerBtn.setAttribute("aria-expanded", "false");
+  form.appendChild(triggerBtn);
 
-  // Add event listener for form submission
-  form.addEventListener('submit', (event) => {
-    event.preventDefault();
-  
-    const startDateInput = document.getElementById('start-date');
-    const endDateInput = document.getElementById('end-date');
-  
-    const startDate = new Date(startDateInput.value);
-    const endDate = new Date(endDateInput.value);
-    
-    // Update URL with query parameters
-    const queryParams = new URLSearchParams(window.location.search);
-    queryParams.set('start', startDate.toISOString().split('T')[0]);
-    queryParams.set('end', endDate.toISOString().split('T')[0]);
-    history.pushState(null, '', '?' + queryParams.toString());
-  
+  // Custom date range popover content
+  const pop = document.createElement("div");
+  pop.className = "p-2 md:p-3 text-xs md:text-sm";
+  pop.setAttribute("role", "form");
+  pop.setAttribute("aria-labelledby", "date-range-form-title");
+
+  // Create labelled inputs, but give them distinct IDs
+  const startField = createDateInput("start-date-pop", "From");
+  const endField = createDateInput("end-date-pop", "To");
+  startField.className = "mb-3 p-2 flex items-center justify-between";
+  endField.className = "mb-3 p-2 flex items-center justify-between";
+  pop.appendChild(startField);
+  pop.appendChild(endField);
+
+  // Apply button inside the popover
+  const applyBtn = document.createElement("button");
+  applyBtn.type = "button";
+  applyBtn.className = DATE_SELECTION_BUTTON_CLASSES.active + " w-full";
+  applyBtn.textContent = "Apply";
+  pop.appendChild(applyBtn);
+
+  // Initialise a dedicated Tippy instance
+  const tip = tippy(triggerBtn, {
+    content: pop,
+    allowHTML: true,
+    interactive: true,
+    placement: "bottom",
+    appendTo: document.body,
+    trigger: "click",
+    theme: "popover",
+    arrow: false,
+    onShow() {
+      triggerBtn.setAttribute("aria-expanded", "true");
+      // Prefill popover inputs from hidden values (if any)
+      const s = /** @type {HTMLInputElement|null} */ (document.getElementById("start-date"));
+      const e = /** @type {HTMLInputElement|null} */ (document.getElementById("end-date"));
+      const sPop = /** @type {HTMLInputElement|null} */ (document.getElementById("start-date-pop"));
+      const ePop = /** @type {HTMLInputElement|null} */ (document.getElementById("end-date-pop"));
+      if (s && sPop) sPop.value = s.value || "";
+      if (e && ePop) ePop.value = e.value || "";
+    },
+    onHide() { triggerBtn.setAttribute("aria-expanded", "false"); }
+  });
+
+  // Handle Apply: validate, update URL, sync hidden inputs, call existing handlers, close
+  applyBtn.addEventListener("click", () => {
+    const sPop = /** @type {HTMLInputElement|null} */ (document.getElementById("start-date-pop"));
+    const ePop = /** @type {HTMLInputElement|null} */ (document.getElementById("end-date-pop"));
+    if (!sPop || !ePop) return;
+
+    const startDate = new Date(sPop.value);
+    const endDate = new Date(ePop.value);
+
     // Validate dates
-    if (startDate > endDate) {
-      console.log('Start date must be before end date.');
+    if (!sPop.value || !ePop.value) {
+      console.log("Please select both start and end dates.");
       return;
     }
-  
-    const dateRangeForm = document.getElementById("date_range_form");
-    handleYearButtonLogic(null, startDate, endDate, `${makeDateReadable(startDate)} &ndash; ${makeDateReadable(endDate)}`);
-    updateYearButtonStyling(dateRangeForm, true);
+    if (startDate > endDate) {
+      console.log("Start date must be before end date.");
+      return;
+    }
+
+    // Update URL with query parameters (YYYY-MM-DD via toISOString split as before)
+    const queryParams = new URLSearchParams(window.location.search);
+    queryParams.set("start", startDate.toISOString().split("T")[0]);
+    queryParams.set("end", endDate.toISOString().split("T")[0]);
+    history.pushState(null, "", "?" + queryParams.toString());
+
+    // Sync hidden inputs so existing code sees them
+    hiddenStart.value = sPop.value;
+    hiddenEnd.value = ePop.value;
+
+    // Build label and invoke existing handlers
+    handleYearButtonLogic(
+      null,
+      startDate,
+      endDate,
+      `${makeDateReadable(startDate)} &ndash; ${makeDateReadable(endDate)}`
+    );
+    updateYearButtonStyling(form, true);
+
+    // Close the popover
+    if (tip && tip[0]) tip[0].hide();
   });
-  
 
   return form;
 }
@@ -404,7 +469,7 @@ function createDateInput(id, label) {
   const labelElement = document.createElement("label");
   labelElement.htmlFor = id;
   labelElement.textContent = label;
-  labelElement.className = "mr-1 font-semibold uppercase text-xs";
+  labelElement.className = "mr-3 font-semibold uppercase text-xs";
   wrapper.appendChild(labelElement);
 
   const input = document.createElement("input");
