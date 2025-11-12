@@ -44,9 +44,12 @@ permalink: "{{ org._source.objectID | slug }}/"
           </div>
         </section>
       {% else %}
-        {# Temp UI for query filters. See https://github.com/oaworks/discussion/issues/3591 #}
-        <div class="col-span-2 md:col-span-4 p-3 rounded-md bg-carnation-100 text-neutral-800 text-xs md:text-sm">
-          <h2>
+        {# Active filters panel #}
+        <aside
+          class="col-span-2 md:col-span-4 p-3 rounded-md bg-carnation-100 text-neutral-900 text-xs md:text-sm md:sticky top-[var(--af-top)] z-10 md:self-start"
+          aria-labelledby="active-filters-title"
+        >
+          <h2 id="active-filters-title" class="mb-2 font-medium">
             Filters active
             {{ component("tooltip", {
               sup: true,
@@ -54,9 +57,14 @@ permalink: "{{ org._source.objectID | slug }}/"
               text: "Beta",
               theme: "tooltip-black"
             }) }}
-          </h1>
-          <div id="js-active-filters"></div>
-        </div>
+          </h2>
+
+          {# Live region so SR users hear updates when filters change #}
+          <div id="js-active-filters"
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"></div>
+        </aside>
       {% endif %}
     </div>
   </div>
@@ -67,7 +75,7 @@ permalink: "{{ org._source.objectID | slug }}/"
   <nav class="sticky top-0 pt-3 md:pt-6 z-20 bg-white transition-pb-0" id="top_nav">
     <h2 class="sr-only">See the report by year or custom dates</h2>
     <div class="flex">
-      <div id="year-buttons-container" class="mx-3 md:mx-6 mb-1 md:mb-0 flex flex-wrap space-y-1 md:space-y-0 text-xs md:text-sm lg:text-lg"></div>
+      <div id="year-buttons-container" class="mx-3 md:mx-6 mb-1 md:mb-0 flex flex-wrap space-y-1 md:space-y-0 text-xs md:text-sm"></div>
       {% if org._source.paid == false %}
         <span class="-ml-6">
           {{ component("tooltip", {
@@ -237,7 +245,7 @@ permalink: "{{ org._source.objectID | slug }}/"
 
       <div class="flex flex-wrap space-r-4 space-b-4 items-center">
         <div id="explore_buttons">
-          <button id="explore_see_more_button" class="items-center inline-flex p-2 px-4 mr-4 mt-4 px-3 rounded-full bg-carnation-300 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500"><span>See more</span></button>
+          <button id="explore_see_more_button" class="items-center inline-flex p-2 mr-4 mt-4 px-3 rounded-full bg-carnation-300 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500"><span>See more</span></button>
         </div>
       </div>
 
