@@ -122,12 +122,6 @@ permalink: "{{ org._source.objectID | slug }}/"
         }) }}
         {% endif %}
 
-        {{ component("card", {
-          id: "is_free_to_read",
-          title: "Free-to-read",
-          icon: "gift"
-        }) }}
-
         {# Article-specific compliance displayed for Gates only #}
         {% if org._source.objectID == "gates-foundation" %}
         {{ component("card", {
@@ -136,6 +130,12 @@ permalink: "{{ org._source.objectID | slug }}/"
           icon: "check-circle"
         }) }}
         {% endif %}
+
+        {{ component("card", {
+          id: "is_free_to_read",
+          title: "Free-to-read",
+          icon: "gift"
+        }) }}
 
         {{ component("card", {
           id: "is_compliant",
