@@ -921,10 +921,16 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
             `${currentActiveExploreItemData.term.trim()}:"${String(content).replace(/"/g, '\\"')}"`
           )
         });
-        renderActiveFiltersBanner();
-        if (currentActiveExploreItemButton && currentActiveExploreItemData) {
-          processExploreDataTable(currentActiveExploreItemButton, currentActiveExploreItemData);
-        }
+        // Small timeout to ensure URL params are updated before re-render
+        setTimeout(() => {
+          initInsightsAndStrategies(org);
+          if (currentActiveExploreItemButton && currentActiveExploreItemData) {
+            processExploreDataTable(currentActiveExploreItemButton, currentActiveExploreItemData);
+          } else {
+            displayDefaultArticlesData();
+          }
+          renderActiveFiltersBanner();
+        }, 50);
       };
     }
   } else if (exploreItemId === 'author' && typeof content === 'string' && content.includes('orcid.org')) {
@@ -1372,7 +1378,7 @@ function renderActiveFiltersBanner() {
   if (!pairs.length) {
     mount.innerHTML = '';
     mount.style.display = 'none';
-    mount.closest('.bg-carnation-100')?.remove(); // fully remove container when empty
+    mount.closest('.bg-carnation-100')?.classList.add('hidden'); // hide the container when no filters
     return;
   }
 
@@ -1392,6 +1398,7 @@ function renderActiveFiltersBanner() {
     </div>
   `;
   mount.style.display = '';
+  mount.closest('.bg-carnation-100')?.classList.remove('hidden'); // show the container when filters exist
 
   document.getElementById('js-clear-q')?.addEventListener('click', () => {
     removeURLParams('q'); // keep breakdown, start/end, etc.
