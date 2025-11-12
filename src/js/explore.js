@@ -911,6 +911,22 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
         displayContent = content;
     }
     cell.innerHTML = displayContent;
+
+    // Click-to-filter for term tables
+    if (key === 'key' && currentActiveExploreItemData?.term) {
+      cell.classList.add('cursor-pointer', 'hover:underline');
+      cell.onclick = () => {
+        updateURLParams({
+          q: buildEncodedQueryWithUrlFilter(
+            `${currentActiveExploreItemData.term.trim()}:"${String(content).replace(/"/g, '\\"')}"`
+          )
+        });
+        renderActiveFiltersBanner();
+        if (currentActiveExploreItemButton && currentActiveExploreItemData) {
+          processExploreDataTable(currentActiveExploreItemButton, currentActiveExploreItemData);
+        }
+      };
+    }
   } else if (exploreItemId === 'author' && typeof content === 'string' && content.includes('orcid.org')) {
     // Handle ORCiD links by fetching full name
     const orcidId = content.split('/').pop();
