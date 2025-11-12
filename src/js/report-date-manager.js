@@ -230,7 +230,7 @@ export function bindDynamicYearButtons(startYear, endYear, visibleYears = 3) {
  */
 function createDropdownContainer(id = null) {
   const dropdown = document.createElement("div");
-  dropdown.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " relative inline-block px-4 js_dropdown";
+  dropdown.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " relative inline-block px-3 js_dropdown";
 
   const dropdownButton = document.createElement("button");
   dropdownButton.className = "h-full w-full js_dropdown_button";
@@ -305,7 +305,7 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
   button.textContent = buttonText;
 
   // Add classes for styling
-  button.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " px-4";
+  button.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " px-3";
   button.setAttribute("aria-pressed", buttonText === `${DEFAULT_YEAR}` ? "true" : "false");
 
   // Add event listener
