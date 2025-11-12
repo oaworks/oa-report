@@ -838,7 +838,7 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
         const row = tableBody.children[index]; // Get the corresponding row
         const secondCell = row.children[1]; // Get the second cell in the row
         const rowCells = row.querySelectorAll('td');
-        rowCells.forEach(cell => cell.classList.add('bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900'));
+        rowCells.forEach(cell => cell.classList.add('!bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900'));
         secondCell.classList.remove('bg-neutral-600');
       }
     });
@@ -1003,14 +1003,14 @@ function enableExploreRowHighlighting() {
       const rowCells = event.target.parentElement.querySelectorAll('td');
       const firstCellContent = rowCells[0].textContent;
       const secondCell = rowCells[1];
-      const isRowHighlighted = rowCells[0].classList.contains('bg-neutral-200');
+      const isRowHighlighted = rowCells[0].classList.contains('!bg-neutral-200');
 
       if (isRowHighlighted) {
-        rowCells.forEach(cell => cell.classList.remove('bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900'));
+        rowCells.forEach(cell => cell.classList.remove('!bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900'));
         secondCell.classList.add('bg-neutral-600');
         selectedRowKeys = selectedRowKeys.filter(key => key !== firstCellContent); // Remove key from array for persistent active keys
       } else {
-        rowCells.forEach(cell => cell.classList.add('bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900'));
+        rowCells.forEach(cell => cell.classList.add('!bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900'));
         secondCell.classList.remove('bg-neutral-600');
         selectedRowKeys.push(firstCellContent); // Add key to array for persistent active keys 
       }
@@ -1023,7 +1023,7 @@ function enableExploreRowHighlighting() {
  */
 function clearRowHighlights() {
   document.querySelectorAll('.js_export_table_container td').forEach(cell => {
-    cell.classList.remove('bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900');
+    cell.classList.remove('!bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900');
   });
 }
 
