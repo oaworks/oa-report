@@ -861,6 +861,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
 
   /**
    * Helper: attach click-to-filter for term tables, but ignore clicks on external pills.
+   * Clicking toggles the term in the active ?q= filters.
    *
    * @param {string|number} rawValue - The raw bucket key value to filter on.
    */
@@ -876,15 +877,33 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
       const value = String(rawValue).replace(/"/g, '\\"');
       const clause = `${term}:"${value}"`;
 
-      // If this clause is already present in the decoded ?q=, do nothing
       const existingQuery = getDecodedUrlQuery() || '';
-      if (existingQuery.includes(clause)) {
-        return;
-      }
 
-      updateURLParams({
-        q: buildEncodedQueryWithUrlFilter(clause)
-      });
+      // If clause is not present, just add it via the existing helper
+      if (!existingQuery || !existingQuery.includes(clause)) {
+        updateURLParams({
+          q: buildEncodedQueryWithUrlFilter(clause)
+        });
+      } else {
+        // Clause is present: remove ONLY this clause from the decoded ?q=
+        const parts = existingQuery
+          .split(/\s+AND\s+/)
+          .map(part => part.trim())
+          .filter(Boolean);
+
+        const remaining = parts.filter(part => !part.includes(clause));
+
+        if (!remaining.length) {
+          // No filters left – drop q entirely
+          removeURLParams('q');
+        } else {
+          const newDecodedQuery = remaining.join(' AND ');
+          // Write the updated expression back (encoded) so helpers keep working
+          updateURLParams({
+            q: encodeURIComponent(newDecodedQuery)
+          });
+        }
+      }
 
       setTimeout(() => {
         initInsightsAndStrategies(org);
