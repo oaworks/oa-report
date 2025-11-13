@@ -267,24 +267,51 @@ function createDropdownContainer(id = null) {
  * @param {string} buttonText - The text to be displayed on the item.
  * @param {Date} startDate - The start date for the report corresponding to the item.
  * @param {Date} endDate - The end date for the report corresponding to the item.
- * @returns {HTMLElement} The created dropdown item element.
+ * @param {HTMLButtonElement} dropdownButton - The visible "More" button whose label/style we update.
+ * @returns {HTMLButtonElement} The created dropdown item element.
  */
 function createDropdownItem(buttonId, buttonText, startDate, endDate, dropdownButton) {
   const item = document.createElement("button");
-  item.className = DATE_SELECTION_BUTTON_CLASSES.enabled  + " py-2 w-full js_dropdown_item"; 
+  item.id = buttonId;
+  item.type = "button";
+
+  item.className =
+    "js_dropdown_item block w-full px-4 py-2 text-left text-xs md:text-sm " +
+    "bg-white text-neutral-900 hover:bg-carnation-100 focus:outline-none focus:bg-carnation-100";
+
   item.textContent = buttonText;
 
   item.addEventListener("click", (event) => {
     event.preventDefault();
-    // Update dropdown button text and style
+
+    // Update visible label on the More chip
     dropdownButton.innerHTML = `${buttonText} <span class='ml-1 text-xs'>&#9660;</span>`;
+
     // Update URL with the selected year
-    updateURLParams({ 
-      'start': startDate.toISOString().split('T')[0], 
-      'end': endDate.toISOString().split('T')[0] 
+    updateURLParams({
+      start: startDate.toISOString().split("T")[0],
+      end: endDate.toISOString().split("T")[0]
     });
-    handleYearButtonLogic(item, startDate, endDate, buttonText);
+
+    // Apply the date range + refresh reports, but DO NOT style the row itself
+    handleYearButtonLogic(
+      null,
+      startDate,
+      endDate,
+      buttonText
+    );
+
+    // Visually mark the More chip as the active selection
     updateYearButtonStyling(dropdownButton, true);
+
+    // Close the dropdown
+    const dropdownContainer = dropdownButton.closest(".js_dropdown");
+    const dropdownContent = dropdownContainer?.querySelector(".js_dropdown_content");
+    if (dropdownContent) {
+      dropdownContent.classList.add("hidden");
+      dropdownContent.setAttribute("hidden", "true");
+    }
+    dropdownButton.setAttribute("aria-expanded", "false");
   });
 
   return item;
@@ -534,12 +561,12 @@ function updateYearButtonStyling(selectedElement, isDropdownItem = false) {
 
   // Reset styles for all chips (years, All time, date-range form, Clear filters, etc.)
   const yearButtons = document.querySelectorAll(".js-nav-chip");
+
   yearButtons.forEach((button) => {
     // Remove active-only styles, restore enabled-only styles
-    button.classList.remove(...activeOnlyClasses, "hover:bg-neutral-800");
-    button.classList.add(...enabledOnlyClasses, "hover:bg-carnation-100");
+    button.classList.remove(...activeOnlyClasses);
+    button.classList.add(...enabledOnlyClasses);
 
-    // a11y: only real <button> elements get aria-pressed
     if (button.tagName.toLowerCase() === "button") {
       button.setAttribute("aria-pressed", "false");
     }
@@ -551,12 +578,13 @@ function updateYearButtonStyling(selectedElement, isDropdownItem = false) {
     }
   });
 
+
   if (!selectedElement) return;
 
   // For normal chips (not the inner dropdown toggle button), apply active styles
   if (!selectedElement.classList.contains("js_dropdown_button")) {
-    selectedElement.classList.remove(...enabledOnlyClasses, "hover:bg-carnation-100", "opacity-50");
-    selectedElement.classList.add(...activeOnlyClasses, "hover:bg-neutral-800");
+    selectedElement.classList.remove(...enabledOnlyClasses, "opacity-50");
+    selectedElement.classList.add(...activeOnlyClasses);
 
     if (selectedElement.tagName.toLowerCase() === "button") {
       selectedElement.setAttribute("aria-pressed", "true");
