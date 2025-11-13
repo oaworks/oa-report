@@ -594,12 +594,12 @@ export function bindSmoothScrollLinks() {
  * Adds a shadow to the nav bar, a border to the bottom of the items, and a transition effect.
  */
 export function adjustNavOnScroll() {
-  const nav = document.querySelector("#top_nav");
+  const nav = document.querySelector("#js-report-nav");
   if (!nav) return;
 
   function adjustNavStyle() {
     // Re-query so dynamically added buttons (e.g. Clear filters) are included
-    const yearButtons = nav.querySelectorAll(".js_year_select");
+    const yearButtons = nav.querySelectorAll(".js-nav-chip");
     const rect = nav.getBoundingClientRect();
 
     if (rect.top <= 0) {

@@ -50,28 +50,40 @@ permalink: "{{ org._source.objectID | slug }}/"
   {# TOP NAV #}
   {# Only shown for paid reports #}
   {% if org._source.paid == true %}
-  <nav class="sticky top-0 pt-3 md:pt-6 z-20 bg-white transition-pb-0" id="top_nav">
-    <h2 class="sr-only">See the report by year or custom dates</h2>
+  <nav
+    class="sticky top-0 pt-3 md:pt-6 z-20 bg-white transition-pb-0 js-report-nav"
+    id="js-report-nav"
+  >
+  <h2 class="sr-only">Report navigation</h2>
     <div class="flex items-stretch justify-between">
-      <div id="year-buttons-container" class="ml-3 md:ml-6 mb-1 md:mb-0 flex flex-wrap space-y-1 md:space-y-0 text-xs md:text-sm"></div>
+      <section>
+        <h3 class="sr-only">See the report by year or custom dates</h3>
+        <div
+          id="js-year-buttons"
+          class="ml-3 md:ml-6 mb-1 md:mb-0 flex flex-wrap space-y-1 md:space-y-0 text-xs md:text-sm"
+        ></div>
+      </section>
       {# Active filters panel #}
       <aside
         class="mr-3 md:mr-6 text-neutral-900 text-xs md:text-sm md:border-b-0 js-active-filters-wrapper"
-        aria-labelledby="active-filters-title"
+        aria-labelledby="js-active-filters-title"
       >
-        <h2 class="sr-only">
+        <h3 id="js-active-filters-title" class="sr-only">
           Active filters
-        </h2>
+        </h3>
 
         {# Live region so SR users hear updates when filters change #}
-        <div id="js-active-filters"
-            class="flex items-center"
-            role="status"
-            aria-live="polite"
-            aria-atomic="true"></div>
+        <div
+          id="js-active-filters"
+          class="flex items-center"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        ></div>
       </aside>
     </div>
   </nav>
+
   {% endif %}
 
   {# INSIGHTS #}

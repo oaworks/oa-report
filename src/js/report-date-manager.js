@@ -174,7 +174,7 @@ export function initDateManager() {
  * @param {number} [visibleYears=4] - The number of years to be visible outside the dropdown.
  */
 export function bindDynamicYearButtons(startYear, endYear, visibleYears = 3) {
-  const yearsContainer = document.getElementById("year-buttons-container");
+  const yearsContainer = document.getElementById("js-year-buttons");
   const currentYear = new Date().getFullYear(); // Get current year
   const currentDate = new Date(); // Get current date
   const { dropdown, dropdownContent, dropdownButton } = createDropdownContainer("date_range_more_dropdown");
@@ -336,12 +336,12 @@ function createDateRangeForm() {
   // Form container
   const form = document.createElement("form");
   form.id = "date_range_form";
-  form.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " flex items-center whitespace-nowrap hover:text-white";
-  form.setAttribute("aria-labelledby", "date-range-form-title");
+  form.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " flex items-center whitespace-nowrap";
+  form.setAttribute("aria-labelledby", "js-date-range-form-title");
 
   // Title for the form (for screen readers)
   const formTitle = document.createElement("h2");
-  formTitle.id = "date-range-form-title";
+  formTitle.id = "js-date-range-form-title";
   formTitle.textContent = "Select custom date range";
   formTitle.className = "sr-only";
   form.appendChild(formTitle);
@@ -362,7 +362,7 @@ function createDateRangeForm() {
   // Trigger button to open the popover
   const triggerBtn = document.createElement("button");
   triggerBtn.type = "button";
-  triggerBtn.textContent = "Custom date";
+  triggerBtn.textContent = "Custom date range";
   triggerBtn.setAttribute("aria-haspopup", "dialog");
   triggerBtn.setAttribute("aria-expanded", "false");
   triggerBtn.style.color = "inherit";
@@ -372,7 +372,7 @@ function createDateRangeForm() {
   const pop = document.createElement("div");
   pop.className = "p-2 md:p-3 text-xs md:text-sm";
   pop.setAttribute("role", "form");
-  pop.setAttribute("aria-labelledby", "date-range-form-title");
+  pop.setAttribute("aria-labelledby", "js-date-range-form-title");
 
   // Create labelled inputs, but give them distinct IDs
   const startField = createDateInput("start-date-pop", "From");
@@ -525,7 +525,7 @@ function handleYearButtonLogic(button, startDate, endDate, buttonText) {
  */
 function updateYearButtonStyling(selectedElement, isDropdownItem = false) {
   // Reset styles for year buttons and dropdown items
-  const yearButtons = document.querySelectorAll(".js_year_select");
+  const yearButtons = document.querySelectorAll(".js-nav-chip");
   yearButtons.forEach(button => {
     button.classList.remove("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
     button.classList.add("bg-white", "text-neutral-900");
