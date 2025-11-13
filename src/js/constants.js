@@ -73,9 +73,9 @@ export const USER_LOCALE = navigator.languages && navigator.languages.length
  * date selection buttons, including 'enabled', 'disabled', and 'active'.
  */
 export const DATE_SELECTION_BUTTON_CLASSES = {
-  enabled: "block p-2 border rounded-t-sm mt-1 mr-1 md:mt-0 md:mr-3 md:border-b-0 bg-white text-neutral-900 hover:bg-neutral-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 js-nav-chip",
+  enabled: "block p-2 border rounded-t-sm mt-1 mr-1 md:mt-0 md:mr-3 md:border-b-0 bg-white text-neutral-900 hover:bg-carnation-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 js-nav-chip",
   disabled: "block p-2 border rounded-t-sm mt-1 mr-1 md:mt-0 md:mr-3 md:border-b-0 bg-white text-neutral-900 opacity-50 cursor-not-allowed js-nav-chip",
-  active: "p-2 border mt-1 mr-1 md:mt-0 md:mr-3 hover:bg-neutral-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 md:border-b-0 bg-neutral-900 text-white font-semibold border-neutral-900 js-nav-chip"
+  active: "p-2 border mt-1 mr-1 md:mt-0 md:mr-3 hover:bg-carnation-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 md:border-b-0 bg-neutral-900 text-white font-semibold border-neutral-900 js-nav-chip"
 }
 
 /**

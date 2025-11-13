@@ -1412,7 +1412,7 @@ function renderActiveFiltersBanner() {
     <button
       id="js-filters-summary"
       type="button"
-      class="block p-2 rounded-t-sm mt-1 mr-1 md:mt-0 md:mr-3 bg-carnation-100 text-neutral-900 hover:bg-neutral-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 px-3"
+      class="block p-2 rounded-t-sm mt-1 mr-1 md:mt-0 md:mr-3 bg-carnation-100 text-neutral-900 hover:bg-carnation-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 px-3"
       aria-label="${count} active filter${count > 1 ? 's' : ''}. Click to see details."
       title="${plainExpression}"
     >
@@ -1421,7 +1421,7 @@ function renderActiveFiltersBanner() {
     <button
       id="js-clear-q"
       type="button"
-      class="block p-2 border rounded-t-sm mt-1 mr-1 md:mt-0 md:mr-3 md:border-b-0 bg-white text-neutral-900 hover:bg-neutral-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 js-nav-chip"
+      class="block p-2 border rounded-t-sm mt-1 mr-1 md:mt-0 md:mr-3 md:border-b-0 bg-white text-neutral-900 hover:bg-carnation-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 js-nav-chip"
     >
       Clear filters
     </button>
