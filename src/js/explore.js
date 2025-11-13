@@ -859,7 +859,11 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
   const cell = document.createElement(isHeader ? 'th' : 'td');
   cell.className = cssClass;
 
-  // Helper: attach click-to-filter for term tables, but ignore clicks on external pills
+  /**
+   * Helper: attach click-to-filter for term tables, but ignore clicks on external pills.
+   *
+   * @param {string|number} rawValue - The raw bucket key value to filter on.
+   */
   function attachTermClickFilter(rawValue) {
     if (key !== 'key' || !currentActiveExploreItemData?.term) return;
 
@@ -893,6 +897,35 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
       }, 50);
     };
   }
+
+  /**
+   * Helper: add a small dot indicating selected term for any term already active in the URL ?q=.
+   *
+   * @param {HTMLElement} wrapper - The span wrapping the clickable term text.
+   * @param {string|number} rawValue - The raw bucket key value to match against the active filters.
+   */
+  function addSelectedDotIfNeeded(wrapper, rawValue) {
+    if (key !== 'key' || !currentActiveExploreItemData?.term) return;
+
+    const term = currentActiveExploreItemData.term.trim();
+    const value = String(rawValue).replace(/"/g, '\\"');
+    const clause = `${term}:"${value}"`;
+    const q = getDecodedUrlQuery() || '';
+
+    if (!q.includes(clause)) return;
+
+    wrapper.classList.add('inline-flex', 'items-center');
+
+    const dot = document.createElement('span');
+    dot.className = 'inline-block w-1.5 h-1.5 mr-1 rounded-full bg-carnation-500';
+    dot.setAttribute('aria-hidden', 'true');
+    wrapper.insertBefore(dot, wrapper.firstChild);
+
+    const sr = document.createElement('span');
+    sr.className = 'sr-only';
+    sr.textContent = 'Selected filter';
+    wrapper.appendChild(sr);
+  }
   
   // Early handling for common 'all_values' and 'no_values' cases in terms-based data
   // Display either 'All [explore item]]' or 'No [explore item]'
@@ -905,6 +938,8 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
   // Safely check and process content based on its type and the context
   if (key === 'key' && content) {
     let displayContent = "";
+    /** @type {HTMLElement|null} */
+    let labelWrapper = null;
 
     switch (exploreItemId) {
       case 'country': {
@@ -928,7 +963,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
         const licenseName = licenseInfo?.name || "Unknown license";
         const licenseUrl = licenseInfo?.url || null;
 
-        const labelWrapper = document.createElement('span');
+        labelWrapper = document.createElement('span');
         labelWrapper.className = 'js-filter-target cursor-pointer hover:underline';
 
         const codeEl = document.createElement('strong');
@@ -954,8 +989,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
           cell.appendChild(pill);
         }
 
-        attachTermClickFilter(content);
-        return cell;
+        break;
       }
 
       case 'all_lab_head': // TODO: remove these cases once we settle on a naming convention
@@ -974,7 +1008,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
           pill.className = 'ml-2 bg-neutral-200 text-neutral-900 text-xs px-2 py-0.5 rounded-full whitespace-nowrap hover:bg-carnation-200 js-external-pill';
           pill.textContent = 'ORCID ↗';
 
-          const labelWrapper = document.createElement('span');
+          labelWrapper = document.createElement('span');
           labelWrapper.className = 'js-filter-target cursor-pointer hover:underline';
 
           const nameSpan = document.createElement('span');
@@ -993,8 +1027,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
               nameSpan.textContent = content;
             });
 
-          attachTermClickFilter(content); // filter on the ORCID value
-          return cell;
+          break;
         }
 
         // Non-ORCID value, just show as-is and let it be filterable
@@ -1007,12 +1040,17 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
       }
     }
 
-    // Wrap plain key values in a filter-target span
-    const labelWrapper = document.createElement('span');
-    labelWrapper.className = 'js-filter-target cursor-pointer hover:underline';
-    labelWrapper.textContent = displayContent;
+    // Wrap plain key values in a filter-target span (countries, grant IDs, etc.)
+    if (!labelWrapper) {
+      labelWrapper = document.createElement('span');
+      labelWrapper.className = 'js-filter-target cursor-pointer hover:underline';
+      labelWrapper.textContent = displayContent;
+      cell.appendChild(labelWrapper);
+    }
 
-    cell.appendChild(labelWrapper);
+    // Where the active-filter-dot is added for ALL term cells
+    addSelectedDotIfNeeded(labelWrapper, content);
+
     attachTermClickFilter(content);
     return cell;
   }
