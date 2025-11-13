@@ -917,7 +917,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
     wrapper.classList.add('inline-flex', 'items-center');
 
     const dot = document.createElement('span');
-    dot.className = 'inline-block w-1.5 h-1.5 mr-1 rounded-full bg-carnation-500';
+    dot.className = 'inline-block w-1.5 h-1.5 mr-1 rounded-full bg-carnation-400';
     dot.setAttribute('aria-hidden', 'true');
     wrapper.insertBefore(dot, wrapper.firstChild);
 
