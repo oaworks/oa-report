@@ -524,92 +524,68 @@ function handleYearButtonLogic(button, startDate, endDate, buttonText) {
  * @param {boolean} isDropdownItem - Indicates whether the selected button is a dropdown item.
  */
 function updateYearButtonStyling(selectedElement, isDropdownItem = false) {
-  // Reset styles for year buttons and dropdown items
+  // Derive class differences from the constants so we don't manually juggle Tailwind classes
+  const enabledClasses = DATE_SELECTION_BUTTON_CLASSES.enabled.split(' ');
+  const activeClasses  = DATE_SELECTION_BUTTON_CLASSES.active.split(' ');
+
+  // Classes that only belong to one state or the other
+  const activeOnlyClasses  = activeClasses.filter(c => !enabledClasses.includes(c));
+  const enabledOnlyClasses = enabledClasses.filter(c => !activeClasses.includes(c));
+
+  // Reset styles for all chips (years, All time, date-range form, Clear filters, etc.)
   const yearButtons = document.querySelectorAll(".js-nav-chip");
-  yearButtons.forEach(button => {
-    // Remove active styles
-    button.classList.remove(
-      "bg-neutral-900",
-      "text-white",
-      "font-semibold",
-      "border-neutral-900",
-      "hover:bg-neutral-800"
-    );
+  yearButtons.forEach((button) => {
+    // Remove active-only styles, restore enabled-only styles
+    button.classList.remove(...activeOnlyClasses, "hover:bg-neutral-800");
+    button.classList.add(...enabledOnlyClasses, "hover:bg-carnation-100");
 
-    // Restore inactive styles
-    button.classList.add(
-      "bg-white",
-      "text-neutral-900",
-      "hover:bg-carnation-100"
-    );
-
-    // a11y: check if the element is a button before setting aria-pressed
-    // This ARIA role can only be applied to these elements: div and form can not be pressed
-    // See axe-core 4.4, "Elements must only use allowed ARIA attributes"
-    if (button.tagName.toLowerCase() === 'button') {
+    // a11y: only real <button> elements get aria-pressed
+    if (button.tagName.toLowerCase() === "button") {
       button.setAttribute("aria-pressed", "false");
     }
 
-    const parentDropdown = button.closest('.js_dropdown');
+    const parentDropdown = button.closest(".js_dropdown");
     if (parentDropdown) {
-      parentDropdown.classList.remove("bg-neutral-900", "border-neutral-900");
+      parentDropdown.classList.remove("bg-neutral-900", "border-neutral-900", "text-white", "font-semibold");
       parentDropdown.classList.add("bg-white");
     }
   });
 
-  // Check if selectedElement is not null before applying styles
-  if (selectedElement) {
-    if (!selectedElement.classList.contains('js_dropdown_button')) {
-      // Active styles for selected chip/form
-      selectedElement.classList.add(
-        "bg-neutral-900",
-        "text-white",
-        "font-semibold",
-        "border-neutral-900",
-        "hover:bg-neutral-800"
-      );
-      selectedElement.classList.remove(
-        "bg-white",
-        "text-neutral-900",
-        "opacity-50",
-        "hover:bg-carnation-100"
-      );
+  if (!selectedElement) return;
 
-      if (selectedElement.tagName.toLowerCase() === 'button') {
-        selectedElement.setAttribute("aria-pressed", "true");
-      }
+  // For normal chips (not the inner dropdown toggle button), apply active styles
+  if (!selectedElement.classList.contains("js_dropdown_button")) {
+    selectedElement.classList.remove(...enabledOnlyClasses, "hover:bg-carnation-100", "opacity-50");
+    selectedElement.classList.add(...activeOnlyClasses, "hover:bg-neutral-800");
+
+    if (selectedElement.tagName.toLowerCase() === "button") {
+      selectedElement.setAttribute("aria-pressed", "true");
     }
+  }
 
-    // Style form contents if the selected "button" is the date range form
-    if (selectedElement.tagName.toLowerCase() === 'form') {
-      selectedElement.classList.remove("hover:bg-white", "hover:text-white");
+  // If the selected "chip" is actually the date range form, style its internals
+  if (selectedElement.tagName.toLowerCase() === "form") {
+    const labels = selectedElement.querySelectorAll("label");
+    labels.forEach((label) => {
+      label.classList.add("text-white");
+    });
 
-      const labels = selectedElement.querySelectorAll('label');
-      labels.forEach(label => {
-        label.classList.add("text-white");
-      });
+    const inputs = selectedElement.querySelectorAll("input");
+    inputs.forEach((input) => {
+      input.classList.add("text-white", "bg-neutral-900", "border-neutral-900");
+    });
+  }
 
-      const inputs = selectedElement.querySelectorAll('input');
-      inputs.forEach(input => {
-        input.classList.add("text-white", "bg-neutral-900", "border-neutral-900");
-      });
-    }
-
-    // If the selected button is a dropdown item, apply styling to the dropdown container only
-    if (isDropdownItem) {
-      const dropdownContainer = selectedElement.closest('.js_dropdown');
-      if (dropdownContainer) {
-        dropdownContainer.classList.add(
-          "bg-neutral-900",
-          "text-white",
-          "font-semibold",
-          "border-neutral-900"
-        );
-        dropdownContainer.classList.remove("bg-white");
-      }
+  // If the selected element came from the dropdown list, style the visible dropdown container instead
+  if (isDropdownItem) {
+    const dropdownContainer = selectedElement.closest(".js_dropdown");
+    if (dropdownContainer) {
+      dropdownContainer.classList.remove("bg-white");
+      dropdownContainer.classList.add("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
     }
   }
 }
+
 
 /**
  * Resets the dropdown to its default state - back to 'More years' and reverting the 
