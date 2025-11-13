@@ -371,7 +371,7 @@ function createDateRangeForm() {
   // Custom date range popover content
   const pop = document.createElement("div");
   pop.className = "p-2 md:p-3 text-xs md:text-sm";
-  pop.setAttribute("role", "form");
+  pop.setAttribute("role", "dialog");
   pop.setAttribute("aria-labelledby", "js-date-range-form-title");
 
   // Create labelled inputs, but give them distinct IDs
