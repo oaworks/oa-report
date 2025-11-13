@@ -362,7 +362,7 @@ function createDateRangeForm() {
   // Trigger button to open the popover
   const triggerBtn = document.createElement("button");
   triggerBtn.type = "button";
-  triggerBtn.textContent = "Custom date range";
+  triggerBtn.innerHTML = "Custom date range <span class='ml-1 text-xs'>▼</span>";
   triggerBtn.setAttribute("aria-haspopup", "dialog");
   triggerBtn.setAttribute("aria-expanded", "false");
   triggerBtn.style.color = "inherit";
@@ -385,7 +385,7 @@ function createDateRangeForm() {
   // Apply button inside the popover
   const applyBtn = document.createElement("button");
   applyBtn.type = "button";
-  applyBtn.className = DATE_SELECTION_BUTTON_CLASSES.active + " w-full";
+  applyBtn.className = DATE_SELECTION_BUTTON_CLASSES.active + " rounded-sm w-full";
   applyBtn.textContent = "Apply";
   pop.appendChild(applyBtn);
 

@@ -603,14 +603,18 @@ export function adjustNavOnScroll() {
     const rect = nav.getBoundingClientRect();
 
     if (rect.top <= 0) {
+      // Nav is at the top of the viewport
       yearButtons.forEach((button) => {
         button.classList.remove("md:border-b-0");
+        button.classList.add("rounded-b-sm");
       });
       nav.classList.add("shadow-lg", "transition-pb-3", "md:transition-pb-6");
       nav.classList.remove("transition-pb-0");
     } else {
+      // Nav has scrolled away from the top
       yearButtons.forEach((button) => {
         button.classList.add("md:border-b-0");
+        button.classList.remove("rounded-b-sm");
       });
       nav.classList.remove("shadow-lg", "transition-pb-3", "md:transition-pb-6");
       nav.classList.add("transition-pb-0");
