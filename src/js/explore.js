@@ -999,7 +999,12 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
       }
     }
 
-    cell.innerHTML = displayContent;
+    // Wrap plain key values in a filter-target span
+    const labelWrapper = document.createElement('span');
+    labelWrapper.className = 'js-filter-target cursor-pointer hover:underline';
+    labelWrapper.textContent = displayContent;
+
+    cell.appendChild(labelWrapper);
     attachTermClickFilter(content);
     return cell;
   }
