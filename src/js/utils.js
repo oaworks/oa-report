@@ -595,21 +595,21 @@ export function bindSmoothScrollLinks() {
  */
 export function adjustNavOnScroll() {
   const nav = document.querySelector("#top_nav");
-  const yearButtons = document.querySelectorAll(".js_year_select");
+  if (!nav) return;
 
   function adjustNavStyle() {
+    // Re-query so dynamically added buttons (e.g. Clear filters) are included
+    const yearButtons = nav.querySelectorAll(".js_year_select");
     const rect = nav.getBoundingClientRect();
-    
+
     if (rect.top <= 0) {
-      yearButtons.forEach((button) => { 
-        button.classList.add("md:border-b");
+      yearButtons.forEach((button) => {
         button.classList.remove("md:border-b-0");
       });
       nav.classList.add("shadow-lg", "transition-pb-3", "md:transition-pb-6");
       nav.classList.remove("transition-pb-0");
     } else {
-      yearButtons.forEach((button) => { 
-        button.classList.remove("md:border-b");
+      yearButtons.forEach((button) => {
         button.classList.add("md:border-b-0");
       });
       nav.classList.remove("shadow-lg", "transition-pb-3", "md:transition-pb-6");
@@ -618,7 +618,7 @@ export function adjustNavOnScroll() {
   }
 
   // Attach the function to the scroll event
-  document.addEventListener("scroll", adjustNavStyle);
+  document.addEventListener("scroll", adjustNavStyle, { passive: true });
 
   // Call the function immediately to check the initial scroll position
   adjustNavStyle();

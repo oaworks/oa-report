@@ -365,6 +365,7 @@ function createDateRangeForm() {
   triggerBtn.textContent = "Custom date";
   triggerBtn.setAttribute("aria-haspopup", "dialog");
   triggerBtn.setAttribute("aria-expanded", "false");
+  triggerBtn.style.color = "inherit";
   form.appendChild(triggerBtn);
 
   // Custom date range popover content

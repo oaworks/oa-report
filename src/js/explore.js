@@ -1377,7 +1377,7 @@ function renderActiveFiltersBanner() {
   if (!pairs.length) {
     mount.innerHTML = '';
     mount.style.display = 'none';
-    mount.closest('.bg-carnation-100')?.classList.add('hidden'); // hide the container when no filters
+    mount.closest('.js-active-filters-wrapper')?.classList.add('hidden'); // hide the container when no filters
     return;
   }
 
@@ -1407,12 +1407,12 @@ function renderActiveFiltersBanner() {
     </div>
   `;
 
-  // In the nav, show a compact button + Clear
+  // In the nav, show the Active filters + Clear filter buttons
   mount.innerHTML = `
     <button
       id="js-filters-summary"
       type="button"
-      class="px-2 py-1 border border-neutral-300 bg-white text-neutral-900 text-xs md:text-sm whitespace-nowrap"
+      class="block p-2 rounded-t-sm mt-1 mr-1 md:mt-0 md:mr-3 bg-carnation-100 text-neutral-900 hover:bg-neutral-800 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 px-3"
       aria-label="${count} active filter${count > 1 ? 's' : ''}. Click to see details."
       title="${plainExpression}"
     >
@@ -1421,14 +1421,14 @@ function renderActiveFiltersBanner() {
     <button
       id="js-clear-q"
       type="button"
-      class="ml-2 py-1 px-2 border"
+      class="block p-2 border rounded-t-sm mt-1 mr-1 md:mt-0 md:mr-3 md:border-b-0 bg-white text-neutral-900 hover:bg-neutral-800 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 js_year_select"
     >
-      Clear filter
+      Clear filters
     </button>
   `;
 
   mount.style.display = '';
-  mount.closest('.bg-carnation-100')?.classList.remove('hidden'); // show the container when filters exist
+  mount.closest('.js-active-filters-wrapper')?.classList.remove('hidden'); // show the container when filters exist
 
   // Attach popover for full filter details
   const summaryBtn = document.getElementById('js-filters-summary');
