@@ -1382,6 +1382,8 @@ function renderActiveFiltersBanner() {
   }
 
   // Build a single/compact inline expression
+  const count = pairs.length;
+
   const plainExpression = pairs
     .map(({ label, value }) => `${label} ${value}`)
     .join(' AND ');
@@ -1393,24 +1395,62 @@ function renderActiveFiltersBanner() {
     )
     .join(' <span class="text-neutral-600">AND</span> ');
 
+  // Content for the popover containing the full expression/filters
+  const popoverContent = `
+    <div class="p-2 text-xs md:text-sm max-w-xs">
+      <p class="mb-1 font-medium text-neutral-900">
+        Active filters (${count})
+      </p>
+      <p class="text-neutral-800">
+        ${expression}
+      </p>
+    </div>
+  `;
+
+  // In the nav, show a compact button + Clear
   mount.innerHTML = `
-    <span class="truncate max-w-[10rem] md:max-w-xs" title="${plainExpression}">
-      ${expression}
-    </span>
-    <button id="js-clear-q" type="button"
-      class="ml-4 py-1 px-2 border">
+    <button
+      id="js-filters-summary"
+      type="button"
+      class="px-2 py-1 border border-neutral-300 bg-white text-neutral-900 text-xs md:text-sm whitespace-nowrap"
+      aria-label="${count} active filter${count > 1 ? 's' : ''}. Click to see details."
+      title="${plainExpression}"
+    >
+      Filters (${count})
+    </button>
+    <button
+      id="js-clear-q"
+      type="button"
+      class="ml-2 py-1 px-2 border"
+    >
       Clear filter
     </button>
   `;
 
-
   mount.style.display = '';
   mount.closest('.bg-carnation-100')?.classList.remove('hidden'); // show the container when filters exist
+
+  // Attach popover for full filter details
+  const summaryBtn = document.getElementById('js-filters-summary');
+  if (summaryBtn && typeof tippy === 'function') {
+    if (summaryBtn._tippy) summaryBtn._tippy.destroy();
+
+    tippy(summaryBtn, {
+      content: popoverContent,
+      allowHTML: true,
+      interactive: true,
+      placement: 'bottom',
+      appendTo: document.body,
+      theme: 'popover',
+      arrow: false
+    });
+  }
 
   document.getElementById('js-clear-q')?.addEventListener('click', () => {
     removeURLParams('q'); // keep breakdown, start/end, etc.
     renderActiveFiltersBanner(); // refresh banner
-    initInsightsAndStrategies(org); // re-init insights & actions 
+    initInsightsAndStrategies(org); // re-init insights & actions
+
     if (currentActiveExploreItemButton && currentActiveExploreItemData) {
       processExploreDataTable(currentActiveExploreItemButton, currentActiveExploreItemData);
     } else {
