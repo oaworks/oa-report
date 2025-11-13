@@ -527,8 +527,21 @@ function updateYearButtonStyling(selectedElement, isDropdownItem = false) {
   // Reset styles for year buttons and dropdown items
   const yearButtons = document.querySelectorAll(".js-nav-chip");
   yearButtons.forEach(button => {
-    button.classList.remove("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
-    button.classList.add("bg-white", "text-neutral-900");
+    // Remove active styles
+    button.classList.remove(
+      "bg-neutral-900",
+      "text-white",
+      "font-semibold",
+      "border-neutral-900",
+      "hover:bg-neutral-800"
+    );
+
+    // Restore inactive styles
+    button.classList.add(
+      "bg-white",
+      "text-neutral-900",
+      "hover:bg-carnation-100"
+    );
 
     // a11y: check if the element is a button before setting aria-pressed
     // This ARIA role can only be applied to these elements: div and form can not be pressed
@@ -547,9 +560,24 @@ function updateYearButtonStyling(selectedElement, isDropdownItem = false) {
   // Check if selectedElement is not null before applying styles
   if (selectedElement) {
     if (!selectedElement.classList.contains('js_dropdown_button')) {
-      selectedElement.classList.add("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
-      selectedElement.classList.remove("bg-white", "text-neutral-900", "opacity-50");
-      selectedElement.setAttribute("aria-pressed", "true");
+      // Active styles for selected chip/form
+      selectedElement.classList.add(
+        "bg-neutral-900",
+        "text-white",
+        "font-semibold",
+        "border-neutral-900",
+        "hover:bg-neutral-800"
+      );
+      selectedElement.classList.remove(
+        "bg-white",
+        "text-neutral-900",
+        "opacity-50",
+        "hover:bg-carnation-100"
+      );
+
+      if (selectedElement.tagName.toLowerCase() === 'button') {
+        selectedElement.setAttribute("aria-pressed", "true");
+      }
     }
 
     // Style form contents if the selected "button" is the date range form
@@ -571,7 +599,12 @@ function updateYearButtonStyling(selectedElement, isDropdownItem = false) {
     if (isDropdownItem) {
       const dropdownContainer = selectedElement.closest('.js_dropdown');
       if (dropdownContainer) {
-        dropdownContainer.classList.add("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
+        dropdownContainer.classList.add(
+          "bg-neutral-900",
+          "text-white",
+          "font-semibold",
+          "border-neutral-900"
+        );
         dropdownContainer.classList.remove("bg-white");
       }
     }
