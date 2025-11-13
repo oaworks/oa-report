@@ -66,27 +66,34 @@ export function setDefaultYear() {
       document.getElementById('end-date').value = endDate.toISOString().split('T')[0];
     }
 
-    // Trigger any additional logic needed to refresh the report
-    handleYearButtonLogic(null, startDate, endDate, `${makeDateReadable(startDate)} &ndash; ${makeDateReadable(endDate)}`);
-
     let elementToUpdate;
+    let buttonText;
 
-    // Check if startDate and endDate correspond to the start and end of the same year
-    if (
+    const isWholeYear =
       startDate.getFullYear() === endDate.getFullYear() &&
-      startDate.getMonth() === 0 && // January is 0
-      startDate.getDate() === 1 && // Start of the year
-      endDate.getMonth() === 11 && // December is 11
-      endDate.getDate() === 31 // End of the year
-    ) {
-      // If true, select & style the button with ID `year-[YYYY]`
+      startDate.getMonth() === 0 &&
+      startDate.getDate() === 1 &&
+      endDate.getMonth() === 11 &&
+      endDate.getDate() === 31;
+
+    if (isWholeYear) {
       elementToUpdate = document.getElementById(`year-${startDate.getFullYear()}`);
+      buttonText = `${startDate.getFullYear()}`;
     } else {
-      // Otherwise, select & style the date range form
       elementToUpdate = document.getElementById("date_range_form");
+      buttonText = `${makeDateReadable(startDate)} &ndash; ${makeDateReadable(endDate)}`;
     }
-    // Style the selected element, whether it’s a year button or the date range form
-    updateYearButtonStyling(elementToUpdate, true);
+
+    // Trigger any additional logic needed to refresh the report and style the control
+    handleYearButtonLogic(elementToUpdate, startDate, endDate, buttonText);
+
+    // If this is a year that lives in the More dropdown, update the visible label
+    if (elementToUpdate && elementToUpdate.classList.contains("js_dropdown_item")) {
+      const dropdownButton = document.querySelector(".js_dropdown_button");
+      if (dropdownButton) {
+        dropdownButton.innerHTML = `${startDate.getFullYear()} <span class='ml-1 text-xs'>&#9660;</span>`;
+      }
+    }
   } else {
     // Otherwise, set default dates or years based on user type
     let defaultStartDate, defaultEndDate;
@@ -284,25 +291,17 @@ function createDropdownItem(buttonId, buttonText, startDate, endDate, dropdownBu
   item.addEventListener("click", (event) => {
     event.preventDefault();
 
-    // Update visible label on the More chip
-    dropdownButton.innerHTML = `${buttonText} <span class='ml-1 text-xs'>&#9660;</span>`;
-
     // Update URL with the selected year
     updateURLParams({
       start: startDate.toISOString().split("T")[0],
       end: endDate.toISOString().split("T")[0]
     });
 
-    // Apply the date range + refresh reports, but DO NOT style the row itself
-    handleYearButtonLogic(
-      null,
-      startDate,
-      endDate,
-      buttonText
-    );
+    // Apply the date range + refresh reports and style via the dropdown container
+    handleYearButtonLogic(item, startDate, endDate, buttonText);
 
-    // Visually mark the More chip as the active selection
-    updateYearButtonStyling(dropdownButton, true);
+    // Update visible label on the More chip
+    dropdownButton.innerHTML = `${buttonText} <span class='ml-1 text-xs'>&#9660;</span>`;
 
     // Close the dropdown
     const dropdownContainer = dropdownButton.closest(".js_dropdown");
@@ -313,6 +312,7 @@ function createDropdownItem(buttonId, buttonText, startDate, endDate, dropdownBu
     }
     dropdownButton.setAttribute("aria-expanded", "false");
   });
+
 
   return item;
 }
@@ -412,7 +412,7 @@ function createDateRangeForm() {
   // Apply button inside the popover
   const applyBtn = document.createElement("button");
   applyBtn.type = "button";
-  applyBtn.className = DATE_SELECTION_BUTTON_CLASSES.active + " rounded-sm w-full";
+  applyBtn.className = "block p-2 border rounded-sm mt-1 mr-1 md:mt-0 md:mr-3 w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 hover:bg-carnation-100 js-nav-chip";
   applyBtn.textContent = "Apply";
   pop.appendChild(applyBtn);
 
@@ -573,16 +573,15 @@ function updateYearButtonStyling(selectedElement, isDropdownItem = false) {
 
     const parentDropdown = button.closest(".js_dropdown");
     if (parentDropdown) {
-      parentDropdown.classList.remove("bg-neutral-900", "border-neutral-900", "text-white", "font-semibold");
-      parentDropdown.classList.add("bg-white");
+      parentDropdown.classList.remove(...activeOnlyClasses);
+      parentDropdown.classList.add(...enabledOnlyClasses);
     }
   });
 
-
   if (!selectedElement) return;
 
-  // For normal chips (not the inner dropdown toggle button), apply active styles
-  if (!selectedElement.classList.contains("js_dropdown_button")) {
+  // For normal chips (not the inner dropdown toggle button, not dropdown items), apply active styles
+  if (!selectedElement.classList.contains("js_dropdown_button") && !isDropdownItem) {
     selectedElement.classList.remove(...enabledOnlyClasses, "opacity-50");
     selectedElement.classList.add(...activeOnlyClasses);
 
@@ -608,12 +607,11 @@ function updateYearButtonStyling(selectedElement, isDropdownItem = false) {
   if (isDropdownItem) {
     const dropdownContainer = selectedElement.closest(".js_dropdown");
     if (dropdownContainer) {
-      dropdownContainer.classList.remove("bg-white");
-      dropdownContainer.classList.add("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
+      dropdownContainer.classList.remove(...enabledOnlyClasses);
+      dropdownContainer.classList.add(...activeOnlyClasses);
     }
   }
 }
-
 
 /**
  * Resets the dropdown to its default state - back to 'More years' and reverting the 
