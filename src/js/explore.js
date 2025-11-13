@@ -859,6 +859,33 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
   const cell = document.createElement(isHeader ? 'th' : 'td');
   cell.className = cssClass;
 
+  // Helper: attach click-to-filter for term tables, but ignore clicks on external pills
+  function attachTermClickFilter(rawValue) {
+    if (key !== 'key' || !currentActiveExploreItemData?.term) return;
+
+    cell.onclick = (event) => {
+      const target = /** @type {HTMLElement} */ (event.target);
+      // Do not trigger filtering when clicking the external profile pill
+      if (target && target.closest('.js-external-pill')) return;
+
+      updateURLParams({
+        q: buildEncodedQueryWithUrlFilter(
+          `${currentActiveExploreItemData.term.trim()}:"${String(rawValue).replace(/"/g, '\\"')}"`
+        )
+      });
+
+      setTimeout(() => {
+        initInsightsAndStrategies(org);
+        if (currentActiveExploreItemButton && currentActiveExploreItemData) {
+          processExploreDataTable(currentActiveExploreItemButton, currentActiveExploreItemData);
+        } else {
+          displayDefaultArticlesData();
+        }
+        renderActiveFiltersBanner();
+      }, 50);
+    };
+  }
+
   // Early handling for common 'all_values' and 'no_values' cases in terms-based data
   // Display either 'All [explore item]]' or 'No [explore item]'
   if (content === 'all_values' || content === 'no_values') {
@@ -870,80 +897,144 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
   // Safely check and process content based on its type and the context
   if (key === 'key' && content) {
     let displayContent = "";
+
     switch (exploreItemId) {
-      case 'country':
+      case 'country': {
         // Fetch and display country name using country code
         displayContent = COUNTRY_CODES[content] || "Unknown country";
         break;
-      case 'language':
+      }
+
+      case 'language': {
         // Fetch and display language name using language code
         displayContent = LANGUAGE_CODES[content] || "Unknown language";
         break;
+      }
+
       case 'publisher_license':
       case 'repository_license':
-        // Check if LICENSE_CODES entry exists and get name and URL
+      case 'license':
+      case 'dataset_license': {
+        // License label + separate CC pill
         const licenseInfo = LICENSE_CODES[content];
         const licenseName = licenseInfo?.name || "Unknown license";
-        const licenseUrl = licenseInfo?.url;
-        displayContent = `<strong class='uppercase'>${content}</strong><br>` +
-          (licenseUrl ? `<a href="${licenseUrl}" class="underline underline-offset-2 decoration-1" rel="noopener noreferrer" target="_blank">${licenseName}</a>` : licenseName);
-        break;
+        const licenseUrl = licenseInfo?.url || null;
+
+        const labelWrapper = document.createElement('span');
+        labelWrapper.className = 'js-filter-target cursor-pointer hover:underline';
+
+        const codeEl = document.createElement('strong');
+        codeEl.className = 'uppercase';
+        codeEl.textContent = content;
+
+        const nameEl = document.createElement('span');
+        nameEl.textContent = ` – ${licenseName}`;
+
+        labelWrapper.appendChild(codeEl);
+        labelWrapper.appendChild(document.createElement('br'));
+        labelWrapper.appendChild(nameEl);
+
+        cell.appendChild(labelWrapper);
+
+        if (licenseUrl) {
+          const pill = document.createElement('a');
+          pill.href = licenseUrl;
+          pill.target = '_blank';
+          pill.rel = 'noopener noreferrer';
+          pill.className = 'ml-2 bg-neutral-200 text-neutral-900 text-xs px-2 py-0.5 rounded-full whitespace-nowrap hover:bg-carnation-200 js-external-pill';
+          pill.textContent = 'CC License ↗';
+          cell.appendChild(pill);
+        }
+
+        attachTermClickFilter(content);
+        return cell;
+      }
+
       case 'all_lab_head': // TODO: remove these cases once we settle on a naming convention
       case 'janelia_lab_head':
       case 'investigator':
       case 'freeman_hrabowski_scholar':
-      case 'author':
+      case 'author': {
+        // ORCID-based author (or investigator, etc.): show name + ORCID pill
         if (typeof content === 'string' && content.includes('orcid.org')) {
           const orcidId = content.split('/').pop();
-          cell.innerHTML = `<a href="${content}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 decoration-1">Loading ORCiD data...</a>`;
+
+          const pill = document.createElement('a');
+          pill.href = content;
+          pill.target = '_blank';
+          pill.rel = 'noopener noreferrer';
+          pill.className = 'ml-2 bg-neutral-200 text-neutral-900 text-xs px-2 py-0.5 rounded-full whitespace-nowrap hover:bg-carnation-200 js-external-pill';
+          pill.textContent = 'ORCID ↗';
+
+          const labelWrapper = document.createElement('span');
+          labelWrapper.className = 'js-filter-target cursor-pointer hover:underline';
+
+          const nameSpan = document.createElement('span');
+          nameSpan.textContent = 'Loading ORCID data...';
+
+          labelWrapper.appendChild(nameSpan);
+
+          cell.appendChild(labelWrapper);
+          cell.appendChild(pill);
+
           getORCiDFullName(orcidId)
             .then(fullName => {
-              cell.innerHTML = `<a href="${content}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 decoration-1">${fullName || 'Name not found'}</a>`;
+              nameSpan.textContent = fullName || 'Name not found';
             })
             .catch(() => {
-              cell.innerHTML = `<a href="${content}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 decoration-1">${content}</a>`;
+              nameSpan.textContent = content;
             });
-          return cell; // Early return to avoid overriding innerHTML after async operation
+
+          attachTermClickFilter(content); // filter on the ORCID value
+          return cell;
         }
+
+        // Non-ORCID value, just show as-is and let it be filterable
         displayContent = content;
         break;
-      default:
-        displayContent = content;
-    }
-    cell.innerHTML = displayContent;
+      }
 
-    // Click-to-filter for term tables
-    if (key === 'key' && currentActiveExploreItemData?.term) {
-      cell.classList.add('cursor-pointer', 'hover:underline');
-      cell.onclick = () => {
-        updateURLParams({
-          q: buildEncodedQueryWithUrlFilter(
-            `${currentActiveExploreItemData.term.trim()}:"${String(content).replace(/"/g, '\\"')}"`
-          )
-        });
-        // Small timeout to ensure URL params are updated before re-render
-        setTimeout(() => {
-          initInsightsAndStrategies(org);
-          if (currentActiveExploreItemButton && currentActiveExploreItemData) {
-            processExploreDataTable(currentActiveExploreItemButton, currentActiveExploreItemData);
-          } else {
-            displayDefaultArticlesData();
-          }
-          renderActiveFiltersBanner();
-        }, 50);
-      };
+      default: {
+        displayContent = content;
+      }
     }
-  } else if (exploreItemId === 'author' && typeof content === 'string' && content.includes('orcid.org')) {
-    // Handle ORCiD links by fetching full name
+
+    cell.innerHTML = displayContent;
+    attachTermClickFilter(content);
+    return cell;
+  }
+
+  // Non-`key` cells, or cases outside terms tables
+
+  // Handle ORCID links (e.g. in non-key author cells) as: name + pill
+  if (exploreItemId === 'author' && typeof content === 'string' && content.includes('orcid.org')) {
     const orcidId = content.split('/').pop();
+
+    const nameSpan = document.createElement('span');
+    nameSpan.textContent = 'Loading ORCID data...';
+
+    const pill = document.createElement('a');
+    pill.href = content;
+    pill.target = '_blank';
+    pill.rel = 'noopener noreferrer';
+    pill.className = 'ml-2 bg-neutral-200 text-neutral-900 text-xs px-2 py-0.5 rounded-full whitespace-nowrap hover:bg-carnation-200 js-external-pill';
+    pill.textContent = 'ORCID ↗';
+
+    cell.appendChild(nameSpan);
+    cell.appendChild(pill);
+
     getORCiDFullName(orcidId)
       .then(fullName => {
-        cell.innerHTML = `<a href="${content}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 decoration-1">${fullName}</a>`;
+        nameSpan.textContent = fullName || 'Name not found';
       })
       .catch(() => {
-        cell.innerHTML = `<a href="${content}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 decoration-1">${content} (Name not found)</a>`;
+        nameSpan.textContent = content;
       });
-  } else if (content == 'US$NaN'){
+
+    return cell;
+  }
+
+  if (content === 'US$NaN') {
     cell.innerHTML = "N/A"; // Display NaN as the more user-friendly "N/A"
   } else if (typeof content === 'object' && content !== null) {
     // If content is an object, format its values as a list
