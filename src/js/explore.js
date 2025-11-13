@@ -868,10 +868,18 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
       // Do not trigger filtering when clicking the external profile pill
       if (target && target.closest('.js-external-pill')) return;
 
+      const term = currentActiveExploreItemData.term.trim();
+      const value = String(rawValue).replace(/"/g, '\\"');
+      const clause = `${term}:"${value}"`;
+
+      // If this clause is already present in the decoded ?q=, do nothing
+      const existingQuery = getDecodedUrlQuery() || '';
+      if (existingQuery.includes(clause)) {
+        return;
+      }
+
       updateURLParams({
-        q: buildEncodedQueryWithUrlFilter(
-          `${currentActiveExploreItemData.term.trim()}:"${String(rawValue).replace(/"/g, '\\"')}"`
-        )
+        q: buildEncodedQueryWithUrlFilter(clause)
       });
 
       setTimeout(() => {
@@ -885,7 +893,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
       }, 50);
     };
   }
-
+  
   // Early handling for common 'all_values' and 'no_values' cases in terms-based data
   // Display either 'All [explore item]]' or 'No [explore item]'
   if (content === 'all_values' || content === 'no_values') {
