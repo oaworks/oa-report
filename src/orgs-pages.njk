@@ -15,17 +15,7 @@ permalink: "{{ org._source.objectID | slug }}/"
       <header class="col-span-2 md:col-span-8">
         <h1 class="flex items-center">
           <div class="text-xl md:text-3xl font-serif">
-            {% if org._source.paid %}
-              {{ component("tooltip", {
-                msg: "<p>This OA.Report uses <a href='https://about.oa.report/docs/sources' target='_blank' class='underline underline-offset-4 decoration-1'>all our data sources</a> and state-of-the-art analysis to provide insights into their publications, impact, and how open their research is.</p>",
-                text: "<span class='highlight-neutral-300'>" + org._source.name + "</span><span class='block md:inline text-neutral-700'><span class='md:ml-3 report_readable_start_date'></span> — <span class='report_readable_end_date'></span></span>"
-              }) }}
-            {% else %}
-              {{ component("tooltip", {
-                msg: "<p>This OA.Report uses <a href='https://about.oa.report/docs/sources#open-sources' target='_blank' class='underline underline-offset-4 decoration-1'>open data</a> and automated analysis to provide insights into their publication volume and how open their research is.</p>",
-                text: "<span class='highlight-neutral-300 font-serif'>" + org._source.name + "</span><div class='mt-2 text-neutral-700'><span class='report_readable_start_date'></span> — <span class='report_readable_end_date'></span></div>"
-              }) }}
-            {% endif %}
+            <span class='highlight-neutral-300'>{{ org._source.name }}</span><span class='block md:inline text-neutral-700'><span class='md:ml-3 report_readable_start_date'></span> — <span class='report_readable_end_date'></span></span>
           </div>
         </h1>
       </header>
@@ -99,6 +89,10 @@ permalink: "{{ org._source.objectID | slug }}/"
         <span class="font-semibold uppercase text-sm md:text-base line-thru">
           <span class="bg-neutral-900">
             Insights
+            {{ component("tooltip", {
+              sup: true,
+              msg: "The <em>Insights</em> section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/developers/infrastructure/' target='_blank' class='underline underline-offset-2 decoration-1'>infrastructure page</a>."
+            }) }}
           </span>
         </span>
       </h2>
