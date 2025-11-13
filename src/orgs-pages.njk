@@ -99,10 +99,6 @@ permalink: "{{ org._source.objectID | slug }}/"
         <span class="font-semibold uppercase text-sm md:text-base line-thru">
           <span class="bg-neutral-900">
             Insights
-            {{ component("tooltip", {
-              sup: true,
-              msg: "The <em>Insights</em> section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/developers/infrastructure/' target='_blank' class='underline underline-offset-2 decoration-1'>infrastructure page</a>."
-            }) }}
           </span>
         </span>
       </h2>
@@ -229,12 +225,6 @@ permalink: "{{ org._source.objectID | slug }}/"
           <span class="font-semibold uppercase text-sm md:text-base line-thru">
             <span class="bg-neutral-800">
               Data exploration
-              {{ component("tooltip", {
-                sup: true,
-                msg: "The <em>Data Exploration</em> section is in beta. We’re working on adding more features. If you have any feedback, please <a href='mailto:joe@oa.works?subject=OA.Report feedback' class='underline underline-offset-2 decoration-1'>get in touch by email</a>.",
-                text: "Beta",
-                theme: "tooltip-white"
-              }) }}
             </span>
           </span>
         </h2>
