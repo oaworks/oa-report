@@ -1356,7 +1356,6 @@ function parseEsQueryToPairs(q) {
   return out;
 }
 
-
 /**
  * Renders a small banner above Explore showing active ?q= filters as a <dl>.
  * Hidden when no ?q=. "Clear filter" removes only q (keeps everything else).
@@ -1382,21 +1381,29 @@ function renderActiveFiltersBanner() {
     return;
   }
 
-  const list = pairs.map(({ label, value }) =>
-    `<div class="mr-4 mb-1">
-       <dt class="inline text-neutral-600">${label}</dt>
-       <dd class="inline ml-1 font-semibold">${value}</dd>
-     </div>`
-  ).join('');
+  // Build a single/compact inline expression
+  const plainExpression = pairs
+    .map(({ label, value }) => `${label} ${value}`)
+    .join(' AND ');
+
+  const expression = pairs
+    .map(({ label, value }) =>
+      `<span class="text-neutral-700">${label}</span>: \
+       <span class="font-medium text-neutral-900">${value}</span>`
+    )
+    .join(' <span class="text-neutral-600">AND</span> ');
 
   mount.innerHTML = `
-    <div role="status" aria-live="polite" class="py-2">
-      <dl class="flex flex-wrap">${list}</dl>
-      <button id="js-clear-q" type="button" class="underline underline-offset-2 decoration-1 hover:opacity-80 mt-1">
-        Clear filter
-      </button>
-    </div>
+    <span class="truncate max-w-[10rem] md:max-w-xs" title="${plainExpression}">
+      ${expression}
+    </span>
+    <button id="js-clear-q" type="button"
+      class="ml-4 py-1 px-2 border">
+      Clear filter
+    </button>
   `;
+
+
   mount.style.display = '';
   mount.closest('.bg-carnation-100')?.classList.remove('hidden'); // show the container when filters exist
 

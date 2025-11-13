@@ -52,29 +52,24 @@ permalink: "{{ org._source.objectID | slug }}/"
   {% if org._source.paid == true %}
   <nav class="sticky top-0 pt-3 md:pt-6 z-20 bg-white transition-pb-0" id="top_nav">
     <h2 class="sr-only">See the report by year or custom dates</h2>
-    <div class="flex">
+    <div class="flex items-stretch">
       <div id="year-buttons-container" class="mx-3 md:mx-6 mb-1 md:mb-0 flex flex-wrap space-y-1 md:space-y-0 text-xs md:text-sm"></div>
       {# Active filters panel #}
-      {# <aside
-        class="col-span-2 md:col-span-4 p-3 rounded-md bg-carnation-100 text-neutral-900 text-xs md:text-sm md:sticky top-[var(--af-top)] z-10 md:self-start"
+      <aside
+        class="ml-auto p-2 rounded-sm bg-carnation-100 text-neutral-900 text-xs md:text-sm md:border-b-0"
         aria-labelledby="active-filters-title"
       >
-        <h2 id="active-filters-title" class="mb-2 font-medium">
-          Filters active
-          {{ component("tooltip", {
-            sup: true,
-            msg: "This is an experimental feature, which we are working on integrating to OA.Report. If you have any feedback, please <a href='mailto:joe@oa.works?subject=OA.Report feedback' class='underline underline-offset-2 decoration-1'>get in touch by email</a>.",
-            text: "Beta",
-            theme: "tooltip-black"
-          }) }}
-        </h2> #}
+        <h2 id="active-filters-title" class="sr-only">
+          Active filters
+        </h2>
 
         {# Live region so SR users hear updates when filters change #}
-        {# <div id="js-active-filters"
+        <div id="js-active-filters"
+            class="flex items-center gap-2"
             role="status"
             aria-live="polite"
             aria-atomic="true"></div>
-      </aside> #}
+      </aside>
     </div>
   </nav>
   {% endif %}
