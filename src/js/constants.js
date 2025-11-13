@@ -96,25 +96,25 @@ export const INSIGHTS_CARDS = [
     numerator: "is_paper",
     denominator: null,
     denominatorText: "articles",
-    info: "<p>The total number of articles published by grantees or authors at your organization.</p>"
+    info: "<p>The total number of journal articles published by grantees or authors at your organization.</p>"
   },
   {
     numerator: "is_preprint",
     denominator: null,
     denominatorText: "preprints",
-    info: "<p>The total number of preprints published by grantees or authors at your organization.</p>"
+    info: "<p>The total number of preprints published gby grantees or authors at your organization.</p>"
   },
   {
     numerator: "is_unique_publication",
     denominator: null,
-    denominatorText: "publications",
-    info: "<p>The total number of unique publications, including journal articles and preprints without an associated peer-reviewed journal publication.</p>"
+    denominatorText: "unique publications",
+    info: "<p>The total number of unique publications, i.e., journal articles and preprints without an associated journal article.</p>"
   },
   {
     numerator: "is_free_to_read",
     denominator: "is_paper",
     denominatorText: "articles",
-    info: "<p>Articles that are free to read on the publisher website or any online repository, including temporarily accessible articles (“bronze Open Access”).</p>"
+    info: "<p>Journal articles that are free to read on the publisher website or any online repository, including temporarily accessible articles (“bronze Open Access”).</p>"
   },
   {
     numerator: "is_free_to_read_preprint",
@@ -126,7 +126,7 @@ export const INSIGHTS_CARDS = [
     numerator: "is_compliant",
     denominator: "is_covered_by_policy",
     denominatorText: "articles covered by policy",
-    info: `<p class='mb-2'>The percentage of articles covered by <a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
+    info: `<p class='mb-2'>The percentage of journal articles covered by <a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
   },
   {
     numerator: "is_compliant_preprint",
@@ -138,19 +138,19 @@ export const INSIGHTS_CARDS = [
     numerator: "is_compliant_article",
     denominator: "is_paper",
     denominatorText: "articles covered by policy",
-    info: `<p class='mb-2'>The percentage of articles covered by <a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
+    info: `<p class='mb-2'>The percentage of journal articles covered by <a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
   },
   {
     numerator: "is_oa",
     denominator: "is_paper",
     denominatorText: "articles",
-    info: "<p>The number of articles that are free and <a href='https://creativecommons.org/licenses/by/4.0/' class='underline underline-offset-2 decoration-1' target='_blank' rel='noopener'>CC BY</a> <strong class='bold'>or</strong> <a href='https://creativecommons.org/publicdomain/zero/1.0/' class='underline underline-offset-2 decoration-1' target='_blank' rel='noopener'>CC0</a> (in the public domain) on the publisher’s website, a repository or a preprint server.</p>"
+    info: "<p>The number of journal articles that are free and <a href='https://creativecommons.org/licenses/by/4.0/' class='underline underline-offset-2 decoration-1' target='_blank' rel='noopener'>CC BY</a> <strong class='bold'>or</strong> <a href='https://creativecommons.org/publicdomain/zero/1.0/' class='underline underline-offset-2 decoration-1' target='_blank' rel='noopener'>CC0</a> (in the public domain) on the publisher’s website, a repository or a preprint server.</p>"
   },
   {
     numerator: "has_data_availability_statement",
     denominator: "has_checked_data_availability_statement",
     denominatorText: "articles checked to date",
-    info: `<p class='mb-2'>This number tells you how many articles that we’ve analyzed have a data availability statement.</p> <p>To check if a paper has a data availability statement, we use data from PubMed and review articles manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data).</p>`
+    info: `<p class='mb-2'>This number tells you how many journal articles that we’ve analyzed have a data availability statement.</p> <p>To check if a paper has a data availability statement, we use data from PubMed and review articles manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data).</p>`
   },
   {
     numerator: "has_data_availability_statement_preprint",
@@ -162,13 +162,13 @@ export const INSIGHTS_CARDS = [
     numerator: "has_open_data",
     denominator: "has_data",
     denominatorText: "articles with data",
-    info: "<p class='mb-2'>The percentage of articles that shared any data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>CC-BY</a> license.</p> <p class='mb-2'>This figure only measures how many articles shared Open Data if they generated data in the first place. It also only measures if any of the datasets generated were open, not if all of them were open.</p> <p>We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>"
+    info: "<p class='mb-2'>The percentage of journal articles that shared any data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>CC-BY</a> license.</p> <p class='mb-2'>This figure only measures how many articles shared Open Data if they generated data in the first place. It also only measures if any of the datasets generated were open, not if all of them were open.</p> <p>We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>"
   },
   {
     numerator: "has_open_code",
     denominator: "has_code",
     denominatorText: "articles with code",
-    info: "<p class='mb-2'>The percentage of articles that shared any code under a permissive open-source licence, such as MIT.</p> <p class='mb-2'>This figure measures how many articles shared Open Code if they generated code in the first place. It also only measures if <strong>any parts</strong> of the code generated are open, not if <strong>all</strong> of it is open.</p> <p> We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>"
+    info: "<p class='mb-2'>The percentage of journal articles that shared any code under a permissive open-source licence, such as MIT.</p> <p class='mb-2'>This figure measures how many articles shared Open Code if they generated code in the first place. It also only measures if <strong>any parts</strong> of the code generated are open, not if <strong>all</strong> of it is open.</p> <p> We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>"
   },
   {
     numerator: "is_compliant_publication",
@@ -184,19 +184,19 @@ export const INSIGHTS_CARDS = [
  */
 export const EXPLORE_ITEMS_LABELS = {
   "articles": {
-    singular: "Article",
-    plural: "Articles",
-    tooltip: "Explore various articles"
+    singular: "Journal article",
+    plural: "Journal articles",
+    tooltip: "Explore various journal articles"
   },
-    "covered_by_policy": {
+  "covered_by_policy": {
     singular: "Work covered by policy",
     plural: "Works covered by policy",
     tooltip: "Explore various works covered by your policy"
   },
-    "unique_publication": {
+  "unique_publication": {
     singular: "Publication",
     plural: "Publications",
-    tooltip: "Explore journal articles, plus preprints without an associated peer-reviewed journal publication"
+    tooltip: "Explore unique publications, i.e., journal articles and preprints without an associated journal article"
   },
   "grant": {
     singular: "Grant",
@@ -251,8 +251,8 @@ export const EXPLORE_ITEMS_LABELS = {
     plural: "Programs"
   },
   "article_oa_type": {
-    singular: "Article <span class='uppercase'>OA</span> type",
-    plural: "Article <span class='uppercase'>OA</span> types"
+    singular: "Journal article <span class='uppercase'>OA</span> type",
+    plural: "Journal article <span class='uppercase'>OA</span> types"
   },
   "syp_permissions.journal_oa_type": {
     singular: "Journal <span class='uppercase'>OA</span> type",
@@ -283,8 +283,8 @@ export const EXPLORE_ITEMS_LABELS = {
     plural: "Preprint servers"
   },
   "articles_with_apcs": {
-    singular: "Article with <span class='uppercase'>APC</span>s",
-    plural: "Articles with <span class='uppercase'>APC</span>s"
+    singular: "Journal article with <span class='uppercase'>APC</span>s",
+    plural: "Journal articles with <span class='uppercase'>APC</span>s"
   },
   "all_lab_head": {
     singular: "All lab head",
@@ -323,8 +323,8 @@ export const EXPLORE_ITEMS_LABELS = {
  */
 export const EXPLORE_FILTERS_LABELS = {
   "is_paper": {
-    label: "All articles",
-    info: "<p>Scholarly research articles, <strong>including</strong>:</p>\
+    label: "All journal articles",
+    info: "<p>Journal articles, <strong>including</strong>:</p>\
       <ul class='mb-2 list-disc list-inside'>\
         <li>peer-reviewed research</li>\
         <li>reviews</li>\
@@ -340,11 +340,11 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "is_preprint": {
     label: "Preprints",
-    info: "<p>Scholarly research articles that haven’t been peer-reviewed.</p>"
+    info: "<p>Publications that haven’t been peer-reviewed.</p>"
   },
   "is_authored": {
-    label: "Authored",
-    info: "<p>Scholarly research articles authored by someone at <span class='org-name'></span>, <strong>including</strong>:</p>\
+    label: "Authored journal articles",
+    info: "<p>Journal articles authored by someone at <span class='org-name'></span>, <strong>including</strong>:</p>\
     <ul class='mb-2 list-disc list-inside'>\
       <li>peer-reviewed research</li>\
       <li>reviews</li>\
@@ -360,23 +360,23 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "is_covered_by_policy": {
     label: "Covered by <span class='uppercase'>OA</span> policy",
-    info: "<p class='mb-2'>Scholarly research articles covered by <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p><p><span class='org-policy-coverage'></span></p>"
+    info: "<p class='mb-2'>Publications covered by <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p><p><span class='org-policy-coverage'></span></p>"
   },
   "is_covered_by_current_policy": {
     label: "Covered by current <span class='uppercase'>OA</span> policy",
-    info: "<p>Scholarly research articles covered by <span class='org-name'></span>’s most recent <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p>"
+    info: "<p>Publications covered by <span class='org-name'></span>’s most recent <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p>"
   },
   "is_covered_by_old_policy": {
     label: "Covered by old <span class='uppercase'>OA</span> policy",
-    info: "<p>Scholarly research articles covered by an older <span class='org-name'></span> Open Access policy.</p>"
+    info: "<p>Publications covered by an older <span class='org-name'></span> Open Access policy.</p>"
   },
   "is_compliant": {
     label: "Covered by & compliant with <span class='uppercase'>OA</span> policy",
-    info: "<p>Scholarly research articles covered by <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a> and compliant with its terms.</p><p><span class='org-policy-compliance'></span></p><p><span class='org-policy-coverage'></span></p>"
+    info: "<p>Publications covered by <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a> and compliant with its terms.</p><p><span class='org-policy-compliance'></span></p><p><span class='org-policy-coverage'></span></p>"
   },
   "is_compliant_all_works": {
     label: "Compliant with <span class='uppercase'>OA</span> policy",
-    info: "<p>Scholarly research articles that comply with the terms of <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>, but are not necessarily covered by it.</p><p><span class='org-policy-compliance'></span></p>"
+    info: "<p>Publications that comply with the terms of <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>, but are not necessarily covered by it.</p><p><span class='org-policy-compliance'></span></p>"
   },
     "is_not_compliant": {
     label: "Not compliant with <span class='uppercase'>OA</span> policy",
@@ -384,7 +384,7 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "is_original_research": {
     label: "Original research",
-    info: "<p>Scholarly research articles, <strong>including only</strong>:</p>\
+    info: "<p>Journal articles, <strong>including only</strong>:</p>\
     <ul class='mb-2 list-disc list-inside'>\
       <li>peer-reviewed research (that present new findings)</li>\
     </ul>\
@@ -398,7 +398,7 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "with_grant_id": {
     label: "With grant <span class='uppercase'>ID</span>",
-    info: "<p>Scholarly research articles with a grant ID from <span class='org-name'></span>, <strong>including</strong>:</p>\
+    info: "<p>Publications with a grant ID from <span class='org-name'></span>, <strong>including</strong>:</p>\
     <ul class='mb-2 list-disc list-inside'>\
       <li>peer-reviewed research</li>\
       <li>reviews</li>\
@@ -427,18 +427,18 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "has_data_availability_statement": {
     label: "Has data availability statement",
-    info: "<p class='mb-2'>Any scholarly research article that has a data availability statement. Data availability statements (i.e. “data access statement”, “resource availability statements”, “code availability statements”) tell a reader where the research data or code associated with an article is available and how they can be accessed. This doesn’t tell you what type of data availability statement is provided (e.g., there is Open Data VS there is no data).</p><p>To check if an article has a data availability statement, we use data from PubMed’s data availability filter and review articles manually.</p>"
+    info: "<p class='mb-2'>Any journal article that has a data availability statement. Data availability statements (i.e. “data access statement”, “resource availability statements”, “code availability statements”) tell a reader where the research data or code associated with an article is available and how they can be accessed. This doesn’t tell you what type of data availability statement is provided (e.g., there is Open Data VS there is no data).</p><p>To check if an article has a data availability statement, we use data from PubMed’s data availability filter and review articles manually.</p>"
   },
   "has_apc": {
-    label: "Paid via APC",
-    info: "<p>Scholarly research articles that had an article-processing charge (APC) paid by <span class='org-name'></span></p>"
+    label: "APC-funded journal articles",
+    info: "<p>Journal articles that had an article-processing charge (APC) paid by <span class='org-name'></span></p>"
   },
   "is_under_transitional_agreement": {
     label: "Paid via transitional agreement"
   },
   "is_funded": {
     label: "Funded",
-    info: "<p>Scholarly research articles funded by <span class='org-name'></span>, <strong>including</strong>:</p>\
+    info: "<p>Publications funded by <span class='org-name'></span>, <strong>including</strong>:</p>\
     <ul class='mb-2 list-disc list-inside'>\
       <li>peer-reviewed research</li>\
       <li>reviews</li>\
@@ -482,7 +482,7 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "is_authored_and_is_original_research": {
     label: "Authored original research",
-    info: "<p>Scholarly research articles authored by someone at <span class='org-name'></span>, <strong>including only</strong>:</p>\
+    info: "<p>Journal articles authored by someone at <span class='org-name'></span>, <strong>including only</strong>:</p>\
     <ul class='mb-2 list-disc list-inside'>\
       <li>peer-reviewed research</li>\
     </ul>\
@@ -500,7 +500,7 @@ export const EXPLORE_FILTERS_LABELS = {
   },
     "is_unique_publication": {
     label: "Unique publications",
-    info: "Journal articles, plus preprints without an associated peer-reviewed journal publication."
+    info: "Journal articles and preprints without an associated journal article."
   }
 };
 
@@ -555,8 +555,7 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
     details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref, OpenAlex, Europe PMC and manual checks (as required). If a work has the required license at any location it is considered Open Access."
   },
   "publications": {
-    label: "Publications",
-    info: "Scholarly research articles found by the current filter."
+    label: "Publications"
   },
   "total_apc_amount": {
     label: "Total APC amount",
@@ -585,7 +584,7 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   },
   "with_apc": {
     label: "With APC<span class='lowercase'>s</span>",
-    info: "Scholarly research articles with an article-processing charge (APC) paid by <span class='org-name'></span>."
+    info: "Journal articles with an article-processing charge (APC) paid by <span class='org-name'></span>."
   },
   "with_data": {
     label: "With data"
@@ -615,15 +614,15 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   },
   "with_fundref_dois": {
     label: "With FundRef DOI<span style='text-transform: lowercase;'>s</span>",
-    info: "Scholarly research articles that have at least one ORCID in their Crossref metadata."
+    info: "Publications that have at least one ORCID in their Crossref metadata."
   },
   "with_grant_dois": {
     label: "With grant DOI<span style='text-transform: lowercase;'>s</span>",
-    info: "Scholarly research articles that have at least one grant DOI in their Crossref metadata."
+    info: "Publications that have at least one grant DOI in their Crossref metadata."
   },
   "with_grant_id": {
     label: "With grant ID<span style='text-transform: lowercase;'>s</span>",
-    info: "Scholarly research articles with a grant ID from <span class='org-name'></span> found by OA.Works.",
+    info: "Publications with a grant ID from <span class='org-name'></span> found by OA.Works.",
     details: "We found and normalized data from Crossref to find data provided by the publisher. Where this wasn't possible, we manually collected the funding statement. The grant ID was then extracted and normalized using a mix of automated tools and manual review."
   },
   "with_open_data": {
@@ -640,7 +639,7 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   },
   "with_orcids": {
     label: "With ORC<span style='text-transform: lowercase;'>i</span>D<span style='text-transform: lowercase;'>s</span>",
-    info: "Scholarly research articles that have at least one ORCID in their OpenAlex metadata."
+    info: "Publications that have at least one ORCID in their OpenAlex metadata."
   },
   "with_preprint": {
     label: "With preprint",
@@ -654,7 +653,7 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   },
   "with_rors": {
     label: "With ROR<span style='text-transform: lowercase;'>s</span>",
-    info: "Scholarly research articles that have at least one ROR ID in their OpenAlex metadata."
+    info: "Publications that have at least one ROR ID in their OpenAlex metadata."
   },
   "with_shared_data": {
     label: "With shared data"
@@ -984,19 +983,19 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "is_compliant_with_current_policy": {
     label: "Compliant with current <span class='uppercase'>OA</span> policy",
-    info: "<p>Scholarly research articles compliant with <span class='org-name'></span>’s most recent <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p>"
+    info: "<p>Publications compliant with <span class='org-name'></span>’s most recent <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p>"
   },
   "is_compliant_with_old_policy": {
     label: "Compliant with old <span class='uppercase'>OA</span> policy",
-    info: "<p>Scholarly research articles compliant with an older <span class='org-name'></span> Open Access policy.</p>"
+    info: "<p>Publications compliant with an older <span class='org-name'></span> Open Access policy.</p>"
   },
   "is_covered_by_current_policy": {
     label: "Covered by current <span class='uppercase'>OA</span> policy",
-    info: "<p>Scholarly research articles covered by <span class='org-name'></span>’s most recent <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p>"
+    info: "<p>Publications covered by <span class='org-name'></span>’s most recent <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p>"
   },
   "is_covered_by_old_policy": {
     label: "Covered by old <span class='uppercase'>OA</span> policy",
-    info: "<p>Scholarly research articles covered by an older <span class='org-name'></span> Open Access policy.</p>"
+    info: "<p>Publications covered by an older <span class='org-name'></span> Open Access policy.</p>"
   },
   "is_covered_by_policy": {
     label: "Covered by <span class='uppercase'>OA</span> policy",
@@ -1008,7 +1007,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "is_original_research": {
     label: "Original research?",
-    info: "<p>Scholarly research articles, <strong>including only</strong>:</p>\
+    info: "<p>Journal articles, <strong>including only</strong>:</p>\
     <ul class='mb-2 list-disc list-inside'>\
       <li>peer-reviewed research (that present new findings)</li>\
     </ul>\

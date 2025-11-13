@@ -122,12 +122,6 @@ permalink: "{{ org._source.objectID | slug }}/"
         }) }}
         {% endif %}
 
-        {{ component("card", {
-          id: "is_free_to_read",
-          title: "Free-to-read",
-          icon: "gift"
-        }) }}
-
         {# Article-specific compliance displayed for Gates only #}
         {% if org._source.objectID == "gates-foundation" %}
         {{ component("card", {
@@ -136,6 +130,12 @@ permalink: "{{ org._source.objectID | slug }}/"
           icon: "check-circle"
         }) }}
         {% endif %}
+
+        {{ component("card", {
+          id: "is_free_to_read",
+          title: "Free-to-read",
+          icon: "gift"
+        }) }}
 
         {{ component("card", {
           id: "is_compliant",
@@ -431,7 +431,7 @@ permalink: "{{ org._source.objectID | slug }}/"
             {{ component("strategy-contents", {
               id: "apc_followup",
               heading: "Correct publisher errors",
-              desc: "These are articles where an APC has been paid, but the article isn't compliant with the policy. Use this list to follow up with publishers. If an article is made compliant, and the metadata is updated, it will be removed from this list.",
+              desc: "These are articles where an APC has been paid, but they still aren’t compliant with the policy. Use this list to follow up with publishers. If it is made compliant, and the metadata is updated, it will be removed.",
               table_headings: "<th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-4/12 sm:w-4/12'>Publisher & journal</th>\
                               <th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-3/12 sm:w-4/12'>Article</th>\
                               <th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-5/12 sm:w-4/12'>Invoice</th>",
