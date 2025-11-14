@@ -1649,21 +1649,36 @@ function initGrantFilterForm(org) {
     const raw = input.value.trim();
     if (!raw) return;
 
-    // Some escaping, same idea as term-click handler
-    const safe = raw.replace(/"/g, '\\"');
-    const clause = `supplements.grantid__bmgf:"${safe}"`;
+    // Support multiple IDs separated by spaces, commas, OR / AND
+    const ids = raw
+      .replace(/\s+(OR|AND)\s+/gi, ',')
+      .split(/[,\s]+/)
+      .map((value) => value.trim())
+      .filter(Boolean);
 
-    // Use existing helper so this composes with whatever is already in ?q=
+    if (!ids.length) return;
+
+    const quoted = ids.map(
+      (id) => `"${id.replace(/"/g, '\\"')}"`
+    );
+
+    const clause =
+      quoted.length === 1
+        ? `supplements.grantid__bmgf:${quoted[0]}`
+        : `supplements.grantid__bmgf:(${quoted.join(' OR ')})`;
+
     updateURLParams({
       q: buildEncodedQueryWithUrlFilter(clause)
     });
 
-    // Refresh everything that depends on ?q=, mirroring the term-click flow.
     setTimeout(() => {
       initInsightsAndStrategies(org);
 
       if (currentActiveExploreItemButton && currentActiveExploreItemData) {
-        processExploreDataTable(currentActiveExploreItemButton, currentActiveExploreItemData);
+        processExploreDataTable(
+          currentActiveExploreItemButton,
+          currentActiveExploreItemData
+        );
       } else {
         displayDefaultArticlesData();
       }
