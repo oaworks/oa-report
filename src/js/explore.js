@@ -1649,10 +1649,10 @@ function initGrantFilterForm(org) {
     const raw = input.value.trim();
     if (!raw) return;
 
-    // Support multiple IDs separated by spaces, commas, OR / AND
+    // Support multiple IDs separated by commas, OR / AND
     const ids = raw
       .replace(/\s+(OR|AND)\s+/gi, ',')
-      .split(/[,\s]+/)
+      .split(',')
       .map((value) => value.trim())
       .filter(Boolean);
 
