@@ -131,6 +131,10 @@ export async function initDataExplore(org) {
       handleDataDisplayToggle();
       enableExploreRowHighlighting();
       copyToClipboard('explore_copy_clipboard', 'explore_table');
+
+      // TEMP: initialise Gates-only grant filter form if present
+      // See https://github.com/oaworks/discussion/issues/3616
+      initGrantFilterForm(org);
     } else {
       displayNone("explore"); // Hide the explore section if no data is available
     }
@@ -1619,3 +1623,53 @@ function renderActiveFiltersBanner() {
     }
   });
 }
+
+/**
+ * Initialises the "Filter by grant ID" form for Gates.
+ * Reuses the existing ?q= helpers so the entered grant ID is simply
+ * appended as an extra clause:
+ *
+ *   supplements.grantid__bmgf:"<user input>"
+ *
+ * @param {string} org - Organisation identifier passed into initDataExplore.
+ */
+function initGrantFilterForm(org) {
+  const form  = document.getElementById('js-grant-filter-form');
+  const input = document.getElementById('js-grant-filter-input');
+
+  // If the form isn't in the DOM (non-Gates orgs), do nothing.
+  if (!form || !input) return;
+
+  // Make sure it’s visible whenever the Active filters panel is visible.
+  form.classList.remove('hidden');
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const raw = input.value.trim();
+    if (!raw) return;
+
+    // Some escaping, same idea as term-click handler
+    const safe = raw.replace(/"/g, '\\"');
+    const clause = `supplements.grantid__bmgf:"${safe}"`;
+
+    // Use existing helper so this composes with whatever is already in ?q=
+    updateURLParams({
+      q: buildEncodedQueryWithUrlFilter(clause)
+    });
+
+    // Refresh everything that depends on ?q=, mirroring the term-click flow.
+    setTimeout(() => {
+      initInsightsAndStrategies(org);
+
+      if (currentActiveExploreItemButton && currentActiveExploreItemData) {
+        processExploreDataTable(currentActiveExploreItemButton, currentActiveExploreItemData);
+      } else {
+        displayDefaultArticlesData();
+      }
+
+      renderActiveFiltersBanner();
+    }, 50);
+  });
+}
+
