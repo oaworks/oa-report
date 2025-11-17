@@ -370,6 +370,7 @@ permalink: "{{ org._source.objectID | slug }}/"
 
           <nav class="hidden sm:block mt-6 mb-10">
             <ul class="flex flex-wrap space-r-4 space-b-4 items-center" role="tablist" aria-label="Actions Tabs" id="actions_buttons">
+            {# HIDE TEMPORARILY 
               {{ component("strategy-pill", {
                 id: "email_author_vor",
                 txt: "Deposit publisher PDFs",
@@ -381,7 +382,7 @@ permalink: "{{ org._source.objectID | slug }}/"
                 id: "email_author_aam",
                 txt: "Deposit accepted manuscripts"
               }) }}
-
+            #}
               {{ component("strategy-pill", {
                 id: "apc_followup",
                 txt: "Correct publisher errors"
@@ -394,7 +395,9 @@ permalink: "{{ org._source.objectID | slug }}/"
 
               {{ component("strategy-pill", {
                 id: "email_author_deposit",
-                txt: "Self-archive articles"
+                txt: "Self-archive articles",
+                class: "font-semibold bg-carnation-300",
+                first: true
               }) }}
 
             </ul>
