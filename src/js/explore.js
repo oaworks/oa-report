@@ -8,7 +8,7 @@
 // =================================================
 
 import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, normaliseFieldId } from "./utils.js";
-import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES } from "./constants.js";
+import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
 import { orgDataPromise, initInsightsAndStrategies } from './insights-and-strategies.js';
@@ -102,6 +102,15 @@ let exploreItemDataById = new Map();
  */
 let selectedRowKeys = [];
 
+/**
+ * Re-runs Insights and Strategies for the current org, using orgData
+ * to derive the slug. Avoids introducing a separate global org slug.
+ */
+function refreshInsightsAndStrategiesForCurrentOrg() {
+  const slug = orgData?.hits?.hits?.[0]?._source?.objectID;
+  if (!slug) return;
+  initInsightsAndStrategies(slug);
+}
 
 // =================================================
 // DOM Manipulation functions
@@ -131,10 +140,7 @@ export async function initDataExplore(org) {
       handleDataDisplayToggle();
       enableExploreRowHighlighting();
       copyToClipboard('explore_copy_clipboard', 'explore_table');
-
-      // TEMP: initialise Gates-only grant filter form if present
-      // See https://github.com/oaworks/discussion/issues/3616
-      initGrantFilterForm(org);
+      initFilterForm();
     } else {
       displayNone("explore"); // Hide the explore section if no data is available
     }
@@ -910,7 +916,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
       }
 
       setTimeout(() => {
-        initInsightsAndStrategies(org);
+        refreshInsightsAndStrategiesForCurrentOrg();
         if (currentActiveExploreItemButton && currentActiveExploreItemData) {
           processExploreDataTable(currentActiveExploreItemButton, currentActiveExploreItemData);
         } else {
@@ -1472,6 +1478,101 @@ window.getExportLink = function() {
 }
 
 /**
+ * Derive a human-readable label from an ES field key.
+ * Falls back to header/filter labels, then a cleaned version of the key.
+ *
+ * @param {string} rawKey
+ * @returns {string}
+ */
+function labelFromFieldKey(rawKey) {
+  if (!rawKey) return "";
+
+  const normalised = normaliseFieldId(rawKey);
+  let label;
+
+  // 1. Try to match this field key to an Explore item.term
+  try {
+    const exploreConfig = orgData?.hits?.hits?.[0]?._source?.explore || [];
+
+    const matchingItem = exploreConfig.find((item) => {
+      if (!item.term) return false;
+      // Match either exact term or normalised term
+      return item.term === rawKey || normaliseFieldId(item.term) === normalised;
+    });
+
+    if (matchingItem) {
+      const itemId = matchingItem.id;
+      const itemLabels = EXPLORE_ITEMS_LABELS[itemId];
+
+      // Use the same mechanism as the Explore buttons
+      if (itemLabels) {
+        label = itemLabels.plural || itemLabels.label || itemLabels.singular;
+      } else {
+        label = pluraliseNoun(itemId);
+      }
+    }
+  } catch (e) {
+    // If anything goes wrong here, just fall through to the existing fallbacks
+  }
+
+  // 2. If we still don't have a label, fall back to the existing label sources
+  const fromFilters =
+    EXPLORE_FILTERS_LABELS[rawKey] ||
+    EXPLORE_FILTERS_LABELS[normalised];
+
+  const fromArticles =
+    EXPLORE_HEADER_ARTICLES_LABELS[rawKey] ||
+    EXPLORE_HEADER_ARTICLES_LABELS[normalised];
+
+  const fromTerms =
+    EXPLORE_HEADER_TERMS_LABELS[rawKey] ||
+    EXPLORE_HEADER_TERMS_LABELS[normalised];
+
+  if (!label) {
+    label =
+      fromFilters?.label ||
+      fromArticles?.label ||
+      fromTerms?.label ||
+      normalised
+        .replace(/^openalex[.\s_]+/i, "")
+        .replace(/[._]/g, " ");
+  }
+
+  if (label && label.length) {
+    label = label.charAt(0).toUpperCase() + label.slice(1);
+  }
+
+  return label;
+}
+
+/**
+ * Build <select> options for the filter form from all term-based Explore items.
+ *
+ * @param {Array<Object>} exploreData
+ * @returns {{value:string,label:string}[]}
+ */
+function buildFilterFieldOptions(exploreData) {
+  if (!Array.isArray(exploreData)) return [];
+
+  const seen = new Set();
+  const options = [];
+
+  exploreData.forEach((item) => {
+    if (item.type !== "terms" || !item.term) return;
+
+    const fieldKey = item.term;
+    if (seen.has(fieldKey)) return;
+    seen.add(fieldKey);
+
+    const label = labelFromFieldKey(fieldKey);
+    options.push({ value: fieldKey, label });
+  });
+
+  options.sort((a, b) => a.label.localeCompare(b.label));
+  return options;
+}
+
+/**
  * Parses the decoded ?q= string into [{label, value}] pairs.
  * Uses the same normalisation as table headers for consistent labels.
  * Falls back to raw keys if no constant label is found.
@@ -1484,35 +1585,29 @@ window.getExportLink = function() {
  */
 function parseEsQueryToPairs(q) {
   if (!q) return [];
+
   const re = /([A-Za-z0-9._]+):"([^"]+)"|([A-Za-z0-9._]+):\(([^)]+)\)|([A-Za-z0-9._]+):([^\s]+)/g;
 
   const out = [];
   let m;
+
   while ((m = re.exec(q)) !== null) {
     const rawKey = m[1] || m[3] || m[5];
     let rawVal   = m[2] || m[4] || m[6];
 
     const key = normaliseFieldId(rawKey);
-
-    // Try looking for human-readable label in article → terms → items → filters
-    // Else fall back to prettified key
-    const label =
-      (EXPLORE_HEADER_ARTICLES_LABELS[key] && EXPLORE_HEADER_ARTICLES_LABELS[key].label) ||
-      (EXPLORE_HEADER_TERMS_LABELS[key] && EXPLORE_HEADER_TERMS_LABELS[key].label) ||
-      (EXPLORE_ITEMS_LABELS[key] && (EXPLORE_ITEMS_LABELS[key].label || EXPLORE_ITEMS_LABELS[key].singular)) ||
-      (EXPLORE_FILTERS_LABELS[key] && EXPLORE_FILTERS_LABELS[key].label) ||
-      key.replace(/_/g, ' ');
+    const label = labelFromFieldKey(rawKey);
 
     // If this was a parenthesised OR group, render as a comma-separated list
     if (m[4]) {
-      // m[4] looks like: `"INV-029392" OR "INV-005210" OR "INV-010680"`
       const parts = m[4]
         .split(/\s+OR\s+/i)
-        .map(s => s.replace(/^"+|"+$/g, ''));
-      rawVal = parts.join(', ');
+        .map((s) => s.replace(/^"+|"+$/g, ""));
+      rawVal = parts.join(", ");
     }
 
-    const value =
+    // Country codes to names in the filter search
+    const value = 
       (/country(_code)?$/i.test(key) && COUNTRY_CODES[rawVal]) ? COUNTRY_CODES[rawVal] : rawVal;
 
     out.push({ label, value });
@@ -1522,157 +1617,203 @@ function parseEsQueryToPairs(q) {
 }
 
 /**
- * Renders a small banner above Explore showing active ?q= filters as a <dl>.
- * Hidden when no ?q=. "Clear filter" removes only q (keeps everything else).
+ * Renders the Filters summary in the top nav.
+ *
+ * - If there are no filters, show a simple "No filters applied" message.
+ * - If filters exist, show a compact "Filters (n)" button.
+ * - Clicking "Filters (n)" opens a Tippy popover that contains:
+ *     • chips for each active filter
+ *     • a "Clear filters" button
+ *
+ * The "Clear filters" button uses DATE_SELECTION_BUTTON_CLASSES.enabled
+ * so it visually matches the date chips (same slight rounding).
  */
 function renderActiveFiltersBanner() {
-  const mountId = 'js-active-filters';
-  let mount = document.getElementById(mountId);
-  if (!mount) {
-    mount = document.createElement('div');
-    mount.id = mountId;
-    mount.className = 'mb-3 text-xs md:text-sm';
-    const exploreHeader = document.getElementById('explore_buttons');
-    exploreHeader?.parentNode.insertBefore(mount, exploreHeader);
+  const wrapper = document.querySelector(".js-active-filters-wrapper");
+  const mount = document.getElementById("js-active-filters");
+  if (!wrapper || !mount) return;
+
+  // Clean up any previous Tippy instance
+  const existingSummary = document.getElementById("js-filters-summary");
+  if (existingSummary && existingSummary._tippy) {
+    existingSummary._tippy.destroy();
   }
 
   const q = getDecodedUrlQuery();
   const pairs = parseEsQueryToPairs(q);
 
+  wrapper.classList.remove("hidden");
+
+  // No filters applied: show this status and no popover
   if (!pairs.length) {
-    mount.innerHTML = '';
-    mount.style.display = 'none';
-    mount.closest('.js-active-filters-wrapper')?.classList.add('hidden'); // hide the container when no filters
+    mount.innerHTML = `
+      <span class="px-2 py-1 text-xs md:text-sm text-neutral-600">
+        No filters applied
+      </span>
+    `;
     return;
   }
 
-  // Build a single/compact inline expression
   const count = pairs.length;
-
-  const plainExpression = pairs
-    .map(({ label, value }) => `${label} ${value}`)
-    .join(' AND ');
-
-  const expression = pairs
-    .map(({ label, value }) =>
-      `<span class="text-neutral-700">${label}</span>: \
-       <span class="font-medium text-neutral-900">${value}</span>`
-    )
-    .join(' <span class="text-neutral-600">AND</span> ');
-
-  // Content for the popover containing the full expression/filters
-  const popoverContent = `
-    <div class="p-2 text-xs md:text-sm max-w-xs">
-      <p class="mb-1 font-medium text-neutral-900">
-        Active filters (${count})
-      </p>
-      <p class="text-neutral-800">
-        ${expression}
-      </p>
-    </div>
-  `;
 
   // In the nav, show the Active filters + Clear filter buttons
   mount.innerHTML = `
     <button
       id="js-filters-summary"
       type="button"
-      class="block p-2 px-3 border rounded-t-sm mt-1 mr-1 md:mt-0 md:mr-3 md:border-b-0 border-carnation-100 bg-carnation-100 text-neutral-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900"
-      aria-label="${count} active filter${count > 1 ? 's' : ''}. Click to see details."
-      title="${plainExpression}"
+      class="inline-flex items-center px-2 py-1 text-xs md:text-sm border border-neutral-300 bg-white text-neutral-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900"
+      aria-label="${count} active filter${count > 1 ? "s" : ""}. Click to see details."
     >
       Filters (${count})
     </button>
-    <button
-      id="js-clear-q"
-      type="button"
-      class="block p-2 border rounded-t-sm mt-1 mr-1 md:mt-0 md:mr-3 md:border-b-0 bg-white text-neutral-900 hover:bg-carnation-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 js-nav-chip"
-    >
+  `;
+
+  const summaryBtn = document.getElementById("js-filters-summary");
+  if (!summaryBtn || typeof tippy !== "function") return;
+
+  // Build chips HTML for inside the popover
+  const chipsHtml = pairs
+    .map(
+      ({ label, value }) => `
+        <li class="inline-flex items-center px-2 py-0.5 border border-neutral-300 bg-neutral-50 text-[11px] md:text-xs mr-1 mb-1">
+          <span class="text-neutral-700 mr-1">${label}:</span>
+          <span class="font-medium text-neutral-900">${value}</span>
+        </li>
+      `
+    )
+    .join("");
+
+  // Clear button styled like the date chips
+  const clearBase =
+    DATE_SELECTION_BUTTON_CLASSES?.enabled ||
+    "inline-flex items-center px-2 py-1 border border-neutral-300 bg-white text-xs md:text-sm text-neutral-900 hover:bg-neutral-100";
+  const clearClasses = `${clearBase} mt-2 w-full justify-center`;
+
+  // Build a DOM node for Tippy so we can attach events to the inner button
+  const popover = document.createElement("div");
+  popover.className = "p-2 text-xs md:text-sm max-w-xs";
+  popover.innerHTML = `
+    <p class="mb-2 font-medium text-neutral-900">Active filters (${count})</p>
+    <ul class="mb-2 flex flex-wrap">
+      ${chipsHtml}
+    </ul>
+    <button type="button" id="js-clear-q-popover" class="${clearClasses}">
       Clear filters
     </button>
   `;
 
-  mount.style.display = '';
-  mount.closest('.js-active-filters-wrapper')?.classList.remove('hidden'); // show the container when filters exist
+  tippy(summaryBtn, {
+    content: popover,
+    allowHTML: true,
+    interactive: true,
+    placement: "bottom",
+    appendTo: document.body,
+    theme: "popover",
+    arrow: false,
+    onShown(instance) {
+      const clearBtn = instance.popper.querySelector("#js-clear-q-popover");
+      if (!clearBtn) return;
 
-  // Attach popover for full filter details
-  const summaryBtn = document.getElementById('js-filters-summary');
-  if (summaryBtn && typeof tippy === 'function') {
-    if (summaryBtn._tippy) summaryBtn._tippy.destroy();
+      clearBtn.addEventListener(
+        "click",
+        () => {
+          removeURLParams("q");
+          instance.hide();
 
-    tippy(summaryBtn, {
-      content: popoverContent,
-      allowHTML: true,
-      interactive: true,
-      placement: 'bottom',
-      appendTo: document.body,
-      theme: 'popover',
-      arrow: false
-    });
-  }
+          refreshInsightsAndStrategiesForCurrentOrg();
 
-  document.getElementById('js-clear-q')?.addEventListener('click', () => {
-    removeURLParams('q'); // keep breakdown, start/end, etc.
-    renderActiveFiltersBanner(); // refresh banner
-    initInsightsAndStrategies(org); // re-init insights & actions
+          if (currentActiveExploreItemButton && currentActiveExploreItemData) {
+            processExploreDataTable(
+              currentActiveExploreItemButton,
+              currentActiveExploreItemData
+            );
+          } else {
+            displayDefaultArticlesData();
+          }
 
-    if (currentActiveExploreItemButton && currentActiveExploreItemData) {
-      processExploreDataTable(currentActiveExploreItemButton, currentActiveExploreItemData);
-    } else {
-      displayDefaultArticlesData();
-    }
+
+          renderActiveFiltersBanner();
+        },
+        { once: true }
+      );
+    },
   });
 }
 
 /**
- * Initialises the "Filter by grant ID" form for Gates.
- * Reuses the existing ?q= helpers so the entered grant ID is simply
- * appended as an extra clause:
+ * Initialises the "Add filter" form.
  *
- *   supplements.grantid__bmgf:"<user input>"
+ * Populates the field dropdown from all term-based Explore items.
+ * Builds a clause of the form:
+ *     <field>:"value"
+ *   or
+ *     <field>:("v1" OR "v2")
  *
- * @param {string} org - Organisation identifier passed into initDataExplore.
  */
-function initGrantFilterForm(org) {
-  const form  = document.getElementById('js-grant-filter-form');
-  const input = document.getElementById('js-grant-filter-input');
+function initFilterForm() {
+  const form = document.getElementById("js-filter-form");
+  const fieldSelect = document.getElementById("js-filter-field");
+  const input = document.getElementById("js-filter-input");
+  const applyButton = document.getElementById("js-filter-apply");
 
-  // If the form isn't in the DOM (non-Gates orgs), do nothing.
-  if (!form || !input) return;
+  // Non-Gates orgs: form isn't in the DOM
+  if (!form || !fieldSelect || !input) return;
 
-  // Make sure it’s visible whenever the Active filters panel is visible.
-  form.classList.remove('hidden');
+  const exploreConfig = orgData?.hits?.hits?.[0]?._source?.explore || [];
+  const options = buildFilterFieldOptions(exploreConfig);
 
-  form.addEventListener('submit', (event) => {
+  // Populate the field dropdown
+  fieldSelect.innerHTML = "";
+
+  const placeholderOption = document.createElement("option");
+  placeholderOption.value = "";
+  placeholderOption.textContent = "Filter by…";
+  fieldSelect.appendChild(placeholderOption);
+
+  options.forEach(({ value, label }) => {
+    const opt = document.createElement("option");
+    opt.value = value;
+    opt.textContent = label;
+    fieldSelect.appendChild(opt);
+  });
+
+  form.addEventListener("submit", (event) => {
     event.preventDefault();
 
+    const field = fieldSelect.value;
     const raw = input.value.trim();
-    if (!raw) return;
 
-    // Support multiple IDs separated by commas, OR / AND
-    const ids = raw
-      .replace(/\s+(OR|AND)\s+/gi, ',')
-      .split(',')
+    if (!field || !raw) return;
+
+    // Support "ID1, ID2" or "ID1 OR ID2" or "ID1 AND ID2"
+    const tokens = raw
+      .replace(/\s+(OR|AND)\s+/gi, ",")
+      .split(",")
       .map((value) => value.trim())
       .filter(Boolean);
 
-    if (!ids.length) return;
+    if (!tokens.length) return;
 
-    const quoted = ids.map(
-      (id) => `"${id.replace(/"/g, '\\"')}"`
+    const quoted = tokens.map(
+      (value) => `"${value.replace(/"/g, '\\"')}"`
     );
 
     const clause =
       quoted.length === 1
-        ? `supplements.grantid__bmgf:${quoted[0]}`
-        : `supplements.grantid__bmgf:(${quoted.join(' OR ')})`;
+        ? `${field}:${quoted[0]}`
+        : `${field}:(${quoted.join(" OR ")})`;
 
+    // Append the new clause to existing ?q= filters
     updateURLParams({
       q: buildEncodedQueryWithUrlFilter(clause)
     });
 
+    // Leave the input as-is so users see what they typed
+    input.value = "";
+
     setTimeout(() => {
-      initInsightsAndStrategies(org);
+      // Refresh Insights/Actions and Explore for the current org
+      refreshInsightsAndStrategiesForCurrentOrg();
 
       if (currentActiveExploreItemButton && currentActiveExploreItemData) {
         processExploreDataTable(
@@ -1687,4 +1828,5 @@ function initGrantFilterForm(org) {
     }, 50);
   });
 }
+
 
