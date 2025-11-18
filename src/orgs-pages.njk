@@ -393,8 +393,8 @@ permalink: "{{ org._source.objectID | slug }}/"
               }) }}
 
               {{ component("strategy-pill", {
-                id: "email_author_unpublished_preprint_not_ccby",
-                txt: "Update preprint license"
+                id: "email_author_unpublished_openrxiv_preprint_not_ccby",
+                txt: "Update bioRxiv / medRxiv license"
               }) }}
             </ul>
           </nav>
@@ -446,9 +446,9 @@ permalink: "{{ org._source.objectID | slug }}/"
             }) }}
 
             {{ component("strategy-contents", {
-              id: "email_author_unpublished_preprint_not_ccby",
-              heading: "Update preprint license",
-              desc: "Send emails to authors to request they license their preprint CC-BY.",
+              id: "email_author_unpublished_openrxiv_preprint_not_ccby",
+              heading: "Update bioRxiv / medRxiv license",
+              desc: "Send emails to authors to request they license their bioRxiv or medRxiv preprint CC-BY.",
               table_headings: "<th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-10/12 sm:w-6/12'>Article</th>\
                               <th scope='col' class='hidden px-3 py-3.5 text-left text-sm font-semibold w-4/12 sm:table-cell'>Corresponding author</th>",
               draft_btn: true,
