@@ -66,27 +66,34 @@ export function setDefaultYear() {
       document.getElementById('end-date').value = endDate.toISOString().split('T')[0];
     }
 
-    // Trigger any additional logic needed to refresh the report
-    handleYearButtonLogic(null, startDate, endDate, `${makeDateReadable(startDate)} &ndash; ${makeDateReadable(endDate)}`);
-
     let elementToUpdate;
+    let buttonText;
 
-    // Check if startDate and endDate correspond to the start and end of the same year
-    if (
+    const isWholeYear =
       startDate.getFullYear() === endDate.getFullYear() &&
-      startDate.getMonth() === 0 && // January is 0
-      startDate.getDate() === 1 && // Start of the year
-      endDate.getMonth() === 11 && // December is 11
-      endDate.getDate() === 31 // End of the year
-    ) {
-      // If true, select & style the button with ID `year-[YYYY]`
+      startDate.getMonth() === 0 &&
+      startDate.getDate() === 1 &&
+      endDate.getMonth() === 11 &&
+      endDate.getDate() === 31;
+
+    if (isWholeYear) {
       elementToUpdate = document.getElementById(`year-${startDate.getFullYear()}`);
+      buttonText = `${startDate.getFullYear()}`;
     } else {
-      // Otherwise, select & style the date range form
       elementToUpdate = document.getElementById("date_range_form");
+      buttonText = `${makeDateReadable(startDate)} &ndash; ${makeDateReadable(endDate)}`;
     }
-    // Style the selected element, whether it’s a year button or the date range form
-    updateYearButtonStyling(elementToUpdate, true);
+
+    // Trigger any additional logic needed to refresh the report and style the control
+    handleYearButtonLogic(elementToUpdate, startDate, endDate, buttonText);
+
+    // If this is a year that lives in the More dropdown, update the visible label
+    if (elementToUpdate && elementToUpdate.classList.contains("js_dropdown_item")) {
+      const dropdownButton = document.querySelector(".js_dropdown_button");
+      if (dropdownButton) {
+        dropdownButton.innerHTML = `${startDate.getFullYear()} <span class='ml-1 text-xs'>&#9660;</span>`;
+      }
+    }
   } else {
     // Otherwise, set default dates or years based on user type
     let defaultStartDate, defaultEndDate;
@@ -174,7 +181,7 @@ export function initDateManager() {
  * @param {number} [visibleYears=4] - The number of years to be visible outside the dropdown.
  */
 export function bindDynamicYearButtons(startYear, endYear, visibleYears = 3) {
-  const yearsContainer = document.getElementById("year-buttons-container");
+  const yearsContainer = document.getElementById("js-year-buttons");
   const currentYear = new Date().getFullYear(); // Get current year
   const currentDate = new Date(); // Get current date
   const { dropdown, dropdownContent, dropdownButton } = createDropdownContainer("date_range_more_dropdown");
@@ -230,7 +237,7 @@ export function bindDynamicYearButtons(startYear, endYear, visibleYears = 3) {
  */
 function createDropdownContainer(id = null) {
   const dropdown = document.createElement("div");
-  dropdown.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " relative inline-block px-4 js_dropdown";
+  dropdown.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " relative inline-block px-3 js_dropdown";
 
   const dropdownButton = document.createElement("button");
   dropdownButton.className = "h-full w-full js_dropdown_button";
@@ -267,25 +274,45 @@ function createDropdownContainer(id = null) {
  * @param {string} buttonText - The text to be displayed on the item.
  * @param {Date} startDate - The start date for the report corresponding to the item.
  * @param {Date} endDate - The end date for the report corresponding to the item.
- * @returns {HTMLElement} The created dropdown item element.
+ * @param {HTMLButtonElement} dropdownButton - The visible "More" button whose label/style we update.
+ * @returns {HTMLButtonElement} The created dropdown item element.
  */
 function createDropdownItem(buttonId, buttonText, startDate, endDate, dropdownButton) {
   const item = document.createElement("button");
-  item.className = DATE_SELECTION_BUTTON_CLASSES.enabled  + " py-2 w-full js_dropdown_item"; 
+  item.id = buttonId;
+  item.type = "button";
+
+  item.className =
+    "js_dropdown_item block w-full px-4 py-2 text-left text-xs md:text-sm " +
+    "bg-white text-neutral-900 hover:bg-carnation-100 focus:outline-none focus:bg-carnation-100";
+
   item.textContent = buttonText;
 
   item.addEventListener("click", (event) => {
     event.preventDefault();
-    // Update dropdown button text and style
-    dropdownButton.innerHTML = `${buttonText} <span class='ml-1 text-xs'>&#9660;</span>`;
+
     // Update URL with the selected year
-    updateURLParams({ 
-      'start': startDate.toISOString().split('T')[0], 
-      'end': endDate.toISOString().split('T')[0] 
+    updateURLParams({
+      start: startDate.toISOString().split("T")[0],
+      end: endDate.toISOString().split("T")[0]
     });
+
+    // Apply the date range + refresh reports and style via the dropdown container
     handleYearButtonLogic(item, startDate, endDate, buttonText);
-    updateYearButtonStyling(dropdownButton, true);
+
+    // Update visible label on the More chip
+    dropdownButton.innerHTML = `${buttonText} <span class='ml-1 text-xs'>&#9660;</span>`;
+
+    // Close the dropdown
+    const dropdownContainer = dropdownButton.closest(".js_dropdown");
+    const dropdownContent = dropdownContainer?.querySelector(".js_dropdown_content");
+    if (dropdownContent) {
+      dropdownContent.classList.add("hidden");
+      dropdownContent.setAttribute("hidden", "true");
+    }
+    dropdownButton.setAttribute("aria-expanded", "false");
   });
+
 
   return item;
 }
@@ -305,7 +332,7 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
   button.textContent = buttonText;
 
   // Add classes for styling
-  button.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " px-4";
+  button.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " px-3";
   button.setAttribute("aria-pressed", buttonText === `${DEFAULT_YEAR}` ? "true" : "false");
 
   // Add event listener
@@ -330,63 +357,129 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
  * ensuring a11y compliance.
  * 
  * @returns {HTMLElement} The created form element with date inputs and a submit button.
+ *
  */
 function createDateRangeForm() {
+  // Form container
   const form = document.createElement("form");
-  form.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " flex items-center hover:text-white"; 
   form.id = "date_range_form";
-  form.setAttribute('role', 'form');
-  form.setAttribute('aria-labelledby', 'date-range-form-title');
+  form.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " flex items-center whitespace-nowrap";
+  form.setAttribute("aria-labelledby", "js-date-range-form-title");
 
-  // Title for the form (for a11y)
-  const formTitle = document.createElement('h2');
-  formTitle.id = 'date-range-form-title';
-  formTitle.textContent = 'Select custom date range';
-  formTitle.className = 'sr-only';
+  // Title for the form (for screen readers)
+  const formTitle = document.createElement("h2");
+  formTitle.id = "js-date-range-form-title";
+  formTitle.textContent = "Select custom date range";
+  formTitle.className = "sr-only";
   form.appendChild(formTitle);
 
-  // Create the start date input
-  const startDateInput = createDateInput("start-date", "Start Date");
-  form.appendChild(startDateInput);
+  // Hidden inputs kept for compatibility
+  const hiddenStart = document.createElement("input");
+  hiddenStart.type = "hidden";
+  hiddenStart.id = "start-date";
+  hiddenStart.name = "start";
+  form.appendChild(hiddenStart);
 
-  // Create the end date input
-  const endDateInput = createDateInput("end-date", "End Date");
-  form.appendChild(endDateInput);
+  const hiddenEnd = document.createElement("input");
+  hiddenEnd.type = "hidden";
+  hiddenEnd.id = "end-date";
+  hiddenEnd.name = "end";
+  form.appendChild(hiddenEnd);
 
-  // Create and append a submit button
-  const submitButton = document.createElement("button");
-  submitButton.type = "submit";
-  submitButton.className = "text-xs uppercase md:text-center py-2 px-3 bg-neutral-200 hover:bg-neutral-800 hover:text-white";
-  submitButton.textContent = "Submit";
-  form.appendChild(submitButton);
+  // Trigger button to open the popover
+  const triggerBtn = document.createElement("button");
+  triggerBtn.type = "button";
+  triggerBtn.innerHTML = "Custom date range <span class='ml-1 text-xs'>▼</span>";
+  triggerBtn.setAttribute("aria-haspopup", "dialog");
+  triggerBtn.setAttribute("aria-expanded", "false");
+  triggerBtn.style.color = "inherit";
+  form.appendChild(triggerBtn);
 
-  // Add event listener for form submission
-  form.addEventListener('submit', (event) => {
-    event.preventDefault();
-  
-    const startDateInput = document.getElementById('start-date');
-    const endDateInput = document.getElementById('end-date');
-  
-    const startDate = new Date(startDateInput.value);
-    const endDate = new Date(endDateInput.value);
-    
-    // Update URL with query parameters
-    const queryParams = new URLSearchParams(window.location.search);
-    queryParams.set('start', startDate.toISOString().split('T')[0]);
-    queryParams.set('end', endDate.toISOString().split('T')[0]);
-    history.pushState(null, '', '?' + queryParams.toString());
-  
+  // Custom date range popover content
+  const pop = document.createElement("div");
+  pop.className = "p-2 md:p-3 text-xs md:text-sm";
+  pop.setAttribute("role", "dialog");
+  pop.setAttribute("aria-labelledby", "js-date-range-form-title");
+
+  // Create labelled inputs, but give them distinct IDs
+  const startField = createDateInput("start-date-pop", "From");
+  const endField = createDateInput("end-date-pop", "To");
+  startField.className = "mb-3 p-2 flex items-center justify-between";
+  endField.className = "mb-3 p-2 flex items-center justify-between";
+  pop.appendChild(startField);
+  pop.appendChild(endField);
+
+  // Apply button inside the popover
+  const applyBtn = document.createElement("button");
+  applyBtn.type = "button";
+  applyBtn.className = "block p-2 border rounded-sm mt-1 mr-1 md:mt-0 md:mr-3 w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 hover:bg-carnation-100 js-nav-chip";
+  applyBtn.textContent = "Apply";
+  pop.appendChild(applyBtn);
+
+  // Initialise a dedicated Tippy instance
+  const tip = tippy(triggerBtn, {
+    content: pop,
+    allowHTML: true,
+    interactive: true,
+    placement: "bottom",
+    appendTo: document.body,
+    trigger: "click",
+    theme: "popover",
+    arrow: false,
+    onShow() {
+      triggerBtn.setAttribute("aria-expanded", "true");
+      // Prefill popover inputs from hidden values (if any)
+      const s = /** @type {HTMLInputElement|null} */ (document.getElementById("start-date"));
+      const e = /** @type {HTMLInputElement|null} */ (document.getElementById("end-date"));
+      const sPop = /** @type {HTMLInputElement|null} */ (document.getElementById("start-date-pop"));
+      const ePop = /** @type {HTMLInputElement|null} */ (document.getElementById("end-date-pop"));
+      if (s && sPop) sPop.value = s.value || "";
+      if (e && ePop) ePop.value = e.value || "";
+    },
+    onHide() { triggerBtn.setAttribute("aria-expanded", "false"); }
+  });
+
+  // Handle Apply: validate, update URL, sync hidden inputs, call existing handlers, close
+  applyBtn.addEventListener("click", () => {
+    const sPop = /** @type {HTMLInputElement|null} */ (document.getElementById("start-date-pop"));
+    const ePop = /** @type {HTMLInputElement|null} */ (document.getElementById("end-date-pop"));
+    if (!sPop || !ePop) return;
+
+    const startDate = new Date(sPop.value);
+    const endDate = new Date(ePop.value);
+
     // Validate dates
-    if (startDate > endDate) {
-      console.log('Start date must be before end date.');
+    if (!sPop.value || !ePop.value) {
+      console.log("Please select both start and end dates.");
       return;
     }
-  
-    const dateRangeForm = document.getElementById("date_range_form");
-    handleYearButtonLogic(null, startDate, endDate, `${makeDateReadable(startDate)} &ndash; ${makeDateReadable(endDate)}`);
-    updateYearButtonStyling(dateRangeForm, true);
+    if (startDate > endDate) {
+      console.log("Start date must be before end date.");
+      return;
+    }
+
+    // Update URL with query parameters (YYYY-MM-DD via toISOString split as before)
+    const queryParams = new URLSearchParams(window.location.search);
+    queryParams.set("start", startDate.toISOString().split("T")[0]);
+    queryParams.set("end", endDate.toISOString().split("T")[0]);
+    history.pushState(null, "", "?" + queryParams.toString());
+
+    // Sync hidden inputs so existing code sees them
+    hiddenStart.value = sPop.value;
+    hiddenEnd.value = ePop.value;
+
+    // Build label and invoke existing handlers
+    handleYearButtonLogic(
+      null,
+      startDate,
+      endDate,
+      `${makeDateReadable(startDate)} &ndash; ${makeDateReadable(endDate)}`
+    );
+    updateYearButtonStyling(form, true);
+
+    // Close the popover
+    if (tip && tip[0]) tip[0].hide();
   });
-  
 
   return form;
 }
@@ -404,7 +497,7 @@ function createDateInput(id, label) {
   const labelElement = document.createElement("label");
   labelElement.htmlFor = id;
   labelElement.textContent = label;
-  labelElement.className = "mr-1 font-semibold uppercase text-xs";
+  labelElement.className = "mr-3 font-semibold uppercase text-xs";
   wrapper.appendChild(labelElement);
 
   const input = document.createElement("input");
@@ -458,56 +551,64 @@ function handleYearButtonLogic(button, startDate, endDate, buttonText) {
  * @param {boolean} isDropdownItem - Indicates whether the selected button is a dropdown item.
  */
 function updateYearButtonStyling(selectedElement, isDropdownItem = false) {
-  // Reset styles for year buttons and dropdown items
-  const yearButtons = document.querySelectorAll(".js_year_select");
-  yearButtons.forEach(button => {
-    button.classList.remove("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
-    button.classList.add("bg-white", "text-neutral-900");
+  // Derive class differences from the constants so we don't manually juggle Tailwind classes
+  const enabledClasses = DATE_SELECTION_BUTTON_CLASSES.enabled.split(' ');
+  const activeClasses  = DATE_SELECTION_BUTTON_CLASSES.active.split(' ');
 
-    // a11y: check if the element is a button before setting aria-pressed
-    // This ARIA role can only be applied to these elements: div and form can not be pressed
-    // See axe-core 4.4, "Elements must only use allowed ARIA attributes"
-    if (button.tagName.toLowerCase() === 'button') {
+  // Classes that only belong to one state or the other
+  const activeOnlyClasses  = activeClasses.filter(c => !enabledClasses.includes(c));
+  const enabledOnlyClasses = enabledClasses.filter(c => !activeClasses.includes(c));
+
+  // Reset styles for all chips (years, All time, date-range form, Clear filters, etc.)
+  const yearButtons = document.querySelectorAll(".js-nav-chip");
+
+  yearButtons.forEach((button) => {
+    // Remove active-only styles, restore enabled-only styles
+    button.classList.remove(...activeOnlyClasses);
+    button.classList.add(...enabledOnlyClasses);
+
+    if (button.tagName.toLowerCase() === "button") {
       button.setAttribute("aria-pressed", "false");
     }
 
-    const parentDropdown = button.closest('.js_dropdown');
+    const parentDropdown = button.closest(".js_dropdown");
     if (parentDropdown) {
-      parentDropdown.classList.remove("bg-neutral-900", "border-neutral-900");
-      parentDropdown.classList.add("bg-white");
+      parentDropdown.classList.remove(...activeOnlyClasses);
+      parentDropdown.classList.add(...enabledOnlyClasses);
     }
   });
 
-  // Check if selectedElement is not null before applying styles
-  if (selectedElement) {
-    if (!selectedElement.classList.contains('js_dropdown_button')) {
-      selectedElement.classList.add("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
-      selectedElement.classList.remove("bg-white", "text-neutral-900", "opacity-50");
+  if (!selectedElement) return;
+
+  // For normal chips (not the inner dropdown toggle button, not dropdown items), apply active styles
+  if (!selectedElement.classList.contains("js_dropdown_button") && !isDropdownItem) {
+    selectedElement.classList.remove(...enabledOnlyClasses, "opacity-50");
+    selectedElement.classList.add(...activeOnlyClasses);
+
+    if (selectedElement.tagName.toLowerCase() === "button") {
       selectedElement.setAttribute("aria-pressed", "true");
     }
+  }
 
-    // Style form contents if the selected "button" is the date range form
-    if (selectedElement.tagName.toLowerCase() === 'form') {
-      selectedElement.classList.remove("hover:bg-white", "hover:text-white");
+  // If the selected "chip" is actually the date range form, style its internals
+  if (selectedElement.tagName.toLowerCase() === "form") {
+    const labels = selectedElement.querySelectorAll("label");
+    labels.forEach((label) => {
+      label.classList.add("text-white");
+    });
 
-      const labels = selectedElement.querySelectorAll('label');
-      labels.forEach(label => {
-        label.classList.add("text-white");
-      });
+    const inputs = selectedElement.querySelectorAll("input");
+    inputs.forEach((input) => {
+      input.classList.add("text-white", "bg-neutral-900", "border-neutral-900");
+    });
+  }
 
-      const inputs = selectedElement.querySelectorAll('input');
-      inputs.forEach(input => {
-        input.classList.add("text-white", "bg-neutral-900", "border-neutral-900");
-      });
-    }
-
-    // If the selected button is a dropdown item, apply styling to the dropdown container only
-    if (isDropdownItem) {
-      const dropdownContainer = selectedElement.closest('.js_dropdown');
-      if (dropdownContainer) {
-        dropdownContainer.classList.add("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
-        dropdownContainer.classList.remove("bg-white");
-      }
+  // If the selected element came from the dropdown list, style the visible dropdown container instead
+  if (isDropdownItem) {
+    const dropdownContainer = selectedElement.closest(".js_dropdown");
+    if (dropdownContainer) {
+      dropdownContainer.classList.remove(...enabledOnlyClasses);
+      dropdownContainer.classList.add(...activeOnlyClasses);
     }
   }
 }

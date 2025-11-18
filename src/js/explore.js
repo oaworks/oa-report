@@ -838,7 +838,7 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
         const row = tableBody.children[index]; // Get the corresponding row
         const secondCell = row.children[1]; // Get the second cell in the row
         const rowCells = row.querySelectorAll('td');
-        rowCells.forEach(cell => cell.classList.add('bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900'));
+        rowCells.forEach(cell => cell.classList.add('!bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900'));
         secondCell.classList.remove('bg-neutral-600');
       }
     });
@@ -859,6 +859,93 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
   const cell = document.createElement(isHeader ? 'th' : 'td');
   cell.className = cssClass;
 
+  /**
+   * Helper: attach click-to-filter for term tables, but ignore clicks on external pills.
+   * Clicking toggles the term in the active ?q= filters.
+   *
+   * @param {string|number} rawValue - The raw bucket key value to filter on.
+   */
+  function attachTermClickFilter(rawValue) {
+    if (key !== 'key' || !currentActiveExploreItemData?.term) return;
+
+    cell.onclick = (event) => {
+      const target = /** @type {HTMLElement} */ (event.target);
+      // Do not trigger filtering when clicking the external profile pill
+      if (target && target.closest('.js-external-pill')) return;
+
+      const term = currentActiveExploreItemData.term.trim();
+      const value = String(rawValue).replace(/"/g, '\\"');
+      const clause = `${term}:"${value}"`;
+
+      const existingQuery = getDecodedUrlQuery() || '';
+
+      // If clause is not present, just add it via the existing helper
+      if (!existingQuery || !existingQuery.includes(clause)) {
+        updateURLParams({
+          q: buildEncodedQueryWithUrlFilter(clause)
+        });
+      } else {
+        // Clause is present: remove ONLY this clause from the decoded ?q=
+        const parts = existingQuery
+          .split(/\s+AND\s+/)
+          .map(part => part.trim())
+          .filter(Boolean);
+
+        const remaining = parts.filter(part => !part.includes(clause));
+
+        if (!remaining.length) {
+          // No filters left – drop q entirely
+          removeURLParams('q');
+        } else {
+          const newDecodedQuery = remaining.join(' AND ');
+          // Write the updated expression back (encoded) so helpers keep working
+          updateURLParams({
+            q: encodeURIComponent(newDecodedQuery)
+          });
+        }
+      }
+
+      setTimeout(() => {
+        initInsightsAndStrategies(org);
+        if (currentActiveExploreItemButton && currentActiveExploreItemData) {
+          processExploreDataTable(currentActiveExploreItemButton, currentActiveExploreItemData);
+        } else {
+          displayDefaultArticlesData();
+        }
+        renderActiveFiltersBanner();
+      }, 50);
+    };
+  }
+
+  /**
+   * Helper: add a small dot indicating selected term for any term already active in the URL ?q=.
+   *
+   * @param {HTMLElement} wrapper - The span wrapping the clickable term text.
+   * @param {string|number} rawValue - The raw bucket key value to match against the active filters.
+   */
+  function addSelectedDotIfNeeded(wrapper, rawValue) {
+    if (key !== 'key' || !currentActiveExploreItemData?.term) return;
+
+    const term = currentActiveExploreItemData.term.trim();
+    const value = String(rawValue).replace(/"/g, '\\"');
+    const clause = `${term}:"${value}"`;
+    const q = getDecodedUrlQuery() || '';
+
+    if (!q.includes(clause)) return;
+
+    wrapper.classList.add('inline-flex', 'items-center');
+
+    const dot = document.createElement('span');
+    dot.className = 'inline-block w-1.5 h-1.5 mr-1 rounded-full bg-carnation-400';
+    dot.setAttribute('aria-hidden', 'true');
+    wrapper.insertBefore(dot, wrapper.firstChild);
+
+    const sr = document.createElement('span');
+    sr.className = 'sr-only';
+    sr.textContent = 'Selected filter';
+    wrapper.appendChild(sr);
+  }
+  
   // Early handling for common 'all_values' and 'no_values' cases in terms-based data
   // Display either 'All [explore item]]' or 'No [explore item]'
   if (content === 'all_values' || content === 'no_values') {
@@ -870,58 +957,154 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
   // Safely check and process content based on its type and the context
   if (key === 'key' && content) {
     let displayContent = "";
+    /** @type {HTMLElement|null} */
+    let labelWrapper = null;
+
     switch (exploreItemId) {
-      case 'country':
+      case 'country': {
         // Fetch and display country name using country code
         displayContent = COUNTRY_CODES[content] || "Unknown country";
         break;
-      case 'language':
+      }
+
+      case 'language': {
         // Fetch and display language name using language code
         displayContent = LANGUAGE_CODES[content] || "Unknown language";
         break;
+      }
+
       case 'publisher_license':
       case 'repository_license':
-        // Check if LICENSE_CODES entry exists and get name and URL
+      case 'license':
+      case 'dataset_license': {
+        // License label + separate CC pill
         const licenseInfo = LICENSE_CODES[content];
         const licenseName = licenseInfo?.name || "Unknown license";
-        const licenseUrl = licenseInfo?.url;
-        displayContent = `<strong class='uppercase'>${content}</strong><br>` +
-          (licenseUrl ? `<a href="${licenseUrl}" class="underline underline-offset-2 decoration-1" rel="noopener noreferrer" target="_blank">${licenseName}</a>` : licenseName);
+        const licenseUrl = licenseInfo?.url || null;
+
+        labelWrapper = document.createElement('span');
+        labelWrapper.className = 'js-filter-target cursor-pointer hover:underline';
+
+        const codeEl = document.createElement('strong');
+        codeEl.className = 'uppercase';
+        codeEl.textContent = content;
+
+        const nameEl = document.createElement('span');
+        nameEl.textContent = ` – ${licenseName}`;
+
+        labelWrapper.appendChild(codeEl);
+        labelWrapper.appendChild(document.createElement('br'));
+        labelWrapper.appendChild(nameEl);
+
+        cell.appendChild(labelWrapper);
+
+        if (licenseUrl) {
+          const pill = document.createElement('a');
+          pill.href = licenseUrl;
+          pill.target = '_blank';
+          pill.rel = 'noopener noreferrer';
+          pill.className = 'ml-2 bg-neutral-200 text-neutral-900 text-xs px-2 py-0.5 rounded-full whitespace-nowrap hover:bg-carnation-200 js-external-pill';
+          pill.textContent = 'CC License ↗';
+          cell.appendChild(pill);
+        }
+
         break;
+      }
+
       case 'all_lab_head': // TODO: remove these cases once we settle on a naming convention
       case 'janelia_lab_head':
       case 'investigator':
       case 'freeman_hrabowski_scholar':
-      case 'author':
+      case 'author': {
+        // ORCID-based author (or investigator, etc.): show name + ORCID pill
         if (typeof content === 'string' && content.includes('orcid.org')) {
           const orcidId = content.split('/').pop();
-          cell.innerHTML = `<a href="${content}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 decoration-1">Loading ORCiD data...</a>`;
+
+          const pill = document.createElement('a');
+          pill.href = content;
+          pill.target = '_blank';
+          pill.rel = 'noopener noreferrer';
+          pill.className = 'ml-2 bg-neutral-200 text-neutral-900 text-xs px-2 py-0.5 rounded-full whitespace-nowrap hover:bg-carnation-200 js-external-pill';
+          pill.textContent = 'ORCID ↗';
+
+          labelWrapper = document.createElement('span');
+          labelWrapper.className = 'js-filter-target cursor-pointer hover:underline';
+
+          const nameSpan = document.createElement('span');
+          nameSpan.textContent = 'Loading ORCID data...';
+
+          labelWrapper.appendChild(nameSpan);
+
+          cell.appendChild(labelWrapper);
+          cell.appendChild(pill);
+
           getORCiDFullName(orcidId)
             .then(fullName => {
-              cell.innerHTML = `<a href="${content}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 decoration-1">${fullName || 'Name not found'}</a>`;
+              nameSpan.textContent = fullName || 'Name not found';
             })
             .catch(() => {
-              cell.innerHTML = `<a href="${content}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 decoration-1">${content}</a>`;
+              nameSpan.textContent = content;
             });
-          return cell; // Early return to avoid overriding innerHTML after async operation
+
+          break;
         }
+
+        // Non-ORCID value, just show as-is and let it be filterable
         displayContent = content;
         break;
-      default:
+      }
+
+      default: {
         displayContent = content;
+      }
     }
-    cell.innerHTML = displayContent;
-  } else if (exploreItemId === 'author' && typeof content === 'string' && content.includes('orcid.org')) {
-    // Handle ORCiD links by fetching full name
+
+    // Wrap plain key values in a filter-target span (countries, grant IDs, etc.)
+    if (!labelWrapper) {
+      labelWrapper = document.createElement('span');
+      labelWrapper.className = 'js-filter-target cursor-pointer hover:underline';
+      labelWrapper.textContent = displayContent;
+      cell.appendChild(labelWrapper);
+    }
+
+    // Where the active-filter-dot is added for ALL term cells
+    addSelectedDotIfNeeded(labelWrapper, content);
+
+    attachTermClickFilter(content);
+    return cell;
+  }
+
+  // Non-`key` cells, or cases outside terms tables
+
+  // Handle ORCID links (e.g. in non-key author cells) as: name + pill
+  if (exploreItemId === 'author' && typeof content === 'string' && content.includes('orcid.org')) {
     const orcidId = content.split('/').pop();
+
+    const nameSpan = document.createElement('span');
+    nameSpan.textContent = 'Loading ORCID data...';
+
+    const pill = document.createElement('a');
+    pill.href = content;
+    pill.target = '_blank';
+    pill.rel = 'noopener noreferrer';
+    pill.className = 'ml-2 bg-neutral-200 text-neutral-900 text-xs px-2 py-0.5 rounded-full whitespace-nowrap hover:bg-carnation-200 js-external-pill';
+    pill.textContent = 'ORCID ↗';
+
+    cell.appendChild(nameSpan);
+    cell.appendChild(pill);
+
     getORCiDFullName(orcidId)
       .then(fullName => {
-        cell.innerHTML = `<a href="${content}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 decoration-1">${fullName}</a>`;
+        nameSpan.textContent = fullName || 'Name not found';
       })
       .catch(() => {
-        cell.innerHTML = `<a href="${content}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 decoration-1">${content} (Name not found)</a>`;
+        nameSpan.textContent = content;
       });
-  } else if (content == 'US$NaN'){
+
+    return cell;
+  }
+
+  if (content === 'US$NaN') {
     cell.innerHTML = "N/A"; // Display NaN as the more user-friendly "N/A"
   } else if (typeof content === 'object' && content !== null) {
     // If content is an object, format its values as a list
@@ -981,14 +1164,14 @@ function enableExploreRowHighlighting() {
       const rowCells = event.target.parentElement.querySelectorAll('td');
       const firstCellContent = rowCells[0].textContent;
       const secondCell = rowCells[1];
-      const isRowHighlighted = rowCells[0].classList.contains('bg-neutral-200');
+      const isRowHighlighted = rowCells[0].classList.contains('!bg-neutral-200');
 
       if (isRowHighlighted) {
-        rowCells.forEach(cell => cell.classList.remove('bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900'));
+        rowCells.forEach(cell => cell.classList.remove('!bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900'));
         secondCell.classList.add('bg-neutral-600');
         selectedRowKeys = selectedRowKeys.filter(key => key !== firstCellContent); // Remove key from array for persistent active keys
       } else {
-        rowCells.forEach(cell => cell.classList.add('bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900'));
+        rowCells.forEach(cell => cell.classList.add('!bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900'));
         secondCell.classList.remove('bg-neutral-600');
         selectedRowKeys.push(firstCellContent); // Add key to array for persistent active keys 
       }
@@ -1001,7 +1184,7 @@ function enableExploreRowHighlighting() {
  */
 function clearRowHighlights() {
   document.querySelectorAll('.js_export_table_container td').forEach(cell => {
-    cell.classList.remove('bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900');
+    cell.classList.remove('!bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900');
   });
 }
 
@@ -1334,7 +1517,6 @@ function parseEsQueryToPairs(q) {
   return out;
 }
 
-
 /**
  * Renders a small banner above Explore showing active ?q= filters as a <dl>.
  * Hidden when no ?q=. "Clear filter" removes only q (keeps everything else).
@@ -1356,31 +1538,80 @@ function renderActiveFiltersBanner() {
   if (!pairs.length) {
     mount.innerHTML = '';
     mount.style.display = 'none';
-    mount.closest('.bg-carnation-100')?.remove(); // fully remove container when empty
+    mount.closest('.js-active-filters-wrapper')?.classList.add('hidden'); // hide the container when no filters
     return;
   }
 
-  const list = pairs.map(({ label, value }) =>
-    `<div class="mr-4 mb-1">
-       <dt class="inline text-neutral-600">${label}</dt>
-       <dd class="inline ml-1 font-semibold">${value}</dd>
-     </div>`
-  ).join('');
+  // Build a single/compact inline expression
+  const count = pairs.length;
 
-  mount.innerHTML = `
-    <div role="status" aria-live="polite" class="py-2">
-      <dl class="flex flex-wrap">${list}</dl>
-      <button id="js-clear-q" type="button" class="underline underline-offset-2 decoration-1 hover:opacity-80 mt-1">
-        Clear filter
-      </button>
+  const plainExpression = pairs
+    .map(({ label, value }) => `${label} ${value}`)
+    .join(' AND ');
+
+  const expression = pairs
+    .map(({ label, value }) =>
+      `<span class="text-neutral-700">${label}</span>: \
+       <span class="font-medium text-neutral-900">${value}</span>`
+    )
+    .join(' <span class="text-neutral-600">AND</span> ');
+
+  // Content for the popover containing the full expression/filters
+  const popoverContent = `
+    <div class="p-2 text-xs md:text-sm max-w-xs">
+      <p class="mb-1 font-medium text-neutral-900">
+        Active filters (${count})
+      </p>
+      <p class="text-neutral-800">
+        ${expression}
+      </p>
     </div>
   `;
+
+  // In the nav, show the Active filters + Clear filter buttons
+  mount.innerHTML = `
+    <button
+      id="js-filters-summary"
+      type="button"
+      class="block p-2 px-3 border rounded-t-sm mt-1 mr-1 md:mt-0 md:mr-3 md:border-b-0 border-carnation-100 bg-carnation-100 text-neutral-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900"
+      aria-label="${count} active filter${count > 1 ? 's' : ''}. Click to see details."
+      title="${plainExpression}"
+    >
+      Filters (${count})
+    </button>
+    <button
+      id="js-clear-q"
+      type="button"
+      class="block p-2 border rounded-t-sm mt-1 mr-1 md:mt-0 md:mr-3 md:border-b-0 bg-white text-neutral-900 hover:bg-carnation-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 js-nav-chip"
+    >
+      Clear filters
+    </button>
+  `;
+
   mount.style.display = '';
+  mount.closest('.js-active-filters-wrapper')?.classList.remove('hidden'); // show the container when filters exist
+
+  // Attach popover for full filter details
+  const summaryBtn = document.getElementById('js-filters-summary');
+  if (summaryBtn && typeof tippy === 'function') {
+    if (summaryBtn._tippy) summaryBtn._tippy.destroy();
+
+    tippy(summaryBtn, {
+      content: popoverContent,
+      allowHTML: true,
+      interactive: true,
+      placement: 'bottom',
+      appendTo: document.body,
+      theme: 'popover',
+      arrow: false
+    });
+  }
 
   document.getElementById('js-clear-q')?.addEventListener('click', () => {
     removeURLParams('q'); // keep breakdown, start/end, etc.
     renderActiveFiltersBanner(); // refresh banner
-    initInsightsAndStrategies(org); // re-init insights & actions 
+    initInsightsAndStrategies(org); // re-init insights & actions
+
     if (currentActiveExploreItemButton && currentActiveExploreItemData) {
       processExploreDataTable(currentActiveExploreItemButton, currentActiveExploreItemData);
     } else {
