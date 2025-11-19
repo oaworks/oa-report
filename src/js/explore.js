@@ -1554,17 +1554,31 @@ function labelFromFieldKey(rawKey) {
 function buildFilterFieldOptions(exploreData) {
   if (!Array.isArray(exploreData)) return [];
 
+  // Only expose specific fields for search-to-filter ("Add filter")
+  // See https://github.com/oaworks/discussion/issues/3616#issuecomment-3553985006
+  const ALLOWED_TERMS = new Map([
+    ["supplements.grantid__bmgf", "Grants"],
+    ["authorships.institutions.display_name", "Institutions"],
+    ["journal", "Journals"],
+    ["supplements.host_venue.display_name", "Preprint servers"],
+    ["supplements.program__bmgf", "Programs"],
+    ["supplements.publisher_simple", "Publishers"],
+    ["concepts.display_name", "Subjects"]
+  ]);
+
   const seen = new Set();
   const options = [];
 
   exploreData.forEach((item) => {
-    if (item.type !== "terms" || !item.term) return;
-
     const fieldKey = item.term;
-    if (seen.has(fieldKey)) return;
+    if (!ALLOWED_TERMS.has(fieldKey) || seen.has(fieldKey)) return;
     seen.add(fieldKey);
 
-    const label = labelFromFieldKey(fieldKey);
+    const label =
+      EXPLORE_ITEMS_LABELS[item.id]?.label ||
+      ALLOWED_TERMS.get(fieldKey) ||
+      labelFromFieldKey(fieldKey);
+
     options.push({ value: fieldKey, label });
   });
 
