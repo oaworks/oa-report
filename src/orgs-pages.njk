@@ -53,6 +53,9 @@ permalink: "{{ org._source.objectID | slug }}/"
         ></div>
       </section>
 
+      {# TEMP: generic filter form for Gates Foundation only #}
+      {# See https://github.com/oaworks/discussion/issues/3616 #}
+      {% if org._source.objectID == "gates-foundation" %}
       <div class="flex items-center ml-auto mr-3 md:mr-6 space-x-2">
         {# Active filters panel #}
         <aside
@@ -73,10 +76,7 @@ permalink: "{{ org._source.objectID | slug }}/"
           ></div>
         </aside>
 
-        {# TEMP: generic filter form for Gates Foundation only #}
-        {# See https://github.com/oaworks/discussion/issues/3616 #}
-        {% if org._source.objectID == "gates-foundation" %}
-        <form
+        {# <form
           id="js-filter-form"
           class="flex items-center space-x-1"
           novalidate
@@ -110,10 +110,10 @@ permalink: "{{ org._source.objectID | slug }}/"
             >
             Apply
           </button>
-        </form>
-        {% endif %}
+        </form> #}
 
       </div>
+      {% endif %}
     </div>
 
   </nav>

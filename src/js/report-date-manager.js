@@ -3,11 +3,18 @@
 // 
 // =================================================
 
+// =================================================
+// Imports
+// =================================================
+
 import { DATE_SELECTION_BUTTON_CLASSES } from './constants.js';
 import { makeDateReadable, createDate, replaceDateRange, initDropdown, getAllURLParams, getURLParam, updateURLParams, removeURLParams, dateRange } from './utils.js';
 import { initInsightsAndStrategies } from './insights-and-strategies.js';
 import { currentActiveExploreItemButton, currentActiveExploreItemData, processExploreDataTable } from './explore.js';
 
+// =================================================
+// Global variables
+// =================================================
 
 /** 
  * The current date, used across the application to determine the current context or as a default value.
