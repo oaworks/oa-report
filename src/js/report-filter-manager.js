@@ -239,7 +239,7 @@ function addFilterRow(container) {
 
   const textarea = document.createElement("textarea");
   textarea.id = inputId;
-  textarea.className = "js-filter-input mt-1 w-full h-24 border border-neutral-900 bg-white text-xs md:text-sm leading-tight focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900";
+  textarea.className = "js-filter-input mt-1 p-2 w-full h-36 border border-neutral-900 bg-white text-xs md:text-sm leading-tight focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900";
   textarea.rows = 2;
   textarea.placeholder = "Type values (e.g. OPP1128001 OR OPP1182001). You can also use OR and AND.";
 
@@ -301,7 +301,7 @@ export function renderActiveFiltersBanner() {
 
   // Popover content (wider than date range)
   const pop = document.createElement("div");
-  pop.className = "p-2 md:p-3 text-xs md:text-sm";
+  pop.className = "p-2 text-xs md:text-sm";
   pop.setAttribute("role", "dialog");
   pop.setAttribute("aria-labelledby", "js-filters-form-title");
   pop.style.maxWidth = "600px";
