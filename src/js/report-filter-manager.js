@@ -198,7 +198,7 @@ function addFilterRow(container) {
   const idSuffix = Math.random().toString(36).slice(2);
 
   const row = document.createElement("div");
-  row.className = "js-filter-row mb-3 p-2 border border-neutral-200 bg-neutral-50";
+  row.className = "js-filter-row mb-3 p-2 border border-neutral-200 bg-carnation-100";
 
   const fieldWrapper = document.createElement("div");
   fieldWrapper.className = "mb-2 flex items-center";
@@ -206,12 +206,12 @@ function addFilterRow(container) {
   const fieldLabel = document.createElement("label");
   const fieldId = `js-filter-field-${idSuffix}`;
   fieldLabel.setAttribute("for", fieldId);
-  fieldLabel.className = "mr-3 font-semibold uppercase text-[10px] md:text-xs";
+  fieldLabel.className = "mr-3 font-semibold uppercase text-[10px] md:text-xs sr-only"; // Temp: hidden for now
   fieldLabel.textContent = "Filter field";
 
   const fieldSelect = document.createElement("select");
   fieldSelect.id = fieldId;
-  fieldSelect.className = "js-filter-field h-8 md:h-9 px-2 border border-neutral-900 bg-white text-xs md:text-sm leading-tight focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900";
+  fieldSelect.className = "js-filter-field w-full h-8 md:h-9 px-2 border border-neutral-900 bg-white text-xs md:text-sm leading-tight focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900";
 
   const placeholderOption = document.createElement("option");
   placeholderOption.value = "";
@@ -239,7 +239,7 @@ function addFilterRow(container) {
 
   const textarea = document.createElement("textarea");
   textarea.id = inputId;
-  textarea.className = "js-filter-input mt-1 w-full border border-neutral-900 bg-white text-xs md:text-sm leading-tight focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900";
+  textarea.className = "js-filter-input mt-1 w-full h-24 border border-neutral-900 bg-white text-xs md:text-sm leading-tight focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900";
   textarea.rows = 2;
   textarea.placeholder = "Type values (e.g. OPP1128001 OR OPP1182001). You can also use OR and AND.";
 
@@ -317,7 +317,7 @@ export function renderActiveFiltersBanner() {
   if (pairs.length) {
     pairs.forEach(({ label, value }) => {
       const li = document.createElement("li");
-      li.className = "inline-flex items-center px-2 py-0.5 border border-neutral-300 bg-neutral-50 text-[11px] md:text-xs mr-1 mb-1";
+      li.className = "inline-flex items-center px-2 py-0.5 bg-carnation-100 text-[11px] md:text-xs mr-1 mb-1";
       li.innerHTML = `
         <span class="text-neutral-700 mr-1">${label}:</span>
         <span class="font-medium text-neutral-900">${value}</span>
@@ -352,12 +352,14 @@ export function renderActiveFiltersBanner() {
   // Start with one row
   addFilterRow(rowsContainer);
 
-  const addRowBtn = document.createElement("button");
-  addRowBtn.type = "button";
-  addRowBtn.id = "js-add-filter-row";
-  addRowBtn.className = "mt-1 mb-3 p-2 border w-full justify-center";
-  addRowBtn.textContent = "Add another";
-  pop.appendChild(addRowBtn);
+  // Add another row button — not needed yet 
+  // See https://github.com/oaworks/discussion/issues/3616#issuecomment-3558260193
+  // const addRowBtn = document.createElement("button");
+  // addRowBtn.type = "button";
+  // addRowBtn.id = "js-add-filter-row";
+  // addRowBtn.className = "mt-1 mb-3 p-2 border w-full justify-center";
+  // addRowBtn.textContent = "Add another";
+  // pop.appendChild(addRowBtn);
 
   const applyBtn = document.createElement("button");
   applyBtn.type = "button";
@@ -384,10 +386,11 @@ export function renderActiveFiltersBanner() {
     },
   });
 
-  // Add another filter row
-  addRowBtn.addEventListener("click", () => {
-    addFilterRow(rowsContainer);
-  });
+  // Add another filter row — not needed yet 
+  // See https://github.com/oaworks/discussion/issues/3616#issuecomment-3558260193
+  // addRowBtn.addEventListener("click", () => {
+  //   addFilterRow(rowsContainer);
+  // });
 
   // Clear filters behaviour (same as before)
   if (clearBtn) {
