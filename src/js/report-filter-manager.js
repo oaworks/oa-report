@@ -279,7 +279,7 @@ export function renderActiveFiltersBanner() {
   // Trigger form styled like other date/year chips
   const form = document.createElement("form");
   form.id = "filters_form";
-  form.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " flex items-center whitespace-nowrap";
+  form.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " !mr-0 !md:mr-0 flex items-center whitespace-nowrap";
   form.setAttribute("aria-labelledby", "js-filters-form-title");
 
   const formTitle = document.createElement("h2");
