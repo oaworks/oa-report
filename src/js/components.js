@@ -3,10 +3,6 @@
 // UI components
 // =================================================
 
-// =================================================
-// Loading indicator
-// =================================================
-
 /**
  * Toggles the visibility of the loading indicator.
  *
@@ -49,10 +45,6 @@ export function toggleLoadingIndicator(show, id) {
     }
   }
 }
-
-// =================================================
-// Modal
-// =================================================
 
 /**
  * Class representing a modal window.
