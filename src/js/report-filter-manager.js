@@ -214,16 +214,16 @@ function addFilterRow(container) {
   const idSuffix = Math.random().toString(36).slice(2);
 
   const row = document.createElement("div");
-  row.className = "js-filter-row mb-3 p-2 border border-neutral-200 bg-carnation-100";
+  row.className = "js-filter-row space-y-3";
 
   const fieldWrapper = document.createElement("div");
-  fieldWrapper.className = "mb-2 flex items-center";
+  fieldWrapper.className = "w-full";
 
   const fieldLabel = document.createElement("label");
   const fieldId = `js-filter-field-${idSuffix}`;
   fieldLabel.setAttribute("for", fieldId);
-  fieldLabel.className = "mr-3 font-semibold uppercase text-[10px] md:text-xs sr-only"; // Temp: hidden for now
-  fieldLabel.textContent = "Filter field";
+  fieldLabel.className = "flex items-center text-neutral-800 text-[11px] md:text-xs font-medium uppercase tracking-wide";
+  fieldLabel.textContent = "Field";
 
   const fieldSelect = document.createElement("select");
   fieldSelect.id = fieldId;
@@ -247,17 +247,44 @@ function addFilterRow(container) {
   const textWrapper = document.createElement("div");
   textWrapper.className = "w-full";
 
-  const textLabel = document.createElement("label");
-  const inputId = `js-filter-input-${idSuffix}`;
-  textLabel.setAttribute("for", inputId);
-  textLabel.className = "sr-only";
-  textLabel.textContent = "Filter values";
+  const textLabel = document.createElement("div");
+  textLabel.className = "flex items-center text-neutral-800 text-[11px] md:text-xs font-medium uppercase tracking-wide";
+  textLabel.textContent = "Values";
 
+  const helpIcon = document.createElement("button");
+  helpIcon.type = "button";
+  helpIcon.className = "ml-2 text-neutral-600 underline underline-offset-4 decoration-dotted text-[11px]";
+  helpIcon.setAttribute("aria-label", "How to format filter values");
+  helpIcon.textContent = "(?)";
+  textLabel.appendChild(helpIcon);
+
+  const helpText = `
+    <div class="p-2 md:p-3">
+      <p class="mb-2 text-sm font-medium text-neutral-900 normal-case">Add values for this field</p>
+      <ul class="list-disc ml-4 text-xs text-neutral-800 space-y-1 normal-case">
+        <li>Type one or more values separated by commas.</li>
+        <li>Use OR to match any value (e.g. OPP1128001 OR OPP1182001).</li>
+        <li>Use AND to combine conditions when needed.</li>
+        <li>Values are treated as exact matches.</li>
+      </ul>
+    </div>
+  `;
+
+  tippy(helpIcon, {
+    content: helpText,
+    allowHTML: true,
+    theme: "popover",
+    maxWidth: 320,
+    interactive: true,
+    placement: "top",
+  });
+
+  const inputId = `js-filter-input-${idSuffix}`;
   const textarea = document.createElement("textarea");
   textarea.id = inputId;
-  textarea.className = "js-filter-input mt-1 p-2 w-full h-36 border border-neutral-900 bg-white text-xs md:text-sm leading-tight focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900";
+  textarea.className = "js-filter-input mt-1 p-2 w-full h-32 border border-neutral-900 bg-white text-xs md:text-sm leading-tight focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900";
   textarea.rows = 2;
-  textarea.placeholder = "Type values (e.g. OPP1128001 OR OPP1182001). You can also use OR and AND.";
+  textarea.placeholder = "";
 
   textWrapper.appendChild(textLabel);
   textWrapper.appendChild(textarea);
@@ -321,14 +348,14 @@ export function renderActiveFiltersBanner() {
 
   // Popover content (wider than date range)
   const pop = document.createElement("div");
-  pop.className = "p-2 text-xs md:text-sm";
+  pop.className = "p-3 md:p-4 text-xs md:text-sm";
   pop.setAttribute("role", "dialog");
   pop.setAttribute("aria-labelledby", "js-filters-form-title");
-  pop.style.maxWidth = "600px";
+  pop.style.maxWidth = "min(95vw, 960px)";
 
   const heading = document.createElement("p");
   heading.className = "mb-2 font-medium text-neutral-900";
-  heading.textContent = count ? `Active filters (${count})` : "No active filters yet";
+  heading.textContent = count ? `Active (${count})` : "Nothing selected yet";
   pop.appendChild(heading);
 
   const chipsList = document.createElement("ul");
@@ -347,7 +374,7 @@ export function renderActiveFiltersBanner() {
   } else {
     const li = document.createElement("li");
     li.className = "text-[11px] md:text-xs text-neutral-600";
-    li.textContent = "Use the form below to add filters.";
+    li.textContent = "Use the form to add a rule.";
     chipsList.appendChild(li);
   }
 
@@ -359,15 +386,24 @@ export function renderActiveFiltersBanner() {
     clearBtn = document.createElement("button");
     clearBtn.type = "button";
     clearBtn.id = "js-clear-q-popover";
-    clearBtn.className = "mt-1 mb-3 p-2 border w-full justify-center";
-    clearBtn.textContent = "Clear filters";
+    clearBtn.className = "mt-1 mb-3 p-2 border border-neutral-400 text-neutral-900 rounded-sm w-full justify-center hover:bg-neutral-100";
+    clearBtn.textContent = "Clear all";
     pop.appendChild(clearBtn);
   }
 
   // Container for dynamic filter rows
+  const formSection = document.createElement("div");
+  formSection.className = "mt-3 pt-3 border-t border-neutral-200 space-y-3";
+
+  const formHeading = document.createElement("p");
+  formHeading.className = "text-xs md:text-sm font-semibold text-neutral-900";
+  formHeading.textContent = "Add a rule";
+  formSection.appendChild(formHeading);
+
   const rowsContainer = document.createElement("div");
-  rowsContainer.className = "js-filter-rows mt-2 space-y-3";
-  pop.appendChild(rowsContainer);
+  rowsContainer.className = "js-filter-rows space-y-3";
+  formSection.appendChild(rowsContainer);
+  pop.appendChild(formSection);
 
   // Start with one row
   addFilterRow(rowsContainer);
@@ -384,7 +420,7 @@ export function renderActiveFiltersBanner() {
   const applyBtn = document.createElement("button");
   applyBtn.type = "button";
   applyBtn.id = "js-apply-filters";
-  applyBtn.className = "mt-1 mb-3 p-2 border w-full justify-center";
+  applyBtn.className = "mt-1 mb-1 p-2 rounded-sm w-full justify-center bg-neutral-900 text-white hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900";
   applyBtn.textContent = "Apply";
   pop.appendChild(applyBtn);
 
