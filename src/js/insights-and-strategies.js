@@ -86,17 +86,19 @@ export function initInsightsAndStrategies(org) {
 
     /** Get Insights data and display it **/
     // Loop through each Insight card from constants.js and call getInsight
+    const policyUrl = orgData?.hits?.hits?.[0]?._source?.policy?.url;
     INSIGHTS_CARDS.forEach((cardConfig) => {
-      if (cardConfig.info.includes("{policyUrl}")) {
-        const policyUrl = orgData.hits.hits[0]._source.policy.url;
-        cardConfig.info = cardConfig.info.replace("{policyUrl}", policyUrl);
+      // Clone per use so we never mutate the constant
+      const card = { ...cardConfig };
+      if (policyUrl && typeof card.info === 'string' && card.info.includes("{policyUrl}")) {
+        card.info = card.info.replace("{policyUrl}", policyUrl);
       }
 
       getInsight(
-        cardConfig.numerator,
-        cardConfig.denominator,
-        cardConfig.denominatorText,
-        cardConfig.info
+        card.numerator,
+        card.denominator,
+        card.denominatorText,
+        card.info
       );
     });
 
