@@ -275,7 +275,7 @@ function addFilterRow(container) {
   const helpText = `
     <div class="p-2 md:p-3">
       <p class="mb-2 text-sm font-medium text-neutral-900 normal-case">Add values for this field</p>
-      <ul class="list-disc ml-4 text-xs text-neutral-800 space-y-1 normal-case">
+      <ul class="list-disc ml-4 text-xs text-neutral-800 space-y-1 normal-case font-normal">
         <li>Type one or more values separated by commas.</li>
         <li>Use OR to match any value (e.g. OPP1128001 OR OPP1182001).</li>
         <li>Use AND to combine conditions when needed.</li>
@@ -367,18 +367,24 @@ export function renderActiveFiltersBanner() {
   pop.setAttribute("aria-labelledby", "js-filters-form-title");
   pop.style.maxWidth = "min(95vw, 960px)";
 
-  const heading = document.createElement("p");
-  heading.className = "mb-2 font-medium text-neutral-900";
-  heading.textContent = count ? `Active (${count})` : "Nothing selected yet";
+  const heading = document.createElement("h3");
+  heading.className = "mb-2 font-semibold text-neutral-900 text-xs md:text-sm";
+  heading.id = "js-active-filters-heading";
+  heading.textContent = count ? `Active filters (${count})` : "No active filters";
   pop.appendChild(heading);
 
   const chipsList = document.createElement("ul");
   chipsList.className = "mb-2 flex flex-wrap";
+  chipsList.setAttribute("role", "list");
+  chipsList.setAttribute("aria-live", "polite");
+  chipsList.setAttribute("aria-labelledby", heading.id);
 
   if (pairs.length) {
     pairs.forEach(({ label, value }) => {
       const li = document.createElement("li");
       li.className = "inline-flex items-center px-2 py-0.5 bg-carnation-100 text-[11px] md:text-xs mr-1 mb-1";
+      li.setAttribute("role", "listitem");
+      li.setAttribute("aria-label", `${label}: ${value}`);
       li.innerHTML = `
         <span class="text-neutral-700 mr-1">${label}:</span>
         <span class="font-medium text-neutral-900">${value}</span>
@@ -388,6 +394,7 @@ export function renderActiveFiltersBanner() {
   } else {
     const li = document.createElement("li");
     li.className = "text-[11px] md:text-xs text-neutral-600";
+    li.setAttribute("role", "listitem");
     li.textContent = "Use the form to add a rule.";
     chipsList.appendChild(li);
   }
@@ -402,6 +409,7 @@ export function renderActiveFiltersBanner() {
     clearBtn.id = "js-clear-q-popover";
     clearBtn.className = "mt-1 mb-3 p-2 border border-neutral-400 text-neutral-900 rounded-sm w-full justify-center hover:bg-neutral-100";
     clearBtn.textContent = "Clear all";
+    clearBtn.setAttribute("aria-describedby", heading.id);
     pop.appendChild(clearBtn);
   }
 
@@ -409,9 +417,9 @@ export function renderActiveFiltersBanner() {
   const formSection = document.createElement("div");
   formSection.className = "mt-3 pt-3 border-t border-neutral-200 space-y-3";
 
-  const formHeading = document.createElement("p");
+  const formHeading = document.createElement("h3");
   formHeading.className = "text-xs md:text-sm font-semibold text-neutral-900";
-  formHeading.textContent = "Add a rule";
+  formHeading.textContent = "Add a filter";
   formSection.appendChild(formHeading);
 
   const rowsContainer = document.createElement("div");
