@@ -1,6 +1,11 @@
-// ========================
-// Constants/configurations
-// ========================
+// =================================================
+// constants.js
+// Shared constants and copy
+// =================================================
+
+// =================================================
+// API endpoints and URLs
+// =================================================
 
 /**
  * The API endpoint for the orgindex. 
@@ -49,6 +54,10 @@ export const CSV_EXPORT_BASE = `${API_BASE_URL}works.csv?size=all&`;
  */
 export const ARTICLE_EMAIL_BASE = `${API_BG_BASE_URL}email/`;
 
+// =================================================
+// Formatting and locale options
+// =================================================
+
 /**
  * Options for displaying dates in a human-readable format.
  * @type {{day: string, month: string, year: string}}
@@ -67,6 +76,10 @@ export const USER_LOCALE = navigator.languages && navigator.languages.length
                         ? navigator.languages[0] 
                         : navigator.language;
 
+// =================================================
+// UI classes and copy
+// =================================================
+
 /**
  * Class names for the report’s top-nav date or year selection buttons.
  * This constant provides TailwindCSS classes for the different states of the
@@ -77,6 +90,8 @@ export const DATE_SELECTION_BUTTON_CLASSES = {
   disabled: "block p-2 border rounded-t-sm mt-1 mr-1 md:mt-0 md:mr-3 md:border-b-0 bg-white text-neutral-900 opacity-50 cursor-not-allowed js-nav-chip",
   active: "block p-2 border rounded-t-sm mt-1 mr-1 md:mt-0 md:mr-3 hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 md:border-b-0 bg-neutral-900 text-white font-semibold border-neutral-900 js-nav-chip"
 };
+
+// Insight cards
 
 /**
  * An array of Insight card configuration objects.

@@ -8,12 +8,14 @@
 import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter } from './utils.js';
 import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS } from './constants.js';
 
+// Org data
 // Set report org index URL’s base path
 export const orgApiUrl = `${API_BASE_URL}orgs?q=objectID:%22${org}%22`;
 
 // Fetch and store organisational data in a constant
 export const orgDataPromise = axios.get(orgApiUrl);
 
+// Auth state
 let orgKey = "";
 let loggedIn = false;
 const hasOrgKey = typeof window.OAKEYS === 'object' && Object.keys(window.OAKEYS || {}).length !== 0;
