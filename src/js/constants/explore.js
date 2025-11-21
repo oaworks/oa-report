@@ -47,10 +47,6 @@ export const EXPLORE_ITEMS_LABELS = {
     singular: "OA status",
     plural: "OA statuses"
   },
-  "author": {
-    singular: "Author",
-    plural: "Authors"
-  },
   "subject": {
     singular: "Subject",
     plural: "Subjects"
