@@ -471,21 +471,46 @@ export function renderActiveFiltersBanner() {
 
       if (!field || !raw) return;
 
-      // Support "ID1, ID2" or "ID1 OR ID2" or "ID1 AND ID2"
-      const tokens = raw
-        .replace(/\s+(OR|AND)\s+/gi, ",")
-        .split(",")
-        .map((value) => value.trim())
-        .filter(Boolean);
+      // Support "ID1, ID2" (OR), "ID1 OR ID2", "ID1 AND ID2"
+      // Commas inside a segment are OR
+      const operators = [];
+      const segments = [];
+      const opRegex = /\s+(AND|OR)\s+/gi;
+      let lastIndex = 0;
+      raw.replace(opRegex, (match, op, offset) => {
+        segments.push(raw.slice(lastIndex, offset).trim());
+        operators.push(op.toUpperCase());
+        lastIndex = offset + match.length;
+      });
+      segments.push(raw.slice(lastIndex).trim());
 
-      if (!tokens.length) return;
+      const pieceExprs = [];
 
-      const quoted = tokens.map((value) => `"${value.replace(/"/g, '\\"')}"`);
+      segments.forEach((segment, idx) => {
+        if (!segment) return;
+        const values = segment
+          .split(",")
+          .map((v) => v.trim())
+          .filter(Boolean)
+          .map((v) => `"${v.replace(/"/g, '\\"')}"`);
+
+        if (!values.length) return;
+
+        const valueExpr =
+          values.length === 1 ? values[0] : `(${values.join(" OR ")})`;
+
+        pieceExprs.push(valueExpr);
+        if (idx < operators.length) {
+          pieceExprs.push(operators[idx]);
+        }
+      });
+
+      if (!pieceExprs.length) return;
 
       const clause =
-        quoted.length === 1
-          ? `${field}:${quoted[0]}`
-          : `${field}:(${quoted.join(" OR ")})`;
+        pieceExprs.length === 1
+          ? `${field}:${pieceExprs[0]}`
+          : `${field}:(${pieceExprs.join(" ")})`;
 
       clauses.push(clause);
     });
