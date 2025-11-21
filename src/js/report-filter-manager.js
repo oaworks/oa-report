@@ -169,6 +169,25 @@ function parseEsQueryToPairs(q) {
 
   const re = /([A-Za-z0-9._]+):"([^"]+)"|([A-Za-z0-9._]+):\(([^)]+)\)|([A-Za-z0-9._]+):([^\s]+)/g;
 
+  const tidyValue = (val) => val.replace(/^"+|"+$/g, "");
+  const renderGroup = (group) => {
+    const inner = group.trim();
+    if (!inner) return "";
+    if (/\s+OR\s+/i.test(inner)) {
+      return inner
+        .split(/\s+OR\s+/i)
+        .map(tidyValue)
+        .join(", ");
+    }
+    if (/\s+AND\s+/i.test(inner)) {
+      return inner
+        .split(/\s+AND\s+/i)
+        .map(tidyValue)
+        .join(" AND ");
+    }
+    return tidyValue(inner);
+  };
+
   const out = [];
   let m;
 
@@ -179,13 +198,8 @@ function parseEsQueryToPairs(q) {
     const key = normaliseFieldId(rawKey);
     const label = labelFromFieldKey(rawKey);
 
-    // If this was a parenthesised OR group, render as a comma-separated list
-    if (m[4]) {
-      const parts = m[4]
-        .split(/\s+OR\s+/i)
-        .map((s) => s.replace(/^"+|"+$/g, ""));
-      rawVal = parts.join(", ");
-    }
+    // Clean up display of values
+    rawVal = m[4] ? renderGroup(m[4]) : tidyValue(rawVal);
 
     // Country codes to names in the filter search
     const value = 
