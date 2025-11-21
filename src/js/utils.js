@@ -184,6 +184,8 @@ export function createDate(year, month, day) {
   return new Date(Date.UTC(year, month, day));  
 }
 
+// DOM helpers
+
 /**
  * Hides an HTML element by setting its display style to 'none'.
  *
@@ -258,6 +260,8 @@ export function debounce(func, wait) {
     timeout = setTimeout(later, wait);
   };
 }
+
+// Data formatting and transforms
 
 /**
  * Formats the values of an object as inline list items.
@@ -565,6 +569,8 @@ export function convertTextToLinks(text, forceLink = false, urlPrefix = '') {
   return text.replace(urlRegex, match => createAnchor(match, match));
 }
 
+// Navigation and UI helpers
+
 /**
  * Binds click events to all anchor links for smooth scrolling. 
  * Considers the dynamic height of a the #top_nav sticky header.
@@ -635,6 +641,8 @@ export function adjustNavOnScroll() {
   // Call the function immediately to check the initial scroll position
   adjustNavStyle();
 }
+
+// Table and clipboard helpers
 
 /**
  * Inserts a 'No results found' message row into a table body.
@@ -755,6 +763,8 @@ export function copyToClipboard(buttonId, elementId) {
   }
 }
 
+// URL and query helpers
+
 /**
  * Parses all URL parameters into an object.
  * @returns {Object} URL parameters as key-value pairs.
@@ -850,6 +860,8 @@ export function updateExploreFilterHeader(filterId) {
       : (EXPLORE_FILTERS_LABELS[filterId]?.label || filterId);
   replaceText("explore_filter", text);
 }
+
+// Chart helpers
 
 /**
  * Resets the <footer> js_bar_chart area of an Insights card back to its default state.
@@ -1017,6 +1029,8 @@ export function setBarChart(
     `;
   }
 };
+
+// Query builders
 
 /**
  * Get the admin-provided `?q=` from the page URL and normalise it
