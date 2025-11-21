@@ -50,13 +50,13 @@ export const DATA_TABLE_BODY_CLASSES = {
  */
 export const DATA_TABLE_FOOT_CLASSES = {
   terms: {
-    firstFootCol: "sticky left-0 bg-white p-2 w-32 md:w-60 align-top font-semibold border-t-2 mt-5 border-black",
-    secondFootCol: "sticky left-32 md:left-60 bg-neutral-100 p-2 w-24 md:w-32 align-top break-words font-medium border-t-2 mt-5 border-black",
-    otherFootCols: "p-2 w-32 align-top break-words text-right font-medium border-t-2 mt-5 border-black"
+    firstCol: "border-b border-neutral-500 sticky left-0 bg-neutral-600 p-2 w-32 md:w-60 text-left",
+    secondCol: "border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-500 p-2 w-24 md:w-32 whitespace-nowrap truncate",
+    otherCols: "border-b border-neutral-500 p-2 whitespace-nowrap truncate text-right hover:bg-neutral-500"
   },
   articles: {
-    firstFootCol: "sticky left-0 bg-white p-2 w-32 md:w-60 lg:w-80 align-top font-semibold border-t-2 mt-5 border-black",
-    secondFootCol: "sticky left-32 md:left-60 lg:left-80 bg-neutral-100 p-2 w-24 md:w-32 align-top break-words font-medium border-t-2 mt-5 border-black",
-    otherFootCols: "p-2 w-64 max-w-4xl align-top break-words font-medium border-t-2 mt-5 border-black"
+    firstCol: "border-b border-neutral-500 sticky left-0 bg-neutral-600 p-2 w-32 md:w-60 lg:w-80 text-left",
+    secondCol: "border-b border-neutral-500 sticky left-32 md:left-60 lg:left-80 bg-neutral-500 p-2 w-24 md:w-32 whitespace-nowrap truncate",
+    otherCols: "border-b border-neutral-500 p-2 w-64 max-w-4xl whitespace-nowrap truncate text-right hover:bg-neutral-500"
   }
 };
