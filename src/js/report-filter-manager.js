@@ -1,6 +1,6 @@
 // =================================================
 // report-filter-manager.js
-// Manages top-level Filters chip + popover
+// Manages the top-level Filters chip and popover
 // =================================================
 
 // =================================================
@@ -29,11 +29,23 @@ import { orgDataPromise } from './insights-and-strategies.js';
 
 import { handleFiltersChanged } from './explore.js';
 
+// =================================================
+// State
+// =================================================
+
+/**
+ * Cached org data from the org index response.
+ * @type {Object|undefined}
+ */
 let orgData;
 orgDataPromise.then((res) => { orgData = res.data; });
 
+// =================================================
+// Helpers
+// =================================================
+
 /**
- * Derive a human-readable label from an ES field key.
+ * Derives a readable label from an ES field key.
  * Falls back to header/filter labels, then a cleaned version of the key.
  *
  * @param {string} rawKey
@@ -101,7 +113,7 @@ function labelFromFieldKey(rawKey) {
 }
 
 /**
- * Build <select> options for the filter form from all term-based Explore items.
+ * Builds <select> options for the filter form from term-based Explore items.
  *
  * @param {Array<Object>} exploreData
  * @returns {{value:string,label:string}[]}
@@ -185,6 +197,10 @@ function parseEsQueryToPairs(q) {
   return out;
 }
 
+// =================================================
+// DOM helpers
+// =================================================
+
 /**
  * Adds a single "Filter field + textarea" row into the given container.
  *
@@ -251,6 +267,10 @@ function addFilterRow(container) {
 
   container.appendChild(row);
 }
+
+// =================================================
+// Public API
+// =================================================
 
 /**
  * Renders the Filters chip in the top nav and wires a Tippy popover
