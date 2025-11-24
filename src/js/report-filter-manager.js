@@ -396,9 +396,9 @@ export function renderActiveFiltersBanner() {
     });
   } else {
     const li = document.createElement("li");
-    li.className = "text-[11px] md:text-xs text-neutral-600";
+    li.className = "text-neutral-700";
     li.setAttribute("role", "listitem");
-    li.textContent = "Use the form to add a rule.";
+    li.innerHTML = `<p><strong>Filter across your entire OA.Report.</strong></p><p>None selected; use the form below to narrow your results.</p>`;
     chipsList.appendChild(li);
   }
 
