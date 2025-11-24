@@ -278,10 +278,9 @@ function addFilterRow(container) {
     <div class="p-2 md:p-3">
       <p class="mb-2 text-sm font-medium text-neutral-900 normal-case">Add values for this field</p>
       <ul class="list-disc ml-4 text-xs text-neutral-800 space-y-1 normal-case font-normal">
-        <li>Type one or more values separated by commas.</li>
-        <li>Use OR to match any value (e.g. OPP1128001 OR OPP1182001).</li>
-        <li>Use AND to combine conditions when needed.</li>
-        <li>Values are treated as exact matches.</li>
+        <li>Enter one or more values to match any of them; <strong>commas</strong> and <strong><code>OR</code></strong> both mean “any” (e.g. <code>INV-001, INV-002</code> or <code>INV-001 OR INV-002</code> both return publications under either grant).</li>
+        <li>Use <strong><code>AND</code></strong> when all values must be present (e.g. <code>Nature AND 2023</code> returns 2023 Nature publications).</li>
+        <li>Values are <strong>case-insensitive</strong> but must match exactly otherwise (e.g. <code>oxford university press</code> and <code>OXFORD UNIVERSITY PRESS</code> match but <code>OUP</code> does not).</li>
       </ul>
     </div>
   `;
