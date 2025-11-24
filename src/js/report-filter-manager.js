@@ -291,7 +291,7 @@ function addFilterRow(container) {
     theme: "popover",
     maxWidth: 320,
     interactive: true,
-    placement: "top",
+    placement: "bottom",
   });
 
   const inputId = `js-filter-input-${idSuffix}`;
