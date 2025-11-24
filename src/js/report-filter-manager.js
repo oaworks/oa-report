@@ -278,9 +278,9 @@ function addFilterRow(container) {
     <div class="p-2 md:p-3">
       <p class="mb-2 text-sm font-medium text-neutral-900 normal-case">Add values for this field</p>
       <ul class="list-disc ml-4 text-xs text-neutral-800 space-y-1 normal-case font-normal">
-        <li>Enter one or more values to match any of them; <strong>commas</strong> and <strong><code>OR</code></strong> both mean “any” (e.g. <code>INV-001, INV-002</code> or <code>INV-001 OR INV-002</code> both return publications under either grant).</li>
-        <li>Use <strong><code>AND</code></strong> when all values must be present (e.g. <code>Economic growth AND Artificial intelligence</code> returns publications about both Economic growth and Artificial intelligence).</li>
-        <li>Values ignore case and match whole words; typing <code>oxford</code> or <code>OXFORD UNIVERSITY PRESS</code> finds <code>Oxford University Press</code>, but abbreviations like <code>OUP</code> will not match.</li>
+        <li>Enter one or more values to match any of them; <strong>commas</strong> and <strong><code>OR</code></strong> both mean “any” (e.g., <code>INV-001, INV-002</code> or <code>INV-001 OR INV-002</code> both return publications under either grant).</li>
+        <li>Use <strong><code>AND</code></strong> when all values must be present (e.g., <code>Economic growth AND Artificial intelligence</code> returns publications about both Economic growth and Artificial intelligence).</li>
+        <li>Values ignore case and match whole words (e.g., typing <code>oxford</code> or <code>OXFORD UNIVERSITY PRESS</code> finds <code>Oxford University Press</code>, but abbreviations like <code>OUP</code> will not match).</li>
       </ul>
     </div>
   `;
