@@ -242,6 +242,8 @@ function addFilterRow(container) {
   const fieldSelect = document.createElement("select");
   fieldSelect.id = fieldId;
   fieldSelect.className = "js-filter-field w-full h-8 md:h-9 px-2 border border-neutral-900 bg-white text-xs md:text-sm leading-tight focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900";
+  fieldSelect.required = true;
+  fieldSelect.setAttribute("aria-required", "true");
 
   const placeholderOption = document.createElement("option");
   placeholderOption.value = "";
@@ -299,6 +301,8 @@ function addFilterRow(container) {
   textarea.className = "js-filter-input mt-1 p-2 w-full h-32 border border-neutral-900 bg-white text-xs md:text-sm leading-tight focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900";
   textarea.rows = 2;
   textarea.placeholder = "";
+  textarea.required = true;
+  textarea.setAttribute("aria-required", "true");
 
   textWrapper.appendChild(textLabel);
   textWrapper.appendChild(textarea);
@@ -414,18 +418,18 @@ export function renderActiveFiltersBanner() {
   }
 
   // Container for dynamic filter rows
-  const formSection = document.createElement("div");
-  formSection.className = "mt-3 pt-3 border-t border-neutral-200 space-y-3";
+  const filterForm = document.createElement("form");
+  filterForm.className = "mt-3 pt-3 border-t border-neutral-200 space-y-3";
 
   const formHeading = document.createElement("h3");
   formHeading.className = "text-xs md:text-sm font-semibold text-neutral-900";
   formHeading.textContent = "Add a filter";
-  formSection.appendChild(formHeading);
+  filterForm.appendChild(formHeading);
 
   const rowsContainer = document.createElement("div");
   rowsContainer.className = "js-filter-rows space-y-3";
-  formSection.appendChild(rowsContainer);
-  pop.appendChild(formSection);
+  filterForm.appendChild(rowsContainer);
+  pop.appendChild(filterForm);
 
   // Start with one row
   addFilterRow(rowsContainer);
@@ -440,11 +444,11 @@ export function renderActiveFiltersBanner() {
   // pop.appendChild(addRowBtn);
 
   const applyBtn = document.createElement("button");
-  applyBtn.type = "button";
+  applyBtn.type = "submit";
   applyBtn.id = "js-apply-filters";
   applyBtn.className = "mt-1 mb-1 p-2 rounded-sm w-full justify-center bg-neutral-900 text-white hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900";
   applyBtn.textContent = "Apply";
-  pop.appendChild(applyBtn);
+  filterForm.appendChild(applyBtn);
 
   // Tippy instance, same pattern as custom date range
   const tip = tippy(triggerBtn, {
@@ -480,7 +484,8 @@ export function renderActiveFiltersBanner() {
   }
 
   // Apply: gather all rows, build clauses, AND them in one go
-  applyBtn.addEventListener("click", () => {
+  filterForm.addEventListener("submit", (event) => {
+    event.preventDefault();
     const clauses = [];
 
     rowsContainer.querySelectorAll(".js-filter-row").forEach((row) => {
