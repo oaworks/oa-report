@@ -53,9 +53,6 @@ permalink: "{{ org._source.objectID | slug }}/"
         ></div>
       </section>
 
-      {# TEMP: generic filter form for Gates Foundation only #}
-      {# See https://github.com/oaworks/discussion/issues/3616 #}
-      {% if org._source.objectID == "gates-foundation" %}
       <div class="flex items-center ml-auto mr-3 md:mr-6 space-x-2">
         {# Active filters panel #}
         <aside
@@ -75,45 +72,7 @@ permalink: "{{ org._source.objectID | slug }}/"
             aria-atomic="true"
           ></div>
         </aside>
-
-        {# <form
-          id="js-filter-form"
-          class="flex items-center space-x-1"
-          novalidate
-          >
-          <label for="js-filter-field" class="sr-only">
-            Filter field
-          </label>
-          <select
-            id="js-filter-field"
-            class="h-8 md:h-9 px-2 border border-neutral-900 bg-white text-xs md:text-sm leading-tight focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900"
-            >
-            <option value="">Filter by…</option>
-          </select>
-
-          <label for="js-filter-input" class="sr-only">
-            Filter value
-          </label>
-          <input
-            id="js-filter-input"
-            type="search"
-            inputmode="text"
-            autocomplete="off"
-            class="h-8 md:h-9 w-40 px-2 border border-neutral-900 bg-white text-xs md:text-sm leading-tight placeholder-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900"
-            placeholder="Type a value"
-            />
-
-          <button
-            type="submit"
-            id="js-grant-filter-apply-button"
-            class="inline-flex items-center h-8 md:h-9 px-2.5 border border-neutral-900 text-xs md:text-sm leading-tight bg-white hover:bg-neutral-100 focus:outline-none focus:ring-1 focus:ring-neutral-900 whitespace-nowrap"
-          >
-            Apply
-          </button>
-        </form> #}
-
       </div>
-      {% endif %}
     </div>
 
   </nav>
