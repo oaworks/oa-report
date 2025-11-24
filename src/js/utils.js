@@ -606,6 +606,8 @@ export function bindSmoothScrollLinks() {
  * Adjusts the navigation bar's style based on the scroll position.
  * Adds or removes classes to the navigation bar when it reaches the top of the viewport.
  * Adds a shadow to the nav bar, a border to the bottom of the items, and a transition effect.
+ *
+ * Expects nav chips to use `.js-nav-chip`.
  */
 export function adjustNavOnScroll() {
   const nav = document.querySelector("#js-report-nav");
