@@ -279,6 +279,7 @@ export async function fetchFilterValueSuggestions({ field, query, size = 10 }) {
   } catch (e) {
     // If already decoded/invalid, keep as-is
   }
+  const qUpper = qClean.toUpperCase();
   const existingQ = getDecodedUrlQuery();
   const orgName = orgData?.hits?.hits?.[0]?._source?.name;
 
@@ -296,7 +297,7 @@ export async function fetchFilterValueSuggestions({ field, query, size = 10 }) {
         parts.push(`orgs.keyword:"${safeOrg}"`);
       }
       if (existingQ) parts.push(`(${existingQ})`);
-      parts.push(`${f}:*${qClean}*`);
+      parts.push(`(${f}:*${qClean}* OR ${f}:*${qUpper}*)`);
 
       const qParam = encodeURIComponent(parts.join(" AND "));
       const url = `${API_BG_BASE_URL}works/terms/${f}?counts=false&size=${size}&q=${qParam}`;
@@ -439,19 +440,19 @@ function addFilterRow(container) {
   });
 
   const inputId = `js-filter-input-${idSuffix}`;
-  const textarea = document.createElement("textarea");
-  textarea.id = inputId;
-  textarea.className = "js-filter-input mt-1 p-2 w-full h-32 border border-neutral-900 bg-white text-xs md:text-sm leading-tight focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900";
-  textarea.rows = 2;
-  textarea.placeholder = "";
-  textarea.required = true;
-  textarea.setAttribute("aria-required", "true");
-  textarea.setAttribute("role", "combobox");
-  textarea.setAttribute("aria-autocomplete", "list");
-  textarea.setAttribute("aria-expanded", "false");
+  const input = document.createElement("input");
+  input.id = inputId;
+  input.type = "text";
+  input.className = "js-filter-input mt-1 p-2 w-full h-9 border border-neutral-900 bg-white text-xs md:text-sm leading-tight focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900";
+  input.placeholder = "Start typing to search values";
+  input.required = true;
+  input.setAttribute("aria-required", "true");
+  input.setAttribute("role", "combobox");
+  input.setAttribute("aria-autocomplete", "list");
+  input.setAttribute("aria-expanded", "false");
 
   const listboxId = `js-filter-suggestions-${idSuffix}`;
-  textarea.setAttribute("aria-controls", listboxId);
+  input.setAttribute("aria-controls", listboxId);
 
   const listbox = document.createElement("ul");
   listbox.id = listboxId;
@@ -459,28 +460,40 @@ function addFilterRow(container) {
   listbox.setAttribute("role", "listbox");
   listbox.setAttribute("aria-label", "Filter value suggestions");
 
+  const tokens = document.createElement("div");
+  tokens.className = "js-filter-tokens mt-2 flex flex-wrap gap-1";
+
   textWrapper.appendChild(textLabel);
-  textWrapper.appendChild(textarea);
+  textWrapper.appendChild(input);
   textWrapper.appendChild(listbox);
+  textWrapper.appendChild(tokens);
 
   row.appendChild(fieldWrapper);
   row.appendChild(textWrapper);
 
-  // Debounced fetch of value suggestions
+  // Debounced fetch of value suggestions + tokens
   let suggestTimer = null;
   let activeIndex = -1;
+  const tokenData = [];
 
   const hideSuggestions = () => {
     listbox.classList.add("hidden");
-    textarea.setAttribute("aria-expanded", "false");
+    input.setAttribute("aria-expanded", "false");
     activeIndex = -1;
+  };
+
+  const addToken = (value) => {
+    if (!value) return;
+    input.value = "";
+    tokenData.push({ value, op: "OR" });
+    renderTokens();
+    hideSuggestions();
   };
 
   const applySuggestion = (value) => {
     if (!value) return;
-    textarea.value = value;
-    hideSuggestions();
-    textarea.focus();
+    addToken(value);
+    input.focus();
   };
 
   const updateActiveOption = () => {
@@ -498,7 +511,7 @@ function addFilterRow(container) {
       hideSuggestions();
       return;
     }
-    items.forEach((val, idx) => {
+    items.forEach((val) => {
       const li = document.createElement("li");
       li.setAttribute("role", "option");
       li.setAttribute("aria-selected", "false");
@@ -512,24 +525,69 @@ function addFilterRow(container) {
     });
     activeIndex = -1;
     listbox.classList.remove("hidden");
-    textarea.setAttribute("aria-expanded", "true");
+    input.setAttribute("aria-expanded", "true");
+  };
+
+  const renderTokens = () => {
+    tokens.innerHTML = "";
+    // If tokens exist, relax the input required state; otherwise keep it required.
+    const hasTokens = tokenData.length > 0;
+    input.required = !hasTokens;
+    input.setAttribute("aria-required", hasTokens ? "false" : "true");
+
+    tokenData.forEach((tok, idx) => {
+      const chip = document.createElement("span");
+      chip.className = "inline-flex items-center rounded-full bg-carnation-100 text-neutral-900 px-2 py-0.5 text-[11px] md:text-xs";
+      chip.setAttribute("data-op", tok.op);
+      chip.setAttribute("data-value", tok.value);
+
+      const valSpan = document.createElement("span");
+      valSpan.textContent = tok.value;
+      chip.appendChild(valSpan);
+
+      if (idx > 0) {
+        const opBtn = document.createElement("button");
+        opBtn.type = "button";
+        opBtn.className = "ml-2 px-1 text-[10px] uppercase border border-neutral-500 rounded";
+        opBtn.textContent = tok.op;
+        opBtn.addEventListener("click", () => {
+          tok.op = tok.op === "OR" ? "AND" : "OR";
+          opBtn.textContent = tok.op;
+          chip.setAttribute("data-op", tok.op);
+        });
+        chip.appendChild(opBtn);
+      }
+
+      const removeBtn = document.createElement("button");
+      removeBtn.type = "button";
+      removeBtn.className = "ml-2 text-[10px]";
+      removeBtn.setAttribute("aria-label", `Remove ${tok.value}`);
+      removeBtn.textContent = "✕";
+      removeBtn.addEventListener("click", () => {
+        tokenData.splice(idx, 1);
+        renderTokens();
+      });
+
+      chip.appendChild(removeBtn);
+      tokens.appendChild(chip);
+    });
   };
 
   const triggerSuggestions = () => {
     clearTimeout(suggestTimer);
     suggestTimer = setTimeout(async () => {
       const fieldVal = fieldSelect.value;
-      const q = textarea.value.trim();
+      const q = input.value.trim();
       if (!fieldVal || q.length < 3) return;
       const suggestions = await fetchFilterValueSuggestions({
         field: fieldVal,
         query: q,
       });
       renderSuggestions(suggestions);
-    }, 250);
+    }, 300);
   };
 
-  textarea.addEventListener("keydown", (event) => {
+  input.addEventListener("keydown", (event) => {
     if (listbox.classList.contains("hidden")) return;
     const options = listbox.children;
     if (!options.length) return;
@@ -551,12 +609,12 @@ function addFilterRow(container) {
     }
   });
 
-  textarea.addEventListener("blur", () => {
+  input.addEventListener("blur", () => {
     setTimeout(hideSuggestions, 100);
   });
 
   fieldSelect.addEventListener("change", triggerSuggestions);
-  textarea.addEventListener("input", triggerSuggestions);
+  input.addEventListener("input", triggerSuggestions);
 
   container.appendChild(row);
 }
@@ -739,15 +797,37 @@ export function renderActiveFiltersBanner() {
     rowsContainer.querySelectorAll(".js-filter-row").forEach((row) => {
       const fieldSelect = row.querySelector(".js-filter-field");
       const input = row.querySelector(".js-filter-input");
-      if (!fieldSelect || !input) return;
+      const tokensEl = row.querySelector(".js-filter-tokens");
+      if (!fieldSelect || !input || !tokensEl) return;
 
       const field = fieldSelect.value;
       const raw = input.value.trim();
+      const chips = Array.from(tokensEl.children).map((chip) => ({
+        value: chip.getAttribute("data-value") || "",
+        op: chip.getAttribute("data-op") || "OR",
+      })).filter(t => t.value);
 
-      if (!field || !raw) return;
+      if (!field) return;
 
-      // Support "ID1, ID2" (OR), "ID1 OR ID2", "ID1 AND ID2"
-      // Commas inside a segment are OR
+      if (chips.length) {
+        const parts = [];
+        chips.forEach((tok, idx) => {
+          const quoted = `"${tok.value.replace(/"/g, '\\"')}"`;
+          if (idx === 0) {
+            parts.push(quoted);
+          } else {
+            parts.push(tok.op || "OR");
+            parts.push(quoted);
+          }
+        });
+        const valueExpr = parts.length === 1 ? parts[0] : `(${parts.join(" ")})`;
+        clauses.push(`${field}:${valueExpr}`);
+        return;
+      }
+
+      if (!raw) return;
+
+      // Fallback: support "ID1, ID2" (OR), "ID1 OR ID2", "ID1 AND ID2"
       const operators = [];
       const segments = [];
       const opRegex = /\s+(AND|OR)\s+/gi;
