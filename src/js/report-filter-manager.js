@@ -405,7 +405,7 @@ function addFilterRow(container) {
   fieldWrapper.appendChild(fieldSelect);
 
   const textWrapper = document.createElement("div");
-  textWrapper.className = "w-full";
+  textWrapper.className = "w-full relative";
 
   const textLabel = document.createElement("div");
   textLabel.className = "flex items-center text-neutral-800 text-[11px] md:text-xs font-medium uppercase tracking-wide";
@@ -446,15 +446,75 @@ function addFilterRow(container) {
   textarea.placeholder = "";
   textarea.required = true;
   textarea.setAttribute("aria-required", "true");
+  textarea.setAttribute("role", "combobox");
+  textarea.setAttribute("aria-autocomplete", "list");
+  textarea.setAttribute("aria-expanded", "false");
+
+  const listboxId = `js-filter-suggestions-${idSuffix}`;
+  textarea.setAttribute("aria-controls", listboxId);
+
+  const listbox = document.createElement("ul");
+  listbox.id = listboxId;
+  listbox.className = "js-filter-suggestions absolute z-10 mt-1 w-full bg-white border border-neutral-300 shadow-sm max-h-48 overflow-auto hidden";
+  listbox.setAttribute("role", "listbox");
+  listbox.setAttribute("aria-label", "Filter value suggestions");
 
   textWrapper.appendChild(textLabel);
   textWrapper.appendChild(textarea);
+  textWrapper.appendChild(listbox);
 
   row.appendChild(fieldWrapper);
   row.appendChild(textWrapper);
 
   // Debounced fetch of value suggestions
   let suggestTimer = null;
+  let activeIndex = -1;
+
+  const hideSuggestions = () => {
+    listbox.classList.add("hidden");
+    textarea.setAttribute("aria-expanded", "false");
+    activeIndex = -1;
+  };
+
+  const applySuggestion = (value) => {
+    if (!value) return;
+    textarea.value = value;
+    hideSuggestions();
+    textarea.focus();
+  };
+
+  const updateActiveOption = () => {
+    Array.from(listbox.children).forEach((li, idx) => {
+      const selected = idx === activeIndex;
+      li.setAttribute("aria-selected", selected ? "true" : "false");
+      li.classList.toggle("bg-neutral-900", selected);
+      li.classList.toggle("text-white", selected);
+    });
+  };
+
+  const renderSuggestions = (items) => {
+    listbox.innerHTML = "";
+    if (!items || !items.length) {
+      hideSuggestions();
+      return;
+    }
+    items.forEach((val, idx) => {
+      const li = document.createElement("li");
+      li.setAttribute("role", "option");
+      li.setAttribute("aria-selected", "false");
+      li.className = "px-2 py-1 cursor-pointer hover:bg-carnation-100 text-xs md:text-sm";
+      li.textContent = val;
+      li.addEventListener("mousedown", (e) => {
+        e.preventDefault(); // keep focus
+        applySuggestion(val);
+      });
+      listbox.appendChild(li);
+    });
+    activeIndex = -1;
+    listbox.classList.remove("hidden");
+    textarea.setAttribute("aria-expanded", "true");
+  };
+
   const triggerSuggestions = () => {
     clearTimeout(suggestTimer);
     suggestTimer = setTimeout(async () => {
@@ -465,8 +525,35 @@ function addFilterRow(container) {
         field: fieldVal,
         query: q,
       });
+      renderSuggestions(suggestions);
     }, 250);
   };
+
+  textarea.addEventListener("keydown", (event) => {
+    if (listbox.classList.contains("hidden")) return;
+    const options = listbox.children;
+    if (!options.length) return;
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      activeIndex = (activeIndex + 1) % options.length;
+      updateActiveOption();
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      activeIndex = activeIndex <= 0 ? options.length - 1 : activeIndex - 1;
+      updateActiveOption();
+    } else if (event.key === "Enter") {
+      if (activeIndex >= 0 && activeIndex < options.length) {
+        event.preventDefault();
+        applySuggestion(options[activeIndex].textContent);
+      }
+    } else if (event.key === "Escape") {
+      hideSuggestions();
+    }
+  });
+
+  textarea.addEventListener("blur", () => {
+    setTimeout(hideSuggestions, 100);
+  });
 
   fieldSelect.addEventListener("change", triggerSuggestions);
   textarea.addEventListener("input", triggerSuggestions);
