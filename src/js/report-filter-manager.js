@@ -361,7 +361,7 @@ export async function fetchFilterValueSuggestions({ field, query, size = 10 }) {
 // =================================================
 
 /**
- * Adds a single "Filter field + textarea" row into the given container.
+ * Adds a single "Filter field + value input" row into the given container.
  *
  * @param {HTMLElement} container
  */
@@ -486,7 +486,7 @@ function addFilterRow(container) {
   const addToken = (value) => {
     if (!value) return;
     input.value = "";
-    tokenData.push({ value, op: "OR" });
+    tokenData.push(value);
     renderTokens();
     hideSuggestions();
   };
@@ -531,41 +531,29 @@ function addFilterRow(container) {
 
   const renderTokens = () => {
     tokens.innerHTML = "";
-    // If tokens exist, relax the input required state; otherwise keep it required.
     const hasTokens = tokenData.length > 0;
     input.required = !hasTokens;
     input.setAttribute("aria-required", hasTokens ? "false" : "true");
 
-    tokenData.forEach((tok, idx) => {
+    tokenData.forEach((val) => {
       const chip = document.createElement("span");
       chip.className = "inline-flex items-center rounded-full bg-carnation-100 text-neutral-900 px-2 py-0.5 text-[11px] md:text-xs";
-      chip.setAttribute("data-op", tok.op);
-      chip.setAttribute("data-value", tok.value);
+      chip.setAttribute("data-value", val);
 
       const valSpan = document.createElement("span");
-      valSpan.textContent = tok.value;
+      valSpan.textContent = val;
       chip.appendChild(valSpan);
-
-      if (idx > 0) {
-        const opBtn = document.createElement("button");
-        opBtn.type = "button";
-        opBtn.className = "ml-2 px-1 text-[10px] uppercase border border-neutral-500 rounded";
-        opBtn.textContent = tok.op;
-        opBtn.addEventListener("click", () => {
-          tok.op = tok.op === "OR" ? "AND" : "OR";
-          opBtn.textContent = tok.op;
-          chip.setAttribute("data-op", tok.op);
-        });
-        chip.appendChild(opBtn);
-      }
 
       const removeBtn = document.createElement("button");
       removeBtn.type = "button";
       removeBtn.className = "ml-2 text-[10px]";
-      removeBtn.setAttribute("aria-label", `Remove ${tok.value}`);
+      removeBtn.setAttribute("aria-label", `Remove ${val}`);
       removeBtn.textContent = "✕";
       removeBtn.addEventListener("click", () => {
-        tokenData.splice(idx, 1);
+        const idxToRemove = tokenData.indexOf(val);
+        if (idxToRemove > -1) {
+          tokenData.splice(idxToRemove, 1);
+        }
         renderTokens();
       });
 
@@ -810,25 +798,13 @@ export function renderActiveFiltersBanner() {
 
       const field = fieldSelect.value;
       const raw = input.value.trim();
-      const chips = Array.from(tokensEl.children).map((chip) => ({
-        value: chip.getAttribute("data-value") || "",
-        op: chip.getAttribute("data-op") || "OR",
-      })).filter(t => t.value);
+      const chips = Array.from(tokensEl.children).map((chip) => chip.getAttribute("data-value") || "").filter(Boolean);
 
       if (!field) return;
 
       if (chips.length) {
-        const parts = [];
-        chips.forEach((tok, idx) => {
-          const quoted = `"${tok.value.replace(/"/g, '\\"')}"`;
-          if (idx === 0) {
-            parts.push(quoted);
-          } else {
-            parts.push(tok.op || "OR");
-            parts.push(quoted);
-          }
-        });
-        const valueExpr = parts.length === 1 ? parts[0] : `(${parts.join(" ")})`;
+        const quotedVals = chips.map((val) => `"${val.replace(/"/g, '\\"')}"`);
+        const valueExpr = quotedVals.length === 1 ? quotedVals[0] : `(${quotedVals.join(" OR ")})`;
         clauses.push(`${field}:${valueExpr}`);
         return;
       }
