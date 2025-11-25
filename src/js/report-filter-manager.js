@@ -11,7 +11,7 @@ import {
   getDecodedUrlQuery,
   updateURLParams,
   removeURLParams,
-  buildEncodedQueryWithUrlFilter,
+  andQueryStrings,
   normaliseFieldId,
   pluraliseNoun
 } from "./utils.js";
@@ -167,48 +167,73 @@ function buildFilterFieldOptions(exploreData) {
 function parseEsQueryToPairs(q) {
   if (!q) return [];
 
-  const re = /([A-Za-z0-9._]+):"([^"]+)"|([A-Za-z0-9._]+):\(([^)]+)\)|([A-Za-z0-9._]+):([^\s]+)/g;
+  const splitTopLevel = (str, keyword) => {
+    const parts = [];
+    let buf = "";
+    let depth = 0;
+    let inQuote = false;
+    const needle = ` ${keyword} `;
 
-  const tidyValue = (val) => val.replace(/^"+|"+$/g, "");
-  const renderGroup = (group) => {
-    const inner = group.trim();
-    if (!inner) return "";
-    if (/\s+OR\s+/i.test(inner)) {
-      return inner
-        .split(/\s+OR\s+/i)
-        .map(tidyValue)
-        .join(", ");
+    for (let i = 0; i < str.length; i++) {
+      const ch = str[i];
+      if (ch === '"') inQuote = !inQuote;
+      if (!inQuote) {
+        if (ch === "(") depth++;
+        if (ch === ")" && depth > 0) depth--;
+        if (depth === 0 && str.slice(i, i + needle.length).toUpperCase() === needle) {
+          parts.push(buf.trim());
+          buf = "";
+          i += needle.length - 1;
+          continue;
+        }
+      }
+      buf += ch;
     }
-    if (/\s+AND\s+/i.test(inner)) {
-      return inner
-        .split(/\s+AND\s+/i)
-        .map(tidyValue)
-        .join(" AND ");
-    }
-    return tidyValue(inner);
+
+    if (buf.trim()) parts.push(buf.trim());
+    return parts.length ? parts : [str.trim()];
   };
 
-  const out = [];
-  let m;
+  const unwrapParens = (val) => {
+    let out = val.trim();
+    const balanced = (s) => {
+      let depth = 0;
+      for (let i = 0; i < s.length; i++) {
+        if (s[i] === "(") depth++;
+        if (s[i] === ")") depth--;
+        if (depth === 0 && i < s.length - 1) return false;
+      }
+      return depth === 0;
+    };
+    while (out.startsWith("(") && out.endsWith(")") && balanced(out)) {
+      out = out.slice(1, -1).trim();
+    }
+    return out;
+  };
 
-  while ((m = re.exec(q)) !== null) {
-    const rawKey = m[1] || m[3] || m[5];
-    let rawVal   = m[2] || m[4] || m[6];
+  const renderValue = (key, rawVal) =>
+    splitTopLevel(rawVal, "AND")
+      .map((segment) =>
+        splitTopLevel(unwrapParens(segment), "OR")
+          .map((part) => part.replace(/^\(+|\)+$/g, "").replace(/^"+|"+$/g, "").trim())
+          .filter(Boolean)
+          .map((val) =>
+            /country(_code)?$/i.test(key) && COUNTRY_CODES[val] ? COUNTRY_CODES[val] : val
+          )
+          .join(", ")
+      )
+      .filter(Boolean)
+      .join(" AND ");
 
-    const key = normaliseFieldId(rawKey);
-    const label = labelFromFieldKey(rawKey);
-
-    // Clean up display of values
-    rawVal = m[4] ? renderGroup(m[4]) : tidyValue(rawVal);
-
-    // Country codes to names in the filter search
-    const value = 
-      (/country(_code)?$/i.test(key) && COUNTRY_CODES[rawVal]) ? COUNTRY_CODES[rawVal] : rawVal;
-
-    out.push({ label, value });
-  }
-
-  return out;
+  return splitTopLevel(q, "AND")
+    .map((clause) => {
+      const m = clause.match(/^\s*\(?\s*([A-Za-z0-9._]+)\s*:\s*(.+?)\s*\)?\s*$/);
+      if (!m) return null;
+      const rawKey = m[1];
+      const value = renderValue(rawKey, unwrapParens(m[2]));
+      return value ? { label: labelFromFieldKey(rawKey), value } : null;
+    })
+    .filter(Boolean);
 }
 
 // =================================================
@@ -549,7 +574,7 @@ export function renderActiveFiltersBanner() {
     const combined = clauses.join(" AND ");
 
     updateURLParams({
-      q: buildEncodedQueryWithUrlFilter(combined),
+      q: andQueryStrings(combined, getDecodedUrlQuery()),
     });
 
     handleFiltersChanged();
