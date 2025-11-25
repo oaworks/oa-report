@@ -267,9 +267,10 @@ function parseEsQueryToPairs(q) {
  * @param {string} params.field  - ES field id (e.g., journal, concepts.display_name)
  * @param {string} params.query  - User-entered prefix/term to match
  * @param {number} [params.size=10] - Max number of suggestions to return
+ * @param {AbortSignal} [params.signal] - Optional abort signal
  * @returns {Promise<string[]>} Ordered list of suggested values (unique, trimmed)
  */
-export async function fetchFilterValueSuggestions({ field, query, size = 10 }) {
+export async function fetchFilterValueSuggestions({ field, query, size = 10, signal }) {
   if (!field || !query || !query.trim()) return [];
 
   // Try the works terms endpoint first (scoped by org + existing filters), preferring ".keyword" for dotted fields
@@ -302,7 +303,7 @@ export async function fetchFilterValueSuggestions({ field, query, size = 10 }) {
       const qParam = encodeURIComponent(parts.join(" AND "));
       const url = `${API_BG_BASE_URL}works/terms/${f}?counts=false&size=${size}&q=${qParam}`;
 
-      const res = await fetch(url);
+      const res = await fetch(url, { signal });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       if (!Array.isArray(data) || !data.length) continue;
