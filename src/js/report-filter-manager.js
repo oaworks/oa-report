@@ -475,6 +475,7 @@ function addFilterRow(container) {
   let suggestTimer = null;
   let activeIndex = -1;
   const tokenData = [];
+  let abortController = null;
 
   const hideSuggestions = () => {
     listbox.classList.add("hidden");
@@ -575,15 +576,22 @@ function addFilterRow(container) {
 
   const triggerSuggestions = () => {
     clearTimeout(suggestTimer);
+    if (abortController) {
+      abortController.abort();
+      abortController = null;
+    }
     suggestTimer = setTimeout(async () => {
       const fieldVal = fieldSelect.value;
       const q = input.value.trim();
       if (!fieldVal || q.length < 3) return;
+      abortController = new AbortController();
       const suggestions = await fetchFilterValueSuggestions({
         field: fieldVal,
         query: q,
+        signal: abortController.signal,
       });
       renderSuggestions(suggestions);
+      abortController = null;
     }, 300);
   };
 
