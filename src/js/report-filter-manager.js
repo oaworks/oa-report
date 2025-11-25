@@ -167,6 +167,24 @@ function buildFilterFieldOptions(exploreData) {
 function parseEsQueryToPairs(q) {
   if (!q) return [];
 
+  // Remove outer wrapping parentheses so top-level AND splitting works
+  const query = (() => {
+    let out = q.trim();
+    const balanced = (s) => {
+      let depth = 0;
+      for (let i = 0; i < s.length; i++) {
+        if (s[i] === "(") depth++;
+        if (s[i] === ")") depth--;
+        if (depth === 0 && i < s.length - 1) return false;
+      }
+      return depth === 0;
+    };
+    while (out.startsWith("(") && out.endsWith(")") && balanced(out)) {
+      out = out.slice(1, -1).trim();
+    }
+    return out;
+  })();
+
   const splitTopLevel = (str, keyword) => {
     const parts = [];
     let buf = "";
@@ -215,7 +233,11 @@ function parseEsQueryToPairs(q) {
     splitTopLevel(rawVal, "AND")
       .map((segment) =>
         splitTopLevel(unwrapParens(segment), "OR")
-          .map((part) => part.replace(/^\(+|\)+$/g, "").replace(/^"+|"+$/g, "").trim())
+          .map((part) =>
+            part
+              .replace(/["()]/g, "")
+              .trim()
+          )
           .filter(Boolean)
           .map((val) =>
             /country(_code)?$/i.test(key) && COUNTRY_CODES[val] ? COUNTRY_CODES[val] : val
@@ -225,9 +247,10 @@ function parseEsQueryToPairs(q) {
       .filter(Boolean)
       .join(" AND ");
 
-  return splitTopLevel(q, "AND")
+  return splitTopLevel(query, "AND")
     .map((clause) => {
-      const m = clause.match(/^\s*\(?\s*([A-Za-z0-9._]+)\s*:\s*(.+?)\s*\)?\s*$/);
+      const cleanedClause = unwrapParens(clause);
+      const m = cleanedClause.match(/^\s*\(?\s*([A-Za-z0-9._]+)\s*:\s*(.+?)\s*\)?\s*$/);
       if (!m) return null;
       const rawKey = m[1];
       const value = renderValue(rawKey, unwrapParens(m[2]));

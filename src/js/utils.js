@@ -1049,8 +1049,17 @@ export function getDecodedUrlQuery() {
   const raw = params.get('q');
   if (!raw || !raw.trim()) return '';
   // Normalise '+' (often used for spaces), then decode %xx sequences.
-  const plusAsSpace = raw.replace(/\+/g, ' ');
-  return decodeAndReplaceUrlEncodedChars(plusAsSpace);
+  let out = raw.replace(/\+/g, ' ');
+  try {
+    let next = decodeAndReplaceUrlEncodedChars(out);
+    while (next !== out) {
+      out = next;
+      next = decodeAndReplaceUrlEncodedChars(out);
+    }
+  } catch (e) {
+    // If decoding fails, fall back to best-effort value.
+  }
+  return out;
 }
 
 /**
