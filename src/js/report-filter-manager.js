@@ -409,6 +409,7 @@ function addFilterRow(container) {
   textWrapper.className = "w-full relative";
 
   const textLabel = document.createElement("div");
+  textLabel.id = `js-filter-values-label-${idSuffix}`;
   textLabel.className = "flex items-center text-neutral-800 text-[11px] md:text-xs font-medium uppercase tracking-wide";
   textLabel.textContent = "Values";
 
@@ -450,6 +451,7 @@ function addFilterRow(container) {
   input.setAttribute("role", "combobox");
   input.setAttribute("aria-autocomplete", "list");
   input.setAttribute("aria-expanded", "false");
+  input.setAttribute("aria-labelledby", textLabel.id);
 
   const listboxId = `js-filter-suggestions-${idSuffix}`;
   input.setAttribute("aria-controls", listboxId);
@@ -462,6 +464,8 @@ function addFilterRow(container) {
 
   const tokens = document.createElement("div");
   tokens.className = "js-filter-tokens mt-2 flex flex-wrap gap-1";
+  tokens.setAttribute("role", "list");
+  tokens.setAttribute("aria-label", "Selected values");
 
   textWrapper.appendChild(textLabel);
   textWrapper.appendChild(input);
@@ -539,6 +543,7 @@ function addFilterRow(container) {
       const chip = document.createElement("span");
       chip.className = "inline-flex items-center rounded-full bg-carnation-100 text-neutral-900 px-2 py-0.5 text-[11px] md:text-xs";
       chip.setAttribute("data-value", val);
+      chip.setAttribute("role", "listitem");
 
       const valSpan = document.createElement("span");
       valSpan.textContent = val;
