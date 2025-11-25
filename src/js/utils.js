@@ -642,6 +642,10 @@ export function adjustNavOnScroll() {
 
   // Call the function immediately to check the initial scroll position
   adjustNavStyle();
+
+  // Re-run when nav chips are added/removed (e.g., Filters chip mounts)
+  const observer = new MutationObserver(() => adjustNavStyle());
+  observer.observe(nav, { childList: true, subtree: true });
 }
 
 // Table and clipboard helpers
