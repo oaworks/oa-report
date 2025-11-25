@@ -264,39 +264,95 @@ function parseEsQueryToPairs(q) {
  * Fetch autocomplete suggestions for a given field and org.
  *
  * @param {Object} params
- * @param {string} params.orgKey - Org key/slug (e.g., gates-foundation)
  * @param {string} params.field  - ES field id (e.g., journal, concepts.display_name)
  * @param {string} params.query  - User-entered prefix/term to match
  * @param {number} [params.size=10] - Max number of suggestions to return
  * @returns {Promise<string[]>} Ordered list of suggested values (unique, trimmed)
  */
-export async function fetchFilterValueSuggestions({ orgKey, field, query, size = 10 }) {
-  if (!orgKey || !field || !query || !query.trim()) return [];
+export async function fetchFilterValueSuggestions({ field, query, size = 10 }) {
+  if (!field || !query || !query.trim()) return [];
 
-  // Use the works suggest endpoint (supports field names without a period, like journal)
-  const url = `${API_BG_BASE_URL}works/suggest/${encodeURIComponent(field)}/${encodeURIComponent(query.trim())}?size=${size}`;
-
+  // Try the works terms endpoint first (scoped by org + existing filters), preferring ".keyword" for dotted fields
+  let qClean = query.trim();
   try {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    if (!Array.isArray(data) || !data.length) return [];
-
-    const seen = new Set();
-    const values = [];
-    data.forEach((item) => {
-      const val = (typeof item === "string" ? item : item?.value || item?.label || "").trim();
-      if (val && !seen.has(val)) {
-        seen.add(val);
-        values.push(val);
-      }
-    });
-
-    return values.slice(0, size);
-  } catch (err) {
-    console.error("Error fetching filter suggestions:", err);
-    return [];
+    qClean = decodeURIComponent(qClean);
+  } catch (e) {
+    // If already decoded/invalid, keep as-is
   }
+  const existingQ = getDecodedUrlQuery();
+  const orgName = orgData?.hits?.hits?.[0]?._source?.name;
+
+  const candidates = field.includes(".")
+    ? [ `${field}.keyword`, field ]
+    : [ field, `${field}.keyword` ];
+  const candidateFields = Array.from(new Set(candidates));
+
+  // Scoped terms-based suggestions
+  for (const f of candidateFields) {
+    try {
+      const parts = [];
+      if (orgName) {
+        const safeOrg = orgName.replace(/"/g, '\\"');
+        parts.push(`orgs.keyword:"${safeOrg}"`);
+      }
+      if (existingQ) parts.push(`(${existingQ})`);
+      parts.push(`${f}:*${qClean}*`);
+
+      const qParam = encodeURIComponent(parts.join(" AND "));
+      const url = `${API_BG_BASE_URL}works/terms/${f}?counts=false&size=${size}&q=${qParam}`;
+
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      if (!Array.isArray(data) || !data.length) continue;
+
+      const seen = new Set();
+      const values = [];
+      data.forEach((item) => {
+        const val = (
+          typeof item === "string"
+            ? item
+            : item?.key || item?.value || item?.label || ""
+        ).trim();
+        if (val && !seen.has(val)) {
+          seen.add(val);
+          values.push(val);
+        }
+      });
+
+      if (values.length) return values.slice(0, size);
+    } catch (err) {
+      console.error("Error fetching filter suggestions (terms):", err);
+    }
+  }
+
+  // Fallback to unscoped suggest if terms returns nothing
+  for (const f of candidateFields) {
+    try {
+      // Do not encode the field (dotted names need to remain intact); only encode the query
+      const url = `${API_BG_BASE_URL}works/suggest/${f}/${encodeURIComponent(qClean)}?size=${size}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      if (!Array.isArray(data) || !data.length) continue;
+
+      const seen = new Set();
+      const values = [];
+      data.forEach((item) => {
+        const val = (typeof item === "string" ? item : item?.value || item?.label || "").trim();
+        if (val && !seen.has(val)) {
+          seen.add(val);
+          values.push(val);
+        }
+      });
+
+      if (values.length) return values.slice(0, size);
+    } catch (err) {
+      console.error("Error fetching filter suggestions (suggest fallback):", err);
+    }
+  }
+
+  return [];
 }
 
 // =================================================
@@ -396,6 +452,24 @@ function addFilterRow(container) {
 
   row.appendChild(fieldWrapper);
   row.appendChild(textWrapper);
+
+  // Debounced fetch of value suggestions
+  let suggestTimer = null;
+  const triggerSuggestions = () => {
+    clearTimeout(suggestTimer);
+    suggestTimer = setTimeout(async () => {
+      const fieldVal = fieldSelect.value;
+      const q = textarea.value.trim();
+      if (!fieldVal || q.length < 2) return;
+      const suggestions = await fetchFilterValueSuggestions({
+        field: fieldVal,
+        query: q,
+      });
+    }, 250);
+  };
+
+  fieldSelect.addEventListener("change", triggerSuggestions);
+  textarea.addEventListener("input", triggerSuggestions);
 
   container.appendChild(row);
 }
