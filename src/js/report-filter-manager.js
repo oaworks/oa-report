@@ -15,6 +15,7 @@ import {
   normaliseFieldId,
   pluraliseNoun
 } from "./utils.js";
+import { API_BG_BASE_URL } from "./constants/api.js";
 
 import {
   EXPLORE_ITEMS_LABELS,
@@ -257,6 +258,45 @@ function parseEsQueryToPairs(q) {
       return value ? { label: labelFromFieldKey(rawKey), value } : null;
     })
     .filter(Boolean);
+}
+
+/**
+ * Fetch autocomplete suggestions for a given field and org.
+ *
+ * @param {Object} params
+ * @param {string} params.orgKey - Org key/slug (e.g., gates-foundation)
+ * @param {string} params.field  - ES field id (e.g., journal, concepts.display_name)
+ * @param {string} params.query  - User-entered prefix/term to match
+ * @param {number} [params.size=10] - Max number of suggestions to return
+ * @returns {Promise<string[]>} Ordered list of suggested values (unique, trimmed)
+ */
+export async function fetchFilterValueSuggestions({ orgKey, field, query, size = 10 }) {
+  if (!orgKey || !field || !query || !query.trim()) return [];
+
+  // Use the works suggest endpoint (supports field names without a period, like journal)
+  const url = `${API_BG_BASE_URL}works/suggest/${encodeURIComponent(field)}/${encodeURIComponent(query.trim())}?size=${size}`;
+
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if (!Array.isArray(data) || !data.length) return [];
+
+    const seen = new Set();
+    const values = [];
+    data.forEach((item) => {
+      const val = (typeof item === "string" ? item : item?.value || item?.label || "").trim();
+      if (val && !seen.has(val)) {
+        seen.add(val);
+        values.push(val);
+      }
+    });
+
+    return values.slice(0, size);
+  } catch (err) {
+    console.error("Error fetching filter suggestions:", err);
+    return [];
+  }
 }
 
 // =================================================
