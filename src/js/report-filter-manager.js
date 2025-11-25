@@ -460,7 +460,7 @@ function addFilterRow(container) {
     suggestTimer = setTimeout(async () => {
       const fieldVal = fieldSelect.value;
       const q = textarea.value.trim();
-      if (!fieldVal || q.length < 2) return;
+      if (!fieldVal || q.length < 3) return;
       const suggestions = await fetchFilterValueSuggestions({
         field: fieldVal,
         query: q,
