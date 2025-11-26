@@ -273,14 +273,20 @@ function parseEsQueryToPairs(q) {
 export async function fetchFilterValueSuggestions({ field, query, size = 10, signal }) {
   if (!field || !query || !query.trim()) return [];
 
-  // Try the works terms endpoint first (scoped by org + existing filters), preferring ".keyword" for dotted fields
+  // Try scoped terms first (org + existing filters), then fall back to unscoped suggest.
   let qClean = query.trim();
   try {
     qClean = decodeURIComponent(qClean);
   } catch (e) {
     // If already decoded/invalid, keep as-is
   }
-  const qUpper = qClean.toUpperCase();
+  // Build a case-insensitive, contains-style pattern for terms queries
+  const variants = Array.from(new Set([
+    qClean,
+    qClean.toLowerCase(),
+    qClean.toUpperCase(),
+    qClean.charAt(0).toUpperCase() + qClean.slice(1).toLowerCase()
+  ])).filter(Boolean);
   const existingQ = getDecodedUrlQuery();
   const orgName = orgData?.hits?.hits?.[0]?._source?.name;
 
@@ -298,7 +304,8 @@ export async function fetchFilterValueSuggestions({ field, query, size = 10, sig
         parts.push(`orgs.keyword:"${safeOrg}"`);
       }
       if (existingQ) parts.push(`(${existingQ})`);
-      parts.push(`(${f}:*${qClean}* OR ${f}:*${qUpper}*)`);
+      const orParts = variants.map((v) => `${f}:*${v}*`);
+      parts.push(`(${orParts.join(" OR ")})`);
 
       const qParam = encodeURIComponent(parts.join(" AND "));
       const url = `${API_BG_BASE_URL}works/terms/${f}?counts=false&size=${size}&q=${qParam}`;
@@ -333,7 +340,7 @@ export async function fetchFilterValueSuggestions({ field, query, size = 10, sig
     try {
       // Do not encode the field (dotted names need to remain intact); only encode the query
       const url = `${API_BG_BASE_URL}works/suggest/${f}/${encodeURIComponent(qClean)}?size=${size}`;
-      const res = await fetch(url);
+      const res = await fetch(url, { signal });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       if (!Array.isArray(data) || !data.length) continue;
