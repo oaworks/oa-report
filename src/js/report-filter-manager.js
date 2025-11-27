@@ -789,7 +789,8 @@ export function renderActiveFiltersBanner() {
   pop.className = "p-3 md:p-4 text-xs md:text-sm";
   pop.setAttribute("role", "dialog");
   pop.setAttribute("aria-labelledby", "js-filters-form-title");
-  pop.style.maxWidth = "min(95vw, 960px)";
+  pop.style.maxWidth = "90vw";
+  pop.style.minWidth = "320px";
 
   const heading = document.createElement("h3");
   heading.className = "mb-2 font-semibold text-neutral-900 text-xs md:text-sm";
@@ -875,7 +876,7 @@ export function renderActiveFiltersBanner() {
     content: pop,
     allowHTML: true,
     interactive: true,
-    placement: "bottom",
+    placement: "bottom-start",
     appendTo: document.body,
     trigger: "click",
     theme: "popover",
