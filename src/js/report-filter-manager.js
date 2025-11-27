@@ -806,12 +806,12 @@ export function renderActiveFiltersBanner() {
   if (pairs.length) {
     pairs.forEach(({ label, value }) => {
       const li = document.createElement("li");
-      li.className = "inline-flex items-center px-2 py-0.5 bg-carnation-100 text-[11px] md:text-xs mr-1 mb-1";
+      li.className = "inline-flex items-center px-2 py-0.5 bg-neutral-900 text-white rounded-full text-[11px] md:text-xs mr-1 mb-1";
       li.setAttribute("role", "listitem");
       li.setAttribute("aria-label", `${label}: ${value}`);
       li.innerHTML = `
-        <span class="text-neutral-700 mr-1">${label}:</span>
-        <span class="font-medium text-neutral-900">${value}</span>
+        <span class="mr-1 opacity-80">${label}:</span>
+        <span class="font-semibold">${value}</span>
       `;
       chipsList.appendChild(li);
     });
