@@ -324,7 +324,7 @@ function parseEsQueryToPairs(q) {
   const grouped = new Map();
   rawClauses.forEach((c) => {
     if (!grouped.has(c.field)) {
-      grouped.set(c.field, { field: c.field, label: c.label, values: [], clauses: [] });
+      grouped.set(c.field, { field: c.field, values: [], clauses: [] });
     }
     const entry = grouped.get(c.field);
     entry.values.push(c.value);
@@ -333,7 +333,7 @@ function parseEsQueryToPairs(q) {
 
   return Array.from(grouped.values()).map((g) => ({
     field: g.field,
-    label: g.label,
+    label: labelFromFieldKey(g.field),
     value: g.values.join(" OR "),
     clause: g.clauses.join(" AND "),
   }));
@@ -341,13 +341,11 @@ function parseEsQueryToPairs(q) {
 
 function removeClauseFromQuery(q, field) {
   if (!field) return q;
-  const clauses = [];
-  const parts = parseEsQueryToPairs(q);
-  parts.forEach((p) => {
-    if (p.field === field) return;
-    clauses.push(p.clause);
-  });
-  return clauses.join(" AND ");
+  if (!q) return "";
+  return parseEsQueryToPairs(q)
+    .filter((p) => p.field !== field)
+    .map((p) => p.clause)
+    .join(" AND ");
 }
 
 /**
@@ -993,13 +991,11 @@ export function renderActiveFiltersBanner() {
       if (!raw) return;
 
       // Fallback: support "ID1, ID2" (OR), "ID1 OR ID2", "ID1 AND ID2"
-      const operators = [];
       const segments = [];
       const opRegex = /\s+(AND|OR)\s+/gi;
       let lastIndex = 0;
       raw.replace(opRegex, (match, op, offset) => {
         segments.push(raw.slice(lastIndex, offset).trim());
-        operators.push(op.toUpperCase());
         lastIndex = offset + match.length;
       });
       segments.push(raw.slice(lastIndex).trim());
