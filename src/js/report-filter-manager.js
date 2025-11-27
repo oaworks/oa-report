@@ -302,26 +302,52 @@ function parseEsQueryToPairs(q) {
       .filter(Boolean)
       .join(" AND ");
 
-  return splitTopLevel(query, "AND")
-    .map((clause) => {
-      const cleanedClause = unwrapParens(clause);
-      const m = cleanedClause.match(/^\s*\(?\s*([A-Za-z0-9._]+)\s*:\s*(.+?)\s*\)?\s*$/);
-      if (!m) return null;
-      const rawKey = m[1];
-      const value = renderValue(rawKey, unwrapParens(m[2]));
-      return value ? { label: labelFromFieldKey(rawKey), value, clause: clause.trim() } : null;
-    })
-    .filter(Boolean);
+  const rawClauses = [];
+  const processClause = (clause) => {
+    const cleanedClause = unwrapParens(clause);
+    const nested = splitTopLevel(cleanedClause, "AND");
+    if (nested.length > 1) {
+      nested.forEach((sub) => processClause(sub));
+      return;
+    }
+    const m = cleanedClause.match(/^\s*\(?\s*([A-Za-z0-9._]+)\s*:\s*(.+?)\s*\)?\s*$/);
+    if (!m) return;
+    const rawKey = m[1];
+    const value = renderValue(rawKey, unwrapParens(m[2]));
+    if (!value) return;
+    rawClauses.push({ label: labelFromFieldKey(rawKey), field: rawKey, value, clause: clause.trim() });
+  };
+
+  splitTopLevel(query, "AND").forEach((clause) => processClause(clause));
+
+  // Group by field, OR all values within the same field
+  const grouped = new Map();
+  rawClauses.forEach((c) => {
+    if (!grouped.has(c.field)) {
+      grouped.set(c.field, { field: c.field, label: c.label, values: [], clauses: [] });
+    }
+    const entry = grouped.get(c.field);
+    entry.values.push(c.value);
+    entry.clauses.push(c.clause);
+  });
+
+  return Array.from(grouped.values()).map((g) => ({
+    field: g.field,
+    label: g.label,
+    value: g.values.join(" OR "),
+    clause: g.clauses.join(" AND "),
+  }));
 }
 
-function removeClauseFromQuery(q, clause) {
-  const trimmed = (clause || "").trim();
-  if (!trimmed) return q;
-  const pairs = parseEsQueryToPairs(q);
-  const remaining = pairs
-    .map((p) => p.clause)
-    .filter((c) => c !== trimmed);
-  return remaining.join(" AND ");
+function removeClauseFromQuery(q, field) {
+  if (!field) return q;
+  const clauses = [];
+  const parts = parseEsQueryToPairs(q);
+  parts.forEach((p) => {
+    if (p.field === field) return;
+    clauses.push(p.clause);
+  });
+  return clauses.join(" AND ");
 }
 
 /**
@@ -815,7 +841,7 @@ export function renderActiveFiltersBanner() {
   chipsList.setAttribute("aria-labelledby", heading.id);
 
   if (pairs.length) {
-    pairs.forEach(({ label, value, clause }) => {
+    pairs.forEach(({ label, value, clause, field }) => {
       const li = document.createElement("li");
       li.className = "inline-flex items-center rounded-full bg-carnation-100 text-neutral-900 px-2 py-0.5 text-[11px] md:text-xs mr-1 mb-1";
       li.setAttribute("role", "listitem");
@@ -834,7 +860,7 @@ export function renderActiveFiltersBanner() {
           e.preventDefault();
           e.stopPropagation();
           const decodedQ = getDecodedUrlQuery();
-          const nextQ = removeClauseFromQuery(decodedQ, clause);
+          const nextQ = removeClauseFromQuery(decodedQ, field);
           if (nextQ) {
             updateURLParams({ q: nextQ });
           } else {
@@ -935,10 +961,10 @@ export function renderActiveFiltersBanner() {
     });
   }
 
-  // Apply: gather all rows, build clauses, AND them in one go
+  // Apply: gather all rows, group values by field (OR within field, AND across fields)
   filterForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    const clauses = [];
+    const fieldMap = new Map(); // field -> array of values (strings)
 
     rowsContainer.querySelectorAll(".js-filter-row").forEach((row) => {
       const fieldSelect = row.querySelector(".js-filter-field");
@@ -952,10 +978,15 @@ export function renderActiveFiltersBanner() {
 
       if (!field) return;
 
+      const pushVals = (vals) => {
+        if (!vals.length) return;
+        const list = fieldMap.get(field) || [];
+        vals.forEach((v) => list.push(v));
+        fieldMap.set(field, list);
+      };
+
       if (chips.length) {
-        const quotedVals = chips.map((val) => `"${val.replace(/"/g, '\\"')}"`);
-        const valueExpr = quotedVals.length === 1 ? quotedVals[0] : `(${quotedVals.join(" OR ")})`;
-        clauses.push(`${field}:${valueExpr}`);
+        pushVals(chips);
         return;
       }
 
@@ -973,35 +1004,48 @@ export function renderActiveFiltersBanner() {
       });
       segments.push(raw.slice(lastIndex).trim());
 
-      const pieceExprs = [];
-
-      segments.forEach((segment, idx) => {
+      const values = [];
+      segments.forEach((segment) => {
         if (!segment) return;
-        const values = segment
+        segment
           .split(",")
           .map((v) => v.trim())
           .filter(Boolean)
-          .map((v) => `"${v.replace(/"/g, '\\"')}"`);
-
-        if (!values.length) return;
-
-        const valueExpr =
-          values.length === 1 ? values[0] : `(${values.join(" OR ")})`;
-
-        pieceExprs.push(valueExpr);
-        if (idx < operators.length) {
-          pieceExprs.push(operators[idx]);
-        }
+          .forEach((v) => values.push(v));
       });
 
-      if (!pieceExprs.length) return;
+      pushVals(values);
+    });
 
-      const clause =
-        pieceExprs.length === 1
-          ? `${field}:${pieceExprs[0]}`
-          : `${field}:(${pieceExprs.join(" ")})`;
+    // Merge with existing: keep existing clauses, but merge values per field (OR)
+    const existingQ = getDecodedUrlQuery();
+    const existingPairs = parseEsQueryToPairs(existingQ);
+    const mergedFields = new Map();
 
-      clauses.push(clause);
+    // Start with existing values
+    existingPairs.forEach((p) => {
+      mergedFields.set(p.field, {
+        label: p.label,
+        values: new Set((p.value || "").split(/\s+OR\s+/).map((v) => v.trim()).filter(Boolean)),
+      });
+    });
+
+    // Add new values
+    fieldMap.forEach((vals, field) => {
+      if (!mergedFields.has(field)) {
+        mergedFields.set(field, { label: labelFromFieldKey(field), values: new Set() });
+      }
+      const entry = mergedFields.get(field);
+      vals.filter(Boolean).forEach((v) => entry.values.add(v));
+    });
+
+    const clauses = [];
+    mergedFields.forEach((entry, field) => {
+      const unique = Array.from(entry.values);
+      if (!unique.length) return;
+      const quotedVals = unique.map((val) => `"${val.replace(/"/g, '\\"')}"`);
+      const valueExpr = quotedVals.length === 1 ? quotedVals[0] : `(${quotedVals.join(" OR ")})`;
+      clauses.push(`${field}:${valueExpr}`);
     });
 
     if (!clauses.length) {
@@ -1009,10 +1053,8 @@ export function renderActiveFiltersBanner() {
       return;
     }
 
-    const combined = clauses.join(" AND ");
-
     updateURLParams({
-      q: andQueryStrings(combined, getDecodedUrlQuery()),
+      q: clauses.join(" AND "),
     });
 
     handleFiltersChanged();
