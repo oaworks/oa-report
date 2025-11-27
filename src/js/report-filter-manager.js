@@ -315,6 +315,7 @@ export async function fetchFilterValueSuggestions({ field, query, size = 8, sign
 
       const qParam = encodeURIComponent(parts.join(" AND "));
       const url = `${API_BG_BASE_URL}works/terms/${f}?counts=false&size=${size}&q=${qParam}`;
+      console.log("[terms]", { field: f, url, q: parts.join(" AND ") });
 
       const res = await fetch(url, { signal });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -337,7 +338,9 @@ export async function fetchFilterValueSuggestions({ field, query, size = 8, sign
 
       if (values.length) return values.slice(0, size);
     } catch (err) {
-      console.error("Error fetching filter suggestions (terms):", err);
+      if (err?.name !== "AbortError") {
+        console.error("Error fetching filter suggestions (terms):", err);
+      }
     }
   }
 
@@ -468,7 +471,7 @@ function addFilterRow(container) {
   let suggestTimer = null;
   let activeIndex = -1;
   const tokenData = [];
-  let abortController = null;
+  let requestSeq = 0;
 
   const hideSuggestions = () => {
     listbox.classList.add("hidden");
@@ -603,10 +606,6 @@ function addFilterRow(container) {
 
   const triggerSuggestions = () => {
     clearTimeout(suggestTimer);
-    if (abortController) {
-      abortController.abort();
-      abortController = null;
-    }
     suggestTimer = setTimeout(async () => {
       const fieldVal = fieldSelect.value;
       const raw = input.value || "";
@@ -615,14 +614,19 @@ function addFilterRow(container) {
         renderHint();
         return;
       }
-      abortController = new AbortController();
-      const suggestions = await fetchFilterValueSuggestions({
-        field: fieldVal,
-        query: q,
-        signal: abortController.signal,
-      });
-      renderSuggestions(suggestions);
-      abortController = null;
+      const currentReq = ++requestSeq;
+      renderHint("Searching…");
+      try {
+        const suggestions = await fetchFilterValueSuggestions({
+          field: fieldVal,
+          query: q,
+        });
+        if (currentReq === requestSeq) {
+          renderSuggestions(suggestions);
+        }
+      } catch (err) {
+        console.error("Error fetching suggestions:", err);
+      }
     }, 150);
   };
 
