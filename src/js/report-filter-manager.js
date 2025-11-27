@@ -79,7 +79,7 @@ async function preloadFilterValues() {
       const keywordField = `${baseField}.keyword`;
       const orParts = `(${baseField}:* OR ${keywordField}:*)`;
       const qParam = encodeURIComponent(`${baseOrgClause} AND ${orParts}`);
-      const url = `${API_BG_BASE_URL}works/terms/${keywordField}?counts=false&size=5000&q=${qParam}`;
+      const url = `${API_BG_BASE_URL}works/terms/${keywordField}?counts=false&size=10000&q=${qParam}`;
       try {
         const res = await fetch(url);
         if (!res.ok) continue;
@@ -573,7 +573,7 @@ function addFilterRow(container) {
   const renderSuggestions = (items) => {
     listbox.innerHTML = "";
     const termRaw = input.value || "";
-    const term = termRaw.toLowerCase();
+    const term = termRaw.toLowerCase().replace(/\s+/g, " ").trim();
 
     // Keep a non-selectable hint at the top
     renderHint(termRaw);
@@ -677,7 +677,7 @@ function addFilterRow(container) {
     suggestTimer = setTimeout(async () => {
       const fieldVal = fieldSelect.value;
       const raw = input.value || "";
-      const q = raw.trim();
+      const q = raw.replace(/\s+/g, " ").trim();
       if (!fieldVal || raw.length < 1) {
         renderHint();
         return;
@@ -695,7 +695,7 @@ function addFilterRow(container) {
       } catch (err) {
         console.error("Error fetching suggestions:", err);
       }
-    }, 150);
+    }, 120);
   };
 
   input.addEventListener("keydown", (event) => {
