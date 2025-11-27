@@ -30,6 +30,18 @@ import { orgDataPromise } from './insights-and-strategies.js';
 
 import { handleFiltersChanged } from './explore.js';
 
+// Only expose specific fields for search-to-filter ("Add filter")
+// See https://github.com/oaworks/discussion/issues/3616#issuecomment-3553985006
+const ALLOWED_TERMS = new Map([
+  ["supplements.grantid__bmgf", "Grants"],
+  ["authorships.institutions.display_name", "Institutions"],
+  ["journal", "Journals"],
+  ["supplements.host_venue.display_name", "Preprint servers"],
+  ["supplements.program__bmgf", "Programs"],
+  ["supplements.publisher_simple", "Publishers"],
+  ["concepts.display_name", "Subjects"]
+]);
+
 // =================================================
 // State
 // =================================================
@@ -41,9 +53,63 @@ import { handleFiltersChanged } from './explore.js';
 let orgData;
 orgDataPromise.then((res) => { orgData = res.data; });
 
+// Preload cache for filter values
+let preloadFilterValuesPromise = null;
+
 // =================================================
 // Helpers
 // =================================================
+
+/**
+ * Preload all allowed term values scoped by org. Cached in window.__filterValueCache.
+ */
+async function preloadFilterValues() {
+  if (window.__filterValueCache) return window.__filterValueCache;
+  if (preloadFilterValuesPromise) return preloadFilterValuesPromise;
+
+  preloadFilterValuesPromise = (async () => {
+    const cache = new Map();
+    const orgName = orgData?.hits?.hits?.[0]?._source?.name;
+    if (!orgName) return cache;
+    const safeOrg = orgName.replace(/"/g, '\\"');
+    const baseOrgClause = `orgs.keyword:"${safeOrg}"`;
+
+    for (const field of ALLOWED_TERMS.keys()) {
+      const baseField = field.replace(/\.keyword$/, "");
+      const keywordField = `${baseField}.keyword`;
+      const orParts = `(${baseField}:* OR ${keywordField}:*)`;
+      const qParam = encodeURIComponent(`${baseOrgClause} AND ${orParts}`);
+      const url = `${API_BG_BASE_URL}works/terms/${keywordField}?counts=false&size=5000&q=${qParam}`;
+      try {
+        const res = await fetch(url);
+        if (!res.ok) continue;
+        const data = await res.json();
+        if (!Array.isArray(data) || !data.length) continue;
+        const seen = new Set();
+        const values = [];
+        data.forEach((item) => {
+          const val = (typeof item === "string" ? item : item?.key || "").trim();
+          if (val && !seen.has(val)) {
+            seen.add(val);
+            values.push(val);
+          }
+        });
+        cache.set(field, values);
+      } catch (err) {
+        console.error("Error preloading filter values:", err);
+      }
+    }
+
+    window.__filterValueCache = cache;
+    console.log("[preload] filter values cache", cache);
+    return cache;
+  })();
+
+  return preloadFilterValuesPromise;
+}
+
+// Kick off preload when org data arrives
+orgDataPromise.then(() => preloadFilterValues()).catch(() => {});
 
 /**
  * Derives a readable label from an ES field key.
@@ -121,18 +187,6 @@ function labelFromFieldKey(rawKey) {
  */
 function buildFilterFieldOptions(exploreData) {
   if (!Array.isArray(exploreData)) return [];
-
-  // Only expose specific fields for search-to-filter ("Add filter")
-  // See https://github.com/oaworks/discussion/issues/3616#issuecomment-3553985006
-  const ALLOWED_TERMS = new Map([
-    ["supplements.grantid__bmgf", "Grants"],
-    ["authorships.institutions.display_name", "Institutions"],
-    ["journal", "Journals"],
-    ["supplements.host_venue.display_name", "Preprint servers"],
-    ["supplements.program__bmgf", "Programs"],
-    ["supplements.publisher_simple", "Publishers"],
-    ["concepts.display_name", "Subjects"]
-  ]);
 
   const seen = new Set();
   const options = [];
@@ -273,6 +327,22 @@ function parseEsQueryToPairs(q) {
 export async function fetchFilterValueSuggestions({ field, query, size = 8, signal }) {
   if (!field || !query || !query.trim()) return [];
 
+  // Use preloaded values if present
+  if (window.__filterValueCache && window.__filterValueCache.has(field)) {
+    const all = window.__filterValueCache.get(field) || [];
+    const term = query.toLowerCase();
+    const filtered = all
+      .filter((v) => (v || "").toLowerCase().includes(term))
+      .sort((a, b) => {
+        const aStarts = (a || "").toLowerCase().startsWith(term);
+        const bStarts = (b || "").toLowerCase().startsWith(term);
+        if (aStarts === bStarts) return 0;
+        return aStarts ? -1 : 1;
+      })
+      .slice(0, size);
+    return filtered;
+  }
+
   // Per-session cache to avoid repeat calls
   fetchFilterValueSuggestions._cache = fetchFilterValueSuggestions._cache || new Map();
   const cacheKey = `${field}::${query.slice(0, 50)}`;
@@ -291,7 +361,6 @@ export async function fetchFilterValueSuggestions({ field, query, size = 8, sign
   const keywordField = `${baseField}.keyword`;
   const lower = qClean.toLowerCase();
   const upper = qClean.toUpperCase();
-  const existingQ = getDecodedUrlQuery();
   const orgName = orgData?.hits?.hits?.[0]?._source?.name;
 
   const candidateFields = Array.from(new Set([baseField, keywordField]));
@@ -315,7 +384,6 @@ export async function fetchFilterValueSuggestions({ field, query, size = 8, sign
 
       const qParam = encodeURIComponent(parts.join(" AND "));
       const url = `${API_BG_BASE_URL}works/terms/${f}?counts=false&size=${size}&q=${qParam}`;
-      console.log("[terms]", { field: f, url, q: parts.join(" AND ") });
 
       const res = await fetch(url, { signal });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -537,7 +605,7 @@ function addFilterRow(container) {
       });
 
     if (!filtered.length) {
-      hideSuggestions();
+      renderHint(termRaw);
       return;
     }
 
@@ -610,12 +678,12 @@ function addFilterRow(container) {
       const fieldVal = fieldSelect.value;
       const raw = input.value || "";
       const q = raw.trim();
-      if (!fieldVal || raw.length < 2) {
+      if (!fieldVal || raw.length < 1) {
         renderHint();
         return;
       }
       const currentReq = ++requestSeq;
-      renderHint("Searching…");
+      renderHint(q);
       try {
         const suggestions = await fetchFilterValueSuggestions({
           field: fieldVal,
