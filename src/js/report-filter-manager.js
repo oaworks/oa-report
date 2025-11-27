@@ -335,7 +335,11 @@ function parseEsQueryToPairs(q) {
       grouped.set(c.field, { field: c.field, values: [], clauses: [] });
     }
     const entry = grouped.get(c.field);
-    entry.values.push(c.value);
+    const tokens = (c.value || "")
+      .split(/\s+OR\s+/)
+      .map((v) => v.trim())
+      .filter(Boolean);
+    tokens.forEach((t) => entry.values.push(t));
     entry.clauses.push(c.clause);
   });
 
