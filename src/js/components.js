@@ -1,7 +1,7 @@
-// =============
+// =================================================
 // components.js
-// UI Components
-// =============
+// UI components
+// =================================================
 
 /**
  * Toggles the visibility of the loading indicator.

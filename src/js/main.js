@@ -3,6 +3,10 @@
 // Main event listeners and functions
 // =================================================
 
+// =================================================
+// Imports
+// =================================================
+
 import { bindSmoothScrollLinks, adjustNavOnScroll } from './utils.js';
 import { DEFAULT_YEAR, FIRST_YEAR, currentDate, bindDynamicYearButtons, setDefaultYear, initDateManager } from './report-date-manager.js';
 import { initDataExplore } from './explore.js';
@@ -10,6 +14,10 @@ import { initStrategyTabs } from './strategies.js';
 
 // Flag to check if initDataExplore has already been initialised
 let isDataExploreInitialised = false;
+
+// =================================================
+// Init
+// =================================================
 
 /**
  * Initialises the application by setting up default dates, binding year select buttons, and setting up event listeners.

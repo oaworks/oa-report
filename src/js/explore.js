@@ -8,9 +8,10 @@
 // =================================================
 
 import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, normaliseFieldId } from "./utils.js";
-import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES } from "./constants.js";
+import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
+import { renderActiveFiltersBanner } from './report-filter-manager.js';
 import { orgDataPromise, initInsightsAndStrategies } from './insights-and-strategies.js';
 import { getAggregatedDataQuery } from './aggregated-data-query.js';
 
@@ -102,6 +103,45 @@ let exploreItemDataById = new Map();
  */
 let selectedRowKeys = [];
 
+/**
+ * Re-runs Insights / Strategies and the current Explore table
+ * after the top-level filters (?q=) change, then re-renders
+ * the Filters banner.
+ */
+export async function handleFiltersChanged() {
+  // 1. Refresh Insights & Strategies
+  const slug = orgData?.hits?.hits?.[0]?._source?.objectID;
+  if (slug) {
+    initInsightsAndStrategies(slug);
+  }
+
+  // 2. Refresh Explore table (current item if set, otherwise default)
+  if (currentActiveExploreItemButton && currentActiveExploreItemData) {
+    await processExploreDataTable(
+      currentActiveExploreItemButton,
+      currentActiveExploreItemData
+    );
+  } else {
+    await displayDefaultArticlesData();
+  }
+
+  // 3. Re-render the Filters chip / popover
+  refreshFiltersBanner();
+}
+
+/**
+ * Helper to render the active filters banner via the shared
+ * filter manager module.
+ */
+function refreshFiltersBanner() {
+  if (!orgData) return;
+
+  renderActiveFiltersBanner({
+    orgData,
+    onFiltersApplied: handleFiltersChanged,
+    onFiltersCleared: handleFiltersChanged
+  });
+}
 
 // =================================================
 // DOM Manipulation functions
@@ -126,7 +166,11 @@ export async function initDataExplore(org) {
     // Check if explore data exists and is not empty
     if (orgData.hits.hits.length > 0 && orgData.hits.hits[0]._source.explore && orgData.hits.hits[0]._source.explore.length > 0) {
       addExploreButtonsToDOM(orgData.hits.hits[0]._source.explore);
-      renderActiveFiltersBanner();
+      renderActiveFiltersBanner({
+        orgData,
+        onFiltersApplied: handleFiltersChanged,
+        onFiltersCleared: handleFiltersChanged
+      });
       addRecordsShownSelectToDOM();
       handleDataDisplayToggle();
       enableExploreRowHighlighting();
@@ -466,7 +510,6 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
   try {
     if (!itemData) {
       showNoResultsRow(10, "export_table_body", "js_export_table");
-      toggleLoadingIndicator(false, 'explore_loading');
       return;
     }
 
@@ -485,7 +528,6 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     // Check if query is blank or undefined and abort if so
     if (!query || query.trim() === '') {
       showNoResultsRow(10, "export_table_body", "js_export_table");
-      toggleLoadingIndicator(false, 'explore_loading');
       return;
     }
 
@@ -905,15 +947,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
         }
       }
 
-      setTimeout(() => {
-        initInsightsAndStrategies(org);
-        if (currentActiveExploreItemButton && currentActiveExploreItemData) {
-          processExploreDataTable(currentActiveExploreItemButton, currentActiveExploreItemData);
-        } else {
-          displayDefaultArticlesData();
-        }
-        renderActiveFiltersBanner();
-      }, 50);
+      handleFiltersChanged();
     };
   }
 
@@ -1130,7 +1164,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
  * @async
  * @returns {Promise<void>}
  */
-async function displayDefaultArticlesData() {
+export async function displayDefaultArticlesData() {
   try {
     await awaitDateRange(); 
 
@@ -1465,157 +1499,4 @@ window.getExportLink = function() {
   });
 
   return false; // Prevent default form submission
-}
-
-/**
- * Parses the decoded ?q= string into [{label, value}] pairs.
- * Uses the same normalisation as table headers for consistent labels.
- * Falls back to raw keys if no constant label is found.
- * 
- * Handles parenthesised OR groups, e.g.
- *   supplements.grantid__bmgf:("INV-1" OR "INV-2")
- *
- * @param {string} q
- * @returns {{label:string,value:string}[]}
- */
-function parseEsQueryToPairs(q) {
-  if (!q) return [];
-  const re = /([A-Za-z0-9._]+):"([^"]+)"|([A-Za-z0-9._]+):\(([^)]+)\)|([A-Za-z0-9._]+):([^\s]+)/g;
-
-  const out = [];
-  let m;
-  while ((m = re.exec(q)) !== null) {
-    const rawKey = m[1] || m[3] || m[5];
-    let rawVal   = m[2] || m[4] || m[6];
-
-    const key = normaliseFieldId(rawKey);
-
-    // Try looking for human-readable label in article → terms → items → filters
-    // Else fall back to prettified key
-    const label =
-      (EXPLORE_HEADER_ARTICLES_LABELS[key] && EXPLORE_HEADER_ARTICLES_LABELS[key].label) ||
-      (EXPLORE_HEADER_TERMS_LABELS[key] && EXPLORE_HEADER_TERMS_LABELS[key].label) ||
-      (EXPLORE_ITEMS_LABELS[key] && (EXPLORE_ITEMS_LABELS[key].label || EXPLORE_ITEMS_LABELS[key].singular)) ||
-      (EXPLORE_FILTERS_LABELS[key] && EXPLORE_FILTERS_LABELS[key].label) ||
-      key.replace(/_/g, ' ');
-
-    // If this was a parenthesised OR group, render as a comma-separated list
-    if (m[4]) {
-      // m[4] looks like: `"INV-029392" OR "INV-005210" OR "INV-010680"`
-      const parts = m[4]
-        .split(/\s+OR\s+/i)
-        .map(s => s.replace(/^"+|"+$/g, ''));
-      rawVal = parts.join(', ');
-    }
-
-    const value =
-      (/country(_code)?$/i.test(key) && COUNTRY_CODES[rawVal]) ? COUNTRY_CODES[rawVal] : rawVal;
-
-    out.push({ label, value });
-  }
-
-  return out;
-}
-
-/**
- * Renders a small banner above Explore showing active ?q= filters as a <dl>.
- * Hidden when no ?q=. "Clear filter" removes only q (keeps everything else).
- */
-function renderActiveFiltersBanner() {
-  const mountId = 'js-active-filters';
-  let mount = document.getElementById(mountId);
-  if (!mount) {
-    mount = document.createElement('div');
-    mount.id = mountId;
-    mount.className = 'mb-3 text-xs md:text-sm';
-    const exploreHeader = document.getElementById('explore_buttons');
-    exploreHeader?.parentNode.insertBefore(mount, exploreHeader);
-  }
-
-  const q = getDecodedUrlQuery();
-  const pairs = parseEsQueryToPairs(q);
-
-  if (!pairs.length) {
-    mount.innerHTML = '';
-    mount.style.display = 'none';
-    mount.closest('.js-active-filters-wrapper')?.classList.add('hidden'); // hide the container when no filters
-    return;
-  }
-
-  // Build a single/compact inline expression
-  const count = pairs.length;
-
-  const plainExpression = pairs
-    .map(({ label, value }) => `${label} ${value}`)
-    .join(' AND ');
-
-  const expression = pairs
-    .map(({ label, value }) =>
-      `<span class="text-neutral-700">${label}</span>: \
-       <span class="font-medium text-neutral-900">${value}</span>`
-    )
-    .join(' <span class="text-neutral-600">AND</span> ');
-
-  // Content for the popover containing the full expression/filters
-  const popoverContent = `
-    <div class="p-2 text-xs md:text-sm max-w-xs">
-      <p class="mb-1 font-medium text-neutral-900">
-        Active filters (${count})
-      </p>
-      <p class="text-neutral-800">
-        ${expression}
-      </p>
-    </div>
-  `;
-
-  // In the nav, show the Active filters + Clear filter buttons
-  mount.innerHTML = `
-    <button
-      id="js-filters-summary"
-      type="button"
-      class="block p-2 px-3 border rounded-t-sm mt-1 mr-1 md:mt-0 md:mr-3 md:border-b-0 border-carnation-100 bg-carnation-100 text-neutral-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900"
-      aria-label="${count} active filter${count > 1 ? 's' : ''}. Click to see details."
-      title="${plainExpression}"
-    >
-      Filters (${count})
-    </button>
-    <button
-      id="js-clear-q"
-      type="button"
-      class="block p-2 border rounded-t-sm mt-1 mr-1 md:mt-0 md:mr-3 md:border-b-0 bg-white text-neutral-900 hover:bg-carnation-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 js-nav-chip"
-    >
-      Clear filters
-    </button>
-  `;
-
-  mount.style.display = '';
-  mount.closest('.js-active-filters-wrapper')?.classList.remove('hidden'); // show the container when filters exist
-
-  // Attach popover for full filter details
-  const summaryBtn = document.getElementById('js-filters-summary');
-  if (summaryBtn && typeof tippy === 'function') {
-    if (summaryBtn._tippy) summaryBtn._tippy.destroy();
-
-    tippy(summaryBtn, {
-      content: popoverContent,
-      allowHTML: true,
-      interactive: true,
-      placement: 'bottom',
-      appendTo: document.body,
-      theme: 'popover',
-      arrow: false
-    });
-  }
-
-  document.getElementById('js-clear-q')?.addEventListener('click', () => {
-    removeURLParams('q'); // keep breakdown, start/end, etc.
-    renderActiveFiltersBanner(); // refresh banner
-    initInsightsAndStrategies(org); // re-init insights & actions
-
-    if (currentActiveExploreItemButton && currentActiveExploreItemData) {
-      processExploreDataTable(currentActiveExploreItemButton, currentActiveExploreItemData);
-    } else {
-      displayDefaultArticlesData();
-    }
-  });
 }
