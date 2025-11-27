@@ -219,6 +219,14 @@ function buildFilterFieldOptions(exploreData) {
  * @param {string} q
  * @returns {{label:string,value:string}[]}
  */
+function labelFromFieldKeyInverse(label) {
+  // We only need this to map the displayed label back to the field key when removing chips
+  for (const [key, val] of ALLOWED_TERMS.entries()) {
+    if (val === label) return key;
+  }
+  return null;
+}
+
 function parseEsQueryToPairs(q) {
   if (!q) return [];
 
@@ -334,7 +342,7 @@ function parseEsQueryToPairs(q) {
   return Array.from(grouped.values()).map((g) => ({
     field: g.field,
     label: labelFromFieldKey(g.field),
-    value: g.values.join(" OR "),
+    values: g.values,
     clause: g.clauses.join(" AND "),
   }));
 }
@@ -346,6 +354,27 @@ function removeClauseFromQuery(q, field) {
     .filter((p) => p.field !== field)
     .map((p) => p.clause)
     .join(" AND ");
+}
+
+function removeValueFromField(q, field, value) {
+  if (!field || !value) return q || "";
+  const pairs = parseEsQueryToPairs(q);
+  const clauses = [];
+  pairs.forEach((p) => {
+    if (p.field !== field) {
+      clauses.push(p.clause);
+      return;
+    }
+    const remaining = (p.values || [])
+      .map((v) => v.trim())
+      .filter(Boolean)
+      .filter((v) => v !== value);
+    if (!remaining.length) return;
+    const quotedVals = remaining.map((val) => `"${val.replace(/"/g, '\\"')}"`);
+    const valueExpr = quotedVals.length === 1 ? quotedVals[0] : `(${quotedVals.join(" OR ")})`;
+    clauses.push(`${p.field}:${valueExpr}`);
+  });
+  return clauses.join(" AND ");
 }
 
 /**
@@ -833,32 +862,48 @@ export function renderActiveFiltersBanner() {
   pop.appendChild(heading);
 
   const chipsList = document.createElement("ul");
-  chipsList.className = "mb-2 flex flex-wrap";
+  chipsList.className = "mb-2 space-y-2";
   chipsList.setAttribute("role", "list");
   chipsList.setAttribute("aria-live", "polite");
   chipsList.setAttribute("aria-labelledby", heading.id);
 
   if (pairs.length) {
-    pairs.forEach(({ label, value, clause, field }) => {
+    const grouped = new Map(); // field -> {label, clauses:[...], values:[...]}
+    pairs.forEach(({ field, label, values, clause }) => {
+      if (!grouped.has(field)) {
+        grouped.set(field, { label, clauses: [], values: [] });
+      }
+      const entry = grouped.get(field);
+      entry.clauses.push(clause);
+      (values || []).forEach((v) => entry.values.push(v));
+    });
+
+    Array.from(grouped.values()).forEach(({ label, clauses, values }) => {
       const li = document.createElement("li");
-      li.className = "inline-flex items-center rounded-full bg-carnation-100 text-neutral-900 px-2 py-0.5 text-[11px] md:text-xs mr-1 mb-1";
+      li.className = "mb-1";
       li.setAttribute("role", "listitem");
-      li.setAttribute("aria-label", `${label}: ${value}`);
-      li.innerHTML = `
-        <span class="mr-1 opacity-80">${label}:</span>
-        <span class="font-semibold">${value}</span>
-      `;
-      if (clause) {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "ml-2 text-[10px]";
-        btn.setAttribute("aria-label", `Remove ${label}: ${value}`);
-        btn.textContent = "✕";
-        btn.addEventListener("click", (e) => {
+
+      const headingDiv = document.createElement("div");
+      headingDiv.className = "text-[11px] md:text-xs font-semibold text-neutral-900";
+      headingDiv.textContent = label;
+      li.appendChild(headingDiv);
+
+      const chipsRow = document.createElement("div");
+      chipsRow.className = "flex flex-wrap gap-1 mt-1";
+      chipsRow.setAttribute("role", "list");
+
+      (values || []).forEach((val) => {
+        const chip = document.createElement("button");
+        chip.type = "button";
+        chip.className = "inline-flex items-center rounded-full bg-carnation-100 text-neutral-900 px-2 py-0.5 text-[11px] md:text-xs";
+        chip.setAttribute("role", "listitem");
+        chip.setAttribute("aria-label", `Remove ${label}: ${val}`);
+        chip.innerHTML = `<span>${val}</span><span class="ml-2 text-[10px]">✕</span>`;
+        chip.addEventListener("click", (e) => {
           e.preventDefault();
           e.stopPropagation();
           const decodedQ = getDecodedUrlQuery();
-          const nextQ = removeClauseFromQuery(decodedQ, field);
+          const nextQ = removeValueFromField(decodedQ, labelFromFieldKeyInverse(label), val);
           if (nextQ) {
             updateURLParams({ q: nextQ });
           } else {
@@ -867,8 +912,10 @@ export function renderActiveFiltersBanner() {
           handleFiltersChanged();
           tip.hide();
         });
-        li.appendChild(btn);
-      }
+        chipsRow.appendChild(chip);
+      });
+
+      li.appendChild(chipsRow);
       chipsList.appendChild(li);
     });
   } else {
@@ -1020,9 +1067,15 @@ export function renderActiveFiltersBanner() {
 
     // Start with existing values
     existingPairs.forEach((p) => {
+      const vals = Array.isArray(p.values)
+        ? p.values
+        : (p.value || "")
+            .split(/\s+OR\s+/)
+            .map((v) => v.trim())
+            .filter(Boolean);
       mergedFields.set(p.field, {
         label: p.label,
-        values: new Set((p.value || "").split(/\s+OR\s+/).map((v) => v.trim()).filter(Boolean)),
+        values: new Set(vals),
       });
     });
 
