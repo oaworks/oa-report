@@ -273,7 +273,14 @@ function parseEsQueryToPairs(q) {
 export async function fetchFilterValueSuggestions({ field, query, size = 10, signal }) {
   if (!field || !query || !query.trim()) return [];
 
-  // Try scoped terms first (org + existing filters), then fall back to unscoped suggest.
+  // Per-session cache to avoid repeat calls
+  fetchFilterValueSuggestions._cache = fetchFilterValueSuggestions._cache || new Map();
+  const cacheKey = `${field}::${query.slice(0, 50)}`;
+  if (fetchFilterValueSuggestions._cache.has(cacheKey)) {
+    return fetchFilterValueSuggestions._cache.get(cacheKey);
+  }
+
+  // Scoped terms only (org + existing filters)
   let qClean = query.trim();
   try {
     qClean = decodeURIComponent(qClean);
@@ -335,32 +342,7 @@ export async function fetchFilterValueSuggestions({ field, query, size = 10, sig
     }
   }
 
-  // Fallback to unscoped suggest if terms returns nothing
-  for (const f of candidateFields) {
-    try {
-      // Do not encode the field (dotted names need to remain intact); only encode the query
-      const url = `${API_BG_BASE_URL}works/suggest/${f}/${encodeURIComponent(qClean)}?size=${size}`;
-      const res = await fetch(url, { signal });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      if (!Array.isArray(data) || !data.length) continue;
-
-      const seen = new Set();
-      const values = [];
-      data.forEach((item) => {
-        const val = (typeof item === "string" ? item : item?.value || item?.label || "").trim();
-        if (val && !seen.has(val)) {
-          seen.add(val);
-          values.push(val);
-        }
-      });
-
-      if (values.length) return values.slice(0, size);
-    } catch (err) {
-      console.error("Error fetching filter suggestions (suggest fallback):", err);
-    }
-  }
-
+  fetchFilterValueSuggestions._cache.set(cacheKey, []);
   return [];
 }
 
@@ -524,7 +506,22 @@ function addFilterRow(container) {
       hideSuggestions();
       return;
     }
-    items.forEach((val) => {
+    const term = (input.value || "").toLowerCase();
+    const filtered = items
+      .filter((val) => (val || "").toLowerCase().includes(term))
+      .sort((a, b) => {
+        const aStarts = (a || "").toLowerCase().startsWith(term);
+        const bStarts = (b || "").toLowerCase().startsWith(term);
+        if (aStarts === bStarts) return 0;
+        return aStarts ? -1 : 1;
+      });
+
+    if (!filtered.length) {
+      hideSuggestions();
+      return;
+    }
+
+    filtered.forEach((val) => {
       const li = document.createElement("li");
       li.setAttribute("role", "option");
       li.setAttribute("aria-selected", "false");
@@ -583,8 +580,9 @@ function addFilterRow(container) {
     }
     suggestTimer = setTimeout(async () => {
       const fieldVal = fieldSelect.value;
-      const q = input.value.trim();
-      if (!fieldVal || q.length < 3) return;
+      const raw = input.value || "";
+      const q = raw.trim();
+      if (!fieldVal || raw.length < 2) return;
       abortController = new AbortController();
       const suggestions = await fetchFilterValueSuggestions({
         field: fieldVal,
@@ -593,7 +591,7 @@ function addFilterRow(container) {
       });
       renderSuggestions(suggestions);
       abortController = null;
-    }, 300);
+    }, 200);
   };
 
   input.addEventListener("keydown", (event) => {
