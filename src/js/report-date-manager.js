@@ -1,6 +1,11 @@
 // =================================================
 // report-date-manager.js
-// 
+// Handles report date selection, defaults, 
+// and URL syncing
+// =================================================
+
+// =================================================
+// Imports
 // =================================================
 
 import { DATE_SELECTION_BUTTON_CLASSES } from './constants.js';
@@ -8,43 +13,53 @@ import { makeDateReadable, createDate, replaceDateRange, initDropdown, getAllURL
 import { initInsightsAndStrategies } from './insights-and-strategies.js';
 import { currentActiveExploreItemButton, currentActiveExploreItemData, processExploreDataTable } from './explore.js';
 
+// =================================================
+// Global variables
+// =================================================
 
 /** 
- * The current date, used across the application to determine the current context or as a default value.
+ * Current date used across the app for default ranges.
  * @constant {Date}
  */
 export const currentDate = new Date();
 
 /** 
- * The default year for paid users, used as the starting point for reports.
+ * Default year for paid users.
  * @constant {number}
  */
 export const DEFAULT_YEAR = 2025;
 
 /** 
- * The default year for free users, usually set to one year behind the paid users' default.
- * It indicates the latest year for which free users can access reports.
+ * Default year for free users (usually behind the paid default).
  * @constant {number}
  */
 export const DEFAULT_YEAR_FREE = 2023;
 
 /** 
- * The first year for which data is available in the application, used to populate year selection options and to limit date range selections.
+ * First year with available data.
  * @constant {number}
  */
 export const FIRST_YEAR = 2015;
 
+// =================================================
+// Helpers
+// =================================================
+
 /**
- * Determines if the current date is in Q2 or later of the current year.
- * @returns {boolean} True if the current date is on or after April 1 of the current year, false otherwise.
+ * Checks whether we are in Q2 or later of the current year.
+ * @returns {boolean} True if on or after 1 April of the current year.
  */
 function isQuarterTwoOrLater() {
   const currentMonth = currentDate.getMonth();
   return currentMonth >= 3; // Q2 starts in April (Month 3)
 }
 
+// =================================================
+// Initialisation
+// =================================================
+
 /**
- * Sets up the default year for the application, depending on whether the user is a paid user or not.
+ * Sets up the default year, depending on whether the user is a paid user or not.
  */
 export function setDefaultYear() {
   const startParam = getURLParam('start');
@@ -169,6 +184,10 @@ export function initDateManager() {
   // Remove orgkey from URL after processing
   if (orgkey) removeURLParams('orgkey');
 }
+
+// =================================================
+// UI controls
+// =================================================
 
 
 /**
@@ -412,7 +431,9 @@ function createDateRangeForm() {
   // Apply button inside the popover
   const applyBtn = document.createElement("button");
   applyBtn.type = "button";
+  applyBtn.id = "js-date-range-apply-button";
   applyBtn.className = "block p-2 border rounded-sm mt-1 mr-1 md:mt-0 md:mr-3 w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 hover:bg-carnation-100 js-nav-chip";
+  applyBtn.id = "js-date-range-apply-button";
   applyBtn.textContent = "Apply";
   pop.appendChild(applyBtn);
 
@@ -697,4 +718,3 @@ export function awaitDateRange(timeoutMs = 3000) {
     })();
   });
 }
-

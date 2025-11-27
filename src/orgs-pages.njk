@@ -37,14 +37,14 @@ permalink: "{{ org._source.objectID | slug }}/"
     </div>
   </div>
 
-  {# TOP NAV #}
+  {# Report filtering (dates, terms) — sticky top nav #}
   {% if org._source.paid == true %}
   <nav
     class="sticky top-0 pt-3 md:pt-6 z-20 bg-white transition-pb-0 js-report-nav"
     id="js-report-nav"
   >
-  <h2 class="sr-only">Report navigation</h2>
-    <div class="flex items-stretch justify-between">
+    <h2 class="sr-only">Report navigation</h2>
+    <div class="flex items-center justify-between">
       <section>
         <h3 class="sr-only">View this report by year or by custom date range</h3>
         <div
@@ -53,25 +53,28 @@ permalink: "{{ org._source.objectID | slug }}/"
         ></div>
       </section>
 
-      {# Active filters panel #}
-      <aside
-        class="mr-3 md:mr-6 text-neutral-900 text-xs md:text-sm md:border-b-0 js-active-filters-wrapper hidden"
-        aria-labelledby="js-active-filters-title"
-      >
-        <h3 id="js-active-filters-title" class="sr-only">
-          Active filters
-        </h3>
+      <div class="flex items-center ml-auto mr-3 md:mr-6 space-x-2">
+        {# Active filters panel #}
+        <aside
+          class="text-neutral-900 text-xs md:text-sm md:border-b-0 js-active-filters-wrapper hidden"
+          aria-labelledby="js-active-filters-title"
+        >
+          <h3 id="js-active-filters-title" class="sr-only">
+            Active filters
+          </h3>
 
-        {# Live region so SR users hear updates when filters change #}
-        <div
-          id="js-active-filters"
-          class="flex items-center"
-          role="status"
-          aria-live="polite"
-          aria-atomic="true"
-        ></div>
-      </aside>
+          {# Live region so SR users hear updates when filters change #}
+          <div
+            id="js-active-filters"
+            class="flex items-center"
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+          ></div>
+        </aside>
+      </div>
     </div>
+
   </nav>
   {% endif %}
 
@@ -481,4 +484,3 @@ permalink: "{{ org._source.objectID | slug }}/"
     </div>
   </div>
 </main>
-

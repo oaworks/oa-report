@@ -6,7 +6,7 @@ module.exports = {
     './src/_data/*.json',
     './src/**/*.njk',
     './src/*.njk',
-    './src/js/*.js',
+    './src/js/**/*.js',
     './.eleventy.js',
   ],
   safelist: [],

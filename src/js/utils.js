@@ -5,6 +5,10 @@
 
 import { ELEVENTY_API_ENDPOINT, READABLE_DATE_OPTIONS, USER_LOCALE, EXPLORE_FILTERS_LABELS } from './constants.js';
 
+// =================================================
+// Network and caching helpers
+// =================================================
+
 /**
  * Checks if the cached data has expired.
  * 
@@ -72,6 +76,10 @@ export function normaliseFieldId(id) {
     .replace(/__.*/, '')
     .replace(/_pct$/, '');
 }
+
+// =================================================
+// Date helpers
+// =================================================
 
 
 /**
@@ -176,6 +184,8 @@ export function createDate(year, month, day) {
   return new Date(Date.UTC(year, month, day));  
 }
 
+// DOM helpers
+
 /**
  * Hides an HTML element by setting its display style to 'none'.
  *
@@ -250,6 +260,8 @@ export function debounce(func, wait) {
     timeout = setTimeout(later, wait);
   };
 }
+
+// Data formatting and transforms
 
 /**
  * Formats the values of an object as inline list items.
@@ -557,6 +569,8 @@ export function convertTextToLinks(text, forceLink = false, urlPrefix = '') {
   return text.replace(urlRegex, match => createAnchor(match, match));
 }
 
+// Navigation and UI helpers
+
 /**
  * Binds click events to all anchor links for smooth scrolling. 
  * Considers the dynamic height of a the #top_nav sticky header.
@@ -592,6 +606,8 @@ export function bindSmoothScrollLinks() {
  * Adjusts the navigation bar's style based on the scroll position.
  * Adds or removes classes to the navigation bar when it reaches the top of the viewport.
  * Adds a shadow to the nav bar, a border to the bottom of the items, and a transition effect.
+ *
+ * Expects nav chips to use `.js-nav-chip`.
  */
 export function adjustNavOnScroll() {
   const nav = document.querySelector("#js-report-nav");
@@ -627,6 +643,8 @@ export function adjustNavOnScroll() {
   // Call the function immediately to check the initial scroll position
   adjustNavStyle();
 }
+
+// Table and clipboard helpers
 
 /**
  * Inserts a 'No results found' message row into a table body.
@@ -747,6 +765,8 @@ export function copyToClipboard(buttonId, elementId) {
   }
 }
 
+// URL and query helpers
+
 /**
  * Parses all URL parameters into an object.
  * @returns {Object} URL parameters as key-value pairs.
@@ -842,6 +862,8 @@ export function updateExploreFilterHeader(filterId) {
       : (EXPLORE_FILTERS_LABELS[filterId]?.label || filterId);
   replaceText("explore_filter", text);
 }
+
+// Chart helpers
 
 /**
  * Resets the <footer> js_bar_chart area of an Insights card back to its default state.
@@ -1010,6 +1032,8 @@ export function setBarChart(
   }
 };
 
+// Query builders
+
 /**
  * Get the admin-provided `?q=` from the page URL and normalise it
  * to a plain Elasticsearch query string.
@@ -1025,8 +1049,17 @@ export function getDecodedUrlQuery() {
   const raw = params.get('q');
   if (!raw || !raw.trim()) return '';
   // Normalise '+' (often used for spaces), then decode %xx sequences.
-  const plusAsSpace = raw.replace(/\+/g, ' ');
-  return decodeAndReplaceUrlEncodedChars(plusAsSpace);
+  let out = raw.replace(/\+/g, ' ');
+  try {
+    let next = decodeAndReplaceUrlEncodedChars(out);
+    while (next !== out) {
+      out = next;
+      next = decodeAndReplaceUrlEncodedChars(out);
+    }
+  } catch (e) {
+    // If decoding fails, fall back to best-effort value.
+  }
+  return out;
 }
 
 /**

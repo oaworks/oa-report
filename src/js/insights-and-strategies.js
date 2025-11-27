@@ -5,14 +5,26 @@
 // Needs to be completely refactored
 // ================================================
 
+// =================================================
+// Imports
+// =================================================
+
 import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter } from './utils.js';
 import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS } from './constants.js';
+
+// =================================================
+// Org data
+// =================================================
 
 // Set report org index URL’s base path
 export const orgApiUrl = `${API_BASE_URL}orgs?q=objectID:%22${org}%22`;
 
 // Fetch and store organisational data in a constant
 export const orgDataPromise = axios.get(orgApiUrl);
+
+// =================================================
+// Auth state
+// =================================================
 
 let orgKey = "";
 let loggedIn = false;
@@ -29,6 +41,10 @@ if (hasOrgKey) {
   loggedIn = false;
   displayNone("logout");
 }
+
+// =================================================
+// Exports
+// =================================================
 
 // Generate report’s UI for any given date range
 export function initInsightsAndStrategies(org) {
@@ -84,17 +100,19 @@ export function initInsightsAndStrategies(org) {
 
     /** Get Insights data and display it **/
     // Loop through each Insight card from constants.js and call getInsight
+    const policyUrl = orgData?.hits?.hits?.[0]?._source?.policy?.url;
     INSIGHTS_CARDS.forEach((cardConfig) => {
-      if (cardConfig.info.includes("{policyUrl}")) {
-        const policyUrl = orgData.hits.hits[0]._source.policy.url;
-        cardConfig.info = cardConfig.info.replace("{policyUrl}", policyUrl);
+      // Clone per use so we never mutate the constant
+      const card = { ...cardConfig };
+      if (policyUrl && typeof card.info === 'string' && card.info.includes("{policyUrl}")) {
+        card.info = card.info.replace("{policyUrl}", policyUrl);
       }
 
       getInsight(
-        cardConfig.numerator,
-        cardConfig.denominator,
-        cardConfig.denominatorText,
-        cardConfig.info
+        card.numerator,
+        card.denominator,
+        card.denominatorText,
+        card.info
       );
     });
 

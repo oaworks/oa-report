@@ -3,6 +3,10 @@
 // State & DOM manipulation specific to Strategies
 // ================================================
 
+// =================================================
+// Imports
+// =================================================
+
 import { updateURLParams, getAllURLParams } from './utils.js';
 
 /**

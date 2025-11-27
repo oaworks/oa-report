@@ -1,13 +1,27 @@
+// =================================================
+// aggregated-data-query.js
+// Builds Elasticsearch aggregation queries 
+// for Explore views
+// =================================================
+
+// =================================================
+// Imports
+// =================================================
+
 import { ELEVENTY_API_ENDPOINT } from "./constants.js";
+
+// =================================================
+// Helpers
+// =================================================
 
 /**
  * Generates the aggregation buckets template for Elasticsearch queries.
- * This function returns a set of common aggregations used in the Data Explore breakdowns.
+ * Returns the common aggregations used in the Data Explore breakdowns,
  * based on the provided suffix (identifier for an organisation).
  *
- * @param {string} suffix – Organisation-specific suffix used in dynamic field
- *                          names (e.g. "bmgf" for Gates Foundation).
- * @returns {Object}       Map of Elasticsearch aggregation definitions.
+ * @param {string} suffix - Organisation-specific suffix used in dynamic field
+ * names (e.g. "bmgf" for Gates Foundation).
+ * @returns {Object} Map of Elasticsearch aggregation definitions.
  */
 function createAggregationTemplate(suffix) {
   return {
@@ -684,18 +698,22 @@ function createAggregationTemplate(suffix) {
   };
 }
 
+// =================================================
+// Exports
+// =================================================
+
 /**
  * Dynamically constructs the POST body for Elasticsearch queries 
  * to handle complex term-based aggregations.
  * This includes sorting and filtering based on specified parameters.
  *
- * @param {string}   suffix     – Organisation-specific suffix.
- * @param {string}   query      – Main query string.
- * @param {string}   term       – Field whose values will form the row labels.
- * @param {number}   startYear  – Start year (inclusive) for `published_date`.
- * @param {number}   endYear    – End year (inclusive) for `published_date`.
- * @param {number}   [size=20]  – Max buckets to return.
- * @param {string}   [sort="_count"] – Sort field (`_count` or a metric name).
+ * @param {string}   suffix     - Organisation-specific suffix.
+ * @param {string}   query      - Main query string.
+ * @param {string}   term       - Field whose values will form the row labels.
+ * @param {number}   startYear  - Start year (inclusive) for `published_date`.
+ * @param {number}   endYear    - End year (inclusive) for `published_date`.
+ * @param {number}   [size=20]  - Max buckets to return.
+ * @param {string}   [sort="_count"] - Sort field (`_count` or a metric name).
  * @returns {Object} POST body suitable for `/_search`.
  */
 export function getAggregatedDataQuery(
