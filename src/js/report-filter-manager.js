@@ -309,9 +309,19 @@ function parseEsQueryToPairs(q) {
       if (!m) return null;
       const rawKey = m[1];
       const value = renderValue(rawKey, unwrapParens(m[2]));
-      return value ? { label: labelFromFieldKey(rawKey), value } : null;
+      return value ? { label: labelFromFieldKey(rawKey), value, clause: clause.trim() } : null;
     })
     .filter(Boolean);
+}
+
+function removeClauseFromQuery(q, clause) {
+  const trimmed = (clause || "").trim();
+  if (!trimmed) return q;
+  const pairs = parseEsQueryToPairs(q);
+  const remaining = pairs
+    .map((p) => p.clause)
+    .filter((c) => c !== trimmed);
+  return remaining.join(" AND ");
 }
 
 /**
@@ -805,15 +815,36 @@ export function renderActiveFiltersBanner() {
   chipsList.setAttribute("aria-labelledby", heading.id);
 
   if (pairs.length) {
-    pairs.forEach(({ label, value }) => {
+    pairs.forEach(({ label, value, clause }) => {
       const li = document.createElement("li");
-      li.className = "inline-flex items-center px-2 py-0.5 bg-neutral-900 text-white rounded-full text-[11px] md:text-xs mr-1 mb-1";
+      li.className = "inline-flex items-center rounded-full bg-carnation-100 text-neutral-900 px-2 py-0.5 text-[11px] md:text-xs mr-1 mb-1";
       li.setAttribute("role", "listitem");
       li.setAttribute("aria-label", `${label}: ${value}`);
       li.innerHTML = `
         <span class="mr-1 opacity-80">${label}:</span>
         <span class="font-semibold">${value}</span>
       `;
+      if (clause) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "ml-2 text-[10px]";
+        btn.setAttribute("aria-label", `Remove ${label}: ${value}`);
+        btn.textContent = "✕";
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const decodedQ = getDecodedUrlQuery();
+          const nextQ = removeClauseFromQuery(decodedQ, clause);
+          if (nextQ) {
+            updateURLParams({ q: nextQ });
+          } else {
+            removeURLParams("q");
+          }
+          handleFiltersChanged();
+          tip.hide();
+        });
+        li.appendChild(btn);
+      }
       chipsList.appendChild(li);
     });
   } else {
