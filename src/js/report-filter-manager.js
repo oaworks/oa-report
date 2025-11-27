@@ -270,7 +270,7 @@ function parseEsQueryToPairs(q) {
  * @param {AbortSignal} [params.signal] - Optional abort signal
  * @returns {Promise<string[]>} Ordered list of suggested values (unique, trimmed)
  */
-export async function fetchFilterValueSuggestions({ field, query, size = 10, signal }) {
+export async function fetchFilterValueSuggestions({ field, query, size = 8, signal }) {
   if (!field || !query || !query.trim()) return [];
 
   // Per-session cache to avoid repeat calls
@@ -287,20 +287,14 @@ export async function fetchFilterValueSuggestions({ field, query, size = 10, sig
   } catch (e) {
     // If already decoded/invalid, keep as-is
   }
-  // Build a case-insensitive, contains-style pattern for terms queries
-  const variants = Array.from(new Set([
-    qClean,
-    qClean.toLowerCase(),
-    qClean.toUpperCase(),
-    qClean.charAt(0).toUpperCase() + qClean.slice(1).toLowerCase()
-  ])).filter(Boolean);
+  const baseField = field.replace(/\.keyword$/, "");
+  const keywordField = `${baseField}.keyword`;
+  const lower = qClean.toLowerCase();
+  const upper = qClean.toUpperCase();
   const existingQ = getDecodedUrlQuery();
   const orgName = orgData?.hits?.hits?.[0]?._source?.name;
 
-  const candidates = field.includes(".")
-    ? [ `${field}.keyword`, field ]
-    : [ field, `${field}.keyword` ];
-  const candidateFields = Array.from(new Set(candidates));
+  const candidateFields = Array.from(new Set([baseField, keywordField]));
 
   // Scoped terms-based suggestions
   for (const f of candidateFields) {
@@ -310,8 +304,13 @@ export async function fetchFilterValueSuggestions({ field, query, size = 10, sig
         const safeOrg = orgName.replace(/"/g, '\\"');
         parts.push(`orgs.keyword:"${safeOrg}"`);
       }
-      if (existingQ) parts.push(`(${existingQ})`);
-      const orParts = variants.map((v) => `${f}:*${v}*`);
+      // Skip existing ?q filters here to keep suggestions broader/faster
+      const orParts = [
+        `${baseField}:*${lower}*`,
+        `${baseField}:*${upper}*`,
+        `${keywordField}:*${lower}*`,
+        `${keywordField}:*${upper}*`,
+      ];
       parts.push(`(${orParts.join(" OR ")})`);
 
       const qParam = encodeURIComponent(parts.join(" AND "));
@@ -435,7 +434,7 @@ function addFilterRow(container) {
   input.id = inputId;
   input.type = "text";
   input.className = "js-filter-input mt-1 p-2 w-full h-9 border border-neutral-900 bg-white text-xs md:text-sm leading-tight focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900";
-  input.placeholder = "Start typing to search values";
+  input.placeholder = "Search for values…";
   input.required = true;
   input.setAttribute("aria-required", "true");
   input.setAttribute("role", "combobox");
@@ -502,11 +501,29 @@ function addFilterRow(container) {
 
   const renderSuggestions = (items) => {
     listbox.innerHTML = "";
+    const termRaw = input.value || "";
+    const term = termRaw.toLowerCase();
+
+    // Keep a non-selectable hint at the top
+    renderHint(termRaw);
+
     if (!items || !items.length) {
-      hideSuggestions();
+      listbox.classList.remove("hidden");
+      input.setAttribute("aria-expanded", "true");
+      activeIndex = -1;
       return;
     }
-    const term = (input.value || "").toLowerCase();
+
+    const highlight = (val) => {
+      if (!term || !val) return val;
+      const idx = val.toLowerCase().indexOf(term);
+      if (idx === -1) return val;
+      const before = val.slice(0, idx);
+      const match = val.slice(idx, idx + term.length);
+      const after = val.slice(idx + term.length);
+      return `${before}<strong>${match}</strong>${after}`;
+    };
+
     const filtered = items
       .filter((val) => (val || "").toLowerCase().includes(term))
       .sort((a, b) => {
@@ -526,13 +543,25 @@ function addFilterRow(container) {
       li.setAttribute("role", "option");
       li.setAttribute("aria-selected", "false");
       li.className = "px-2 py-1 cursor-pointer hover:bg-carnation-100 text-xs md:text-sm";
-      li.textContent = val;
+      li.innerHTML = highlight(val);
       li.addEventListener("mousedown", (e) => {
         e.preventDefault(); // keep focus
         applySuggestion(val);
       });
       listbox.appendChild(li);
     });
+    activeIndex = -1;
+    listbox.classList.remove("hidden");
+    input.setAttribute("aria-expanded", "true");
+  };
+
+  const renderHint = (termRaw = "") => {
+    listbox.innerHTML = "";
+    const hint = document.createElement("li");
+    hint.setAttribute("role", "presentation");
+    hint.className = "px-2 py-1 h-9 flex items-center text-xs md:text-sm bg-neutral-100 text-neutral-700 border-b border-neutral-200";
+    hint.textContent = termRaw ? `Matching suggestions for “${termRaw}”` : "Start typing to see suggestions…";
+    listbox.appendChild(hint);
     activeIndex = -1;
     listbox.classList.remove("hidden");
     input.setAttribute("aria-expanded", "true");
@@ -582,7 +611,10 @@ function addFilterRow(container) {
       const fieldVal = fieldSelect.value;
       const raw = input.value || "";
       const q = raw.trim();
-      if (!fieldVal || raw.length < 2) return;
+      if (!fieldVal || raw.length < 2) {
+        renderHint();
+        return;
+      }
       abortController = new AbortController();
       const suggestions = await fetchFilterValueSuggestions({
         field: fieldVal,
@@ -591,7 +623,7 @@ function addFilterRow(container) {
       });
       renderSuggestions(suggestions);
       abortController = null;
-    }, 200);
+    }, 150);
   };
 
   input.addEventListener("keydown", (event) => {
@@ -622,6 +654,9 @@ function addFilterRow(container) {
 
   fieldSelect.addEventListener("change", triggerSuggestions);
   input.addEventListener("input", triggerSuggestions);
+  input.addEventListener("focus", () => {
+    renderHint();
+  });
 
   container.appendChild(row);
 }
