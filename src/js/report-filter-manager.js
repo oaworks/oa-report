@@ -823,7 +823,7 @@ export function renderActiveFiltersBanner() {
 
   const q = getDecodedUrlQuery();
   const pairs = parseEsQueryToPairs(q);
-  const count = pairs.length;
+  const count = pairs.reduce((sum, p) => sum + (Array.isArray(p.values) ? p.values.length : 1), 0); // total values count across all fields, instead of just fields count
 
   wrapper.classList.remove("hidden");
   mount.innerHTML = "";
