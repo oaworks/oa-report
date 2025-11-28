@@ -490,7 +490,7 @@ export function initInsightsAndStrategies(org) {
       </td>"
     );
 
-        displayStrategy(
+    displayStrategy(
       "email_author_deposit",
       ['published_date', 'title', 'journal', 'author_email_name', 'email', 'DOI', 'mailto'],
       "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
