@@ -15,6 +15,7 @@ import {
   normaliseFieldId,
   pluraliseNoun
 } from "./utils.js";
+import { API_BG_BASE_URL } from "./constants/api.js";
 
 import {
   EXPLORE_ITEMS_LABELS,
@@ -259,12 +260,100 @@ function parseEsQueryToPairs(q) {
     .filter(Boolean);
 }
 
+/**
+ * Fetch autocomplete suggestions for a given field and org.
+ *
+ * @param {Object} params
+ * @param {string} params.field  - ES field id (e.g., journal, concepts.display_name)
+ * @param {string} params.query  - User-entered prefix/term to match
+ * @param {number} [params.size=10] - Max number of suggestions to return
+ * @param {AbortSignal} [params.signal] - Optional abort signal
+ * @returns {Promise<string[]>} Ordered list of suggested values (unique, trimmed)
+ */
+export async function fetchFilterValueSuggestions({ field, query, size = 8, signal }) {
+  if (!field || !query || !query.trim()) return [];
+
+  // Per-session cache to avoid repeat calls
+  fetchFilterValueSuggestions._cache = fetchFilterValueSuggestions._cache || new Map();
+  const cacheKey = `${field}::${query.slice(0, 50)}`;
+  if (fetchFilterValueSuggestions._cache.has(cacheKey)) {
+    return fetchFilterValueSuggestions._cache.get(cacheKey);
+  }
+
+  // Scoped terms only (org + existing filters)
+  let qClean = query.trim();
+  try {
+    qClean = decodeURIComponent(qClean);
+  } catch (e) {
+    // If already decoded/invalid, keep as-is
+  }
+  const baseField = field.replace(/\.keyword$/, "");
+  const keywordField = `${baseField}.keyword`;
+  const lower = qClean.toLowerCase();
+  const upper = qClean.toUpperCase();
+  const existingQ = getDecodedUrlQuery();
+  const orgName = orgData?.hits?.hits?.[0]?._source?.name;
+
+  const candidateFields = Array.from(new Set([baseField, keywordField]));
+
+  // Scoped terms-based suggestions
+  for (const f of candidateFields) {
+    try {
+      const parts = [];
+      if (orgName) {
+        const safeOrg = orgName.replace(/"/g, '\\"');
+        parts.push(`orgs.keyword:"${safeOrg}"`);
+      }
+      // Skip existing ?q filters here to keep suggestions broader/faster
+      const orParts = [
+        `${baseField}:*${lower}*`,
+        `${baseField}:*${upper}*`,
+        `${keywordField}:*${lower}*`,
+        `${keywordField}:*${upper}*`,
+      ];
+      parts.push(`(${orParts.join(" OR ")})`);
+
+      const qParam = encodeURIComponent(parts.join(" AND "));
+      const url = `${API_BG_BASE_URL}works/terms/${f}?counts=false&size=${size}&q=${qParam}`;
+      console.log("[terms]", { field: f, url, q: parts.join(" AND ") });
+
+      const res = await fetch(url, { signal });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      if (!Array.isArray(data) || !data.length) continue;
+
+      const seen = new Set();
+      const values = [];
+      data.forEach((item) => {
+        const val = (
+          typeof item === "string"
+            ? item
+            : item?.key || item?.value || item?.label || ""
+        ).trim();
+        if (val && !seen.has(val)) {
+          seen.add(val);
+          values.push(val);
+        }
+      });
+
+      if (values.length) return values.slice(0, size);
+    } catch (err) {
+      if (err?.name !== "AbortError") {
+        console.error("Error fetching filter suggestions (terms):", err);
+      }
+    }
+  }
+
+  fetchFilterValueSuggestions._cache.set(cacheKey, []);
+  return [];
+}
+
 // =================================================
 // DOM helpers
 // =================================================
 
 /**
- * Adds a single "Filter field + textarea" row into the given container.
+ * Adds a single "Filter field + value input" row into the given container.
  *
  * @param {HTMLElement} container
  */
@@ -309,9 +398,10 @@ function addFilterRow(container) {
   fieldWrapper.appendChild(fieldSelect);
 
   const textWrapper = document.createElement("div");
-  textWrapper.className = "w-full";
+  textWrapper.className = "w-full relative";
 
   const textLabel = document.createElement("div");
+  textLabel.id = `js-filter-values-label-${idSuffix}`;
   textLabel.className = "flex items-center text-neutral-800 text-[11px] md:text-xs font-medium uppercase tracking-wide";
   textLabel.textContent = "Values";
 
@@ -343,19 +433,234 @@ function addFilterRow(container) {
   });
 
   const inputId = `js-filter-input-${idSuffix}`;
-  const textarea = document.createElement("textarea");
-  textarea.id = inputId;
-  textarea.className = "js-filter-input mt-1 p-2 w-full h-32 border border-neutral-900 bg-white text-xs md:text-sm leading-tight focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900";
-  textarea.rows = 2;
-  textarea.placeholder = "";
-  textarea.required = true;
-  textarea.setAttribute("aria-required", "true");
+  const input = document.createElement("input");
+  input.id = inputId;
+  input.type = "text";
+  input.className = "js-filter-input mt-1 p-2 w-full h-9 border border-neutral-900 bg-white text-xs md:text-sm leading-tight focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900";
+  input.placeholder = "Search for values…";
+  input.required = true;
+  input.setAttribute("aria-required", "true");
+  input.setAttribute("role", "combobox");
+  input.setAttribute("aria-autocomplete", "list");
+  input.setAttribute("aria-expanded", "false");
+  input.setAttribute("aria-labelledby", textLabel.id);
+
+  const listboxId = `js-filter-suggestions-${idSuffix}`;
+  input.setAttribute("aria-controls", listboxId);
+
+  const listbox = document.createElement("ul");
+  listbox.id = listboxId;
+  listbox.className = "js-filter-suggestions absolute z-10 mt-1 w-full bg-white border border-neutral-300 shadow-sm max-h-48 overflow-auto hidden";
+  listbox.setAttribute("role", "listbox");
+  listbox.setAttribute("aria-label", "Filter value suggestions");
+
+  const tokens = document.createElement("div");
+  tokens.className = "js-filter-tokens mt-2 flex flex-wrap gap-1";
+  tokens.setAttribute("role", "list");
+  tokens.setAttribute("aria-label", "Selected values");
 
   textWrapper.appendChild(textLabel);
-  textWrapper.appendChild(textarea);
+  textWrapper.appendChild(input);
+  textWrapper.appendChild(listbox);
+  textWrapper.appendChild(tokens);
 
   row.appendChild(fieldWrapper);
   row.appendChild(textWrapper);
+
+  // Debounced fetch of value suggestions + tokens
+  let suggestTimer = null;
+  let activeIndex = -1;
+  const tokenData = [];
+  let requestSeq = 0;
+
+  const hideSuggestions = () => {
+    listbox.classList.add("hidden");
+    input.setAttribute("aria-expanded", "false");
+    activeIndex = -1;
+  };
+
+  const addToken = (value) => {
+    if (!value) return;
+    input.value = "";
+    tokenData.push(value);
+    renderTokens();
+    hideSuggestions();
+  };
+
+  const applySuggestion = (value) => {
+    if (!value) return;
+    addToken(value);
+    input.focus();
+  };
+
+  const updateActiveOption = () => {
+    Array.from(listbox.children).forEach((li, idx) => {
+      const selected = idx === activeIndex;
+      li.setAttribute("aria-selected", selected ? "true" : "false");
+      li.classList.toggle("bg-neutral-900", selected);
+      li.classList.toggle("text-white", selected);
+    });
+  };
+
+  const renderSuggestions = (items) => {
+    listbox.innerHTML = "";
+    const termRaw = input.value || "";
+    const term = termRaw.toLowerCase();
+
+    // Keep a non-selectable hint at the top
+    renderHint(termRaw);
+
+    if (!items || !items.length) {
+      listbox.classList.remove("hidden");
+      input.setAttribute("aria-expanded", "true");
+      activeIndex = -1;
+      return;
+    }
+
+    const highlight = (val) => {
+      if (!term || !val) return val;
+      const idx = val.toLowerCase().indexOf(term);
+      if (idx === -1) return val;
+      const before = val.slice(0, idx);
+      const match = val.slice(idx, idx + term.length);
+      const after = val.slice(idx + term.length);
+      return `${before}<strong>${match}</strong>${after}`;
+    };
+
+    const filtered = items
+      .filter((val) => (val || "").toLowerCase().includes(term))
+      .sort((a, b) => {
+        const aStarts = (a || "").toLowerCase().startsWith(term);
+        const bStarts = (b || "").toLowerCase().startsWith(term);
+        if (aStarts === bStarts) return 0;
+        return aStarts ? -1 : 1;
+      });
+
+    if (!filtered.length) {
+      hideSuggestions();
+      return;
+    }
+
+    filtered.forEach((val) => {
+      const li = document.createElement("li");
+      li.setAttribute("role", "option");
+      li.setAttribute("aria-selected", "false");
+      li.className = "px-2 py-1 cursor-pointer hover:bg-carnation-100 text-xs md:text-sm";
+      li.innerHTML = highlight(val);
+      li.addEventListener("mousedown", (e) => {
+        e.preventDefault(); // keep focus
+        applySuggestion(val);
+      });
+      listbox.appendChild(li);
+    });
+    activeIndex = -1;
+    listbox.classList.remove("hidden");
+    input.setAttribute("aria-expanded", "true");
+  };
+
+  const renderHint = (termRaw = "") => {
+    listbox.innerHTML = "";
+    const hint = document.createElement("li");
+    hint.setAttribute("role", "presentation");
+    hint.className = "px-2 py-1 h-9 flex items-center text-xs md:text-sm bg-neutral-100 text-neutral-700 border-b border-neutral-200";
+    hint.textContent = termRaw ? `Matching suggestions for “${termRaw}”` : "Start typing to see suggestions…";
+    listbox.appendChild(hint);
+    activeIndex = -1;
+    listbox.classList.remove("hidden");
+    input.setAttribute("aria-expanded", "true");
+  };
+
+  const renderTokens = () => {
+    tokens.innerHTML = "";
+    const hasTokens = tokenData.length > 0;
+    input.required = !hasTokens;
+    input.setAttribute("aria-required", hasTokens ? "false" : "true");
+
+    tokenData.forEach((val) => {
+      const chip = document.createElement("span");
+      chip.className = "inline-flex items-center rounded-full bg-carnation-100 text-neutral-900 px-2 py-0.5 text-[11px] md:text-xs";
+      chip.setAttribute("data-value", val);
+      chip.setAttribute("role", "listitem");
+
+      const valSpan = document.createElement("span");
+      valSpan.textContent = val;
+      chip.appendChild(valSpan);
+
+      const removeBtn = document.createElement("button");
+      removeBtn.type = "button";
+      removeBtn.className = "ml-2 text-[10px]";
+      removeBtn.setAttribute("aria-label", `Remove ${val}`);
+      removeBtn.textContent = "✕";
+      removeBtn.addEventListener("click", () => {
+        const idxToRemove = tokenData.indexOf(val);
+        if (idxToRemove > -1) {
+          tokenData.splice(idxToRemove, 1);
+        }
+        renderTokens();
+      });
+
+      chip.appendChild(removeBtn);
+      tokens.appendChild(chip);
+    });
+  };
+
+  const triggerSuggestions = () => {
+    clearTimeout(suggestTimer);
+    suggestTimer = setTimeout(async () => {
+      const fieldVal = fieldSelect.value;
+      const raw = input.value || "";
+      const q = raw.trim();
+      if (!fieldVal || raw.length < 2) {
+        renderHint();
+        return;
+      }
+      const currentReq = ++requestSeq;
+      renderHint("Searching…");
+      try {
+        const suggestions = await fetchFilterValueSuggestions({
+          field: fieldVal,
+          query: q,
+        });
+        if (currentReq === requestSeq) {
+          renderSuggestions(suggestions);
+        }
+      } catch (err) {
+        console.error("Error fetching suggestions:", err);
+      }
+    }, 150);
+  };
+
+  input.addEventListener("keydown", (event) => {
+    if (listbox.classList.contains("hidden")) return;
+    const options = listbox.children;
+    if (!options.length) return;
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      activeIndex = (activeIndex + 1) % options.length;
+      updateActiveOption();
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      activeIndex = activeIndex <= 0 ? options.length - 1 : activeIndex - 1;
+      updateActiveOption();
+    } else if (event.key === "Enter") {
+      if (activeIndex >= 0 && activeIndex < options.length) {
+        event.preventDefault();
+        applySuggestion(options[activeIndex].textContent);
+      }
+    } else if (event.key === "Escape") {
+      hideSuggestions();
+    }
+  });
+
+  input.addEventListener("blur", () => {
+    setTimeout(hideSuggestions, 100);
+  });
+
+  fieldSelect.addEventListener("change", triggerSuggestions);
+  input.addEventListener("input", triggerSuggestions);
+  input.addEventListener("focus", () => {
+    renderHint();
+  });
 
   container.appendChild(row);
 }
@@ -538,15 +843,25 @@ export function renderActiveFiltersBanner() {
     rowsContainer.querySelectorAll(".js-filter-row").forEach((row) => {
       const fieldSelect = row.querySelector(".js-filter-field");
       const input = row.querySelector(".js-filter-input");
-      if (!fieldSelect || !input) return;
+      const tokensEl = row.querySelector(".js-filter-tokens");
+      if (!fieldSelect || !input || !tokensEl) return;
 
       const field = fieldSelect.value;
       const raw = input.value.trim();
+      const chips = Array.from(tokensEl.children).map((chip) => chip.getAttribute("data-value") || "").filter(Boolean);
 
-      if (!field || !raw) return;
+      if (!field) return;
 
-      // Support "ID1, ID2" (OR), "ID1 OR ID2", "ID1 AND ID2"
-      // Commas inside a segment are OR
+      if (chips.length) {
+        const quotedVals = chips.map((val) => `"${val.replace(/"/g, '\\"')}"`);
+        const valueExpr = quotedVals.length === 1 ? quotedVals[0] : `(${quotedVals.join(" OR ")})`;
+        clauses.push(`${field}:${valueExpr}`);
+        return;
+      }
+
+      if (!raw) return;
+
+      // Fallback: support "ID1, ID2" (OR), "ID1 OR ID2", "ID1 AND ID2"
       const operators = [];
       const segments = [];
       const opRegex = /\s+(AND|OR)\s+/gi;
