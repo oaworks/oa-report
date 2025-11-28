@@ -381,6 +381,7 @@ permalink: "{{ org._source.objectID | slug }}/"
               }) }}
 
             {# HIDE TEMPORARILY 
+              See https://github.com/oaworks/discussion/issues/3619#issuecomment-3587683138 
               {{ component("strategy-pill", {
                 id: "email_author_vor",
                 txt: "Deposit publisher PDFs",
@@ -407,7 +408,9 @@ permalink: "{{ org._source.objectID | slug }}/"
           </nav>
 
           <div class="hidden sm:block js_strategies">
-            {{ component("strategy-contents", {
+            {# Hide temporarily
+              See https://github.com/oaworks/discussion/issues/3619#issuecomment-3587683138 #}
+            {# {{ component("strategy-contents", {
               id: "email_author_vor",
               heading: "Deposit publisher PDFs",
               desc: "Send emails to authors to request they make their work free to read. In these cases, they can do that by making a <strong>publisher PDF (version of record, VOR)</strong> available in a repository.",
@@ -421,6 +424,17 @@ permalink: "{{ org._source.objectID | slug }}/"
             {{ component("strategy-contents", {
               id: "email_author_aam",
               heading: "Deposit accepted manuscripts",
+              desc: "Send emails to authors to request they make their work free to read. In these cases, they can do that by making an <strong>author accepted manuscript (AAM)</strong> available in a repository.",
+              table_headings: "<th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-10/12 sm:w-6/12'>Article</th>\
+                              <th scope='col' class='hidden px-3 py-3.5 text-left text-sm font-semibold w-4/12 sm:table-cell'>Corresponding author</th>",
+              draft_btn: true,
+              action_help_txt: true,
+              hidden: true
+            }) }} #}
+
+            {{ component("strategy-contents", {
+              id: "email_author_deposit",
+              heading: "Self-archive articles",
               desc: "Send emails to authors to request they make their work free to read. In these cases, they can do that by making an <strong>author accepted manuscript (AAM)</strong> available in a repository.",
               table_headings: "<th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-10/12 sm:w-6/12'>Article</th>\
                               <th scope='col' class='hidden px-3 py-3.5 text-left text-sm font-semibold w-4/12 sm:table-cell'>Corresponding author</th>",
