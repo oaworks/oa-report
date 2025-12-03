@@ -362,7 +362,9 @@ export async function fetchFilterValueSuggestions({ field, query, size = 8, sign
       const safeOrg = orgName.replace(/"/g, '\\"');
       parts.push(`orgs.keyword:"${safeOrg}"`);
     }
-    parts.push(`${baseField}:*${lower}*`);
+    // Handle dashes/exact tokens, both lower/upper
+    const upper = qClean.toUpperCase();
+    parts.push(`(${baseField}:*${lower}* OR ${baseField}:*${upper}* OR ${targetField}:*${lower}* OR ${targetField}:*${upper}*)`);
 
     const qParam = encodeURIComponent(parts.join(" AND "));
     const url = `${API_BG_BASE_URL}works/terms/${targetField}?counts=false&size=${size}&q=${qParam}`;
