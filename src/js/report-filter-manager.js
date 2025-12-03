@@ -351,11 +351,10 @@ export async function fetchFilterValueSuggestions({ field, query, size = 8, sign
     // If already decoded/invalid, keep as-is
   }
   const baseField = field.replace(/\.keyword$/, "");
-  const keywordField = `${baseField}.keyword`;
   const lower = qClean.toLowerCase();
   const orgName = orgData?.hits?.hits?.[0]?._source?.name;
 
-  const targetField = keywordField;
+  const targetField = `${baseField}.keyword`;
 
   try {
     const parts = [];
@@ -363,7 +362,7 @@ export async function fetchFilterValueSuggestions({ field, query, size = 8, sign
       const safeOrg = orgName.replace(/"/g, '\\"');
       parts.push(`orgs.keyword:"${safeOrg}"`);
     }
-    parts.push(`${targetField}:*${lower}*`);
+    parts.push(`${baseField}:*${lower}*`);
 
     const qParam = encodeURIComponent(parts.join(" AND "));
     const url = `${API_BG_BASE_URL}works/terms/${targetField}?counts=false&size=${size}&q=${qParam}`;
