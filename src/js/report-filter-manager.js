@@ -53,64 +53,6 @@ const ALLOWED_TERMS = new Map([
 let orgData;
 orgDataPromise.then((res) => { orgData = res.data; });
 
-// Preload cache for filter values
-let preloadFilterValuesPromise = null;
-
-// =================================================
-// Helpers
-// =================================================
-
-/**
- * Preload all allowed term values scoped by org. Cached in window.__filterValueCache.
- */
-async function preloadFilterValues() {
-  if (window.__filterValueCache) return window.__filterValueCache;
-  if (preloadFilterValuesPromise) return preloadFilterValuesPromise;
-
-  preloadFilterValuesPromise = (async () => {
-    const cache = new Map();
-    const orgName = orgData?.hits?.hits?.[0]?._source?.name;
-    if (!orgName) return cache;
-    const safeOrg = orgName.replace(/"/g, '\\"');
-    const baseOrgClause = `orgs.keyword:"${safeOrg}"`;
-
-    for (const field of ALLOWED_TERMS.keys()) {
-      const baseField = field.replace(/\.keyword$/, "");
-      const keywordField = `${baseField}.keyword`;
-      const orParts = `(${baseField}:* OR ${keywordField}:*)`;
-      const qParam = encodeURIComponent(`${baseOrgClause} AND ${orParts}`);
-      const url = `${API_BG_BASE_URL}works/terms/${keywordField}?counts=false&size=10000&q=${qParam}`;
-      try {
-        const res = await fetch(url);
-        if (!res.ok) continue;
-        const data = await res.json();
-        if (!Array.isArray(data) || !data.length) continue;
-        const seen = new Set();
-        const values = [];
-        data.forEach((item) => {
-          const val = (typeof item === "string" ? item : item?.key || "").trim();
-          if (val && !seen.has(val)) {
-            seen.add(val);
-            values.push(val);
-          }
-        });
-        cache.set(field, values);
-      } catch (err) {
-        console.error("Error preloading filter values:", err);
-      }
-    }
-
-    window.__filterValueCache = cache;
-    console.log("[preload] filter values cache", cache);
-    return cache;
-  })();
-
-  return preloadFilterValuesPromise;
-}
-
-// Kick off preload when org data arrives
-orgDataPromise.then(() => preloadFilterValues()).catch(() => {});
-
 /**
  * Derives a readable label from an ES field key.
  * Falls back to header/filter labels, then a cleaned version of the key.
@@ -394,22 +336,6 @@ function removeValueFromField(q, field, value) {
 export async function fetchFilterValueSuggestions({ field, query, size = 8, signal }) {
   if (!field || !query || !query.trim()) return [];
 
-  // Use preloaded values if present
-  if (window.__filterValueCache && window.__filterValueCache.has(field)) {
-    const all = window.__filterValueCache.get(field) || [];
-    const term = query.toLowerCase();
-    const filtered = all
-      .filter((v) => (v || "").toLowerCase().includes(term))
-      .sort((a, b) => {
-        const aStarts = (a || "").toLowerCase().startsWith(term);
-        const bStarts = (b || "").toLowerCase().startsWith(term);
-        if (aStarts === bStarts) return 0;
-        return aStarts ? -1 : 1;
-      })
-      .slice(0, size);
-    return filtered;
-  }
-
   // Per-session cache to avoid repeat calls
   fetchFilterValueSuggestions._cache = fetchFilterValueSuggestions._cache || new Map();
   const cacheKey = `${field}::${query.slice(0, 50)}`;
@@ -427,60 +353,51 @@ export async function fetchFilterValueSuggestions({ field, query, size = 8, sign
   const baseField = field.replace(/\.keyword$/, "");
   const keywordField = `${baseField}.keyword`;
   const lower = qClean.toLowerCase();
-  const upper = qClean.toUpperCase();
   const orgName = orgData?.hits?.hits?.[0]?._source?.name;
 
-  const candidateFields = Array.from(new Set([baseField, keywordField]));
+  const targetField = keywordField;
 
-  // Scoped terms-based suggestions
-  for (const f of candidateFields) {
-    try {
-      const parts = [];
-      if (orgName) {
-        const safeOrg = orgName.replace(/"/g, '\\"');
-        parts.push(`orgs.keyword:"${safeOrg}"`);
-      }
-      // Skip existing ?q filters here to keep suggestions broader/faster
-      const orParts = [
-        `${baseField}:*${lower}*`,
-        `${baseField}:*${upper}*`,
-        `${keywordField}:*${lower}*`,
-        `${keywordField}:*${upper}*`,
-      ];
-      parts.push(`(${orParts.join(" OR ")})`);
-
-      const qParam = encodeURIComponent(parts.join(" AND "));
-      const url = `${API_BG_BASE_URL}works/terms/${f}?counts=false&size=${size}&q=${qParam}`;
-
-      const res = await fetch(url, { signal });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      if (!Array.isArray(data) || !data.length) continue;
-
-      const seen = new Set();
-      const values = [];
-      data.forEach((item) => {
-        const val = (
-          typeof item === "string"
-            ? item
-            : item?.key || item?.value || item?.label || ""
-        ).trim();
-        if (val && !seen.has(val)) {
-          seen.add(val);
-          values.push(val);
-        }
-      });
-
-      if (values.length) return values.slice(0, size);
-    } catch (err) {
-      if (err?.name !== "AbortError") {
-        console.error("Error fetching filter suggestions (terms):", err);
-      }
+  try {
+    const parts = [];
+    if (orgName) {
+      const safeOrg = orgName.replace(/"/g, '\\"');
+      parts.push(`orgs.keyword:"${safeOrg}"`);
     }
-  }
+    parts.push(`${targetField}:*${lower}*`);
 
-  fetchFilterValueSuggestions._cache.set(cacheKey, []);
-  return [];
+    const qParam = encodeURIComponent(parts.join(" AND "));
+    const url = `${API_BG_BASE_URL}works/terms/${targetField}?counts=false&size=${size}&q=${qParam}`;
+
+    const res = await fetch(url, { signal });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if (!Array.isArray(data) || !data.length) throw new Error("No suggestions");
+
+    const seen = new Set();
+    const values = [];
+    data.forEach((item) => {
+      const val = (
+        typeof item === "string"
+          ? item
+          : item?.key || item?.value || item?.label || ""
+      ).trim();
+      if (val && !seen.has(val)) {
+        seen.add(val);
+        values.push(val);
+      }
+    });
+
+    const sorted = values.sort((a, b) => a.localeCompare(b));
+    const result = sorted.slice(0, size);
+    fetchFilterValueSuggestions._cache.set(cacheKey, result);
+    return result;
+  } catch (err) {
+    if (err?.name !== "AbortError") {
+      console.error("Error fetching filter suggestions (terms):", err);
+    }
+    fetchFilterValueSuggestions._cache.set(cacheKey, []);
+    return [];
+  }
 }
 
 // =================================================
@@ -745,8 +662,9 @@ function addFilterRow(container) {
       const fieldVal = fieldSelect.value;
       const raw = input.value || "";
       const q = raw.replace(/\s+/g, " ").trim();
-      if (!fieldVal || raw.length < 1) {
-        renderHint();
+      if (!fieldVal || q.length < 2) {
+        const msg = !fieldVal ? "Select a field first to see suggestions." : "Type at least 2 characters.";
+        renderHint("", msg);
         return;
       }
       const currentReq = ++requestSeq;
