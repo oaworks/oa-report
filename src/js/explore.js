@@ -265,6 +265,11 @@ async function applyURLSelectionsOrDefault() {
 
   const params = getAllURLParams();
   const breakdown = params.breakdown;
+  const breakdownFilter = params.explore_filter;
+
+  if (breakdownFilter) {
+    currentActiveExploreItemQuery = breakdownFilter;
+  }
 
   if (breakdown) {
     // Honour the user/bookmarked URL
@@ -279,7 +284,7 @@ async function applyURLSelectionsOrDefault() {
     const data = exploreItemDataById.get(fallbackBtn.id);
     if (data) {
       // Do NOT call updateURLParams here; render directly
-      await processExploreDataTable(fallbackBtn, data);
+      await processExploreDataTable(fallbackBtn, data, { syncFilterParam: false });
     } else {
       // If for any reason the registry isn't populated yet, fall back gracefully
       fallbackBtn.click(); // last-resort behaviour
@@ -303,7 +308,7 @@ function createExploreButton(exploreDataItem) {
 
   button.addEventListener("click", debounce(async function() {
     updateURLParams({ 'breakdown': exploreDataItem.id });
-    processExploreDataTable(button, exploreDataItem);
+    processExploreDataTable(button, exploreDataItem, { syncFilterParam: false });
   }, 500));
 
   // Register each button’s data when created
@@ -320,7 +325,8 @@ function createExploreButton(exploreDataItem) {
  * @param {HTMLButtonElement} button - The button element to attach the event listener to.
  * @param {Object} itemData - The data object associated with the explore item.
  */
-export async function processExploreDataTable(button, itemData) {
+export async function processExploreDataTable(button, itemData, options = {}) {
+  const { syncFilterParam = false } = options;
   currentActiveExploreItemButton = button; // Set the currently active explore item button
   currentActiveExploreItemData = itemData; // Set the currently active explore item data
 
@@ -1396,6 +1402,7 @@ async function handleRecordsShownChange(event) {
  */
 async function handleFilterChange(filterId) {
   toggleLoadingIndicator(true, 'explore_loading'); // Display loading indicator on filter change
+  updateURLParams({ 'explore_filter': filterId });
   await fetchAndDisplayExploreData(currentActiveExploreItemData, filterId);
   currentActiveExploreItemQuery = filterId;
   updateExploreFilterHeader(filterId);
