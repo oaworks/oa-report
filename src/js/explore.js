@@ -108,7 +108,16 @@ let selectedRowKeys = [];
  * after the top-level filters (?q=) change, then re-renders
  * the Filters banner.
  */
+let _handleFiltersChangedTimer = null;
 export async function handleFiltersChanged() {
+  if (_handleFiltersChangedTimer) {
+    clearTimeout(_handleFiltersChangedTimer);
+  }
+  _handleFiltersChangedTimer = setTimeout(_runHandleFiltersChanged, 150);
+}
+
+async function _runHandleFiltersChanged() {
+  _handleFiltersChangedTimer = null;
   // 1. Refresh Insights & Strategies
   const slug = orgData?.hits?.hits?.[0]?._source?.objectID;
   if (slug) {
