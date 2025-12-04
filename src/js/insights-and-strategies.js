@@ -12,6 +12,15 @@
 import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter } from './utils.js';
 import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS } from './constants.js';
 
+// Cache identical count queries so we only hit the API once per unique URL
+const countQueryCache = new Map();
+const fetchCountQuery = (url) => {
+  if (!countQueryCache.has(url)) {
+    countQueryCache.set(url, axios.get(url));
+  }
+  return countQueryCache.get(url);
+};
+
 // =================================================
 // Org data
 // =================================================
@@ -159,12 +168,12 @@ export function initInsightsAndStrategies(org) {
         cardContents.setAttribute('title', 'More information on this metric');
 
         // Get numerator’s count query
-        let numPromise = axios.get(countQueryPrefix + buildEncodedQueryWithUrlFilter(analysisEntry.query));
+        let numPromise = fetchCountQuery(countQueryPrefix + buildEncodedQueryWithUrlFilter(analysisEntry.query));
 
         // If we have a denominator param
         if (numerator && denominator) {
           // Get denominator’s count query
-          let denomPromise = axios.get(
+          let denomPromise = fetchCountQuery(
             countQueryPrefix + buildEncodedQueryWithUrlFilter(
               orgData.hits.hits[0]._source.analysis[denominator].query
             )
@@ -189,7 +198,7 @@ export function initInsightsAndStrategies(org) {
           const totalArticlesPromise =
             totalKey === denominator
               ? denomPromise
-              : axios.get(
+              : fetchCountQuery(
                   countQueryPrefix + buildEncodedQueryWithUrlFilter(analysis[totalKey].query)
                 );
 
@@ -277,7 +286,7 @@ export function initInsightsAndStrategies(org) {
             listQuery  = queryPrefix + encodedQuery + sort;
         
         // Get total action (article) count for this strategy
-        axios.get(countQuery)
+        fetchCountQuery(countQuery)
           .then(function (countResponse) {
             var count = parseFloat(countResponse.data);
             
