@@ -547,7 +547,12 @@ function addFilterRow(container) {
   };
 
   const updateActiveOption = () => {
-    Array.from(listbox.children).forEach((li, idx) => {
+    const options = Array.from(listbox.querySelectorAll('[role="option"]:not([aria-disabled="true"])'));
+    if (!options.length) return;
+    if (activeIndex >= options.length) {
+      activeIndex = options.length - 1;
+    }
+    options.forEach((li, idx) => {
       const selected = idx === activeIndex;
       li.setAttribute("aria-selected", selected ? "true" : "false");
       li.classList.toggle("bg-neutral-900", selected);
@@ -598,6 +603,7 @@ function addFilterRow(container) {
       const li = document.createElement("li");
       li.setAttribute("role", "option");
       li.setAttribute("aria-selected", "false");
+      li.setAttribute("aria-disabled", "false");
       li.className = "px-2 py-1 cursor-pointer hover:bg-carnation-100 text-xs md:text-sm";
       li.innerHTML = highlight(val);
       li.addEventListener("mousedown", (e) => {
@@ -615,6 +621,8 @@ function addFilterRow(container) {
     listbox.innerHTML = "";
     const hint = document.createElement("li");
     hint.setAttribute("role", "presentation");
+    hint.setAttribute("aria-hidden", "true");
+    hint.setAttribute("aria-disabled", "true");
     hint.className = "px-2 py-1 h-9 flex items-center text-xs md:text-sm bg-neutral-100 text-neutral-700 border-b border-neutral-200";
     hint.textContent = termRaw ? `Matching suggestions for “${termRaw}”` : "Start typing to see suggestions…";
     listbox.appendChild(hint);
@@ -686,7 +694,7 @@ function addFilterRow(container) {
 
   input.addEventListener("keydown", (event) => {
     if (listbox.classList.contains("hidden")) return;
-    const options = listbox.children;
+    const options = Array.from(listbox.querySelectorAll('[role="option"]:not([aria-disabled="true"])'));
     if (!options.length) return;
     if (event.key === "ArrowDown") {
       event.preventDefault();
