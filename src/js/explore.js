@@ -371,6 +371,20 @@ async function addExploreFiltersToDOM(query) {
  * @param {boolean} isChecked - True if the filter should be checked by default.
  * @returns {HTMLDivElement} The div element containing the configured radio button and label.
  */
+const injectOrgFields = (html = '') => html
+  .replace(/<span class=['"]org-name['"]><\/span>/g, orgName ?? '')
+  .replace(/<span class=['"]org-policy-coverage['"]><\/span>/g, orgPolicyCoverage ?? '')
+  .replace(/<span class=['"]org-policy-compliance['"]><\/span>/g, orgPolicyCompliance ?? '')
+  .replace(
+    /class=['"]org-policy-url['"][^>]*href=['"][^'"]*['"]/g,
+    match => match.replace(/href=['"][^'"]*['"]/, `href='${orgPolicyUrl ?? '#'}'`)
+  );
+const plainText = (html = '') => {
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  return div.textContent.replace(/\s+/g, ' ').trim();
+};
+
 function createExploreFilterRadioButton(id, isChecked) {
   const labelData = EXPLORE_FILTERS_LABELS[id];
   const label = labelData ? labelData.label || id : id; // Use label from filters or default to ID
@@ -381,37 +395,14 @@ function createExploreFilterRadioButton(id, isChecked) {
 
   // Generate and set tooltip if info is present and non-empty
   if (labelData && labelData.info && labelData.info.trim()) {
-    const tooltipContent = generateTooltipContent(labelData);
-
-    // Initialise Tippy tooltip if there is tooltip content
     tippy(filterRadioButton, {
-      content: tooltipContent,
+      content: generateTooltipContent(labelData),
       allowHTML: true,
       interactive: true,
       placement: 'bottom',
       appendTo: document.body,
-      theme: 'tooltip-white',
-      onShow(instance) {
-        // Use setTimeout to ensure DOM is ready for updates
-        setTimeout(() => {
-          // Safely update text and href using optional chaining and nullish coalescing
-          replaceText('org-name', orgName ?? '');
-          replaceText('org-policy-coverage', orgPolicyCoverage ?? '');
-          replaceText('org-policy-compliance', orgPolicyCompliance ?? '');
-
-          // Safely set the href attribute
-          const policyUrlElement = document.querySelector('.org-policy-url');
-          if (policyUrlElement) {
-              policyUrlElement.href = orgPolicyUrl ?? '#';  // Fallback to '#' if orgPolicyUrl is undefined
-          }
-
-          // Update the tooltip content if labelData exists
-          instance.setContent(generateTooltipContent(labelData));
-        }, 0);
-      }
+      theme: 'tooltip-white'
     });
-
-    const tooltipID = `${id}_info`;
   }
 
   // Create and append radio input
@@ -736,10 +727,14 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
  */
 function generateTooltipContent(labelData, additionalHelpText = null) {
   const hasDetails = !!labelData.details;
+  const infoHtml = injectOrgFields(labelData.info);
+  const detailsHtml = injectOrgFields(labelData.details);
+  const helpHtml = additionalHelpText ? injectOrgFields(additionalHelpText) : '';
+  const showHelp = helpHtml && !plainText(infoHtml).includes(plainText(helpHtml));
   let tooltipHTML = `
-    <p class='${hasDetails ? "mb-2" : ""}'>${labelData.info}</p>
-    ${additionalHelpText ? `<p class='mb-2'>${additionalHelpText}</p>` : ""}
-    ${hasDetails ? `<details><summary class='hover:cursor-pointer'>Methodology</summary><p class='mt-2'>${labelData.details}</p></details>` : ""}
+    <p class='${hasDetails ? "mb-2" : ""}'>${infoHtml}</p>
+    ${showHelp ? `<p class='mb-2'>${helpHtml}</p>` : ""}
+    ${hasDetails ? `<details><summary class='hover:cursor-pointer'>Methodology</summary><p class='mt-2'>${detailsHtml}</p></details>` : ""}
   `;
   return tooltipHTML;
 }
@@ -762,33 +757,19 @@ function setupHeaderTooltip(element, key, dataType) {
   // Generate and set tooltip if info is present and non-empty
   if (labelData && labelData.info && labelData.info.trim()) {
     // Get additional help text from orgData if available
-    let additionalHelpText = orgData.hits.hits[0]?._source.policy?.help_text?.[key] ?? null;
-
-    const tooltipContent = generateTooltipContent(labelData, additionalHelpText);
-    const tooltipID = `${key}_info`;
+    const additionalHelpText = orgData.hits.hits[0]?._source.policy?.help_text?.[key] ?? null;
 
     tippy(element, {
-      content: tooltipContent,
+      content: generateTooltipContent(labelData, additionalHelpText),
       allowHTML: true,
       interactive: true,
       placement: 'bottom',
       appendTo: document.body,
-      theme: 'tooltip-white',
-      onShow(instance) {
-        // Use setTimeout to ensure DOM is ready for updates
-        setTimeout(() => {
-          // Safely update text and href using optional chaining and nullish coalescing
-          replaceText('org-name', orgName ?? '');
-          replaceText('org-policy-coverage', orgPolicyCoverage ?? '');
-
-          // Update the tooltip content if labelData exists
-          instance.setContent(generateTooltipContent(labelData));
-        }, 0);
-      }
+      theme: 'tooltip-white'
     });
 
-    element.setAttribute('aria-controls', tooltipID);
-    element.setAttribute('aria-labelledby', tooltipID);
+    element.setAttribute('aria-controls', `${key}_info`);
+    element.setAttribute('aria-labelledby', `${key}_info`);
   }
 }
 
