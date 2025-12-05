@@ -307,6 +307,7 @@ function createExploreButton(exploreDataItem) {
   button.className = "items-center inline-flex p-2 px-4 mr-4 mt-4 px-3 rounded-full bg-carnation-100 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500";
 
   button.addEventListener("click", debounce(async function() {
+    removeURLParams('explore_filter');
     updateURLParams({ 'breakdown': exploreDataItem.id });
     processExploreDataTable(button, exploreDataItem, { syncFilterParam: false });
   }, 500));
