@@ -801,7 +801,9 @@ export function getURLParam(param) {
 export function updateURLParams(params) {
   const queryParams = new URLSearchParams(window.location.search);
   Object.entries(params).forEach(([key, value]) => queryParams.set(key, value));
-  history.pushState(null, '', '?' + queryParams.toString());
+  const newQuery = queryParams.toString();
+  const newUrl = newQuery ? `?${newQuery}` : window.location.pathname;
+  history.pushState(null, '', newUrl);
 }
 
 /**
