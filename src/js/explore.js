@@ -308,13 +308,10 @@ function createExploreButton(exploreDataItem) {
 
   button.addEventListener("click", debounce(async function() {
     // Keep an existing filter if the new breakdown supports it; otherwise fall back to that breakdown’s default.
-    const params = getAllURLParams();
-    const availableFilters = parseCommaSeparatedQueries(exploreDataItem.query).map(filter => filter.id);
-    const activeFilter = params.explore_filter || currentActiveExploreItemQuery;
-    const filterSupported = activeFilter && availableFilters.includes(activeFilter);
-
-    currentActiveExploreItemQuery = filterSupported ? activeFilter : (availableFilters[0] || null);
-    if (!filterSupported) removeURLParams('explore_filter');
+    const availableFilters = parseCommaSeparatedQueries(exploreDataItem.query).map(({ id }) => id);
+    const activeFilter = getAllURLParams().explore_filter || currentActiveExploreItemQuery;
+    currentActiveExploreItemQuery = availableFilters.includes(activeFilter) ? activeFilter : (availableFilters[0] || null);
+    if (activeFilter && activeFilter !== currentActiveExploreItemQuery) removeURLParams('explore_filter');
 
     updateURLParams({ 'breakdown': exploreDataItem.id });
     processExploreDataTable(button, exploreDataItem, { syncFilterParam: false });
