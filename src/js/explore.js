@@ -776,15 +776,14 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
  */
 function generateTooltipContent(labelData, additionalHelpText = null) {
   // Org-specific fields to inject with text content
-  const injectOrgFields = (html = '') => html
+  // Only run regex if fields are present in the HTML
+  const injectOrgFields = (html = '') => /org-(name|policy-(coverage|compliance|url))/.test(html) ? html
     .replace(/<span class=['"]org-name['"]><\/span>/g, orgName ?? '')
     .replace(/<span class=['"]org-policy-coverage['"]><\/span>/g, orgPolicyCoverage ?? '')
     .replace(/<span class=['"]org-policy-compliance['"]><\/span>/g, orgPolicyCompliance ?? '')
-    .replace(
-      /class=['"]org-policy-url['"][^>]*href=['"][^'"]*['"]/g,
-      match => match.replace(/href=['"][^'"]*['"]/, `href='${orgPolicyUrl ?? '#'}'`)
-    );
-  
+    .replace(/class=['"]org-policy-url['"][^>]*href=['"][^'"]*['"]/g, match => match.replace(/href=['"][^'"]*['"]/, `href='${orgPolicyUrl ?? '#'}'`))
+  : html;
+
   // Reuse a single off-DOM element to avoid repeated creation
   const textBuffer = generateTooltipContent.textBuffer || (generateTooltipContent.textBuffer = document.createElement('div'));
 
