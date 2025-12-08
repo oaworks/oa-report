@@ -274,6 +274,11 @@ async function applyURLSelectionsOrDefault() {
 
   const params = getAllURLParams();
   const breakdown = params.breakdown;
+  const breakdownFilter = params.explore_filter;
+
+  if (breakdownFilter) {
+    currentActiveExploreItemQuery = breakdownFilter;
+  }
 
   if (breakdown) {
     // Honour the user/bookmarked URL
@@ -288,7 +293,7 @@ async function applyURLSelectionsOrDefault() {
     const data = exploreItemDataById.get(fallbackBtn.id);
     if (data) {
       // Do NOT call updateURLParams here; render directly
-      await processExploreDataTable(fallbackBtn, data);
+  await processExploreDataTable(fallbackBtn, data);
     } else {
       // If for any reason the registry isn't populated yet, fall back gracefully
       fallbackBtn.click(); // last-resort behaviour
@@ -311,6 +316,12 @@ function createExploreButton(exploreDataItem) {
   button.className = "items-center inline-flex p-2 px-4 mr-4 mt-4 px-3 rounded-full bg-carnation-100 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500";
 
   button.addEventListener("click", debounce(async function() {
+    // Keep an existing filter if the new breakdown supports it; otherwise fall back to that breakdown’s default.
+    const availableFilters = parseCommaSeparatedQueries(exploreDataItem.query).map(({ id }) => id);
+    const activeFilter = getAllURLParams().explore_filter || currentActiveExploreItemQuery;
+    currentActiveExploreItemQuery = availableFilters.includes(activeFilter) ? activeFilter : (availableFilters[0] || null);
+    if (activeFilter && activeFilter !== currentActiveExploreItemQuery) removeURLParams('explore_filter');
+
     updateURLParams({ 'breakdown': exploreDataItem.id });
     processExploreDataTable(button, exploreDataItem);
   }, 500));
@@ -360,8 +371,7 @@ async function addExploreFiltersToDOM(query) {
 
   // If currentActiveExploreItemQuery does not exist in the new set, reset it to the first filter
   if (!currentFilterExists && filters.length > 0) {
-    let id = filters[0].id;
-    currentActiveExploreItemQuery = id;
+    currentActiveExploreItemQuery = filters[0].id;
   }
   
   // Create radio buttons for each filter and append them to the DOM
@@ -369,6 +379,9 @@ async function addExploreFiltersToDOM(query) {
     const radioButton = createExploreFilterRadioButton(filter.id, filter.id === currentActiveExploreItemQuery);
     exploreFiltersElement.appendChild(radioButton);
   });
+
+  bindFilterPillClickHandler();
+  updateFilterPillStates(currentActiveExploreItemQuery);
 }
 
 /**
@@ -386,7 +399,8 @@ function createExploreFilterRadioButton(id, isChecked) {
 
   // Create div to contain radio input and label
   const filterRadioButton = document.createElement('div');
-  filterRadioButton.className = 'flex items-center mr-3 md:mr-6 mb-3';
+  filterRadioButton.className = 'mr-2 md:mr-4 mb-2';
+  filterRadioButton.setAttribute('data-filter-id', id);
 
   // Generate and set tooltip if info is present and non-empty
   if (labelData && labelData.info && labelData.info.trim()) {
@@ -428,7 +442,7 @@ function createExploreFilterRadioButton(id, isChecked) {
   Object.assign(radioInput, {
     type: 'radio',
     id: `filter_${id}`,
-    className: 'mr-1',
+    className: 'sr-only',
     name: 'filter_by',
     value: id,
     checked: isChecked,
@@ -440,18 +454,65 @@ function createExploreFilterRadioButton(id, isChecked) {
   const labelElement = document.createElement('label');
   Object.assign(labelElement, {
     htmlFor: `filter_${id}`,
-    className: 'text-xs md:text-base cursor-pointer flex items-center whitespace-nowrap',
+    className: FILTER_PILL_BASE_CLASSES,
     innerHTML: '<span>' + label + '</span>'
   });
   filterRadioButton.appendChild(labelElement);
 
-  // Event listener for filter change
-  filterRadioButton.addEventListener('click', debounce(async function() {
-    await handleFilterChange(id);
-  }, 500));
+  setFilterPillState(labelElement, isChecked);
 
   return filterRadioButton;
 }
+
+/**
+ * Sets state-driven classes/attributes for a filter pill label.
+ * Tailwind classes are applied from a single base string to keep this lean.
+ * @param {HTMLElement} labelElement
+ * @param {boolean} isActive
+ */
+function setFilterPillState(labelElement, isActive) {
+  labelElement.className = `${FILTER_PILL_BASE_CLASSES} ${isActive ? FILTER_PILL_ACTIVE_CLASSES : FILTER_PILL_INACTIVE_CLASSES}`;
+  labelElement.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+}
+
+/**
+ * Updates pill styles across all filter options.
+ * @param {string} activeId
+ */
+function updateFilterPillStates(activeId) {
+  document.querySelectorAll('#explore_filters [data-filter-id]').forEach((wrapper) => {
+    const label = wrapper.querySelector('label');
+    setFilterPillState(label, wrapper.getAttribute('data-filter-id') === activeId);
+  });
+}
+
+/**
+ * Binds a single delegated click handler for filter pills to avoid per-pill listeners.
+ */
+function bindFilterPillClickHandler() {
+  const container = document.getElementById('explore_filters');
+  if (!container || container.dataset.bound === 'true') return;
+
+  // Debounced version of handleFilterChange (500ms)
+  const debouncedHandleFilterChange = debounce(async (filterId) => {
+    await handleFilterChange(filterId);
+  }, 500);
+
+  container.addEventListener('click', (event) => {
+    const wrapper = event.target.closest('[data-filter-id]');
+    if (!wrapper) return;
+    const filterId = wrapper.getAttribute('data-filter-id');
+    if (filterId === currentActiveExploreItemQuery) return;
+    debouncedHandleFilterChange(filterId);
+  });
+
+  container.dataset.bound = 'true';
+}
+
+// Tailwind class presets for filter pills
+const FILTER_PILL_BASE_CLASSES = 'inline-flex items-center px-3 py-1 rounded-full border text-xs md:text-sm cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 whitespace-nowrap';
+const FILTER_PILL_ACTIVE_CLASSES = 'bg-neutral-200 text-neutral-900 border-neutral-200 shadow-sm';
+const FILTER_PILL_INACTIVE_CLASSES = 'bg-neutral-800 text-white border-neutral-500 hover:bg-neutral-700';
 
 /**
  * Adds a select menu for changing the number of records shown in the active table.
@@ -572,7 +633,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       populateTableBody(records, 'export_table_body', id, type);
       
       // Update any mentions of the explore data type with plural version of the ID
-      replaceText("explore_type", EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id));
+      replaceText("explore_type", EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id), { allowHTML: true });
     
       // Add functionalities to the table
       enableExploreTableScroll();
@@ -1360,9 +1421,11 @@ async function handleRecordsShownChange(event) {
  */
 async function handleFilterChange(filterId) {
   toggleLoadingIndicator(true, 'explore_loading'); // Display loading indicator on filter change
+  updateURLParams({ 'explore_filter': filterId });
   await fetchAndDisplayExploreData(currentActiveExploreItemData, filterId);
   currentActiveExploreItemQuery = filterId;
   updateExploreFilterHeader(filterId);
+  updateFilterPillStates(filterId);
   toggleLoadingIndicator(false, 'explore_loading'); // Hide loading indicator once data is loaded
 }
 
