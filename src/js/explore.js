@@ -445,8 +445,7 @@ function createExploreFilterRadioButton(id, isChecked) {
     className: 'sr-only',
     name: 'filter_by',
     value: id,
-    checked: isChecked,
-    'aria-hidden': 'true'
+    checked: isChecked
   });
   filterRadioButton.appendChild(radioInput);
 
@@ -472,7 +471,6 @@ function createExploreFilterRadioButton(id, isChecked) {
  */
 function setFilterPillState(labelElement, isActive) {
   labelElement.className = `${FILTER_PILL_BASE_CLASSES} ${isActive ? FILTER_PILL_ACTIVE_CLASSES : FILTER_PILL_INACTIVE_CLASSES}`;
-  labelElement.setAttribute('aria-pressed', isActive ? 'true' : 'false');
 }
 
 /**
