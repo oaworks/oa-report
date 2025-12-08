@@ -8,7 +8,7 @@
 // =================================================
 
 import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, normaliseFieldId } from "./utils.js";
-import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES } from "./constants.js";
+import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, FILTER_PILL_CLASSES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
 import { renderActiveFiltersBanner } from './report-filter-manager.js';
@@ -453,7 +453,7 @@ function createExploreFilterRadioButton(id, isChecked) {
   const labelElement = document.createElement('label');
   Object.assign(labelElement, {
     htmlFor: `filter_${id}`,
-    className: FILTER_PILL_BASE_CLASSES,
+    className: FILTER_PILL_CLASSES.base,
     innerHTML: '<span>' + label + '</span>'
   });
   filterRadioButton.appendChild(labelElement);
@@ -470,7 +470,7 @@ function createExploreFilterRadioButton(id, isChecked) {
  * @param {boolean} isActive
  */
 function setFilterPillState(labelElement, isActive) {
-  labelElement.className = `${FILTER_PILL_BASE_CLASSES} ${isActive ? FILTER_PILL_ACTIVE_CLASSES : FILTER_PILL_INACTIVE_CLASSES}`;
+  labelElement.className = `${FILTER_PILL_CLASSES.base} ${isActive ? FILTER_PILL_CLASSES.active : FILTER_PILL_CLASSES.inactive}`;
 }
 
 /**
@@ -506,11 +506,6 @@ function bindFilterPillClickHandler() {
 
   container.dataset.bound = 'true';
 }
-
-// Tailwind class presets for filter pills
-const FILTER_PILL_BASE_CLASSES = 'inline-flex items-center px-3 py-1 rounded-full border text-xs md:text-sm cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 whitespace-nowrap';
-const FILTER_PILL_ACTIVE_CLASSES = 'bg-neutral-200 text-neutral-900 border-neutral-200 shadow-sm';
-const FILTER_PILL_INACTIVE_CLASSES = 'bg-neutral-800 text-white border-neutral-500 hover:bg-neutral-700';
 
 /**
  * Adds a select menu for changing the number of records shown in the active table.
