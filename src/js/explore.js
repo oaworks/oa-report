@@ -293,7 +293,7 @@ async function applyURLSelectionsOrDefault() {
     const data = exploreItemDataById.get(fallbackBtn.id);
     if (data) {
       // Do NOT call updateURLParams here; render directly
-  await processExploreDataTable(fallbackBtn, data);
+      await processExploreDataTable(fallbackBtn, data);
     } else {
       // If for any reason the registry isn't populated yet, fall back gracefully
       fallbackBtn.click(); // last-resort behaviour
