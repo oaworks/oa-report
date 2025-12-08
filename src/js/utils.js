@@ -54,11 +54,13 @@ export let dateRange, startDate, endDate, startYear, endYear;
  * Replace all instances of a text found in elements with a given class name.
  * 
  * @param {string} className - The class name indicating the elements whose text will be replaced.
- * @param {string} parameter - The content we are replacing instances found with.
+ * @param {string} parameter - The content to set.
+ * @param {{ allowHTML?: boolean }} [options] - Set allowHTML to true only for trusted markup.
  */
-
-export function replaceText(className, parameter) {
-  document.querySelectorAll(`.${className}`).forEach(element => element.innerHTML = parameter);
+export function replaceText(className, parameter, { allowHTML = false } = {}) {
+  document.querySelectorAll(`.${className}`).forEach(element => {
+    element[allowHTML ? 'innerHTML' : 'textContent'] = parameter;
+  });
 }
 
 /**
@@ -801,7 +803,9 @@ export function getURLParam(param) {
 export function updateURLParams(params) {
   const queryParams = new URLSearchParams(window.location.search);
   Object.entries(params).forEach(([key, value]) => queryParams.set(key, value));
-  history.pushState(null, '', '?' + queryParams.toString());
+  const newQuery = queryParams.toString();
+  const newUrl = newQuery ? `?${newQuery}` : window.location.pathname;
+  history.pushState(null, '', newUrl);
 }
 
 /**
@@ -864,7 +868,7 @@ export function updateExploreFilterHeader(filterId) {
     filterId === 'is_paper'
       ? EXPLORE_FILTERS_LABELS[filterId].label
       : (EXPLORE_FILTERS_LABELS[filterId]?.label || filterId);
-  replaceText("explore_filter", text);
+  replaceText("explore_filter", text, { allowHTML: true });
 }
 
 // Chart helpers

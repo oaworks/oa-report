@@ -8,7 +8,7 @@
 // =================================================
 
 import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, normaliseFieldId } from "./utils.js";
-import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES } from "./constants.js";
+import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, FILTER_PILL_CLASSES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
 import { renderActiveFiltersBanner } from './report-filter-manager.js';
@@ -108,7 +108,16 @@ let selectedRowKeys = [];
  * after the top-level filters (?q=) change, then re-renders
  * the Filters banner.
  */
+let _handleFiltersChangedTimer = null;
 export async function handleFiltersChanged() {
+  if (_handleFiltersChangedTimer) {
+    clearTimeout(_handleFiltersChangedTimer);
+  }
+  _handleFiltersChangedTimer = setTimeout(_runHandleFiltersChanged, 150);
+}
+
+async function _runHandleFiltersChanged() {
+  _handleFiltersChangedTimer = null;
   // 1. Refresh Insights & Strategies
   const slug = orgData?.hits?.hits?.[0]?._source?.objectID;
   if (slug) {
@@ -265,6 +274,11 @@ async function applyURLSelectionsOrDefault() {
 
   const params = getAllURLParams();
   const breakdown = params.breakdown;
+  const breakdownFilter = params.explore_filter;
+
+  if (breakdownFilter) {
+    currentActiveExploreItemQuery = breakdownFilter;
+  }
 
   if (breakdown) {
     // Honour the user/bookmarked URL
@@ -302,6 +316,12 @@ function createExploreButton(exploreDataItem) {
   button.className = "items-center inline-flex p-2 px-4 mr-4 mt-4 px-3 rounded-full bg-carnation-100 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500";
 
   button.addEventListener("click", debounce(async function() {
+    // Keep an existing filter if the new breakdown supports it; otherwise fall back to that breakdown’s default.
+    const availableFilters = parseCommaSeparatedQueries(exploreDataItem.query).map(({ id }) => id);
+    const activeFilter = getAllURLParams().explore_filter || currentActiveExploreItemQuery;
+    currentActiveExploreItemQuery = availableFilters.includes(activeFilter) ? activeFilter : (availableFilters[0] || null);
+    if (activeFilter && activeFilter !== currentActiveExploreItemQuery) removeURLParams('explore_filter');
+
     updateURLParams({ 'breakdown': exploreDataItem.id });
     processExploreDataTable(button, exploreDataItem);
   }, 500));
@@ -351,8 +371,7 @@ async function addExploreFiltersToDOM(query) {
 
   // If currentActiveExploreItemQuery does not exist in the new set, reset it to the first filter
   if (!currentFilterExists && filters.length > 0) {
-    let id = filters[0].id;
-    currentActiveExploreItemQuery = id;
+    currentActiveExploreItemQuery = filters[0].id;
   }
   
   // Create radio buttons for each filter and append them to the DOM
@@ -360,6 +379,9 @@ async function addExploreFiltersToDOM(query) {
     const radioButton = createExploreFilterRadioButton(filter.id, filter.id === currentActiveExploreItemQuery);
     exploreFiltersElement.appendChild(radioButton);
   });
+
+  bindFilterPillClickHandler();
+  updateFilterPillStates(currentActiveExploreItemQuery);
 }
 
 /**
@@ -391,7 +413,8 @@ function createExploreFilterRadioButton(id, isChecked) {
 
   // Create div to contain radio input and label
   const filterRadioButton = document.createElement('div');
-  filterRadioButton.className = 'flex items-center mr-3 md:mr-6 mb-3';
+  filterRadioButton.className = 'mr-2 md:mr-4 mb-2';
+  filterRadioButton.setAttribute('data-filter-id', id);
 
   // Generate and set tooltip if info is present and non-empty
   if (labelData && labelData.info && labelData.info.trim()) {
@@ -410,11 +433,10 @@ function createExploreFilterRadioButton(id, isChecked) {
   Object.assign(radioInput, {
     type: 'radio',
     id: `filter_${id}`,
-    className: 'mr-1',
+    className: 'sr-only',
     name: 'filter_by',
     value: id,
-    checked: isChecked,
-    'aria-hidden': 'true'
+    checked: isChecked
   });
   filterRadioButton.appendChild(radioInput);
 
@@ -422,17 +444,58 @@ function createExploreFilterRadioButton(id, isChecked) {
   const labelElement = document.createElement('label');
   Object.assign(labelElement, {
     htmlFor: `filter_${id}`,
-    className: 'text-xs md:text-base cursor-pointer flex items-center whitespace-nowrap',
+    className: FILTER_PILL_CLASSES.base,
     innerHTML: '<span>' + label + '</span>'
   });
   filterRadioButton.appendChild(labelElement);
 
-  // Event listener for filter change
-  filterRadioButton.addEventListener('click', debounce(async function() {
-    await handleFilterChange(id);
-  }, 500));
+  setFilterPillState(labelElement, isChecked);
 
   return filterRadioButton;
+}
+
+/**
+ * Sets state-driven classes/attributes for a filter pill label.
+ * Tailwind classes are applied from a single base string to keep this lean.
+ * @param {HTMLElement} labelElement
+ * @param {boolean} isActive
+ */
+function setFilterPillState(labelElement, isActive) {
+  labelElement.className = `${FILTER_PILL_CLASSES.base} ${isActive ? FILTER_PILL_CLASSES.active : FILTER_PILL_CLASSES.inactive}`;
+}
+
+/**
+ * Updates pill styles across all filter options.
+ * @param {string} activeId
+ */
+function updateFilterPillStates(activeId) {
+  document.querySelectorAll('#explore_filters [data-filter-id]').forEach((wrapper) => {
+    const label = wrapper.querySelector('label');
+    setFilterPillState(label, wrapper.getAttribute('data-filter-id') === activeId);
+  });
+}
+
+/**
+ * Binds a single delegated click handler for filter pills to avoid per-pill listeners.
+ */
+function bindFilterPillClickHandler() {
+  const container = document.getElementById('explore_filters');
+  if (!container || container.dataset.bound === 'true') return;
+
+  // Debounced version of handleFilterChange (500ms)
+  const debouncedHandleFilterChange = debounce(async (filterId) => {
+    await handleFilterChange(filterId);
+  }, 500);
+
+  container.addEventListener('click', (event) => {
+    const wrapper = event.target.closest('[data-filter-id]');
+    if (!wrapper) return;
+    const filterId = wrapper.getAttribute('data-filter-id');
+    if (filterId === currentActiveExploreItemQuery) return;
+    debouncedHandleFilterChange(filterId);
+  });
+
+  container.dataset.bound = 'true';
 }
 
 /**
@@ -554,7 +617,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       populateTableBody(records, 'export_table_body', id, type);
       
       // Update any mentions of the explore data type with plural version of the ID
-      replaceText("explore_type", EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id));
+      replaceText("explore_type", EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id), { allowHTML: true });
     
       // Add functionalities to the table
       enableExploreTableScroll();
@@ -1332,9 +1395,11 @@ async function handleRecordsShownChange(event) {
  */
 async function handleFilterChange(filterId) {
   toggleLoadingIndicator(true, 'explore_loading'); // Display loading indicator on filter change
+  updateURLParams({ 'explore_filter': filterId });
   await fetchAndDisplayExploreData(currentActiveExploreItemData, filterId);
   currentActiveExploreItemQuery = filterId;
   updateExploreFilterHeader(filterId);
+  updateFilterPillStates(filterId);
   toggleLoadingIndicator(false, 'explore_loading'); // Hide loading indicator once data is loaded
 }
 

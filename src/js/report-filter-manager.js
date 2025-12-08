@@ -30,6 +30,18 @@ import { orgDataPromise } from './insights-and-strategies.js';
 
 import { handleFiltersChanged } from './explore.js';
 
+// Only expose specific fields for search-to-filter ("Add filter")
+// See https://github.com/oaworks/discussion/issues/3616#issuecomment-3553985006
+const ALLOWED_TERMS = new Map([
+  ["supplements.grantid__bmgf", "Grants"],
+  ["authorships.institutions.display_name", "Institutions"],
+  ["journal", "Journals"],
+  ["supplements.host_venue.display_name", "Preprint servers"],
+  ["supplements.program__bmgf", "Programs"],
+  ["supplements.publisher_simple", "Publishers"],
+  ["concepts.display_name", "Subjects"]
+]);
+
 // =================================================
 // State
 // =================================================
@@ -40,10 +52,6 @@ import { handleFiltersChanged } from './explore.js';
  */
 let orgData;
 orgDataPromise.then((res) => { orgData = res.data; });
-
-// =================================================
-// Helpers
-// =================================================
 
 /**
  * Derives a readable label from an ES field key.
@@ -122,18 +130,6 @@ function labelFromFieldKey(rawKey) {
 function buildFilterFieldOptions(exploreData) {
   if (!Array.isArray(exploreData)) return [];
 
-  // Only expose specific fields for search-to-filter ("Add filter")
-  // See https://github.com/oaworks/discussion/issues/3616#issuecomment-3553985006
-  const ALLOWED_TERMS = new Map([
-    ["supplements.grantid__bmgf", "Grants"],
-    ["authorships.institutions.display_name", "Institutions"],
-    ["journal", "Journals"],
-    ["supplements.host_venue.display_name", "Preprint servers"],
-    ["supplements.program__bmgf", "Programs"],
-    ["supplements.publisher_simple", "Publishers"],
-    ["concepts.display_name", "Subjects"]
-  ]);
-
   const seen = new Set();
   const options = [];
 
@@ -165,6 +161,14 @@ function buildFilterFieldOptions(exploreData) {
  * @param {string} q
  * @returns {{label:string,value:string}[]}
  */
+function labelFromFieldKeyInverse(label) {
+  // We only need this to map the displayed label back to the field key when removing chips
+  for (const [key, val] of ALLOWED_TERMS.entries()) {
+    if (val === label) return key;
+  }
+  return null;
+}
+
 function parseEsQueryToPairs(q) {
   if (!q) return [];
 
@@ -248,16 +252,75 @@ function parseEsQueryToPairs(q) {
       .filter(Boolean)
       .join(" AND ");
 
-  return splitTopLevel(query, "AND")
-    .map((clause) => {
-      const cleanedClause = unwrapParens(clause);
-      const m = cleanedClause.match(/^\s*\(?\s*([A-Za-z0-9._]+)\s*:\s*(.+?)\s*\)?\s*$/);
-      if (!m) return null;
-      const rawKey = m[1];
-      const value = renderValue(rawKey, unwrapParens(m[2]));
-      return value ? { label: labelFromFieldKey(rawKey), value } : null;
-    })
-    .filter(Boolean);
+  const rawClauses = [];
+  const processClause = (clause) => {
+    const cleanedClause = unwrapParens(clause);
+    const nested = splitTopLevel(cleanedClause, "AND");
+    if (nested.length > 1) {
+      nested.forEach((sub) => processClause(sub));
+      return;
+    }
+    const m = cleanedClause.match(/^\s*\(?\s*([A-Za-z0-9._]+)\s*:\s*(.+?)\s*\)?\s*$/);
+    if (!m) return;
+    const rawKey = m[1];
+    const value = renderValue(rawKey, unwrapParens(m[2]));
+    if (!value) return;
+    rawClauses.push({ label: labelFromFieldKey(rawKey), field: rawKey, value, clause: clause.trim() });
+  };
+
+  splitTopLevel(query, "AND").forEach((clause) => processClause(clause));
+
+  // Group by field, OR all values within the same field
+  const grouped = new Map();
+  rawClauses.forEach((c) => {
+    if (!grouped.has(c.field)) {
+      grouped.set(c.field, { field: c.field, values: [], clauses: [] });
+    }
+    const entry = grouped.get(c.field);
+    const tokens = (c.value || "")
+      .split(/\s+OR\s+/)
+      .map((v) => v.trim())
+      .filter(Boolean);
+    tokens.forEach((t) => entry.values.push(t));
+    entry.clauses.push(c.clause);
+  });
+
+  return Array.from(grouped.values()).map((g) => ({
+    field: g.field,
+    label: labelFromFieldKey(g.field),
+    values: g.values,
+    clause: g.clauses.join(" AND "),
+  }));
+}
+
+function removeClauseFromQuery(q, field) {
+  if (!field) return q;
+  if (!q) return "";
+  return parseEsQueryToPairs(q)
+    .filter((p) => p.field !== field)
+    .map((p) => p.clause)
+    .join(" AND ");
+}
+
+function removeValueFromField(q, field, value) {
+  if (!field || !value) return q || "";
+  const pairs = parseEsQueryToPairs(q);
+  const clauses = [];
+  pairs.forEach((p) => {
+    if (p.field !== field) {
+      clauses.push(p.clause);
+      return;
+    }
+    const remaining = (p.values || [])
+      .map((v) => v.trim())
+      .filter(Boolean)
+      .filter((v) => v !== value);
+    if (!remaining.length) return;
+    const quotedVals = remaining.map((val) => `"${val.replace(/"/g, '\\"')}"`);
+    const valueExpr = quotedVals.length === 1 ? quotedVals[0] : `(${quotedVals.join(" OR ")})`;
+    clauses.push(`${p.field}:${valueExpr}`);
+  });
+  return clauses.join(" AND ");
 }
 
 /**
@@ -288,64 +351,54 @@ export async function fetchFilterValueSuggestions({ field, query, size = 8, sign
     // If already decoded/invalid, keep as-is
   }
   const baseField = field.replace(/\.keyword$/, "");
-  const keywordField = `${baseField}.keyword`;
   const lower = qClean.toLowerCase();
-  const upper = qClean.toUpperCase();
-  const existingQ = getDecodedUrlQuery();
   const orgName = orgData?.hits?.hits?.[0]?._source?.name;
 
-  const candidateFields = Array.from(new Set([baseField, keywordField]));
+  const targetField = `${baseField}.keyword`;
 
-  // Scoped terms-based suggestions
-  for (const f of candidateFields) {
-    try {
-      const parts = [];
-      if (orgName) {
-        const safeOrg = orgName.replace(/"/g, '\\"');
-        parts.push(`orgs.keyword:"${safeOrg}"`);
-      }
-      // Skip existing ?q filters here to keep suggestions broader/faster
-      const orParts = [
-        `${baseField}:*${lower}*`,
-        `${baseField}:*${upper}*`,
-        `${keywordField}:*${lower}*`,
-        `${keywordField}:*${upper}*`,
-      ];
-      parts.push(`(${orParts.join(" OR ")})`);
-
-      const qParam = encodeURIComponent(parts.join(" AND "));
-      const url = `${API_BG_BASE_URL}works/terms/${f}?counts=false&size=${size}&q=${qParam}`;
-      console.log("[terms]", { field: f, url, q: parts.join(" AND ") });
-
-      const res = await fetch(url, { signal });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      if (!Array.isArray(data) || !data.length) continue;
-
-      const seen = new Set();
-      const values = [];
-      data.forEach((item) => {
-        const val = (
-          typeof item === "string"
-            ? item
-            : item?.key || item?.value || item?.label || ""
-        ).trim();
-        if (val && !seen.has(val)) {
-          seen.add(val);
-          values.push(val);
-        }
-      });
-
-      if (values.length) return values.slice(0, size);
-    } catch (err) {
-      if (err?.name !== "AbortError") {
-        console.error("Error fetching filter suggestions (terms):", err);
-      }
+  try {
+    const parts = [];
+    if (orgName) {
+      const safeOrg = orgName.replace(/"/g, '\\"');
+      parts.push(`orgs.keyword:"${safeOrg}"`);
     }
-  }
+    // Handle dashes/exact tokens, both lower/upper
+    const upper = qClean.toUpperCase();
+    parts.push(`(${baseField}:*${lower}* OR ${baseField}:*${upper}* OR ${targetField}:*${lower}* OR ${targetField}:*${upper}*)`);
 
-  fetchFilterValueSuggestions._cache.set(cacheKey, []);
-  return [];
+    const qParam = encodeURIComponent(parts.join(" AND "));
+    const url = `${API_BG_BASE_URL}works/terms/${targetField}?counts=false&size=${size}&q=${qParam}`;
+
+    const res = await fetch(url, { signal });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if (!Array.isArray(data) || !data.length) throw new Error("No suggestions");
+
+    const seen = new Set();
+    const values = [];
+    data.forEach((item) => {
+      const val = (
+        typeof item === "string"
+          ? item
+          : item?.key || item?.value || item?.label || ""
+      ).trim();
+      if (val && !seen.has(val)) {
+        seen.add(val);
+        values.push(val);
+      }
+    });
+
+    const sorted = values.sort((a, b) => a.localeCompare(b));
+    const result = sorted.slice(0, size);
+    fetchFilterValueSuggestions._cache.set(cacheKey, result);
+    return result;
+  } catch (err) {
+    if (err?.name !== "AbortError") {
+      console.error("Error fetching filter suggestions (terms):", err);
+    }
+    fetchFilterValueSuggestions._cache.set(cacheKey, []);
+    return [];
+  }
 }
 
 // =================================================
@@ -505,7 +558,7 @@ function addFilterRow(container) {
   const renderSuggestions = (items) => {
     listbox.innerHTML = "";
     const termRaw = input.value || "";
-    const term = termRaw.toLowerCase();
+    const term = termRaw.toLowerCase().replace(/\s+/g, " ").trim();
 
     // Keep a non-selectable hint at the top
     renderHint(termRaw);
@@ -537,7 +590,7 @@ function addFilterRow(container) {
       });
 
     if (!filtered.length) {
-      hideSuggestions();
+      renderHint(termRaw);
       return;
     }
 
@@ -609,13 +662,14 @@ function addFilterRow(container) {
     suggestTimer = setTimeout(async () => {
       const fieldVal = fieldSelect.value;
       const raw = input.value || "";
-      const q = raw.trim();
-      if (!fieldVal || raw.length < 2) {
-        renderHint();
+      const q = raw.replace(/\s+/g, " ").trim();
+      if (!fieldVal || q.length < 2) {
+        const msg = !fieldVal ? "Select a field first to see suggestions." : "Type at least 2 characters.";
+        renderHint("", msg);
         return;
       }
       const currentReq = ++requestSeq;
-      renderHint("Searching…");
+      renderHint(q);
       try {
         const suggestions = await fetchFilterValueSuggestions({
           field: fieldVal,
@@ -627,7 +681,7 @@ function addFilterRow(container) {
       } catch (err) {
         console.error("Error fetching suggestions:", err);
       }
-    }, 150);
+    }, 120);
   };
 
   input.addEventListener("keydown", (event) => {
@@ -688,7 +742,7 @@ export function renderActiveFiltersBanner() {
 
   const q = getDecodedUrlQuery();
   const pairs = parseEsQueryToPairs(q);
-  const count = pairs.length;
+  const count = pairs.reduce((sum, p) => sum + (Array.isArray(p.values) ? p.values.length : 1), 0); // total values count across all fields, instead of just fields count
 
   wrapper.classList.remove("hidden");
   mount.innerHTML = "";
@@ -721,7 +775,8 @@ export function renderActiveFiltersBanner() {
   pop.className = "p-3 md:p-4 text-xs md:text-sm";
   pop.setAttribute("role", "dialog");
   pop.setAttribute("aria-labelledby", "js-filters-form-title");
-  pop.style.maxWidth = "min(95vw, 960px)";
+  pop.style.maxWidth = "90vw";
+  pop.style.minWidth = "320px";
 
   const heading = document.createElement("h3");
   heading.className = "mb-2 font-semibold text-neutral-900 text-xs md:text-sm";
@@ -730,21 +785,60 @@ export function renderActiveFiltersBanner() {
   pop.appendChild(heading);
 
   const chipsList = document.createElement("ul");
-  chipsList.className = "mb-2 flex flex-wrap";
+  chipsList.className = "mb-2 space-y-2";
   chipsList.setAttribute("role", "list");
   chipsList.setAttribute("aria-live", "polite");
   chipsList.setAttribute("aria-labelledby", heading.id);
 
   if (pairs.length) {
-    pairs.forEach(({ label, value }) => {
+    const grouped = new Map(); // field -> {label, clauses:[...], values:[...]}
+    pairs.forEach(({ field, label, values, clause }) => {
+      if (!grouped.has(field)) {
+        grouped.set(field, { label, clauses: [], values: [] });
+      }
+      const entry = grouped.get(field);
+      entry.clauses.push(clause);
+      (values || []).forEach((v) => entry.values.push(v));
+    });
+
+    Array.from(grouped.values()).forEach(({ label, clauses, values }) => {
       const li = document.createElement("li");
-      li.className = "inline-flex items-center px-2 py-0.5 bg-carnation-100 text-[11px] md:text-xs mr-1 mb-1";
+      li.className = "mb-1";
       li.setAttribute("role", "listitem");
-      li.setAttribute("aria-label", `${label}: ${value}`);
-      li.innerHTML = `
-        <span class="text-neutral-700 mr-1">${label}:</span>
-        <span class="font-medium text-neutral-900">${value}</span>
-      `;
+
+      const headingDiv = document.createElement("div");
+      headingDiv.className = "text-[11px] md:text-xs font-semibold text-neutral-900";
+      headingDiv.textContent = label;
+      li.appendChild(headingDiv);
+
+      const chipsRow = document.createElement("div");
+      chipsRow.className = "flex flex-wrap gap-1 mt-1";
+      chipsRow.setAttribute("role", "list");
+
+      (values || []).forEach((val) => {
+        const chip = document.createElement("button");
+        chip.type = "button";
+        chip.className = "inline-flex items-center rounded-full bg-carnation-100 text-neutral-900 px-2 py-0.5 text-[11px] md:text-xs";
+        chip.setAttribute("role", "listitem");
+        chip.setAttribute("aria-label", `Remove ${label}: ${val}`);
+        chip.innerHTML = `<span>${val}</span><span class="ml-2 text-[10px]">✕</span>`;
+        chip.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const decodedQ = getDecodedUrlQuery();
+          const nextQ = removeValueFromField(decodedQ, labelFromFieldKeyInverse(label), val);
+          if (nextQ) {
+            updateURLParams({ q: nextQ });
+          } else {
+            removeURLParams("q");
+          }
+          handleFiltersChanged();
+          tip.hide();
+        });
+        chipsRow.appendChild(chip);
+      });
+
+      li.appendChild(chipsRow);
       chipsList.appendChild(li);
     });
   } else {
@@ -807,7 +901,7 @@ export function renderActiveFiltersBanner() {
     content: pop,
     allowHTML: true,
     interactive: true,
-    placement: "bottom",
+    placement: "bottom-start",
     appendTo: document.body,
     trigger: "click",
     theme: "popover",
@@ -835,10 +929,10 @@ export function renderActiveFiltersBanner() {
     });
   }
 
-  // Apply: gather all rows, build clauses, AND them in one go
+  // Apply: gather all rows, group values by field (OR within field, AND across fields)
   filterForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    const clauses = [];
+    const fieldMap = new Map(); // field -> array of values (strings)
 
     rowsContainer.querySelectorAll(".js-filter-row").forEach((row) => {
       const fieldSelect = row.querySelector(".js-filter-field");
@@ -852,56 +946,78 @@ export function renderActiveFiltersBanner() {
 
       if (!field) return;
 
+      const pushVals = (vals) => {
+        if (!vals.length) return;
+        const list = fieldMap.get(field) || [];
+        vals.forEach((v) => list.push(v));
+        fieldMap.set(field, list);
+      };
+
       if (chips.length) {
-        const quotedVals = chips.map((val) => `"${val.replace(/"/g, '\\"')}"`);
-        const valueExpr = quotedVals.length === 1 ? quotedVals[0] : `(${quotedVals.join(" OR ")})`;
-        clauses.push(`${field}:${valueExpr}`);
+        pushVals(chips);
         return;
       }
 
       if (!raw) return;
 
       // Fallback: support "ID1, ID2" (OR), "ID1 OR ID2", "ID1 AND ID2"
-      const operators = [];
       const segments = [];
       const opRegex = /\s+(AND|OR)\s+/gi;
       let lastIndex = 0;
       raw.replace(opRegex, (match, op, offset) => {
         segments.push(raw.slice(lastIndex, offset).trim());
-        operators.push(op.toUpperCase());
         lastIndex = offset + match.length;
       });
       segments.push(raw.slice(lastIndex).trim());
 
-      const pieceExprs = [];
-
-      segments.forEach((segment, idx) => {
+      const values = [];
+      segments.forEach((segment) => {
         if (!segment) return;
-        const values = segment
+        segment
           .split(",")
           .map((v) => v.trim())
           .filter(Boolean)
-          .map((v) => `"${v.replace(/"/g, '\\"')}"`);
-
-        if (!values.length) return;
-
-        const valueExpr =
-          values.length === 1 ? values[0] : `(${values.join(" OR ")})`;
-
-        pieceExprs.push(valueExpr);
-        if (idx < operators.length) {
-          pieceExprs.push(operators[idx]);
-        }
+          .forEach((v) => values.push(v));
       });
 
-      if (!pieceExprs.length) return;
+      pushVals(values);
+    });
 
-      const clause =
-        pieceExprs.length === 1
-          ? `${field}:${pieceExprs[0]}`
-          : `${field}:(${pieceExprs.join(" ")})`;
+    // Merge with existing: keep existing clauses, but merge values per field (OR)
+    const existingQ = getDecodedUrlQuery();
+    const existingPairs = parseEsQueryToPairs(existingQ);
+    const mergedFields = new Map();
 
-      clauses.push(clause);
+    // Start with existing values
+    existingPairs.forEach((p) => {
+      const vals = Array.isArray(p.values)
+        ? p.values
+        : (p.value || "")
+            .split(/\s+OR\s+/)
+            .map((v) => v.trim())
+            .filter(Boolean);
+      mergedFields.set(p.field, {
+        label: p.label,
+        values: new Set(vals),
+      });
+    });
+
+    // Add new values
+    fieldMap.forEach((vals, field) => {
+      if (!mergedFields.has(field)) {
+        mergedFields.set(field, { label: labelFromFieldKey(field), values: new Set() });
+      }
+      const entry = mergedFields.get(field);
+      vals.filter(Boolean).forEach((v) => entry.values.add(v));
+    });
+
+    const clauses = [];
+    mergedFields.forEach((entry, field) => {
+      const unique = Array.from(entry.values);
+      if (!unique.length) return;
+      const quotedVals = unique.map((val) => `"${val.replace(/"/g, '\\"')}"`);
+      const valueExpr = quotedVals.length === 1 ? quotedVals[0] : `(${quotedVals.join(" OR ")})`;
+      clauses.push(`${field}:${valueExpr}`);
     });
 
     if (!clauses.length) {
@@ -909,10 +1025,8 @@ export function renderActiveFiltersBanner() {
       return;
     }
 
-    const combined = clauses.join(" AND ");
-
     updateURLParams({
-      q: andQueryStrings(combined, getDecodedUrlQuery()),
+      q: clauses.join(" AND "),
     });
 
     handleFiltersChanged();
