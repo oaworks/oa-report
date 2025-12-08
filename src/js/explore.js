@@ -374,7 +374,7 @@ async function addExploreFiltersToDOM(query) {
     currentActiveExploreItemQuery = filters[0].id;
   }
   
-  // Create radio buttons for each filter and append them to the DOM
+ // Create radio buttons for each filter and append them to the DOM
   filters.forEach((filter, index) => {
     const radioButton = createExploreFilterRadioButton(filter.id, filter.id === currentActiveExploreItemQuery);
     exploreFiltersElement.appendChild(radioButton);
@@ -393,20 +393,6 @@ async function addExploreFiltersToDOM(query) {
  * @param {boolean} isChecked - True if the filter should be checked by default.
  * @returns {HTMLDivElement} The div element containing the configured radio button and label.
  */
-const injectOrgFields = (html = '') => html
-  .replace(/<span class=['"]org-name['"]><\/span>/g, orgName ?? '')
-  .replace(/<span class=['"]org-policy-coverage['"]><\/span>/g, orgPolicyCoverage ?? '')
-  .replace(/<span class=['"]org-policy-compliance['"]><\/span>/g, orgPolicyCompliance ?? '')
-  .replace(
-    /class=['"]org-policy-url['"][^>]*href=['"][^'"]*['"]/g,
-    match => match.replace(/href=['"][^'"]*['"]/, `href='${orgPolicyUrl ?? '#'}'`)
-  );
-const plainText = (html = '') => {
-  const div = document.createElement('div');
-  div.innerHTML = html;
-  return div.textContent.replace(/\s+/g, ' ').trim();
-};
-
 function createExploreFilterRadioButton(id, isChecked) {
   const labelData = EXPLORE_FILTERS_LABELS[id];
   const label = labelData ? labelData.label || id : id; // Use label from filters or default to ID
@@ -789,17 +775,34 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
  * @returns {string} The generated HTML content for the tooltip.
  */
 function generateTooltipContent(labelData, additionalHelpText = null) {
-  const hasDetails = !!labelData.details;
+  // Org-specific fields to inject with text content
+  const injectOrgFields = (html = '') => html
+    .replace(/<span class=['"]org-name['"]><\/span>/g, orgName ?? '')
+    .replace(/<span class=['"]org-policy-coverage['"]><\/span>/g, orgPolicyCoverage ?? '')
+    .replace(/<span class=['"]org-policy-compliance['"]><\/span>/g, orgPolicyCompliance ?? '')
+    .replace(
+      /class=['"]org-policy-url['"][^>]*href=['"][^'"]*['"]/g,
+      match => match.replace(/href=['"][^'"]*['"]/, `href='${orgPolicyUrl ?? '#'}'`)
+    );
+  
+  // Reuse a single off-DOM element to avoid repeated creation
+  const textBuffer = generateTooltipContent.textBuffer || (generateTooltipContent.textBuffer = document.createElement('div'));
+
+  // Get plain text version of HTML content
+  const plainText = (html = '') => {
+    textBuffer.innerHTML = html;
+    return textBuffer.textContent.replace(/\s+/g, ' ').trim();
+  };
   const infoHtml = injectOrgFields(labelData.info);
-  const detailsHtml = injectOrgFields(labelData.details);
   const helpHtml = additionalHelpText ? injectOrgFields(additionalHelpText) : '';
+  const detailsHtml = injectOrgFields(labelData.details);
   const showHelp = helpHtml && !plainText(infoHtml).includes(plainText(helpHtml));
-  let tooltipHTML = `
+  const hasDetails = !!labelData.details;
+  return `
     <p class='${hasDetails ? "mb-2" : ""}'>${infoHtml}</p>
     ${showHelp ? `<p class='mb-2'>${helpHtml}</p>` : ""}
     ${hasDetails ? `<details><summary class='hover:cursor-pointer'>Methodology</summary><p class='mt-2'>${detailsHtml}</p></details>` : ""}
   `;
-  return tooltipHTML;
 }
 
 /**
