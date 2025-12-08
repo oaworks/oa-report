@@ -484,12 +484,17 @@ function bindFilterPillClickHandler() {
   const container = document.getElementById('explore_filters');
   if (!container || container.dataset.bound === 'true') return;
 
-  container.addEventListener('click', async (event) => {
+  // Debounced version of handleFilterChange (500ms)
+  const debouncedHandleFilterChange = debounce(async (filterId) => {
+    await handleFilterChange(filterId);
+  }, 500);
+
+  container.addEventListener('click', (event) => {
     const wrapper = event.target.closest('[data-filter-id]');
     if (!wrapper) return;
     const filterId = wrapper.getAttribute('data-filter-id');
     if (filterId === currentActiveExploreItemQuery) return;
-    await handleFilterChange(filterId);
+    debouncedHandleFilterChange(filterId);
   });
 
   container.dataset.bound = 'true';
