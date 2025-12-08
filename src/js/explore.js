@@ -284,7 +284,7 @@ async function applyURLSelectionsOrDefault() {
     const data = exploreItemDataById.get(fallbackBtn.id);
     if (data) {
       // Do NOT call updateURLParams here; render directly
-      await processExploreDataTable(fallbackBtn, data, { syncFilterParam: false });
+  await processExploreDataTable(fallbackBtn, data);
     } else {
       // If for any reason the registry isn't populated yet, fall back gracefully
       fallbackBtn.click(); // last-resort behaviour
@@ -314,7 +314,7 @@ function createExploreButton(exploreDataItem) {
     if (activeFilter && activeFilter !== currentActiveExploreItemQuery) removeURLParams('explore_filter');
 
     updateURLParams({ 'breakdown': exploreDataItem.id });
-    processExploreDataTable(button, exploreDataItem, { syncFilterParam: false });
+    processExploreDataTable(button, exploreDataItem);
   }, 500));
 
   // Register each button’s data when created
@@ -331,8 +331,7 @@ function createExploreButton(exploreDataItem) {
  * @param {HTMLButtonElement} button - The button element to attach the event listener to.
  * @param {Object} itemData - The data object associated with the explore item.
  */
-export async function processExploreDataTable(button, itemData, options = {}) {
-  const { syncFilterParam = false } = options;
+export async function processExploreDataTable(button, itemData) {
   currentActiveExploreItemButton = button; // Set the currently active explore item button
   currentActiveExploreItemData = itemData; // Set the currently active explore item data
 
