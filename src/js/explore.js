@@ -619,7 +619,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       populateTableBody(records, 'export_table_body', id, type);
       
       // Update any mentions of the explore data type with plural version of the ID
-      replaceText("explore_type", EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id));
+      replaceText("explore_type", EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id), { allowHTML: true });
     
       // Add functionalities to the table
       enableExploreTableScroll();
