@@ -8,7 +8,7 @@
 // =================================================
 
 import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, normaliseFieldId } from "./utils.js";
-import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES } from "./constants.js";
+import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, FILTER_PILL_CLASSES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
 import { renderActiveFiltersBanner } from './report-filter-manager.js';
@@ -274,6 +274,11 @@ async function applyURLSelectionsOrDefault() {
 
   const params = getAllURLParams();
   const breakdown = params.breakdown;
+  const breakdownFilter = params.explore_filter;
+
+  if (breakdownFilter) {
+    currentActiveExploreItemQuery = breakdownFilter;
+  }
 
   if (breakdown) {
     // Honour the user/bookmarked URL
@@ -311,6 +316,12 @@ function createExploreButton(exploreDataItem) {
   button.className = "items-center inline-flex p-2 px-4 mr-4 mt-4 px-3 rounded-full bg-carnation-100 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500";
 
   button.addEventListener("click", debounce(async function() {
+    // Keep an existing filter if the new breakdown supports it; otherwise fall back to that breakdown’s default.
+    const availableFilters = parseCommaSeparatedQueries(exploreDataItem.query).map(({ id }) => id);
+    const activeFilter = getAllURLParams().explore_filter || currentActiveExploreItemQuery;
+    currentActiveExploreItemQuery = availableFilters.includes(activeFilter) ? activeFilter : (availableFilters[0] || null);
+    if (activeFilter && activeFilter !== currentActiveExploreItemQuery) removeURLParams('explore_filter');
+
     updateURLParams({ 'breakdown': exploreDataItem.id });
     processExploreDataTable(button, exploreDataItem);
   }, 500));
@@ -360,15 +371,17 @@ async function addExploreFiltersToDOM(query) {
 
   // If currentActiveExploreItemQuery does not exist in the new set, reset it to the first filter
   if (!currentFilterExists && filters.length > 0) {
-    let id = filters[0].id;
-    currentActiveExploreItemQuery = id;
+    currentActiveExploreItemQuery = filters[0].id;
   }
   
-  // Create radio buttons for each filter and append them to the DOM
+ // Create radio buttons for each filter and append them to the DOM
   filters.forEach((filter, index) => {
     const radioButton = createExploreFilterRadioButton(filter.id, filter.id === currentActiveExploreItemQuery);
     exploreFiltersElement.appendChild(radioButton);
   });
+
+  bindFilterPillClickHandler();
+  updateFilterPillStates(currentActiveExploreItemQuery);
 }
 
 /**
@@ -386,41 +399,19 @@ function createExploreFilterRadioButton(id, isChecked) {
 
   // Create div to contain radio input and label
   const filterRadioButton = document.createElement('div');
-  filterRadioButton.className = 'flex items-center mr-3 md:mr-6 mb-3';
+  filterRadioButton.className = 'mr-2 md:mr-4 mb-2';
+  filterRadioButton.setAttribute('data-filter-id', id);
 
   // Generate and set tooltip if info is present and non-empty
   if (labelData && labelData.info && labelData.info.trim()) {
-    const tooltipContent = generateTooltipContent(labelData);
-
-    // Initialise Tippy tooltip if there is tooltip content
     tippy(filterRadioButton, {
-      content: tooltipContent,
+      content: generateTooltipContent(labelData),
       allowHTML: true,
       interactive: true,
       placement: 'bottom',
       appendTo: document.body,
-      theme: 'tooltip-white',
-      onShow(instance) {
-        // Use setTimeout to ensure DOM is ready for updates
-        setTimeout(() => {
-          // Safely update text and href using optional chaining and nullish coalescing
-          replaceText('org-name', orgName ?? '');
-          replaceText('org-policy-coverage', orgPolicyCoverage ?? '');
-          replaceText('org-policy-compliance', orgPolicyCompliance ?? '');
-
-          // Safely set the href attribute
-          const policyUrlElement = document.querySelector('.org-policy-url');
-          if (policyUrlElement) {
-              policyUrlElement.href = orgPolicyUrl ?? '#';  // Fallback to '#' if orgPolicyUrl is undefined
-          }
-
-          // Update the tooltip content if labelData exists
-          instance.setContent(generateTooltipContent(labelData));
-        }, 0);
-      }
+      theme: 'tooltip-white'
     });
-
-    const tooltipID = `${id}_info`;
   }
 
   // Create and append radio input
@@ -428,11 +419,10 @@ function createExploreFilterRadioButton(id, isChecked) {
   Object.assign(radioInput, {
     type: 'radio',
     id: `filter_${id}`,
-    className: 'mr-1',
+    className: 'sr-only',
     name: 'filter_by',
     value: id,
-    checked: isChecked,
-    'aria-hidden': 'true'
+    checked: isChecked
   });
   filterRadioButton.appendChild(radioInput);
 
@@ -440,17 +430,58 @@ function createExploreFilterRadioButton(id, isChecked) {
   const labelElement = document.createElement('label');
   Object.assign(labelElement, {
     htmlFor: `filter_${id}`,
-    className: 'text-xs md:text-base cursor-pointer flex items-center whitespace-nowrap',
+    className: FILTER_PILL_CLASSES.base,
     innerHTML: '<span>' + label + '</span>'
   });
   filterRadioButton.appendChild(labelElement);
 
-  // Event listener for filter change
-  filterRadioButton.addEventListener('click', debounce(async function() {
-    await handleFilterChange(id);
-  }, 500));
+  setFilterPillState(labelElement, isChecked);
 
   return filterRadioButton;
+}
+
+/**
+ * Sets state-driven classes/attributes for a filter pill label.
+ * Tailwind classes are applied from a single base string to keep this lean.
+ * @param {HTMLElement} labelElement
+ * @param {boolean} isActive
+ */
+function setFilterPillState(labelElement, isActive) {
+  labelElement.className = `${FILTER_PILL_CLASSES.base} ${isActive ? FILTER_PILL_CLASSES.active : FILTER_PILL_CLASSES.inactive}`;
+}
+
+/**
+ * Updates pill styles across all filter options.
+ * @param {string} activeId
+ */
+function updateFilterPillStates(activeId) {
+  document.querySelectorAll('#explore_filters [data-filter-id]').forEach((wrapper) => {
+    const label = wrapper.querySelector('label');
+    setFilterPillState(label, wrapper.getAttribute('data-filter-id') === activeId);
+  });
+}
+
+/**
+ * Binds a single delegated click handler for filter pills to avoid per-pill listeners.
+ */
+function bindFilterPillClickHandler() {
+  const container = document.getElementById('explore_filters');
+  if (!container || container.dataset.bound === 'true') return;
+
+  // Debounced version of handleFilterChange (500ms)
+  const debouncedHandleFilterChange = debounce(async (filterId) => {
+    await handleFilterChange(filterId);
+  }, 500);
+
+  container.addEventListener('click', (event) => {
+    const wrapper = event.target.closest('[data-filter-id]');
+    if (!wrapper) return;
+    const filterId = wrapper.getAttribute('data-filter-id');
+    if (filterId === currentActiveExploreItemQuery) return;
+    debouncedHandleFilterChange(filterId);
+  });
+
+  container.dataset.bound = 'true';
 }
 
 /**
@@ -572,7 +603,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       populateTableBody(records, 'export_table_body', id, type);
       
       // Update any mentions of the explore data type with plural version of the ID
-      replaceText("explore_type", EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id));
+      replaceText("explore_type", EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id), { allowHTML: true });
     
       // Add functionalities to the table
       enableExploreTableScroll();
@@ -744,13 +775,33 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
  * @returns {string} The generated HTML content for the tooltip.
  */
 function generateTooltipContent(labelData, additionalHelpText = null) {
+  // Org-specific fields to inject with text content
+  // Only run regex if fields are present in the HTML
+  const injectOrgFields = (html = '') => /org-(name|policy-(coverage|compliance|url))/.test(html) ? html
+    .replace(/<span class=['"]org-name['"]><\/span>/g, orgName ?? '')
+    .replace(/<span class=['"]org-policy-coverage['"]><\/span>/g, orgPolicyCoverage ?? '')
+    .replace(/<span class=['"]org-policy-compliance['"]><\/span>/g, orgPolicyCompliance ?? '')
+    .replace(/class=['"]org-policy-url['"][^>]*href=['"][^'"]*['"]/g, match => match.replace(/href=['"][^'"]*['"]/, `href='${orgPolicyUrl ?? '#'}'`))
+  : html;
+
+  // Reuse a single off-DOM element to avoid repeated creation
+  const textBuffer = generateTooltipContent.textBuffer || (generateTooltipContent.textBuffer = document.createElement('div'));
+
+  // Get plain text version of HTML content
+  const plainText = (html = '') => {
+    textBuffer.innerHTML = html;
+    return textBuffer.textContent.replace(/\s+/g, ' ').trim();
+  };
+  const infoHtml = injectOrgFields(labelData.info);
+  const helpHtml = additionalHelpText ? injectOrgFields(additionalHelpText) : '';
+  const detailsHtml = injectOrgFields(labelData.details);
+  const showHelp = helpHtml && !plainText(infoHtml).includes(plainText(helpHtml));
   const hasDetails = !!labelData.details;
-  let tooltipHTML = `
-    <p class='${hasDetails ? "mb-2" : ""}'>${labelData.info}</p>
-    ${additionalHelpText ? `<p class='mb-2'>${additionalHelpText}</p>` : ""}
-    ${hasDetails ? `<details><summary class='hover:cursor-pointer'>Methodology</summary><p class='mt-2'>${labelData.details}</p></details>` : ""}
+  return `
+    <p class='${hasDetails ? "mb-2" : ""}'>${infoHtml}</p>
+    ${showHelp ? `<p class='mb-2'>${helpHtml}</p>` : ""}
+    ${hasDetails ? `<details><summary class='hover:cursor-pointer'>Methodology</summary><p class='mt-2'>${detailsHtml}</p></details>` : ""}
   `;
-  return tooltipHTML;
 }
 
 /**
@@ -771,33 +822,19 @@ function setupHeaderTooltip(element, key, dataType) {
   // Generate and set tooltip if info is present and non-empty
   if (labelData && labelData.info && labelData.info.trim()) {
     // Get additional help text from orgData if available
-    let additionalHelpText = orgData.hits.hits[0]?._source.policy?.help_text?.[key] ?? null;
-
-    const tooltipContent = generateTooltipContent(labelData, additionalHelpText);
-    const tooltipID = `${key}_info`;
+    const additionalHelpText = orgData.hits.hits[0]?._source.policy?.help_text?.[key] ?? null;
 
     tippy(element, {
-      content: tooltipContent,
+      content: generateTooltipContent(labelData, additionalHelpText),
       allowHTML: true,
       interactive: true,
       placement: 'bottom',
       appendTo: document.body,
-      theme: 'tooltip-white',
-      onShow(instance) {
-        // Use setTimeout to ensure DOM is ready for updates
-        setTimeout(() => {
-          // Safely update text and href using optional chaining and nullish coalescing
-          replaceText('org-name', orgName ?? '');
-          replaceText('org-policy-coverage', orgPolicyCoverage ?? '');
-
-          // Update the tooltip content if labelData exists
-          instance.setContent(generateTooltipContent(labelData));
-        }, 0);
-      }
+      theme: 'tooltip-white'
     });
 
-    element.setAttribute('aria-controls', tooltipID);
-    element.setAttribute('aria-labelledby', tooltipID);
+    element.setAttribute('aria-controls', `${key}_info`);
+    element.setAttribute('aria-labelledby', `${key}_info`);
   }
 }
 
@@ -1360,9 +1397,11 @@ async function handleRecordsShownChange(event) {
  */
 async function handleFilterChange(filterId) {
   toggleLoadingIndicator(true, 'explore_loading'); // Display loading indicator on filter change
+  updateURLParams({ 'explore_filter': filterId });
   await fetchAndDisplayExploreData(currentActiveExploreItemData, filterId);
   currentActiveExploreItemQuery = filterId;
   updateExploreFilterHeader(filterId);
+  updateFilterPillStates(filterId);
   toggleLoadingIndicator(false, 'explore_loading'); // Hide loading indicator once data is loaded
 }
 
