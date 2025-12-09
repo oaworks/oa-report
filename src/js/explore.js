@@ -145,6 +145,16 @@ async function _runHandleFiltersChanged() {
 function refreshFiltersBanner() {
   if (!orgData) return;
 
+  // When logged out, hide the filters UI entirely
+  if (!loggedIn) {
+    displayNone("report-filters");
+    const mount = document.getElementById("js-active-filters");
+    if (mount) mount.innerHTML = "";
+    return;
+  }
+
+  removeDisplayStyle("report-filters");
+
   renderActiveFiltersBanner({
     orgData,
     onFiltersApplied: handleFiltersChanged,
@@ -175,11 +185,7 @@ export async function initDataExplore(org) {
     // Check if explore data exists and is not empty
     if (orgData.hits.hits.length > 0 && orgData.hits.hits[0]._source.explore && orgData.hits.hits[0]._source.explore.length > 0) {
       addExploreButtonsToDOM(orgData.hits.hits[0]._source.explore);
-      renderActiveFiltersBanner({
-        orgData,
-        onFiltersApplied: handleFiltersChanged,
-        onFiltersCleared: handleFiltersChanged
-      });
+      refreshFiltersBanner(); // respects logged-in state
       addRecordsShownSelectToDOM();
       handleDataDisplayToggle();
       enableExploreRowHighlighting();

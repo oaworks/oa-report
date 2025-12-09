@@ -49,6 +49,7 @@ if (hasOrgKey) {
   // logged out
   loggedIn = false;
   displayNone("logout");
+  displayNone("strategies");
 }
 
 // =================================================

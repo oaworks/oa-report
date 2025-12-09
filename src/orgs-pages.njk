@@ -38,10 +38,11 @@ permalink: "{{ org._source.objectID | slug }}/"
         ></div>
       </section>
 
-      <div class="flex items-center ml-auto mr-3 md:mr-6 space-x-2">
-        {# Active filters panel #}
-        <aside
-          class="text-neutral-900 text-xs md:text-sm md:border-b-0 js-active-filters-wrapper hidden"
+    <div class="flex items-center ml-auto mr-3 md:mr-6 space-x-2" id="report-filters">
+      {# Active filters panel #}
+      <aside
+        class="text-neutral-900 text-xs md:text-sm md:border-b-0 js-active-filters-wrapper hidden"
+        id="js-active-filters-wrapper"
           aria-labelledby="js-active-filters-title"
         >
           <h3 id="js-active-filters-title" class="sr-only">
