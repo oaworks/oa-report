@@ -32,6 +32,14 @@ if (hasOrgKey) {
 } else {
   // logged out
   loggedIn = false;
+
+  // Force-hide filters until real orgkey validation is in place
+  const hideFilters = () => displayNone("report-filters");
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", hideFilters, { once: true });
+  } else {
+    hideFilters();
+  }
 }
 
 /**
