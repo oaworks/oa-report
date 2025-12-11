@@ -333,7 +333,7 @@ function removeValueFromField(q, field, value) {
  * @param {AbortSignal} [params.signal] - Optional abort signal
  * @returns {Promise<string[]>} Ordered list of suggested values (unique, trimmed)
  */
-export async function fetchFilterValueSuggestions({ field, query, size = 8, signal }) {
+export async function fetchFilterValueSuggestions({ field, query, size = 15, signal }) {
   if (!field || !query || !query.trim()) return [];
 
   // Per-session cache to avoid repeat calls
@@ -631,6 +631,9 @@ function addFilterRow(container) {
     input.setAttribute("aria-expanded", "true");
   };
 
+  // Remember the last fetched suggestions so we can reuse them for longer searches
+  let lastFetched = { field: "", query: "", items: [] };
+
   const renderTokens = () => {
     tokens.innerHTML = "";
     const hasTokens = tokenData.length > 0;
@@ -674,6 +677,18 @@ function addFilterRow(container) {
       if (!fieldVal || q.length < 2) {
         const msg = !fieldVal ? "Select a field first to see suggestions." : "Type at least 2 characters.";
         renderHint("", msg);
+        lastFetched = { field: "", query: "", items: [] };
+        return;
+      }
+      // If we already have results for this field that cover the current (longer) search, reuse them
+      const lowercasedQuery = q.toLowerCase();
+      if (
+        lastFetched.field === fieldVal &&
+        q.startsWith(lastFetched.query || "") &&
+        Array.isArray(lastFetched.items) &&
+        lastFetched.items.some((val) => (val || "").toLowerCase().includes(lowercasedQuery))
+      ) {
+        renderSuggestions(lastFetched.items);
         return;
       }
       const currentReq = ++requestSeq;
@@ -684,10 +699,12 @@ function addFilterRow(container) {
           query: q,
         });
         if (currentReq === requestSeq) {
+          lastFetched = { field: fieldVal, query: q, items: suggestions };
           renderSuggestions(suggestions);
         }
       } catch (err) {
         console.error("Error fetching suggestions:", err);
+        lastFetched = { field: fieldVal, query: q, items: [] };
       }
     }, 120);
   };
@@ -718,7 +735,10 @@ function addFilterRow(container) {
     setTimeout(hideSuggestions, 100);
   });
 
-  fieldSelect.addEventListener("change", triggerSuggestions);
+  fieldSelect.addEventListener("change", () => {
+    lastFetched = { field: "", query: "", items: [] };
+    triggerSuggestions();
+  });
   input.addEventListener("input", triggerSuggestions);
   input.addEventListener("focus", () => {
     renderHint();
