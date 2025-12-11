@@ -903,15 +903,26 @@ export function resetBarChart(cardContents) {
   let footerEl = cardContents.querySelector('footer.js_bar_chart');
   if (!footerEl) {
     footerEl = document.createElement('footer');
-    footerEl.className = 'js_bar_chart w-full mt-4';
+    footerEl.className = 'js_bar_chart';
     cardContents.appendChild(footerEl);
   }
   // If it was in "unavailable" mode, restore for drawing bars
   footerEl.removeAttribute('data-unavailable');
   footerEl.innerHTML = '';
-  footerEl.classList.add('w-full', 'h-3', 'bg-carnation-800', 'rounded-full', 'mt-4');
-}
 
+  // Default vertical bar container: tall, thicker, rounded
+  footerEl.className = [
+    'js_bar_chart',
+    'flex',
+    'flex-col',
+    'justify-end',
+    'h-auto',
+    'w-2',
+    'bg-carnation-800',
+    'rounded-full',
+    'overflow-hidden'
+  ].join(' ');
+}
 
 /**
  * Switches the default Insights card into greyed-out "Data unavailable" style.
@@ -960,10 +971,10 @@ export function showUnavailableCard(cardContents) {
   // Clear or replace the bar chart area with "Data unavailable"
   const footerEl = cardContents.querySelector('footer.js_bar_chart');
   if (footerEl) {
-    footerEl.classList.remove('h-3', 'bg-carnation-800', 'rounded-full');
+    footerEl.className = 'js_bar_chart mt-4 w-full';
     footerEl.setAttribute('data-unavailable', 'true');
     footerEl.innerHTML = `
-      <p class="mt-4 text-xs text-left text-neutral-700">
+      <p class="text-xs text-left text-neutral-700">
         Data unavailable
       </p>
     `;
@@ -998,27 +1009,35 @@ export function setBarChart(
   // If the denominator is missing or zero, skip
   if (!denominatorCount) return;
 
+  // Ensure the container is in the expected vertical state
+  barContainer.classList.remove('mt-4', 'w-full');
+  barContainer.classList.add(
+    'flex',
+    'flex-col',
+    'justify-end',
+    'h-20',
+    'w-2',
+    'bg-carnation-800',
+    'rounded-full',
+    'overflow-hidden'
+  );
+
   // ----- CASE 1: Denominator is the full set => Single bar -----
-  // The <footer> has 'bg-carnation-800' to represent the full set
-  // We overlay one bar for the numerator portion in carnation-300
   if  (
     denominatorID === 'is_paper' ||
     denominatorID === 'is_preprint' ||
-    (denominatorCount && totalArticlesCount && denominatorCount === totalArticlesCount) // if the total amount is the same as the denominator
+    (denominatorCount && totalArticlesCount && denominatorCount === totalArticlesCount)
   ) {
     const fraction = Math.round((numeratorCount / denominatorCount) * 100);
     barContainer.innerHTML = `
       <div
-        class="h-3 bg-carnation-300 rounded-full"
-        style="width: ${fraction}%"
+        class="w-full bg-carnation-300 rounded-full"
+        style="height: ${fraction}%"
       ></div>
     `;
   } 
 
   // ----- CASE 2: Denominator is a subset => Two stacked bars -----
-  // The footer is still 'bg-carnation-800' overall, but we
-  // insert an outer bar in carnation-500 for "subset vs. total"
-  // and an inner bar in carnation-300 for "numerator vs. that subset".
   else {
     let fractionOuter = 0;
     if (totalArticlesCount) {
@@ -1028,12 +1047,12 @@ export function setBarChart(
 
     barContainer.innerHTML = `
       <div 
-        class="h-3 bg-carnation-500 rounded-full" 
-        style="width: ${fractionOuter}%"
+        class="w-full bg-carnation-500 flex flex-col justify-end rounded-full"
+        style="height: ${fractionOuter}%"
       >
         <div 
-          class="h-3 bg-carnation-300 rounded-full" 
-          style="width: ${fractionInner}%"
+          class="w-full bg-carnation-300 rounded-full"
+          style="height: ${fractionInner}%"
         ></div>
       </div>
     `;

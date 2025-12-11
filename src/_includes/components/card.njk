@@ -9,36 +9,49 @@
 <article 
   id="{{ params.id }}"
   class="
-    p-2.5 md:p-3 rounded-md bg-white shadow-sm hover:shadow-md 
+    p-4 rounded-md bg-white shadow-sm hover:shadow-md 
     transition-shadow duration-200 
-    proportional-card flex flex-col h-full
+    proportional-card flex flex-col
   "
   aria-expanded="false"
   aria-labelledby="{{ params.id }}"
-  title="More information on this metric"
->
-  {# Header: name of Insight and icon #}
-  <header class="flex items-start justify-between text-neutral-700 min-h-[44px]">
-    <h3 class="text-sm font-medium">
-      {{ params.title }}
-    </h3>
-    {% icon_small params.icon %}
-  </header>
+  title="More information on this metric">
+  <div class="flex items-stretch h-full gap-4">
+    {# Vertical bar chart on the left #}
+    <footer
+      class="
+        js_bar_chart
+        flex flex-col justify-end
+        h-auto w-2
+        bg-carnation-800
+        rounded-full
+        overflow-hidden
+      "
+      aria-hidden="true"
+    ></footer>
 
-  {# Body: raw number and percentage #}
-  <div class="flex-grow flex flex-col justify-start text-neutral-900">
-    <p class="mt-2 text-2xl font-bold">
-      <span id="percent_{{ params.id }}">
-        00%
-      </span>
-    </p>
-    <p class="mt-2 text-xs leading-snug font-semibold text-neutral-600">
-      <span id="articles_{{ params.id }}">
-        articles
-      </span>
-    </p>
+    <div class="flex-1 min-w-0 flex flex-col justify-between">
+      {# Header: name of Insight and icon #}
+      <header class="flex items-start justify-between text-neutral-700">
+        <h3 class="text-sm font-medium">
+          {{ params.title }}
+        </h3>
+        {% icon_small params.icon %}
+      </header>
+
+      {# Body: raw number and percentage #}
+      <div class="mt-4 text-neutral-900">
+        <p class="text-2xl font-bold leading-tight">
+          <span id="percent_{{ params.id }}">
+            00%
+          </span>
+        </p>
+        <p class="mt-1 text-xs font-semibold text-neutral-600">
+          <span id="articles_{{ params.id }}">
+            articles
+          </span>
+        </p>
+      </div>
+    </div>
   </div>
-
-  {# Footer: data visualisation #}
-  <footer class="mt-3 h-3 bg-carnation-800 rounded-full js_bar_chart w-full" aria-hidden="true"></footer>
 </article>
