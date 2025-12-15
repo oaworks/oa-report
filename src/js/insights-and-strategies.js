@@ -156,21 +156,25 @@ export function initInsightsAndStrategies(org) {
         const percentageContents = document.getElementById(`percent_${numerator}`);
         const articlesContents   = document.getElementById(`articles_${numerator}`);
 
-        // Create tippy tooltip
-        const instance = tippy(cardContents, {
+        // Create tippy tooltip on card title click
+        const tooltipTarget = cardContents.querySelector('h3') || cardContents;
+        const tooltipTargetId = tooltipTarget.id || `${numerator}-heading`;
+        tooltipTarget.id = tooltipTargetId;
+        const instance = tippy(tooltipTarget, {
           allowHTML: true,
           interactive: true,
           placement: 'right',
           appendTo: document.body,
-          theme: 'tooltip-white'
+          theme: 'tooltip-white',
+          trigger: 'click'
         });
         instance.setContent(info);
 
         // Accessibility / tooltip IDs
         const tooltipID = instance.popper.id;
-        cardContents.setAttribute('aria-controls', tooltipID);
-        cardContents.setAttribute('aria-labelledby', numerator);
-        cardContents.setAttribute('title', 'More information on this metric');
+        tooltipTarget.setAttribute('aria-controls', tooltipID);
+        tooltipTarget.setAttribute('aria-labelledby', tooltipTargetId);
+        tooltipTarget.setAttribute('title', 'More information on this metric');
 
         // Get numerator’s count query
         let numPromise = fetchCountQuery(countQueryPrefix + buildEncodedQueryWithUrlFilter(analysisEntry.query));

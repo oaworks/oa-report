@@ -30,13 +30,12 @@
       aria-hidden="true"
     ></footer>
 
-    <div class="flex-1 min-w-0 flex flex-col justify-between">
+    <div class="flex-1 min-w-0 flex flex-col">
       {# Header: name of Insight and icon #}
-      <header class="flex items-start justify-between text-neutral-700">
-        <h3 class="text-sm font-medium">
-          {{ params.title }}
+      <header class="flex items-end justify-between text-neutral-700">
+        <h3 class="text-sm font-medium cursor-pointer inline-flex items-baseline">
+          <span>{{ params.title }} <sup class="text-neutral-600 leading-none">{% icon_small "info" %}</sup></span>
         </h3>
-        {% icon_small params.icon %}
       </header>
 
       {# Body: raw number and percentage #}
@@ -51,6 +50,10 @@
             articles
           </span>
         </p>
+      </div>
+
+      <div class="mt-auto flex justify-end text-neutral-800">
+        {% icon_small params.icon %}
       </div>
     </div>
   </div>
