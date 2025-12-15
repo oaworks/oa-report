@@ -11,6 +11,7 @@
 
 import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter } from './utils.js';
 import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS } from './constants.js';
+import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 
 // Cache identical count queries so we only hit the API once per unique URL
 const countQueryCache = new Map();
@@ -37,20 +38,23 @@ export const orgDataPromise = axios.get(orgApiUrl);
 
 let orgKey = "";
 let loggedIn = false;
-const hasOrgKey = typeof window.OAKEYS === 'object' && Object.keys(window.OAKEYS || {}).length !== 0;
 
-if (hasOrgKey) {
-  // logged in
-  orgKey = `&orgkey=${(window.OAKEYS || {})[org] ?? ''}`;
-  loggedIn = true;
-  displayNone("login");
-  displayNone("about-free-logged-out");
-} else {
-  // logged out
-  loggedIn = false;
-  displayNone("logout");
-  displayNone("strategies");
-}
+const authState = initAuth(org);
+loggedIn = authState.loggedIn;
+orgKey = authState.orgKey ? `&orgkey=${authState.orgKey}` : "";
+applyAuthVisibility({
+  showWhenLoggedIn: ["logout", "strategies"],
+  hideWhenLoggedIn: ["login"]
+});
+
+onAuthChange(({ loggedIn: isLoggedIn, orgKey: key }) => {
+  loggedIn = isLoggedIn;
+  orgKey = key ? `&orgkey=${key}` : "";
+  applyAuthVisibility({
+    showWhenLoggedIn: ["logout", "strategies"],
+    hideWhenLoggedIn: ["login"]
+  });
+});
 
 // =================================================
 // Exports
@@ -87,7 +91,7 @@ export function initInsightsAndStrategies(org) {
       }
   
       // if email is not undefined and there is an orgkey, try to decrypt the author’s email
-      if (email !== 'undefined' && hasOrgKey) {
+      if (email !== 'undefined' && loggedIn) {
           axios.get(`${ARTICLE_EMAIL_BASE + doi}?${orgKey}`)
               .then(function (response) {
                   let authorEmail = response.data;

@@ -14,6 +14,7 @@ import { awaitDateRange } from './report-date-manager.js';
 import { renderActiveFiltersBanner } from './report-filter-manager.js';
 import { orgDataPromise, initInsightsAndStrategies } from './insights-and-strategies.js';
 import { getAggregatedDataQuery } from './aggregated-data-query.js';
+import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 
 // =================================================
 // Global variables
@@ -23,24 +24,21 @@ const exportSort = "&sort=published_date:desc";
 
 let orgKey = "";
 let loggedIn = false;
-const hasOrgKey = typeof window.OAKEYS === 'object' && Object.keys(window.OAKEYS || {}).length !== 0;
 
-if (hasOrgKey) {
-  // logged in
-  orgKey = `&orgkey=${Object.values(window.OAKEYS)[0] ?? ''}`;
-  loggedIn = true;
-} else {
-  // logged out
-  loggedIn = false;
+// Holds organisation data; declared early so auth listeners can check it safely
+let orgData;
 
-  // Force-hide filters until real orgkey validation is in place
-  const hideFilters = () => displayNone("report-filters");
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", hideFilters, { once: true });
-  } else {
-    hideFilters();
-  }
-}
+const authState = initAuth();
+loggedIn = authState.loggedIn;
+orgKey = authState.orgKey ? `&orgkey=${authState.orgKey}` : "";
+applyAuthVisibility({ hideWhenLoggedOut: ["report-filters"] });
+
+onAuthChange(({ loggedIn: isLoggedIn, orgKey: key }) => {
+  loggedIn = isLoggedIn;
+  orgKey = key ? `&orgkey=${key}` : "";
+  applyAuthVisibility({ hideWhenLoggedOut: ["report-filters"] });
+  refreshFiltersBanner();
+});
 
 /**
  * Allows the EXPLORE_HEADER_TERMS_LABELS constant to be accessible via a browser.
@@ -48,13 +46,6 @@ if (hasOrgKey) {
  * @type {Object}
  */
 window.EXPLORE_HEADER_TERMS_LABELS = EXPLORE_HEADER_TERMS_LABELS;
-
-/**
- * Data object representing metadata on an organization.
- * @global
- * @type {Object}
- */
-let orgData;
 
 /**
  * Flag indicating whether the data explore section has been initialised.
