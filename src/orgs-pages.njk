@@ -29,37 +29,35 @@ permalink: "{{ org._source.objectID | slug }}/"
     id="js-report-nav"
   >
     <h2 class="sr-only">Report navigation</h2>
-    <div class="flex items-center justify-between">
-      <section>
-        <h3 class="sr-only">View this report by year or by custom date range</h3>
-        <div
-          id="js-year-buttons"
-          class="ml-3 md:ml-6 mb-1 md:mb-0 flex flex-wrap space-y-1 md:space-y-0 text-xs md:text-sm"
-        ></div>
-      </section>
+    <section class="flex items-center flex-wrap">
+      <h3 class="sr-only">View this report by year or by custom date range</h3>
+      <div
+        id="js-year-buttons"
+        class="ml-3 md:ml-4 mb-1 md:mb-0 flex flex-wrap space-y-1 md:space-y-0 text-xs md:text-sm"
+      ></div>
 
-    <div class="flex items-center ml-auto mr-3 md:mr-6 space-x-2" id="report-filters">
-      {# Active filters panel #}
-      <aside
-        class="text-neutral-900 text-xs md:text-sm md:border-b-0 js-active-filters-wrapper hidden"
-        id="js-active-filters-wrapper"
-          aria-labelledby="js-active-filters-title"
-        >
-          <h3 id="js-active-filters-title" class="sr-only">
-            Active filters
-          </h3>
+      <div class="flex items-center space-x-2" id="report-filters">
+        {# Active filters panel #}
+        <aside
+          class="text-neutral-900 text-xs md:text-sm md:border-b-0 js-active-filters-wrapper hidden"
+          id="js-active-filters-wrapper"
+            aria-labelledby="js-active-filters-title"
+          >
+            <h3 id="js-active-filters-title" class="sr-only">
+              Active filters
+            </h3>
 
-          {# Live region so SR users hear updates when filters change #}
-          <div
-            id="js-active-filters"
-            class="flex items-center"
-            role="status"
-            aria-live="polite"
-            aria-atomic="true"
-          ></div>
-        </aside>
-      </div>
-    </div>
+            {# Live region so SR users hear updates when filters change #}
+            <div
+              id="js-active-filters"
+              class="flex items-center"
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+            ></div>
+          </aside>
+        </div>
+    </section>
 
   </nav>
   {% endif %}
