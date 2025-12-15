@@ -155,6 +155,32 @@ export function initInsightsAndStrategies(org) {
         // Locate placeholders
         const percentageContents = document.getElementById(`percent_${numerator}`);
         const articlesContents   = document.getElementById(`articles_${numerator}`);
+        const articlesWrapper    = articlesContents ? articlesContents.closest('p') : null;
+        const barChartElement    = cardContents.querySelector('.js_bar_chart');
+        const figureElement      = percentageContents
+          ? percentageContents.closest('p') || percentageContents
+          : null;
+
+        if (org === 'gates-foundation' && articlesWrapper) {
+          articlesWrapper.classList.add('sr-only');
+        }
+
+        function updateDetailTooltips() {
+          if (!articlesContents) return;
+          const targets = [barChartElement, figureElement].filter(Boolean);
+          if (!targets.length) return;
+          targets.forEach((target) => {
+            if (!target._detailTooltip) {
+              target._detailTooltip = tippy(target, {
+                allowHTML: true,
+                placement: 'top',
+                appendTo: document.body,
+                theme: 'tooltip-white'
+              });
+            }
+            target._detailTooltip.setContent(articlesContents.innerHTML);
+          });
+        }
 
         // Create tippy tooltip on card title click
         const tooltipTarget = cardContents.querySelector('h3') || cardContents;
@@ -241,6 +267,7 @@ export function initInsightsAndStrategies(org) {
                   denominator,
                   totalArticlesCount
                 );
+                updateDetailTooltips();
               } else {
                 showUnavailableCard(cardContents);
               }
@@ -259,6 +286,7 @@ export function initInsightsAndStrategies(org) {
 
               // Put smaller label "articles" (or denominatorText) in #articles_{numerator}
               articlesContents.textContent = denominatorText;
+              updateDetailTooltips();
             })
             .catch(function (error) {
               console.log(`${numerator} error: ${error}`);

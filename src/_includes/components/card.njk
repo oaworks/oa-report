@@ -31,29 +31,32 @@
     ></footer>
 
     <div class="flex-1 min-w-0 flex flex-col">
-      {# Header: name of Insight and icon #}
-      <header class="flex items-end justify-between text-neutral-700">
-        <h3 class="text-sm font-medium cursor-pointer inline-flex items-baseline">
-          <span>{{ params.title }} <sup class="text-neutral-600 leading-none">{% icon_small "info" %}</sup></span>
-        </h3>
-      </header>
+      <div class="flex flex-col justify-between flex-1">
+        {# Header: name of Insight and icon #}
+        <header class="flex items-end justify-between text-neutral-700">
+          <h3 class="text-sm font-medium cursor-pointer inline-flex items-baseline">
+            <span>{{ params.title }} <sup class="text-neutral-600 leading-none">{% icon_small "info" %}</sup></span>
+          </h3>
+        </header>
 
-      {# Body: raw number and percentage #}
-      <div class="mt-4 text-neutral-900">
-        <p class="text-2xl font-bold leading-tight">
-          <span id="percent_{{ params.id }}">
-            00%
-          </span>
-        </p>
-        <p class="mt-1 text-xs font-semibold text-neutral-600">
-          <span id="articles_{{ params.id }}">
-            articles
-          </span>
-        </p>
-      </div>
-
-      <div class="mt-auto flex justify-end text-neutral-800">
-        {% icon_small params.icon %}
+        {# Body and icon aligned to bottom #}
+        <div class="mt-4 flex items-end justify-between gap-3">
+          <div class="text-neutral-900">
+            <p class="text-2xl font-bold leading-tight">
+              <span id="percent_{{ params.id }}">
+                00%
+              </span>
+            </p>
+            <p class="mt-1 text-xs font-semibold text-neutral-600">
+              <span id="articles_{{ params.id }}">
+                articles
+              </span>
+            </p>
+          </div>
+          <div class="text-neutral-800">
+            {% icon_small params.icon %}
+          </div>
+        </div>
       </div>
     </div>
   </div>
