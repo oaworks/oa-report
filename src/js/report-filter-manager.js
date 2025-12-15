@@ -671,8 +671,7 @@ function addFilterRow(container) {
       const raw = input.value || "";
       const q = raw.replace(/\s+/g, " ").trim();
       if (!fieldVal || q.length < 2) {
-        const msg = !fieldVal ? "Select a field first to see suggestions." : "Type at least 2 characters.";
-        renderHint("", msg);
+        renderHint();
         return;
       }
       const currentReq = ++requestSeq;
