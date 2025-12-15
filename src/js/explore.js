@@ -28,7 +28,7 @@ let loggedIn = false;
 // Holds organisation data; declared early so auth listeners can check it safely
 let orgData;
 
-const authState = initAuth();
+const authState = initAuth(typeof org !== "undefined" ? org : undefined);
 loggedIn = authState.loggedIn;
 orgKey = authState.orgKey ? `&orgkey=${authState.orgKey}` : "";
 applyAuthVisibility({ hideWhenLoggedOut: ["report-filters"] });
