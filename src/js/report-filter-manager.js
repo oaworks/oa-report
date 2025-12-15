@@ -11,7 +11,6 @@ import {
   getDecodedUrlQuery,
   updateURLParams,
   removeURLParams,
-  andQueryStrings,
   normaliseFieldId,
   pluraliseNoun
 } from "./utils.js";
