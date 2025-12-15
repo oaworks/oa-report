@@ -761,10 +761,6 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
         ? DATA_TABLE_HEADER_CLASSES[dataType].secondHeaderCol
         : DATA_TABLE_HEADER_CLASSES[dataType].otherHeaderCols;
 
-    const label = dataType === 'terms'
-      ? EXPLORE_HEADER_TERMS_LABELS[key]?.label || key
-      : EXPLORE_HEADER_ARTICLES_LABELS[key]?.label || key;
-
     const headerCell = createTableCell('', cssClass, null, null, true); 
     setupHeaderTooltip(headerCell, key, dataType);
 
