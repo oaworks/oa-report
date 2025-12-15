@@ -311,7 +311,7 @@ export function initInsightsAndStrategies(org) {
               }
 
               // Otherwise, generate list of actions
-              else if (count > 0 || count !== null) {
+              else if (count > 0) {
 
                 // Get full list of actions for this strategy 
                 axios.get(listQuery)
@@ -335,7 +335,7 @@ export function initInsightsAndStrategies(org) {
                             }
                           );
 
-                          if (suppKey == undefined || suppKey == null) {
+                          if (suppKey == null) {
                             action[key] = "N/A";
                           } else {
                             var value = suppKey[key];
@@ -351,7 +351,7 @@ export function initInsightsAndStrategies(org) {
                           if (key === 'published_date') action[key] = makeDateReadable(new Date(action[key]));
                         }
 
-                        if (value == undefined || value == null) {
+                        if (action[key] == null) {
                           action[key] = "N/A";
                         }
                       };
