@@ -292,15 +292,6 @@ function parseEsQueryToPairs(q) {
   }));
 }
 
-function removeClauseFromQuery(q, field) {
-  if (!field) return q;
-  if (!q) return "";
-  return parseEsQueryToPairs(q)
-    .filter((p) => p.field !== field)
-    .map((p) => p.clause)
-    .join(" AND ");
-}
-
 function removeValueFromField(q, field, value) {
   if (!field || !value) return q || "";
   const pairs = parseEsQueryToPairs(q);
