@@ -18,7 +18,7 @@ export const INSIGHTS_CARDS = [
     numerator: "is_preprint",
     denominator: null,
     denominatorText: "preprints",
-    info: "<p>The total number of preprints published gby grantees or authors at your organization.</p>"
+    info: "<p>The total number of preprints published by grantees or authors at your organization.</p>"
   },
   {
     numerator: "is_unique_publication",
