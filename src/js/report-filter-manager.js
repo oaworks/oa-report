@@ -323,7 +323,7 @@ function removeValueFromField(q, field, value) {
  * @param {AbortSignal} [params.signal] - Optional abort signal
  * @returns {Promise<string[]>} Ordered list of suggested values (unique, trimmed)
  */
-export async function fetchFilterValueSuggestions({ field, query, size = 8, signal }) {
+export async function fetchFilterValueSuggestions({ field, query, size = 15, signal }) {
   if (!field || !query || !query.trim()) return [];
 
   // Per-session cache to avoid repeat calls
@@ -618,20 +618,23 @@ function addFilterRow(container) {
     input.setAttribute("aria-activedescendant", "");
   };
 
-  const renderHint = (termRaw = "") => {
+  const renderHint = (termRaw = "", message) => {
     listbox.innerHTML = "";
     const hint = document.createElement("li");
     hint.setAttribute("role", "presentation");
     hint.setAttribute("aria-hidden", "true");
     hint.setAttribute("aria-disabled", "true");
     hint.className = "px-2 py-1 h-9 flex items-center text-xs md:text-sm bg-neutral-100 text-neutral-700 border-b border-neutral-200";
-    hint.textContent = termRaw ? `Matching suggestions for “${termRaw}”` : "Start typing to see suggestions…";
+    hint.textContent = message || (termRaw ? `Matching suggestions for “${termRaw}”` : "Start typing to see suggestions…");
     listbox.appendChild(hint);
     activeIndex = -1;
     listbox.classList.remove("hidden");
     input.setAttribute("aria-expanded", "true");
     input.setAttribute("aria-activedescendant", "");
   };
+
+  // Remember the last fetched suggestions so we can reuse them for longer searches
+  let lastFetched = { field: "", query: "", items: [] };
 
   const renderTokens = () => {
     tokens.innerHTML = "";
@@ -675,6 +678,18 @@ function addFilterRow(container) {
       const q = raw.replace(/\s+/g, " ").trim();
       if (!fieldVal || q.length < 2) {
         renderHint();
+        lastFetched = { field: "", query: "", items: [] };
+        return;
+      }
+      // If we already have results for this field that cover the current (longer) search, reuse them
+      const lowercasedQuery = q.toLowerCase();
+      if (
+        lastFetched.field === fieldVal &&
+        q.startsWith(lastFetched.query || "") &&
+        Array.isArray(lastFetched.items) &&
+        lastFetched.items.some((val) => (val || "").toLowerCase().includes(lowercasedQuery))
+      ) {
+        renderSuggestions(lastFetched.items);
         return;
       }
       const currentReq = ++requestSeq;
@@ -685,10 +700,12 @@ function addFilterRow(container) {
           query: q,
         });
         if (currentReq === requestSeq) {
+          lastFetched = { field: fieldVal, query: q, items: suggestions };
           renderSuggestions(suggestions);
         }
       } catch (err) {
         console.error("Error fetching suggestions:", err);
+        lastFetched = { field: fieldVal, query: q, items: [] };
       }
     }, 500);
   };
@@ -719,7 +736,10 @@ function addFilterRow(container) {
     setTimeout(hideSuggestions, 100);
   });
 
-  fieldSelect.addEventListener("change", triggerSuggestions);
+  fieldSelect.addEventListener("change", () => {
+    lastFetched = { field: "", query: "", items: [] };
+    triggerSuggestions();
+  });
   input.addEventListener("input", triggerSuggestions);
   input.addEventListener("focus", () => {
     renderHint();
