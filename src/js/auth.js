@@ -37,7 +37,9 @@ function safeSessionSet(value) {
   // Safe set for sessionStorage; store per-org so keys don't leak across slugs
   try {
     sessionStorage.setItem(getStorageKey(), value);
-  } catch (_) {}
+  } catch (err) {
+    console.error("Failed to set orgKey in sessionStorage:", err);
+  }
 }
 
 function safeSessionClear() {
@@ -123,11 +125,10 @@ export function initAuth(slug) {
 
 /**
  * Subscribe to auth state updates. Returns an unsubscribe function.
- * The callback is called immediately with the current state.
+ * The callback is NOT called immediately; call getAuthState() after subscribing if you need the current state.
  */
 export function onAuthChange(callback) {
   listeners.add(callback);
-  callback(currentState());
   return () => listeners.delete(callback);
 }
 
