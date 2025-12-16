@@ -10,18 +10,6 @@ permalink: "{{ org._source.objectID | slug }}/"
 {%- from "system/component.njk" import component with context -%}
 
 <main>
-  <div class="px-3 md:px-6">
-    <div class="grid grid-cols-2 md:grid-cols-12 gap-3 sm:gap-6 md:gap-12 py-3 xl:pb-6 xl:pt-12">
-      <header class="col-span-2 md:col-span-8">
-        <h1 class="flex items-center">
-          <div class="text-xl md:text-3xl font-serif">
-            <span class='highlight-neutral-300'>{{ org._source.name }}</span><span class='block md:inline text-neutral-700'><span class='md:ml-3 report_readable_start_date'></span> — <span class='report_readable_end_date'></span></span>
-          </div>
-        </h1>
-      </header>
-    </div>
-  </div>
-
   {# Report filtering (dates, terms) — sticky top nav #}
   {% if org._source.paid == true %}
   <nav

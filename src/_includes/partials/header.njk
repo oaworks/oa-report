@@ -4,13 +4,28 @@
   <h2 class="sr-only">
     OA.Report
   </h2>
-  <nav class="mx-auto flex max-w-10xl items-center justify-between p-6 lg:px-8" aria-label="Global">
+  <nav class="mx-auto flex max-w-10xl items-center justify-between gap-3 px-3 py-2 md:px-4 md:py-3 lg:px-6" aria-label="Global">
     <h3 class="sr-only">Site navigation</h3>
-    <div class="flex items-center lg:flex-1">
-      <a href="/" class="-mb-2 p-1.5 flex items-center">
+    <div class="flex items-center gap-3 shrink-0">
+      <a href="/" class="-mb-2 p-1 flex items-center">
         {% include 'partials/app-name.njk' %}
       </a>
     </div>
+
+    {% if page.url != '/' %}
+    <div class="flex-1 min-w-0 flex justify-center">
+      <div class="flex items-center gap-2 min-w-0 max-w-4xl justify-center text-center leading-tight">
+        <span class="truncate font-serif text-sm md:text-base lg:text-lg text-neutral-900" title="{{ org._source.name }}">{{ org._source.name }}</span>
+        <span class="text-xs md:text-sm font-medium text-neutral-800 whitespace-nowrap flex items-center gap-1 leading-tight">
+          <span class="report_readable_start_date"></span>
+          <span aria-hidden="true">—</span>
+          <span class="report_readable_end_date"></span>
+        </span>
+      </div>
+    </div>
+    {% else %}
+    <div class="flex-1"></div>
+    {% endif %}
 
     <!-- Hamburger Button -->
     <button id="menu-toggle" aria-expanded="false" aria-controls="mobile-menu" class="sm:hidden flex items-center justify-center p-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-carnation-500">
@@ -21,10 +36,10 @@
     <!-- Menu Items -->
     <div id="mobile-menu" class="hidden absolute top-full left-0 w-full bg-neutral-100 sm:static sm:flex sm:items-center sm:justify-end sm:w-auto sm:bg-transparent sm:p-0">
       <div class="flex flex-col sm:flex-row sm:items-center gap-x-4 sm:gap-x-8 md:gap-x-12">
-        <a href="https://about.oa.report/" class="text-xs md:text-sm font-semibold leading-6 text-gray-900 px-4 py-2 sm:p-0">About</a>
+        <a href="https://about.oa.report/" class="text-xs md:text-sm font-medium leading-6 text-neutral-800 px-4 py-2 sm:p-0">About</a>
         {% if page.url != "/" %}
-        <a href="?logout" id="logout" class="text-xs md:text-sm font-semibold leading-6 text-gray-900 px-4 py-2 sm:p-0">Log out <span aria-hidden="true">&rarr;</span></a>
-        <button data-modal-title="Log in to access this OA.Report" data-modal-content="<div class='text-center'><p class='mb-2'>If you work for <strong>{{ org._source.name }}</strong>, search your inbox for an email titled <br><span class='highlight font-normal'>“OA.Report login link”</span><br> to access your report.</p><p class='mb-4'>If you can’t find it, please <a href='mailto:joe@oa.works?subject=I%20can’t%20find%20my%20OA.Report%20login%20link' class='underline underline-offset-2 decoration-1'>contact our helpdesk</a>.</p><hr><p class='pt-4'><small class='text-xs font-normal'>Find out more about <a href='https://about.oa.report/docs/user-accounts' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>OA.Report user accounts</a>.</small></p></div>" class="text-sm font-semibold leading-6 text-gray-900 px-4 py-2 sm:p-0" id="login">Log in <span aria-hidden="true">&larr;</span></button>
+        <a href="?logout" id="logout" class="text-xs md:text-sm font-medium leading-6 text-neutral-800 px-4 py-2 sm:p-0">Log out <span aria-hidden="true">&rarr;</span></a>
+        <button data-modal-title="Log in to access this OA.Report" data-modal-content="<div class='text-center'><p class='mb-2'>If you work for <strong>{{ org._source.name }}</strong>, search your inbox for an email titled <br><span class='highlight font-normal'>“OA.Report login link”</span><br> to access your report.</p><p class='mb-4'>If you can’t find it, please <a href='mailto:joe@oa.works?subject=I%20can’t%20find%20my%20OA.Report%20login%20link' class='underline underline-offset-2 decoration-1'>contact our helpdesk</a>.</p><hr><p class='pt-4'><small class='text-xs font-normal'>Find out more about <a href='https://about.oa.report/docs/user-accounts' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>OA.Report user accounts</a>.</small></p></div>" class="text-sm font-medium leading-6 text-neutral-800 px-4 py-2 sm:p-0" id="login">Log in <span aria-hidden="true">&larr;</span></button>
         {% endif %}
         {% if page.url == '/' %}
         <a href="https://blog.oa.works/join-the-oa-report-for-libraries-pilot-to-simplify-compliance-checking-for-your-institutional-funders-oa-policies/" target="_blank" class="text-xs md:text-sm font-semibold leading-6 text-gray-900 px-4 py-2 sm:p-0">For libraries</a>
