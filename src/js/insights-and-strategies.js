@@ -173,7 +173,7 @@ export function initInsightsAndStrategies(org) {
             if (!target._detailTooltip) {
               target._detailTooltip = tippy(target, {
                 allowHTML: true,
-                placement: 'top',
+                placement: 'bottom',
                 appendTo: document.body,
                 theme: 'tooltip-white'
               });
@@ -247,7 +247,7 @@ export function initInsightsAndStrategies(org) {
                 // Show "X of Y" in #articles_... with some styling
                 articlesContents.innerHTML = `
                   <span class="font-semibold text-carnation-600">${makeNumberReadable(numeratorCount)}</span>
-                  <span class="text-neutral-700">
+                  <span class="text-neutral-800">
                     of ${makeNumberReadable(denominatorCount)} ${denominatorText}
                   </span>
                 `;
