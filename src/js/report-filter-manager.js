@@ -319,11 +319,11 @@ function removeValueFromField(q, field, value) {
  * @param {Object} params
  * @param {string} params.field  - ES field id (e.g., journal, concepts.display_name)
  * @param {string} params.query  - User-entered prefix/term to match
- * @param {number} [params.size=10] - Max number of suggestions to return
+ * @param {number} [params.size=100] - Max number of suggestions to return
  * @param {AbortSignal} [params.signal] - Optional abort signal
  * @returns {Promise<string[]>} Ordered list of suggested values (unique, trimmed)
  */
-export async function fetchFilterValueSuggestions({ field, query, size = 15, signal }) {
+export async function fetchFilterValueSuggestions({ field, query, size = 100, signal }) {
   if (!field || !query || !query.trim()) return [];
 
   // Per-session cache to avoid repeat calls
@@ -598,7 +598,7 @@ function addFilterRow(container) {
       return;
     }
 
-    filtered.forEach((val) => {
+    filtered.slice(0, 20).forEach((val) => {
       const li = document.createElement("li");
       li.setAttribute("role", "option");
       li.setAttribute("aria-selected", "false");
