@@ -690,7 +690,7 @@ function addFilterRow(container) {
       } catch (err) {
         console.error("Error fetching suggestions:", err);
       }
-    }, 120);
+    }, 500);
   };
 
   input.addEventListener("keydown", (event) => {
