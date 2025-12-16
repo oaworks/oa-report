@@ -11,7 +11,6 @@ import {
   getDecodedUrlQuery,
   updateURLParams,
   removeURLParams,
-  andQueryStrings,
   normaliseFieldId,
   pluraliseNoun
 } from "./utils.js";
@@ -293,15 +292,6 @@ function parseEsQueryToPairs(q) {
   }));
 }
 
-function removeClauseFromQuery(q, field) {
-  if (!field) return q;
-  if (!q) return "";
-  return parseEsQueryToPairs(q)
-    .filter((p) => p.field !== field)
-    .map((p) => p.clause)
-    .join(" AND ");
-}
-
 function removeValueFromField(q, field, value) {
   if (!field || !value) return q || "";
   const pairs = parseEsQueryToPairs(q);
@@ -329,11 +319,11 @@ function removeValueFromField(q, field, value) {
  * @param {Object} params
  * @param {string} params.field  - ES field id (e.g., journal, concepts.display_name)
  * @param {string} params.query  - User-entered prefix/term to match
- * @param {number} [params.size=10] - Max number of suggestions to return
+ * @param {number} [params.size=100] - Max number of suggestions to return
  * @param {AbortSignal} [params.signal] - Optional abort signal
  * @returns {Promise<string[]>} Ordered list of suggested values (unique, trimmed)
  */
-export async function fetchFilterValueSuggestions({ field, query, size = 8, signal }) {
+export async function fetchFilterValueSuggestions({ field, query, size = 100, signal }) {
   if (!field || !query || !query.trim()) return [];
 
   // Per-session cache to avoid repeat calls
@@ -496,6 +486,8 @@ function addFilterRow(container) {
   input.setAttribute("role", "combobox");
   input.setAttribute("aria-autocomplete", "list");
   input.setAttribute("aria-expanded", "false");
+  input.setAttribute("aria-haspopup", "listbox");
+  input.setAttribute("aria-activedescendant", "");
   input.setAttribute("aria-labelledby", textLabel.id);
 
   const listboxId = `js-filter-suggestions-${idSuffix}`;
@@ -529,6 +521,7 @@ function addFilterRow(container) {
   const hideSuggestions = () => {
     listbox.classList.add("hidden");
     input.setAttribute("aria-expanded", "false");
+    input.setAttribute("aria-activedescendant", "");
     activeIndex = -1;
   };
 
@@ -558,6 +551,12 @@ function addFilterRow(container) {
       li.classList.toggle("bg-neutral-900", selected);
       li.classList.toggle("text-white", selected);
     });
+    const activeOption = options[activeIndex];
+    if (activeOption && activeOption.id) {
+      input.setAttribute("aria-activedescendant", activeOption.id);
+    } else {
+      input.setAttribute("aria-activedescendant", "");
+    }
   };
 
   const renderSuggestions = (items) => {
@@ -599,12 +598,13 @@ function addFilterRow(container) {
       return;
     }
 
-    filtered.forEach((val) => {
+    filtered.slice(0, 20).forEach((val) => {
       const li = document.createElement("li");
       li.setAttribute("role", "option");
       li.setAttribute("aria-selected", "false");
       li.setAttribute("aria-disabled", "false");
       li.className = "px-2 py-1 cursor-pointer hover:bg-carnation-100 text-xs md:text-sm";
+      li.id = `${listboxId}-option-${listbox.childElementCount}`;
       li.innerHTML = highlight(val);
       li.addEventListener("mousedown", (e) => {
         e.preventDefault(); // keep focus
@@ -615,21 +615,26 @@ function addFilterRow(container) {
     activeIndex = -1;
     listbox.classList.remove("hidden");
     input.setAttribute("aria-expanded", "true");
+    input.setAttribute("aria-activedescendant", "");
   };
 
-  const renderHint = (termRaw = "") => {
+  const renderHint = (termRaw = "", message) => {
     listbox.innerHTML = "";
     const hint = document.createElement("li");
     hint.setAttribute("role", "presentation");
     hint.setAttribute("aria-hidden", "true");
     hint.setAttribute("aria-disabled", "true");
     hint.className = "px-2 py-1 h-9 flex items-center text-xs md:text-sm bg-neutral-100 text-neutral-700 border-b border-neutral-200";
-    hint.textContent = termRaw ? `Matching suggestions for “${termRaw}”` : "Start typing to see suggestions…";
+    hint.textContent = message || (termRaw ? `Matching suggestions for “${termRaw}”` : "Start typing to see suggestions…");
     listbox.appendChild(hint);
     activeIndex = -1;
     listbox.classList.remove("hidden");
     input.setAttribute("aria-expanded", "true");
+    input.setAttribute("aria-activedescendant", "");
   };
+
+  // Remember the last fetched suggestions so we can reuse them for longer searches
+  let lastFetched = { field: "", query: "", items: [] };
 
   const renderTokens = () => {
     tokens.innerHTML = "";
@@ -672,8 +677,19 @@ function addFilterRow(container) {
       const raw = input.value || "";
       const q = raw.replace(/\s+/g, " ").trim();
       if (!fieldVal || q.length < 2) {
-        const msg = !fieldVal ? "Select a field first to see suggestions." : "Type at least 2 characters.";
-        renderHint("", msg);
+        renderHint();
+        lastFetched = { field: "", query: "", items: [] };
+        return;
+      }
+      // If we already have results for this field that cover the current (longer) search, reuse them
+      const lowercasedQuery = q.toLowerCase();
+      if (
+        lastFetched.field === fieldVal &&
+        q.startsWith(lastFetched.query || "") &&
+        Array.isArray(lastFetched.items) &&
+        lastFetched.items.some((val) => (val || "").toLowerCase().includes(lowercasedQuery))
+      ) {
+        renderSuggestions(lastFetched.items);
         return;
       }
       const currentReq = ++requestSeq;
@@ -684,12 +700,14 @@ function addFilterRow(container) {
           query: q,
         });
         if (currentReq === requestSeq) {
+          lastFetched = { field: fieldVal, query: q, items: suggestions };
           renderSuggestions(suggestions);
         }
       } catch (err) {
         console.error("Error fetching suggestions:", err);
+        lastFetched = { field: fieldVal, query: q, items: [] };
       }
-    }, 120);
+    }, 500);
   };
 
   input.addEventListener("keydown", (event) => {
@@ -718,7 +736,10 @@ function addFilterRow(container) {
     setTimeout(hideSuggestions, 100);
   });
 
-  fieldSelect.addEventListener("change", triggerSuggestions);
+  fieldSelect.addEventListener("change", () => {
+    lastFetched = { field: "", query: "", items: [] };
+    triggerSuggestions();
+  });
   input.addEventListener("input", triggerSuggestions);
   input.addEventListener("focus", () => {
     renderHint();

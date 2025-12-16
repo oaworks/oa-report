@@ -13,25 +13,40 @@ let loggedIn = false;
 
 const listeners = new Set();
 
+function getStorageKey() {
+  return orgSlug ? `${AUTH_STORAGE_KEY}:${orgSlug}` : AUTH_STORAGE_KEY;
+}
+
+function dropLegacySessionKey() {
+  if (!orgSlug) return;
+  try {
+    sessionStorage.removeItem(AUTH_STORAGE_KEY);
+  } catch (_) {}
+}
+
 function safeSessionGet() {
   // Safe access to sessionStorage so we don't break on browsers that block it
   try {
-    return sessionStorage.getItem(AUTH_STORAGE_KEY);
+    return sessionStorage.getItem(getStorageKey());
   } catch (_) {
     return null;
   }
 }
 
 function safeSessionSet(value) {
-  // Safe set for sessionStorage; silently ignore if storage is unavailable
+  // Safe set for sessionStorage; store per-org so keys don't leak across slugs
   try {
-    sessionStorage.setItem(AUTH_STORAGE_KEY, value);
-  } catch (_) {}
+    sessionStorage.setItem(getStorageKey(), value);
+  } catch (err) {
+    console.error("Failed to set orgKey in sessionStorage:", err);
+  }
 }
 
 function safeSessionClear() {
   // Safe clear for sessionStorage; ignore errors if storage is blocked
   try {
+    // Clear both current and legacy keys
+    sessionStorage.removeItem(getStorageKey());
     sessionStorage.removeItem(AUTH_STORAGE_KEY);
   } catch (_) {}
 }
@@ -54,12 +69,15 @@ function extractOrgKeyFromOAKeys() {
   if (typeof window.OAKEYS !== "object") return null;
   if (!window.OAKEYS) return null;
 
-  if (orgSlug && window.OAKEYS[orgSlug]) {
-    return window.OAKEYS[orgSlug];
+  if (orgSlug && window.OAKEYS[orgSlug]) return window.OAKEYS[orgSlug];
+
+  // Only fall back to the first value when no slug is provided
+  if (!orgSlug) {
+    const values = Object.values(window.OAKEYS || {});
+    return values.length ? values[0] : null;
   }
 
-  const values = Object.values(window.OAKEYS || {});
-  return values.length ? values[0] : null;
+  return null;
 }
 
 /**
@@ -71,6 +89,7 @@ function extractOrgKeyFromOAKeys() {
 export function initAuth(slug) {
   if (slug && !orgSlug) {
     orgSlug = decodeURIComponent(slug);
+    dropLegacySessionKey(); // clear any pre-namespaced key from earlier versions
   }
 
   // Handle ?logout straight away
@@ -106,11 +125,10 @@ export function initAuth(slug) {
 
 /**
  * Subscribe to auth state updates. Returns an unsubscribe function.
- * The callback is called immediately with the current state.
+ * The callback is NOT called immediately; call getAuthState() after subscribing if you need the current state.
  */
 export function onAuthChange(callback) {
   listeners.add(callback);
-  callback(currentState());
   return () => listeners.delete(callback);
 }
 

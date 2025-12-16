@@ -8,7 +8,7 @@
 // =================================================
 
 import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, normaliseFieldId } from "./utils.js";
-import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, FILTER_PILL_CLASSES } from "./constants.js";
+import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, FILTER_PILL_CLASSES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
 import { renderActiveFiltersBanner } from './report-filter-manager.js';
@@ -28,7 +28,7 @@ let loggedIn = false;
 // Holds organisation data; declared early so auth listeners can check it safely
 let orgData;
 
-const authState = initAuth();
+const authState = initAuth(typeof org !== "undefined" ? org : undefined);
 loggedIn = authState.loggedIn;
 orgKey = authState.orgKey ? `&orgkey=${authState.orgKey}` : "";
 applyAuthVisibility({ hideWhenLoggedOut: ["report-filters"] });
@@ -760,10 +760,6 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
       : index === 1
         ? DATA_TABLE_HEADER_CLASSES[dataType].secondHeaderCol
         : DATA_TABLE_HEADER_CLASSES[dataType].otherHeaderCols;
-
-    const label = dataType === 'terms'
-      ? EXPLORE_HEADER_TERMS_LABELS[key]?.label || key
-      : EXPLORE_HEADER_ARTICLES_LABELS[key]?.label || key;
 
     const headerCell = createTableCell('', cssClass, null, null, true); 
     setupHeaderTooltip(headerCell, key, dataType);

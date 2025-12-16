@@ -70,7 +70,13 @@ if (window.location.search.includes('orgkey=')) {
 
 if (window.location.search.includes('logout')) {
   window.OAKEYS = {};
-  sessionStorage.removeItem('orgkey');
+  // Clear all possible sessionStorage orgkey entries
+  try {
+    sessionStorage.removeItem('orgkey');
+    Object.keys(sessionStorage)
+      .filter((k) => k === 'orgkey' || k.startsWith('orgkey:'))
+      .forEach((k) => sessionStorage.removeItem(k));
+  } catch (_) {}
 
   const hostname = window.location.hostname;
   const domain = '.' + hostname;
