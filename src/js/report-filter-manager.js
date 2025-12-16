@@ -634,7 +634,7 @@ function addFilterRow(container) {
   };
 
   // Remember the last fetched suggestions so we can reuse them for longer searches
-  let lastFetched = { field: "", query: "", items: [] };
+  let lastFetched = { field: "", query: "", items: [], size: 0 };
 
   const renderTokens = () => {
     tokens.innerHTML = "";
@@ -699,7 +699,10 @@ function addFilterRow(container) {
         lastFetched.field === fieldVal &&
         q.startsWith(lastFetched.query || "") &&
         Array.isArray(lastFetched.items) &&
-        lastFetched.items.some((val) => (val || "").toLowerCase().includes(lowercasedQuery))
+        (
+          lastFetched.query === q || // exact same query, always reuse
+          (lastFetched.items.length < lastFetched.size && lastFetched.items.some((val) => (val || "").toLowerCase().includes(lowercasedQuery)))
+        )
       ) {
         renderSuggestions(lastFetched.items);
         return;
@@ -712,12 +715,12 @@ function addFilterRow(container) {
           query: q,
         });
         if (currentReq === requestSeq) {
-          lastFetched = { field: fieldVal, query: q, items: suggestions };
+          lastFetched = { field: fieldVal, query: q, items: suggestions, size: suggestions.length };
           renderSuggestions(suggestions);
         }
       } catch (err) {
         console.error("Error fetching suggestions:", err);
-        lastFetched = { field: fieldVal, query: q, items: [] };
+        lastFetched = { field: fieldVal, query: q, items: [], size: 0 };
       }
     }, 500);
   };
