@@ -681,6 +681,18 @@ function addFilterRow(container) {
         lastFetched = { field: "", query: "", items: [] };
         return;
       }
+      // If the last fetch for this field returned nothing and 
+      // the user is just extending that query (or entering gibberish),
+      // don't bother re-fetching
+      if (
+        lastFetched.field === fieldVal &&
+        q.startsWith(lastFetched.query || "") &&
+        Array.isArray(lastFetched.items) &&
+        lastFetched.items.length === 0
+      ) {
+        renderHint(q);
+        return;
+      }
       // If we already have results for this field that cover the current (longer) search, reuse them
       const lowercasedQuery = q.toLowerCase();
       if (
