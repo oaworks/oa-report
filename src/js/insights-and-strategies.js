@@ -161,7 +161,7 @@ export function initInsightsAndStrategies(org) {
           ? percentageContents.closest('p') || percentageContents
           : null;
 
-        if (org === 'gates-foundation' && articlesWrapper) {
+        if (articlesWrapper) {
           articlesWrapper.classList.add('sr-only');
         }
 
