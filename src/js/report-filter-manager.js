@@ -486,6 +486,8 @@ function addFilterRow(container) {
   input.setAttribute("role", "combobox");
   input.setAttribute("aria-autocomplete", "list");
   input.setAttribute("aria-expanded", "false");
+  input.setAttribute("aria-haspopup", "listbox");
+  input.setAttribute("aria-activedescendant", "");
   input.setAttribute("aria-labelledby", textLabel.id);
 
   const listboxId = `js-filter-suggestions-${idSuffix}`;
@@ -519,6 +521,7 @@ function addFilterRow(container) {
   const hideSuggestions = () => {
     listbox.classList.add("hidden");
     input.setAttribute("aria-expanded", "false");
+    input.setAttribute("aria-activedescendant", "");
     activeIndex = -1;
   };
 
@@ -548,6 +551,12 @@ function addFilterRow(container) {
       li.classList.toggle("bg-neutral-900", selected);
       li.classList.toggle("text-white", selected);
     });
+    const activeOption = options[activeIndex];
+    if (activeOption && activeOption.id) {
+      input.setAttribute("aria-activedescendant", activeOption.id);
+    } else {
+      input.setAttribute("aria-activedescendant", "");
+    }
   };
 
   const renderSuggestions = (items) => {
@@ -595,6 +604,7 @@ function addFilterRow(container) {
       li.setAttribute("aria-selected", "false");
       li.setAttribute("aria-disabled", "false");
       li.className = "px-2 py-1 cursor-pointer hover:bg-carnation-100 text-xs md:text-sm";
+      li.id = `${listboxId}-option-${listbox.childElementCount}`;
       li.innerHTML = highlight(val);
       li.addEventListener("mousedown", (e) => {
         e.preventDefault(); // keep focus
@@ -605,6 +615,7 @@ function addFilterRow(container) {
     activeIndex = -1;
     listbox.classList.remove("hidden");
     input.setAttribute("aria-expanded", "true");
+    input.setAttribute("aria-activedescendant", "");
   };
 
   const renderHint = (termRaw = "") => {
@@ -619,6 +630,7 @@ function addFilterRow(container) {
     activeIndex = -1;
     listbox.classList.remove("hidden");
     input.setAttribute("aria-expanded", "true");
+    input.setAttribute("aria-activedescendant", "");
   };
 
   const renderTokens = () => {
