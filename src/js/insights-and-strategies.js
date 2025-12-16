@@ -175,7 +175,9 @@ export function initInsightsAndStrategies(org) {
                 allowHTML: true,
                 placement: 'bottom',
                 appendTo: document.body,
-                theme: 'tooltip-white'
+                theme: 'tooltip-white',
+                interactive: true,
+                trigger: 'mouseenter focus click'
               });
             }
             target._detailTooltip.setContent(articlesContents.innerHTML);
@@ -247,7 +249,7 @@ export function initInsightsAndStrategies(org) {
                 // Show "X of Y" in #articles_... with some styling
                 articlesContents.innerHTML = `
                   <span class="font-semibold text-carnation-600">${makeNumberReadable(numeratorCount)}</span>
-                  <span class="text-neutral-800">
+                  <span class="text-neutral-900">
                     of ${makeNumberReadable(denominatorCount)} ${denominatorText}
                   </span>
                 `;
