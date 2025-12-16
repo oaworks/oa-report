@@ -894,11 +894,27 @@ export function resetBarChart(cardContents) {
   // Remove the "unavailable" card styling
   cardContents.classList.remove(
     'bg-carnation-100',
+    'bg-neutral-100',
+    'bg-neutral-50',
+    'opacity-70',
     'flex',
     'flex-col',
     'justify-center'
   );
-  
+
+  // Restore swapped icon and percent styling if it was changed
+  const iconEl = cardContents.querySelector('.text-neutral-800');
+  if (iconEl && iconEl.dataset.oarDefaultIcon) {
+    iconEl.innerHTML = iconEl.dataset.oarDefaultIcon;
+    delete iconEl.dataset.oarDefaultIcon;
+  }
+  const percentEl = cardContents.querySelector('[id^="percent_"]');
+  if (percentEl) {
+    percentEl.classList.remove('text-sm', 'font-semibold', 'text-neutral-700', 'text-neutral-800');
+    percentEl.innerHTML = percentEl.dataset.oarDefaultUnavailable || percentEl.innerHTML;
+    delete percentEl.dataset.oarDefaultUnavailable;
+  }
+
   // Ensure one <footer.js_bar_chart> exists
   let footerEl = cardContents.querySelector('footer.js_bar_chart');
   if (!footerEl) {
@@ -931,22 +947,35 @@ export function showUnavailableCard(cardContents) {
   // Locate the "articles" and "percent" elements
   const articlesEl = cardContents.querySelector('[id^="articles_"]');
   const percentEl  = cardContents.querySelector('[id^="percent_"]');
+  const iconEl     = cardContents.querySelector('.text-neutral-800');
 
   // Clear the text for #articles_...
   if (articlesEl) {
     articlesEl.textContent = '';
   }
 
-  // Replace the text in #percent_... with the slash icon
+  // Replace the text in #percent_... with a compact label
   if (percentEl) {
-    percentEl.innerHTML = `
+    if (!percentEl.dataset.oarDefaultUnavailable) {
+      percentEl.dataset.oarDefaultUnavailable = percentEl.innerHTML;
+    }
+    percentEl.innerHTML = `<span class="text-sm font-semibold text-neutral-800">Data unavailable</span>`;
+  }
+
+  // Swap the corner icon for a slash, remembering the original
+  if (iconEl) {
+    if (!iconEl.dataset.oarDefaultIcon) {
+      iconEl.dataset.oarDefaultIcon = iconEl.innerHTML;
+    }
+    iconEl.innerHTML = `
       <svg xmlns="http://www.w3.org/2000/svg"
-           width="24" height="24" fill="none"
+           width="16" height="16" fill="none"
            stroke="currentColor" stroke-width="2"
            stroke-linecap="round" stroke-linejoin="round"
-           class="feather feather-slash inline-block">
-        <circle cx="12" cy="12" r="10"></circle>
-        <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+           class="feather feather-slash inline-block text-neutral-700"
+           aria-hidden="true">
+        <circle cx="8" cy="8" r="6.5"></circle>
+        <line x1="2.62" y1="2.62" x2="13.38" y2="13.38"></line>
       </svg>
     `;
   }
@@ -960,7 +989,7 @@ export function showUnavailableCard(cardContents) {
     'proportional-card'
   );
 
-  // Add grey background & center layout
+  // Add muted/disabled styling & center layout
   cardContents.classList.add(
     'bg-carnation-100',
     'flex',
@@ -971,13 +1000,19 @@ export function showUnavailableCard(cardContents) {
   // Clear or replace the bar chart area with "Data unavailable"
   const footerEl = cardContents.querySelector('footer.js_bar_chart');
   if (footerEl) {
-    footerEl.className = 'js_bar_chart mt-4 w-full';
+    footerEl.className = [
+      'js_bar_chart',
+      'flex',
+      'flex-col',
+      'justify-end',
+      'h-20',
+      'w-2',
+      'bg-neutral-300',
+      'rounded-full',
+      'overflow-hidden'
+    ].join(' ');
     footerEl.setAttribute('data-unavailable', 'true');
-    footerEl.innerHTML = `
-      <p class="text-xs text-left text-neutral-700">
-        Data unavailable
-      </p>
-    `;
+    footerEl.innerHTML = '';
   }
 }
 
