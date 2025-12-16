@@ -123,11 +123,10 @@ export function initAuth(slug) {
 
 /**
  * Subscribe to auth state updates. Returns an unsubscribe function.
- * The callback is called immediately with the current state.
+ * The callback is NOT called immediately; call getAuthState() after subscribing if you need the current state.
  */
 export function onAuthChange(callback) {
   listeners.add(callback);
-  callback(currentState());
   return () => listeners.delete(callback);
 }
 
