@@ -858,14 +858,14 @@ export function renderActiveFiltersBanner() {
     const grouped = new Map(); // field -> {label, clauses:[...], values:[...]}
     pairs.forEach(({ field, label, values, clause }) => {
       if (!grouped.has(field)) {
-        grouped.set(field, { label, clauses: [], values: [] });
+        grouped.set(field, { label, field, clauses: [], values: [] });
       }
       const entry = grouped.get(field);
       entry.clauses.push(clause);
       (values || []).forEach((v) => entry.values.push(v));
     });
 
-    Array.from(grouped.values()).forEach(({ label, clauses, values }) => {
+    Array.from(grouped.values()).forEach(({ label, clauses, values, field }) => {
       const li = document.createElement("li");
       li.className = "mb-1";
       li.setAttribute("role", "listitem");
@@ -885,12 +885,16 @@ export function renderActiveFiltersBanner() {
         chip.className = "inline-flex items-center rounded-full bg-carnation-100 text-neutral-900 px-2 py-0.5 text-[11px] md:text-xs";
         chip.setAttribute("role", "listitem");
         chip.setAttribute("aria-label", `Remove ${label}: ${val}`);
+        chip.setAttribute("data-field", ensureKeywordField(field));
         chip.innerHTML = `<span>${val}</span><span class="ml-2 text-[10px]">✕</span>`;
         chip.addEventListener("click", (e) => {
           e.preventDefault();
           e.stopPropagation();
           const decodedQ = getDecodedUrlQuery();
-          const nextQ = removeValueFromField(decodedQ, labelFromFieldKeyInverse(label), val);
+          // Prefer the actual parsed field for clearing from active filters
+          // Fall back to label-based mapping only when missing
+          const chipField = chip.getAttribute("data-field") || labelFromFieldKeyInverse(label);
+          const nextQ = removeValueFromField(decodedQ, chipField, val);
           if (nextQ) {
             updateURLParams({ q: nextQ });
           } else {
