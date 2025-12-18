@@ -52,6 +52,11 @@ const ALLOWED_TERMS = new Map([
 let orgData;
 orgDataPromise.then((res) => { orgData = res.data; });
 
+const ensureKeywordField = (field = "") => {
+  if (!field) return "";
+  return /\.keyword$/i.test(field) ? field : `${field}.keyword`;
+};
+
 /**
  * Derives a readable label from an ES field key.
  * Falls back to header/filter labels, then a cleaned version of the key.
@@ -62,7 +67,8 @@ orgDataPromise.then((res) => { orgData = res.data; });
 function labelFromFieldKey(rawKey) {
   if (!rawKey) return "";
 
-  const normalised = normaliseFieldId(rawKey);
+  const baseKey = rawKey.replace(/\.keyword$/i, "");
+  const normalised = normaliseFieldId(baseKey);
   let label;
 
   // 1. Try to match this field key to an Explore item.term
@@ -72,7 +78,8 @@ function labelFromFieldKey(rawKey) {
     const matchingItem = exploreConfig.find((item) => {
       if (!item.term) return false;
       // Match either exact term or normalised term
-      return item.term === rawKey || normaliseFieldId(item.term) === normalised;
+      const termBase = item.term.replace(/\.keyword$/i, "");
+      return termBase === baseKey || normaliseFieldId(termBase) === normalised;
     });
 
     if (matchingItem) {
@@ -91,16 +98,17 @@ function labelFromFieldKey(rawKey) {
   }
 
   // 2. If we still don't have a label, fall back to the existing label sources
+  const lookupKey = baseKey || rawKey;
   const fromFilters =
-    EXPLORE_FILTERS_LABELS[rawKey] ||
+    EXPLORE_FILTERS_LABELS[lookupKey] ||
     EXPLORE_FILTERS_LABELS[normalised];
 
   const fromArticles =
-    EXPLORE_HEADER_ARTICLES_LABELS[rawKey] ||
+    EXPLORE_HEADER_ARTICLES_LABELS[lookupKey] ||
     EXPLORE_HEADER_ARTICLES_LABELS[normalised];
 
   const fromTerms =
-    EXPLORE_HEADER_TERMS_LABELS[rawKey] ||
+    EXPLORE_HEADER_TERMS_LABELS[lookupKey] ||
     EXPLORE_HEADER_TERMS_LABELS[normalised];
 
   if (!label) {
@@ -133,7 +141,7 @@ function buildFilterFieldOptions(exploreData) {
   const options = [];
 
   exploreData.forEach((item) => {
-    const fieldKey = item.term;
+    const fieldKey = (item.term || "").replace(/\.keyword$/i, "");
     if (!ALLOWED_TERMS.has(fieldKey) || seen.has(fieldKey)) return;
     seen.add(fieldKey);
 
@@ -163,7 +171,7 @@ function buildFilterFieldOptions(exploreData) {
 function labelFromFieldKeyInverse(label) {
   // We only need this to map the displayed label back to the field key when removing chips
   for (const [key, val] of ALLOWED_TERMS.entries()) {
-    if (val === label) return key;
+    if (val === label) return ensureKeywordField(key);
   }
   return null;
 }
@@ -243,9 +251,10 @@ function parseEsQueryToPairs(q) {
               .trim()
           )
           .filter(Boolean)
-          .map((val) =>
-            /country(_code)?$/i.test(key) && COUNTRY_CODES[val] ? COUNTRY_CODES[val] : val
-          )
+          .map((val) => {
+            const baseKey = key.replace(/\.keyword$/i, "");
+            return /country(_code)?$/i.test(baseKey) && COUNTRY_CODES[val] ? COUNTRY_CODES[val] : val;
+          })
           .join(", ")
       )
       .filter(Boolean)
@@ -262,9 +271,10 @@ function parseEsQueryToPairs(q) {
     const m = cleanedClause.match(/^\s*\(?\s*([A-Za-z0-9._]+)\s*:\s*(.+?)\s*\)?\s*$/);
     if (!m) return;
     const rawKey = m[1];
-    const value = renderValue(rawKey, unwrapParens(m[2]));
+    const fieldKey = ensureKeywordField(rawKey);
+    const value = renderValue(fieldKey, unwrapParens(m[2]));
     if (!value) return;
-    rawClauses.push({ label: labelFromFieldKey(rawKey), field: rawKey, value, clause: clause.trim() });
+    rawClauses.push({ label: labelFromFieldKey(fieldKey), field: fieldKey, value, clause: clause.trim() });
   };
 
   splitTopLevel(query, "AND").forEach((clause) => processClause(clause));
@@ -292,12 +302,22 @@ function parseEsQueryToPairs(q) {
   }));
 }
 
+function removeClauseFromQuery(q, field) {
+  if (!field) return q;
+  if (!q) return "";
+  return parseEsQueryToPairs(q)
+    .filter((p) => ensureKeywordField(p.field) !== ensureKeywordField(field))
+    .map((p) => p.clause)
+    .join(" AND ");
+}
+
 function removeValueFromField(q, field, value) {
   if (!field || !value) return q || "";
+  const targetField = ensureKeywordField(field);
   const pairs = parseEsQueryToPairs(q);
   const clauses = [];
   pairs.forEach((p) => {
-    if (p.field !== field) {
+    if (ensureKeywordField(p.field) !== targetField) {
       clauses.push(p.clause);
       return;
     }
@@ -308,7 +328,7 @@ function removeValueFromField(q, field, value) {
     if (!remaining.length) return;
     const quotedVals = remaining.map((val) => `"${val.replace(/"/g, '\\"')}"`);
     const valueExpr = quotedVals.length === 1 ? quotedVals[0] : `(${quotedVals.join(" OR ")})`;
-    clauses.push(`${p.field}:${valueExpr}`);
+    clauses.push(`${ensureKeywordField(p.field)}:${valueExpr}`);
   });
   return clauses.join(" AND ");
 }
@@ -328,7 +348,7 @@ export async function fetchFilterValueSuggestions({ field, query, size = 100, si
 
   // Per-session cache to avoid repeat calls
   fetchFilterValueSuggestions._cache = fetchFilterValueSuggestions._cache || new Map();
-  const cacheKey = `${field}::${query.slice(0, 50)}`;
+  const cacheKey = `${ensureKeywordField(field || "")}::${query.slice(0, 50)}`;
   if (fetchFilterValueSuggestions._cache.has(cacheKey)) {
     return fetchFilterValueSuggestions._cache.get(cacheKey);
   }
@@ -340,11 +360,11 @@ export async function fetchFilterValueSuggestions({ field, query, size = 100, si
   } catch (e) {
     // If already decoded/invalid, keep as-is
   }
-  const baseField = field.replace(/\.keyword$/, "");
+  const baseField = field.replace(/\.keyword$/i, "");
   const lower = qClean.toLowerCase();
   const orgName = orgData?.hits?.hits?.[0]?._source?.name;
 
-  const targetField = `${baseField}.keyword`;
+  const targetField = ensureKeywordField(field || baseField);
 
   try {
     const parts = [];
@@ -984,7 +1004,7 @@ export function renderActiveFiltersBanner() {
       const tokensEl = row.querySelector(".js-filter-tokens");
       if (!fieldSelect || !input || !tokensEl) return;
 
-      const field = fieldSelect.value;
+      const field = ensureKeywordField(fieldSelect.value);
       const raw = input.value.trim();
       const chips = Array.from(tokensEl.children).map((chip) => chip.getAttribute("data-value") || "").filter(Boolean);
 
@@ -1034,24 +1054,26 @@ export function renderActiveFiltersBanner() {
 
     // Start with existing values
     existingPairs.forEach((p) => {
+      const fieldKey = ensureKeywordField(p.field);
       const vals = Array.isArray(p.values)
         ? p.values
         : (p.value || "")
             .split(/\s+OR\s+/)
             .map((v) => v.trim())
             .filter(Boolean);
-      mergedFields.set(p.field, {
-        label: p.label,
+      mergedFields.set(fieldKey, {
+        label: p.label || labelFromFieldKey(fieldKey),
         values: new Set(vals),
       });
     });
 
     // Add new values
     fieldMap.forEach((vals, field) => {
-      if (!mergedFields.has(field)) {
-        mergedFields.set(field, { label: labelFromFieldKey(field), values: new Set() });
+      const fieldKey = ensureKeywordField(field);
+      if (!mergedFields.has(fieldKey)) {
+        mergedFields.set(fieldKey, { label: labelFromFieldKey(fieldKey), values: new Set() });
       }
-      const entry = mergedFields.get(field);
+      const entry = mergedFields.get(fieldKey);
       vals.filter(Boolean).forEach((v) => entry.values.add(v));
     });
 
@@ -1061,7 +1083,7 @@ export function renderActiveFiltersBanner() {
       if (!unique.length) return;
       const quotedVals = unique.map((val) => `"${val.replace(/"/g, '\\"')}"`);
       const valueExpr = quotedVals.length === 1 ? quotedVals[0] : `(${quotedVals.join(" OR ")})`;
-      clauses.push(`${field}:${valueExpr}`);
+      clauses.push(`${ensureKeywordField(field)}:${valueExpr}`);
     });
 
     if (!clauses.length) {
