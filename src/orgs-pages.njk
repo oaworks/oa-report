@@ -220,10 +220,10 @@ permalink: "{{ org._source.objectID | slug }}/"
       </div>
 
       <div 
-        class="fixed inset-0 z-50 flex justify-center items-center opacity-0 transition-opacity duration-300" 
+        class="hidden fixed inset-0 z-50 flex justify-center items-center opacity-0 transition-opacity duration-300" 
         id="explore_loading"
         aria-live="polite" 
-        aria-busy="true"
+        aria-busy="false"
       >
         <div class="absolute inset-0 bg-neutral-800 bg-opacity-50"></div>
         <div class="loader ease-linear rounded-full border-8 border-t-8 border-carnation-200 border-t-carnation-500 h-12 w-12 z-10"></div>
