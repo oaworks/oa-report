@@ -1,4 +1,7 @@
-<span class="w-16 md:w-28 lg:w-32 h-auto flex items-center">
+{% set logo_size = logo_size | default('w-16 md:w-28 lg:w-32') %}
+<span class="inline-flex items-center {{ logo_size }} h-auto">
   <span class="sr-only">OA.Report</span>
-  {% include 'svg/logo.svg' %}
+  <span class="w-full h-auto flex items-center">
+    {% include 'svg/logo.svg' %}
+  </span>
 </span>
