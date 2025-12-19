@@ -3,11 +3,11 @@
     {% set logo_size = 'w-20 md:w-24 lg:w-32' %}
     {% include 'partials/app-name.njk' %}
   </a>
-  <nav class="mt-8 md:mt-0 md:flex">
+  <nav class="mt-8 md:mt-0 md:flex" aria-label="Footer">
     <ul class="md:flex md:space-x-12 md:justify-center md:self-center text-center">
       {% for item in nav_footer %}
       <li>
-        <a href="{{ item.url }}" {% if item.ext %}target="_blank" {% endif %}class="text-xs md:text-base lg:text-lg hover:text-carnation-500 transition duration-300">{{ item.label }}</a>
+        <a href="{{ item.url }}" {% if item.ext %}target="_blank" rel="noopener"{% endif %} class="text-xs md:text-base lg:text-lg hover:text-carnation-500 transition duration-300">{{ item.label }}</a>
       </li>
       {% endfor %}
     </ul>
