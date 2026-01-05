@@ -417,7 +417,7 @@ function createDateRangeForm() {
   const applyBtn = document.createElement("button");
   applyBtn.type = "button";
   applyBtn.id = "js-date-range-apply-button";
-  applyBtn.className = "block p-2 border rounded-sm mt-1 mr-1 md:mt-0 md:mr-3 w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 hover:bg-carnation-100 js-nav-chip";
+  applyBtn.className = "block px-2 py-1 border rounded-sm w-full mt-1 md:mt-0 md:px-3 md:py-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 hover:bg-carnation-100 js-nav-chip";
   applyBtn.id = "js-date-range-apply-button";
   applyBtn.textContent = "Apply";
   pop.appendChild(applyBtn);

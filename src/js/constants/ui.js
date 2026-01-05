@@ -8,9 +8,9 @@
  * @type {{enabled:string,disabled:string,active:string}}
  */
 export const DATE_SELECTION_BUTTON_CLASSES = {
-  enabled: "block p-2 border rounded-t-sm mt-1 mr-1 md:mt-0 md:mr-3 md:border-b-0 bg-white text-neutral-900 hover:bg-carnation-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 js-nav-chip",
-  disabled: "block p-2 border rounded-t-sm mt-1 mr-1 md:mt-0 md:mr-3 md:border-b-0 bg-white text-neutral-900 opacity-50 cursor-not-allowed js-nav-chip",
-  active: "block p-2 border rounded-t-sm mt-1 mr-1 md:mt-0 md:mr-3 hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 md:border-b-0 bg-neutral-900 text-white font-semibold border-neutral-900 js-nav-chip"
+  enabled: "block px-2 py-1 border rounded-t-sm mt-1 md:mt-0 md:border-b-0 md:px-3 md:py-1.5 bg-white text-neutral-900 hover:bg-carnation-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 js-nav-chip",
+  disabled: "block px-2 py-1 border rounded-t-sm mt-1 md:mt-0 md:border-b-0 md:px-3 md:py-1.5 bg-white text-neutral-900 opacity-50 cursor-not-allowed js-nav-chip",
+  active: "block px-2 py-1 border rounded-t-sm mt-1 md:mt-0 md:border-b-0 md:px-3 md:py-1.5 hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 bg-neutral-900 text-white font-semibold border-neutral-900 js-nav-chip"
 };
 
 /**
