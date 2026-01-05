@@ -11,6 +11,16 @@
 
 import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter } from './utils.js';
 import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS } from './constants.js';
+import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
+
+// Cache identical count queries so we only hit the API once per unique URL
+const countQueryCache = new Map();
+const fetchCountQuery = (url) => {
+  if (!countQueryCache.has(url)) {
+    countQueryCache.set(url, axios.get(url));
+  }
+  return countQueryCache.get(url);
+};
 
 // =================================================
 // Org data
@@ -28,19 +38,23 @@ export const orgDataPromise = axios.get(orgApiUrl);
 
 let orgKey = "";
 let loggedIn = false;
-const hasOrgKey = typeof window.OAKEYS === 'object' && Object.keys(window.OAKEYS || {}).length !== 0;
 
-if (hasOrgKey) {
-  // logged in
-  orgKey = `&orgkey=${(window.OAKEYS || {})[org] ?? ''}`;
-  loggedIn = true;
-  displayNone("login");
-  displayNone("about-free-logged-out");
-} else {
-  // logged out
-  loggedIn = false;
-  displayNone("logout");
-}
+const authState = initAuth(org);
+loggedIn = authState.loggedIn;
+orgKey = authState.orgKey ? `&orgkey=${authState.orgKey}` : "";
+applyAuthVisibility({
+  showWhenLoggedIn: ["logout", "strategies"],
+  hideWhenLoggedIn: ["login"]
+});
+
+onAuthChange(({ loggedIn: isLoggedIn, orgKey: key }) => {
+  loggedIn = isLoggedIn;
+  orgKey = key ? `&orgkey=${key}` : "";
+  applyAuthVisibility({
+    showWhenLoggedIn: ["logout", "strategies"],
+    hideWhenLoggedIn: ["login"]
+  });
+});
 
 // =================================================
 // Exports
@@ -77,7 +91,7 @@ export function initInsightsAndStrategies(org) {
       }
   
       // if email is not undefined and there is an orgkey, try to decrypt the author’s email
-      if (email !== 'undefined' && hasOrgKey) {
+      if (email !== 'undefined' && loggedIn) {
           axios.get(`${ARTICLE_EMAIL_BASE + doi}?${orgKey}`)
               .then(function (response) {
                   let authorEmail = response.data;
@@ -159,12 +173,12 @@ export function initInsightsAndStrategies(org) {
         cardContents.setAttribute('title', 'More information on this metric');
 
         // Get numerator’s count query
-        let numPromise = axios.get(countQueryPrefix + buildEncodedQueryWithUrlFilter(analysisEntry.query));
+        let numPromise = fetchCountQuery(countQueryPrefix + buildEncodedQueryWithUrlFilter(analysisEntry.query));
 
         // If we have a denominator param
         if (numerator && denominator) {
           // Get denominator’s count query
-          let denomPromise = axios.get(
+          let denomPromise = fetchCountQuery(
             countQueryPrefix + buildEncodedQueryWithUrlFilter(
               orgData.hits.hits[0]._source.analysis[denominator].query
             )
@@ -189,7 +203,7 @@ export function initInsightsAndStrategies(org) {
           const totalArticlesPromise =
             totalKey === denominator
               ? denomPromise
-              : axios.get(
+              : fetchCountQuery(
                   countQueryPrefix + buildEncodedQueryWithUrlFilter(analysis[totalKey].query)
                 );
 
@@ -277,7 +291,7 @@ export function initInsightsAndStrategies(org) {
             listQuery  = queryPrefix + encodedQuery + sort;
         
         // Get total action (article) count for this strategy
-        axios.get(countQuery)
+        fetchCountQuery(countQuery)
           .then(function (countResponse) {
             var count = parseFloat(countResponse.data);
             
@@ -297,7 +311,7 @@ export function initInsightsAndStrategies(org) {
               }
 
               // Otherwise, generate list of actions
-              else if (count > 0 || count !== null) {
+              else if (count > 0) {
 
                 // Get full list of actions for this strategy 
                 axios.get(listQuery)
@@ -321,7 +335,7 @@ export function initInsightsAndStrategies(org) {
                             }
                           );
 
-                          if (suppKey == undefined || suppKey == null) {
+                          if (suppKey == null) {
                             action[key] = "N/A";
                           } else {
                             var value = suppKey[key];
@@ -337,7 +351,7 @@ export function initInsightsAndStrategies(org) {
                           if (key === 'published_date') action[key] = makeDateReadable(new Date(action[key]));
                         }
 
-                        if (value == undefined || value == null) {
+                        if (action[key] == null) {
                           action[key] = "N/A";
                         }
                       };
@@ -388,55 +402,57 @@ export function initInsightsAndStrategies(org) {
       };
     };
 
-    displayStrategy(
-      "email_author_vor",
-      ['published_date', 'title', 'journal', 'author_email_name', 'email', 'DOI', 'mailto'],
-      "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
-        <div class='mb-1 font-medium text-neutral-900 hover:text-carnation-500'>\
-          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
-        </div>\
-        <div class='text-neutral-600'>${action.journal}</div>\
-      </td>\
-      <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
-        <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
-      </td>\
-      <td class='hidden px-3 py-4 text-sm text-center text-neutral-600 align-top break-words sm:table-cell'>\
-        <button \
-          class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
-          data-email='${action.email}'\
-          data-doi='${action.DOI}'\
-          data-mailto='${action.mailto}'\
-          onclick='handleDecryptEmailClick(this)'>\
-          <svg class='h-4 w-4' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-mail inline-block h-4 duration-500'><path d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'></path><polyline points='22,6 12,13 2,6'></polyline></svg>\
-        </button>\
-      </td>"
-    );
+    // Hide temporarily 
+    // See See https://github.com/oaworks/discussion/issues/3619#issuecomment-3587683138 #}
+    // displayStrategy(
+    //   "email_author_vor",
+    //   ['published_date', 'title', 'journal', 'author_email_name', 'email', 'DOI', 'mailto'],
+    //   "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
+    //     <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
+    //     <div class='mb-1 font-medium text-neutral-900 hover:text-carnation-500'>\
+    //       <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
+    //     </div>\
+    //     <div class='text-neutral-600'>${action.journal}</div>\
+    //   </td>\
+    //   <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
+    //     <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
+    //   </td>\
+    //   <td class='hidden px-3 py-4 text-sm text-center text-neutral-600 align-top break-words sm:table-cell'>\
+    //     <button \
+    //       class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
+    //       data-email='${action.email}'\
+    //       data-doi='${action.DOI}'\
+    //       data-mailto='${action.mailto}'\
+    //       onclick='handleDecryptEmailClick(this)'>\
+    //       <svg class='h-4 w-4' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-mail inline-block h-4 duration-500'><path d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'></path><polyline points='22,6 12,13 2,6'></polyline></svg>\
+    //     </button>\
+    //   </td>"
+    // );
 
-    displayStrategy(
-      "email_author_aam",
-      ['published_date', 'title', 'journal', 'author_email_name', 'email', 'DOI', 'mailto'],
-      "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
-        <div class='mb-1 font-medium text-neutral-900 hover:text-carnation-500'>\
-          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
-        </div>\
-        <div class='text-neutral-600'>${action.journal}</div>\
-      </td>\
-      <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
-        <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
-      </td>\
-      <td class='hidden px-3 py-4 text-sm text-center text-neutral-600 align-top break-words sm:table-cell'>\
-        <button \
-          class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
-          data-email='${action.email}'\
-          data-doi='${action.DOI}'\
-          data-mailto='${action.mailto}'\
-          onclick='handleDecryptEmailClick(this)'>\
-          <svg class='h-4 w-4' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-mail inline-block h-4 duration-500'><path d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'></path><polyline points='22,6 12,13 2,6'></polyline></svg>\
-        </button>\
-      </td>"
-    );
+    // displayStrategy(
+    //   "email_author_aam",
+    //   ['published_date', 'title', 'journal', 'author_email_name', 'email', 'DOI', 'mailto'],
+    //   "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
+    //     <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
+    //     <div class='mb-1 font-medium text-neutral-900 hover:text-carnation-500'>\
+    //       <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
+    //     </div>\
+    //     <div class='text-neutral-600'>${action.journal}</div>\
+    //   </td>\
+    //   <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
+    //     <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
+    //   </td>\
+    //   <td class='hidden px-3 py-4 text-sm text-center text-neutral-600 align-top break-words sm:table-cell'>\
+    //     <button \
+    //       class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
+    //       data-email='${action.email}'\
+    //       data-doi='${action.DOI}'\
+    //       data-mailto='${action.mailto}'\
+    //       onclick='handleDecryptEmailClick(this)'>\
+    //       <svg class='h-4 w-4' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-mail inline-block h-4 duration-500'><path d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'></path><polyline points='22,6 12,13 2,6'></polyline></svg>\
+    //     </button>\
+    //   </td>"
+    // );
     
     displayStrategy(
       "apc_followup",

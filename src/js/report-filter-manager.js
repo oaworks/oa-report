@@ -11,10 +11,10 @@ import {
   getDecodedUrlQuery,
   updateURLParams,
   removeURLParams,
-  andQueryStrings,
   normaliseFieldId,
   pluraliseNoun
 } from "./utils.js";
+import { API_BG_BASE_URL } from "./constants/api.js";
 
 import {
   EXPLORE_ITEMS_LABELS,
@@ -29,6 +29,18 @@ import { orgDataPromise } from './insights-and-strategies.js';
 
 import { handleFiltersChanged } from './explore.js';
 
+// Only expose specific fields for search-to-filter ("Add filter")
+// See https://github.com/oaworks/discussion/issues/3616#issuecomment-3553985006
+const ALLOWED_TERMS = new Map([
+  ["supplements.grantid__bmgf", "Grants"],
+  ["authorships.institutions.display_name", "Institutions"],
+  ["journal", "Journals"],
+  ["supplements.host_venue.display_name", "Preprint servers"],
+  ["supplements.program__bmgf", "Programs"],
+  ["supplements.publisher_simple", "Publishers"],
+  ["concepts.display_name", "Subjects"]
+]);
+
 // =================================================
 // State
 // =================================================
@@ -40,9 +52,10 @@ import { handleFiltersChanged } from './explore.js';
 let orgData;
 orgDataPromise.then((res) => { orgData = res.data; });
 
-// =================================================
-// Helpers
-// =================================================
+const ensureKeywordField = (field = "") => {
+  if (!field) return "";
+  return /\.keyword$/i.test(field) ? field : `${field}.keyword`;
+};
 
 /**
  * Derives a readable label from an ES field key.
@@ -54,7 +67,8 @@ orgDataPromise.then((res) => { orgData = res.data; });
 function labelFromFieldKey(rawKey) {
   if (!rawKey) return "";
 
-  const normalised = normaliseFieldId(rawKey);
+  const baseKey = rawKey.replace(/\.keyword$/i, "");
+  const normalised = normaliseFieldId(baseKey);
   let label;
 
   // 1. Try to match this field key to an Explore item.term
@@ -64,7 +78,8 @@ function labelFromFieldKey(rawKey) {
     const matchingItem = exploreConfig.find((item) => {
       if (!item.term) return false;
       // Match either exact term or normalised term
-      return item.term === rawKey || normaliseFieldId(item.term) === normalised;
+      const termBase = item.term.replace(/\.keyword$/i, "");
+      return termBase === baseKey || normaliseFieldId(termBase) === normalised;
     });
 
     if (matchingItem) {
@@ -83,16 +98,17 @@ function labelFromFieldKey(rawKey) {
   }
 
   // 2. If we still don't have a label, fall back to the existing label sources
+  const lookupKey = baseKey || rawKey;
   const fromFilters =
-    EXPLORE_FILTERS_LABELS[rawKey] ||
+    EXPLORE_FILTERS_LABELS[lookupKey] ||
     EXPLORE_FILTERS_LABELS[normalised];
 
   const fromArticles =
-    EXPLORE_HEADER_ARTICLES_LABELS[rawKey] ||
+    EXPLORE_HEADER_ARTICLES_LABELS[lookupKey] ||
     EXPLORE_HEADER_ARTICLES_LABELS[normalised];
 
   const fromTerms =
-    EXPLORE_HEADER_TERMS_LABELS[rawKey] ||
+    EXPLORE_HEADER_TERMS_LABELS[lookupKey] ||
     EXPLORE_HEADER_TERMS_LABELS[normalised];
 
   if (!label) {
@@ -121,23 +137,11 @@ function labelFromFieldKey(rawKey) {
 function buildFilterFieldOptions(exploreData) {
   if (!Array.isArray(exploreData)) return [];
 
-  // Only expose specific fields for search-to-filter ("Add filter")
-  // See https://github.com/oaworks/discussion/issues/3616#issuecomment-3553985006
-  const ALLOWED_TERMS = new Map([
-    ["supplements.grantid__bmgf", "Grants"],
-    ["authorships.institutions.display_name", "Institutions"],
-    ["journal", "Journals"],
-    ["supplements.host_venue.display_name", "Preprint servers"],
-    ["supplements.program__bmgf", "Programs"],
-    ["supplements.publisher_simple", "Publishers"],
-    ["concepts.display_name", "Subjects"]
-  ]);
-
   const seen = new Set();
   const options = [];
 
   exploreData.forEach((item) => {
-    const fieldKey = item.term;
+    const fieldKey = (item.term || "").replace(/\.keyword$/i, "");
     if (!ALLOWED_TERMS.has(fieldKey) || seen.has(fieldKey)) return;
     seen.add(fieldKey);
 
@@ -164,6 +168,14 @@ function buildFilterFieldOptions(exploreData) {
  * @param {string} q
  * @returns {{label:string,value:string}[]}
  */
+function labelFromFieldKeyInverse(label) {
+  // We only need this to map the displayed label back to the field key when removing chips
+  for (const [key, val] of ALLOWED_TERMS.entries()) {
+    if (val === label) return ensureKeywordField(key);
+  }
+  return null;
+}
+
 function parseEsQueryToPairs(q) {
   if (!q) return [];
 
@@ -239,24 +251,164 @@ function parseEsQueryToPairs(q) {
               .trim()
           )
           .filter(Boolean)
-          .map((val) =>
-            /country(_code)?$/i.test(key) && COUNTRY_CODES[val] ? COUNTRY_CODES[val] : val
-          )
+          .map((val) => {
+            const baseKey = key.replace(/\.keyword$/i, "");
+            return /country(_code)?$/i.test(baseKey) && COUNTRY_CODES[val] ? COUNTRY_CODES[val] : val;
+          })
           .join(", ")
       )
       .filter(Boolean)
       .join(" AND ");
 
-  return splitTopLevel(query, "AND")
-    .map((clause) => {
-      const cleanedClause = unwrapParens(clause);
-      const m = cleanedClause.match(/^\s*\(?\s*([A-Za-z0-9._]+)\s*:\s*(.+?)\s*\)?\s*$/);
-      if (!m) return null;
-      const rawKey = m[1];
-      const value = renderValue(rawKey, unwrapParens(m[2]));
-      return value ? { label: labelFromFieldKey(rawKey), value } : null;
-    })
-    .filter(Boolean);
+  const rawClauses = [];
+  const processClause = (clause) => {
+    const cleanedClause = unwrapParens(clause);
+    const nested = splitTopLevel(cleanedClause, "AND");
+    if (nested.length > 1) {
+      nested.forEach((sub) => processClause(sub));
+      return;
+    }
+    const m = cleanedClause.match(/^\s*\(?\s*([A-Za-z0-9._]+)\s*:\s*(.+?)\s*\)?\s*$/);
+    if (!m) return;
+    const rawKey = m[1];
+    const fieldKey = ensureKeywordField(rawKey);
+    const value = renderValue(fieldKey, unwrapParens(m[2]));
+    if (!value) return;
+    rawClauses.push({ label: labelFromFieldKey(fieldKey), field: fieldKey, value, clause: clause.trim() });
+  };
+
+  splitTopLevel(query, "AND").forEach((clause) => processClause(clause));
+
+  // Group by field, OR all values within the same field
+  const grouped = new Map();
+  rawClauses.forEach((c) => {
+    if (!grouped.has(c.field)) {
+      grouped.set(c.field, { field: c.field, values: [], clauses: [] });
+    }
+    const entry = grouped.get(c.field);
+    const tokens = (c.value || "")
+      .split(/\s+OR\s+/)
+      .map((v) => v.trim())
+      .filter(Boolean);
+    tokens.forEach((t) => entry.values.push(t));
+    entry.clauses.push(c.clause);
+  });
+
+  return Array.from(grouped.values()).map((g) => ({
+    field: g.field,
+    label: labelFromFieldKey(g.field),
+    values: g.values,
+    clause: g.clauses.join(" AND "),
+  }));
+}
+
+function removeClauseFromQuery(q, field) {
+  if (!field) return q;
+  if (!q) return "";
+  return parseEsQueryToPairs(q)
+    .filter((p) => ensureKeywordField(p.field) !== ensureKeywordField(field))
+    .map((p) => p.clause)
+    .join(" AND ");
+}
+
+function removeValueFromField(q, field, value) {
+  if (!field || !value) return q || "";
+  const targetField = ensureKeywordField(field);
+  const pairs = parseEsQueryToPairs(q);
+  const clauses = [];
+  pairs.forEach((p) => {
+    if (ensureKeywordField(p.field) !== targetField) {
+      clauses.push(p.clause);
+      return;
+    }
+    const remaining = (p.values || [])
+      .map((v) => v.trim())
+      .filter(Boolean)
+      .filter((v) => v !== value);
+    if (!remaining.length) return;
+    const quotedVals = remaining.map((val) => `"${val.replace(/"/g, '\\"')}"`);
+    const valueExpr = quotedVals.length === 1 ? quotedVals[0] : `(${quotedVals.join(" OR ")})`;
+    clauses.push(`${ensureKeywordField(p.field)}:${valueExpr}`);
+  });
+  return clauses.join(" AND ");
+}
+
+/**
+ * Fetch autocomplete suggestions for a given field and org.
+ *
+ * @param {Object} params
+ * @param {string} params.field  - ES field id (e.g., journal, concepts.display_name)
+ * @param {string} params.query  - User-entered prefix/term to match
+ * @param {number} [params.size=100] - Max number of suggestions to return
+ * @param {AbortSignal} [params.signal] - Optional abort signal
+ * @returns {Promise<string[]>} Ordered list of suggested values (unique, trimmed)
+ */
+export async function fetchFilterValueSuggestions({ field, query, size = 100, signal }) {
+  if (!field || !query || !query.trim()) return [];
+
+  // Per-session cache to avoid repeat calls
+  fetchFilterValueSuggestions._cache = fetchFilterValueSuggestions._cache || new Map();
+  const cacheKey = `${ensureKeywordField(field || "")}::${query.slice(0, 50)}`;
+  if (fetchFilterValueSuggestions._cache.has(cacheKey)) {
+    return fetchFilterValueSuggestions._cache.get(cacheKey);
+  }
+
+  // Scoped terms only (org + existing filters)
+  let qClean = query.trim();
+  try {
+    qClean = decodeURIComponent(qClean);
+  } catch (e) {
+    // If already decoded/invalid, keep as-is
+  }
+  const baseField = field.replace(/\.keyword$/i, "");
+  const lower = qClean.toLowerCase();
+  const orgName = orgData?.hits?.hits?.[0]?._source?.name;
+
+  const targetField = ensureKeywordField(field || baseField);
+
+  try {
+    const parts = [];
+    if (orgName) {
+      const safeOrg = orgName.replace(/"/g, '\\"');
+      parts.push(`orgs.keyword:"${safeOrg}"`);
+    }
+    // Handle dashes/exact tokens, both lower/upper
+    const upper = qClean.toUpperCase();
+    parts.push(`(${baseField}:*${lower}* OR ${baseField}:*${upper}* OR ${targetField}:*${lower}* OR ${targetField}:*${upper}*)`);
+
+    const qParam = encodeURIComponent(parts.join(" AND "));
+    const url = `${API_BG_BASE_URL}works/terms/${targetField}?counts=false&size=${size}&q=${qParam}`;
+
+    const res = await fetch(url, { signal });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if (!Array.isArray(data) || !data.length) throw new Error("No suggestions");
+
+    const seen = new Set();
+    const values = [];
+    data.forEach((item) => {
+      const val = (
+        typeof item === "string"
+          ? item
+          : item?.key || item?.value || item?.label || ""
+      ).trim();
+      if (val && !seen.has(val)) {
+        seen.add(val);
+        values.push(val);
+      }
+    });
+
+    const sorted = values.sort((a, b) => a.localeCompare(b));
+    const result = sorted.slice(0, size);
+    fetchFilterValueSuggestions._cache.set(cacheKey, result);
+    return result;
+  } catch (err) {
+    if (err?.name !== "AbortError") {
+      console.error("Error fetching filter suggestions (terms):", err);
+    }
+    fetchFilterValueSuggestions._cache.set(cacheKey, []);
+    return [];
+  }
 }
 
 // =================================================
@@ -264,7 +416,7 @@ function parseEsQueryToPairs(q) {
 // =================================================
 
 /**
- * Adds a single "Filter field + textarea" row into the given container.
+ * Adds a single "Filter field + value input" row into the given container.
  *
  * @param {HTMLElement} container
  */
@@ -309,9 +461,10 @@ function addFilterRow(container) {
   fieldWrapper.appendChild(fieldSelect);
 
   const textWrapper = document.createElement("div");
-  textWrapper.className = "w-full";
+  textWrapper.className = "w-full relative";
 
   const textLabel = document.createElement("div");
+  textLabel.id = `js-filter-values-label-${idSuffix}`;
   textLabel.className = "flex items-center text-neutral-800 text-[11px] md:text-xs font-medium uppercase tracking-wide";
   textLabel.textContent = "Values";
 
@@ -343,19 +496,289 @@ function addFilterRow(container) {
   });
 
   const inputId = `js-filter-input-${idSuffix}`;
-  const textarea = document.createElement("textarea");
-  textarea.id = inputId;
-  textarea.className = "js-filter-input mt-1 p-2 w-full h-32 border border-neutral-900 bg-white text-xs md:text-sm leading-tight focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900";
-  textarea.rows = 2;
-  textarea.placeholder = "";
-  textarea.required = true;
-  textarea.setAttribute("aria-required", "true");
+  const input = document.createElement("input");
+  input.id = inputId;
+  input.type = "text";
+  input.className = "js-filter-input mt-1 p-2 w-full h-9 border border-neutral-900 bg-white text-xs md:text-sm leading-tight focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900";
+  input.placeholder = "Search for values…";
+  input.required = true;
+  input.setAttribute("aria-required", "true");
+  input.setAttribute("role", "combobox");
+  input.setAttribute("aria-autocomplete", "list");
+  input.setAttribute("aria-expanded", "false");
+  input.setAttribute("aria-haspopup", "listbox");
+  input.setAttribute("aria-activedescendant", "");
+  input.setAttribute("aria-labelledby", textLabel.id);
+
+  const listboxId = `js-filter-suggestions-${idSuffix}`;
+  input.setAttribute("aria-controls", listboxId);
+
+  const listbox = document.createElement("ul");
+  listbox.id = listboxId;
+  listbox.className = "js-filter-suggestions absolute z-10 mt-1 w-full bg-white border border-neutral-300 shadow-sm max-h-48 overflow-auto hidden";
+  listbox.setAttribute("role", "listbox");
+  listbox.setAttribute("aria-label", "Filter value suggestions");
+
+  const tokens = document.createElement("div");
+  tokens.className = "js-filter-tokens mt-2 flex flex-wrap gap-1";
+  tokens.setAttribute("role", "list");
+  tokens.setAttribute("aria-label", "Selected values");
 
   textWrapper.appendChild(textLabel);
-  textWrapper.appendChild(textarea);
+  textWrapper.appendChild(input);
+  textWrapper.appendChild(listbox);
+  textWrapper.appendChild(tokens);
 
   row.appendChild(fieldWrapper);
   row.appendChild(textWrapper);
+
+  // Debounced fetch of value suggestions + tokens
+  let suggestTimer = null;
+  let activeIndex = -1;
+  const tokenData = [];
+  let requestSeq = 0;
+
+  const hideSuggestions = () => {
+    listbox.classList.add("hidden");
+    input.setAttribute("aria-expanded", "false");
+    input.setAttribute("aria-activedescendant", "");
+    activeIndex = -1;
+  };
+
+  const addToken = (value) => {
+    if (!value) return;
+    input.value = "";
+    tokenData.push(value);
+    renderTokens();
+    hideSuggestions();
+  };
+
+  const applySuggestion = (value) => {
+    if (!value) return;
+    addToken(value);
+    input.focus();
+  };
+
+  const updateActiveOption = () => {
+    const options = Array.from(listbox.querySelectorAll('[role="option"]:not([aria-disabled="true"])'));
+    if (!options.length) return;
+    if (activeIndex >= options.length) {
+      activeIndex = options.length - 1;
+    }
+    options.forEach((li, idx) => {
+      const selected = idx === activeIndex;
+      li.setAttribute("aria-selected", selected ? "true" : "false");
+      li.classList.toggle("bg-neutral-900", selected);
+      li.classList.toggle("text-white", selected);
+    });
+    const activeOption = options[activeIndex];
+    if (activeOption && activeOption.id) {
+      input.setAttribute("aria-activedescendant", activeOption.id);
+    } else {
+      input.setAttribute("aria-activedescendant", "");
+    }
+  };
+
+  const renderSuggestions = (items) => {
+    listbox.innerHTML = "";
+    const termRaw = input.value || "";
+    const term = termRaw.toLowerCase().replace(/\s+/g, " ").trim();
+
+    // Keep a non-selectable hint at the top
+    renderHint(termRaw);
+
+    if (!items || !items.length) {
+      listbox.classList.remove("hidden");
+      input.setAttribute("aria-expanded", "true");
+      activeIndex = -1;
+      return;
+    }
+
+    const highlight = (val) => {
+      if (!term || !val) return val;
+      const idx = val.toLowerCase().indexOf(term);
+      if (idx === -1) return val;
+      const before = val.slice(0, idx);
+      const match = val.slice(idx, idx + term.length);
+      const after = val.slice(idx + term.length);
+      return `${before}<strong>${match}</strong>${after}`;
+    };
+
+    const filtered = items
+      .filter((val) => (val || "").toLowerCase().includes(term))
+      .sort((a, b) => {
+        const aStarts = (a || "").toLowerCase().startsWith(term);
+        const bStarts = (b || "").toLowerCase().startsWith(term);
+        if (aStarts === bStarts) return 0;
+        return aStarts ? -1 : 1;
+      });
+
+    if (!filtered.length) {
+      renderHint(termRaw);
+      return;
+    }
+
+    filtered.slice(0, 20).forEach((val) => {
+      const li = document.createElement("li");
+      li.setAttribute("role", "option");
+      li.setAttribute("aria-selected", "false");
+      li.setAttribute("aria-disabled", "false");
+      li.className = "px-2 py-1 cursor-pointer hover:bg-carnation-100 text-xs md:text-sm";
+      li.id = `${listboxId}-option-${listbox.childElementCount}`;
+      li.innerHTML = highlight(val);
+      li.addEventListener("mousedown", (e) => {
+        e.preventDefault(); // keep focus
+        applySuggestion(val);
+      });
+      listbox.appendChild(li);
+    });
+    activeIndex = -1;
+    listbox.classList.remove("hidden");
+    input.setAttribute("aria-expanded", "true");
+    input.setAttribute("aria-activedescendant", "");
+  };
+
+  const renderHint = (termRaw = "", message) => {
+    listbox.innerHTML = "";
+    const hint = document.createElement("li");
+    hint.setAttribute("role", "presentation");
+    hint.setAttribute("aria-hidden", "true");
+    hint.setAttribute("aria-disabled", "true");
+    hint.className = "px-2 py-1 h-9 flex items-center text-xs md:text-sm bg-neutral-100 text-neutral-700 border-b border-neutral-200";
+    hint.textContent = message || (termRaw ? `Matching suggestions for “${termRaw}”` : "Start typing to see suggestions…");
+    listbox.appendChild(hint);
+    activeIndex = -1;
+    listbox.classList.remove("hidden");
+    input.setAttribute("aria-expanded", "true");
+    input.setAttribute("aria-activedescendant", "");
+  };
+
+  // Remember the last fetched suggestions so we can reuse them for longer searches
+  let lastFetched = { field: "", query: "", items: [], size: 0 };
+
+  const renderTokens = () => {
+    tokens.innerHTML = "";
+    const hasTokens = tokenData.length > 0;
+    input.required = !hasTokens;
+    input.setAttribute("aria-required", hasTokens ? "false" : "true");
+
+    tokenData.forEach((val) => {
+      const chip = document.createElement("span");
+      chip.className = "inline-flex items-center rounded-full bg-carnation-100 text-neutral-900 px-2 py-0.5 text-[11px] md:text-xs";
+      chip.setAttribute("data-value", val);
+      chip.setAttribute("role", "listitem");
+
+      const valSpan = document.createElement("span");
+      valSpan.textContent = val;
+      chip.appendChild(valSpan);
+
+      const removeBtn = document.createElement("button");
+      removeBtn.type = "button";
+      removeBtn.className = "ml-2 text-[10px]";
+      removeBtn.setAttribute("aria-label", `Remove ${val}`);
+      removeBtn.textContent = "✕";
+      removeBtn.addEventListener("click", () => {
+        const idxToRemove = tokenData.indexOf(val);
+        if (idxToRemove > -1) {
+          tokenData.splice(idxToRemove, 1);
+        }
+        renderTokens();
+      });
+
+      chip.appendChild(removeBtn);
+      tokens.appendChild(chip);
+    });
+  };
+
+  const triggerSuggestions = () => {
+    clearTimeout(suggestTimer);
+    suggestTimer = setTimeout(async () => {
+      const fieldVal = fieldSelect.value;
+      const raw = input.value || "";
+      const q = raw.replace(/\s+/g, " ").trim();
+      if (!fieldVal || q.length < 2) {
+        renderHint();
+        lastFetched = { field: "", query: "", items: [] };
+        return;
+      }
+      // If the last fetch for this field returned nothing and 
+      // the user is just extending that query (or entering gibberish),
+      // don't bother re-fetching
+      if (
+        lastFetched.field === fieldVal &&
+        q.startsWith(lastFetched.query || "") &&
+        Array.isArray(lastFetched.items) &&
+        lastFetched.items.length === 0
+      ) {
+        renderHint(q);
+        return;
+      }
+      // If we already have results for this field that cover the current (longer) search, reuse them
+      const lowercasedQuery = q.toLowerCase();
+      if (
+        lastFetched.field === fieldVal &&
+        q.startsWith(lastFetched.query || "") &&
+        Array.isArray(lastFetched.items) &&
+        (
+          lastFetched.query === q || // exact same query, always reuse
+          (lastFetched.items.length < lastFetched.size && lastFetched.items.some((val) => (val || "").toLowerCase().includes(lowercasedQuery)))
+        )
+      ) {
+        renderSuggestions(lastFetched.items);
+        return;
+      }
+      const currentReq = ++requestSeq;
+      renderHint(q);
+      try {
+        const suggestions = await fetchFilterValueSuggestions({
+          field: fieldVal,
+          query: q,
+        });
+        if (currentReq === requestSeq) {
+          lastFetched = { field: fieldVal, query: q, items: suggestions, size: suggestions.length };
+          renderSuggestions(suggestions);
+        }
+      } catch (err) {
+        console.error("Error fetching suggestions:", err);
+        lastFetched = { field: fieldVal, query: q, items: [], size: 0 };
+      }
+    }, 500);
+  };
+
+  input.addEventListener("keydown", (event) => {
+    if (listbox.classList.contains("hidden")) return;
+    const options = Array.from(listbox.querySelectorAll('[role="option"]:not([aria-disabled="true"])'));
+    if (!options.length) return;
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      activeIndex = (activeIndex + 1) % options.length;
+      updateActiveOption();
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      activeIndex = activeIndex <= 0 ? options.length - 1 : activeIndex - 1;
+      updateActiveOption();
+    } else if (event.key === "Enter") {
+      if (activeIndex >= 0 && activeIndex < options.length) {
+        event.preventDefault();
+        applySuggestion(options[activeIndex].textContent);
+      }
+    } else if (event.key === "Escape") {
+      hideSuggestions();
+    }
+  });
+
+  input.addEventListener("blur", () => {
+    setTimeout(hideSuggestions, 100);
+  });
+
+  fieldSelect.addEventListener("change", () => {
+    lastFetched = { field: "", query: "", items: [] };
+    triggerSuggestions();
+  });
+  input.addEventListener("input", triggerSuggestions);
+  input.addEventListener("focus", () => {
+    renderHint();
+  });
 
   container.appendChild(row);
 }
@@ -383,7 +806,7 @@ export function renderActiveFiltersBanner() {
 
   const q = getDecodedUrlQuery();
   const pairs = parseEsQueryToPairs(q);
-  const count = pairs.length;
+  const count = pairs.reduce((sum, p) => sum + (Array.isArray(p.values) ? p.values.length : 1), 0); // total values count across all fields, instead of just fields count
 
   wrapper.classList.remove("hidden");
   mount.innerHTML = "";
@@ -416,7 +839,8 @@ export function renderActiveFiltersBanner() {
   pop.className = "p-3 md:p-4 text-xs md:text-sm";
   pop.setAttribute("role", "dialog");
   pop.setAttribute("aria-labelledby", "js-filters-form-title");
-  pop.style.maxWidth = "min(95vw, 960px)";
+  pop.style.maxWidth = "90vw";
+  pop.style.minWidth = "320px";
 
   const heading = document.createElement("h3");
   heading.className = "mb-2 font-semibold text-neutral-900 text-xs md:text-sm";
@@ -425,21 +849,64 @@ export function renderActiveFiltersBanner() {
   pop.appendChild(heading);
 
   const chipsList = document.createElement("ul");
-  chipsList.className = "mb-2 flex flex-wrap";
+  chipsList.className = "mb-2 space-y-2";
   chipsList.setAttribute("role", "list");
   chipsList.setAttribute("aria-live", "polite");
   chipsList.setAttribute("aria-labelledby", heading.id);
 
   if (pairs.length) {
-    pairs.forEach(({ label, value }) => {
+    const grouped = new Map(); // field -> {label, clauses:[...], values:[...]}
+    pairs.forEach(({ field, label, values, clause }) => {
+      if (!grouped.has(field)) {
+        grouped.set(field, { label, field, clauses: [], values: [] });
+      }
+      const entry = grouped.get(field);
+      entry.clauses.push(clause);
+      (values || []).forEach((v) => entry.values.push(v));
+    });
+
+    Array.from(grouped.values()).forEach(({ label, clauses, values, field }) => {
       const li = document.createElement("li");
-      li.className = "inline-flex items-center px-2 py-0.5 bg-carnation-100 text-[11px] md:text-xs mr-1 mb-1";
+      li.className = "mb-1";
       li.setAttribute("role", "listitem");
-      li.setAttribute("aria-label", `${label}: ${value}`);
-      li.innerHTML = `
-        <span class="text-neutral-700 mr-1">${label}:</span>
-        <span class="font-medium text-neutral-900">${value}</span>
-      `;
+
+      const headingDiv = document.createElement("div");
+      headingDiv.className = "text-[11px] md:text-xs font-semibold text-neutral-900";
+      headingDiv.textContent = label;
+      li.appendChild(headingDiv);
+
+      const chipsRow = document.createElement("div");
+      chipsRow.className = "flex flex-wrap gap-1 mt-1";
+      chipsRow.setAttribute("role", "list");
+
+      (values || []).forEach((val) => {
+        const chip = document.createElement("button");
+        chip.type = "button";
+        chip.className = "inline-flex items-center rounded-full bg-carnation-100 text-neutral-900 px-2 py-0.5 text-[11px] md:text-xs";
+        chip.setAttribute("role", "listitem");
+        chip.setAttribute("aria-label", `Remove ${label}: ${val}`);
+        chip.setAttribute("data-field", ensureKeywordField(field));
+        chip.innerHTML = `<span>${val}</span><span class="ml-2 text-[10px]">✕</span>`;
+        chip.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const decodedQ = getDecodedUrlQuery();
+          // Prefer the actual parsed field for clearing from active filters
+          // Fall back to label-based mapping only when missing
+          const chipField = chip.getAttribute("data-field") || labelFromFieldKeyInverse(label);
+          const nextQ = removeValueFromField(decodedQ, chipField, val);
+          if (nextQ) {
+            updateURLParams({ q: nextQ });
+          } else {
+            removeURLParams("q");
+          }
+          handleFiltersChanged();
+          tip.hide();
+        });
+        chipsRow.appendChild(chip);
+      });
+
+      li.appendChild(chipsRow);
       chipsList.appendChild(li);
     });
   } else {
@@ -502,7 +969,7 @@ export function renderActiveFiltersBanner() {
     content: pop,
     allowHTML: true,
     interactive: true,
-    placement: "bottom",
+    placement: "bottom-start",
     appendTo: document.body,
     trigger: "click",
     theme: "popover",
@@ -530,63 +997,97 @@ export function renderActiveFiltersBanner() {
     });
   }
 
-  // Apply: gather all rows, build clauses, AND them in one go
+  // Apply: gather all rows, group values by field (OR within field, AND across fields)
   filterForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    const clauses = [];
+    const fieldMap = new Map(); // field -> array of values (strings)
 
     rowsContainer.querySelectorAll(".js-filter-row").forEach((row) => {
       const fieldSelect = row.querySelector(".js-filter-field");
       const input = row.querySelector(".js-filter-input");
-      if (!fieldSelect || !input) return;
+      const tokensEl = row.querySelector(".js-filter-tokens");
+      if (!fieldSelect || !input || !tokensEl) return;
 
-      const field = fieldSelect.value;
+      const field = ensureKeywordField(fieldSelect.value);
       const raw = input.value.trim();
+      const chips = Array.from(tokensEl.children).map((chip) => chip.getAttribute("data-value") || "").filter(Boolean);
 
-      if (!field || !raw) return;
+      if (!field) return;
 
-      // Support "ID1, ID2" (OR), "ID1 OR ID2", "ID1 AND ID2"
-      // Commas inside a segment are OR
-      const operators = [];
+      const pushVals = (vals) => {
+        if (!vals.length) return;
+        const list = fieldMap.get(field) || [];
+        vals.forEach((v) => list.push(v));
+        fieldMap.set(field, list);
+      };
+
+      if (chips.length) {
+        pushVals(chips);
+        return;
+      }
+
+      if (!raw) return;
+
+      // Fallback: support "ID1, ID2" (OR), "ID1 OR ID2", "ID1 AND ID2"
       const segments = [];
       const opRegex = /\s+(AND|OR)\s+/gi;
       let lastIndex = 0;
       raw.replace(opRegex, (match, op, offset) => {
         segments.push(raw.slice(lastIndex, offset).trim());
-        operators.push(op.toUpperCase());
         lastIndex = offset + match.length;
       });
       segments.push(raw.slice(lastIndex).trim());
 
-      const pieceExprs = [];
-
-      segments.forEach((segment, idx) => {
+      const values = [];
+      segments.forEach((segment) => {
         if (!segment) return;
-        const values = segment
+        segment
           .split(",")
           .map((v) => v.trim())
           .filter(Boolean)
-          .map((v) => `"${v.replace(/"/g, '\\"')}"`);
-
-        if (!values.length) return;
-
-        const valueExpr =
-          values.length === 1 ? values[0] : `(${values.join(" OR ")})`;
-
-        pieceExprs.push(valueExpr);
-        if (idx < operators.length) {
-          pieceExprs.push(operators[idx]);
-        }
+          .forEach((v) => values.push(v));
       });
 
-      if (!pieceExprs.length) return;
+      pushVals(values);
+    });
 
-      const clause =
-        pieceExprs.length === 1
-          ? `${field}:${pieceExprs[0]}`
-          : `${field}:(${pieceExprs.join(" ")})`;
+    // Merge with existing: keep existing clauses, but merge values per field (OR)
+    const existingQ = getDecodedUrlQuery();
+    const existingPairs = parseEsQueryToPairs(existingQ);
+    const mergedFields = new Map();
 
-      clauses.push(clause);
+    // Start with existing values
+    existingPairs.forEach((p) => {
+      const fieldKey = ensureKeywordField(p.field);
+      const vals = Array.isArray(p.values)
+        ? p.values
+        : (p.value || "")
+            .split(/\s+OR\s+/)
+            .map((v) => v.trim())
+            .filter(Boolean);
+      mergedFields.set(fieldKey, {
+        label: p.label || labelFromFieldKey(fieldKey),
+        values: new Set(vals),
+      });
+    });
+
+    // Add new values
+    fieldMap.forEach((vals, field) => {
+      const fieldKey = ensureKeywordField(field);
+      if (!mergedFields.has(fieldKey)) {
+        mergedFields.set(fieldKey, { label: labelFromFieldKey(fieldKey), values: new Set() });
+      }
+      const entry = mergedFields.get(fieldKey);
+      vals.filter(Boolean).forEach((v) => entry.values.add(v));
+    });
+
+    const clauses = [];
+    mergedFields.forEach((entry, field) => {
+      const unique = Array.from(entry.values);
+      if (!unique.length) return;
+      const quotedVals = unique.map((val) => `"${val.replace(/"/g, '\\"')}"`);
+      const valueExpr = quotedVals.length === 1 ? quotedVals[0] : `(${quotedVals.join(" OR ")})`;
+      clauses.push(`${ensureKeywordField(field)}:${valueExpr}`);
     });
 
     if (!clauses.length) {
@@ -594,10 +1095,8 @@ export function renderActiveFiltersBanner() {
       return;
     }
 
-    const combined = clauses.join(" AND ");
-
     updateURLParams({
-      q: andQueryStrings(combined, getDecodedUrlQuery()),
+      q: clauses.join(" AND "),
     });
 
     handleFiltersChanged();

@@ -9,7 +9,7 @@
 // =================================================
 
 import { DATE_SELECTION_BUTTON_CLASSES } from './constants.js';
-import { makeDateReadable, createDate, replaceDateRange, initDropdown, getAllURLParams, getURLParam, updateURLParams, removeURLParams, dateRange } from './utils.js';
+import { createDate, replaceDateRange, initDropdown, getAllURLParams, updateURLParams, dateRange, getURLParam } from './utils.js';
 import { initInsightsAndStrategies } from './insights-and-strategies.js';
 import { currentActiveExploreItemButton, currentActiveExploreItemData, processExploreDataTable } from './explore.js';
 
@@ -82,7 +82,6 @@ export function setDefaultYear() {
     }
 
     let elementToUpdate;
-    let buttonText;
 
     const isWholeYear =
       startDate.getFullYear() === endDate.getFullYear() &&
@@ -93,14 +92,12 @@ export function setDefaultYear() {
 
     if (isWholeYear) {
       elementToUpdate = document.getElementById(`year-${startDate.getFullYear()}`);
-      buttonText = `${startDate.getFullYear()}`;
     } else {
       elementToUpdate = document.getElementById("date_range_form");
-      buttonText = `${makeDateReadable(startDate)} &ndash; ${makeDateReadable(endDate)}`;
     }
 
     // Trigger any additional logic needed to refresh the report and style the control
-    handleYearButtonLogic(elementToUpdate, startDate, endDate, buttonText);
+    handleYearButtonLogic(elementToUpdate, startDate, endDate);
 
     // If this is a year that lives in the More dropdown, update the visible label
     if (elementToUpdate && elementToUpdate.classList.contains("js_dropdown_item")) {
@@ -135,11 +132,10 @@ export function setDefaultYear() {
     // Select the default year button and style it as selected
     const defaultButton = document.getElementById(`year-${DEFAULT_YEAR}`);
     if (defaultButton) {
-      handleYearButtonLogic(defaultButton, defaultStartDate, defaultEndDate, `${DEFAULT_YEAR}`);
+      handleYearButtonLogic(defaultButton, defaultStartDate, defaultEndDate);
       updateYearButtonStyling(defaultButton);
     } else {
-      // TO FIX: free reports don’t have a defaultButton
-      handleYearButtonLogic(null, defaultStartDate, defaultEndDate, `${makeDateReadable(defaultStartDate)} &ndash; ${makeDateReadable(defaultEndDate)}`);
+      handleYearButtonLogic(null, defaultStartDate, defaultEndDate);
     }
   }
 }
@@ -149,18 +145,6 @@ export function setDefaultYear() {
  */
 export function initDateManager() {
   const params = getAllURLParams();
-
-  // Early logout guard (in case scripts load in a different order)
-  if (getURLParam('logout')) {
-    try { sessionStorage.removeItem('orgkey'); } catch (_) {}
-  }
-
-  // Process orgkey first
-  const orgkey = getURLParam('orgkey');
-  if (orgkey) {
-    sessionStorage.setItem('orgkey', orgkey);
-    delete params.orgkey; // remove orgkey from params to avoid duplication
-  }
 
   // Process other parameters
   const start = params.start;
@@ -180,9 +164,6 @@ export function initDateManager() {
 
   // Update the URL without losing parameters
   updateURLParams(params);
-
-  // Remove orgkey from URL after processing
-  if (orgkey) removeURLParams('orgkey');
 }
 
 // =================================================
@@ -317,7 +298,7 @@ function createDropdownItem(buttonId, buttonText, startDate, endDate, dropdownBu
     });
 
     // Apply the date range + refresh reports and style via the dropdown container
-    handleYearButtonLogic(item, startDate, endDate, buttonText);
+    handleYearButtonLogic(item, startDate, endDate);
 
     // Update visible label on the More chip
     dropdownButton.innerHTML = `${buttonText} <span class='ml-1 text-xs'>&#9660;</span>`;
@@ -365,7 +346,7 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
       'end': endDate.toISOString().split('T')[0] 
     });
 
-    handleYearButtonLogic(button, startDate, endDate, buttonText);
+    handleYearButtonLogic(button, startDate, endDate);
   });
 
   return button;
@@ -493,8 +474,7 @@ function createDateRangeForm() {
     handleYearButtonLogic(
       null,
       startDate,
-      endDate,
-      `${makeDateReadable(startDate)} &ndash; ${makeDateReadable(endDate)}`
+      endDate
     );
     updateYearButtonStyling(form, true);
 
@@ -540,9 +520,8 @@ function createDateInput(id, label) {
  * @param {HTMLElement} button - The button element that was clicked.
  * @param {Date} startDate - The start date for the report corresponding to the button.
  * @param {Date} endDate - The end date for the report corresponding to the button.
- * @param {string} buttonText - The text displayed on the button, typically the year.
  */
-function handleYearButtonLogic(button, startDate, endDate, buttonText) {
+function handleYearButtonLogic(button, startDate, endDate) {
   // Check if the button is null or not
   const isDropdownItem = button && button.classList.contains('js_dropdown_item');
 

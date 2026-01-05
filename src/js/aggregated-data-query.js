@@ -211,57 +211,25 @@ function createAggregationTemplate(suffix) {
     },
     with_data_availability_statement: {
       filter: {
-        bool: {
-          should: [
-            {
-              term: {
-                "supplements.has_data_availability_statement": true
-              }
-            },
-            {
-              exists: {
-                field: "data_availability_statement"
-              }
-            }
-          ],
-          minimum_should_match: 1
+        term: {
+          has_data_availability_statement: true
         }
       }
     },
     without_data_availability_statement: {
       filter: {
-          bool: {
-              must: [
-                  {
-                      term: {
-                          "supplements.has_data_availability_statement": false
-                      }
-                  },
-                  {
-                      bool: {
-                          must_not: {
-                              exists: {
-                                  field: "data_availability_statement"
-                              }
-                          }
-                      }
-                  }
-              ]
-          }
+        term: {
+          has_data_availability_statement: false
+        }
       }
-  },
+    },
     unknown_data_availability_statement: {
       filter: {
         bool: {
           must_not: [
             {
               exists: {
-                field: "supplements.has_data_availability_statement"
-              }
-            },
-            {
-              exists: {
-                field: "data_availability_statement"
+                field: "has_data_availability_statement"
               }
             }
           ]

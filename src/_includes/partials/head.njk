@@ -47,10 +47,6 @@
   <meta name="msapplication-TileColor" content="#ff6666">
   <meta name="theme-color" content="#25201E">
 
-  {# SimpleAnalytics tracking code #}
-  <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
-  <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif" alt="" referrerpolicy="no-referrer-when-downgrade" /></noscript>
-
   {# Detect any console errors and display in UI #}
   <script>
     window.addEventListener('error', function (event) {
@@ -85,6 +81,12 @@
     })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
   </script>
   {% endif %}
+
+  {# SimpleAnalytics tracking code (load early to capture URL params) #}
+  <script 
+    data-allow-params="breakdown,records,start,end,action,explore_filter,q"
+    src="https://scripts.simpleanalyticscdn.com/latest.js">
+  </script>
 
   {% block extra_head %}{% endblock %}
 </head>

@@ -60,3 +60,12 @@ export const DATA_TABLE_FOOT_CLASSES = {
     otherCols: "border-b border-neutral-500 p-2 w-64 max-w-4xl whitespace-nowrap truncate text-right hover:bg-neutral-500"
   }
 };
+
+/**
+ * Class names for Explore filter pills.
+ */
+export const FILTER_PILL_CLASSES = {
+  base: 'inline-flex items-center px-3 py-1 rounded-full border text-xs md:text-sm cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 whitespace-nowrap',
+  active: 'bg-neutral-200 text-neutral-900 border-neutral-200 shadow-sm',
+  inactive: 'bg-neutral-800 text-white border-neutral-500 hover:bg-neutral-700'
+};

@@ -19,21 +19,6 @@ permalink: "{{ org._source.objectID | slug }}/"
           </div>
         </h1>
       </header>
-
-      {# Free reports’ prompt to sign up #}
-      {% if org._source.paid == false %}
-        <section class="col-span-2 md:col-span-4 p-3 rounded-md bg-carnation-100 text-neutral-800 text-xs md:text-sm" id="about-free-logged-out">
-          <h2 class="mb-2 font-semibold uppercase">
-            Sign up to access your institution’s OA.Report for free
-          </h2>
-          <p class="mb-4">
-            Consider a <a href="https://about.oa.report/pricing" target="_blank" class="underline underline-offset-4 decoration-1">paid plan</a> to help <a href="https://about.oa.report/docs/sources" target="_blank" class="underline underline-offset-4 decoration-1">discover all your papers</a> and provide up-to-date, deep insights into the state of open at your institution.
-          </p>
-          <div class="md:flex">
-            {% include 'partials/signup-form.njk' %}
-          </div>
-        </section>
-      {% endif %}
     </div>
   </div>
 
@@ -53,10 +38,11 @@ permalink: "{{ org._source.objectID | slug }}/"
         ></div>
       </section>
 
-      <div class="flex items-center ml-auto mr-3 md:mr-6 space-x-2">
-        {# Active filters panel #}
-        <aside
-          class="text-neutral-900 text-xs md:text-sm md:border-b-0 js-active-filters-wrapper hidden"
+    <div class="flex items-center ml-auto mr-3 md:mr-6 space-x-2" id="report-filters">
+      {# Active filters panel #}
+      <aside
+        class="text-neutral-900 text-xs md:text-sm md:border-b-0 js-active-filters-wrapper hidden"
+        id="js-active-filters-wrapper"
           aria-labelledby="js-active-filters-title"
         >
           <h3 id="js-active-filters-title" class="sr-only">
@@ -234,10 +220,10 @@ permalink: "{{ org._source.objectID | slug }}/"
       </div>
 
       <div 
-        class="fixed inset-0 z-50 flex justify-center items-center opacity-0 transition-opacity duration-300" 
+        class="hidden fixed inset-0 z-50 flex justify-center items-center opacity-0 transition-opacity duration-300" 
         id="explore_loading"
         aria-live="polite" 
-        aria-busy="true"
+        aria-busy="false"
       >
         <div class="absolute inset-0 bg-neutral-800 bg-opacity-50"></div>
         <div class="loader ease-linear rounded-full border-8 border-t-8 border-carnation-200 border-t-carnation-500 h-12 w-12 z-10"></div>
@@ -374,6 +360,15 @@ permalink: "{{ org._source.objectID | slug }}/"
           <nav class="hidden sm:block mt-6 mb-10">
             <ul class="flex flex-wrap space-r-4 space-b-4 items-center" role="tablist" aria-label="Actions Tabs" id="actions_buttons">
               {{ component("strategy-pill", {
+                id: "email_author_deposit",
+                txt: "Self-archive articles",
+                class: "font-semibold bg-carnation-300",
+                first: true
+              }) }}
+
+            {# HIDE TEMPORARILY 
+              See https://github.com/oaworks/discussion/issues/3619#issuecomment-3587683138 
+              {{ component("strategy-pill", {
                 id: "email_author_vor",
                 txt: "Deposit publisher PDFs",
                 class: "font-semibold bg-carnation-300",
@@ -384,7 +379,7 @@ permalink: "{{ org._source.objectID | slug }}/"
                 id: "email_author_aam",
                 txt: "Deposit accepted manuscripts"
               }) }}
-
+            #}
               {{ component("strategy-pill", {
                 id: "apc_followup",
                 txt: "Correct publisher errors"
@@ -403,7 +398,9 @@ permalink: "{{ org._source.objectID | slug }}/"
           </nav>
 
           <div class="hidden sm:block js_strategies">
-            {{ component("strategy-contents", {
+            {# Hide temporarily
+              See https://github.com/oaworks/discussion/issues/3619#issuecomment-3587683138 #}
+            {# {{ component("strategy-contents", {
               id: "email_author_vor",
               heading: "Deposit publisher PDFs",
               desc: "Send emails to authors to request they make their work free to read. In these cases, they can do that by making a <strong>publisher PDF (version of record, VOR)</strong> available in a repository.",
@@ -423,6 +420,17 @@ permalink: "{{ org._source.objectID | slug }}/"
               draft_btn: true,
               action_help_txt: true,
               hidden: true
+            }) }} #}
+
+            {{ component("strategy-contents", {
+              id: "email_author_deposit",
+              heading: "Self-archive articles",
+              desc: "Send emails to authors requesting that they make their work freely available in a repository.",
+              table_headings: "<th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-10/12 sm:w-6/12'>Article</th>\
+                              <th scope='col' class='hidden px-3 py-3.5 text-left text-sm font-semibold w-4/12 sm:table-cell'>Corresponding author</th>",
+              draft_btn: true,
+              action_help_txt: true,
+              hidden: false
             }) }}
 
             {{ component("strategy-contents", {

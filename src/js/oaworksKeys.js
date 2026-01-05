@@ -70,10 +70,17 @@ if (window.location.search.includes('orgkey=')) {
 
 if (window.location.search.includes('logout')) {
   window.OAKEYS = {};
-  sessionStorage.removeItem('orgkey');
+  // Clear all possible sessionStorage orgkey entries
+  try {
+    sessionStorage.removeItem('orgkey');
+    Object.keys(sessionStorage)
+      .filter((k) => k === 'orgkey' || k.startsWith('orgkey:'))
+      .forEach((k) => sessionStorage.removeItem(k));
+  } catch (_) {}
 
   const hostname = window.location.hostname;
   const domain = '.' + hostname;
+  const domainRoot = '.' + hostname.split('.').slice(-2).join('.');
   const expired = 'Thu, 01 Jan 1970 00:00:00 GMT';
 
   // Delete at current path
@@ -83,6 +90,11 @@ if (window.location.search.includes('logout')) {
   // Also delete any legacy site-wide variants
   document.cookie = `OAKeys=; expires=${expired}; path=/; secure`;
   document.cookie = `OAKeys=; expires=${expired}; domain=${domain}; path=/; secure`;
+  // Also delete parent-domain cookies (e.g., .oa.report set by other envs)
+  if (domainRoot !== domain) {
+    document.cookie = `OAKeys=; expires=${expired}; domain=${domainRoot}; secure`;
+    document.cookie = `OAKeys=; expires=${expired}; domain=${domainRoot}; path=/; secure`;
+  }
 
   // Remove ?logout from URL
   try {
