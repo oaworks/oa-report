@@ -7,7 +7,7 @@
 // Imports
 // =================================================
 
-import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, normaliseFieldId } from "./utils.js";
+import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, normaliseFieldId, makeNumberReadable } from "./utils.js";
 import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, FILTER_PILL_CLASSES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
@@ -758,12 +758,11 @@ function updateExploreCountSummary({ type, id, total, shown }) {
     return;
   }
 
-  const safeTotal = Number.isFinite(total) ? total : 0;
-  const safeShown = Number.isFinite(shown) ? shown : 0;
+  const formatCount = (n) => makeNumberReadable(Number.isFinite(n) ? n : 0);
   const label = EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id);
   const sortLabel = document.querySelector(".explore_sort")?.textContent?.trim() || "published date";
 
-  summaryEl.innerHTML = `Showing <span class="font-semibold">${safeShown} of ${safeTotal}</span> <span class="lowercase">${label}</span> · Sorted by ${sortLabel}`;
+  summaryEl.innerHTML = `Showing <span class="font-semibold">${formatCount(shown)} of ${formatCount(total)}</span> <span class="lowercase">${label}</span> · Sorted by ${sortLabel}`;
   summaryEl.classList.remove("hidden");
 }
 
