@@ -70,34 +70,42 @@
     aria-labelledby="report-nav-heading"
   >
     <h2 id="report-nav-heading" class="sr-only">Report navigation</h2>
-    <section class="flex items-center flex-wrap px-3 md:px-4 gap-x-2 gap-y-1 md:gap-x-3 md:gap-y-0">
-      <h3 class="sr-only">View this report by year or by custom date range</h3>
-      <div
-        id="js-year-buttons"
-        class="flex flex-wrap gap-2 text-xs md:text-sm"
-      ></div>
+    <section class="flex items-center flex-wrap justify-between px-3 md:px-4 gap-x-2 gap-y-1 md:gap-x-3 md:gap-y-0">
+      <div class="flex items-center flex-wrap gap-x-2 gap-y-1 md:gap-x-3 md:gap-y-0">
+        <h3 class="sr-only">View this report by year or by custom date range</h3>
+        <div
+          id="js-year-buttons"
+          class="flex flex-wrap gap-2 text-xs md:text-sm"
+        ></div>
 
-      <div class="flex items-center flex-wrap gap-2" id="report-filters">
-        {# Active filters panel #}
-        <aside
-          class="text-neutral-900 text-xs md:text-sm md:border-b-0 js-active-filters-wrapper hidden"
-          id="js-active-filters-wrapper"
-            aria-labelledby="js-active-filters-title"
-          >
-            <h3 id="js-active-filters-title" class="sr-only">
-              Active filters
-            </h3>
+        <div class="flex items-center flex-wrap gap-2" id="report-filters">
+          {# Active filters panel #}
+          <aside
+            class="text-neutral-900 text-xs md:text-sm md:border-b-0 js-active-filters-wrapper hidden"
+            id="js-active-filters-wrapper"
+              aria-labelledby="js-active-filters-title"
+            >
+              <h3 id="js-active-filters-title" class="sr-only">
+                Active filters
+              </h3>
 
-            {# Live region so SR users hear updates when filters change #}
-            <div
-              id="js-active-filters"
-              class="flex items-center"
-              role="status"
-              aria-live="polite"
-              aria-atomic="true"
-            ></div>
-          </aside>
-        </div>
+              {# Live region so SR users hear updates when filters change #}
+              <div
+                id="js-active-filters"
+                class="flex items-center"
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+              ></div>
+            </aside>
+          </div>
+      </div>
+
+      <div class="flex flex-wrap gap-1.5 md:gap-2 text-[13px] md:text-sm">
+        <a class="border border-neutral-300 bg-white hover:bg-neutral-50 text-neutral-700 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full font-semibold transition duration-200 shadow-sm js_section_tab" href="#insights">Insights</a>
+        <a class="border border-neutral-300 bg-white hover:bg-neutral-50 text-neutral-700 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full font-semibold transition duration-200 shadow-sm js_section_tab" href="#explore">Explore</a>
+        <a class="border border-neutral-300 bg-white hover:bg-neutral-50 text-neutral-700 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full font-semibold transition duration-200 shadow-sm js_section_tab" href="#strategies">Actions</a>
+      </div>
     </section>
 
   </nav>
