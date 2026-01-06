@@ -186,14 +186,12 @@ permalink: "{{ org._source.objectID | slug }}/"
 
       
       <div id="export_table" class="mt-12 hidden">
-        <header class="mb-12 grid grid-cols-3 gap-3 sm:gap-6 md:gap-12 ">
-          <h3 class="mb-4 md:mb-0 text-4xl col-span-3 md:col-span-1" aria-live="polite">
-            <span class="report_sort_adjective">Top</span> <strong class="lowercase explore_type">articles</strong>
-          </h3> 
-          <p class="col-span-3 md:col-span-1 mb-2 md:mb-0 text-sm md:text-base md:border-l md:pl-4 border-neutral-300 text-neutral-100">
-            This table is a preview of the <strong class="explore_type lowercase">articles</strong> records sorted by <strong class="explore_sort">publication count</strong>.
-          </p>
-        </header>
+      <header class="mb-10 space-y-2">
+        <h3 class="text-3xl md:text-4xl" aria-live="polite">
+          <span class="report_sort_adjective">Top</span> <strong class="lowercase explore_type">articles</strong>
+        </h3> 
+        <p id="explore_count_summary" class="text-base md:text-lg text-neutral-100 hidden" aria-live="polite"></p>
+      </header>
         <div class="my-4 gap-3 md:gap-12 flex justify-between">
           <div class="gap-3 md:gap-12 flex justify-between">
             <form class="w-auto">
