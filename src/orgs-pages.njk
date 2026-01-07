@@ -41,116 +41,142 @@ permalink: "{{ org._source.objectID | slug }}/"
       </h2>
     </header>
 
-    {# ARTICLE INSIGHTS #}
-    <article id="insights_articles">
-      <h3 class="mb-1 text-sm font-semibold uppercase tracking-wide text-white">Journal articles</h3> 
-      <div class="grid gap-4 grid-cols-3 xl:grid-cols-6 2xl:grid-cols-8" id="insights_articles">
-        {{ component("card", {
-          id: "is_paper",
-          title: "Total",
-          icon: "file-text"
-        }) }}
-
-        {# Hide for Gates only since it’s displayed in a separate section #}
-        {% if org._source.objectID != "gates-foundation" %}
-        {{ component("card", {
-          id: "is_preprint",
-          title: "Preprint",
-          icon: "edit"
-        }) }}
-        {% endif %}
-
-        {# Article-specific compliance displayed for Gates only #}
-        {% if org._source.objectID == "gates-foundation" %}
-        {{ component("card", {
-          id: "is_compliant_article", 
-          title: "OA policy-compliant",
-          icon: "check-circle"
-        }) }}
-        {% endif %}
-
-        {{ component("card", {
-          id: "is_free_to_read",
-          title: "Free-to-read",
-          icon: "gift"
-        }) }}
-
-        {{ component("card", {
-          id: "is_compliant",
-          title: "OA policy-compliant",
-          icon: "check-circle"
-        }) }}
-
-        {{ component("card", {
-          id: "is_oa",
-          title: "Open Access",
-          icon: "unlock"
-        }) }}
-
-        {{ component("card", {
-          id: "has_data_availability_statement",
-          title: "Data availability statements",
-          icon: "search"
-        }) }}
-
-        {{ component("card", {
-          id: "has_open_data",
-          title: "With Open Data",
-          icon: "database"
-        }) }}
-
-        {{ component("card", {
-          id: "has_open_code",
-          title: "With Open Code",
-          icon: "code"
-        }) }}
-      </div>
-    </article>
-
-    {# PREPRINT INSIGHTS — SEPARATED FOR GATES ONLY #}
-    {% if org._source.objectID == "gates-foundation" %}
-    <article class="mt-6" id="insights_preprints">
-      <h3 class="mb-1 text-sm font-semibold uppercase tracking-wide text-white">Preprints</h3> 
-      <div class="grid gap-4 grid-cols-3 xl:grid-cols-6 2xl:grid-cols-8">
-        {{ component("card", {
-          id: "is_preprint",
-          title: "Total",
-          icon: "file-text"
-        }) }}
-
-        {{ component("card", {
-          id: "is_compliant_preprint",
-          title: "OA policy-compliant",
-          icon: "check-circle"
-        }) }}
-
-        {{ component("card", {
-          id: "has_data_availability_statement_preprint",
-          title: "Data availability statements",
-          icon: "search"
-        }) }}
-      </div>
-    </article>
-
-    {# UNIQUE PUBLICATIONS INSIGHTS #}
-    <article class="mt-6" id="insights_unique_publications">
-      <h3 class="mb-1 text-sm font-semibold uppercase tracking-wide text-white">Unique publications</h3> 
-      <div class="grid gap-4 grid-cols-3 xl:grid-cols-6 2xl:grid-cols-8" id="insights_unique_publications">
-        {{ component("card", {
-          id: "is_unique_publication", 
-          title: "Total",
-          icon: "file-text"
-        }) }}
-
-        {{ component("card", {
-          id: "is_compliant_publication",
-          title: "OA policy-compliant",
-          icon: "check-circle"
-        }) }}
-
-      </div>
-    </article>
+    {# Determine how many subsections we have (journal, preprints, unique pub) #}
+    {# For now, only Gates’ report has a preprints and unique pub subsection #}
+    {% set has_preprints = org._source.objectID == "gates-foundation" %}
+    {% set has_unique = org._source.objectID == "gates-foundation" %}
+    {% set subsection_count = 1 %}
+    {% if has_preprints %}{% set subsection_count = subsection_count + 1 %}{% endif %}
+    {% if has_unique %}{% set subsection_count = subsection_count + 1 %}{% endif %}
+    {% if subsection_count == 1 %}
+      {% set subsection_cols = "md:grid-cols-1" %}
+    {% elseif subsection_count == 2 %}
+      {% set subsection_cols = "md:grid-cols-2" %}
+    {% else %}
+      {% set subsection_cols = "md:grid-cols-3" %}
     {% endif %}
+
+    {# Card grid: in 3-col layout show 2 cards per column; otherwise allow up to 6 per row #}
+    {% if subsection_count == 3 %}
+      {% set insights_card_grid = "grid gap-4 grid-cols-1 sm:grid-cols-2" %}
+    {% else %}
+      {% set insights_card_grid = "grid gap-4 grid-cols-2 md:grid-cols-3 xl:grid-cols-6" %}
+    {% endif %}
+
+    <div class="grid grid-cols-1 {{ subsection_cols }} gap-8 md:gap-10">
+      {# ARTICLE INSIGHTS #}
+      <article id="insights_articles">
+        <h3 class="mb-1 text-sm font-semibold uppercase tracking-wide text-white">Journal articles</h3> 
+        <div class="{{ insights_card_grid }}" id="insights_articles">
+          {{ component("card", {
+            id: "is_paper",
+            title: "Total",
+            icon: "file-text"
+          }) }}
+
+          {# Hide for Gates only since it’s displayed in a separate section #}
+          {% if org._source.objectID != "gates-foundation" %}
+          {{ component("card", {
+            id: "is_preprint",
+            title: "Preprint",
+            icon: "edit"
+          }) }}
+          {% endif %}
+
+          {# Article-specific compliance displayed for Gates only #}
+          {% if org._source.objectID == "gates-foundation" %}
+          {{ component("card", {
+            id: "is_compliant_article", 
+            title: "OA policy-compliant",
+            icon: "check-circle"
+          }) }}
+          {% endif %}
+
+          {{ component("card", {
+            id: "is_free_to_read",
+            title: "Free-to-read",
+            icon: "gift"
+          }) }}
+
+          {{ component("card", {
+            id: "is_compliant",
+            title: "OA policy-compliant",
+            icon: "check-circle"
+          }) }}
+
+          {{ component("card", {
+            id: "is_oa",
+            title: "Open Access",
+            icon: "unlock"
+          }) }}
+
+          {{ component("card", {
+            id: "has_data_availability_statement",
+            title: "Data availability statements",
+            icon: "search"
+          }) }}
+
+          {{ component("card", {
+            id: "has_open_data",
+            title: "With Open Data",
+            icon: "database"
+          }) }}
+
+          {{ component("card", {
+            id: "has_open_code",
+            title: "With Open Code",
+            icon: "code"
+          }) }}
+        </div>
+      </article>
+
+      {# PREPRINT INSIGHTS — SEPARATED FOR GATES ONLY #}
+      {% if has_preprints %}
+      <article class="mt-6 md:mt-0" id="insights_preprints">
+        <h3 class="mb-1 text-sm font-semibold uppercase tracking-wide text-white">Preprints</h3> 
+        <div class="{{ insights_card_grid }}">
+          {{ component("card", {
+            id: "is_preprint",
+            title: "Total",
+            icon: "file-text"
+          }) }}
+
+          {{ component("card", {
+            id: "is_compliant_preprint",
+            title: "OA policy-compliant",
+            icon: "check-circle"
+          }) }}
+
+          {{ component("card", {
+            id: "has_data_availability_statement_preprint",
+            title: "Data availability statements",
+            icon: "search"
+          }) }}
+        </div>
+      </article>
+      {% endif %}
+
+      {# UNIQUE PUBLICATIONS INSIGHTS #}
+      {% if has_unique %}
+      <article class="mt-6 md:mt-0" id="insights_unique_publications">
+        <h3 class="mb-1 text-sm font-semibold uppercase tracking-wide text-white">Unique publications</h3> 
+        <div class="{{ insights_card_grid }}" id="insights_unique_publications">
+          {{ component("card", {
+            id: "is_unique_publication", 
+            title: "Total",
+            icon: "file-text"
+          }) }}
+
+          {{ component("card", {
+            id: "is_compliant_publication",
+            title: "OA policy-compliant",
+            icon: "check-circle"
+          }) }}
+
+        </div>
+      </article>
+      {% endif %}
+    </div>
   </section>
 
   {# EXPLORE #}
