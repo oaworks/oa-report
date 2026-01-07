@@ -883,13 +883,7 @@ export function resetBarChart(cardContents) {
   if (!cardContents) return;
 
   // Restore the default white card styling
-  cardContents.classList.add(
-    'bg-white',
-    'hover:shadow-md',
-    'transition-shadow',
-    'duration-200',
-    'proportional-card'
-  );
+  cardContents.classList.add('bg-white', 'proportional-card');
 
   // Remove the "unavailable" card styling
   cardContents.classList.remove(

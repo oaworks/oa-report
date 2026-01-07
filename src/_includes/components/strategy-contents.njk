@@ -57,7 +57,7 @@
     </div>
     <div class="mb-8 overflow-hidden drop-shadow-lg">
       <table class="divide-y divide-neutral-300 table-fixed w-full" id="table_{{ params.id }}">
-        <thead class="bg-neutral-800 text-white">
+        <thead class="bg-neutral-700 text-white">
           <tr>
             {{ params.table_headings|safe }}
             {% if params.draft_btn %}<th scope='col' class='text-xs font-semibold py-3.5 pl-3 pr-4 w-2/12'>Open draft {{ component('tooltip', {    msg: 'This will open a preset message in your email client. If you make any changes to the email, it will not be saved here.'  }) }}</th>{% endif %}
