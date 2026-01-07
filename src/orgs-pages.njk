@@ -185,18 +185,19 @@ permalink: "{{ org._source.objectID | slug }}/"
     <div class="p-3 md:px-6 md:py-8">
       <div class="max-w-8xl mx-auto">
       
-        <header>
-          <h2 class="pb-4 border-b border-neutral-700 text-2xl md:text-3xl font-normal leading-8 text-white">
+        <header class="pb-4 border-b border-neutral-700">
+          <h2 class="text-2xl md:text-3xl font-normal leading-8 text-white">
             <span class="inline-flex items-center gap-2">
               <span>Data exploration</span>
             </span>
           </h2>
-          <nav class="flex flex-wrap space-r-4 space-b-4 items-center">
-            <div id="explore_buttons">
-              <button id="explore_see_more_button" class="items-center inline-flex p-2 mr-4 mt-4 px-3 rounded-full bg-carnation-300 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500"><span>See more</span></button>
-            </div>
-          </nav>
         </header>
+
+        <nav class="flex flex-wrap space-r-4 space-b-4 items-center">
+          <div id="explore_buttons">
+            <button id="explore_see_more_button" class="items-center inline-flex p-2 mr-4 mt-4 px-3 rounded-full bg-carnation-300 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500"><span>See more</span></button>
+          </div>
+        </nav>
 
         <div class="mt-6 bg-neutral-800 border border-neutral-700 rounded-lg p-4 md:p-6">
         <div 
@@ -324,8 +325,8 @@ permalink: "{{ org._source.objectID | slug }}/"
   <section class="bg-neutral-900 text-white js_section relative">
     <div class="p-3 md:px-6 md:py-8">
       <div class="max-w-8xl mx-auto">
-        <header>
-          <h2 class="pb-4 border-b border-neutral-700 text-2xl md:text-3xl font-normal leading-8 text-white">
+        <header class="pb-4 border-b border-neutral-700">
+          <h2 class="text-2xl md:text-3xl font-normal leading-8 text-white">
             <span class="inline-flex items-center gap-2">
               <span>Actions</span>
               {{ component("tooltip", {
@@ -334,42 +335,43 @@ permalink: "{{ org._source.objectID | slug }}/"
               }) }}
             </span>
           </h2>
+        </header>
 
-          <nav class="hidden sm:block">
-            <ul class="flex flex-wrap space-r-4 space-b-4 items-center" role="tablist" aria-label="Actions Tabs" id="actions_buttons">
-              {{ component("strategy-pill", {
-                id: "email_author_deposit",
-                txt: "Self-archive articles",
-                class: "font-semibold bg-carnation-300",
-                first: true
-              }) }}
+        <nav class="hidden sm:block">
+          <ul class="flex flex-wrap space-r-4 space-b-4 items-center" role="tablist" aria-label="Actions Tabs" id="actions_buttons">
+            {{ component("strategy-pill", {
+              id: "email_author_deposit",
+              txt: "Self-archive articles",
+              class: "font-semibold bg-carnation-300",
+              first: true
+            }) }}
 
-            {# HIDE TEMPORARILY 
-              See https://github.com/oaworks/discussion/issues/3619#issuecomment-3587683138 
-              {{ component("strategy-pill", {
-                id: "email_author_vor",
-                txt: "Deposit publisher PDFs",
-                class: "font-semibold bg-carnation-300",
-                first: true
-              }) }}
+          {# HIDE TEMPORARILY 
+            See https://github.com/oaworks/discussion/issues/3619#issuecomment-3587683138 
+            {{ component("strategy-pill", {
+              id: "email_author_vor",
+              txt: "Deposit publisher PDFs",
+              class: "font-semibold bg-carnation-300",
+              first: true
+            }) }}
 
-              {{ component("strategy-pill", {
-                id: "email_author_aam",
-                txt: "Deposit accepted manuscripts"
-              }) }}
-            #}
-              {{ component("strategy-pill", {
-                id: "apc_followup",
-                txt: "Correct publisher errors"
-              }) }}
+            {{ component("strategy-pill", {
+              id: "email_author_aam",
+              txt: "Deposit accepted manuscripts"
+            }) }}
+          #}
+            {{ component("strategy-pill", {
+              id: "apc_followup",
+              txt: "Correct publisher errors"
+            }) }}
 
-              {{ component("strategy-pill", {
-                id: "unanswered_requests",
-                txt: "Escalate unanswered requests"
-              }) }}
+            {{ component("strategy-pill", {
+              id: "unanswered_requests",
+              txt: "Escalate unanswered requests"
+            }) }}
 
-            </ul>
-          </nav>
+          </ul>
+        </nav>
         </header>
 
         <div class="mt-6 bg-neutral-800 border border-neutral-700 rounded-lg p-4 md:p-6">
