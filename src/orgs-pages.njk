@@ -28,15 +28,13 @@ permalink: "{{ org._source.objectID | slug }}/"
       </div>
     </div>
     <header class="col-span-3">
-      <h2 class="mb-3 text-base md:text-lg leading-6 text-neutral-300">
-        <span class="font-semibold uppercase text-sm md:text-base line-thru">
-          <span class="bg-neutral-900 text-neutral-300">
-            Insights
-            {{ component("tooltip", {
-              sup: true,
-              msg: "The <em>Insights</em> section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/developers/infrastructure/' target='_blank' class='underline underline-offset-2 decoration-1'>infrastructure page</a>."
-            }) }}
-          </span>
+      <h2 class="mb-6 text-2xl md:text-3xl font-normal leading-8 text-neutral-100">
+        <span class="inline-flex items-center gap-2">
+          <span>Insights</span>
+          {{ component("tooltip", {
+            sup: true,
+            msg: "The <em>Insights</em> section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/developers/infrastructure/' target='_blank' class='underline underline-offset-2 decoration-1'>infrastructure page</a>."
+          }) }}
         </span>
       </h2>
     </header>
@@ -185,11 +183,9 @@ permalink: "{{ org._source.objectID | slug }}/"
     <div class="p-3 md:px-6 md:py-8">
       
       <header class="col-span-3">
-        <h2 class="text-base md:text-lg leading-6">
-          <span class="font-semibold uppercase text-sm md:text-base line-thru">
-            <span class="bg-neutral-800">
-              Data exploration
-            </span>
+        <h2 class="mb-6 text-2xl md:text-3xl font-normal leading-8 text-white">
+          <span class="inline-flex items-center gap-2">
+            <span>Data exploration</span>
           </span>
         </h2>
       </header>
@@ -326,9 +322,9 @@ permalink: "{{ org._source.objectID | slug }}/"
     <div class="p-3 md:px-6 md:py-8">
       <div class="grid grid-cols-2 gap-3 sm:gap-6 md:gap-12"> 
         <div class="col-span-2">
-          <h2 class="leading-6 font-semibold uppercase text-sm md:text-base line-thru">
-            <span class="bg-neutral-700">
-              Actions
+          <h2 class="mb-6 text-2xl md:text-3xl font-normal leading-8 text-white">
+            <span class="inline-flex items-center gap-2">
+              <span>Actions</span>
               {{ component("tooltip", {
                 sup: true,
                 msg: "The <em>Strategy</em> section provides actionable steps for making more of your articles Open Access."
