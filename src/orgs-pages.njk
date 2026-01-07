@@ -28,8 +28,8 @@ permalink: "{{ org._source.objectID | slug }}/"
       </div>
     </div>
     <div class="max-w-8xl mx-auto">
-      <header class="pb-4 border-b border-neutral-700">
-        <h2 class="text-2xl md:text-3xl font-normal leading-8 text-white">
+      <header>
+        <h2 class="pb-4 border-b border-neutral-700 text-2xl md:text-3xl font-normal leading-8 text-white">
           <span class="inline-flex items-center gap-2">
             <span>Insights</span>
             {{ component("tooltip", {
@@ -185,27 +185,26 @@ permalink: "{{ org._source.objectID | slug }}/"
     <div class="p-3 md:px-6 md:py-8">
       <div class="max-w-8xl mx-auto">
       
-        <header class="pb-4 border-b border-neutral-700">
-          <h2 class="text-2xl md:text-3xl font-normal leading-8 text-white">
+        <header>
+          <h2 class="pb-4 border-b border-neutral-700 text-2xl md:text-3xl font-normal leading-8 text-white">
             <span class="inline-flex items-center gap-2">
               <span>Data exploration</span>
             </span>
           </h2>
-        </header>
-
-        <div class="mt-6 bg-neutral-800 border border-neutral-700 rounded-lg p-4 md:p-6">
-          <div class="flex flex-wrap space-r-4 space-b-4 items-center">
+          <nav class="flex flex-wrap space-r-4 space-b-4 items-center">
             <div id="explore_buttons">
               <button id="explore_see_more_button" class="items-center inline-flex p-2 mr-4 mt-4 px-3 rounded-full bg-carnation-300 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500"><span>See more</span></button>
             </div>
-          </div>
+          </nav>
+        </header>
 
-      <div 
-        class="fixed inset-0 z-50 flex justify-center items-center opacity-0 transition-opacity duration-300" 
-        id="explore_loading"
-        aria-live="polite" 
-        aria-busy="true"
-      >
+        <div class="mt-6 bg-neutral-800 border border-neutral-700 rounded-lg p-4 md:p-6">
+        <div 
+          class="fixed inset-0 z-50 flex justify-center items-center opacity-0 transition-opacity duration-300" 
+          id="explore_loading"
+          aria-live="polite" 
+          aria-busy="true"
+        >
         <div class="absolute inset-0 bg-neutral-900 bg-opacity-50"></div>
         <div class="loader ease-linear rounded-full border-8 border-t-8 border-carnation-200 border-t-carnation-500 h-12 w-12 z-10"></div>
         {# Visually hidden text for screen readers #}
@@ -213,7 +212,7 @@ permalink: "{{ org._source.objectID | slug }}/"
       </div>
 
       
-      <div id="export_table" class="mt-12 hidden">
+      <div id="export_table" class="hidden">
       <header class="mb-10 space-y-2">
         <h3 class="text-3xl md:text-4xl" aria-live="polite">
           <span class="report_sort_adjective">Top</span> <strong class="lowercase explore_type">articles</strong>
@@ -325,8 +324,8 @@ permalink: "{{ org._source.objectID | slug }}/"
   <section class="bg-neutral-900 text-white js_section relative">
     <div class="p-3 md:px-6 md:py-8">
       <div class="max-w-8xl mx-auto">
-        <header class="pb-4 border-b border-neutral-700">
-          <h2 class="text-2xl md:text-3xl font-normal leading-8 text-white">
+        <header>
+          <h2 class="pb-4 border-b border-neutral-700 text-2xl md:text-3xl font-normal leading-8 text-white">
             <span class="inline-flex items-center gap-2">
               <span>Actions</span>
               {{ component("tooltip", {
@@ -335,13 +334,8 @@ permalink: "{{ org._source.objectID | slug }}/"
               }) }}
             </span>
           </h2>
-        </header>
 
-        <div class="mt-6 bg-neutral-800 border border-neutral-700 rounded-lg p-4 md:p-6">
-          <div class="grid grid-cols-2 gap-3 sm:gap-6 md:gap-12"> 
-            <div class="col-span-2">
-
-          <nav class="hidden sm:block mt-6 mb-10">
+          <nav class="hidden sm:block">
             <ul class="flex flex-wrap space-r-4 space-b-4 items-center" role="tablist" aria-label="Actions Tabs" id="actions_buttons">
               {{ component("strategy-pill", {
                 id: "email_author_deposit",
@@ -376,6 +370,11 @@ permalink: "{{ org._source.objectID | slug }}/"
 
             </ul>
           </nav>
+        </header>
+
+        <div class="mt-6 bg-neutral-800 border border-neutral-700 rounded-lg p-4 md:p-6">
+          <div class="grid grid-cols-2 gap-3 sm:gap-6 md:gap-12"> 
+            <div class="col-span-2">
 
           <div class="hidden sm:block js_strategies">
             {# Hide temporarily
