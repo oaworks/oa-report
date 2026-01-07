@@ -980,22 +980,9 @@ export function showUnavailableCard(cardContents) {
     `;
   }
 
-  // Remove the default white card styling
-  cardContents.classList.remove(
-    'bg-white',
-    'hover:shadow-md',
-    'transition-shadow',
-    'duration-200',
-    'proportional-card'
-  );
-
-  // Add muted/disabled styling & center layout
-  cardContents.classList.add(
-    'bg-carnation-100',
-    'flex',
-    'flex-col',
-    'justify-center'
-  );
+  // Muted card styling
+  cardContents.classList.remove('bg-white', 'hover:shadow-md');
+  cardContents.classList.add('bg-neutral-100');
 
   // Clear or replace the bar chart area with "Data unavailable"
   const footerEl = cardContents.querySelector('footer.js_bar_chart');
@@ -1005,7 +992,7 @@ export function showUnavailableCard(cardContents) {
       'flex',
       'flex-col',
       'justify-end',
-      'h-20',
+      'h-auto',
       'w-2',
       'bg-neutral-300',
       'rounded-full',
