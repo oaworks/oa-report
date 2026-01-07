@@ -28,9 +28,9 @@ permalink: "{{ org._source.objectID | slug }}/"
       </div>
     </div>
     <header class="col-span-3">
-      <h2 class="mb-4 text-base md:text-lg leading-6">
+      <h2 class="mb-3 text-base md:text-lg leading-6 text-neutral-300">
         <span class="font-semibold uppercase text-sm md:text-base line-thru">
-          <span class="bg-neutral-900">
+          <span class="bg-neutral-900 text-neutral-300">
             Insights
             {{ component("tooltip", {
               sup: true,
@@ -43,11 +43,11 @@ permalink: "{{ org._source.objectID | slug }}/"
 
     {# ARTICLE INSIGHTS #}
     <article id="insights_articles">
-      <h3 class="mb-2 text-xl{% if org._source.objectID != 'gates-foundation' %} sr-only{% endif %}">Articles</h3> 
+      <h3 class="mb-1 text-sm font-semibold uppercase tracking-wide text-white">Journal articles</h3> 
       <div class="grid gap-4 grid-cols-3 xl:grid-cols-6 2xl:grid-cols-8" id="insights_articles">
         {{ component("card", {
           id: "is_paper",
-          title: "Total journal articles",
+          title: "Total",
           icon: "file-text"
         }) }}
 
@@ -110,11 +110,11 @@ permalink: "{{ org._source.objectID | slug }}/"
     {# PREPRINT INSIGHTS — SEPARATED FOR GATES ONLY #}
     {% if org._source.objectID == "gates-foundation" %}
     <article class="mt-6" id="insights_preprints">
-      <h3 class="mb-2 text-xl">Preprints</h3> 
+      <h3 class="mb-1 text-sm font-semibold uppercase tracking-wide text-white">Preprints</h3> 
       <div class="grid gap-4 grid-cols-3 xl:grid-cols-6 2xl:grid-cols-8">
         {{ component("card", {
           id: "is_preprint",
-          title: "Total preprints",
+          title: "Total",
           icon: "file-text"
         }) }}
 
@@ -134,11 +134,11 @@ permalink: "{{ org._source.objectID | slug }}/"
 
     {# UNIQUE PUBLICATIONS INSIGHTS #}
     <article class="mt-6" id="insights_unique_publications">
-      <h3 class="mb-2 text-xl">Unique publications</h3> 
+      <h3 class="mb-1 text-sm font-semibold uppercase tracking-wide text-white">Unique publications</h3> 
       <div class="grid gap-4 grid-cols-3 xl:grid-cols-6 2xl:grid-cols-8" id="insights_unique_publications">
         {{ component("card", {
           id: "is_unique_publication", 
-          title: "Total unique publications",
+          title: "Total",
           icon: "file-text"
         }) }}
 
