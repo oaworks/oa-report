@@ -8,9 +8,9 @@
  * @type {{enabled:string,disabled:string,active:string}}
  */
 export const DATE_SELECTION_BUTTON_CLASSES = {
-  enabled: "block px-2 py-1 border rounded-t-sm mt-1 md:mt-0 md:border-b-0 md:px-3 md:py-1.5 bg-white text-neutral-900 hover:bg-carnation-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 js-nav-chip",
-  disabled: "block px-2 py-1 border rounded-t-sm mt-1 md:mt-0 md:border-b-0 md:px-3 md:py-1.5 bg-white text-neutral-900 opacity-50 cursor-not-allowed js-nav-chip",
-  active: "block px-2 py-1 border rounded-t-sm mt-1 md:mt-0 md:border-b-0 md:px-3 md:py-1.5 hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 bg-neutral-900 text-white font-semibold border-neutral-900 js-nav-chip"
+  enabled: "block px-2 py-1 border rounded-t-sm mt-1 md:mt-0 md:border-b-0 md:px-3 md:py-1.5 bg-neutral-800 text-neutral-100 hover:bg-neutral-700 border-neutral-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-300 js-nav-chip",
+  disabled: "block px-2 py-1 border rounded-t-sm mt-1 md:mt-0 md:border-b-0 md:px-3 md:py-1.5 bg-neutral-800 text-neutral-500 opacity-60 cursor-not-allowed border-neutral-700 js-nav-chip",
+  active: "block px-2 py-1 border rounded-t-sm mt-1 md:mt-0 md:border-b-0 md:px-3 md:py-1.5 bg-neutral-100 text-neutral-900 font-semibold border-neutral-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-300 js-nav-chip"
 };
 
 /**
@@ -66,6 +66,6 @@ export const DATA_TABLE_FOOT_CLASSES = {
  */
 export const FILTER_PILL_CLASSES = {
   base: 'inline-flex items-center px-3 py-1 rounded-full border text-xs md:text-sm cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 whitespace-nowrap',
-  active: 'bg-neutral-200 text-neutral-900 border-neutral-200 shadow-sm',
-  inactive: 'bg-neutral-800 text-white border-neutral-500 hover:bg-neutral-700'
+  active: 'bg-neutral-700 text-neutral-100 border-neutral-500 shadow-sm',
+  inactive: 'bg-neutral-800 text-neutral-100 border-neutral-600 hover:bg-neutral-700'
 };
