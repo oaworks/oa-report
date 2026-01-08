@@ -550,7 +550,7 @@ export function deepCopy(obj) {
  */
 export function convertTextToLinks(text, forceLink = false, urlPrefix = '') {
   // Validate input is a non-null string
-  if (typeof text !== 'string' || text === null) {
+  if (typeof text !== 'string') {
     return 'N/A';
   }
 

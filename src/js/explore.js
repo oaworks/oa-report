@@ -28,7 +28,7 @@ let loggedIn = false;
 // Holds organisation data; declared early so auth listeners can check it safely
 let orgData;
 
-const authState = initAuth();
+const authState = initAuth(typeof org !== "undefined" ? org : undefined);
 loggedIn = authState.loggedIn;
 orgKey = authState.orgKey ? `&orgkey=${authState.orgKey}` : "";
 applyAuthVisibility({ hideWhenLoggedOut: ["report-filters"] });
@@ -794,10 +794,6 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
       : index === 1
         ? DATA_TABLE_HEADER_CLASSES[dataType].secondHeaderCol
         : DATA_TABLE_HEADER_CLASSES[dataType].otherHeaderCols;
-
-    const label = dataType === 'terms'
-      ? EXPLORE_HEADER_TERMS_LABELS[key]?.label || key
-      : EXPLORE_HEADER_ARTICLES_LABELS[key]?.label || key;
 
     const headerCell = createTableCell('', cssClass, null, null, true); 
     setupHeaderTooltip(headerCell, key, dataType);
