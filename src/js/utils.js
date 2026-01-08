@@ -953,7 +953,7 @@ export function showUnavailableCard(cardContents) {
     if (!percentEl.dataset.oarDefaultUnavailable) {
       percentEl.dataset.oarDefaultUnavailable = percentEl.innerHTML;
     }
-    percentEl.innerHTML = `<span class="text-sm font-semibold text-neutral-800">Data unavailable</span>`;
+    percentEl.innerHTML = `<span class="text-sm font-semibold text-neutral-800">Unavailable</span>`;
   }
 
   // Swap the corner icon for a slash, remembering the original
@@ -978,7 +978,7 @@ export function showUnavailableCard(cardContents) {
   cardContents.classList.remove('bg-white', 'hover:shadow-md');
   cardContents.classList.add('bg-neutral-100');
 
-  // Clear or replace the bar chart area with "Data unavailable"
+  // Clear or replace the bar chart area with "Unavailable"
   const footerEl = cardContents.querySelector('footer.js_bar_chart');
   if (footerEl) {
     footerEl.className = [
