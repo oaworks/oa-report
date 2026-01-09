@@ -1,14 +1,7 @@
 {# Insights section #}
 {% from "partials/report/section-wrapper.njk" import sectionWrapper %}
 
-{% call sectionWrapper(
-  "insights",
-  "Insights",
-  component("tooltip", {
-    sup: true,
-    msg: "The <em>Insights</em> section provides a quick overview of your organization’s Open Access statistics. Our data sources are listed on our <a href='https://oa.works/developers/infrastructure/' target='_blank' class='underline underline-offset-2 decoration-1'>infrastructure page</a>."
-  })
-) %}
+{% call sectionWrapper("insights", "Insights") %}
 
   {# Loading spinning icon #}
   <div class="relative">

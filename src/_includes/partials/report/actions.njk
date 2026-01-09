@@ -1,14 +1,7 @@
 {# Actions section #}
 {% from "partials/report/section-wrapper.njk" import sectionWrapper %}
 
-{% call sectionWrapper(
-  "strategies",
-  "Actions",
-  component("tooltip", {
-    sup: true,
-    msg: "The <em>Strategy</em> section provides actionable steps for making more of your articles Open Access."
-  })
-) %}
+{% call sectionWrapper("strategies", "Actions") %}
 
   {# Actions tabs / pills #}
   <nav class="hidden sm:block">
@@ -83,7 +76,7 @@
             table_headings: "<th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-10/12 sm:w-6/12'>Article</th>\
                             <th scope='col' class='hidden px-3 py-3.5 text-left text-sm font-semibold w-4/12 sm:table-cell'>Corresponding author</th>",
             draft_btn: true,
-            action_help_txt: true,
+            action_help_txt: false,
             hidden: false
           }) }}
 
