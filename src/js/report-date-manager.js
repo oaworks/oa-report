@@ -237,7 +237,7 @@ export function bindDynamicYearButtons(startYear, endYear, visibleYears = 3) {
  */
 function createDropdownContainer(id = null) {
   const dropdown = document.createElement("div");
-  dropdown.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " relative inline-block px-3 js_dropdown";
+  dropdown.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " relative inline-block js_dropdown";
 
   const dropdownButton = document.createElement("button");
   dropdownButton.className = "h-full w-full js_dropdown_button";
@@ -250,9 +250,11 @@ function createDropdownContainer(id = null) {
   dropdownContent.classList.add(
     "absolute",
     "left-0",
-    "mt-1",
+    "mt-3",
     "w-full",
     "shadow-lg",
+    "border",
+    "border-neutral-600",
     "bg-neutral-800",
     "text-neutral-100",
     "focus:outline-none",
