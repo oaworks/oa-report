@@ -62,6 +62,9 @@ onAuthChange(({ loggedIn: isLoggedIn, orgKey: key }) => {
 
 // Generate report’s UI for any given date range
 export function initInsightsAndStrategies(org) {
+  // Ensure counts are fetched fresh for the current date range
+  countQueryCache.clear();
+
   // Set paths for orgindex
   let queryPrefix = `${QUERY_BASE}q=${dateRange}`,
       countQueryPrefix = `${COUNT_QUERY_BASE}q=${dateRange}`;
@@ -152,6 +155,9 @@ export function initInsightsAndStrategies(org) {
       if (!cardContents) return; 
 
       if (shown === true) {
+        // Ensure card is reset from any prior "unavailable" state before fetching fresh data
+        resetBarChart(cardContents);
+
         // Locate placeholders
         const percentageContents = document.getElementById(`percent_${numerator}`);
         const articlesContents   = document.getElementById(`articles_${numerator}`);
@@ -261,7 +267,6 @@ export function initInsightsAndStrategies(org) {
                 `;
 
                 // Clear any existing bar chart and set up new bar chart visualisation
-                resetBarChart(cardContents);
                 setBarChart(
                   cardContents,
                   numeratorCount,
