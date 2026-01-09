@@ -301,7 +301,7 @@ function createDropdownItem(buttonId, buttonText, startDate, endDate, dropdownBu
   item.type = "button";
 
   item.className =
-    "js_dropdown_item block w-full px-4 py-2 text-left text-xs md:text-sm " +
+    "js_dropdown_item block w-full px-4 py-2 text-left text-xs " +
     "bg-neutral-800 text-neutral-100 hover:bg-neutral-700 focus:outline-none focus:bg-neutral-600 active:bg-neutral-700";
 
   item.textContent = buttonText;

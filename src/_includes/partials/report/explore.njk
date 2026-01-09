@@ -3,13 +3,14 @@
 
 {% call sectionWrapper("explore", "Explore") %}
   {# Breakdown table options #}
-  <nav class="flex flex-wrap space-r-4 space-b-4 items-center">
-    <div id="explore_buttons">
-      <button id="explore_see_more_button" class="items-center inline-flex p-2 mr-4 mt-4 px-3 rounded-full bg-carnation-300 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500"><span>See more</span></button>
-    </div>
+  <nav aria-label="Explore breakdowns" class="mt-2 flex flex-wrap items-center gap-2">
+    <ul id="explore_buttons" class="flex flex-wrap items-center gap-2 m-0 p-0 list-none"></ul>
+    <button id="explore_see_more_button" class="inline-flex items-center px-3 py-1.5 rounded-md bg-neutral-700 text-neutral-100 text-xs font-medium hover:bg-neutral-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800">
+      <span>See more</span>
+    </button>
   </nav>
 
-  <div class="mt-6 bg-neutral-800 border border-neutral-700 rounded-lg p-4 md:p-6">
+  <div class="mt-2 bg-neutral-800 border border-neutral-700 rounded-lg p-4 md:p-6">
     {# Loading spinner #}
     <div
       class="fixed inset-0 z-50 flex justify-center items-center opacity-0 transition-opacity duration-300"

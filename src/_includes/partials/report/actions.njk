@@ -4,8 +4,8 @@
 {% call sectionWrapper("strategies", "Actions") %}
 
   {# Actions tabs / pills #}
-  <nav class="hidden sm:block">
-    <ul class="flex flex-wrap space-r-4 space-b-4 items-center" role="tablist" aria-label="Actions Tabs" id="actions_buttons">
+  <nav class="hidden sm:block mt-2 flex flex-wrap items-center gap-2" aria-label="Actions Tabs">
+    <ul class="flex flex-wrap items-center gap-2 m-0 p-0 list-none" role="tablist" id="actions_buttons">
       {{ component("strategy-pill", {
         id: "email_author_deposit",
         txt: "Self-archive articles",
@@ -40,7 +40,7 @@
     </ul>
   </nav>
 
-  <div class="mt-6 bg-neutral-800 border border-neutral-700 rounded-lg p-4 md:p-6">
+  <div class="mt-2 bg-neutral-800 border border-neutral-700 rounded-lg p-4 md:p-6">
     <div class="grid grid-cols-2 gap-3 sm:gap-6 md:gap-12">
       <div class="col-span-2">
 
