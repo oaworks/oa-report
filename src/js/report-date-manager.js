@@ -247,7 +247,23 @@ function createDropdownContainer(id = null) {
   dropdownButton.innerHTML = "More <span class='sr-only'>years</span> <span class='ml-1 text-xs'>&#9660;</span>";
 
   const dropdownContent = document.createElement("div");
-  dropdownContent.classList.add("absolute", "left-0", "mt-1", "w-full", "shadow-lg", "bg-white", "focus:outline-none",  "focus:ring-2", "focus:ring-offset-2", "focus:ring-neutral-900", "divide-y", "divide-neutral-200", "hidden", "js_dropdown_content");
+  dropdownContent.classList.add(
+    "absolute",
+    "left-0",
+    "mt-1",
+    "w-full",
+    "shadow-lg",
+    "bg-neutral-800",
+    "text-neutral-100",
+    "focus:outline-none",
+    "focus:ring-2",
+    "focus:ring-offset-2",
+    "focus:ring-neutral-300",
+    "divide-y",
+    "divide-neutral-700",
+    "hidden",
+    "js_dropdown_content"
+  );
   dropdownContent.setAttribute("hidden", true);
 
   dropdownButton.addEventListener("click", () => {
@@ -284,7 +300,7 @@ function createDropdownItem(buttonId, buttonText, startDate, endDate, dropdownBu
 
   item.className =
     "js_dropdown_item block w-full px-4 py-2 text-left text-xs md:text-sm " +
-    "bg-white text-neutral-900 hover:bg-carnation-100 focus:outline-none focus:bg-carnation-100";
+    "bg-neutral-800 text-neutral-100 hover:bg-neutral-700 focus:outline-none focus:bg-neutral-600 active:bg-neutral-700";
 
   item.textContent = buttonText;
 
@@ -629,8 +645,15 @@ function resetDropdown() {
   // Reset styling for all dropdown items to their original state
   const dropdownItems = document.querySelectorAll('.js_dropdown_item');
   dropdownItems.forEach((item) => {
-    item.classList.remove("bg-neutral-900", "text-white", "font-semibold", "border-neutral-900");
-    item.classList.add("bg-white", "text-neutral-900");
+    item.classList.remove(
+      "bg-neutral-700",
+      "bg-neutral-600",
+      "text-neutral-100",
+      "font-semibold",
+      "border-neutral-900",
+      "border-neutral-700",
+      "border-neutral-600"
+    );
   });
 
   // The date range form may not exist yet depending on init order
