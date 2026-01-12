@@ -172,9 +172,11 @@ export function initInsightsAndStrategies(org) {
         }
 
         // On-click tooltip to contain Insight info + figure details
-        const tooltipTarget = cardContents.querySelector('h3') || cardContents;
-        const tooltipTargetId = tooltipTarget.id || `${numerator}-heading`;
+        const tooltipTarget = cardContents;
+        const tooltipTargetId = tooltipTarget.id || `${numerator}-card`;
         tooltipTarget.id = tooltipTargetId;
+        tooltipTarget.setAttribute('role', 'button');
+        tooltipTarget.setAttribute('tabindex', '0');
         let instance = cardContents._insightTooltip;
         if (!instance) {
           instance = tippy(tooltipTarget, {
@@ -188,6 +190,12 @@ export function initInsightsAndStrategies(org) {
           });
           cardContents._insightTooltip = instance;
         }
+        tooltipTarget.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            instance.show();
+          }
+        });
         const updateTooltipContent = () => {
           const detailHtml = figureDetails
             ? `<div class="mb-2 font-semibold text-neutral-900">${figureDetails.innerHTML}</div>`
@@ -201,6 +209,7 @@ export function initInsightsAndStrategies(org) {
         tooltipTarget.setAttribute('aria-controls', tooltipID);
         tooltipTarget.setAttribute('aria-labelledby', tooltipTargetId);
         tooltipTarget.setAttribute('title', 'More information on this metric');
+        tooltipTarget.setAttribute('aria-haspopup', 'dialog');
 
         // Get numerator’s count query
         let numPromise = fetchCountQuery(countQueryPrefix + buildEncodedQueryWithUrlFilter(analysisEntry.query));
