@@ -42,19 +42,19 @@ export const INSIGHTS_CARDS = [
     numerator: "is_compliant",
     denominator: "is_covered_by_policy",
     denominatorText: "articles covered by policy",
-    info: `<p class='mb-2'>The percentage of journal articles covered by <a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
+    info: `<p>The percentage of journal articles covered by <a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
   },
   {
     numerator: "is_compliant_preprint",
     denominator: "is_covered_by_policy_preprint",
     denominatorText: "preprints covered by policy",
-    info: `<p class='mb-2'>The percentage of preprints covered by <a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
+    info: `<p>The percentage of preprints covered by <a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
   },
   {
     numerator: "is_compliant_article",
     denominator: "is_paper",
     denominatorText: "articles covered by policy",
-    info: `<p class='mb-2'>The percentage of journal articles covered by <a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
+    info: `<p>The percentage of journal articles covered by <a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
   },
   {
     numerator: "is_oa",
@@ -66,13 +66,13 @@ export const INSIGHTS_CARDS = [
     numerator: "has_data_availability_statement",
     denominator: "has_checked_data_availability_statement",
     denominatorText: "articles checked to date",
-    info: `<p class='mb-2'>This number tells you how many journal articles that we’ve analyzed have a data availability statement.</p> <p>To check if a paper has a data availability statement, we use data from PubMed and review articles manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data).</p>`
+    info: `<p>This number tells you how many journal articles that we’ve analyzed have a data availability statement.</p> <p>To check if a paper has a data availability statement, we use data from PubMed and review articles manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data).</p>`
   },
   {
     numerator: "has_data_availability_statement_preprint",
     denominator: "has_checked_data_availability_statement_preprint",
     denominatorText: "preprints checked to date",
-    info: `<p class='mb-2'>This number tells you how many preprints that we’ve analyzed have a data availability statement.</p> <p>To check if a paper has a data availability statement, we use data from PubMed and review preprints manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data).</p>`
+    info: `<p>This number tells you how many preprints that we’ve analyzed have a data availability statement.</p> <p>To check if a paper has a data availability statement, we use data from PubMed and review preprints manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data).</p>`
   },
   {
     numerator: "has_open_data",
@@ -90,6 +90,6 @@ export const INSIGHTS_CARDS = [
     numerator: "is_compliant_publication",
     denominator: "is_covered_by_policy",
     denominatorText: "unique publications covered by policy",
-    info: `<p class='mb-2'>The percentage of unique publications covered by <a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
+    info: `<p>The percentage of unique publications covered by <a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
   }
 ];

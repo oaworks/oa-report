@@ -133,7 +133,7 @@ export function initInsightsAndStrategies(org) {
       );
     });
 
-    function getInsight(numerator, denominator, denominatorText, info) {
+    function getInsight(numerator, denominator, denominatorText, insightInfo) {
       // Check if the data for this "numerator" (i.e. Insights data card) exists in orgData
       const analysisEntry = orgData.hits.hits[0]._source.analysis[numerator];
 
@@ -160,8 +160,8 @@ export function initInsightsAndStrategies(org) {
 
         // Locate placeholders
         const percentageContents = document.getElementById(`percent_${numerator}`);
-        const articlesContents   = document.getElementById(`articles_${numerator}`);
-        const articlesWrapper    = articlesContents ? articlesContents.closest('p') : null;
+        const figureDetails      = document.getElementById(`articles_${numerator}`);
+        const articlesWrapper    = figureDetails ? figureDetails.closest('p') : null;
         const barChartElement    = cardContents.querySelector('.js_bar_chart');
         const figureElement      = percentageContents
           ? percentageContents.closest('p') || percentageContents
@@ -189,11 +189,11 @@ export function initInsightsAndStrategies(org) {
           cardContents._insightTooltip = instance;
         }
         const updateTooltipContent = () => {
-          const contentHtml = [
-            info ? `<div>${info}</div>` : '',
-            articlesContents ? `<div>${articlesContents.innerHTML}</div>` : ''
-          ].join('');
-          instance.setContent(contentHtml);
+          const detailHtml = figureDetails
+            ? `<div class="mb-2 font-semibold text-neutral-900">${figureDetails.innerHTML}</div>`
+            : "";
+          const infoHtml = insightInfo ? `<div class="space-y-2">${insightInfo}</div>` : "";
+          instance.setContent(`${detailHtml}${infoHtml}`);
         };
 
         // Accessibility / tooltip IDs
@@ -245,7 +245,7 @@ export function initInsightsAndStrategies(org) {
 
               if (denominatorCount) {
                 // Show "X of Y" in #articles_... with some styling
-                articlesContents.innerHTML = `
+                figureDetails.innerHTML = `
                   <span class="font-semibold text-carnation-600">${makeNumberReadable(numeratorCount)}</span>
                   <span class="text-neutral-900">
                     of ${makeNumberReadable(denominatorCount)} ${denominatorText}
@@ -284,7 +284,7 @@ export function initInsightsAndStrategies(org) {
               percentageContents.textContent = makeNumberReadable(result.data);
 
               // Put smaller label "articles" (or denominatorText) in #articles_{numerator}
-              articlesContents.textContent = denominatorText;
+              figureDetails.textContent = denominatorText;
             })
             .catch(function (error) {
               console.log(`${numerator} error: ${error}`);
