@@ -24,6 +24,8 @@ export function initStrategyTabs() {
   const action = params.action;
   if (action) {
     document.getElementById(`strategy_${action}`)?.click();
+  } else if (strategyTabBtns.length) {
+    strategyTabBtns[0].click();
   }
 }
 
