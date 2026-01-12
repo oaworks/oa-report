@@ -11,7 +11,7 @@ permalink: "{{ org._source.objectID | slug }}/"
 {%- from "system/component.njk" import component with context -%}
 
 {% block header %}
-<div id="js-report-nav" class="bg-neutral-900 text-neutral-100 sticky top-0 z-50">
+<div id="js-report-nav" class="bg-neutral-900 text-neutral-100 border-b border-neutral-700 sticky top-0 z-50">
   {% include 'partials/header.njk' %}
 </div>
 {% endblock %}
