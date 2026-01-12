@@ -284,7 +284,12 @@ export function initInsightsAndStrategies(org) {
               percentageContents.textContent = makeNumberReadable(result.data);
 
               // Put smaller label "articles" (or denominatorText) in #articles_{numerator}
-              figureDetails.textContent = denominatorText;
+              figureDetails.innerHTML = `
+                <span class="font-semibold text-carnation-600">${makeNumberReadable(result.data)}</span>
+                <span class="text-neutral-900">
+                  ${denominatorText} in total
+                </span>
+              `;
             })
             .catch(function (error) {
               console.log(`${numerator} error: ${error}`);
