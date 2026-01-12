@@ -73,6 +73,6 @@ export const FILTER_PILL_CLASSES = {
 // Segmented pill styles for tab-like groups
 export const SEGMENTED_PILL_CLASSES = {
   base: "px-4 py-1.5 text-xs font-medium rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 transition-colors",
-  active: "bg-neutral-700 text-neutral-100 shadow-inner hover:bg-neutral-700/80",
-  inactive: "text-neutral-300 bg-transparent hover:bg-neutral-700/70"
+  active: "bg-neutral-700 text-neutral-100 shadow-inner hover:bg-neutral-600/90",
+  inactive: "text-neutral-300 bg-transparent hover:bg-neutral-700"
 };
