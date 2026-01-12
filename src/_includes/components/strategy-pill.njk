@@ -11,10 +11,10 @@
   role="tab"
   aria-selected="{% if params.first %}true{% else %}false{% endif %}"
   aria-controls="{{ params.id }}"
-  class="js_strategy_btn cursor-pointer px-4 py-1.5 text-xs font-medium rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 transition-colors text-neutral-300 bg-transparent hover:bg-neutral-700 {{ params.class }}"
+  class="js_strategy_btn cursor-pointer px-4 py-1.5 text-xs font-medium rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 transition-colors text-neutral-200 bg-transparent hover:bg-neutral-700 {{ params.class }}"
   id="strategy_{{ params.id }}"
   tabindex="{% if params.first %}0{% else %}-1{% endif %}"
 >
   <span>{{ params.txt }}</span>
-  <span id="count_{{ params.id }}" class="bg-neutral-700 text-neutral-100 ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block">0</span>
+  <span id="count_{{ params.id }}" class="bg-neutral-900 text-neutral-100 ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block">0</span>
 </li>
