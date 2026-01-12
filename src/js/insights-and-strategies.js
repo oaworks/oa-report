@@ -171,38 +171,30 @@ export function initInsightsAndStrategies(org) {
           articlesWrapper.classList.add('sr-only');
         }
 
-        function updateDetailTooltips() {
-          if (!articlesContents) return;
-          const targets = [barChartElement, figureElement].filter(Boolean);
-          if (!targets.length) return;
-          targets.forEach((target) => {
-            if (!target._detailTooltip) {
-              target._detailTooltip = tippy(target, {
-                allowHTML: true,
-                placement: 'bottom',
-                appendTo: document.body,
-                theme: 'tooltip-white',
-                interactive: true,
-                trigger: 'mouseenter focus click'
-              });
-            }
-            target._detailTooltip.setContent(articlesContents.innerHTML);
-          });
-        }
-
-        // Create tippy tooltip on card title click
+        // On-click tooltip to contain Insight info + figure details
         const tooltipTarget = cardContents.querySelector('h3') || cardContents;
         const tooltipTargetId = tooltipTarget.id || `${numerator}-heading`;
         tooltipTarget.id = tooltipTargetId;
-        const instance = tippy(tooltipTarget, {
-          allowHTML: true,
-          interactive: true,
-          placement: 'right',
-          appendTo: document.body,
-          theme: 'tooltip-white',
-          trigger: 'click'
-        });
-        instance.setContent(info);
+        let instance = cardContents._insightTooltip;
+        if (!instance) {
+          instance = tippy(tooltipTarget, {
+            allowHTML: true,
+            interactive: true,
+            placement: 'right',
+            appendTo: document.body,
+            theme: 'tooltip-white',
+            trigger: 'click',
+            content: ''
+          });
+          cardContents._insightTooltip = instance;
+        }
+        const updateTooltipContent = () => {
+          const contentHtml = [
+            info ? `<div>${info}</div>` : '',
+            articlesContents ? `<div>${articlesContents.innerHTML}</div>` : ''
+          ].join('');
+          instance.setContent(contentHtml);
+        };
 
         // Accessibility / tooltip IDs
         const tooltipID = instance.popper.id;
@@ -274,14 +266,16 @@ export function initInsightsAndStrategies(org) {
                   denominator,
                   totalArticlesCount
                 );
-                updateDetailTooltips();
+                updateTooltipContent();
               } else {
                 showUnavailableCard(cardContents);
+                updateTooltipContent();
               }
             })
             .catch(function (error) {
               console.log(`error: ${error}`);
               showUnavailableCard(cardContents);
+              updateTooltipContent();
             });
 
         } else {
@@ -293,11 +287,12 @@ export function initInsightsAndStrategies(org) {
 
               // Put smaller label "articles" (or denominatorText) in #articles_{numerator}
               articlesContents.textContent = denominatorText;
-              updateDetailTooltips();
+              updateTooltipContent();
             })
             .catch(function (error) {
               console.log(`${numerator} error: ${error}`);
               showUnavailableCard(cardContents);
+              updateTooltipContent();
             });
         }
 
