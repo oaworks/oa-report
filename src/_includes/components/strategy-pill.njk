@@ -7,7 +7,14 @@
 }) }}
 #}
 
-<li role="tab" aria-selected="{% if params.first %}true{% else %}false{% endif %}" aria-controls="{{ params.id }}" class="items-center inline-flex p-2 mr-4 mt-4 px-3 rounded-full bg-carnation-100 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500 hover:cursor-pointer js_strategy_btn {{ params.class }}" id="strategy_{{ params.id }}" tabindex="{% if params.first %}0{% else %}-1{% endif %}">
+<li
+  role="tab"
+  aria-selected="{% if params.first %}true{% else %}false{% endif %}"
+  aria-controls="{{ params.id }}"
+  class="js_strategy_btn cursor-pointer px-4 py-1.5 text-xs font-medium rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 transition-colors text-neutral-200 bg-transparent hover:bg-neutral-700 {{ params.class }}"
+  id="strategy_{{ params.id }}"
+  tabindex="{% if params.first %}0{% else %}-1{% endif %}"
+>
   <span>{{ params.txt }}</span>
-  <span id="count_{{ params.id }}" class="bg-neutral-800 text-white ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block">0</span>
+  <span id="count_{{ params.id }}" class="bg-neutral-900 text-neutral-100 ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block">0</span>
 </li>

@@ -62,6 +62,9 @@ onAuthChange(({ loggedIn: isLoggedIn, orgKey: key }) => {
 
 // Generate report’s UI for any given date range
 export function initInsightsAndStrategies(org) {
+  // Ensure counts are fetched fresh for the current date range
+  countQueryCache.clear();
+
   // Set paths for orgindex
   let queryPrefix = `${QUERY_BASE}q=${dateRange}`,
       countQueryPrefix = `${COUNT_QUERY_BASE}q=${dateRange}`;
@@ -130,7 +133,7 @@ export function initInsightsAndStrategies(org) {
       );
     });
 
-    function getInsight(numerator, denominator, denominatorText, info) {
+    function getInsight(numerator, denominator, denominatorText, insightInfo) {
       // Check if the data for this "numerator" (i.e. Insights data card) exists in orgData
       const analysisEntry = orgData.hits.hits[0]._source.analysis[numerator];
 
@@ -152,25 +155,61 @@ export function initInsightsAndStrategies(org) {
       if (!cardContents) return; 
 
       if (shown === true) {
+        // Ensure card is reset from any prior "unavailable" state before fetching fresh data
+        resetBarChart(cardContents);
+
         // Locate placeholders
         const percentageContents = document.getElementById(`percent_${numerator}`);
-        const articlesContents   = document.getElementById(`articles_${numerator}`);
+        const figureDetails      = document.getElementById(`articles_${numerator}`);
+        const articlesWrapper    = figureDetails ? figureDetails.closest('p') : null;
+        const barChartElement    = cardContents.querySelector('.js_bar_chart');
+        const figureElement      = percentageContents
+          ? percentageContents.closest('p') || percentageContents
+          : null;
 
-        // Create tippy tooltip
-        const instance = tippy(cardContents, {
-          allowHTML: true,
-          interactive: true,
-          placement: 'right',
-          appendTo: document.body,
-          theme: 'tooltip-white'
+        if (articlesWrapper) {
+          articlesWrapper.classList.add('sr-only');
+        }
+
+        // On-click tooltip to contain Insight info + figure details
+        const tooltipTarget = cardContents;
+        const tooltipTargetId = tooltipTarget.id || `${numerator}-card`;
+        tooltipTarget.id = tooltipTargetId;
+        tooltipTarget.setAttribute('role', 'button');
+        tooltipTarget.setAttribute('tabindex', '0');
+        let instance = cardContents._insightTooltip;
+        if (!instance) {
+          instance = tippy(tooltipTarget, {
+            allowHTML: true,
+            interactive: true,
+            placement: 'right',
+            appendTo: document.body,
+            theme: 'tooltip-white',
+            trigger: 'click',
+            content: ''
+          });
+          cardContents._insightTooltip = instance;
+        }
+        tooltipTarget.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            instance.show();
+          }
         });
-        instance.setContent(info);
+        const updateTooltipContent = () => {
+          const detailHtml = figureDetails
+            ? `<div class="mb-2 font-semibold text-neutral-900">${figureDetails.innerHTML}</div>`
+            : "";
+          const infoHtml = insightInfo ? `<div class="space-y-2">${insightInfo}</div>` : "";
+          instance.setContent(`${detailHtml}${infoHtml}`);
+        };
 
         // Accessibility / tooltip IDs
         const tooltipID = instance.popper.id;
-        cardContents.setAttribute('aria-controls', tooltipID);
-        cardContents.setAttribute('aria-labelledby', numerator);
-        cardContents.setAttribute('title', 'More information on this metric');
+        tooltipTarget.setAttribute('aria-controls', tooltipID);
+        tooltipTarget.setAttribute('aria-labelledby', tooltipTargetId);
+        tooltipTarget.setAttribute('title', 'More information on this metric');
+        tooltipTarget.setAttribute('aria-haspopup', 'dialog');
 
         // Get numerator’s count query
         let numPromise = fetchCountQuery(countQueryPrefix + buildEncodedQueryWithUrlFilter(analysisEntry.query));
@@ -215,9 +254,9 @@ export function initInsightsAndStrategies(org) {
 
               if (denominatorCount) {
                 // Show "X of Y" in #articles_... with some styling
-                articlesContents.innerHTML = `
+                figureDetails.innerHTML = `
                   <span class="font-semibold text-carnation-600">${makeNumberReadable(numeratorCount)}</span>
-                  <span class="text-neutral-700">
+                  <span class="text-neutral-900">
                     of ${makeNumberReadable(denominatorCount)} ${denominatorText}
                   </span>
                 `;
@@ -229,7 +268,6 @@ export function initInsightsAndStrategies(org) {
                 `;
 
                 // Clear any existing bar chart and set up new bar chart visualisation
-                resetBarChart(cardContents);
                 setBarChart(
                   cardContents,
                   numeratorCount,
@@ -244,7 +282,8 @@ export function initInsightsAndStrategies(org) {
             .catch(function (error) {
               console.log(`error: ${error}`);
               showUnavailableCard(cardContents);
-            });
+            })
+            .finally(updateTooltipContent);
 
         } else {
           // NO DENOMINATOR => single total value
@@ -254,12 +293,18 @@ export function initInsightsAndStrategies(org) {
               percentageContents.textContent = makeNumberReadable(result.data);
 
               // Put smaller label "articles" (or denominatorText) in #articles_{numerator}
-              articlesContents.textContent = denominatorText;
+              figureDetails.innerHTML = `
+                <span class="font-semibold text-carnation-600">${makeNumberReadable(result.data)}</span>
+                <span class="text-neutral-900">
+                  ${denominatorText} in total
+                </span>
+              `;
             })
             .catch(function (error) {
               console.log(`${numerator} error: ${error}`);
               showUnavailableCard(cardContents);
-            });
+            })
+            .finally(updateTooltipContent);
         }
 
         // Once data has loaded, display the card

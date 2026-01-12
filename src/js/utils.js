@@ -883,35 +883,56 @@ export function resetBarChart(cardContents) {
   if (!cardContents) return;
 
   // Restore the default white card styling
-  cardContents.classList.add(
-    'bg-white',
-    'hover:shadow-md',
-    'transition-shadow',
-    'duration-200',
-    'proportional-card'
-  );
+  cardContents.classList.add('bg-white', 'proportional-card');
 
   // Remove the "unavailable" card styling
   cardContents.classList.remove(
     'bg-carnation-100',
+    'bg-neutral-100',
+    'bg-neutral-50',
+    'opacity-70',
     'flex',
     'flex-col',
     'justify-center'
   );
-  
+
+  // Restore swapped icon and percent styling if it was changed
+  const iconEl = cardContents.querySelector('.text-neutral-800');
+  if (iconEl && iconEl.dataset.oarDefaultIcon) {
+    iconEl.innerHTML = iconEl.dataset.oarDefaultIcon;
+    delete iconEl.dataset.oarDefaultIcon;
+  }
+  const percentEl = cardContents.querySelector('[id^="percent_"]');
+  if (percentEl) {
+    percentEl.classList.remove('text-sm', 'font-semibold', 'text-neutral-700', 'text-neutral-800');
+    percentEl.innerHTML = percentEl.dataset.oarDefaultUnavailable || percentEl.innerHTML;
+    delete percentEl.dataset.oarDefaultUnavailable;
+  }
+
   // Ensure one <footer.js_bar_chart> exists
   let footerEl = cardContents.querySelector('footer.js_bar_chart');
   if (!footerEl) {
     footerEl = document.createElement('footer');
-    footerEl.className = 'js_bar_chart w-full mt-4';
+    footerEl.className = 'js_bar_chart';
     cardContents.appendChild(footerEl);
   }
   // If it was in "unavailable" mode, restore for drawing bars
   footerEl.removeAttribute('data-unavailable');
   footerEl.innerHTML = '';
-  footerEl.classList.add('w-full', 'h-3', 'bg-carnation-800', 'rounded-full', 'mt-4');
-}
 
+  // Default vertical bar container: tall, thicker, rounded
+  footerEl.className = [
+    'js_bar_chart',
+    'flex',
+    'flex-col',
+    'justify-end',
+    'h-auto',
+    'w-2',
+    'bg-carnation-800',
+    'rounded-full',
+    'overflow-hidden'
+  ].join(' ');
+}
 
 /**
  * Switches the default Insights card into greyed-out "Data unavailable" style.
@@ -920,53 +941,59 @@ export function showUnavailableCard(cardContents) {
   // Locate the "articles" and "percent" elements
   const articlesEl = cardContents.querySelector('[id^="articles_"]');
   const percentEl  = cardContents.querySelector('[id^="percent_"]');
+  const iconEl     = cardContents.querySelector('.text-neutral-800');
 
   // Clear the text for #articles_...
   if (articlesEl) {
     articlesEl.textContent = '';
   }
 
-  // Replace the text in #percent_... with the slash icon
+  // Replace the text in #percent_... with a compact label
   if (percentEl) {
-    percentEl.innerHTML = `
+    if (!percentEl.dataset.oarDefaultUnavailable) {
+      percentEl.dataset.oarDefaultUnavailable = percentEl.innerHTML;
+    }
+    percentEl.innerHTML = `<span class="text-sm font-semibold text-neutral-800">Unavailable</span>`;
+  }
+
+  // Swap the corner icon for a slash, remembering the original
+  if (iconEl) {
+    if (!iconEl.dataset.oarDefaultIcon) {
+      iconEl.dataset.oarDefaultIcon = iconEl.innerHTML;
+    }
+    iconEl.innerHTML = `
       <svg xmlns="http://www.w3.org/2000/svg"
-           width="24" height="24" fill="none"
+           width="16" height="16" fill="none"
            stroke="currentColor" stroke-width="2"
            stroke-linecap="round" stroke-linejoin="round"
-           class="feather feather-slash inline-block">
-        <circle cx="12" cy="12" r="10"></circle>
-        <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+           class="feather feather-slash inline-block text-neutral-700"
+           aria-hidden="true">
+        <circle cx="8" cy="8" r="6.5"></circle>
+        <line x1="2.62" y1="2.62" x2="13.38" y2="13.38"></line>
       </svg>
     `;
   }
 
-  // Remove the default white card styling
-  cardContents.classList.remove(
-    'bg-white',
-    'hover:shadow-md',
-    'transition-shadow',
-    'duration-200',
-    'proportional-card'
-  );
+  // Muted card styling
+  cardContents.classList.remove('bg-white', 'hover:shadow-md');
+  cardContents.classList.add('bg-neutral-100');
 
-  // Add grey background & center layout
-  cardContents.classList.add(
-    'bg-carnation-100',
-    'flex',
-    'flex-col',
-    'justify-center'
-  );
-
-  // Clear or replace the bar chart area with "Data unavailable"
+  // Clear or replace the bar chart area with "Unavailable"
   const footerEl = cardContents.querySelector('footer.js_bar_chart');
   if (footerEl) {
-    footerEl.classList.remove('h-3', 'bg-carnation-800', 'rounded-full');
+    footerEl.className = [
+      'js_bar_chart',
+      'flex',
+      'flex-col',
+      'justify-end',
+      'h-auto',
+      'w-2',
+      'bg-neutral-300',
+      'rounded-full',
+      'overflow-hidden'
+    ].join(' ');
     footerEl.setAttribute('data-unavailable', 'true');
-    footerEl.innerHTML = `
-      <p class="mt-4 text-xs text-left text-neutral-700">
-        Data unavailable
-      </p>
-    `;
+    footerEl.innerHTML = '';
   }
 }
 
@@ -998,27 +1025,35 @@ export function setBarChart(
   // If the denominator is missing or zero, skip
   if (!denominatorCount) return;
 
+  // Ensure the container is in the expected vertical state
+  barContainer.classList.remove('mt-4', 'w-full');
+  barContainer.classList.add(
+    'flex',
+    'flex-col',
+    'justify-end',
+    'h-20',
+    'w-2',
+    'bg-carnation-800',
+    'rounded-full',
+    'overflow-hidden'
+  );
+
   // ----- CASE 1: Denominator is the full set => Single bar -----
-  // The <footer> has 'bg-carnation-800' to represent the full set
-  // We overlay one bar for the numerator portion in carnation-300
   if  (
     denominatorID === 'is_paper' ||
     denominatorID === 'is_preprint' ||
-    (denominatorCount && totalArticlesCount && denominatorCount === totalArticlesCount) // if the total amount is the same as the denominator
+    (denominatorCount && totalArticlesCount && denominatorCount === totalArticlesCount)
   ) {
     const fraction = Math.round((numeratorCount / denominatorCount) * 100);
     barContainer.innerHTML = `
       <div
-        class="h-3 bg-carnation-300 rounded-full"
-        style="width: ${fraction}%"
+        class="w-full bg-carnation-300 rounded-full"
+        style="height: ${fraction}%"
       ></div>
     `;
   } 
 
   // ----- CASE 2: Denominator is a subset => Two stacked bars -----
-  // The footer is still 'bg-carnation-800' overall, but we
-  // insert an outer bar in carnation-500 for "subset vs. total"
-  // and an inner bar in carnation-300 for "numerator vs. that subset".
   else {
     let fractionOuter = 0;
     if (totalArticlesCount) {
@@ -1028,12 +1063,12 @@ export function setBarChart(
 
     barContainer.innerHTML = `
       <div 
-        class="h-3 bg-carnation-500 rounded-full" 
-        style="width: ${fractionOuter}%"
+        class="w-full bg-carnation-500 flex flex-col justify-end rounded-full"
+        style="height: ${fractionOuter}%"
       >
         <div 
-          class="h-3 bg-carnation-300 rounded-full" 
-          style="width: ${fractionInner}%"
+          class="w-full bg-carnation-300 rounded-full"
+          style="height: ${fractionInner}%"
         ></div>
       </div>
     `;

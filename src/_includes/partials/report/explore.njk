@@ -1,0 +1,142 @@
+{# Explore section #}
+{% from "partials/report/section-wrapper.njk" import sectionWrapper %}
+
+{% call sectionWrapper("explore", "Explore") %}
+  {# Breakdown table options #}
+  <nav aria-label="Explore breakdowns" class="flex flex-wrap items-center gap-2 p-2 rounded-md bg-neutral-800/90 border border-neutral-700 shadow-lg">
+    <ul id="explore_buttons" class="flex flex-wrap items-center gap-2 m-0 p-0 list-none"></ul>
+    <button id="explore_see_more_button" class="inline-flex items-center px-3 py-1.5 rounded-md bg-neutral-700 text-neutral-100 text-xs font-medium hover:bg-neutral-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800">
+      <span>See more</span>
+    </button>
+  </nav>
+
+  <div class="mt-2 md:mt-4 bg-neutral-800 border border-neutral-700 shadow-lg rounded-lg p-4 md:p-6">
+    {# Loading spinner #}
+    <div
+      class="fixed inset-0 z-50 flex justify-center items-center opacity-0 transition-opacity duration-300"
+      id="explore_loading"
+      aria-live="polite"
+      aria-busy="true"
+      >
+      <div class="absolute inset-0 bg-neutral-900 bg-opacity-50"></div>
+      <div class="loader ease-linear rounded-full border-8 border-t-8 border-carnation-200 border-t-carnation-500 h-12 w-12 z-10"></div>
+      {# Visually hidden text for screen readers #}
+      <div class="sr-only" id="loading_message">Loading, please wait.</div>
+    </div>
+
+    <div id="export_table" class="hidden">
+      <header class="mb-10 space-y-2">
+        <h3 class="text-3xl md:text-4xl" aria-live="polite">
+          <span class="report_sort_adjective">Top</span> <strong class="lowercase explore_type">articles</strong>
+        </h3>
+        <p id="explore_count_summary" class="text-base md:text-lg text-white hidden" aria-live="polite"></p>
+      </header>
+      {# Data table controls #}
+      <div class="my-4 gap-3 md:gap-12 flex justify-between">
+        <div class="gap-3 md:gap-12 flex justify-between">
+          {# Records shown dropdown #}
+          <form class="w-auto">
+            <fieldset id="explore_records_shown_field">
+              <legend class="mb-4 text-xs font-semibold uppercase">
+                <span id="explore_articles_records_shown_help"
+                      class="tooltip"
+                      role="tooltip"
+                      tabindex="0"
+                      data-tippy-theme="tooltip-pink"
+                      data-tippy-placement="right"
+                      data-tippy-content="You can view up to 500 records here. To see all of them, use the <em>Get this dataset in CSV</em> form below.">
+                  Records shown
+                </span>
+                <span id="explore_terms_records_shown_help"
+                      class="tooltip"
+                      role="tooltip"
+                      tabindex="0"
+                      data-tippy-theme="tooltip-pink"
+                      data-tippy-placement="right"
+                      data-tippy-content="You can view up to 500 records here.">
+                  Records shown
+                </span>
+              </legend>
+              <div class="flex flex-wrap items-center" id="explore_records_shown"></div>
+            </fieldset>
+          </form>
+          {# Filter by radio buttons styled as pills #}
+          <form class="w-auto">
+            <fieldset id="explore_filter_field">
+              <legend class="mb-4 text-xs font-semibold uppercase">Filter by</legend>
+              <div class="flex flex-wrap items-center" id="explore_filters"></div>
+            </fieldset>
+          </form>
+        </div>
+        {# Data display style (raw/pretty) toggle #}
+        <form class="w-auto block" id="explore_display_style_field">
+          <fieldset>
+            <legend id="legend-data-view" class="mb-4 text-xs font-semibold uppercase text-right" for="toggler-data-view">
+              Data display style
+            </legend>
+            <div class="flex items-center">
+              <span class="mr-2 text-xs">{% icon_small "percent" %} Pretty</span>
+              <button
+                id="toggle-data-view"
+                type="button"
+                class="relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-carnation-500 focus:ring-offset-2"
+                role="switch"
+                aria-checked="true"
+                aria-labelledby="legend-data-view button-instructions">
+                <span aria-hidden="true" class="bg-carnation-500 pointer-events-none absolute mx-auto h-4 w-9 rounded-full transition-colors duration-200 ease-in-out"></span>
+                <span aria-hidden="true" class="translate-x-100 pointer-events-none absolute left-0 inline-block h-5 w-5 transform rounded-full border border-neutral-500 bg-neutral-800 shadow ring-0 transition-transform duration-200 ease-in-out"></span>
+              </button>
+              <span id="button-instructions" class="sr-only">Toggle between Pretty and Raw data display</span>
+              <span class="ml-2 text-xs">Raw {% icon_small "hash" %}</span>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+      <div class="relative">
+        {# Scroll table button #}
+        <button
+          id="js_scroll_table_btn"
+          class="p-2 bg-carnation-100 text-neutral-900 text-2xl focus:outline-none focus:ring focus:ring-carnation-500 hover:bg-carnation-300 transition duration-300 ml-4 absolute right-3 top-1/2 transform -translate-y-1/2"
+          aria-label="Scroll to see more of the table"
+        >
+          →
+        </button>
+
+        {# Data table #}
+        <div class="mb-4 overflow-x-auto border border-neutral-200 js_export_table_container" aria-live="polite">
+          <table class="border-collapse w-full table-fixed js_export_table" id="explore_table">
+            <thead class="border-b border-neutral-200 text-left text-xs font-medium uppercase tracking-wider" id="export_table_head"></thead>
+            <tbody class="text-xs md:text-sm" id="export_table_body"></tbody>
+            <tfoot class="text-xs md:text-sm border-t-2 border-neutral-200 bg-neutral-700" id="export_table_foot"></tfoot>
+          </table>
+        </div>
+
+        {# Copy to clipboard button #}
+        <div class="flex justify-end">
+          <button id="explore_copy_clipboard" class="inline-flex items-center justify-content-end space-x-1 px-4 py-2 text-sm font-medium border border-neutral-100 text-white hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 whitespace-nowrap">
+            <div class="flex items-center -ml-2">
+              {% icon_small "clipboard" %}
+            </div>
+            <span>Copy to clipboard</span>
+          </button>
+        </div>
+      </div>
+      {# <div class="flex justify-between" id="explore_export_container"></div> #}
+      {# TODO: allow downloading of all data in CSV #}
+      {# <div class="flex justify-between">
+        <div class="text-right">
+          <a href="/temp/bmgf_all-articles_from_2023-01-01-to-2023-10-04_on_2023-09-27.csv"
+            download
+            role="button"
+            aria-label="Download full data as CSV"
+            id="export_link"
+            class="items-center space-x-2 px-4 py-2 text-base font-medium uppercase border border-neutral-100 text-neutral-100 bg-neutral-800 hover:bg-neutral-100 hover:text-neutral-900 focus:outline-none focus:ring-1 focus:ring-carnation-400 duration-500 whitespace-nowrap inline-block">
+              Download all <span class="js_export_type">data</span> (CSV)
+          </a>
+        </div>
+      </div> #}
+      {# Download CSV form #}
+      <div id="download_csv_form_container">{% include 'partials/email-download-form.njk' %}</div>
+    </div>
+  </div>
+{% endcall %}
