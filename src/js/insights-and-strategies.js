@@ -266,17 +266,15 @@ export function initInsightsAndStrategies(org) {
                   denominator,
                   totalArticlesCount
                 );
-                updateTooltipContent();
               } else {
                 showUnavailableCard(cardContents);
-                updateTooltipContent();
               }
             })
             .catch(function (error) {
               console.log(`error: ${error}`);
               showUnavailableCard(cardContents);
-              updateTooltipContent();
-            });
+            })
+            .finally(updateTooltipContent);
 
         } else {
           // NO DENOMINATOR => single total value
@@ -287,13 +285,12 @@ export function initInsightsAndStrategies(org) {
 
               // Put smaller label "articles" (or denominatorText) in #articles_{numerator}
               articlesContents.textContent = denominatorText;
-              updateTooltipContent();
             })
             .catch(function (error) {
               console.log(`${numerator} error: ${error}`);
               showUnavailableCard(cardContents);
-              updateTooltipContent();
-            });
+            })
+            .finally(updateTooltipContent);
         }
 
         // Once data has loaded, display the card
