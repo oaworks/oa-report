@@ -814,7 +814,8 @@ export function renderActiveFiltersBanner() {
   // Trigger form styled like other date/year chips
   const form = document.createElement("form");
   form.id = "filters_form";
-  const filterChipClasses = count > 0 ? DATE_SELECTION_BUTTON_CLASSES.active : DATE_SELECTION_BUTTON_CLASSES.enabled;
+  const isActive = count > 0;
+  const filterChipClasses = isActive ? DATE_SELECTION_BUTTON_CLASSES.active : DATE_SELECTION_BUTTON_CLASSES.enabled;
   form.className = `${filterChipClasses} !mr-0 !md:mr-0 flex items-center whitespace-nowrap`;
   form.setAttribute("aria-labelledby", "js-filters-form-title");
 
@@ -830,7 +831,7 @@ export function renderActiveFiltersBanner() {
   triggerBtn.innerHTML = `Filters (${count}) <span class="ml-1 text-xs">▼</span>`;
   triggerBtn.setAttribute("aria-haspopup", "dialog");
   triggerBtn.setAttribute("aria-expanded", "false");
-  triggerBtn.setAttribute("aria-pressed", count > 0 ? "true" : "false");
+  triggerBtn.setAttribute("aria-pressed", isActive ? "true" : "false");
   triggerBtn.style.color = "inherit";
   form.appendChild(triggerBtn);
 

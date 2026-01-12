@@ -581,6 +581,7 @@ function updateYearButtonStyling(selectedElement, isDropdownItem = false) {
   const yearButtons = document.querySelectorAll(".js-nav-chip");
 
   yearButtons.forEach((button) => {
+    if (button.id === "filters_form") return;
     // Remove active-only styles, restore enabled-only styles
     button.classList.remove(...activeOnlyClasses);
     button.classList.add(...enabledOnlyClasses);
