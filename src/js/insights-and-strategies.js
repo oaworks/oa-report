@@ -9,7 +9,7 @@
 // Imports
 // =================================================
 
-import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter } from './utils.js';
+import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter } from './utils.js';
 import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS } from './constants.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 
@@ -112,7 +112,8 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
     container.innerHTML = "";
 
     section.cardIds.forEach((cardId) => {
-      if (!analysis?.[cardId]?.show_on_web) return;
+      const analysisEntry = analysis?.[cardId];
+      if (analysisEntry && analysisEntry.show_on_web !== true) return;
       const card = template.content.querySelector(`#${cardId}`);
       if (!card) return;
       const clonedCard = card.cloneNode(true);
@@ -122,8 +123,13 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
           titleEl.textContent = section.sectionId === "insights_preprints" ? "Total" : "Preprint";
         }
       }
+      if (!analysisEntry) {
+        showUnavailableCard(clonedCard);
+      }
       container.appendChild(clonedCard);
-      renderedIds.add(cardId);
+      if (analysisEntry) {
+        renderedIds.add(cardId);
+      }
     });
 
     if (container.children.length > 0) {
