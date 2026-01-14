@@ -59,7 +59,7 @@ function updateStrategyButtonStyling(event) {
 
   // Update button styles
   document.querySelectorAll(".js_strategy_btn").forEach((btn) => {
-    btn.classList.remove("bg-neutral-700", "text-neutral-100", "shadow-inner");
+    btn.classList.remove("bg-neutral-100", "text-neutral-900", "shadow-inner");
     btn.classList.add("text-neutral-300", "bg-transparent", "hover:bg-neutral-700/70");
     const badge = btn.querySelector("[id^='count_']");
     if (badge) {
@@ -71,7 +71,7 @@ function updateStrategyButtonStyling(event) {
     btn.setAttribute("tabindex", "-1");
   });
 
-  tabBtn.classList.add("bg-neutral-700", "text-neutral-100", "shadow-inner");
+  tabBtn.classList.add("bg-neutral-100", "text-neutral-900", "shadow-inner");
   tabBtn.classList.remove("text-neutral-300", "bg-transparent", "hover:bg-neutral-700/70");
   const activeBadge = tabBtn.querySelector("[id^='count_']");
   if (activeBadge) {
