@@ -4,10 +4,10 @@
     {% include 'partials/app-name.njk' %}
   </a>
   <nav class="mt-8 md:mt-0 md:flex" aria-label="Footer">
-    <ul class="md:flex md:space-x-12 md:justify-center md:self-center text-center">
+    <ul class="flex flex-col items-start gap-2 text-left md:flex-row md:items-center md:gap-12 md:justify-center">
       {% for item in nav_footer %}
       <li>
-        <a href="{{ item.url }}" {% if item.ext %}target="_blank" rel="noopener"{% endif %} class="text-xs md:text-base lg:text-lg hover:text-carnation-500 transition duration-300">{{ item.label }}</a>
+        <a href="{{ item.url }}" {% if item.ext %}target="_blank" rel="noopener"{% endif %} class="inline-flex min-h-[44px] items-center rounded-md px-0 py-0 text-base lg:text-lg transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-2">{{ item.label }}</a>
       </li>
       {% endfor %}
     </ul>
