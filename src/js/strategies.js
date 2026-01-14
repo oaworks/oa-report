@@ -25,7 +25,9 @@ export function initStrategyTabs() {
   if (action) {
     document.getElementById(`strategy_${action}`)?.click();
   } else if (strategyTabBtns.length) {
+    shouldUpdateStrategyUrl = false;
     strategyTabBtns[0].click();
+    shouldUpdateStrategyUrl = true;
   }
 }
 
@@ -83,5 +85,9 @@ function updateStrategyButtonStyling(event) {
   tabBtn.setAttribute("tabindex", "0");
 
   // Update URL params
-  updateURLParams({ 'action': selectedStrategy });
+  if (shouldUpdateStrategyUrl) {
+    updateURLParams({ 'action': selectedStrategy });
+  }
 }
+
+let shouldUpdateStrategyUrl = true;
