@@ -255,7 +255,7 @@ export function initInsightsAndStrategies(org) {
               if (denominatorCount) {
                 // Show "X of Y" in #articles_... with some styling
                 figureDetails.innerHTML = `
-                  <span class="font-semibold text-carnation-600">${makeNumberReadable(numeratorCount)}</span>
+                  <span id="details_${numerator}" class="font-semibold text-carnation-600">${makeNumberReadable(numeratorCount)}</span>
                   <span class="text-neutral-900">
                     of ${makeNumberReadable(denominatorCount)} ${denominatorText}
                   </span>
