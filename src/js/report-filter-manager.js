@@ -343,7 +343,7 @@ function removeValueFromField(q, field, value) {
  * @param {AbortSignal} [params.signal] - Optional abort signal
  * @returns {Promise<string[]>} Ordered list of suggested values (unique, trimmed)
  */
-export async function fetchFilterValueSuggestions({ field, query, size = 30, signal }) {
+export async function fetchFilterValueSuggestions({ field, query, size = 100, signal }) {
   if (!field || !query || !query.trim()) return [];
 
   // Per-session cache to avoid repeat calls
@@ -374,7 +374,7 @@ export async function fetchFilterValueSuggestions({ field, query, size = 30, sig
     }
     // Handle dashes/exact tokens, both lower/upper
     const upper = qClean.toUpperCase();
-    parts.push(`(${baseField}:${lower}* OR ${baseField}:${upper}* OR ${targetField}:${lower}* OR ${targetField}:${upper}*)`);
+    parts.push(`(${baseField}:*${lower}* OR ${baseField}:*${upper}* OR ${targetField}:*${lower}* OR ${targetField}:*${upper}*)`);
 
     const qParam = encodeURIComponent(parts.join(" AND "));
     const url = `${API_BG_BASE_URL}works/terms/${targetField}?counts=false&size=${size}&q=${qParam}`;
@@ -403,8 +403,9 @@ export async function fetchFilterValueSuggestions({ field, query, size = 30, sig
     fetchFilterValueSuggestions._cache.set(cacheKey, result);
     return result;
   } catch (err) {
-    if (err?.name === "AbortError") return [];
-    console.error("Error fetching filter suggestions (terms):", err);
+    if (err?.name !== "AbortError") {
+      console.error("Error fetching filter suggestions (terms):", err);
+    }
     fetchFilterValueSuggestions._cache.set(cacheKey, []);
     return [];
   }
@@ -536,9 +537,6 @@ function addFilterRow(container) {
   let activeIndex = -1;
   const tokenData = [];
   let requestSeq = 0;
-  let activeController = null;
-  const suggestionSize = 30;
-  const minQueryLength = 3;
 
   const hideSuggestions = () => {
     listbox.classList.add("hidden");
@@ -698,7 +696,7 @@ function addFilterRow(container) {
       const fieldVal = fieldSelect.value;
       const raw = input.value || "";
       const q = raw.replace(/\s+/g, " ").trim();
-      if (!fieldVal || q.length < minQueryLength) {
+      if (!fieldVal || q.length < 2) {
         renderHint();
         lastFetched = { field: "", query: "", items: [] };
         return;
@@ -732,13 +730,9 @@ function addFilterRow(container) {
       const currentReq = ++requestSeq;
       renderHint(q);
       try {
-        if (activeController) activeController.abort();
-        activeController = new AbortController();
         const suggestions = await fetchFilterValueSuggestions({
           field: fieldVal,
           query: q,
-          size: suggestionSize,
-          signal: activeController.signal,
         });
         if (currentReq === requestSeq) {
           lastFetched = { field: fieldVal, query: q, items: suggestions, size: suggestions.length };
