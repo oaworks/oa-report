@@ -106,12 +106,14 @@
         </button>
 
         {# Data table #}
-        <div class="mb-4 overflow-x-auto border border-neutral-200 js_export_table_container" aria-live="polite">
-          <table class="border-collapse w-full table-fixed js_export_table" id="explore_table">
-            <thead class="border-b border-neutral-200 text-left text-xs font-medium uppercase tracking-wider" id="export_table_head"></thead>
-            <tbody class="text-xs md:text-sm" id="export_table_body"></tbody>
-            <tfoot class="text-xs md:text-sm border-t-2 border-neutral-200 bg-neutral-700" id="export_table_foot"></tfoot>
-          </table>
+        <div class="mb-4">
+          <div class="overflow-x-auto pb-4 border border-neutral-200 js_export_table_container" aria-live="polite">
+            <table class="border-collapse w-full table-fixed js_export_table" id="explore_table">
+              <thead class="border-b border-neutral-200 text-left text-xs font-medium uppercase tracking-wider" id="export_table_head"></thead>
+              <tbody class="text-xs md:text-sm" id="export_table_body"></tbody>
+              <tfoot class="text-xs md:text-sm border-t-2 border-neutral-200 bg-neutral-700" id="export_table_foot"></tfoot>
+            </table>
+          </div>
         </div>
 
         {# Copy to clipboard button #}
