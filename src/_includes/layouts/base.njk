@@ -1,16 +1,25 @@
 <!doctype html>
 <html class="no-js scroll-smooth" lang="en">
   {% include 'partials/head.njk' %}
-  <body class="flex flex-col h-screen justify-between antialiased text-neutral-900 tracking-wide leading-relaxed text-xs md:text-sm lg:text-lg" data-api-endpoint="{{ env.ELEVENTY_API_ENDPOINT }}">
+  <body class="flex flex-col min-h-screen justify-between antialiased text-neutral-900 tracking-wide leading-relaxed text-xs md:text-sm lg:text-lg" data-api-endpoint="{{ env.ELEVENTY_API_ENDPOINT }}">
     {% if site.banner %}
     <section class="py-4 bg-carnation-400 font-medium text-center text-xs" style="z-index: 5; position: sticky; top: 0;">
       <p>{{ site.banner | safe }}</p>
     </section>
     {% endif %}
-    <p id="js-alert" class="py-4 bg-neutral-900 text-white font-medium text-center text-xs" style="z-index: 5; position: sticky; top: 0; display: none;"></p>
-    {% include 'partials/header.njk' %}
+    <p id="js-alert" class="py-4 bg-carnation-500 text-white font-medium text-center text-xs" style="z-index: 5; position: sticky; top: 0; display: none;"></p>
+    {% if hideBaseHeader != true %}
+      {% include 'partials/header.njk' %}
+    {% endif %}
     {% block content %}{% endblock %}
     {{ content | safe }}
     {% include 'partials/footer.njk' %}
+
+    {# SimpleAnalytics tracking code #}
+    <script 
+      data-allow-params="breakdown,records,start,end,action,explore_filter,q"
+      src="https://scripts.simpleanalyticscdn.com/latest.js">
+    </script>
+    <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif" alt="" referrerpolicy="no-referrer-when-downgrade" /></noscript>
   </body>
 </html>

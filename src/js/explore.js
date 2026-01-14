@@ -7,8 +7,8 @@
 // Imports
 // =================================================
 
-import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, normaliseFieldId } from "./utils.js";
-import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, FILTER_PILL_CLASSES } from "./constants.js";
+import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, normaliseFieldId, makeNumberReadable } from "./utils.js";
+import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, FILTER_PILL_CLASSES, SEGMENTED_PILL_CLASSES } from "./constants.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
 import { renderActiveFiltersBanner } from './report-filter-manager.js';
@@ -219,11 +219,14 @@ async function addExploreButtonsToDOM(exploreData) {
   }
 
   for (const exploreDataItem of exploreData) {
-    let button = createExploreButton(exploreDataItem);
-    exploreButtonsContainer.insertBefore(button, seeMoreButton);
+    const listItem = document.createElement("li");
+    listItem.className = "list-none";
+    const button = createExploreButton(exploreDataItem);
+    listItem.appendChild(button);
+    exploreButtonsContainer.appendChild(listItem);
 
     if (!exploreDataItem.featured) {
-      moreButtons.push(button);
+      moreButtons.push(listItem);
     }
   }
 
@@ -235,7 +238,7 @@ async function addExploreButtonsToDOM(exploreData) {
     const totalButtons = exploreData.length;
     moreButtonsVisible = totalButtons <= featuredButtonsCount;
     if (!moreButtonsVisible) {
-      moreButtons.forEach(button => button.classList.add('hidden', 'opacity-0', 'transform', 'translate-y-1', 'transition', 'duration-300', 'ease-in-out'));
+      moreButtons.forEach(item => item.classList.add('hidden', 'opacity-0', 'transform', 'translate-y-1', 'transition', 'duration-300', 'ease-in-out'));
     }
 
     // "See more/See fewer" button logic
@@ -244,13 +247,11 @@ async function addExploreButtonsToDOM(exploreData) {
     seeMoreButton.addEventListener('click', function() {
       moreButtonsVisible = !moreButtonsVisible; // Toggle visibility state
 
-      moreButtons.forEach((button, index) => {
+      moreButtons.forEach((item, index) => {
         // Use a timeout to stagger the animation of each button
         setTimeout(() => {
-          button.classList.toggle('hidden', !moreButtonsVisible);
-          if (moreButtonsVisible) {
-            button.classList.remove('opacity-0', 'translate-y-1'); // Make visible and slide down
-          }
+          item.classList.toggle('hidden', !moreButtonsVisible);
+          if (moreButtonsVisible) item.classList.remove('opacity-0', 'translate-y-1');
         }, index * 70); // Adjust the time for each button
       });
 
@@ -318,7 +319,8 @@ function createExploreButton(exploreDataItem) {
   const id = exploreDataItem.id; 
   button.id = `explore_${id}_button`; 
   button.innerHTML = `<span>${EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id)}</span>`;
-  button.className = "items-center inline-flex p-2 px-4 mr-4 mt-4 px-3 rounded-full bg-carnation-100 font-medium text-xs md:text-sm text-neutral-900 transition duration-300 ease-in-out hover:bg-carnation-500";
+  button.className = `${SEGMENTED_PILL_CLASSES.base} ${SEGMENTED_PILL_CLASSES.inactive}`;
+  button.setAttribute("aria-pressed", "false");
 
   button.addEventListener("click", debounce(async function() {
     // Keep an existing filter if the new breakdown supports it; otherwise fall back to that breakdown’s default.
@@ -566,6 +568,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     let query = orgData.hits.hits[0]._source.analysis[filter]?.query; // Get the query string for the selected filter
     let suffix = orgData.hits.hits[0]._source.key_suffix; // Get the suffix for the org
     let records = [];
+    let totalRecords = 0;
 
     pretty = currentActiveDataDisplayToggle;
     size = currentActiveExploreItemSize;
@@ -593,14 +596,17 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     else if (type === "articles") {
       query = decodeAndReplaceUrlEncodedChars(query); // Decode and replace URL-encoded characters for JSON parsing
       query = andQueryStrings(query, getDecodedUrlQuery()); // Combine with additional query strings from URL params
-      records = await fetchArticleBasedData(query, includes, sort, size);
-      records = reorderArticleRecords(records, includes);
+      const { records: articleRecords, total } = await fetchArticleBasedData(query, includes, sort, size);
+      records = reorderArticleRecords(articleRecords, includes);
+      totalRecords = total;
 
       replaceText("explore_sort", "published date");
       replaceText("report_sort_adjective", "Latest");
 
       addCSVExportLink();
     }
+
+    updateExploreCountSummary({ type, id, total: totalRecords, shown: records.length });
 
     if (records.length > 0) {
       // Populate table with data
@@ -721,16 +727,46 @@ async function fetchArticleBasedData(query, includes, sort, size) {
   const getDataUrl = `https://${ELEVENTY_API_ENDPOINT}.oa.works/report/works/?q=${qParam}&size=${size}&include=${includes}&sort=${sort}`;
 
   const response = await fetchGetData(getDataUrl); // No need to generate POST request
-  // Check nested properties before assigning records
-  if (response && response.hits && response.hits.hits) {
-    return response.hits.hits.map(hit => hit._source);
-  }
-  return [];
+  const hits = response?.hits?.hits ?? [];
+  const totalRaw = response?.hits?.total;
+
+  return {
+    records: hits.map(hit => hit._source),
+    total: typeof totalRaw === "number" ? totalRaw : totalRaw?.value ?? 0
+  };
 }
 
 // =================================================
 // Table updating and styling functions
 // =================================================
+
+/**
+ * Updates the table header summary with how many records are shown vs available.
+ * Hides the summary for non-article views to keep things simple.
+ *
+ * @param {Object} params
+ * @param {string} params.type - The explore item type.
+ * @param {string} params.id - The explore item id (used for label).
+ * @param {number} params.total - Total records returned by the API.
+ * @param {number} params.shown - Number of records currently displayed.
+ */
+function updateExploreCountSummary({ type, id, total, shown }) {
+  const summaryEl = document.getElementById("explore_count_summary");
+  if (!summaryEl) return;
+
+  if (type !== "articles") {
+    summaryEl.textContent = "";
+    summaryEl.classList.add("hidden");
+    return;
+  }
+
+  const formatCount = (n) => makeNumberReadable(Number.isFinite(n) ? n : 0);
+  const label = EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id);
+  const sortLabel = document.querySelector(".explore_sort")?.textContent?.trim() || "published date";
+
+  summaryEl.innerHTML = `Showing <span class="font-semibold">${formatCount(shown)} of ${formatCount(total)}</span> <span class="lowercase">${label}</span> · Sorted by ${sortLabel}`;
+  summaryEl.classList.remove("hidden");
+}
 
 /**
  * Populates the header of a table with column headers derived from the keys of a data object.
@@ -1345,18 +1381,15 @@ function enableTooltipsForTruncatedCells() {
  * @param {string} buttonId - The ID of the selected button.
  */
 function updateButtonActiveStyles(buttonId) {
-  // Reset styles for all buttons
   document.querySelectorAll("#explore_buttons button").forEach(button => {
-    button.classList.remove("bg-carnation-500");
-    button.classList.add("bg-carnation-100");
+    button.className = `${SEGMENTED_PILL_CLASSES.base} ${SEGMENTED_PILL_CLASSES.inactive}`;
+    if (button.id === buttonId) {
+      button.className = `${SEGMENTED_PILL_CLASSES.base} ${SEGMENTED_PILL_CLASSES.active}`;
+      button.setAttribute("aria-pressed", "true");
+    } else {
+      button.setAttribute("aria-pressed", "false");
+    }
   });
-
-  // Apply selected style to the clicked button
-  const selectedButton = document.getElementById(buttonId);
-  if (selectedButton) {
-    selectedButton.classList.remove("bg-carnation-100");
-    selectedButton.classList.add("bg-carnation-500");
-  }
 }
 
 /**
