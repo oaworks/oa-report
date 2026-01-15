@@ -82,5 +82,11 @@
   </script>
   {% endif %}
 
+  {# SimpleAnalytics tracking code (load early to capture URL params) #}
+  <script 
+    data-allow-params="breakdown,records,start,end,action,explore_filter,q"
+    src="https://scripts.simpleanalyticscdn.com/latest.js">
+  </script>
+
   {% block extra_head %}{% endblock %}
 </head>
