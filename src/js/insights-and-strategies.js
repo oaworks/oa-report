@@ -60,6 +60,108 @@ onAuthChange(({ loggedIn: isLoggedIn, orgKey: key }) => {
 // Exports
 // =================================================
 
+function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
+  const template = document.getElementById('insights_cards_template');
+  const sectionsWrapper = document.getElementById('insights_sections');
+  if (!template || !sectionsWrapper) {
+    return new Set();
+  }
+
+  const articleCardIds = [
+    "is_paper",
+    ...(showPreprints ? [] : ["is_preprint"]),
+    ...(isGates ? ["is_compliant_article"] : []),
+    "is_free_to_read",
+    "is_compliant",
+    "is_oa",
+    "has_data_availability_statement",
+    "has_open_data",
+    "has_open_code"
+  ];
+
+  const sections = [
+    {
+      sectionId: "insights_articles",
+      containerId: "insights_articles_cards",
+      cardIds: articleCardIds
+    },
+    {
+      sectionId: "insights_preprints",
+      containerId: "insights_preprints_cards",
+      cardIds: showPreprints
+        ? ["is_preprint", "is_compliant_preprint", "has_data_availability_statement_preprint"]
+        : []
+    },
+    {
+      sectionId: "insights_unique_publications",
+      containerId: "insights_unique_publications_cards",
+      cardIds: showUnique
+        ? ["is_unique_publication", "is_compliant_publication"]
+        : []
+    }
+  ];
+
+  const renderedIds = new Set();
+  const visibleSections = [];
+
+  sections.forEach((section) => {
+    const sectionEl = document.getElementById(section.sectionId);
+    const container = document.getElementById(section.containerId);
+    if (!sectionEl || !container) return;
+
+    container.innerHTML = "";
+
+    section.cardIds.forEach((cardId) => {
+      const analysisEntry = analysis?.[cardId];
+      if (analysisEntry && analysisEntry.show_on_web !== true) return;
+      const card = template.content.querySelector(`#${cardId}`);
+      if (!card) return;
+      const clonedCard = card.cloneNode(true);
+      if (cardId === "is_preprint") {
+        const titleEl = clonedCard.querySelector("h3 span");
+        if (titleEl) {
+          titleEl.textContent = section.sectionId === "insights_preprints" ? "Total" : "Preprint";
+        }
+      }
+      if (!analysisEntry) {
+        showUnavailableCard(clonedCard);
+      }
+      container.appendChild(clonedCard);
+      if (analysisEntry) {
+        renderedIds.add(cardId);
+      }
+    });
+
+    if (container.children.length > 0) {
+      sectionEl.classList.remove("hidden");
+      visibleSections.push(sectionEl);
+    } else {
+      sectionEl.classList.add("hidden");
+    }
+  });
+
+  const columnsClass =
+    visibleSections.length >= 3
+      ? "md:grid-cols-3"
+      : visibleSections.length === 2
+        ? "md:grid-cols-2"
+        : "md:grid-cols-1";
+
+  sectionsWrapper.classList.remove("md:grid-cols-1", "md:grid-cols-2", "md:grid-cols-3");
+  sectionsWrapper.classList.add(columnsClass);
+
+  const gridClass =
+    visibleSections.length === 3
+      ? "grid gap-4 grid-cols-1 sm:grid-cols-2"
+      : "grid gap-4 grid-cols-2 md:grid-cols-3 xl:grid-cols-6";
+
+  document.querySelectorAll(".js_insights_card_grid").forEach((grid) => {
+    grid.className = `js_insights_card_grid ${gridClass}`;
+  });
+
+  return renderedIds;
+}
+
 // Generate report’s UI for any given date range
 export function initInsightsAndStrategies(org) {
   // Ensure counts are fetched fresh for the current date range
@@ -71,11 +173,18 @@ export function initInsightsAndStrategies(org) {
 
   orgDataPromise.then(function (response) {
     const orgData = response.data; // Storing the fetched data in a constant
+    const analysis = orgData?.hits?.hits?.[0]?._source?.analysis || {};
+    const objectID = orgData?.hits?.hits?.[0]?._source?.objectID;
+    const showPreprints = analysis?.is_preprint?.show_on_web === true;
+    const showUnique = analysis?.is_unique_publication?.show_on_web === true;
+    const isGates = objectID === "gates-foundation";
 
-    // Show/hide Preprints section based on orgData
-    const showPreprints = orgData?.hits?.hits?.[0]?._source?.analysis?.is_preprint?.show_on_web === true;
-    const preprintsSection = document.getElementById('insights_preprints');
-    if (preprintsSection) preprintsSection.classList.toggle('hidden', !showPreprints);
+    const renderedInsightIds = renderInsightCards({
+      analysis,
+      showPreprints,
+      showUnique,
+      isGates
+    });
 
     /** Decrypt emails if user has an orgKey **/
     window.handleDecryptEmailClick = function(buttonElement) {
@@ -119,6 +228,9 @@ export function initInsightsAndStrategies(org) {
     // Loop through each Insight card from constants.js and call getInsight
     const policyUrl = orgData?.hits?.hits?.[0]?._source?.policy?.url;
     INSIGHTS_CARDS.forEach((cardConfig) => {
+      if (!renderedInsightIds.has(cardConfig.numerator)) {
+        return;
+      }
       // Clone per use so we never mutate the constant
       const card = { ...cardConfig };
       if (policyUrl && typeof card.info === 'string' && card.info.includes("{policyUrl}")) {
@@ -136,15 +248,7 @@ export function initInsightsAndStrategies(org) {
     function getInsight(numerator, denominator, denominatorText, insightInfo) {
       // Check if the data for this "numerator" (i.e. Insights data card) exists in orgData
       const analysisEntry = orgData.hits.hits[0]._source.analysis[numerator];
-
-      // If there is no analysis for this ID (placeholder card), show "Data unavailable" and stop
-      if (!analysisEntry) {
-        const placeholderCard = document.getElementById(numerator);
-        if (placeholderCard) {
-          showUnavailableCard(placeholderCard);
-        }
-        return;
-      }
+      if (!analysisEntry) return;
 
       // If the analysis entry does exist, proceed as usual
       const shown     = analysisEntry.show_on_web,
