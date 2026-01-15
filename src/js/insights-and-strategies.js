@@ -79,6 +79,7 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
     "has_open_code"
   ];
 
+  // Build the sections list so we only render cards that are relevant for this org.
   const sections = [
     {
       sectionId: "insights_articles",
@@ -111,6 +112,7 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
 
     container.innerHTML = "";
 
+    // Clone from the template to keep markup consistent and avoid extra DOM work.
     section.cardIds.forEach((cardId) => {
       const analysisEntry = analysis?.[cardId];
       if (analysisEntry && analysisEntry.show_on_web !== true) return;
@@ -123,6 +125,7 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
           titleEl.textContent = section.sectionId === "insights_preprints" ? "Total" : "Preprint";
         }
       }
+      // Show a placeholder when the API returns no data for a displayed card.
       if (!analysisEntry) {
         showUnavailableCard(clonedCard);
       }
@@ -140,6 +143,8 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
     }
   });
 
+  // Match grid density to the number of visible sections for a tidy layout.
+  // e.g. Gates Foundation’s has 3 sections; most others have 1. 
   const columnsClass =
     visibleSections.length >= 3
       ? "md:grid-cols-3"
