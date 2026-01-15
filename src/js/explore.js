@@ -211,7 +211,8 @@ async function addExploreButtonsToDOM(exploreData) {
   const moreButtons = []; // Array to store buttons with featured === false
   let moreButtonsVisible = false; // State to track visibility of more buttons
   let featuredButtonsCount = 6; // Count of featured buttons
-  const seeMoreButton = document.getElementById('explore_see_more_button');
+  const seeMoreListItem = document.getElementById('explore_see_more_item');
+  const seeMoreButton = seeMoreListItem?.querySelector('button');
 
   // Only show 'articles' Explore list when logged out
   if (!loggedIn) {
@@ -223,7 +224,11 @@ async function addExploreButtonsToDOM(exploreData) {
     listItem.className = "list-none";
     const button = createExploreButton(exploreDataItem);
     listItem.appendChild(button);
-    exploreButtonsContainer.appendChild(listItem);
+    if (seeMoreListItem) {
+      exploreButtonsContainer.insertBefore(listItem, seeMoreListItem);
+    } else {
+      exploreButtonsContainer.appendChild(listItem);
+    }
 
     if (!exploreDataItem.featured) {
       moreButtons.push(listItem);
@@ -232,8 +237,15 @@ async function addExploreButtonsToDOM(exploreData) {
 
   // Hide 'See More/Fewer' button if only the 'articles' button is present
   if (exploreData.length <= 1) {
-    seeMoreButton.style.display = 'none';
+    if (seeMoreListItem) {
+      seeMoreListItem.style.display = 'none';
+    } else {
+      seeMoreButton.style.display = 'none';
+    }
   } else {
+    if (seeMoreListItem) {
+      seeMoreListItem.style.display = '';
+    }
     // Determine initial visibility based on the total number of buttons
     const totalButtons = exploreData.length;
     moreButtonsVisible = totalButtons <= featuredButtonsCount;
@@ -259,6 +271,7 @@ async function addExploreButtonsToDOM(exploreData) {
       seeMoreButton.querySelector('span').textContent = moreButtonsVisible ? 'See fewer' : 'See more';
     });
   }
+
 
   // Ensure one Explore item is activated (URL breakdown if present, else fallback)
   await applyURLSelectionsOrDefault();
@@ -319,7 +332,7 @@ function createExploreButton(exploreDataItem) {
   const id = exploreDataItem.id; 
   button.id = `explore_${id}_button`; 
   button.innerHTML = `<span>${EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id)}</span>`;
-  button.className = `${SEGMENTED_PILL_CLASSES.base} ${SEGMENTED_PILL_CLASSES.inactive}`;
+  button.className = `js_explore_btn ${SEGMENTED_PILL_CLASSES.base} ${SEGMENTED_PILL_CLASSES.inactive}`;
   button.setAttribute("aria-pressed", "false");
 
   button.addEventListener("click", debounce(async function() {
@@ -1381,10 +1394,10 @@ function enableTooltipsForTruncatedCells() {
  * @param {string} buttonId - The ID of the selected button.
  */
 function updateButtonActiveStyles(buttonId) {
-  document.querySelectorAll("#explore_buttons button").forEach(button => {
-    button.className = `${SEGMENTED_PILL_CLASSES.base} ${SEGMENTED_PILL_CLASSES.inactive}`;
+  document.querySelectorAll("#explore_buttons .js_explore_btn").forEach(button => {
+    button.className = `js_explore_btn ${SEGMENTED_PILL_CLASSES.base} ${SEGMENTED_PILL_CLASSES.inactive}`;
     if (button.id === buttonId) {
-      button.className = `${SEGMENTED_PILL_CLASSES.base} ${SEGMENTED_PILL_CLASSES.active}`;
+      button.className = `js_explore_btn ${SEGMENTED_PILL_CLASSES.base} ${SEGMENTED_PILL_CLASSES.active}`;
       button.setAttribute("aria-pressed", "true");
     } else {
       button.setAttribute("aria-pressed", "false");

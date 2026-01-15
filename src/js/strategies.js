@@ -25,7 +25,9 @@ export function initStrategyTabs() {
   if (action) {
     document.getElementById(`strategy_${action}`)?.click();
   } else if (strategyTabBtns.length) {
+    shouldUpdateStrategyUrl = false;
     strategyTabBtns[0].click();
+    shouldUpdateStrategyUrl = true;
   }
 }
 
@@ -60,7 +62,7 @@ function updateStrategyButtonStyling(event) {
   // Update button styles
   document.querySelectorAll(".js_strategy_btn").forEach((btn) => {
     btn.classList.remove("bg-neutral-100", "text-neutral-900", "shadow-inner");
-    btn.classList.add("text-neutral-300", "bg-transparent", "hover:bg-neutral-700/70");
+    btn.classList.add("text-neutral-300", "hover:bg-neutral-700/70");
     const badge = btn.querySelector("[id^='count_']");
     if (badge) {
       badge.classList.remove("bg-neutral-900", "text-neutral-200");
@@ -72,7 +74,7 @@ function updateStrategyButtonStyling(event) {
   });
 
   tabBtn.classList.add("bg-neutral-100", "text-neutral-900", "shadow-inner");
-  tabBtn.classList.remove("text-neutral-300", "bg-transparent", "hover:bg-neutral-700/70");
+  tabBtn.classList.remove("text-neutral-300", "hover:bg-neutral-700/70");
   const activeBadge = tabBtn.querySelector("[id^='count_']");
   if (activeBadge) {
     activeBadge.classList.add("bg-neutral-900", "text-neutral-200");
@@ -83,5 +85,9 @@ function updateStrategyButtonStyling(event) {
   tabBtn.setAttribute("tabindex", "0");
 
   // Update URL params
-  updateURLParams({ 'action': selectedStrategy });
+  if (shouldUpdateStrategyUrl) {
+    updateURLParams({ 'action': selectedStrategy });
+  }
 }
+
+let shouldUpdateStrategyUrl = true;
