@@ -30,7 +30,7 @@
     "@tryghost/content-api": "^1.12.2",
     "axios": "^1.13.2",
     "caniuse-lite": "^1.0.30001762",
-    "canvas": "^3.2.0",
+    "canvas": "^3.2.1",
     "dotenv": "^17.2.3",
     "feather-icons": "^4.28.0",
     "markdown-it-attrs": "^4.3.1",
