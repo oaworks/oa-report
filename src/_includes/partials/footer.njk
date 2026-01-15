@@ -1,12 +1,13 @@
 <footer class="bg-neutral-900 text-white md:flex md:justify-between p-8 md:px-8">
-  <a href="https://oa.works" target="_blank" rel="noopener" class="block">
-    {% include 'svg/oa-works.svg' %}
+  <a href="/" class="block">
+    {% set logo_size = 'w-20 md:w-24 lg:w-32' %}
+    {% include 'partials/app-name.njk' %}
   </a>
-  <nav class="mt-8 md:mt-0 md:flex">
-    <ul class="md:flex md:space-x-12 md:justify-center md:self-center text-center">
+  <nav class="mt-8 md:mt-0 md:flex" aria-label="Footer">
+    <ul class="flex flex-col items-start gap-2 text-left md:flex-row md:items-center md:gap-12 md:justify-center">
       {% for item in nav_footer %}
       <li>
-        <a href="{{ item.url }}" {% if item.ext %}target="_blank" {% endif %}class="text-xs md:text-base lg:text-lg hover:text-carnation-500 transition duration-300">{{ item.label }}</a>
+        <a href="{{ item.url }}" {% if item.ext %}target="_blank" rel="noopener"{% endif %} class="inline-flex min-h-[44px] items-center rounded-md px-0 py-0 text-base lg:text-lg transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-2">{{ item.label }}</a>
       </li>
       {% endfor %}
     </ul>

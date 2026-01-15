@@ -1,16 +1,44 @@
 {%- from "system/component.njk" import component -%}
 
-<header class="bg-neutral-100 drop-shadow-md z-50{% if page.url == '/' %} h-auto sticky top-0{% endif %}">
+<header class="z-50{% if page.url == '/' %} drop-shadow-md h-auto sticky top-0{% endif %}">
   <h2 class="sr-only">
     OA.Report
   </h2>
-  <nav class="mx-auto flex max-w-10xl items-center justify-between p-6 lg:px-8" aria-label="Global">
+  {% if page.url == '/' %}
+    {% set nav_styles = 'py-3 md:py-4 lg:py-5 bg-neutral-100 text-neutral-900' %}
+  {% else %}
+    {% set nav_styles = 'py-2 md:py-3' %}
+  {% endif %}
+  <nav class="mx-auto flex max-w-10xl items-center justify-between gap-4 px-3 md:px-4 {{ nav_styles }}" aria-label="Global">
     <h3 class="sr-only">Site navigation</h3>
-    <div class="flex items-center lg:flex-1">
-      <a href="/" class="-mb-2 p-1.5 flex items-center">
+
+    {% if page.url == '/' %}
+    <div class="flex items-center gap-3 shrink-0">
+      <a href="/" class="-mb-2 p-1 flex items-center">
+        {% set logo_size = 'w-28 md:w-40 lg:w-48' %}
         {% include 'partials/app-name.njk' %}
       </a>
     </div>
+    {% endif %}
+
+    {% if page.url != '/' %}
+    <div class="flex-1 min-w-0 flex items-center">
+      <h1 class="flex items-center gap-3 min-w-0 leading-tight text-left">
+        <span class="sr-only">Report for</span>
+        <span class="inline-flex items-center gap-2">
+          <span aria-hidden="true" class="w-4 h-4 rounded-full bg-carnation-500 flex-none"></span>
+        <span class="truncate font-serif font-semibold text-base md:text-lg lg:text-xl" title="{{ org._source.name }}">{{ org._source.name }}</span>
+        </span>
+        <span class="text-[11px] md:text-xs lg:text-sm font-medium whitespace-nowrap flex items-center gap-1 leading-tight">
+          <span class="report_readable_start_date"></span>
+          <span aria-hidden="true">—</span>
+          <span class="report_readable_end_date"></span>
+        </span>
+      </h1>
+    </div>
+    {% else %}
+    <div class="flex-1"></div>
+    {% endif %}
 
     <!-- Hamburger Button -->
     <button id="menu-toggle" aria-expanded="false" aria-controls="mobile-menu" class="sm:hidden flex items-center justify-center p-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-carnation-500">
@@ -19,22 +47,66 @@
     </button>
 
     <!-- Menu Items -->
-    <div id="mobile-menu" class="hidden absolute top-full left-0 w-full bg-neutral-100 sm:static sm:flex sm:items-center sm:justify-end sm:w-auto sm:bg-transparent sm:p-0">
-      <div class="flex flex-col sm:flex-row sm:items-center gap-x-4 sm:gap-x-8 md:gap-x-12">
-        <a href="https://about.oa.report/" class="text-xs md:text-sm font-semibold leading-6 text-gray-900 px-4 py-2 sm:p-0">About</a>
+    <div id="mobile-menu" class="hidden absolute top-full left-0 w-full sm:static sm:flex sm:items-center sm:justify-end sm:w-auto sm:bg-transparent sm:p-0">
+      <div class="flex flex-col sm:flex-row sm:items-center gap-x-3 sm:gap-x-6 md:gap-x-8">
+        <a href="https://about.oa.report/" class="text-[11px] md:text-xs lg:text-sm font-medium leading-6 px-4 py-2 sm:p-0">About</a>
         {% if page.url != "/" %}
-        <a href="?logout" id="logout" class="text-xs md:text-sm font-semibold leading-6 text-gray-900 px-4 py-2 sm:p-0">Log out <span aria-hidden="true">&rarr;</span></a>
-        <button data-modal-title="Log in to access this OA.Report" data-modal-content="<div class='text-center'><p class='mb-2'>If you work for <strong>{{ org._source.name }}</strong>, search your inbox for an email titled <br><span class='highlight font-normal'>“OA.Report login link”</span><br> to access your report.</p><p class='mb-4'>If you can’t find it, please <a href='mailto:joe@oa.works?subject=I%20can’t%20find%20my%20OA.Report%20login%20link' class='underline underline-offset-2 decoration-1'>contact our helpdesk</a>.</p><hr><p class='pt-4'><small class='text-xs font-normal'>Find out more about <a href='https://about.oa.report/docs/user-accounts' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>OA.Report user accounts</a>.</small></p></div>" class="text-sm font-semibold leading-6 text-gray-900 px-4 py-2 sm:p-0" id="login">Log in <span aria-hidden="true">&larr;</span></button>
+        <a href="?logout" id="logout" class="text-[11px] md:text-xs lg:text-sm font-medium leading-6p x-4 py-2 sm:p-0">Log out <span aria-hidden="true">&rarr;</span></a>
+        <button data-modal-title="Log in to access this OA.Report" data-modal-content="<div class='text-center'><p class='mb-2'>If you work for <strong>{{ org._source.name }}</strong>, search your inbox for an email titled <br><span class='highlight font-normal'>“OA.Report login link”</span><br> to access your report.</p><p class='mb-4'>If you can’t find it, please <a href='mailto:joe@oa.works?subject=I%20can’t%20find%20my%20OA.Report%20login%20link' class='underline underline-offset-2 decoration-1'>contact our helpdesk</a>.</p><hr><p class='pt-4'><small class='text-xs font-normal'>Find out more about <a href='https://about.oa.report/docs/user-accounts' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>OA.Report user accounts</a>.</small></p></div>" class="text-[11px] md:text-xs lg:text-sm font-medium leading-6 px-4 py-2 sm:p-0" id="login">Log in <span aria-hidden="true">&larr;</span></button>
         {% endif %}
         {% if page.url == '/' %}
-        <a href="https://blog.oa.works/join-the-oa-report-for-libraries-pilot-to-simplify-compliance-checking-for-your-institutional-funders-oa-policies/" target="_blank" class="text-xs md:text-sm font-semibold leading-6 text-gray-900 px-4 py-2 sm:p-0">For libraries</a>
-        <a href="https://savvycal.com/Joe/ed52a37f" data-savvycal-embed class="inline-block bg-carnation-600 text-white text-xs md:text-sm p-2 md:rounded-sm hover:bg-carnation-500 transition-all duration-300 ease-in-out transform md:hover:scale-105 focus:outline-none focus:ring-4 focus:ring-carnation-200 font-semibold px-4 py-2">
+        <a href="https://blog.oa.works/join-the-oa-report-for-libraries-pilot-to-simplify-compliance-checking-for-your-institutional-funders-oa-policies/" target="_blank" class="text-[11px] md:text-xs lg:text-sm font-semibold leading-6 px-4 py-2 sm:p-0">For libraries</a>
+        <a href="https://savvycal.com/Joe/ed52a37f" data-savvycal-embed class="inline-block bg-carnation-600 text-white text-[11px] md:text-xs lg:text-sm p-2 md:rounded-sm hover:bg-carnation-500 transition-all duration-300 ease-in-out transform md:hover:scale-105 focus:outline-none focus:ring-4 focus:ring-carnation-200 font-semibold px-4 py-2">
           Schedule a demo
         </a>
         {% endif %}
       </div>
     </div>
   </nav>
+
+  {% if org and org._source.paid == true %}
+  <nav class="pt-3" aria-labelledby="report-nav-heading">
+    <h2 id="report-nav-heading" class="sr-only">Report navigation</h2>
+    <section class="flex items-center flex-wrap justify-between px-3 md:px-4 gap-x-2 gap-y-1 md:gap-x-3 md:gap-y-0">
+      <div class="flex items-center flex-wrap gap-x-2 gap-y-1 md:gap-x-3 md:gap-y-0">
+        <h3 class="sr-only">View this report by year or by custom date range</h3>
+        <div
+          id="js-year-buttons"
+          class="flex flex-wrap gap-2 text-xs md:text-sm"
+        ></div>
+
+        <div class="flex items-center flex-wrap gap-2" id="report-filters">
+          {# Active filters panel #}
+          <aside
+            class="text-neutral-900 text-xs md:text-sm md:border-b-0 js-active-filters-wrapper hidden"
+            id="js-active-filters-wrapper"
+              aria-labelledby="js-active-filters-title"
+            >
+              <h3 id="js-active-filters-title" class="sr-only">
+                Active filters
+              </h3>
+
+              {# Live region so SR users hear updates when filters change #}
+              <div
+                id="js-active-filters"
+                class="flex items-center"
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+              ></div>
+            </aside>
+          </div>
+      </div>
+
+      <div class="flex flex-wrap gap-x-2 gap-y-1 text-xs">
+        <a class="border border-neutral-600 text-neutral-100 bg-neutral-800 hover:bg-neutral-700 px-2 py-1 md:px-3 md:py-1.5 mt-1 md:mt-0 rounded-full font-medium transition duration-200 js_section_tab" href="#insights">Insights</a>
+        <a class="border border-neutral-600 text-neutral-100 bg-neutral-800 hover:bg-neutral-700 px-2 py-1 md:px-3 md:py-1.5 mt-1 md:mt-0 rounded-full font-medium transition duration-200 js_section_tab" href="#explore">Explore</a>
+        <a class="border border-neutral-600 text-neutral-100 bg-neutral-800 hover:bg-neutral-700 px-2 py-1 md:px-3 md:py-1.5 mt-1 md:mt-0 rounded-full font-medium transition duration-200 js_section_tab" href="#strategies">Actions</a>
+      </div>
+    </section>
+
+  </nav>
+  {% endif %}
 </header>
 
 <script>

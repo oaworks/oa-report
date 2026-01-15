@@ -24,6 +24,10 @@ export function initStrategyTabs() {
   const action = params.action;
   if (action) {
     document.getElementById(`strategy_${action}`)?.click();
+  } else if (strategyTabBtns.length) {
+    shouldUpdateStrategyUrl = false;
+    strategyTabBtns[0].click();
+    shouldUpdateStrategyUrl = true;
   }
 }
 
@@ -57,17 +61,33 @@ function updateStrategyButtonStyling(event) {
 
   // Update button styles
   document.querySelectorAll(".js_strategy_btn").forEach((btn) => {
-    btn.classList.remove("bg-carnation-300", "font-semibold");
-    btn.classList.add("hover:text-neutral-700", "hover:border-neutral-300", "font-normal");
+    btn.classList.remove("bg-neutral-100", "text-neutral-900", "shadow-inner");
+    btn.classList.add("text-neutral-300", "hover:bg-neutral-700/70");
+    const badge = btn.querySelector("[id^='count_']");
+    if (badge) {
+      badge.classList.remove("bg-neutral-900", "text-neutral-200");
+      badge.classList.add("bg-neutral-700", "text-neutral-100");
+    }
     btn.setAttribute("aria-selected", "false");
+    btn.setAttribute("aria-pressed", "false");
     btn.setAttribute("tabindex", "-1");
   });
 
-  tabBtn.classList.add("bg-carnation-300", "font-semibold");
-  tabBtn.classList.remove("hover:text-neutral-700", "hover:border-neutral-300", "font-normal");
+  tabBtn.classList.add("bg-neutral-100", "text-neutral-900", "shadow-inner");
+  tabBtn.classList.remove("text-neutral-300", "hover:bg-neutral-700/70");
+  const activeBadge = tabBtn.querySelector("[id^='count_']");
+  if (activeBadge) {
+    activeBadge.classList.add("bg-neutral-900", "text-neutral-200");
+    activeBadge.classList.remove("bg-neutral-700", "text-neutral-100");
+  }
   tabBtn.setAttribute("aria-selected", "true");
+  tabBtn.setAttribute("aria-pressed", "true");
   tabBtn.setAttribute("tabindex", "0");
 
   // Update URL params
-  updateURLParams({ 'action': selectedStrategy });
+  if (shouldUpdateStrategyUrl) {
+    updateURLParams({ 'action': selectedStrategy });
+  }
 }
+
+let shouldUpdateStrategyUrl = true;
