@@ -12,8 +12,8 @@
 <section class="grid grid-cols-12 gap-3 lg:gap-6 md:gap-12 js_strategy {% if params.hidden %} hidden{% else %}{% endif %}" role="tabpanel" tabindex="0" aria-labelledby="strategy_{{ params.id }}" id="{{ params.id }}"{% if params.hidden %} hidden{% else %}{% endif %}>
   <header class="md:mb-12 col-span-12 lg:col-span-4">
     <div class=" lg:sticky lg:top-3">
-      <h3 class="font-semibold text-xl md:text-3xl mb-3 md:mb-6">{{ params.heading }}</h3>
-      <p class="text-xs md:text-base mb-3 md:mb-6">{{ params.desc|safe }}</p>
+      <h3 class="mb-3 text-base md:text-lg font-semibold uppercase tracking-wide text-neutral-100 md:mb-6">{{ params.heading }}</h3>
+      <p class="text-sm md:text-base text-white mb-3 md:mb-6">{{ params.desc|safe }}</p>
       <form id="form_{{ params.id }}" onsubmit="return window.callGetStrategyExportLink('{{ params.id }}')">
         <h2 class="mb-4">
           <div class="mb-2 text-sm font-semibold uppercase">
