@@ -479,10 +479,10 @@ function createDateRangeForm() {
     }
 
     // Update URL with query parameters (YYYY-MM-DD via toISOString split as before)
-    const queryParams = new URLSearchParams(window.location.search);
-    queryParams.set("start", startDate.toISOString().split("T")[0]);
-    queryParams.set("end", endDate.toISOString().split("T")[0]);
-    history.pushState(null, "", "?" + queryParams.toString());
+    updateURLParams({
+      start: startDate.toISOString().split("T")[0],
+      end: endDate.toISOString().split("T")[0]
+    });
 
     // Sync hidden inputs so existing code sees them
     hiddenStart.value = sPop.value;

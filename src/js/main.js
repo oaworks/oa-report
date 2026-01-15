@@ -26,7 +26,7 @@ function initialise() {
   if (isDataExploreInitialised) {
     return;
   }
-  
+
   // 1) Process URL params and orgkey first
   initDateManager();
 
