@@ -1395,9 +1395,9 @@ function enableTooltipsForTruncatedCells() {
  */
 function updateButtonActiveStyles(buttonId) {
   document.querySelectorAll("#explore_buttons .js_explore_btn").forEach(button => {
-    button.className = `${SEGMENTED_PILL_CLASSES.base} ${SEGMENTED_PILL_CLASSES.inactive}`;
+    button.className = `js_explore_btn ${SEGMENTED_PILL_CLASSES.base} ${SEGMENTED_PILL_CLASSES.inactive}`;
     if (button.id === buttonId) {
-      button.className = `${SEGMENTED_PILL_CLASSES.base} ${SEGMENTED_PILL_CLASSES.active}`;
+      button.className = `js_explore_btn ${SEGMENTED_PILL_CLASSES.base} ${SEGMENTED_PILL_CLASSES.active}`;
       button.setAttribute("aria-pressed", "true");
     } else {
       button.setAttribute("aria-pressed", "false");
