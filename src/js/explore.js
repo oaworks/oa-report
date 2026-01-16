@@ -996,6 +996,12 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
 function createTableCell(content, cssClass, exploreItemId = null, key = null, isHeader = false) {
   const cell = document.createElement(isHeader ? 'th' : 'td');
   cell.className = cssClass;
+  const termBase = currentActiveExploreItemData?.term?.trim() || "";
+  const termField = termBase
+    ? ((termBase === "published_year" && ELEVENTY_API_ENDPOINT === "api")
+      ? termBase.replace(/\.keyword$/i, "")
+      : `${termBase.replace(/\.keyword$/i, "")}.keyword`)
+    : "";
 
   /**
    * Helper: attach click-to-filter for term tables, but ignore clicks on external pills.
@@ -1004,16 +1010,15 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
    * @param {string|number} rawValue - The raw bucket key value to filter on.
    */
   function attachTermClickFilter(rawValue) {
-    if (key !== 'key' || !currentActiveExploreItemData?.term) return;
+    if (key !== 'key' || !termField) return;
 
     cell.onclick = (event) => {
       const target = /** @type {HTMLElement} */ (event.target);
       // Do not trigger filtering when clicking the external profile pill
       if (target && target.closest('.js-external-pill')) return;
 
-      const term = currentActiveExploreItemData.term.trim();
       const value = String(rawValue).replace(/"/g, '\\"');
-      const clause = `${term}:"${value}"`;
+      const clause = `${termField}:"${value}"`;
 
       const existingQuery = getDecodedUrlQuery() || '';
 
@@ -1054,11 +1059,10 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
    * @param {string|number} rawValue - The raw bucket key value to match against the active filters.
    */
   function addSelectedDotIfNeeded(wrapper, rawValue) {
-    if (key !== 'key' || !currentActiveExploreItemData?.term) return;
+    if (key !== 'key' || !termField) return;
 
-    const term = currentActiveExploreItemData.term.trim();
     const value = String(rawValue).replace(/"/g, '\\"');
-    const clause = `${term}:"${value}"`;
+    const clause = `${termField}:"${value}"`;
     const q = getDecodedUrlQuery() || '';
 
     if (!q.includes(clause)) return;
