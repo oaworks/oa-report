@@ -569,7 +569,13 @@ function addFilterRow(container) {
   const renderSuggestions = (items) => {
     listbox.innerHTML = "";
     const termRaw = input.value || "";
-    const term = termRaw.toLowerCase().replace(/\s+/g, " ").trim();
+    const normaliseText = (value) =>
+      (value || "")
+        .normalize("NFD")
+        .replace(/\p{M}/gu, "")
+        .toLowerCase();
+
+    const term = normaliseText(termRaw).replace(/\s+/g, " ").trim();
 
     // Keep a non-selectable hint at the top
     renderHint(termRaw);
@@ -583,7 +589,7 @@ function addFilterRow(container) {
 
     const highlight = (val) => {
       if (!term || !val) return val;
-      const matchIndex = val.toLowerCase().indexOf(term);
+      const matchIndex = normaliseText(val).indexOf(term);
       if (matchIndex === -1) return val;
       const before = val.slice(0, matchIndex);
       const match = val.slice(matchIndex, matchIndex + term.length);
@@ -598,16 +604,16 @@ function addFilterRow(container) {
       .map((val, originalIndex) => ({
         val,
         originalIndex,
-        lower: (val || "").toLowerCase()
+        normalised: normaliseText(val)
       }))
-      .filter(({ lower }) => lower.includes(term))
+      .filter(({ normalised }) => normalised.includes(term))
       .sort((a, b) => {
-        const aStarts = a.lower.startsWith(term);
-        const bStarts = b.lower.startsWith(term);
+        const aStarts = a.normalised.startsWith(term);
+        const bStarts = b.normalised.startsWith(term);
         if (aStarts !== bStarts) return aStarts ? -1 : 1;
 
-        const aWordStart = wordStartPattern.test(a.lower);
-        const bWordStart = wordStartPattern.test(b.lower);
+        const aWordStart = wordStartPattern.test(a.normalised);
+        const bWordStart = wordStartPattern.test(b.normalised);
         if (aWordStart !== bWordStart) return aWordStart ? -1 : 1;
 
         return a.originalIndex - b.originalIndex; // stable order for equal rank
