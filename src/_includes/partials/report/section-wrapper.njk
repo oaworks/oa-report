@@ -1,5 +1,5 @@
 {# Shared wrapper for report sections #}
-{% macro sectionWrapper(id, title, tooltip=null, section_class="bg-neutral-900 text-white js_section", inner_class="p-3 md:px-6 md:py-8", container_class="max-w-8xl mx-auto", header_class="pb-4 border-b border-neutral-700 text-2xl md:text-3xl font-normal leading-8 text-white") %}
+{% macro sectionWrapper(id, title, tooltip=null, section_class="bg-neutral-900 text-white js_section", inner_class="p-3 md:px-6 md:py-8", container_class="max-w-8xl mx-auto", header_class="pb-4 border-b border-neutral-700 text-xl md:text-2xl font-normal leading-8 text-white") %}
   <div id="{{ id }}" class="h-20 md:h-24 -mt-20 md:-mt-24" aria-hidden="true"></div>
   <section class="{{ section_class }}">
     <div class="{{ inner_class }}">

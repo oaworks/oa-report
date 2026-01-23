@@ -4,9 +4,9 @@
 {% call sectionWrapper("explore", "Explore") %}
   {# Breakdown table options #}
   <nav aria-label="Explore breakdowns" class="flex flex-wrap items-center gap-2 p-2 rounded-md bg-neutral-800/90 border border-neutral-700 shadow-lg">
-    <ul id="explore_buttons" class="flex flex-wrap items-center gap-2 m-0 p-0 list-none">
+    <ul id="explore_buttons" class="flex flex-wrap items-center gap-4 m-0 p-0 list-none">
       <li id="explore_see_more_item" class="list-none">
-        <button class="inline-flex items-center px-3 py-1.5 rounded-md bg-neutral-700 text-neutral-100 text-xs font-medium hover:bg-neutral-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800">
+        <button class="inline-flex items-center px-4 py-1.5 rounded-md bg-neutral-700 text-white text-sm font-medium hover:bg-neutral-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 transition-colors">
           <span>See more</span>
         </button>
       </li>
@@ -29,10 +29,10 @@
 
     <div id="export_table" class="hidden">
       <header class="mb-10 space-y-2">
-        <h3 class="text-3xl md:text-4xl" aria-live="polite">
-          <span class="report_sort_adjective">Top</span> <strong class="lowercase explore_type">articles</strong>
+        <h3 class="mb-3 text-base md:text-lg font-semibold uppercase tracking-wide text-neutral-100" aria-live="polite">
+          <span class="report_sort_adjective">Top</span> <strong class="uppercase font-semibold explore_type">articles</strong>
         </h3>
-        <p id="explore_count_summary" class="text-base md:text-lg text-white hidden" aria-live="polite"></p>
+        <p id="explore_count_summary" class="text-sm md:text-base text-white hidden" aria-live="polite"></p>
       </header>
       {# Data table controls #}
       <div class="my-4 gap-3 md:gap-12 flex justify-between">
@@ -106,12 +106,14 @@
         </button>
 
         {# Data table #}
-        <div class="mb-4 overflow-x-auto border border-neutral-200 js_export_table_container" aria-live="polite">
-          <table class="border-collapse w-full table-fixed js_export_table" id="explore_table">
-            <thead class="border-b border-neutral-200 text-left text-xs font-medium uppercase tracking-wider" id="export_table_head"></thead>
-            <tbody class="text-xs md:text-sm" id="export_table_body"></tbody>
-            <tfoot class="text-xs md:text-sm border-t-2 border-neutral-200 bg-neutral-700" id="export_table_foot"></tfoot>
-          </table>
+        <div class="mb-4">
+          <div class="overflow-x-auto pb-4 border border-neutral-200 js_export_table_container" aria-live="polite">
+            <table class="border-collapse w-full table-fixed js_export_table" id="explore_table">
+              <thead class="border-b border-neutral-200 text-left text-xs font-medium uppercase tracking-wider" id="export_table_head"></thead>
+              <tbody class="text-xs md:text-sm" id="export_table_body"></tbody>
+              <tfoot class="text-xs md:text-sm border-t-2 border-neutral-200 bg-neutral-700" id="export_table_foot"></tfoot>
+            </table>
+          </div>
         </div>
 
         {# Copy to clipboard button #}

@@ -806,6 +806,9 @@ export function updateURLParams(params) {
   const newQuery = queryParams.toString();
   const newUrl = newQuery ? `?${newQuery}` : window.location.pathname;
   history.pushState(null, '', newUrl);
+  if (typeof window !== "undefined" && typeof window.sa_pageview === "function") {
+    window.sa_pageview();
+  }
 }
 
 /**
