@@ -552,8 +552,8 @@ function addFilterRow(container) {
     if (activeIndex >= options.length) {
       activeIndex = options.length - 1;
     }
-    options.forEach((li, idx) => {
-      const selected = idx === activeIndex;
+    options.forEach((li, optionIndex) => {
+      const selected = optionIndex === activeIndex;
       li.setAttribute("aria-selected", selected ? "true" : "false");
       li.classList.toggle("bg-neutral-900", selected);
       li.classList.toggle("text-white", selected);
@@ -583,11 +583,11 @@ function addFilterRow(container) {
 
     const highlight = (val) => {
       if (!term || !val) return val;
-      const idx = val.toLowerCase().indexOf(term);
-      if (idx === -1) return val;
-      const before = val.slice(0, idx);
-      const match = val.slice(idx, idx + term.length);
-      const after = val.slice(idx + term.length);
+      const matchIndex = val.toLowerCase().indexOf(term);
+      if (matchIndex === -1) return val;
+      const before = val.slice(0, matchIndex);
+      const match = val.slice(matchIndex, matchIndex + term.length);
+      const after = val.slice(matchIndex + term.length);
       return `${before}<strong>${match}</strong>${after}`;
     };
 
