@@ -576,6 +576,9 @@ function addFilterRow(container) {
         .toLowerCase();
 
     const term = normaliseText(termRaw).replace(/\s+/g, " ").trim();
+    const stopwords = new Set(["journal", "the", "of"]);
+    const termTokens = term.split(" ").filter((tok) => tok && !stopwords.has(tok));
+    const termForMatch = termTokens.join(" ");
 
     // Keep a non-selectable hint at the top
     renderHint(termRaw);
@@ -597,19 +600,28 @@ function addFilterRow(container) {
       return `${before}<strong>${match}</strong>${after}`;
     };
 
-    const escapedTerm = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    if (!termForMatch) {
+      renderHint(termRaw, "Type a more specific term…");
+      return;
+    }
+
+    const escapedTerm = termForMatch.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const wordStartPattern = new RegExp(`\\b${escapedTerm}`, "i");
 
     const filtered = items
-      .map((val, originalIndex) => ({
-        val,
-        originalIndex,
-        normalised: normaliseText(val)
-      }))
-      .filter(({ normalised }) => normalised.includes(term))
+      .map((val, originalIndex) => {
+        const normalised = normaliseText(val);
+        const tokens = normalised.split(" ").filter((tok) => tok && !stopwords.has(tok));
+        return { val, originalIndex, normalised, tokens };
+      })
+      .filter(({ normalised, tokens }) => {
+        if (!termTokens.length) return false;
+        if (termTokens.length === 1) return normalised.includes(termForMatch);
+        return termTokens.every((tok) => tokens.includes(tok));
+      })
       .sort((a, b) => {
-        const aStarts = a.normalised.startsWith(term);
-        const bStarts = b.normalised.startsWith(term);
+        const aStarts = a.normalised.startsWith(termForMatch);
+        const bStarts = b.normalised.startsWith(termForMatch);
         if (aStarts !== bStarts) return aStarts ? -1 : 1;
 
         const aWordStart = wordStartPattern.test(a.normalised);
