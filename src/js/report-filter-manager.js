@@ -591,14 +591,28 @@ function addFilterRow(container) {
       return `${before}<strong>${match}</strong>${after}`;
     };
 
+    const escapedTerm = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const wordStartPattern = new RegExp(`\\b${escapedTerm}`, "i");
+
     const filtered = items
-      .filter((val) => (val || "").toLowerCase().includes(term))
+      .map((val, originalIndex) => ({
+        val,
+        originalIndex,
+        lower: (val || "").toLowerCase()
+      }))
+      .filter(({ lower }) => lower.includes(term))
       .sort((a, b) => {
-        const aStarts = (a || "").toLowerCase().startsWith(term);
-        const bStarts = (b || "").toLowerCase().startsWith(term);
-        if (aStarts === bStarts) return 0;
-        return aStarts ? -1 : 1;
-      });
+        const aStarts = a.lower.startsWith(term);
+        const bStarts = b.lower.startsWith(term);
+        if (aStarts !== bStarts) return aStarts ? -1 : 1;
+
+        const aWordStart = wordStartPattern.test(a.lower);
+        const bWordStart = wordStartPattern.test(b.lower);
+        if (aWordStart !== bWordStart) return aWordStart ? -1 : 1;
+
+        return a.originalIndex - b.originalIndex; // stable order for equal rank
+      })
+      .map(({ val }) => val);
 
     if (!filtered.length) {
       renderHint(termRaw);
