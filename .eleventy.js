@@ -87,6 +87,7 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy("./src/*.xml");
   eleventyConfig.addPassthroughCopy("./src/*.txt");
   eleventyConfig.addPassthroughCopy("./_redirects");
+  eleventyConfig.addPassthroughCopy({ "./src/temp-terms.json": "/temp-terms.json" }); // Temp for GH#3675
 
   /* ─── WebP helper shortcode (unchanged) ────────────────── */
   eleventyConfig.addShortcode("webpImg", function (filename, altText, width, height, classes = '', loading = false) {

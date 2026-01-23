@@ -3,6 +3,9 @@
 // Manages the top-level Filters chip and popover
 // =================================================
 
+// TEMP local terms list for UI testing
+const TEMP_TERMS_URL = "/temp-terms.json";
+
 // =================================================
 // Imports
 // =================================================
@@ -334,37 +337,26 @@ function removeValueFromField(q, field, value) {
 }
 
 /**
- * Fetch autocomplete suggestions for a given field and org.
+ * Fetch a terms list batch for a given field and org.
  *
  * @param {Object} params
  * @param {string} params.field  - ES field id (e.g., journal, concepts.display_name)
- * @param {string} params.query  - User-entered prefix/term to match
  * @param {number} [params.size=100] - Max number of suggestions to return
  * @param {AbortSignal} [params.signal] - Optional abort signal
  * @returns {Promise<string[]>} Ordered list of suggested values (unique, trimmed)
  */
-export async function fetchFilterValueSuggestions({ field, query, size = 100, signal }) {
-  if (!field || !query || !query.trim()) return [];
+export async function fetchFilterValueSuggestions({ field, size = 100, signal }) {
+  if (!field) return [];
 
   // Per-session cache to avoid repeat calls
   fetchFilterValueSuggestions._cache = fetchFilterValueSuggestions._cache || new Map();
-  const cacheKey = `${ensureKeywordField(field || "")}::${query.slice(0, 50)}`;
+  const baseField = field.replace(/\.keyword$/i, "");
+  const targetField = ensureKeywordField(field || baseField);
+  const orgName = orgData?.hits?.hits?.[0]?._source?.name || "";
+  const cacheKey = `${orgName}::${targetField}::${size}`;
   if (fetchFilterValueSuggestions._cache.has(cacheKey)) {
     return fetchFilterValueSuggestions._cache.get(cacheKey);
   }
-
-  // Scoped terms only (org + existing filters)
-  let qClean = query.trim();
-  try {
-    qClean = decodeURIComponent(qClean);
-  } catch (e) {
-    // If already decoded/invalid, keep as-is
-  }
-  const baseField = field.replace(/\.keyword$/i, "");
-  const lower = qClean.toLowerCase();
-  const orgName = orgData?.hits?.hits?.[0]?._source?.name;
-
-  const targetField = ensureKeywordField(field || baseField);
 
   try {
     const parts = [];
@@ -372,12 +364,8 @@ export async function fetchFilterValueSuggestions({ field, query, size = 100, si
       const safeOrg = orgName.replace(/"/g, '\\"');
       parts.push(`orgs.keyword:"${safeOrg}"`);
     }
-    // Handle dashes/exact tokens, both lower/upper
-    const upper = qClean.toUpperCase();
-    parts.push(`(${baseField}:*${lower}* OR ${baseField}:*${upper}* OR ${targetField}:*${lower}* OR ${targetField}:*${upper}*)`);
-
-    const qParam = encodeURIComponent(parts.join(" AND "));
-    const url = `${API_BG_BASE_URL}works/terms/${targetField}?counts=false&size=${size}&q=${qParam}`;
+    const qParam = parts.length ? `&q=${encodeURIComponent(parts.join(" AND "))}` : "";
+    const url = TEMP_TERMS_URL || `${API_BG_BASE_URL}works/terms/${targetField}?counts=false&size=${size}${qParam}`;
 
     const res = await fetch(url, { signal });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -536,7 +524,6 @@ function addFilterRow(container) {
   let suggestTimer = null;
   let activeIndex = -1;
   const tokenData = [];
-  let requestSeq = 0;
 
   const hideSuggestions = () => {
     listbox.classList.add("hidden");
@@ -653,8 +640,8 @@ function addFilterRow(container) {
     input.setAttribute("aria-activedescendant", "");
   };
 
-  // Remember the last fetched suggestions so we can reuse them for longer searches
-  let lastFetched = { field: "", query: "", items: [], size: 0 };
+  // Remember the last fetched suggestions for local filtering
+  let lastFetched = { field: "", items: [], size: 0 };
 
   const renderTokens = () => {
     tokens.innerHTML = "";
@@ -698,50 +685,13 @@ function addFilterRow(container) {
       const q = raw.replace(/\s+/g, " ").trim();
       if (!fieldVal || q.length < 2) {
         renderHint();
-        lastFetched = { field: "", query: "", items: [] };
         return;
       }
-      // If the last fetch for this field returned nothing and 
-      // the user is just extending that query (or entering gibberish),
-      // don't bother re-fetching
-      if (
-        lastFetched.field === fieldVal &&
-        q.startsWith(lastFetched.query || "") &&
-        Array.isArray(lastFetched.items) &&
-        lastFetched.items.length === 0
-      ) {
-        renderHint(q);
+      if (lastFetched.field !== fieldVal || !Array.isArray(lastFetched.items) || !lastFetched.items.length) {
+        renderHint(q, "Loading suggestions…");
         return;
       }
-      // If we already have results for this field that cover the current (longer) search, reuse them
-      const lowercasedQuery = q.toLowerCase();
-      if (
-        lastFetched.field === fieldVal &&
-        q.startsWith(lastFetched.query || "") &&
-        Array.isArray(lastFetched.items) &&
-        (
-          lastFetched.query === q || // exact same query, always reuse
-          (lastFetched.items.length < lastFetched.size && lastFetched.items.some((val) => (val || "").toLowerCase().includes(lowercasedQuery)))
-        )
-      ) {
-        renderSuggestions(lastFetched.items);
-        return;
-      }
-      const currentReq = ++requestSeq;
-      renderHint(q);
-      try {
-        const suggestions = await fetchFilterValueSuggestions({
-          field: fieldVal,
-          query: q,
-        });
-        if (currentReq === requestSeq) {
-          lastFetched = { field: fieldVal, query: q, items: suggestions, size: suggestions.length };
-          renderSuggestions(suggestions);
-        }
-      } catch (err) {
-        console.error("Error fetching suggestions:", err);
-        lastFetched = { field: fieldVal, query: q, items: [], size: 0 };
-      }
+      renderSuggestions(lastFetched.items);
     }, 500);
   };
 
@@ -771,9 +721,27 @@ function addFilterRow(container) {
     setTimeout(hideSuggestions, 100);
   });
 
-  fieldSelect.addEventListener("change", () => {
-    lastFetched = { field: "", query: "", items: [] };
-    triggerSuggestions();
+  fieldSelect.addEventListener("change", async () => {
+    const fieldVal = fieldSelect.value;
+    lastFetched = { field: fieldVal, items: [], size: 0 };
+    if (!fieldVal) {
+      renderHint();
+      return;
+    }
+    renderHint("", "Loading suggestions…");
+    try {
+      const items = await fetchFilterValueSuggestions({ field: fieldVal });
+      lastFetched = { field: fieldVal, items, size: items.length };
+      if (input.value && input.value.trim().length >= 2) {
+        renderSuggestions(items);
+      } else {
+        renderHint();
+      }
+    } catch (err) {
+      console.error("Error fetching suggestions:", err);
+      lastFetched = { field: fieldVal, items: [], size: 0 };
+      renderHint("", "No suggestions available.");
+    }
   });
   input.addEventListener("input", triggerSuggestions);
   input.addEventListener("focus", () => {
