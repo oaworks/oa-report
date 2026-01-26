@@ -577,7 +577,7 @@ function addFilterRow(container) {
 
     const term = normaliseText(termRaw).replace(/\s+/g, " ").trim();
     const stopwords = new Set(["journal", "the", "of"]);
-    const termTokens = term.split(" ").filter((tok) => tok && !stopwords.has(tok));
+    const termTokens = term.split(" ").filter((token) => token && !stopwords.has(token));
     const termForMatch = termTokens.join(" ");
 
     // Keep a non-selectable hint at the top
@@ -611,13 +611,18 @@ function addFilterRow(container) {
     const filtered = items
       .map((val, originalIndex) => {
         const normalised = normaliseText(val);
-        const tokens = normalised.split(" ").filter((tok) => tok && !stopwords.has(tok));
+        const tokens = normalised.split(" ").filter((token) => token && !stopwords.has(token));
         return { val, originalIndex, normalised, tokens };
       })
       .filter(({ normalised, tokens }) => {
         if (!termTokens.length) return false;
         if (termTokens.length === 1) return normalised.includes(termForMatch);
-        return termTokens.every((tok) => tokens.includes(tok));
+        const leadingTokens = termTokens.slice(0, -1);
+        const lastToken = termTokens[termTokens.length - 1];
+        return (
+          leadingTokens.every((token) => tokens.includes(token)) &&
+          tokens.some((token) => token.startsWith(lastToken))
+        );
       })
       .sort((a, b) => {
         const aStarts = a.normalised.startsWith(termForMatch);
