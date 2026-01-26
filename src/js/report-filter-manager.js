@@ -633,7 +633,7 @@ function addFilterRow(container) {
       .map(({ val }) => val);
 
     if (!filtered.length) {
-      renderHint(termRaw);
+      renderHint(termRaw, "No results found");
       return;
     }
 
