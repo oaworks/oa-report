@@ -93,6 +93,20 @@
 }
 
 @layer components {
+  .report_readable_start_date,
+  .report_readable_end_date {
+    display: inline-block;
+    min-width: 11ch;
+  }
+  .report_readable_start_date {
+    text-align: right;
+  }
+  .report_readable_end_date {
+    text-align: left;
+  }
+}
+
+@layer components {
   html.has-orgkey [data-auth="out"] {
     display: none;
   }
