@@ -626,16 +626,14 @@ export function adjustNavOnScroll() {
         button.classList.remove("md:border-b-0");
         button.classList.add("rounded-b-sm");
       });
-      nav.classList.add("shadow-lg", "transition-pb-3", "md:transition-pb-6");
-      nav.classList.remove("transition-pb-0");
+      nav.classList.add("shadow-lg");
     } else {
       // Nav has scrolled away from the top
       yearButtons.forEach((button) => {
         button.classList.add("md:border-b-0");
         button.classList.remove("rounded-b-sm");
       });
-      nav.classList.remove("shadow-lg", "transition-pb-3", "md:transition-pb-6");
-      nav.classList.add("transition-pb-0");
+      nav.classList.remove("shadow-lg");
     }
   }
 

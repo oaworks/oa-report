@@ -7,7 +7,7 @@
       <p>{{ site.banner | safe }}</p>
     </section>
     {% endif %}
-    <p id="js-alert" class="py-4 bg-carnation-500 text-white font-medium text-center text-xs" style="z-index: 5; position: sticky; top: 0; display: none;"></p>
+    <p id="js-alert" class="sticky top-0 z-[60] hidden py-4 bg-carnation-500 text-white font-medium text-center text-xs"></p>
     {% if hideBaseHeader != true %}
       {% include 'partials/header.njk' %}
     {% endif %}
