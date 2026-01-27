@@ -523,7 +523,9 @@ export function initInsightsAndStrategies(org) {
                         action["mailto"] = encodeURI(newMailto);
                       };
 
-                      var tableRowLiteral = eval('`'+ tableRow +'`'); // Convert given tableRow to template literal
+                      var tableRowLiteral = tableRow.replace(/\$\{action\.([^}]+)\}/g, function(match, key) {
+                        return action[key] ?? "";
+                      });
                       tableRows += tableRowLiteral; // Populate the table with a row w/ replaced placeholders for each action 
                       tableRows += "</tr>";
                     }
