@@ -53,7 +53,8 @@
   });
 </script>
 
-{# To get org names/slugs and whether or not they’re paying users #}
+{# To fetch data from the API and display it in the UI #}
+<script src="../js/axios.min.js"></script>
 <script>
   const org = ("{{ org._source.objectID | urlencode }}"),
         orgSlug = ("{{ org._source.objectID | slug }}"),
@@ -67,9 +68,6 @@
     const paid = false;
   {% endif %}
 </script>
-
-{# To fetch data from the API and display it in the UI #}
-<script src="../js/axios.min.js"></script>
 {% endif %}
 
 {# Load homepage-specific JS #}
