@@ -55,6 +55,13 @@
   font-display: swap;
 }
 
+@layer base {
+  .font-serif,
+  .font-degraded {
+    font-size-adjust: 0.5;
+  }
+}
+
 /* Spinner/loader */
 @layer utilities {
   .loader {
