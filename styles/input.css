@@ -92,6 +92,15 @@
   }
 }
 
+@layer components {
+  html.has-orgkey [data-auth="out"] {
+    display: none;
+  }
+  html:not(.has-orgkey) [data-auth="in"] {
+    display: none;
+  }
+}
+
 /* Custom modal animation */
 @keyframes modalFadeInUp {
   0% {

@@ -60,6 +60,25 @@
     }, true);
   </script>
 
+  {# Apply login state class early to avoid nav layout shifts #}
+  <script>
+    (function () {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        let hasOrgKey = params.has('orgkey');
+        if (!hasOrgKey && window.sessionStorage) {
+          const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
+          const slug = path.split('/')[0];
+          const key = slug ? `orgkey:${decodeURIComponent(slug)}` : 'orgkey';
+          hasOrgKey = !!sessionStorage.getItem(key) || !!sessionStorage.getItem('orgkey');
+        }
+        document.documentElement.classList.toggle('has-orgkey', hasOrgKey);
+      } catch (e) {
+        // If parsing or storage access fails, keep default state
+      }
+    })();
+  </script>
+
   {# Load UI-related JS for org report pages only #} 
   {% if org._source.name %}
   <script defer src="../js/oaworksKeys.js"></script>
