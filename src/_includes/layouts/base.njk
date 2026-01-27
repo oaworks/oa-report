@@ -8,6 +8,16 @@
     </section>
     {% endif %}
     <p id="js-alert" class="sticky top-0 z-[60] hidden py-4 bg-carnation-500 text-white font-medium text-center text-xs"></p>
+    {% set env = (site.base_url or '') | lower %}
+    {% set envLabel = 'staging' if 'staging.oa.report' in env else ('development' if 'dev.oa.report' in env or 'localhost' in env else '') %}
+    {% set envClass = 'bg-carnation-500 text-white' %}
+    {% if envLabel %}
+      <div class="fixed left-0 bottom-6 z-[70]">
+        <div class="px-2 py-3 {{ envClass }} shadow-lg flex items-center justify-center text-center text-[9px] md:text-[10px] font-semibold leading-snug break-words">
+          {{ envLabel }}
+        </div>
+      </div>
+    {% endif %}
     {% if hideBaseHeader != true %}
       {% include 'partials/header.njk' %}
     {% endif %}
