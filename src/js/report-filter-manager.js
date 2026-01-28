@@ -341,11 +341,12 @@ function removeValueFromField(q, field, value) {
  *
  * @param {Object} params
  * @param {string} params.field  - ES field id (e.g., journal, concepts.display_name)
+ * @param {string} [params.query]  - User-entered prefix/term to match
  * @param {number} [params.size=100] - Max number of suggestions to return
  * @param {AbortSignal} [params.signal] - Optional abort signal
  * @returns {Promise<string[]>} Ordered list of suggested values (unique, trimmed)
  */
-export async function fetchFilterValueSuggestions({ field, size = 100, signal }) {
+export async function fetchFilterValueSuggestions({ field, query = "", size = 100, signal }) {
   if (!field) return [];
 
   // Per-session cache to avoid repeat calls
@@ -353,7 +354,7 @@ export async function fetchFilterValueSuggestions({ field, size = 100, signal })
   const baseField = field.replace(/\.keyword$/i, "");
   const targetField = ensureKeywordField(field || baseField);
   const orgName = orgData?.hits?.hits?.[0]?._source?.name || "";
-  const cacheKey = `${orgName}::${targetField}::${size}`;
+  const cacheKey = `${orgName}::${targetField}::${query.slice(0, 50)}::${size}`;
   if (fetchFilterValueSuggestions._cache.has(cacheKey)) {
     return fetchFilterValueSuggestions._cache.get(cacheKey);
   }
@@ -364,7 +365,7 @@ export async function fetchFilterValueSuggestions({ field, size = 100, signal })
       const safeOrg = orgName.replace(/"/g, '\\"');
       parts.push(`orgs.keyword:"${safeOrg}"`);
     }
-    const qParam = parts.length ? `&q=${encodeURIComponent(parts.join(" AND "))}` : "";
+    const qParam = query ? `&q=${encodeURIComponent(query)}` : "";
     const url = TEMP_TERMS_URL || `${API_BG_BASE_URL}works/terms/${targetField}?counts=false&size=${size}${qParam}`;
 
     const res = await fetch(url, { signal });
@@ -767,7 +768,7 @@ function addFilterRow(container) {
     }
     renderHint("", "Loading suggestions…");
     try {
-      const items = await fetchFilterValueSuggestions({ field: fieldVal });
+      const items = await fetchFilterValueSuggestions({ field: fieldVal, query: input.value.trim() });
       lastFetched = { field: fieldVal, items, size: items.length };
       if (input.value && input.value.trim().length >= 2) {
         renderSuggestions(items);
