@@ -5,7 +5,7 @@
   <meta name="robots" content="noindex">
   {% endif %}
   {% set env = (site.base_url or '') | lower %}
-  {% set titlePrefix = '[STG] ' if 'staging.oa.report' in env else ('[DEV] ' if 'dev.oa.report' in env or 'localhost' in env else '') %}
+  {% set titlePrefix = '[STG] ' if 'staging.oa.report' in env or 'cf-stg.oa.report' in env else ('[DEV] ' if 'dev.oa.report' in env or 'cf-dev.oa.report' in env or 'localhost' in env else '') %}
   <title>{% if titlePrefix %}{{ titlePrefix }}{% endif %}{% if org._source.name %}{{ org._source.name }} — {% endif %}OA.Report: Unlock your research, simply</title>
   <meta name="description" content="{% if org._source.name %}Insights and actions for Open Access and OA policies at {{ org._source.name | safe }}{% else %}Find your publications, measure their openness, and take action to increase your Open Access policy compliance{% endif %}.">
 
