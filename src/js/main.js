@@ -8,7 +8,7 @@
 // =================================================
 
 import { bindSmoothScrollLinks, adjustNavOnScroll } from './utils.js';
-import { DEFAULT_YEAR, FIRST_YEAR, currentDate, bindDynamicYearButtons, setDefaultYear, initDateManager } from './report-date-manager.js';
+import { FIRST_YEAR, currentDate, bindDynamicYearButtons, setDefaultYear, initDateManager } from './report-date-manager.js';
 import { initDataExplore } from './explore.js';
 import { initStrategyTabs } from './strategies.js';
 
@@ -30,10 +30,7 @@ function initialise() {
   // 1) Process URL params and orgkey first
   initDateManager();
 
-  // 2) Establish the initial dateRange (this calls replaceDateRange)
-  setDefaultYear(DEFAULT_YEAR);
-
-  // 3) Safely initialise Explore now that dateRange is defined
+  // 2) Initialise Explore; it will wait for dateRange readiness when needed
   const exploreElement = document.getElementById("explore");
   // Check if id="explore" exists to trigger data explore initialisation
   if (exploreElement && !isDataExploreInitialised) {
