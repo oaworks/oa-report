@@ -4,7 +4,9 @@
   {% if org._source.private == true or page.fileSlug == 'report-unavailable' or page.fileSlug == 'report-list' %}
   <meta name="robots" content="noindex">
   {% endif %}
-  <title>{% if org._source.name %}{{ org._source.name }} — {% endif %}OA.Report: Unlock your research, simply</title>
+  {% set env = (site.base_url or '') | lower %}
+  {% set titlePrefix = '[STG] ' if 'staging.oa.report' in env or 'cf-stg.oa.report' in env else ('[DEV] ' if 'dev.oa.report' in env or 'cf-dev.oa.report' in env or 'localhost' in env else '') %}
+  <title>{% if titlePrefix %}{{ titlePrefix }}{% endif %}{% if org._source.name %}{{ org._source.name }} — {% endif %}OA.Report: Unlock your research, simply</title>
   <meta name="description" content="{% if org._source.name %}Insights and actions for Open Access and OA policies at {{ org._source.name | safe }}{% else %}Find your publications, measure their openness, and take action to increase your Open Access policy compliance{% endif %}.">
 
   {# OpenGraph meta tags #}
@@ -26,10 +28,12 @@
   {# Preconnect to the CDN for our sans-serif font #}
   <link rel="preconnect" href="https://rsms.me/">
 
-  {# Preload self-hosted font files, Redaction #}
+  {# Preload self-hosted Inter variable font #}
+  <link rel="preload" href="../fonts/inter/InterVariable.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+
+  {# Preload self-hosted Redaction font #}
   <link rel="preload" href="../fonts/redaction/Redaction-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
   <link rel="preload" href="../fonts/redaction/Redaction-Bold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
-  <link rel="preload" href="../fonts/redaction/Redaction-Italic.woff2" as="font" type="font/woff2" crossorigin="anonymous">
 
   {# Load TailwindCSS #}
   <link rel="stylesheet" href="../tailwind.css">
@@ -58,6 +62,25 @@
     }, true);
   </script>
 
+  {# Apply login state class early to avoid nav layout shifts #}
+  <script>
+    (function () {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        let hasOrgKey = params.has('orgkey');
+        if (!hasOrgKey && window.sessionStorage) {
+          const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
+          const slug = path.split('/')[0];
+          const key = slug ? `orgkey:${decodeURIComponent(slug)}` : 'orgkey';
+          hasOrgKey = !!sessionStorage.getItem(key) || !!sessionStorage.getItem('orgkey');
+        }
+        document.documentElement.classList.toggle('has-orgkey', hasOrgKey);
+      } catch (e) {
+        // If parsing or storage access fails, keep default state
+      }
+    })();
+  </script>
+
   {# Load UI-related JS for org report pages only #} 
   {% if org._source.name %}
   <script defer src="../js/oaworksKeys.js"></script>
@@ -71,6 +94,7 @@
   {# SimpleAnalytics tracking code (load early to capture URL params) #}
   <script 
     data-allow-params="breakdown,records,start,end,action,explore_filter,q"
+    defer
     src="https://scripts.simpleanalyticscdn.com/latest.js">
   </script>
 

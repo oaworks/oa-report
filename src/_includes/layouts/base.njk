@@ -7,7 +7,28 @@
       <p>{{ site.banner | safe }}</p>
     </section>
     {% endif %}
-    <p id="js-alert" class="py-4 bg-carnation-500 text-white font-medium text-center text-xs" style="z-index: 5; position: sticky; top: 0; display: none;"></p>
+    <p id="js-alert" class="sticky top-0 z-[60] hidden py-4 bg-carnation-500 text-white font-medium text-center text-xs"></p>
+    {% set env = (site.base_url or '') | lower %}
+    {% if 'cf-stg.oa.report' in env %}
+      {% set envLabel = 'staging cf' %}
+    {% elif 'staging.oa.report' in env %}
+      {% set envLabel = 'staging netlify' %}
+    {% elif 'cf-dev.oa.report' in env %}
+      {% set envLabel = 'development cf' %}
+    {% elif 'dev.oa.report' in env %}
+      {% set envLabel = 'development netlify' %}
+    {% elif 'localhost' in env %}
+      {% set envLabel = 'development local' %}
+    {% else %}
+      {% set envLabel = '' %}
+    {% endif %}
+    {% if envLabel %}
+      <div class="fixed left-0 bottom-6 z-[70]">
+        <div class="flex p-2 bg-carnation-500 text-white shadow-lg text-xs font-semibold">
+          {{ envLabel | replace(' ', '<br>') | safe }}
+        </div>
+      </div>
+    {% endif %}
     {% if hideBaseHeader != true %}
       {% include 'partials/header.njk' %}
     {% endif %}

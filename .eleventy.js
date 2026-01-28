@@ -78,7 +78,11 @@ module.exports = function (eleventyConfig) {
   });
 
   /* ─── Static asset passthroughs ────────────────────────── */
-  eleventyConfig.addPassthroughCopy('./src/js/');
+  eleventyConfig.addPassthroughCopy({
+    "./src/js/oaworksKeys.js": "/js/oaworksKeys.js",
+    "./src/js/popper.min.js": "/js/popper.min.js",
+    "./src/js/tippy-bundle.umd.min.js": "/js/tippy-bundle.umd.min.js"
+  });
   eleventyConfig.addPassthroughCopy('./src/css/');
   eleventyConfig.addPassthroughCopy('./src/img/');
   eleventyConfig.addPassthroughCopy('./src/fonts/');

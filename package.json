@@ -7,7 +7,7 @@
     "start": "npm run clean && concurrently \"eleventy --serve --port=8080\" \"npm run minify-css -- --watch\" \"npm run minify-js -- --watch\"",
     "clean": "rm -rf dist",
     "build": "ELEVENTY_PRODUCTION=true eleventy && NODE_ENV=production npm run minify-css && npm run minify-js",
-    "minify-js": "mkdir -p dist/js && terser src/js/main.js -o dist/js/main.min.js -c -m && terser src/js/insights-and-strategies.js -o dist/js/insights-and-strategies.min.js -c -m",
+    "minify-js": "mkdir -p dist/js && esbuild src/js/main.js --bundle --minify --format=esm --target=es2018 --outfile=dist/js/main.min.js",
     "minify-css": "npx tailwindcss -i styles/input.css -c styles/tailwind.config.js -o dist/tailwind.css --minify"
   },
   "keywords": [],
@@ -19,17 +19,18 @@
     "autoprefixer": "^10.4.23",
     "chokidar-cli": "^3.0.0",
     "concurrently": "^9.2.1",
+    "esbuild": "^0.25.9",
     "html-minifier": "^4.0.0",
     "postcss-cli": "^11.0.1",
-    "sass": "^1.97.2",
+    "sass": "^1.97.3",
     "tailwindcss": "^3.4.19",
-    "terser": "^5.44.1"
+    "terser": "^5.46.0"
   },
   "dependencies": {
     "18": "^0.0.0",
     "@tryghost/content-api": "^1.12.3",
-    "axios": "^1.13.2",
-    "caniuse-lite": "^1.0.30001762",
+    "axios": "^1.13.4",
+    "caniuse-lite": "^1.0.30001766",
     "canvas": "^3.2.1",
     "dotenv": "^17.2.3",
     "feather-icons": "^4.28.0",
