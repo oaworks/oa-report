@@ -27,7 +27,9 @@
         <span class="sr-only">Report for</span>
         <span class="inline-flex items-center gap-2">
           <span aria-hidden="true" class="w-4 h-4 rounded-full bg-carnation-500 flex-none"></span>
-        <span class="truncate font-serif font-semibold text-base md:text-lg lg:text-xl" title="{{ org._source.name }}">{{ org._source.name }}</span>
+        {% set env = (site.base_url or '') | lower %}
+        {% set envPrefix = '[STG] ' if 'staging.oa.report' in env or 'cf-stg.oa.report' in env else ('[DEV] ' if 'dev.oa.report' in env or 'cf-dev.oa.report' in env or 'localhost' in env else '') %}
+        <span class="truncate font-serif font-semibold text-base md:text-lg lg:text-xl" title="{{ org._source.name }}">{% if envPrefix %}{{ envPrefix }}{% endif %}{{ org._source.name }}</span>
         </span>
         <span class="text-[11px] md:text-xs lg:text-sm font-medium whitespace-nowrap flex items-center gap-1 leading-tight">
           <span class="report_readable_start_date"></span>
