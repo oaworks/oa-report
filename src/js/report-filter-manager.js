@@ -3,11 +3,8 @@
 // Manages the top-level Filters chip and popover
 // =================================================
 
-// TEMP local terms list for UI testing
-const TEMP_TERMS_URL = "/temp-terms.json";
-
 // =================================================
-// Imports
+// Imports & Constants
 // =================================================
 
 import {
@@ -31,6 +28,10 @@ import {
 import { orgDataPromise } from './insights-and-strategies.js';
 
 import { handleFiltersChanged } from './explore.js';
+
+const SUGGESTIONS_API_URL = `${API_BG_BASE_URL}remote_works/suggestions`;
+
+const SUGGESTIONS_SIZE_DEFAULT = 1000;
 
 // Only expose specific fields for search-to-filter ("Add filter")
 // See https://github.com/oaworks/discussion/issues/3616#issuecomment-3553985006
@@ -346,7 +347,7 @@ function removeValueFromField(q, field, value) {
  * @param {AbortSignal} [params.signal] - Optional abort signal
  * @returns {Promise<string[]>} Ordered list of suggested values (unique, trimmed)
  */
-export async function fetchFilterValueSuggestions({ field, query = "", size = 100, signal }) {
+export async function fetchFilterValueSuggestions({ field, query = "", size = SUGGESTIONS_SIZE_DEFAULT, signal }) {
   if (!field) return [];
 
   // Per-session cache to avoid repeat calls
@@ -360,13 +361,13 @@ export async function fetchFilterValueSuggestions({ field, query = "", size = 10
   }
 
   try {
-    const parts = [];
-    if (orgName) {
-      const safeOrg = orgName.replace(/"/g, '\\"');
-      parts.push(`orgs.keyword:"${safeOrg}"`);
-    }
-    const qParam = query ? `&q=${encodeURIComponent(query)}` : "";
-    const url = TEMP_TERMS_URL || `${API_BG_BASE_URL}works/terms/${targetField}?counts=false&size=${size}${qParam}`;
+    const params = [
+      `org=${encodeURIComponent(orgName)}`,
+      `field=${encodeURIComponent(baseField)}`,
+      `size=${encodeURIComponent(String(size))}`
+    ];
+    if (query) params.push(`q=${encodeURIComponent(query)}`);
+    const url = `${SUGGESTIONS_API_URL}?${params.join("&")}`;
 
     const res = await fetch(url, { signal });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -745,7 +746,11 @@ function addFilterRow(container) {
       lastQuery = q;
       renderHint(q, "Loading suggestions…");
       try {
-        const items = await fetchFilterValueSuggestions({ field: fieldVal, query: q });
+        const items = await fetchFilterValueSuggestions({
+          field: fieldVal,
+          query: q,
+          size: SUGGESTIONS_SIZE_DEFAULT
+        });
         lastFetched = { field: fieldVal, items, size: items.length };
         renderSuggestions(items);
       } catch (err) {
