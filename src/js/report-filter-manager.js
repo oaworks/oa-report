@@ -588,7 +588,7 @@ function addFilterRow(container) {
       listbox.classList.remove("hidden");
       input.setAttribute("aria-expanded", "true");
       activeIndex = -1;
-      return;
+      return 0;
     }
 
     const highlight = (val) => {
@@ -603,7 +603,7 @@ function addFilterRow(container) {
 
     if (!termForMatch) {
       renderHint(termRaw, "Type a more specific term…");
-      return;
+      return 0;
     }
 
     const escapedTerm = termForMatch.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -640,7 +640,7 @@ function addFilterRow(container) {
 
     if (!filtered.length) {
       renderHint(termRaw, "No results found");
-      return;
+      return 0;
     }
 
     filtered.slice(0, 20).forEach((val) => {
@@ -661,6 +661,7 @@ function addFilterRow(container) {
     listbox.classList.remove("hidden");
     input.setAttribute("aria-expanded", "true");
     input.setAttribute("aria-activedescendant", "");
+    return filtered.length;
   };
 
   const renderHint = (termRaw = "", message) => {
@@ -680,6 +681,8 @@ function addFilterRow(container) {
 
   // Remember the last fetched suggestions for local filtering
   let lastFetched = { field: "", items: [], size: 0 };
+  let lastQuery = "";
+  let requestInFlight = false;
 
   const renderTokens = () => {
     tokens.innerHTML = "";
@@ -725,11 +728,33 @@ function addFilterRow(container) {
         renderHint();
         return;
       }
-      if (lastFetched.field !== fieldVal || !Array.isArray(lastFetched.items) || !lastFetched.items.length) {
+      let matches = 0;
+      if (lastFetched.field === fieldVal && Array.isArray(lastFetched.items) && lastFetched.items.length) {
+        matches = renderSuggestions(lastFetched.items);
+        if (matches > 0) return;
+      }
+      if (requestInFlight) {
         renderHint(q, "Loading suggestions…");
         return;
       }
-      renderSuggestions(lastFetched.items);
+      if (lastQuery === q && lastFetched.field === fieldVal) {
+        renderHint(q, "No results found");
+        return;
+      }
+      requestInFlight = true;
+      lastQuery = q;
+      renderHint(q, "Loading suggestions…");
+      try {
+        const items = await fetchFilterValueSuggestions({ field: fieldVal, query: q });
+        lastFetched = { field: fieldVal, items, size: items.length };
+        renderSuggestions(items);
+      } catch (err) {
+        console.error("Error fetching suggestions:", err);
+        lastFetched = { field: fieldVal, items: [], size: 0 };
+        renderHint(q, "No results found");
+      } finally {
+        requestInFlight = false;
+      }
     }, 500);
   };
 
@@ -759,27 +784,12 @@ function addFilterRow(container) {
     setTimeout(hideSuggestions, 100);
   });
 
-  fieldSelect.addEventListener("change", async () => {
+  fieldSelect.addEventListener("change", () => {
     const fieldVal = fieldSelect.value;
     lastFetched = { field: fieldVal, items: [], size: 0 };
-    if (!fieldVal) {
-      renderHint();
-      return;
-    }
-    renderHint("", "Loading suggestions…");
-    try {
-      const items = await fetchFilterValueSuggestions({ field: fieldVal, query: input.value.trim() });
-      lastFetched = { field: fieldVal, items, size: items.length };
-      if (input.value && input.value.trim().length >= 2) {
-        renderSuggestions(items);
-      } else {
-        renderHint();
-      }
-    } catch (err) {
-      console.error("Error fetching suggestions:", err);
-      lastFetched = { field: fieldVal, items: [], size: 0 };
-      renderHint("", "No suggestions available.");
-    }
+    lastQuery = "";
+    requestInFlight = false;
+    renderHint();
   });
   input.addEventListener("input", triggerSuggestions);
   input.addEventListener("focus", () => {
