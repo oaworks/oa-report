@@ -63,6 +63,7 @@ onAuthChange(({ loggedIn: isLoggedIn, orgKey: key }) => {
 function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
   const template = document.getElementById('insights_cards_template');
   const sectionsWrapper = document.getElementById('insights_sections');
+  const skeleton = document.getElementById('insights_skeleton');
   if (!template || !sectionsWrapper) {
     return new Set();
   }
@@ -142,6 +143,10 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
       sectionEl.classList.add("hidden");
     }
   });
+
+  if (skeleton) {
+    skeleton.classList.add("hidden");
+  }
 
   // Match grid density to the number of visible sections for a tidy layout.
   // e.g. Gates Foundation’s has 3 sections; most others have 1. 
