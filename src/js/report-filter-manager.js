@@ -41,7 +41,7 @@ const ALLOWED_TERMS = new Map([
   ["journal", "Journals"],
   ["supplements.host_venue.display_name", "Preprint servers"],
   ["supplements.program__bmgf", "Programs"],
-  ["publisher", "Publishers"],
+  ["supplements.publisher_simple", "Publishers"],
   ["concepts.display_name", "Subjects"]
 ]);
 
