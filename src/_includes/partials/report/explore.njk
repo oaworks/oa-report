@@ -5,7 +5,7 @@
   {# Breakdown table options #}
   <nav aria-label="Explore breakdowns" class="flex flex-wrap items-center gap-2 p-2 rounded-md bg-neutral-800/90 border border-neutral-700 shadow-lg">
     <ul id="explore_buttons" class="flex flex-wrap items-center gap-4 m-0 p-0 list-none">
-      <li id="explore_see_more_item">
+      <li id="explore_see_more_item" class="list-none">
         <button class="inline-flex items-center px-4 py-1.5 rounded-md bg-neutral-700 text-white text-sm font-medium hover:bg-neutral-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 transition-colors">
           <span>See more</span>
         </button>
@@ -27,7 +27,7 @@
       <div class="sr-only" id="loading_message">Loading, please wait.</div>
     </div>
 
-    <div id="export_table" class="opacity-0 invisible transition-opacity duration-150">
+    <div id="export_table" class="hidden">
       <header class="mb-10 space-y-2">
         <h3 class="mb-3 text-base md:text-lg font-semibold uppercase tracking-wide text-neutral-100" aria-live="polite">
           <span class="report_sort_adjective">Top</span> <strong class="uppercase font-semibold explore_type">articles</strong>

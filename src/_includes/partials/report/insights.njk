@@ -10,27 +10,7 @@
     </div>
   </div>
 
-  {% set analysis = org._source.analysis or {} %}
-  {% set showPreprints = analysis.is_preprint and analysis.is_preprint.show_on_web == true %}
-  {% set showUnique = analysis.is_unique_publication and analysis.is_unique_publication.show_on_web == true %}
-  {% set sectionsCount = 1 + (1 if showPreprints else 0) + (1 if showUnique else 0) %}
-  {% set sectionsClass = "md:grid-cols-1" %}
-  {% if sectionsCount >= 3 %}
-    {% set sectionsClass = "md:grid-cols-3" %}
-  {% elif sectionsCount == 2 %}
-    {% set sectionsClass = "md:grid-cols-2" %}
-  {% endif %}
-
-  {% set skeletonMinHeight = "360px" %}
-  {% if sectionsCount == 2 %}
-    {% set skeletonMinHeight = "680px" %}
-  {% elif sectionsCount >= 3 %}
-    {% set skeletonMinHeight = "920px" %}
-  {% endif %}
-
-  <div id="insights_skeleton" class="mt-6 rounded-lg border border-neutral-800 bg-neutral-900/30" style="min-height: {{ skeletonMinHeight }};" aria-hidden="true"></div>
-
-  <div id="insights_sections" class="mt-6 grid grid-cols-1 gap-8 md:gap-10 {{ sectionsClass }}">
+  <div id="insights_sections" class="mt-6 grid grid-cols-1 gap-8 md:gap-10">
     {# ARTICLE INSIGHTS #}
     <article class="bg-neutral-800 border border-neutral-700 shadow-lg rounded-lg p-4 md:p-6 hidden js_insights_section" id="insights_articles">
       <h3 class="mb-3 text-base md:text-lg font-semibold uppercase tracking-wide text-neutral-100">Journal articles</h3>

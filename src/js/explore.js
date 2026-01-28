@@ -576,7 +576,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     const { type, id, term, sort, includes } = itemData;
     document.getElementById("csv_email_msg").innerHTML = ""; // Clear any existing message in CSV download form
     const exportTable = document.getElementById('export_table');
-    exportTable.classList.remove('opacity-0', 'invisible');
+    exportTable.classList.remove('hidden');
 
     let query = orgData.hits.hits[0]._source.analysis[filter]?.query; // Get the query string for the selected filter
     let suffix = orgData.hits.hits[0]._source.key_suffix; // Get the suffix for the org
