@@ -36,13 +36,15 @@ const SUGGESTIONS_SIZE_DEFAULT = 1000;
 // Only expose specific fields for search-to-filter ("Add filter")
 // See https://github.com/oaworks/discussion/issues/3616#issuecomment-3553985006
 const ALLOWED_TERMS = new Map([
-  ["supplements.grantid__bmgf", "Grants"],
+  ["authorships.author.display_name", "Authors"],
+  ["authorships.author.orcid", "Authors (ORCID)"],
+  ["concepts.display_name", "Subjects"],
   ["authorships.institutions.display_name", "Institutions"],
   ["journal", "Journals"],
-  ["supplements.host_venue.display_name", "Preprint servers"],
-  ["supplements.program__bmgf", "Programs"],
   ["supplements.publisher_simple", "Publishers"],
-  ["concepts.display_name", "Subjects"]
+  ["supplements.host_venue.display_name", "Preprint servers"],
+  ["supplements.grantid", "Grants"],
+  ["supplements.program", "Programs"]
 ]);
 
 // =================================================
@@ -146,15 +148,20 @@ function buildFilterFieldOptions(exploreData) {
 
   exploreData.forEach((item) => {
     const fieldKey = (item.term || "").replace(/\.keyword$/i, "");
-    if (!ALLOWED_TERMS.has(fieldKey) || seen.has(fieldKey)) return;
-    seen.add(fieldKey);
+    const normalisedKey = fieldKey.startsWith("supplements.grantid__")
+      ? "supplements.grantid"
+      : fieldKey.startsWith("supplements.program__")
+        ? "supplements.program"
+        : fieldKey;
+    if (!ALLOWED_TERMS.has(normalisedKey) || seen.has(normalisedKey)) return;
+    seen.add(normalisedKey);
 
     const label =
       EXPLORE_ITEMS_LABELS[item.id]?.label ||
-      ALLOWED_TERMS.get(fieldKey) ||
-      labelFromFieldKey(fieldKey);
+      ALLOWED_TERMS.get(normalisedKey) ||
+      labelFromFieldKey(normalisedKey);
 
-    options.push({ value: fieldKey, label });
+    options.push({ value: normalisedKey, label });
   });
 
   options.sort((a, b) => a.label.localeCompare(b.label));
