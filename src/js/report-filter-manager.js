@@ -29,7 +29,7 @@ import { orgDataPromise } from './insights-and-strategies.js';
 
 import { handleFiltersChanged } from './explore.js';
 
-const SUGGESTIONS_API_URL = `${API_BG_BASE_URL}remote_works/suggestions`;
+const SUGGESTIONS_API_URL = `${API_BG_BASE_URL}suggestions`;
 
 const SUGGESTIONS_SIZE_DEFAULT = 1000;
 
@@ -347,15 +347,20 @@ function removeValueFromField(q, field, value) {
  * @param {AbortSignal} [params.signal] - Optional abort signal
  * @returns {Promise<string[]>} Ordered list of suggested values (unique, trimmed)
  */
-export async function fetchFilterValueSuggestions({ field, query = "", size = SUGGESTIONS_SIZE_DEFAULT, signal }) {
+export async function fetchFilterValueSuggestions({ field, query = "", size = SUGGESTIONS_SIZE_DEFAULT, options = {}, signal }) {
   if (!field) return [];
 
   // Per-session cache to avoid repeat calls
   fetchFilterValueSuggestions._cache = fetchFilterValueSuggestions._cache || new Map();
   const baseField = field.replace(/\.keyword$/i, "");
-  const targetField = ensureKeywordField(field || baseField);
   const orgName = orgData?.hits?.hits?.[0]?._source?.name || "";
-  const cacheKey = `${orgName}::${targetField}::${query.slice(0, 50)}::${size}`;
+  const keySuffix = orgData?.hits?.hits?.[0]?._source?.key_suffix || "";
+  const needsSuffix = (f) => (f === "supplements.grantid" || f === "supplements.program");
+  const requestField = keySuffix && needsSuffix(baseField) && !baseField.includes("__")
+    ? `${baseField}__${keySuffix}`
+    : baseField;
+  const modeKey = options.prefix ? "prefix" : "default";
+  const cacheKey = `${orgName}::${requestField}::${query.slice(0, 50)}::${size}::${modeKey}`;
   if (fetchFilterValueSuggestions._cache.has(cacheKey)) {
     return fetchFilterValueSuggestions._cache.get(cacheKey);
   }
@@ -363,10 +368,11 @@ export async function fetchFilterValueSuggestions({ field, query = "", size = SU
   try {
     const params = [
       `org=${encodeURIComponent(orgName)}`,
-      `field=${encodeURIComponent(baseField)}`,
+      `field=${encodeURIComponent(requestField)}`,
       `size=${encodeURIComponent(String(size))}`
     ];
     if (query) params.push(`q=${encodeURIComponent(query)}`);
+    if (options.prefix) params.push("prefix=true");
     const url = `${SUGGESTIONS_API_URL}?${params.join("&")}`;
 
     const res = await fetch(url, { signal });
@@ -683,6 +689,7 @@ function addFilterRow(container) {
   // Remember the last fetched suggestions for local filtering
   let lastFetched = { field: "", items: [], size: 0 };
   let lastQuery = "";
+  let lastQueryUsedPrefix = false;
   let requestInFlight = false;
 
   const renderTokens = () => {
@@ -738,19 +745,29 @@ function addFilterRow(container) {
         renderHint(q, "Loading suggestions…");
         return;
       }
-      if (lastQuery === q && lastFetched.field === fieldVal) {
+      if (lastQuery === q && lastFetched.field === fieldVal && lastQueryUsedPrefix) {
         renderHint(q, "No results found");
         return;
       }
       requestInFlight = true;
       lastQuery = q;
+      lastQueryUsedPrefix = false;
       renderHint(q, "Loading suggestions…");
       try {
-        const items = await fetchFilterValueSuggestions({
+        let items = await fetchFilterValueSuggestions({
           field: fieldVal,
           query: q,
           size: SUGGESTIONS_SIZE_DEFAULT
         });
+        if (!items.length) {
+          lastQueryUsedPrefix = true;
+          items = await fetchFilterValueSuggestions({
+            field: fieldVal,
+            query: q,
+            size: SUGGESTIONS_SIZE_DEFAULT,
+            options: { prefix: true }
+          });
+        }
         lastFetched = { field: fieldVal, items, size: items.length };
         renderSuggestions(items);
       } catch (err) {
@@ -798,6 +815,13 @@ function addFilterRow(container) {
   });
   input.addEventListener("input", triggerSuggestions);
   input.addEventListener("focus", () => {
+    const fieldVal = fieldSelect.value;
+    const raw = input.value || "";
+    const q = raw.replace(/\s+/g, " ").trim();
+    if (fieldVal && q.length >= 2 && lastFetched.field === fieldVal && Array.isArray(lastFetched.items) && lastFetched.items.length) {
+      renderSuggestions(lastFetched.items);
+      return;
+    }
     renderHint();
   });
 
