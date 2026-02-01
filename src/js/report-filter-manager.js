@@ -31,7 +31,7 @@ import { handleFiltersChanged } from './explore.js';
 
 const SUGGESTIONS_API_URL = `${API_BG_BASE_URL}suggestions`;
 
-const SUGGESTIONS_SIZE_DEFAULT = 1000;
+const SUGGESTIONS_SIZE_DEFAULT = 10000;
 
 // Only expose specific fields for search-to-filter ("Add filter")
 // See https://github.com/oaworks/discussion/issues/3616#issuecomment-3553985006
