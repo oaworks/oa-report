@@ -542,6 +542,29 @@ function addFilterRow(container) {
   let suggestTimer = null;
   let activeIndex = -1;
   const tokenData = [];
+  const fieldTokens = new Map();
+  let currentFieldVal = "";
+  row._fieldTokens = fieldTokens;
+  const saveCurrentFieldTokens = () => {
+    if (currentFieldVal) {
+      fieldTokens.set(currentFieldVal, [...tokenData]);
+    }
+  };
+  const loadFieldTokens = (fieldVal) => {
+    tokenData.length = 0;
+    if (fieldVal && fieldTokens.has(fieldVal)) {
+      fieldTokens.get(fieldVal).forEach((val) => tokenData.push(val));
+    }
+  };
+  const removeTokenFromField = (fieldVal, value) => {
+    const targetList = fieldTokens.get(fieldVal) || [];
+    const idxToRemove = targetList.indexOf(value);
+    if (idxToRemove > -1) targetList.splice(idxToRemove, 1);
+    fieldTokens.set(fieldVal, targetList);
+    if (fieldVal === currentFieldVal) {
+      loadFieldTokens(fieldVal);
+    }
+  };
 
   const hideSuggestions = () => {
     listbox.classList.add("hidden");
@@ -707,11 +730,16 @@ function addFilterRow(container) {
     const hasTokens = tokenData.length > 0;
     input.required = !hasTokens;
     input.setAttribute("aria-required", hasTokens ? "false" : "true");
+    saveCurrentFieldTokens();
 
-    tokenData.forEach((val) => {
+    const fieldEntries = Array.from(fieldTokens.entries()).filter(([, vals]) => Array.isArray(vals) && vals.length);
+
+    fieldEntries.forEach(([fieldName, values]) => {
+      values.forEach((val) => {
       const chip = document.createElement("span");
       chip.className = "inline-flex items-center rounded-full bg-carnation-100 text-neutral-900 px-2 py-0.5 text-[11px] md:text-xs";
       chip.setAttribute("data-value", val);
+      chip.setAttribute("data-field", fieldName);
       chip.setAttribute("role", "listitem");
 
       const valSpan = document.createElement("span");
@@ -724,15 +752,14 @@ function addFilterRow(container) {
       removeBtn.setAttribute("aria-label", `Remove ${val}`);
       removeBtn.textContent = "✕";
       removeBtn.addEventListener("click", () => {
-        const idxToRemove = tokenData.indexOf(val);
-        if (idxToRemove > -1) {
-          tokenData.splice(idxToRemove, 1);
-        }
+        const targetField = chip.getAttribute("data-field");
+        removeTokenFromField(targetField, val);
         renderTokens();
       });
 
       chip.appendChild(removeBtn);
       tokens.appendChild(chip);
+      });
     });
   };
 
@@ -817,11 +844,16 @@ function addFilterRow(container) {
   });
 
   fieldSelect.addEventListener("change", () => {
-    const fieldVal = fieldSelect.value;
-    lastFetched = { field: fieldVal, items: [], size: 0 };
+    const nextFieldVal = fieldSelect.value;
+    saveCurrentFieldTokens();
+    currentFieldVal = nextFieldVal;
+    lastFetched = { field: nextFieldVal, items: [], size: 0 };
     lastQuery = "";
     requestInFlight = false;
-    if (!fieldVal) {
+    loadFieldTokens(currentFieldVal);
+    input.value = "";
+    renderTokens();
+    if (!nextFieldVal) {
       input.disabled = true;
       input.setAttribute("aria-disabled", "true");
       textWrapper.classList.add("max-h-0", "opacity-0", "pointer-events-none");
@@ -1080,25 +1112,29 @@ export function renderActiveFiltersBanner() {
       const tokensEl = row.querySelector(".js-filter-tokens");
       if (!fieldSelect || !input || !tokensEl) return;
 
+      const fieldTokens = row._fieldTokens instanceof Map ? row._fieldTokens : null;
       const field = ensureKeywordField(fieldSelect.value);
       const raw = input.value.trim();
       const chips = Array.from(tokensEl.children).map((chip) => chip.getAttribute("data-value") || "").filter(Boolean);
 
-      if (!field) return;
-
-      const pushVals = (vals) => {
+      const pushVals = (fieldName, vals) => {
+        if (!fieldName) return;
         if (!vals.length) return;
-        const list = fieldMap.get(field) || [];
+        const fieldKey = ensureKeywordField(fieldName);
+        const list = fieldMap.get(fieldKey) || [];
         vals.forEach((v) => list.push(v));
-        fieldMap.set(field, list);
+        fieldMap.set(fieldKey, list);
       };
 
-      if (chips.length) {
-        pushVals(chips);
-        return;
+      if (fieldTokens && fieldTokens.size) {
+        fieldTokens.forEach((vals, fieldName) => {
+          pushVals(fieldName, vals);
+        });
+      } else if (chips.length) {
+        pushVals(field, chips);
       }
 
-      if (!raw) return;
+      if (!raw || !field) return;
 
       // Fallback: support "ID1, ID2" (OR), "ID1 OR ID2", "ID1 AND ID2"
       const segments = [];
@@ -1120,7 +1156,7 @@ export function renderActiveFiltersBanner() {
           .forEach((v) => values.push(v));
       });
 
-      pushVals(values);
+      pushVals(field, values);
     });
 
     // Merge with existing: keep existing clauses, but merge values per field (OR)
