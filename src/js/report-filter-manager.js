@@ -502,8 +502,10 @@ function addFilterRow(container) {
   const input = document.createElement("input");
   input.id = inputId;
   input.type = "text";
-  input.className = "js-filter-input mt-1 p-2 w-full h-9 border border-neutral-900 bg-white text-xs md:text-sm leading-tight focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900";
-  input.placeholder = "Search for values…";
+  input.className = "js-filter-input mt-1 p-2 w-full h-9 border border-neutral-900 bg-white text-xs md:text-sm leading-tight focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 disabled:bg-neutral-200 disabled:placeholder-neutral-800";
+  input.placeholder = "Select a field first";
+  input.disabled = true;
+  input.setAttribute("aria-disabled", "true");
   input.required = true;
   input.setAttribute("aria-required", "true");
   input.setAttribute("role", "combobox");
@@ -818,6 +820,16 @@ function addFilterRow(container) {
     lastFetched = { field: fieldVal, items: [], size: 0 };
     lastQuery = "";
     requestInFlight = false;
+    if (!fieldVal) {
+      input.disabled = true;
+      input.setAttribute("aria-disabled", "true");
+      input.placeholder = "Select a field first";
+      renderHint();
+      return;
+    }
+    input.disabled = false;
+    input.setAttribute("aria-disabled", "false");
+    input.placeholder = "Search for values…";
     renderHint();
   });
   input.addEventListener("input", triggerSuggestions);
