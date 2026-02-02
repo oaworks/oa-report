@@ -36,7 +36,7 @@ const SUGGESTIONS_SIZE_DEFAULT = 10000;
 // Only expose specific fields for search-to-filter ("Add filter")
 // See https://github.com/oaworks/discussion/issues/3616#issuecomment-3553985006
 const ALLOWED_TERMS = new Map([
-  ["authorships.author.display_name", "Authors"],
+  // ["authorships.author.display_name", "Authors"], # TODO: discuss with Joe when to enable
   // ["authorships.author.orcid", "Authors (ORCID)"], # TODO: discuss with Joe when to enable
   ["concepts.display_name", "Subjects"],
   ["authorships.institutions.display_name", "Institutions"],
