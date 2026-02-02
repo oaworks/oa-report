@@ -464,7 +464,7 @@ function addFilterRow(container) {
   fieldWrapper.appendChild(fieldSelect);
 
   const textWrapper = document.createElement("div");
-  textWrapper.className = "w-full relative";
+  textWrapper.className = "w-full relative transition-all duration-200 ease-out max-h-0 opacity-0 pointer-events-none";
 
   const textLabel = document.createElement("div");
   textLabel.id = `js-filter-values-label-${idSuffix}`;
@@ -503,7 +503,7 @@ function addFilterRow(container) {
   input.id = inputId;
   input.type = "text";
   input.className = "js-filter-input mt-1 p-2 w-full h-9 border border-neutral-900 bg-white text-xs md:text-sm leading-tight focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 disabled:bg-neutral-200 disabled:placeholder-neutral-800";
-  input.placeholder = "Select a field first";
+  input.placeholder = "Search for values…";
   input.disabled = true;
   input.setAttribute("aria-disabled", "true");
   input.required = true;
@@ -823,13 +823,15 @@ function addFilterRow(container) {
     if (!fieldVal) {
       input.disabled = true;
       input.setAttribute("aria-disabled", "true");
-      input.placeholder = "Select a field first";
+      textWrapper.classList.add("max-h-0", "opacity-0", "pointer-events-none");
+      textWrapper.classList.remove("max-h-48", "opacity-100", "pointer-events-auto");
       renderHint();
       return;
     }
     input.disabled = false;
     input.setAttribute("aria-disabled", "false");
-    input.placeholder = "Search for values…";
+    textWrapper.classList.remove("max-h-0", "opacity-0", "pointer-events-none");
+    textWrapper.classList.add("max-h-48", "opacity-100", "pointer-events-auto");
     renderHint();
   });
   input.addEventListener("input", triggerSuggestions);
