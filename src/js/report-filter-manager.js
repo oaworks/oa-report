@@ -465,6 +465,7 @@ function addFilterRow(container) {
 
   const textWrapper = document.createElement("div");
   textWrapper.className = "w-full relative transition-all duration-200 ease-out max-h-0 opacity-0 pointer-events-none";
+  textWrapper.setAttribute("aria-hidden", "true");
 
   const textLabel = document.createElement("div");
   textLabel.id = `js-filter-values-label-${idSuffix}`;
@@ -825,6 +826,7 @@ function addFilterRow(container) {
       input.setAttribute("aria-disabled", "true");
       textWrapper.classList.add("max-h-0", "opacity-0", "pointer-events-none");
       textWrapper.classList.remove("max-h-48", "opacity-100", "pointer-events-auto");
+      textWrapper.setAttribute("aria-hidden", "true");
       renderHint();
       return;
     }
@@ -832,6 +834,7 @@ function addFilterRow(container) {
     input.setAttribute("aria-disabled", "false");
     textWrapper.classList.remove("max-h-0", "opacity-0", "pointer-events-none");
     textWrapper.classList.add("max-h-48", "opacity-100", "pointer-events-auto");
+    textWrapper.setAttribute("aria-hidden", "false");
     renderHint();
   });
   input.addEventListener("input", triggerSuggestions);
