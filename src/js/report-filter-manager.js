@@ -732,7 +732,7 @@ function addFilterRow(container) {
       const iconName = iconForField(fieldName);
       if (iconName) {
         const icon = document.createElement("i");
-        icon.className = `ph ph-${iconName} mr-1 text-[12px] leading-none`;
+        icon.className = `ph ph-${iconName} mr-1 text-[14px] leading-none`;
         icon.setAttribute("aria-hidden", "true");
         chip.appendChild(icon);
       }
@@ -988,7 +988,7 @@ export function renderActiveFiltersBanner() {
         const chipIconName = iconForField(field);
         if (chipIconName) {
           const icon = document.createElement("i");
-          icon.className = `ph ph-${chipIconName} mr-1 text-[12px] leading-none`;
+          icon.className = `ph ph-${chipIconName} mr-1 text-[14px] leading-none`;
           icon.setAttribute("aria-hidden", "true");
           chip.appendChild(icon);
         }

@@ -334,7 +334,7 @@ function createExploreButton(exploreDataItem) {
   button.id = `explore_${id}_button`; 
   const label = EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id);
   const iconName = iconForExploreId(id);
-  const iconMarkup = iconName ? `<i class="ph ph-${iconName} mr-1 text-[12px] leading-none" aria-hidden="true"></i>` : "";
+  const iconMarkup = iconName ? `<i class="ph ph-${iconName} mr-1 text-[14px] leading-none" aria-hidden="true"></i>` : "";
   button.innerHTML = `${iconMarkup}<span>${label}</span>`;
   button.className = `js_explore_btn ${SEGMENTED_PILL_CLASSES.base} ${SEGMENTED_PILL_CLASSES.inactive}`;
   button.setAttribute("aria-pressed", "false");
