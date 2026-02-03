@@ -24,7 +24,7 @@ import {
   COUNTRY_CODES,
   DATE_SELECTION_BUTTON_CLASSES
 } from "./constants.js";
-import { ALLOWED_TERMS, FIELD_ICON_MAP } from "./constants/filters.js";
+import { ALLOWED_TERMS, iconForField } from "./constants/explore-icons.js";
 
 import { orgDataPromise } from './insights-and-strategies.js';
 
@@ -120,15 +120,6 @@ function labelFromFieldKey(rawKey) {
 
   return label;
 }
-
-const normaliseFieldForIcon = (field = "") => {
-  const base = field.replace(/\.keyword$/i, "");
-  if (base.startsWith("supplements.grantid__")) return "supplements.grantid";
-  if (base.startsWith("supplements.program__")) return "supplements.program";
-  return base;
-};
-
-const iconForField = (field = "") => FIELD_ICON_MAP.get(normaliseFieldForIcon(field));
 
 /**
  * Builds <select> options for the filter form from term-based Explore items.

@@ -323,6 +323,22 @@ export const EXPLORE_FILTERS_LABELS = {
   }
 };
 
+export const EXPLORE_FILTERS_ICONS = {
+  is_paper: "note",
+  is_preprint: "note-pencil",
+  is_unique_publication: "note",
+  is_compliant: "check-circle",
+  is_compliant_article: "check-circle",
+  is_compliant_preprint: "check-circle",
+  is_free_to_read: "gift",
+  is_free_to_read_preprint: "gift",
+  is_oa: "lock-open",
+  has_data_availability_statement: "list-magnifying-glass",
+  has_data_availability_statement_preprint: "list-magnifying-glass",
+  has_open_data: "database",
+  has_open_code: "code"
+};
+
 /**
  * Mapping of explore table headers to human-readable labels and their corresponding tooltips.
  * For terms-based tables
