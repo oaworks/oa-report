@@ -356,6 +356,13 @@ function createExploreButton(exploreDataItem) {
   return button;
 }
 
+const updateExploreHeadingIcon = (id) => {
+  const icon = document.querySelector(".js-explore-heading-icon");
+  if (!icon) return;
+  const iconName = iconForExploreId(id);
+  icon.className = `ph ph-${iconName || "note"} text-[18px] leading-none js-explore-heading-icon`;
+};
+
 /**
  * Sets up the click event listener for an explore button, displaying a loading
  * indicator, updating the button styles, and displaying data in a table.
@@ -370,6 +377,7 @@ export async function processExploreDataTable(button, itemData) {
 
   toggleLoadingIndicator(true, 'explore_loading'); // Display loading indicator on button click
   updateButtonActiveStyles(button.id);
+  updateExploreHeadingIcon(itemData.id);
   addExploreFiltersToDOM(itemData.query);
   updateExploreFilterHeader(currentActiveExploreItemQuery);
 
