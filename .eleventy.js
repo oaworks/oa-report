@@ -16,10 +16,9 @@ const markdownItOptions = {
 };
 const markdownLib = markdownIt(markdownItOptions).use(markdownItAttrs);
 
-// Feather icon set
-const feather = require('feather-icons');
-const iconShortcode       = (icon) => feather.icons[icon].toSvg({ class: 'inline-block' });
-const iconShortcodeSmall  = (icon) => feather.icons[icon].toSvg({ class: 'inline-block h-4' });
+// Phosphor icon set
+const iconShortcode = (icon) => `<i class="ph ph-${icon} inline-block" aria-hidden="true"></i>`;
+const iconShortcodeSmall = (icon) => `<i class="ph ph-${icon} inline-block text-[16px] leading-none" aria-hidden="true"></i>`;
 
 const now = String(Date.now());
 
@@ -39,13 +38,16 @@ module.exports = function (eleventyConfig) {
   /* ─── Global ENV vars ──────────────────────────────────── */
   eleventyConfig.addGlobalData('env', process.env);
 
-  /* ─── Feather icons ────────────────────────────────────── */
+  /* ─── Phosphor icons ───────────────────────────────────── */
   eleventyConfig.addShortcode('icon',        iconShortcode);
   eleventyConfig.addShortcode('icon_small',  iconShortcodeSmall);
 
   /* ─── Passthrough files ───────────────────────────────── */
   eleventyConfig.addPassthroughCopy({
     "./node_modules/axios/dist/axios.min.js": "/js/axios.min.js"
+  });
+  eleventyConfig.addPassthroughCopy({
+    "./node_modules/@phosphor-icons/web/src/regular/": "/phosphor/"
   });
   eleventyConfig.addPassthroughCopy({
     "./node_modules/sal.js/dist/sal.css": "sal.css",

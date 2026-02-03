@@ -24,6 +24,7 @@ import {
   COUNTRY_CODES,
   DATE_SELECTION_BUTTON_CLASSES
 } from "./constants.js";
+import { ALLOWED_TERMS, FIELD_ICON_MAP } from "./constants/filters.js";
 
 import { orgDataPromise } from './insights-and-strategies.js';
 
@@ -32,20 +33,6 @@ import { handleFiltersChanged } from './explore.js';
 const SUGGESTIONS_API_URL = `${API_BG_BASE_URL}suggestions`;
 
 const SUGGESTIONS_SIZE_DEFAULT = 10000;
-
-// Only expose specific fields for search-to-filter ("Add filter")
-// See https://github.com/oaworks/discussion/issues/3616#issuecomment-3553985006
-const ALLOWED_TERMS = new Map([
-  // ["authorships.author.display_name", "Authors"], # TODO: discuss with Joe when to enable
-  // ["authorships.author.orcid", "Authors (ORCID)"], # TODO: discuss with Joe when to enable
-  ["concepts.display_name", "Subjects"],
-  ["authorships.institutions.display_name", "Institutions"],
-  ["journal", "Journals"],
-  ["supplements.publisher_simple", "Publishers"],
-  ["supplements.host_venue.display_name", "Preprint servers"],
-  ["supplements.grantid", "Grants"],
-  ["supplements.program", "Programs"]
-]);
 
 // =================================================
 // State
@@ -133,6 +120,15 @@ function labelFromFieldKey(rawKey) {
 
   return label;
 }
+
+const normaliseFieldForIcon = (field = "") => {
+  const base = field.replace(/\.keyword$/i, "");
+  if (base.startsWith("supplements.grantid__")) return "supplements.grantid";
+  if (base.startsWith("supplements.program__")) return "supplements.program";
+  return base;
+};
+
+const iconForField = (field = "") => FIELD_ICON_MAP.get(normaliseFieldForIcon(field));
 
 /**
  * Builds <select> options for the filter form from term-based Explore items.
@@ -742,6 +738,14 @@ function addFilterRow(container) {
       chip.setAttribute("data-field", fieldName);
       chip.setAttribute("role", "listitem");
 
+      const iconName = iconForField(fieldName);
+      if (iconName) {
+        const icon = document.createElement("i");
+        icon.className = `ph ph-${iconName} mr-1 text-[12px] leading-none`;
+        icon.setAttribute("aria-hidden", "true");
+        chip.appendChild(icon);
+      }
+
       const valSpan = document.createElement("span");
       valSpan.textContent = val;
       chip.appendChild(valSpan);
@@ -990,7 +994,20 @@ export function renderActiveFiltersBanner() {
         chip.setAttribute("role", "listitem");
         chip.setAttribute("aria-label", `Remove ${label}: ${val}`);
         chip.setAttribute("data-field", ensureKeywordField(field));
-        chip.innerHTML = `<span>${val}</span><span class="ml-2 text-[10px]">✕</span>`;
+        const chipIconName = iconForField(field);
+        if (chipIconName) {
+          const icon = document.createElement("i");
+          icon.className = `ph ph-${chipIconName} mr-1 text-[12px] leading-none`;
+          icon.setAttribute("aria-hidden", "true");
+          chip.appendChild(icon);
+        }
+        const chipLabel = document.createElement("span");
+        chipLabel.textContent = val;
+        chip.appendChild(chipLabel);
+        const removeLabel = document.createElement("span");
+        removeLabel.className = "ml-2 text-[10px]";
+        removeLabel.textContent = "✕";
+        chip.appendChild(removeLabel);
         chip.addEventListener("click", (e) => {
           e.preventDefault();
           e.stopPropagation();

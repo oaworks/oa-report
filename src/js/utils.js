@@ -963,15 +963,7 @@ export function showUnavailableCard(cardContents) {
       iconEl.dataset.oarDefaultIcon = iconEl.innerHTML;
     }
     iconEl.innerHTML = `
-      <svg xmlns="http://www.w3.org/2000/svg"
-           width="16" height="16" fill="none"
-           stroke="currentColor" stroke-width="2"
-           stroke-linecap="round" stroke-linejoin="round"
-           class="feather feather-slash inline-block text-neutral-700"
-           aria-hidden="true">
-        <circle cx="8" cy="8" r="6.5"></circle>
-        <line x1="2.62" y1="2.62" x2="13.38" y2="13.38"></line>
-      </svg>
+      <i class="ph ph-prohibit inline-block text-neutral-700" aria-hidden="true"></i>
     `;
   }
 
