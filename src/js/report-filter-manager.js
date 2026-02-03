@@ -14,7 +14,7 @@ import {
   normaliseFieldId,
   pluraliseNoun
 } from "./utils.js";
-import { API_BG_BASE_URL } from "./constants/api.js";
+import { API_BASE_URL } from "./constants/api.js";
 
 import {
   EXPLORE_ITEMS_LABELS,
@@ -30,7 +30,7 @@ import { orgDataPromise } from './insights-and-strategies.js';
 
 import { handleFiltersChanged } from './explore.js';
 
-const SUGGESTIONS_API_URL = `${API_BG_BASE_URL}suggestions`;
+const SUGGESTIONS_API_URL = `${API_BASE_URL}suggestions`;
 
 const SUGGESTIONS_SIZE_DEFAULT = 10000;
 
