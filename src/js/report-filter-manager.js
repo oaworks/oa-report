@@ -597,13 +597,13 @@ function addFilterRow(container) {
   const renderSuggestions = (items) => {
     listbox.innerHTML = "";
     const termRaw = input.value || "";
-    const normaliseText = (value) =>
-      (value || "")
-        .normalize("NFD")
-        .replace(/\p{M}/gu, "")
-        .toLowerCase();
+    const normaliseText = (value, stripPunct = false) => {
+      let v = (value || "").normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+      if (stripPunct) v = v.replace(/[^\p{L}\p{N}]+/gu, " ").replace(/\s+/g, " ").trim();
+      return v;
+    };
 
-    const term = normaliseText(termRaw).replace(/\s+/g, " ").trim();
+    const term = normaliseText(termRaw, true);
     const stopwords = new Set(["journal", "the", "of"]);
     const termTokens = term.split(" ").filter((token) => token && !stopwords.has(token));
     const termForMatch = termTokens.join(" ");
@@ -620,12 +620,14 @@ function addFilterRow(container) {
 
     const highlight = (val) => {
       if (!term || !val) return val;
-      const matchIndex = normaliseText(val).indexOf(term);
-      if (matchIndex === -1) return val;
-      const before = val.slice(0, matchIndex);
-      const match = val.slice(matchIndex, matchIndex + term.length);
-      const after = val.slice(matchIndex + term.length);
-      return `${before}<strong>${match}</strong>${after}`;
+      const tokens = term.split(" ").filter(Boolean);
+      if (!tokens.length) return val;
+      const escaped = tokens.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+      const pattern = escaped.join("[\\s\\p{P}\\p{S}]*");
+      const re = new RegExp(pattern, "iu");
+      const match = val.match(re);
+      if (!match) return val;
+      return val.replace(re, "<strong>$&</strong>");
     };
 
     if (!termForMatch) {
@@ -638,8 +640,8 @@ function addFilterRow(container) {
 
     const filtered = items
       .map((val, originalIndex) => {
-        const normalised = normaliseText(val);
-        const tokens = normalised.split(" ").filter((token) => token && !stopwords.has(token));
+      const normalised = normaliseText(val, true);
+      const tokens = normalised.split(" ").filter((token) => token && !stopwords.has(token));
         return { val, originalIndex, normalised, tokens };
       })
       .filter(({ normalised, tokens }) => {
