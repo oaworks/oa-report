@@ -365,7 +365,10 @@ export async function fetchFilterValueSuggestions({ field, query = "", size = SU
       `field=${encodeURIComponent(requestField)}`,
       `size=${encodeURIComponent(String(size))}`
     ];
-    if (query) params.push(`q=${encodeURIComponent(query)}`);
+    if (query) {
+      const safeQuery = query.replace(/"/g, '\\"');
+      params.push(`q=${encodeURIComponent(`"${safeQuery}"`)}`);
+    }
     if (options.prefix) params.push("prefix=true");
     const url = `${SUGGESTIONS_API_URL}?${params.join("&")}`;
 
