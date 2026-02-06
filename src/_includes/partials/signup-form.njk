@@ -6,7 +6,7 @@
 
   #sib-form .sib-form-block__button-with-loader {
     position: relative;
-    padding-right: 2.25em;
+    padding-right: 18px;
   }
 
   #sib-form .sib-form-block__button-with-loader .progress-indicator__icon,
@@ -48,20 +48,21 @@
   </div>
 
   <form id="sib-form" method="POST" action="https://cc36ceb0.sibforms.com/serve/MUIFAETbKe6cREQkA8B6jq1PS3fMqsMn79KgUySumvpbxvQ0nVUuWBGR6Wzm6Dgl3t-DiSb8etr-ssEcvp-6dEnT1eSHr_oBnKSoUnOReYwtsmmUWFv5ib4Fb3oWNCic4jy-sXuyRJVH3b63hci33U1OGKrOF6w8TPxeo5KwgtfqPnPoVziHUXePdA6Eoy891RQH62LHgVwZKkDy" data-type="subscription">
-    <label for="EMAIL" class="sr-only">Email</label>
+    <label for="EMAIL" class="sr-only" data-required="*">Email</label>
     <div class="mt-1 mb-3 relative flex items-stretch flex-grow shadow-md focus-within:z-10 text-neutral-900">
       <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
         {% icon_small "envelope-simple" %}
       </div>
-      <input type="email" name="EMAIL" id="EMAIL" class="focus:ring-carnation-300 focus:border-carnation-500 block w-full pl-10 py-3 sm:text-sm border-1 rounded-l-sm" placeholder="you@example.com" required/>
-      <button type="submit" class="sib-form-block__button sib-form-block__button-with-loader -ml-px relative inline-flex items-center space-x-2 px-4 text-xs md:text-sm font-medium text-white bg-neutral-900 hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 transition-all duration-300 ease-in-out border-0 whitespace-nowrap rounded-r-sm">
+      <input type="email" name="EMAIL" id="EMAIL" class="input focus:ring-carnation-300 focus:border-carnation-500 block w-full pl-10 py-3 sm:text-sm border-1 rounded-l-sm" placeholder="you@example.com" autocomplete="off" data-required="true" required/>
+      <label class="entry__error entry__error--primary"></label>
+      <button type="submit" form="sib-form" class="sib-form-block__button sib-form-block__button-with-loader -ml-px relative inline-flex items-center space-x-2 px-4 text-xs md:text-sm font-medium text-white bg-neutral-900 hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 transition-all duration-300 ease-in-out border-0 whitespace-nowrap rounded-r-sm">
         <svg class="icon clickable__icon progress-indicator__icon sib-hide-loader-icon" viewBox="0 0 512 512" style="display: none;">
           <path d="M460.116 373.846l-20.823-12.022c-5.541-3.199-7.54-10.159-4.663-15.874 30.137-59.886 28.343-131.652-5.386-189.946-33.641-58.394-94.896-95.833-161.827-99.676C261.028 55.961 256 50.751 256 44.352V20.309c0-6.904 5.808-12.337 12.703-11.982 83.556 4.306 160.163 50.864 202.11 123.677 42.063 72.696 44.079 162.316 6.031 236.832-3.14 6.148-10.75 8.461-16.728 5.01z" />
         </svg>
         Sign up
       </button>
     </div>
-    <input type="text" name="email_address_check" value="" class="input--hidden">
+    <input type="text" name="email_address_check" value="" class="input--hidden hidden" aria-hidden="true" tabindex="-1">
     <input type="hidden" name="locale" value="en">
   </form>
 </div>
@@ -72,7 +73,6 @@
   window.EMAIL_INVALID_MESSAGE = window.SMS_INVALID_MESSAGE = "The email provided is invalid. Please review it and try again.";
   window.REQUIRED_ERROR_MESSAGE = "This field cannot be left blank. ";
   window.GENERIC_INVALID_MESSAGE = "The email provided is invalid. Please review it and try again.";
-
   window.translation = {
     common: {
       selectedList: '{quantity} list selected',
@@ -81,8 +81,6 @@
       selectedOptions: '{quantity} selected',
     }
   };
-
   var AUTOHIDE = Boolean(0);
 </script>
-
 <script defer src="https://sibforms.com/forms/end-form/build/main.js"></script>
