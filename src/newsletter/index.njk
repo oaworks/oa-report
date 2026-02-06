@@ -1,0 +1,20 @@
+---
+layout: layouts/base.njk
+permalink: "newsletter/"
+---
+
+<section class="px-8 pt-24 pb-12">
+  <div class="container mx-auto text-center">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+      <div class="col-span-1 md:col-span-3 lg:col-span-1 lg:col-start-2">
+        <p class="text-base text-neutral-200 mb-2">
+          Stay connected
+        </p>
+        <h1 class="text-3xl font-serif font-bold leading-tight mb-8">
+          Sign up to learn more
+        </h1>
+        {% include 'partials/signup-form.njk' %}
+      </div>
+    </div>
+  </div>
+</section>
