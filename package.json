@@ -32,7 +32,7 @@
     "axios": "^1.13.4",
     "caniuse-lite": "^1.0.30001767",
     "canvas": "^3.2.1",
-    "dotenv": "^17.2.3",
+    "dotenv": "^17.2.4",
     "@phosphor-icons/web": "^2.1.1",
     "markdown-it-attrs": "^4.3.1",
     "sal.js": "^0.8.5",
