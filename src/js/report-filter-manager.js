@@ -497,7 +497,7 @@ function addFilterRow(container) {
   input.id = inputId;
   input.type = "text";
   input.className = "js-filter-input mt-1 p-2 w-full h-9 border border-neutral-900 bg-white text-xs md:text-sm leading-tight focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 disabled:bg-neutral-200 disabled:placeholder-neutral-800";
-  input.placeholder = "Search for values…";
+  input.placeholder = "Start typing to see suggestions…";
   input.disabled = true;
   input.setAttribute("aria-disabled", "true");
   input.required = true;
@@ -773,7 +773,7 @@ function addFilterRow(container) {
       const raw = input.value || "";
       const q = raw.replace(/\s+/g, " ").trim();
       if (!fieldVal || q.length < 2) {
-        renderHint();
+        hideSuggestions();
         return;
       }
       let matches = 0;
@@ -867,7 +867,7 @@ function addFilterRow(container) {
       textWrapper.classList.add("max-h-0", "opacity-0", "pointer-events-none");
       textWrapper.classList.remove("max-h-48", "opacity-100", "pointer-events-auto");
       textWrapper.setAttribute("aria-hidden", "true");
-      renderHint();
+      hideSuggestions();
       return;
     }
     input.disabled = false;
@@ -875,7 +875,7 @@ function addFilterRow(container) {
     textWrapper.classList.remove("max-h-0", "opacity-0", "pointer-events-none");
     textWrapper.classList.add("max-h-48", "opacity-100", "pointer-events-auto");
     textWrapper.setAttribute("aria-hidden", "false");
-    renderHint();
+      hideSuggestions();
   });
   input.addEventListener("input", triggerSuggestions);
   input.addEventListener("focus", () => {
@@ -893,7 +893,7 @@ function addFilterRow(container) {
       renderSuggestions(lastFetched.items);
       return;
     }
-    renderHint();
+    hideSuggestions();
   });
 
   container.appendChild(row);
