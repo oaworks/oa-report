@@ -715,7 +715,7 @@ function addFilterRow(container) {
   };
 
   // Remember the last fetched suggestions for local filtering
-  let lastFetched = { field: "", items: [], size: 0 };
+  let lastFetched = { field: "", items: [], size: 0, query: "" };
   let lastQuery = "";
   let lastQueryUsedPrefix = false;
   let requestInFlight = false;
@@ -777,7 +777,12 @@ function addFilterRow(container) {
         return;
       }
       let matches = 0;
-      if (lastFetched.field === fieldVal && Array.isArray(lastFetched.items) && lastFetched.items.length) {
+      if (
+        lastFetched.field === fieldVal &&
+        Array.isArray(lastFetched.items) &&
+        lastFetched.items.length &&
+        (!lastFetched.query || q.startsWith(lastFetched.query))
+      ) {
         matches = renderSuggestions(lastFetched.items);
         if (matches > 0) return;
       }
@@ -808,11 +813,11 @@ function addFilterRow(container) {
             options: { prefix: true }
           });
         }
-        lastFetched = { field: fieldVal, items, size: items.length };
+        lastFetched = { field: fieldVal, items, size: items.length, query: q };
         renderSuggestions(items);
       } catch (err) {
         console.error("Error fetching suggestions:", err);
-        lastFetched = { field: fieldVal, items: [], size: 0 };
+        lastFetched = { field: fieldVal, items: [], size: 0, query: q };
         renderHint(q, "No results found");
       } finally {
         requestInFlight = false;
@@ -850,7 +855,7 @@ function addFilterRow(container) {
     const nextFieldVal = fieldSelect.value;
     saveCurrentFieldTokens();
     currentFieldVal = nextFieldVal;
-    lastFetched = { field: nextFieldVal, items: [], size: 0 };
+    lastFetched = { field: nextFieldVal, items: [], size: 0, query: "" };
     lastQuery = "";
     requestInFlight = false;
     loadFieldTokens(currentFieldVal);
@@ -877,7 +882,14 @@ function addFilterRow(container) {
     const fieldVal = fieldSelect.value;
     const raw = input.value || "";
     const q = raw.replace(/\s+/g, " ").trim();
-    if (fieldVal && q.length >= 2 && lastFetched.field === fieldVal && Array.isArray(lastFetched.items) && lastFetched.items.length) {
+    if (
+      fieldVal &&
+      q.length >= 2 &&
+      lastFetched.field === fieldVal &&
+      Array.isArray(lastFetched.items) &&
+      lastFetched.items.length &&
+      (!lastFetched.query || q.startsWith(lastFetched.query))
+    ) {
       renderSuggestions(lastFetched.items);
       return;
     }
