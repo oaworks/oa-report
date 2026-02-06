@@ -50,6 +50,8 @@ const ensureKeywordField = (field = "") => {
   return /\.keyword$/i.test(field) ? field : `${field}.keyword`;
 };
 
+const needsSuffix = (field = "") => field === "supplements.grantid" || field === "supplements.program";
+
 /**
  * Derives a readable label from an ES field key.
  * Falls back to header/filter labels, then a cleaned version of the key.
@@ -349,10 +351,11 @@ export async function fetchFilterValueSuggestions({ field, query = "", size = SU
   const baseField = field.replace(/\.keyword$/i, "");
   const orgName = orgData?.hits?.hits?.[0]?._source?.name || "";
   const keySuffix = orgData?.hits?.hits?.[0]?._source?.key_suffix || "";
-  const needsSuffix = (f) => (f === "supplements.grantid" || f === "supplements.program");
-  const requestField = keySuffix && needsSuffix(baseField) && !baseField.includes("__")
-    ? `${baseField}__${keySuffix}`
-    : baseField;
+  const requestField = (
+    keySuffix &&
+    !baseField.includes("__") &&
+    needsSuffix(baseField)
+  ) ? `${baseField}__${keySuffix}` : baseField;
   const modeKey = options.prefix ? "prefix" : "default";
   const cacheKey = `${orgName}::${requestField}::${query.slice(0, 50)}::${size}::${modeKey}`;
   if (fetchFilterValueSuggestions._cache.has(cacheKey)) {
@@ -1126,14 +1129,27 @@ export function renderActiveFiltersBanner() {
       if (!fieldSelect || !input || !tokensEl) return;
 
       const fieldTokens = row._fieldTokens instanceof Map ? row._fieldTokens : null;
-      const field = ensureKeywordField(fieldSelect.value);
+      const baseField = fieldSelect.value.replace(/\.keyword$/i, "");
+      const keySuffix = orgData?.hits?.hits?.[0]?._source?.key_suffix || "";
+      const suffixedField = (
+        keySuffix &&
+        !baseField.includes("__") &&
+        needsSuffix(baseField)
+      ) ? `${baseField}__${keySuffix}` : baseField;
+      const field = ensureKeywordField(suffixedField);
       const raw = input.value.trim();
       const chips = Array.from(tokensEl.children).map((chip) => chip.getAttribute("data-value") || "").filter(Boolean);
 
       const pushVals = (fieldName, vals) => {
         if (!fieldName) return;
         if (!vals.length) return;
-        const fieldKey = ensureKeywordField(fieldName);
+        const baseName = String(fieldName || "").replace(/\.keyword$/i, "");
+        const suffixedName = (
+          keySuffix &&
+          !baseName.includes("__") &&
+          needsSuffix(baseName)
+        ) ? `${baseName}__${keySuffix}` : baseName;
+        const fieldKey = ensureKeywordField(suffixedName);
         const list = fieldMap.get(fieldKey) || [];
         vals.forEach((v) => list.push(v));
         fieldMap.set(fieldKey, list);
