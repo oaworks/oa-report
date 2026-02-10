@@ -19,7 +19,7 @@
     "autoprefixer": "^10.4.24",
     "chokidar-cli": "^3.0.0",
     "concurrently": "^9.2.1",
-    "esbuild": "^0.27.2",
+    "esbuild": "^0.27.3",
     "html-minifier": "^4.0.0",
     "postcss-cli": "^11.0.1",
     "sass": "^1.97.3",
@@ -29,14 +29,14 @@
   "dependencies": {
     "18": "^0.0.0",
     "@tryghost/content-api": "^1.12.3",
-    "axios": "^1.13.4",
-    "caniuse-lite": "^1.0.30001767",
+    "axios": "^1.13.5",
+    "caniuse-lite": "^1.0.30001769",
     "canvas": "^3.2.1",
-    "dotenv": "^17.2.3",
+    "dotenv": "^17.2.4",
     "@phosphor-icons/web": "^2.1.1",
     "markdown-it-attrs": "^4.3.1",
     "sal.js": "^0.8.5",
-    "sass-loader": "^16.0.6",
+    "sass-loader": "^16.0.7",
     "tailwindcss-font-inter": "^4.0.0"
   }
 }
