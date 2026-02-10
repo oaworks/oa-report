@@ -808,6 +808,16 @@ function addFilterRow(container) {
         matches = renderSuggestions(lastFetched.items);
         if (matches > 0) return;
       }
+      if (
+        lastFetched.field === fieldVal &&
+        Array.isArray(lastFetched.items) &&
+        lastFetched.items.length === 0 &&
+        lastFetched.query &&
+        q.startsWith(lastFetched.query)
+      ) {
+        renderHint(q, "No results. Try a different term.");
+        return;
+      }
       if (requestInFlight) {
         renderHint(q, "Loading suggestions…");
         return;
