@@ -24,7 +24,7 @@ import {
   COUNTRY_CODES,
   DATE_SELECTION_BUTTON_CLASSES
 } from "./constants.js";
-import { ALLOWED_TERMS, iconForField } from "./constants/explore-icons.js";
+import { SEARCH_FILTER_FIELD_MAP, iconForField } from "./constants/filter-fields.js";
 
 import { orgDataPromise } from './insights-and-strategies.js';
 
@@ -51,6 +51,17 @@ const ensureKeywordField = (field = "") => {
 };
 
 const needsSuffix = (field = "") => field === "supplements.grantid" || field === "supplements.program";
+
+const normaliseSortField = (field = "") =>
+  String(field || "")
+    .replace(/\.keyword$/i, "")
+    .replace(/__[^.]+$/i, "");
+
+const getSearchFilterField = (field = "") =>
+  SEARCH_FILTER_FIELD_MAP.get(normaliseSortField(field));
+
+const shouldAlphaSortSuggestions = (field = "") =>
+  Boolean(getSearchFilterField(field)?.alphaSort);
 
 /**
  * Derives a readable label from an ES field key.
@@ -142,12 +153,13 @@ function buildFilterFieldOptions(exploreData) {
       : fieldKey.startsWith("supplements.program__")
         ? "supplements.program"
         : fieldKey;
-    if (!ALLOWED_TERMS.has(normalisedKey) || seen.has(normalisedKey)) return;
+    const fieldMeta = SEARCH_FILTER_FIELD_MAP.get(normalisedKey);
+    if (!fieldMeta || seen.has(normalisedKey)) return;
     seen.add(normalisedKey);
 
     const label =
       EXPLORE_ITEMS_LABELS[item.id]?.label ||
-      ALLOWED_TERMS.get(normalisedKey) ||
+      fieldMeta.label ||
       labelFromFieldKey(normalisedKey);
 
     options.push({ value: normalisedKey, label });
@@ -170,8 +182,8 @@ function buildFilterFieldOptions(exploreData) {
  */
 function labelFromFieldKeyInverse(label) {
   // We only need this to map the displayed label back to the field key when removing chips
-  for (const [key, val] of ALLOWED_TERMS.entries()) {
-    if (val === label) return ensureKeywordField(key);
+  for (const [key, val] of SEARCH_FILTER_FIELD_MAP.entries()) {
+    if (val?.label === label) return ensureKeywordField(key);
   }
   return null;
 }
@@ -391,7 +403,10 @@ export async function fetchFilterValueSuggestions({ field, query = "", size = SU
       }
     });
 
-    const result = values.slice(0, size);
+    const ordered = shouldAlphaSortSuggestions(requestField)
+      ? values.slice().sort((a, b) => a.localeCompare(b))
+      : values;
+    const result = ordered.slice(0, size);
     fetchFilterValueSuggestions._cache.set(cacheKey, result);
     return result;
   } catch (err) {
