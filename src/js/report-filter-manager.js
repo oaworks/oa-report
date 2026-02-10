@@ -821,20 +821,11 @@ function addFilterRow(container) {
       lastQueryUsedPrefix = false;
       renderHint(q, "Loading suggestions…");
       try {
-        let items = await fetchFilterValueSuggestions({
+        const items = await fetchFilterValueSuggestions({
           field: fieldVal,
           query: q,
           size: SUGGESTIONS_SIZE_DEFAULT
         });
-        if (!items.length) {
-          lastQueryUsedPrefix = true;
-          items = await fetchFilterValueSuggestions({
-            field: fieldVal,
-            query: q,
-            size: SUGGESTIONS_SIZE_DEFAULT,
-            options: { prefix: true }
-          });
-        }
         lastFetched = { field: fieldVal, items, size: items.length, query: q };
         renderSuggestions(items);
       } catch (err) {
