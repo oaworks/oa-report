@@ -360,6 +360,14 @@ export async function fetchFilterValueSuggestions({ field, query = "", size = SU
 
   // Per-session cache to avoid repeat calls
   fetchFilterValueSuggestions._cache = fetchFilterValueSuggestions._cache || new Map();
+  const normaliseQueryForCache = (value = "") =>
+    String(value || "")
+      .normalize("NFD")
+      .replace(/\p{M}/gu, "")
+      .toLowerCase()
+      .replace(/[^\p{L}\p{N}]+/gu, " ")
+      .replace(/\s+/g, " ")
+      .trim();
   const baseField = field.replace(/\.keyword$/i, "");
   const orgName = orgData?.hits?.hits?.[0]?._source?.name || "";
   const keySuffix = orgData?.hits?.hits?.[0]?._source?.key_suffix || "";
@@ -369,7 +377,7 @@ export async function fetchFilterValueSuggestions({ field, query = "", size = SU
     needsSuffix(baseField)
   ) ? `${baseField}__${keySuffix}` : baseField;
   const modeKey = options.prefix ? "prefix" : "default";
-  const cacheKey = `${orgName}::${requestField}::${query.slice(0, 50)}::${size}::${modeKey}`;
+  const cacheKey = `${orgName}::${requestField}::${normaliseQueryForCache(query).slice(0, 50)}::${size}::${modeKey}`;
   if (fetchFilterValueSuggestions._cache.has(cacheKey)) {
     return fetchFilterValueSuggestions._cache.get(cacheKey);
   }
