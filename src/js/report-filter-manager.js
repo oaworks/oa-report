@@ -391,8 +391,7 @@ export async function fetchFilterValueSuggestions({ field, query = "", size = SU
       }
     });
 
-    const sorted = values.sort((a, b) => a.localeCompare(b));
-    const result = sorted.slice(0, size);
+    const result = values.slice(0, size);
     fetchFilterValueSuggestions._cache.set(cacheKey, result);
     return result;
   } catch (err) {
