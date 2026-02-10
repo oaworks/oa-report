@@ -17,8 +17,8 @@
 {# Load JS for org report pages only #}
 {% if org._source.name %}
 {# For tooltips #}
-<script defer src="../js/popper.min.js"></script>
-<script defer src="../js/tippy-bundle.umd.min.js"></script>
+<script defer src="/js/popper.min.js"></script>
+<script defer src="/js/tippy-bundle.umd.min.js"></script>
 <script>
   window.addEventListener('load', function () {
     if (typeof window.tippy !== 'function') {
@@ -75,7 +75,7 @@
 
 {# Load homepage-specific JS #}
 {% if page.url == '/' %}
-<script src="../js/sal.js"></script> {# Scroll animations #}
+<script src="/js/sal.js"></script> {# Scroll animations #}
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     sal();
