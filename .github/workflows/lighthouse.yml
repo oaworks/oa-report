@@ -1,0 +1,50 @@
+name: Lighthouse CI (Accessibility + Performance)
+
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  lighthouse:
+    name: Run Lighthouse CI
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        include:
+          - branch: dev # Only run on dev for now, as it is the only one set up for preview branches
+            # Run on both Netlify and CF Pages
+            urls: |
+              https://dev.oa.report/
+              https://dev.oa.report/test/
+              https://dev-oa-report.pages.dev/
+              https://dev-oa-report.pages.dev/test/
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Ensure correct branch mapping
+        if: ${{ github.ref_name != matrix.branch }}
+        run: |
+          echo "Skipping: branch ${GITHUB_REF_NAME} does not match matrix target ${MATRIX_BRANCH}."
+          exit 0
+        env:
+          MATRIX_BRANCH: ${{ matrix.branch }}
+
+      # Run Lighthouse against two audit targets:
+      # - index.html
+      # - test/index.html
+      - name: Run Lighthouse CI
+        if: ${{ github.ref_name == matrix.branch }}
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            ${{ matrix.urls }}
+          configPath: ./lighthouserc.json
+          uploadArtifacts: true
+          temporaryPublicStorage: true
