@@ -799,9 +799,12 @@ function addFilterRow(container) {
       if (
         lastFetched.field === fieldVal &&
         Array.isArray(lastFetched.items) &&
-        lastFetched.items.length &&
-        (!lastFetched.query || q.startsWith(lastFetched.query))
+        lastFetched.items.length
       ) {
+        if (lastFetched.query && lastFetched.query.startsWith(q)) {
+          renderSuggestions(lastFetched.items);
+          return;
+        }
         matches = renderSuggestions(lastFetched.items);
         if (matches > 0) return;
       }
