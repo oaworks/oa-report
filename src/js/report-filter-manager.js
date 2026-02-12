@@ -24,7 +24,7 @@ import {
   COUNTRY_CODES,
   DATE_SELECTION_BUTTON_CLASSES
 } from "./constants.js";
-import { ALLOWED_TERMS, iconForField } from "./constants/explore-icons.js";
+import { SEARCH_FILTER_FIELD_MAP, iconForField } from "./constants/filter-fields.js";
 
 import { orgDataPromise } from './insights-and-strategies.js';
 
@@ -49,6 +49,19 @@ const ensureKeywordField = (field = "") => {
   if (!field) return "";
   return /\.keyword$/i.test(field) ? field : `${field}.keyword`;
 };
+
+const needsSuffix = (field = "") => field === "supplements.grantid" || field === "supplements.program";
+
+const normaliseSortField = (field = "") =>
+  String(field || "")
+    .replace(/\.keyword$/i, "")
+    .replace(/__[^.]+$/i, "");
+
+const getSearchFilterField = (field = "") =>
+  SEARCH_FILTER_FIELD_MAP.get(normaliseSortField(field));
+
+const shouldAlphaSortSuggestions = (field = "") =>
+  Boolean(getSearchFilterField(field)?.alphaSort);
 
 /**
  * Derives a readable label from an ES field key.
@@ -140,12 +153,13 @@ function buildFilterFieldOptions(exploreData) {
       : fieldKey.startsWith("supplements.program__")
         ? "supplements.program"
         : fieldKey;
-    if (!ALLOWED_TERMS.has(normalisedKey) || seen.has(normalisedKey)) return;
+    const fieldMeta = SEARCH_FILTER_FIELD_MAP.get(normalisedKey);
+    if (!fieldMeta || seen.has(normalisedKey)) return;
     seen.add(normalisedKey);
 
     const label =
       EXPLORE_ITEMS_LABELS[item.id]?.label ||
-      ALLOWED_TERMS.get(normalisedKey) ||
+      fieldMeta.label ||
       labelFromFieldKey(normalisedKey);
 
     options.push({ value: normalisedKey, label });
@@ -168,8 +182,8 @@ function buildFilterFieldOptions(exploreData) {
  */
 function labelFromFieldKeyInverse(label) {
   // We only need this to map the displayed label back to the field key when removing chips
-  for (const [key, val] of ALLOWED_TERMS.entries()) {
-    if (val === label) return ensureKeywordField(key);
+  for (const [key, val] of SEARCH_FILTER_FIELD_MAP.entries()) {
+    if (val?.label === label) return ensureKeywordField(key);
   }
   return null;
 }
@@ -346,15 +360,24 @@ export async function fetchFilterValueSuggestions({ field, query = "", size = SU
 
   // Per-session cache to avoid repeat calls
   fetchFilterValueSuggestions._cache = fetchFilterValueSuggestions._cache || new Map();
+  const normaliseQueryForCache = (value = "") =>
+    String(value || "")
+      .normalize("NFD")
+      .replace(/\p{M}/gu, "")
+      .toLowerCase()
+      .replace(/[^\p{L}\p{N}]+/gu, " ")
+      .replace(/\s+/g, " ")
+      .trim();
   const baseField = field.replace(/\.keyword$/i, "");
   const orgName = orgData?.hits?.hits?.[0]?._source?.name || "";
   const keySuffix = orgData?.hits?.hits?.[0]?._source?.key_suffix || "";
-  const needsSuffix = (f) => (f === "supplements.grantid" || f === "supplements.program");
-  const requestField = keySuffix && needsSuffix(baseField) && !baseField.includes("__")
-    ? `${baseField}__${keySuffix}`
-    : baseField;
+  const requestField = (
+    keySuffix &&
+    !baseField.includes("__") &&
+    needsSuffix(baseField)
+  ) ? `${baseField}__${keySuffix}` : baseField;
   const modeKey = options.prefix ? "prefix" : "default";
-  const cacheKey = `${orgName}::${requestField}::${query.slice(0, 50)}::${size}::${modeKey}`;
+  const cacheKey = `${orgName}::${requestField}::${normaliseQueryForCache(query).slice(0, 50)}::${size}::${modeKey}`;
   if (fetchFilterValueSuggestions._cache.has(cacheKey)) {
     return fetchFilterValueSuggestions._cache.get(cacheKey);
   }
@@ -388,8 +411,10 @@ export async function fetchFilterValueSuggestions({ field, query = "", size = SU
       }
     });
 
-    const sorted = values.sort((a, b) => a.localeCompare(b));
-    const result = sorted.slice(0, size);
+    const ordered = shouldAlphaSortSuggestions(requestField)
+      ? values.slice().sort((a, b) => a.localeCompare(b))
+      : values;
+    const result = ordered.slice(0, size);
     fetchFilterValueSuggestions._cache.set(cacheKey, result);
     return result;
   } catch (err) {
@@ -491,7 +516,7 @@ function addFilterRow(container) {
   input.id = inputId;
   input.type = "text";
   input.className = "js-filter-input mt-1 p-2 w-full h-9 border border-neutral-900 bg-white text-xs md:text-sm leading-tight focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 disabled:bg-neutral-200 disabled:placeholder-neutral-800";
-  input.placeholder = "Search for values…";
+  input.placeholder = "Start typing to see suggestions…";
   input.disabled = true;
   input.setAttribute("aria-disabled", "true");
   input.required = true;
@@ -709,7 +734,7 @@ function addFilterRow(container) {
   };
 
   // Remember the last fetched suggestions for local filtering
-  let lastFetched = { field: "", items: [], size: 0 };
+  let lastFetched = { field: "", items: [], size: 0, query: "" };
   let lastQuery = "";
   let lastQueryUsedPrefix = false;
   let requestInFlight = false;
@@ -767,13 +792,31 @@ function addFilterRow(container) {
       const raw = input.value || "";
       const q = raw.replace(/\s+/g, " ").trim();
       if (!fieldVal || q.length < 2) {
-        renderHint();
+        hideSuggestions();
         return;
       }
       let matches = 0;
-      if (lastFetched.field === fieldVal && Array.isArray(lastFetched.items) && lastFetched.items.length) {
+      if (
+        lastFetched.field === fieldVal &&
+        Array.isArray(lastFetched.items) &&
+        lastFetched.items.length
+      ) {
+        if (lastFetched.query && lastFetched.query.startsWith(q)) {
+          renderSuggestions(lastFetched.items);
+          return;
+        }
         matches = renderSuggestions(lastFetched.items);
         if (matches > 0) return;
+      }
+      if (
+        lastFetched.field === fieldVal &&
+        Array.isArray(lastFetched.items) &&
+        lastFetched.items.length === 0 &&
+        lastFetched.query &&
+        q.startsWith(lastFetched.query)
+      ) {
+        renderHint(q, "No results. Try a different term.");
+        return;
       }
       if (requestInFlight) {
         renderHint(q, "Loading suggestions…");
@@ -788,25 +831,16 @@ function addFilterRow(container) {
       lastQueryUsedPrefix = false;
       renderHint(q, "Loading suggestions…");
       try {
-        let items = await fetchFilterValueSuggestions({
+        const items = await fetchFilterValueSuggestions({
           field: fieldVal,
           query: q,
           size: SUGGESTIONS_SIZE_DEFAULT
         });
-        if (!items.length) {
-          lastQueryUsedPrefix = true;
-          items = await fetchFilterValueSuggestions({
-            field: fieldVal,
-            query: q,
-            size: SUGGESTIONS_SIZE_DEFAULT,
-            options: { prefix: true }
-          });
-        }
-        lastFetched = { field: fieldVal, items, size: items.length };
+        lastFetched = { field: fieldVal, items, size: items.length, query: q };
         renderSuggestions(items);
       } catch (err) {
         console.error("Error fetching suggestions:", err);
-        lastFetched = { field: fieldVal, items: [], size: 0 };
+        lastFetched = { field: fieldVal, items: [], size: 0, query: q };
         renderHint(q, "No results found");
       } finally {
         requestInFlight = false;
@@ -844,7 +878,7 @@ function addFilterRow(container) {
     const nextFieldVal = fieldSelect.value;
     saveCurrentFieldTokens();
     currentFieldVal = nextFieldVal;
-    lastFetched = { field: nextFieldVal, items: [], size: 0 };
+    lastFetched = { field: nextFieldVal, items: [], size: 0, query: "" };
     lastQuery = "";
     requestInFlight = false;
     loadFieldTokens(currentFieldVal);
@@ -856,7 +890,7 @@ function addFilterRow(container) {
       textWrapper.classList.add("max-h-0", "opacity-0", "pointer-events-none");
       textWrapper.classList.remove("max-h-48", "opacity-100", "pointer-events-auto");
       textWrapper.setAttribute("aria-hidden", "true");
-      renderHint();
+      hideSuggestions();
       return;
     }
     input.disabled = false;
@@ -864,18 +898,25 @@ function addFilterRow(container) {
     textWrapper.classList.remove("max-h-0", "opacity-0", "pointer-events-none");
     textWrapper.classList.add("max-h-48", "opacity-100", "pointer-events-auto");
     textWrapper.setAttribute("aria-hidden", "false");
-    renderHint();
+      hideSuggestions();
   });
   input.addEventListener("input", triggerSuggestions);
   input.addEventListener("focus", () => {
     const fieldVal = fieldSelect.value;
     const raw = input.value || "";
     const q = raw.replace(/\s+/g, " ").trim();
-    if (fieldVal && q.length >= 2 && lastFetched.field === fieldVal && Array.isArray(lastFetched.items) && lastFetched.items.length) {
+    if (
+      fieldVal &&
+      q.length >= 2 &&
+      lastFetched.field === fieldVal &&
+      Array.isArray(lastFetched.items) &&
+      lastFetched.items.length &&
+      (!lastFetched.query || q.startsWith(lastFetched.query))
+    ) {
       renderSuggestions(lastFetched.items);
       return;
     }
-    renderHint();
+    hideSuggestions();
   });
 
   container.appendChild(row);
@@ -1123,14 +1164,27 @@ export function renderActiveFiltersBanner() {
       if (!fieldSelect || !input || !tokensEl) return;
 
       const fieldTokens = row._fieldTokens instanceof Map ? row._fieldTokens : null;
-      const field = ensureKeywordField(fieldSelect.value);
+      const baseField = fieldSelect.value.replace(/\.keyword$/i, "");
+      const keySuffix = orgData?.hits?.hits?.[0]?._source?.key_suffix || "";
+      const suffixedField = (
+        keySuffix &&
+        !baseField.includes("__") &&
+        needsSuffix(baseField)
+      ) ? `${baseField}__${keySuffix}` : baseField;
+      const field = ensureKeywordField(suffixedField);
       const raw = input.value.trim();
       const chips = Array.from(tokensEl.children).map((chip) => chip.getAttribute("data-value") || "").filter(Boolean);
 
       const pushVals = (fieldName, vals) => {
         if (!fieldName) return;
         if (!vals.length) return;
-        const fieldKey = ensureKeywordField(fieldName);
+        const baseName = String(fieldName || "").replace(/\.keyword$/i, "");
+        const suffixedName = (
+          keySuffix &&
+          !baseName.includes("__") &&
+          needsSuffix(baseName)
+        ) ? `${baseName}__${keySuffix}` : baseName;
+        const fieldKey = ensureKeywordField(suffixedName);
         const list = fieldMap.get(fieldKey) || [];
         vals.forEach((v) => list.push(v));
         fieldMap.set(fieldKey, list);
