@@ -5,8 +5,7 @@
     OA.Report
   </h2>
   {% set isReportPage = org and org._source and org._source.name %}
-  {% set marketingPages = ['/', '/newsletter/', '/newsletter/confirm/', '/newsletter/thanks/', '/report-list/'] %}
-  {% set isMarketingHeader = page.url in marketingPages %}
+  {% set isMarketingHeader = not isReportPage %}
   {% if isMarketingHeader %}
     {% set nav_styles = 'py-3 md:py-4 lg:py-5 bg-neutral-100 text-neutral-900' %}
   {% else %}
