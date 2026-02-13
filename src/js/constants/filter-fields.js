@@ -5,7 +5,7 @@
 
 export const SEARCH_FILTER_FIELDS = [
   // { field: "authorships.author.display_name", label: "Authors", alphaSort: true }, // TODO: discuss with Joe when to enable
-  // { field: "authorships.author.orcid", label: "Authors (ORCID)", alphaSort: false }, // TODO: discuss with Joe when to enable
+  { field: "authorships.author.orcid", label: "Authors (ORCID)", alphaSort: false },
   { field: "concepts.display_name", label: "Subjects", iconKey: "subject", alphaSort: true },
   { field: "authorships.institutions.display_name", label: "Institutions", iconKey: "institution", alphaSort: true },
   { field: "journal", label: "Journals", iconKey: "journal", alphaSort: true },
