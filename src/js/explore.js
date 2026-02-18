@@ -806,10 +806,12 @@ function updateExploreCountSummary({ type, id, total, shown }) {
  * @returns {string} Human-friendly sort label.
  */
 function getExploreSortLabel({ type, id, term, sort }) {
+  const lowerCaseLabels = new Set(["Published date", "Published year", "Year"]);
   if (type === "articles") {
     if (!sort) return "Published date";
     const sortField = sort.split(":")[0];
-    return EXPLORE_HEADER_ARTICLES_LABELS?.[sortField]?.label || "Published date";
+    const label = EXPLORE_HEADER_ARTICLES_LABELS?.[sortField]?.label || "Published date";
+    return lowerCaseLabels.has(label) ? label.toLowerCase() : label;
   }
 
   if (!sort) return "publication count";
@@ -817,12 +819,15 @@ function getExploreSortLabel({ type, id, term, sort }) {
   if (sort.includes("_count")) return "publication count";
 
   if (sort.includes("_key") || sort === "key") {
-    return EXPLORE_ITEMS_LABELS[id]?.singular || EXPLORE_ITEMS_LABELS[id]?.plural || "Label";
+    const label = EXPLORE_ITEMS_LABELS[id]?.singular || EXPLORE_ITEMS_LABELS[id]?.plural || "Label";
+    return lowerCaseLabels.has(label) ? label.toLowerCase() : label;
   }
 
-  return EXPLORE_HEADER_TERMS_LABELS?.[sort]?.label
+  const label = EXPLORE_HEADER_TERMS_LABELS?.[sort]?.label
     || (term ? EXPLORE_HEADER_TERMS_LABELS?.[term]?.label : null)
     || "Publication count";
+  if (label === "Publication count") return "publication count";
+  return lowerCaseLabels.has(label) ? label.toLowerCase() : label;
 }
 
 /**
