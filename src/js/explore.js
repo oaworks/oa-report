@@ -812,9 +812,9 @@ function getExploreSortLabel({ type, id, term, sort }) {
     return EXPLORE_HEADER_ARTICLES_LABELS?.[sortField]?.label || "Published date";
   }
 
-  if (!sort) return "Publication count";
+  if (!sort) return "publication count";
 
-  if (sort.includes("_count")) return "Publication count";
+  if (sort.includes("_count")) return "publication count";
 
   if (sort.includes("_key") || sort === "key") {
     return EXPLORE_ITEMS_LABELS[id]?.singular || EXPLORE_ITEMS_LABELS[id]?.plural || "Label";
