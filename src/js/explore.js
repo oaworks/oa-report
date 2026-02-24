@@ -608,12 +608,14 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     if (type === "terms") {
       query = decodeAndReplaceUrlEncodedChars(query);
       query = andQueryStrings(query, getDecodedUrlQuery()); // Combine with additional query strings from URL params
-      records = await fetchTermBasedData(suffix, query, term, sort, size);
+      const { records: termRecords, total: termTotal } = await fetchTermBasedData(suffix, query, term, sort, size);
+      records = termRecords;
       records = reorderTermRecords(records, includes);
       records = prettifyRecords(records, pretty);
+      totalRecords = termTotal;
 
-      replaceText("explore_sort", "publication count");
-      replaceText("report_sort_adjective", "Top");
+      replaceText("explore_sort", getExploreSortLabel({ type, id, term, sort }), { allowHTML: true });
+      replaceText("report_sort_adjective", getExploreSortAdjective({ type, sort }));
       removeCSVExportLink(); // no CSV export for term-based tables
     }
 
@@ -625,13 +627,20 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       records = reorderArticleRecords(articleRecords, includes);
       totalRecords = total;
 
-      replaceText("explore_sort", "published date");
-      replaceText("report_sort_adjective", "Latest");
+      replaceText("explore_sort", getExploreSortLabel({ type, id, term, sort }), { allowHTML: true });
+      replaceText("report_sort_adjective", getExploreSortAdjective({ type, sort }));
 
       addCSVExportLink();
     }
 
-    updateExploreCountSummary({ type, id, total: totalRecords, shown: records.length });
+    const shownCount = type === "terms"
+      ? records.filter(record => record.key !== "all_values" && record.key !== "no_values").length
+      : records.length;
+    const totalCount = type === "terms" && (!Number.isFinite(totalRecords) || totalRecords === 0)
+      ? shownCount
+      : totalRecords;
+
+    updateExploreCountSummary({ type, id, total: totalCount, shown: shownCount });
 
     if (records.length > 0) {
       // Populate table with data
@@ -683,13 +692,14 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
  * @param {string} term - The term (i.e. type of data breakdown) associated with the explore item.
  * @param {string} sort - The sorting order.
  * @param {number} size - The number of records to fetch.
- * @returns {Promise<Array>} A promise that resolves to an array of term-based records.
+ * @returns {Promise<Object>} A promise that resolves to term-based records and total count.
  */
 async function fetchTermBasedData(suffix, query, term, sort, size) {
   const postData = getAggregatedDataQuery(suffix, query, term, startYear, endYear, size, sort);
   const response = await fetchPostData(postData);
 
   let buckets = [];
+  const totalUniqueTerms = response?.aggregations?.values_total?.value ?? 0;
 
   if (response && response.aggregations && response.aggregations.values && response.aggregations.values.buckets) {
     buckets = response.aggregations.values.buckets.map(bucket => formatBucket(bucket));
@@ -712,7 +722,7 @@ async function fetchTermBasedData(suffix, query, term, sort, size) {
     buckets.sort((a, b) => b.doc_count - a.doc_count); // Sort in descending order as default for now
   }
 
-  return buckets;
+  return { records: buckets, total: totalUniqueTerms };
 }
 
 
@@ -767,8 +777,6 @@ async function fetchArticleBasedData(query, includes, sort, size) {
 
 /**
  * Updates the table header summary with how many records are shown vs available.
- * Hides the summary for non-article views to keep things simple.
- *
  * @param {Object} params
  * @param {string} params.type - The explore item type.
  * @param {string} params.id - The explore item id (used for label).
@@ -779,18 +787,68 @@ function updateExploreCountSummary({ type, id, total, shown }) {
   const summaryEl = document.getElementById("explore_count_summary");
   if (!summaryEl) return;
 
-  if (type !== "articles") {
-    summaryEl.textContent = "";
-    summaryEl.classList.add("hidden");
-    return;
-  }
-
   const formatCount = (n) => makeNumberReadable(Number.isFinite(n) ? n : 0);
   const label = EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id);
   const sortLabel = document.querySelector(".explore_sort")?.textContent?.trim() || "published date";
 
   summaryEl.innerHTML = `Showing <span class="font-semibold">${formatCount(shown)} of ${formatCount(total)}</span> <span class="lowercase">${label}</span> · Sorted by ${sortLabel}`;
   summaryEl.classList.remove("hidden");
+}
+
+/**
+ * Determines the label to use for the "Sorted by" UI based on explore metadata.
+ *
+ * @param {Object} params
+ * @param {string} params.type - The explore item type.
+ * @param {string} params.id - The explore item id.
+ * @param {string} params.term - The term field used for terms-based breakdowns.
+ * @param {string} params.sort - The sort key used by the API.
+ * @returns {string} Human-friendly sort label.
+ */
+function getExploreSortLabel({ type, id, term, sort }) {
+  const lowerCaseLabels = new Set(["Published date", "Published year", "Year"]);
+  if (type === "articles") {
+    if (!sort) return "Published date";
+    const sortField = sort.split(":")[0];
+    const label = EXPLORE_HEADER_ARTICLES_LABELS?.[sortField]?.label || "Published date";
+    return lowerCaseLabels.has(label) ? label.toLowerCase() : label;
+  }
+
+  if (!sort) return "publication count";
+
+  if (sort.includes("_count")) return "publication count";
+
+  if (sort.includes("_key") || sort === "key") {
+    const label = EXPLORE_ITEMS_LABELS[id]?.singular || EXPLORE_ITEMS_LABELS[id]?.plural || "Label";
+    return lowerCaseLabels.has(label) ? label.toLowerCase() : label;
+  }
+
+  const label = EXPLORE_HEADER_TERMS_LABELS?.[sort]?.label
+    || (term ? EXPLORE_HEADER_TERMS_LABELS?.[term]?.label : null)
+    || "Publication count";
+  if (label === "Publication count") return "publication count";
+  return lowerCaseLabels.has(label) ? label.toLowerCase() : label;
+}
+
+/**
+ * Determines the adjective used in the Explore heading (e.g. "Top", "Latest", "By").
+ *
+ * @param {Object} params
+ * @param {string} params.type - The explore item type.
+ * @param {string} params.sort - The sort key used by the API.
+ * @returns {string} Heading adjective.
+ */
+function getExploreSortAdjective({ type, sort }) {
+  if (type === "articles") {
+    if (!sort) return "Latest";
+    const [field, direction] = sort.split(":");
+    if (field === "published_date") return direction === "asc" ? "Earliest" : "Latest";
+    return "Top";
+  }
+
+  if (!sort) return "Top";
+  if (sort.includes("_key") || sort === "key") return "By";
+  return "Top";
 }
 
 /**

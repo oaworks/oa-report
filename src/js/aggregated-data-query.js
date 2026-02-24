@@ -720,6 +720,9 @@ export function getAggregatedDataQuery(
         filter: { bool: { must_not: { exists: { field: termField } } } },
         aggs,
       },
+      values_total: {
+        cardinality: { field: termField },
+      },
       values: {
         terms: { field: termField, size, order: { [sort]: "desc" } },
         aggs,
