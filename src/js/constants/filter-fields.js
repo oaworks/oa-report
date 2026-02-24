@@ -4,7 +4,7 @@
 // =================================================
 
 export const SEARCH_FILTER_FIELDS = [
-  // { field: "authorships.author.display_name", label: "Authors", alphaSort: true }, // TODO: discuss with Joe when to enable
+  { field: "authorships.author.display_name", label: "Authors (Name)", alphaSort: true },
   { field: "authorships.author.orcid", label: "Authors (ORCID)", alphaSort: false },
   { field: "concepts.display_name", label: "Subjects", iconKey: "subject", alphaSort: true },
   { field: "authorships.institutions.display_name", label: "Institutions", iconKey: "institution", alphaSort: true },
@@ -31,6 +31,7 @@ export const FILTER_FIELD_ICONS = {
   grant: "currency-circle-dollar",
   program: "squares-four",
   author: "users",
+  author_name: "users",
   preprint_server: "cloud-arrow-up",
   year: "calendar-blank",
   country: "globe",

@@ -215,6 +215,27 @@ async function addExploreButtonsToDOM(exploreData) {
   const seeMoreListItem = document.getElementById('explore_see_more_item');
   const seeMoreButton = seeMoreListItem?.querySelector('button');
 
+  // Keep ORCID and name lookups separate by exposing a dedicated author-name breakdown.
+  // Reuse the existing author config for query/includes/sort and only swap id+term.
+  if (Array.isArray(exploreData)) {
+    const hasAuthor = exploreData.some((item) => item?.id === "author");
+    const hasAuthorName = exploreData.some((item) => item?.id === "author_name");
+    if (hasAuthor && !hasAuthorName) {
+      const authorItem = exploreData.find((item) => item?.id === "author");
+      if (authorItem) {
+        exploreData = [
+          ...exploreData,
+          {
+            ...authorItem,
+            id: "author_name",
+            term: "authorships.author.display_name",
+            featured: false
+          }
+        ];
+      }
+    }
+  }
+
   // Only show 'articles' Explore list when logged out
   if (!loggedIn) {
     exploreData = exploreData.filter(item => item.id === 'articles');

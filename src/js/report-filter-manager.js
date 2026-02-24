@@ -170,12 +170,10 @@ function labelFromFieldKey(rawKey) {
  * @returns {{value:string,label:string}[]}
  */
 function buildFilterFieldOptions(exploreData) {
-  if (!Array.isArray(exploreData)) return [];
-
   const seen = new Set();
   const options = [];
 
-  exploreData.forEach((item) => {
+  (Array.isArray(exploreData) ? exploreData : []).forEach((item) => {
     const fieldKey = (item.term || "").replace(/\.keyword$/i, "");
     const normalisedKey = fieldKey.startsWith("supplements.grantid__")
       ? "supplements.grantid"
@@ -193,6 +191,17 @@ function buildFilterFieldOptions(exploreData) {
 
     options.push({ value: normalisedKey, label });
   });
+
+  // Fallback: include globally configured search fields even if the org's
+  // Explore config doesn't explicitly list them.
+  for (const [fieldKey, fieldMeta] of SEARCH_FILTER_FIELD_MAP.entries()) {
+    if (seen.has(fieldKey)) continue;
+    seen.add(fieldKey);
+    options.push({
+      value: fieldKey,
+      label: fieldMeta?.label || labelFromFieldKey(fieldKey),
+    });
+  }
 
   options.sort((a, b) => a.label.localeCompare(b.label));
   return options;
