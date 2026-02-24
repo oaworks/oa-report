@@ -63,6 +63,35 @@ const getSearchFilterField = (field = "") =>
 const shouldAlphaSortSuggestions = (field = "") =>
   Boolean(getSearchFilterField(field)?.alphaSort);
 
+const ORCID_ID_RE = /\b\d{4}-\d{4}-\d{4}-\d{3}[\dX]\b/i;
+
+function normaliseFilterValueForField(field = "", value = "") {
+  const trimmed = String(value || "").trim();
+  if (!trimmed) return "";
+
+  const baseField = normaliseSortField(field);
+  if (baseField !== "authorships.author.orcid") return trimmed;
+
+  const match = trimmed.match(ORCID_ID_RE)?.[0];
+  return match ? `https://orcid.org/${match.toUpperCase()}` : trimmed;
+}
+
+function normaliseValuesForField(field = "", values = []) {
+  return values
+    .map((v) => normaliseFilterValueForField(field, v))
+    .filter(Boolean);
+}
+
+function formatFilterValueForDisplay(field = "", value = "") {
+  const trimmed = String(value || "").trim();
+  if (!trimmed) return "";
+
+  if (normaliseSortField(field) !== "authorships.author.orcid") return trimmed;
+
+  const match = trimmed.match(ORCID_ID_RE)?.[0];
+  return match ? match.toUpperCase() : trimmed;
+}
+
 /**
  * Derives a readable label from an ES field key.
  * Falls back to header/filter labels, then a cleaned version of the key.
@@ -326,17 +355,19 @@ function removeClauseFromQuery(q, field) {
 function removeValueFromField(q, field, value) {
   if (!field || !value) return q || "";
   const targetField = ensureKeywordField(field);
+  const targetValue = normaliseFilterValueForField(targetField, value);
   const pairs = parseEsQueryToPairs(q);
   const clauses = [];
   pairs.forEach((p) => {
-    if (ensureKeywordField(p.field) !== targetField) {
+    const pairField = ensureKeywordField(p.field);
+    if (pairField !== targetField) {
       clauses.push(p.clause);
       return;
     }
     const remaining = (p.values || [])
       .map((v) => v.trim())
       .filter(Boolean)
-      .filter((v) => v !== value);
+      .filter((v) => normaliseFilterValueForField(pairField, v) !== targetValue);
     if (!remaining.length) return;
     const quotedVals = remaining.map((val) => `"${val.replace(/"/g, '\\"')}"`);
     const valueExpr = quotedVals.length === 1 ? quotedVals[0] : `(${quotedVals.join(" OR ")})`;
@@ -750,6 +781,7 @@ function addFilterRow(container) {
 
     fieldEntries.forEach(([fieldName, values]) => {
       values.forEach((val) => {
+      const displayVal = formatFilterValueForDisplay(fieldName, val);
       const chip = document.createElement("span");
       chip.className = "inline-flex items-center rounded-full bg-carnation-100 text-neutral-900 px-2 py-0.5 text-[11px] md:text-xs";
       chip.setAttribute("data-value", val);
@@ -765,13 +797,13 @@ function addFilterRow(container) {
       }
 
       const valSpan = document.createElement("span");
-      valSpan.textContent = val;
+      valSpan.textContent = displayVal;
       chip.appendChild(valSpan);
 
       const removeBtn = document.createElement("button");
       removeBtn.type = "button";
       removeBtn.className = "ml-2 text-[10px]";
-      removeBtn.setAttribute("aria-label", `Remove ${val}`);
+      removeBtn.setAttribute("aria-label", `Remove ${displayVal}`);
       removeBtn.textContent = "✕";
       removeBtn.addEventListener("click", () => {
         const targetField = chip.getAttribute("data-field");
@@ -1022,11 +1054,12 @@ export function renderActiveFiltersBanner() {
       chipsRow.setAttribute("role", "list");
 
       (values || []).forEach((val) => {
+        const displayVal = formatFilterValueForDisplay(field, val);
         const chip = document.createElement("button");
         chip.type = "button";
         chip.className = "inline-flex items-center rounded-full bg-carnation-100 text-neutral-900 px-2 py-0.5 text-[11px] md:text-xs";
         chip.setAttribute("role", "listitem");
-        chip.setAttribute("aria-label", `Remove ${label}: ${val}`);
+        chip.setAttribute("aria-label", `Remove ${label}: ${displayVal}`);
         chip.setAttribute("data-field", ensureKeywordField(field));
         const chipIconName = iconForField(field);
         if (chipIconName) {
@@ -1036,7 +1069,7 @@ export function renderActiveFiltersBanner() {
           chip.appendChild(icon);
         }
         const chipLabel = document.createElement("span");
-        chipLabel.textContent = val;
+        chipLabel.textContent = displayVal;
         chip.appendChild(chipLabel);
         const removeLabel = document.createElement("span");
         removeLabel.className = "ml-2 text-[10px]";
@@ -1186,7 +1219,7 @@ export function renderActiveFiltersBanner() {
         ) ? `${baseName}__${keySuffix}` : baseName;
         const fieldKey = ensureKeywordField(suffixedName);
         const list = fieldMap.get(fieldKey) || [];
-        vals.forEach((v) => list.push(v));
+        normaliseValuesForField(fieldKey, vals).forEach((v) => list.push(v));
         fieldMap.set(fieldKey, list);
       };
 
@@ -1237,9 +1270,10 @@ export function renderActiveFiltersBanner() {
             .split(/\s+OR\s+/)
             .map((v) => v.trim())
             .filter(Boolean);
+      const normalisedVals = normaliseValuesForField(fieldKey, vals);
       mergedFields.set(fieldKey, {
         label: p.label || labelFromFieldKey(fieldKey),
-        values: new Set(vals),
+        values: new Set(normalisedVals),
       });
     });
 
@@ -1250,7 +1284,7 @@ export function renderActiveFiltersBanner() {
         mergedFields.set(fieldKey, { label: labelFromFieldKey(fieldKey), values: new Set() });
       }
       const entry = mergedFields.get(fieldKey);
-      vals.filter(Boolean).forEach((v) => entry.values.add(v));
+      normaliseValuesForField(fieldKey, vals).forEach((v) => entry.values.add(v));
     });
 
     const clauses = [];
