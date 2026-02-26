@@ -4,6 +4,7 @@
 // =================================================
 
 export const SEARCH_FILTER_FIELDS = [
+  { field: "authorships.author.unified", label: "Authors (Unified)", iconKey: "author", alphaSort: true },
   { field: "authorships.author.display_name", label: "Authors (Name)", alphaSort: true },
   { field: "authorships.author.orcid", label: "Authors (ORCID)", alphaSort: false },
   { field: "concepts.display_name", label: "Subjects", iconKey: "subject", alphaSort: true },

@@ -64,18 +64,46 @@ const shouldAlphaSortSuggestions = (field = "") =>
   Boolean(getSearchFilterField(field)?.alphaSort);
 
 const ORCID_ID_RE = /\b\d{4}-\d{4}-\d{4}-\d{3}[\dX]\b/i;
+const OPENALEX_AUTHOR_ID_RE = /(?:https?:\/\/openalex\.org\/)?(A\d{4,})\b/i;
 const AUTHOR_ORCID_FIELD = "authorships.author.orcid.keyword";
 const AUTHOR_NAME_FIELD = "authorships.author.display_name.keyword";
+const AUTHOR_OPENALEX_FIELD = "authorships.author.id.keyword";
+const AUTHOR_UNIFIED_FIELD = "authorships.author.unified";
+const OPENALEX_API_BASE = "https://api.openalex.org";
+const OPENALEX_PER_PAGE = 8;
+const openAlexAuthorEntityCache = new Map();
+const openAlexAuthorSearchCache = new Map();
+const AUTHOR_GROUP_FIELDS = new Set([
+  "authorships.author.display_name.keyword",
+  "authorships.raw_author_name.keyword",
+  "authorships.author.id.keyword",
+  "authorships.author.orcid.keyword",
+  "authorships.author.orcid_number.keyword",
+  "corresponding_authors.author.display_name.keyword",
+  "corresponding_authors.raw_author_name.keyword",
+  "corresponding_authors.author.id.keyword",
+  "corresponding_authors.author.orcid.keyword",
+  "corresponding_authors.author.orcid_number.keyword",
+  "openalx.authorships.author.display_name.keyword",
+  "openalx.authorships.raw_author_name.keyword",
+  "openalx.authorships.author.id.keyword",
+  "openalx.authorships.author.orcid.keyword",
+  "openalx.authorships.author.orcid_number.keyword",
+  "openalx.corresponding_author_ids.keyword",
+]);
 
 function normaliseFilterValueForField(field = "", value = "") {
   const trimmed = String(value || "").trim();
   if (!trimmed) return "";
 
   const baseField = normaliseSortField(field);
-  if (baseField !== "authorships.author.orcid") return trimmed;
+  if (!/\.orcid(_number)?$/i.test(baseField)) return trimmed;
 
   const match = trimmed.match(ORCID_ID_RE)?.[0];
-  return match ? `https://orcid.org/${match.toUpperCase()}` : trimmed;
+  if (!match) return trimmed;
+  return /orcid_number$/i.test(baseField)
+    ? match.toUpperCase()
+    : `https://orcid.org/${match.toUpperCase()}`;
 }
 
 function normaliseValuesForField(field = "", values = []) {
@@ -88,10 +116,139 @@ function formatFilterValueForDisplay(field = "", value = "") {
   const trimmed = String(value || "").trim();
   if (!trimmed) return "";
 
-  if (normaliseSortField(field) !== "authorships.author.orcid") return trimmed;
+  const base = normaliseSortField(field);
+  if (/\.orcid(_number)?$/i.test(base) || base === AUTHOR_UNIFIED_FIELD) {
+    const match = trimmed.match(ORCID_ID_RE)?.[0];
+    if (match) return match.toUpperCase();
+  }
+  if (base === "authorships.author.id" || base === AUTHOR_UNIFIED_FIELD) {
+    const match = trimmed.match(OPENALEX_AUTHOR_ID_RE)?.[1];
+    return match ? match.toUpperCase() : trimmed;
+  }
+  return trimmed;
+}
 
-  const match = trimmed.match(ORCID_ID_RE)?.[0];
-  return match ? match.toUpperCase() : trimmed;
+function canonicaliseOpenAlexAuthorId(value = "") {
+  const match = String(value || "").trim().match(OPENALEX_AUTHOR_ID_RE)?.[1];
+  if (!match) return "";
+  return `https://openalex.org/${match.toUpperCase()}`;
+}
+
+function openAlexShortId(value = "") {
+  return String(value || "").trim().match(OPENALEX_AUTHOR_ID_RE)?.[1]?.toUpperCase() || "";
+}
+
+async function fetchOpenAlexAuthorById(shortId, signal) {
+  const id = openAlexShortId(shortId);
+  if (!id) return null;
+  if (openAlexAuthorEntityCache.has(id)) return openAlexAuthorEntityCache.get(id);
+  try {
+    const url = `${OPENALEX_API_BASE}/authors/${id}?select=id,display_name,display_name_alternatives,orcid`;
+    const res = await fetch(url, { signal });
+    if (!res.ok) return null;
+    const data = await res.json();
+    openAlexAuthorEntityCache.set(id, data);
+    return data;
+  } catch (_) {
+    return null;
+  }
+}
+
+async function searchOpenAlexAuthors(query, signal) {
+  const q = String(query || "").trim();
+  if (!q) return [];
+  const cacheKey = q.toLowerCase();
+  if (openAlexAuthorSearchCache.has(cacheKey)) return openAlexAuthorSearchCache.get(cacheKey);
+  try {
+    const url = `${OPENALEX_API_BASE}/authors?search=${encodeURIComponent(q)}&per-page=${OPENALEX_PER_PAGE}&select=id,display_name,display_name_alternatives,orcid`;
+    const res = await fetch(url, { signal });
+    if (!res.ok) return [];
+    const data = await res.json();
+    const results = Array.isArray(data?.results) ? data.results : [];
+    openAlexAuthorSearchCache.set(cacheKey, results);
+    return results;
+  } catch (_) {
+    return [];
+  }
+}
+
+function canonicaliseNameForGrouping(value = "") {
+  const cleaned = String(value || "")
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s]+/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!cleaned) return "";
+  const tokens = cleaned
+    .split(" ")
+    .map((t) => t.trim())
+    .filter(Boolean)
+    .filter((t) => t.length > 1 || /\d/.test(t))
+    .sort();
+  return tokens.join(" ");
+}
+
+function tokenisePersonName(value = "") {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s]+/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .split(" ")
+    .filter(Boolean);
+}
+
+function isLikelySamePersonName(displayName = "", candidate = "") {
+  const a = tokenisePersonName(displayName);
+  const b = tokenisePersonName(candidate);
+  if (!a.length || !b.length) return false;
+
+  const aLast = a[a.length - 1];
+  const bLast = b[b.length - 1];
+  if (!aLast || !bLast || aLast !== bLast) return false;
+
+  const aFirst = a[0];
+  const bFirst = b[0];
+  if (!aFirst || !bFirst) return false;
+  if (aFirst === bFirst) return true;
+  return aFirst[0] === bFirst[0];
+}
+
+function expandUnifiedAuthorValues(values = []) {
+  const names = new Set();
+  const orcidUrls = new Set();
+  const orcidNumbers = new Set();
+  const openalexIdUrls = new Set();
+  const openalexIdShort = new Set();
+
+  values.forEach((raw) => {
+    const val = String(raw || "").trim();
+    if (!val) return;
+
+    const orcid = val.match(ORCID_ID_RE)?.[0];
+    if (orcid) {
+      const canonical = orcid.toUpperCase();
+      orcidUrls.add(`https://orcid.org/${canonical}`);
+      orcidNumbers.add(canonical);
+      return;
+    }
+
+    const openalex = canonicaliseOpenAlexAuthorId(val);
+    if (openalex) {
+      const shortId = val.match(OPENALEX_AUTHOR_ID_RE)?.[1]?.toUpperCase();
+      openalexIdUrls.add(openalex);
+      if (shortId) openalexIdShort.add(shortId);
+      return;
+    }
+
+    names.add(val);
+  });
+
+  return { names, orcidUrls, orcidNumbers, openalexIdUrls, openalexIdShort };
 }
 
 function buildCombinedFilterQuery(fieldExpressions = new Map()) {
@@ -101,7 +258,7 @@ function buildCombinedFilterQuery(fieldExpressions = new Map()) {
   for (const [field, clause] of fieldExpressions.entries()) {
     if (!clause) continue;
     const fieldKey = ensureKeywordField(field);
-    if (fieldKey === AUTHOR_ORCID_FIELD || fieldKey === AUTHOR_NAME_FIELD) {
+    if (AUTHOR_GROUP_FIELDS.has(fieldKey)) {
       authorClauses.push(clause);
     } else {
       normalClauses.push(clause);
@@ -451,6 +608,139 @@ export async function fetchFilterValueSuggestions({ field, query = "", size = SU
     return fetchFilterValueSuggestions._cache.get(cacheKey);
   }
 
+  if (requestField === AUTHOR_UNIFIED_FIELD) {
+    const [
+      nameValuesA,
+      nameValuesB,
+      nameValuesC,
+      nameValuesD,
+      orcidValues,
+      openalexValues,
+    ] = await Promise.all([
+      fetchFilterValueSuggestions({ field: "authorships.author.display_name", query, size, options: { ...options, silent: true }, signal }),
+      fetchFilterValueSuggestions({ field: "authorships.raw_author_name", query, size, options: { ...options, silent: true }, signal }),
+      fetchFilterValueSuggestions({ field: "corresponding_authors.author.display_name", query, size, options: { ...options, silent: true }, signal }),
+      fetchFilterValueSuggestions({ field: "openalx.authorships.author.display_name", query, size, options: { ...options, silent: true }, signal }),
+      fetchFilterValueSuggestions({ field: "authorships.author.orcid_number", query, size, options: { ...options, silent: true }, signal }),
+      fetchFilterValueSuggestions({ field: "authorships.author.id", query, size, options: { ...options, silent: true }, signal }),
+    ]);
+
+    const nameValues = [...nameValuesA, ...nameValuesB, ...nameValuesC, ...nameValuesD]
+      .map((v) => String(v || "").trim())
+      .filter(Boolean);
+
+    const groupedNames = new Map(); // canonical -> { representative, variants:Set }
+    nameValues.forEach((name) => {
+      const key = canonicaliseNameForGrouping(name) || name.toLowerCase();
+      if (!groupedNames.has(key)) {
+        groupedNames.set(key, { representative: name, variants: new Set([name]) });
+        return;
+      }
+      groupedNames.get(key).variants.add(name);
+    });
+
+    const merged = [];
+    const consumedNameKeys = new Set();
+
+    const openalexIdsFromTerms = Array.from(new Set(
+      openalexValues
+        .map((v) => openAlexShortId(v))
+        .filter(Boolean)
+    ));
+    const [openalexFromSearch, ...openalexFromIds] = await Promise.all([
+      searchOpenAlexAuthors(query, signal),
+      ...openalexIdsFromTerms.map((id) => fetchOpenAlexAuthorById(id, signal)),
+    ]);
+    const allOpenAlexAuthors = [
+      ...(Array.isArray(openalexFromSearch) ? openalexFromSearch : []),
+      ...openalexFromIds.filter(Boolean),
+    ];
+    const seenEntityIds = new Set();
+    allOpenAlexAuthors.forEach((author) => {
+      const shortId = openAlexShortId(author?.id);
+      if (!shortId || seenEntityIds.has(shortId)) return;
+      seenEntityIds.add(shortId);
+
+      const displayName = String(author?.display_name || "").trim();
+      if (!displayName) return;
+
+      const alternativesRaw = Array.isArray(author?.display_name_alternatives)
+        ? author.display_name_alternatives.map((v) => String(v || "").trim()).filter(Boolean)
+        : [];
+      const alternatives = alternativesRaw.filter((alt) => isLikelySamePersonName(displayName, alt));
+      const allNameVariants = Array.from(new Set([displayName, ...alternatives]));
+      allNameVariants.forEach((name) => {
+        const key = canonicaliseNameForGrouping(name) || name.toLowerCase();
+        if (key) consumedNameKeys.add(key);
+      });
+
+      const orcidMatch = String(author?.orcid || "").match(ORCID_ID_RE)?.[0];
+      const orcidNumber = orcidMatch ? orcidMatch.toUpperCase() : "";
+      const meta = orcidNumber ? `ORCID ${orcidNumber}` : "OpenAlex";
+
+      const expansionValues = [
+        ...allNameVariants,
+        shortId,
+        `https://openalex.org/${shortId}`,
+      ];
+      if (orcidNumber) {
+        expansionValues.push(orcidNumber, `https://orcid.org/${orcidNumber}`);
+      }
+
+      merged.push({
+        value: displayName,
+        display: displayName,
+        meta,
+        variants: Array.from(new Set(expansionValues)),
+        variantPreview: alternatives.slice(0, 3),
+      });
+    });
+
+    groupedNames.forEach(({ representative, variants }, key) => {
+      if (consumedNameKeys.has(key)) return;
+      const allVariants = Array.from(variants);
+      const representativeNorm = canonicaliseNameForGrouping(representative);
+      const variantPreview = allVariants
+        .filter((v) => canonicaliseNameForGrouping(v) !== representativeNorm)
+        .slice(0, 3);
+      merged.push({
+        value: representative,
+        display: representative,
+        meta: variants.size > 1 ? `${variants.size} variants` : "",
+        variants: allVariants,
+        variantPreview: [],
+      });
+    });
+
+    const seenOrcid = new Set();
+    orcidValues.forEach((raw) => {
+      const display = formatFilterValueForDisplay("authorships.author.orcid_number", raw);
+      if (!display || seenOrcid.has(display)) return;
+      seenOrcid.add(display);
+      merged.push({
+        value: display,
+        display,
+        meta: "ORCID",
+      });
+    });
+
+    const seenOpenAlex = new Set();
+    openalexValues.forEach((raw) => {
+      const display = formatFilterValueForDisplay("authorships.author.id", raw);
+      if (!display || seenOpenAlex.has(display)) return;
+      seenOpenAlex.add(display);
+      merged.push({
+        value: display,
+        display,
+        meta: "OpenAlex",
+      });
+    });
+
+    const result = merged.slice(0, size);
+    fetchFilterValueSuggestions._cache.set(cacheKey, result);
+    return result;
+  }
+
   try {
     const params = [
       `org=${encodeURIComponent(orgName)}`,
@@ -464,7 +754,10 @@ export async function fetchFilterValueSuggestions({ field, query = "", size = SU
     const res = await fetch(url, { signal });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-    if (!Array.isArray(data) || !data.length) throw new Error("No suggestions");
+    if (!Array.isArray(data) || !data.length) {
+      fetchFilterValueSuggestions._cache.set(cacheKey, []);
+      return [];
+    }
 
     const seen = new Set();
     const values = [];
@@ -487,7 +780,7 @@ export async function fetchFilterValueSuggestions({ field, query = "", size = SU
     fetchFilterValueSuggestions._cache.set(cacheKey, result);
     return result;
   } catch (err) {
-    if (err?.name !== "AbortError") {
+    if (err?.name !== "AbortError" && !options.silent) {
       console.error("Error fetching filter suggestions (terms):", err);
     }
     fetchFilterValueSuggestions._cache.set(cacheKey, []);
@@ -624,8 +917,10 @@ function addFilterRow(container) {
   let activeIndex = -1;
   const tokenData = [];
   const fieldTokens = new Map();
+  const unifiedVariantMap = new Map();
   let currentFieldVal = "";
   row._fieldTokens = fieldTokens;
+  row._unifiedVariantMap = unifiedVariantMap;
   const saveCurrentFieldTokens = () => {
     if (currentFieldVal) {
       fieldTokens.set(currentFieldVal, [...tokenData]);
@@ -642,6 +937,7 @@ function addFilterRow(container) {
     const idxToRemove = targetList.indexOf(value);
     if (idxToRemove > -1) targetList.splice(idxToRemove, 1);
     fieldTokens.set(fieldVal, targetList);
+    unifiedVariantMap.delete(value);
     if (fieldVal === currentFieldVal) {
       loadFieldTokens(fieldVal);
     }
@@ -664,6 +960,16 @@ function addFilterRow(container) {
 
   const applySuggestion = (value) => {
     if (!value) return;
+    if (typeof value === "object") {
+      const tokenValue = String(value.value || "").trim();
+      if (!tokenValue) return;
+      if (fieldSelect.value === AUTHOR_UNIFIED_FIELD && Array.isArray(value.variants) && value.variants.length) {
+        unifiedVariantMap.set(tokenValue, value.variants);
+      }
+      addToken(tokenValue);
+      input.focus();
+      return;
+    }
     addToken(value);
     input.focus();
   };
@@ -723,6 +1029,13 @@ function addFilterRow(container) {
       if (!match) return val;
       return val.replace(re, "<strong>$&</strong>");
     };
+    const escapeHtml = (value = "") =>
+      String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
 
     if (!termForMatch) {
       renderHint(termRaw, "Type a more specific term…");
@@ -732,11 +1045,29 @@ function addFilterRow(container) {
     const escapedTerm = termForMatch.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const wordStartPattern = new RegExp(`\\b${escapedTerm}`, "i");
 
-    const filtered = items
-      .map((val, originalIndex) => {
-      const normalised = normaliseText(val, true);
+    const toSuggestionItem = (item) => {
+      if (item && typeof item === "object") {
+        return {
+          value: String(item.value || "").trim(),
+          display: String(item.display || item.value || "").trim(),
+          meta: String(item.meta || "").trim(),
+          variants: Array.isArray(item.variants) ? item.variants : [],
+          variantPreview: Array.isArray(item.variantPreview) ? item.variantPreview : [],
+        };
+      }
+      const value = String(item || "").trim();
+      return { value, display: value, meta: "", variants: [], variantPreview: [] };
+    };
+
+    const suggestionItems = (Array.isArray(items) ? items : [])
+      .map(toSuggestionItem)
+      .filter((item) => item.value && item.display);
+
+    const filtered = suggestionItems
+      .map((item, originalIndex) => {
+      const normalised = normaliseText(item.display, true);
       const tokens = normalised.split(" ").filter((token) => token && !stopwords.has(token));
-        return { val, originalIndex, normalised, tokens };
+        return { item, originalIndex, normalised, tokens };
       })
       .filter(({ normalised, tokens }) => {
         if (!termTokens.length) return false;
@@ -759,24 +1090,29 @@ function addFilterRow(container) {
 
         return a.originalIndex - b.originalIndex; // stable order for equal rank
       })
-      .map(({ val }) => val);
+      .map(({ item }) => item);
 
     if (!filtered.length) {
       renderHint(termRaw, "No results found");
       return 0;
     }
 
-    filtered.slice(0, 20).forEach((val) => {
+    filtered.slice(0, 20).forEach((item) => {
       const li = document.createElement("li");
       li.setAttribute("role", "option");
       li.setAttribute("aria-selected", "false");
       li.setAttribute("aria-disabled", "false");
       li.className = "px-2 py-1 cursor-pointer hover:bg-carnation-100 text-xs md:text-sm";
       li.id = `${listboxId}-option-${listbox.childElementCount}`;
-      li.innerHTML = highlight(val);
+      const meta = item.meta ? `<span class="ml-2 text-neutral-500 font-normal">${escapeHtml(item.meta)}</span>` : "";
+      const preview = item.variantPreview.length
+        ? `<div class="text-[11px] text-neutral-500 mt-0.5">${escapeHtml(item.variantPreview.join(" · "))}</div>`
+        : "";
+      li.innerHTML = `<div>${highlight(item.display)}${meta}</div>${preview}`;
+      li._suggestionItem = item;
       li.addEventListener("mousedown", (e) => {
         e.preventDefault(); // keep focus
-        applySuggestion(val);
+        applySuggestion(item);
       });
       listbox.appendChild(li);
     });
@@ -933,7 +1269,7 @@ function addFilterRow(container) {
     } else if (event.key === "Enter") {
       if (activeIndex >= 0 && activeIndex < options.length) {
         event.preventDefault();
-        applySuggestion(options[activeIndex].textContent);
+        applySuggestion(options[activeIndex]._suggestionItem || options[activeIndex].textContent);
       }
     } else if (event.key === "Escape") {
       hideSuggestions();
@@ -1235,6 +1571,7 @@ export function renderActiveFiltersBanner() {
       if (!fieldSelect || !input || !tokensEl) return;
 
       const fieldTokens = row._fieldTokens instanceof Map ? row._fieldTokens : null;
+      const unifiedVariantMap = row._unifiedVariantMap instanceof Map ? row._unifiedVariantMap : null;
       const baseField = fieldSelect.value.replace(/\.keyword$/i, "");
       const keySuffix = orgData?.hits?.hits?.[0]?._source?.key_suffix || "";
       const suffixedField = (
@@ -1242,7 +1579,9 @@ export function renderActiveFiltersBanner() {
         !baseField.includes("__") &&
         needsSuffix(baseField)
       ) ? `${baseField}__${keySuffix}` : baseField;
-      const field = ensureKeywordField(suffixedField);
+      const field = suffixedField === AUTHOR_UNIFIED_FIELD
+        ? AUTHOR_UNIFIED_FIELD
+        : ensureKeywordField(suffixedField);
       const raw = input.value.trim();
       const chips = Array.from(tokensEl.children).map((chip) => chip.getAttribute("data-value") || "").filter(Boolean);
 
@@ -1255,9 +1594,14 @@ export function renderActiveFiltersBanner() {
           !baseName.includes("__") &&
           needsSuffix(baseName)
         ) ? `${baseName}__${keySuffix}` : baseName;
-        const fieldKey = ensureKeywordField(suffixedName);
+        const fieldKey = suffixedName === AUTHOR_UNIFIED_FIELD
+          ? AUTHOR_UNIFIED_FIELD
+          : ensureKeywordField(suffixedName);
         const list = fieldMap.get(fieldKey) || [];
-        normaliseValuesForField(fieldKey, vals).forEach((v) => list.push(v));
+        const expandedVals = fieldKey === AUTHOR_UNIFIED_FIELD
+          ? vals.flatMap((v) => (unifiedVariantMap?.get(v) || [v]))
+          : vals;
+        normaliseValuesForField(fieldKey, expandedVals).forEach((v) => list.push(v));
         fieldMap.set(fieldKey, list);
       };
 
@@ -1317,7 +1661,7 @@ export function renderActiveFiltersBanner() {
 
     // Add new values
     fieldMap.forEach((vals, field) => {
-      const fieldKey = ensureKeywordField(field);
+      const fieldKey = field === AUTHOR_UNIFIED_FIELD ? AUTHOR_UNIFIED_FIELD : ensureKeywordField(field);
       if (!mergedFields.has(fieldKey)) {
         mergedFields.set(fieldKey, { label: labelFromFieldKey(fieldKey), values: new Set() });
       }
@@ -1329,6 +1673,39 @@ export function renderActiveFiltersBanner() {
     mergedFields.forEach((entry, field) => {
       const unique = Array.from(entry.values);
       if (!unique.length) return;
+      if (field === AUTHOR_UNIFIED_FIELD) {
+        const expanded = expandUnifiedAuthorValues(unique);
+        const addFieldExpr = (fieldKey, valuesSet) => {
+          const vals = Array.from(valuesSet);
+          if (!vals.length) return;
+          const quotedVals = vals.map((val) => `"${val.replace(/"/g, '\\"')}"`);
+          const valueExpr = quotedVals.length === 1 ? quotedVals[0] : `(${quotedVals.join(" OR ")})`;
+          fieldExpressions.set(fieldKey, `${fieldKey}:${valueExpr}`);
+        };
+        addFieldExpr("authorships.author.display_name.keyword", expanded.names);
+        addFieldExpr("authorships.raw_author_name.keyword", expanded.names);
+        addFieldExpr("corresponding_authors.author.display_name.keyword", expanded.names);
+        addFieldExpr("corresponding_authors.raw_author_name.keyword", expanded.names);
+        addFieldExpr("openalx.authorships.author.display_name.keyword", expanded.names);
+        addFieldExpr("openalx.authorships.raw_author_name.keyword", expanded.names);
+
+        addFieldExpr("authorships.author.orcid.keyword", expanded.orcidUrls);
+        addFieldExpr("corresponding_authors.author.orcid.keyword", expanded.orcidUrls);
+        addFieldExpr("openalx.authorships.author.orcid.keyword", expanded.orcidUrls);
+        addFieldExpr("authorships.author.orcid_number.keyword", expanded.orcidNumbers);
+        addFieldExpr("corresponding_authors.author.orcid_number.keyword", expanded.orcidNumbers);
+        addFieldExpr("openalx.authorships.author.orcid_number.keyword", expanded.orcidNumbers);
+
+        addFieldExpr("authorships.author.id.keyword", expanded.openalexIdUrls);
+        addFieldExpr("corresponding_authors.author.id.keyword", expanded.openalexIdUrls);
+        addFieldExpr("openalx.authorships.author.id.keyword", expanded.openalexIdUrls);
+        addFieldExpr("authorships.author.id.keyword", expanded.openalexIdShort);
+        addFieldExpr("corresponding_authors.author.id.keyword", expanded.openalexIdShort);
+        addFieldExpr("openalx.authorships.author.id.keyword", expanded.openalexIdShort);
+        addFieldExpr("openalx.corresponding_author_ids.keyword", expanded.openalexIdUrls);
+        addFieldExpr("openalx.corresponding_author_ids.keyword", expanded.openalexIdShort);
+        return;
+      }
       const quotedVals = unique.map((val) => `"${val.replace(/"/g, '\\"')}"`);
       const valueExpr = quotedVals.length === 1 ? quotedVals[0] : `(${quotedVals.join(" OR ")})`;
       const fieldKey = ensureKeywordField(field);
