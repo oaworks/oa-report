@@ -7,6 +7,12 @@ on:
   pull_request:
     branches:
       - dev
+  workflow_dispatch:
+    inputs:
+      force_fail:
+        description: "Force this workflow to fail (for testing notifications)"
+        required: false
+        default: "false"
 
 jobs:
   lighthouse:
@@ -48,3 +54,9 @@ jobs:
           configPath: ./lighthouserc.json
           uploadArtifacts: true
           temporaryPublicStorage: true
+
+      - name: Force failure (notification test)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.force_fail == 'true' }}
+        run: |
+          echo "Intentionally failing to test email routing to Front."
+          exit 1
