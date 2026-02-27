@@ -29,7 +29,7 @@
   "dependencies": {
     "18": "^0.0.0",
     "@tryghost/content-api": "^1.12.3",
-    "axios": "^1.13.5",
+    "axios": "^1.13.6",
     "caniuse-lite": "^1.0.30001774",
     "canvas": "^3.2.1",
     "dotenv": "^17.3.1",
