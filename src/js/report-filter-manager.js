@@ -64,15 +64,11 @@ const shouldAlphaSortSuggestions = (field = "") =>
   Boolean(getSearchFilterField(field)?.alphaSort);
 
 const ORCID_ID_RE = /\b\d{4}-\d{4}-\d{4}-\d{3}[\dX]\b/i;
-const OPENALEX_AUTHOR_ID_RE = /(?:https?:\/\/openalex\.org\/)?(A\d{4,})\b/i;
+const OPENALEX_AUTHOR_ID_RE = /\bA\d{4,}\b/i;
+const OPENALEX_API_BASE = "https://api.openalex.org";
 const AUTHOR_ORCID_FIELD = "authorships.author.orcid.keyword";
 const AUTHOR_NAME_FIELD = "authorships.author.display_name.keyword";
-const AUTHOR_OPENALEX_FIELD = "authorships.author.id.keyword";
 const AUTHOR_UNIFIED_FIELD = "authorships.author.unified";
-const OPENALEX_API_BASE = "https://api.openalex.org";
-const OPENALEX_PER_PAGE = 8;
-const openAlexAuthorEntityCache = new Map();
-const openAlexAuthorSearchCache = new Map();
 const AUTHOR_GROUP_FIELDS = new Set([
   "authorships.author.display_name.keyword",
   "authorships.raw_author_name.keyword",
@@ -92,11 +88,49 @@ const AUTHOR_GROUP_FIELDS = new Set([
   "openalx.corresponding_author_ids.keyword",
 ]);
 
+function extractOpenAlexAuthorId(value = "") {
+  const trimmed = String(value || "").trim();
+  if (!trimmed) return "";
+  const fromUrl = trimmed.match(/openalex\.org\/(A\d{4,})/i)?.[1];
+  if (fromUrl) return fromUrl.toUpperCase();
+  const fromToken = trimmed.match(OPENALEX_AUTHOR_ID_RE)?.[0];
+  return fromToken ? fromToken.toUpperCase() : "";
+}
+
+function extractOrcidNumber(value = "") {
+  const match = String(value || "").match(ORCID_ID_RE)?.[0];
+  return match ? match.toUpperCase() : "";
+}
+
+const openAlexOrcidLookupCache = new Map();
+async function fetchOpenAlexAuthorsByOrcid(orcidNumber, signal) {
+  const canonical = extractOrcidNumber(orcidNumber);
+  if (!canonical) return [];
+  if (openAlexOrcidLookupCache.has(canonical)) return openAlexOrcidLookupCache.get(canonical);
+  try {
+    const filterValue = encodeURIComponent(`https://orcid.org/${canonical}`);
+    const url = `${OPENALEX_API_BASE}/authors?filter=orcid:${filterValue}&per-page=5&select=id,display_name,display_name_alternatives,orcid`;
+    const res = await fetch(url, { signal });
+    if (!res.ok) return [];
+    const data = await res.json();
+    const results = Array.isArray(data?.results) ? data.results : [];
+    openAlexOrcidLookupCache.set(canonical, results);
+    return results;
+  } catch (_) {
+    return [];
+  }
+}
+
 function normaliseFilterValueForField(field = "", value = "") {
   const trimmed = String(value || "").trim();
   if (!trimmed) return "";
 
   const baseField = normaliseSortField(field);
+  if (/(\.author\.id|\.corresponding_author_ids)$/i.test(baseField)) {
+    const id = extractOpenAlexAuthorId(trimmed);
+    if (id) return `https://openalex.org/${id}`;
+    return trimmed;
+  }
   if (!/\.orcid(_number)?$/i.test(baseField)) return trimmed;
 
   const match = trimmed.match(ORCID_ID_RE)?.[0];
@@ -117,59 +151,23 @@ function formatFilterValueForDisplay(field = "", value = "") {
   if (!trimmed) return "";
 
   const base = normaliseSortField(field);
+  if (/(\.author\.id|\.corresponding_author_ids)$/i.test(base) || base === AUTHOR_UNIFIED_FIELD) {
+    const openAlexId = extractOpenAlexAuthorId(trimmed);
+    if (openAlexId) return openAlexId;
+  }
   if (/\.orcid(_number)?$/i.test(base) || base === AUTHOR_UNIFIED_FIELD) {
     const match = trimmed.match(ORCID_ID_RE)?.[0];
     if (match) return match.toUpperCase();
   }
-  if (base === "authorships.author.id" || base === AUTHOR_UNIFIED_FIELD) {
-    const match = trimmed.match(OPENALEX_AUTHOR_ID_RE)?.[1];
-    return match ? match.toUpperCase() : trimmed;
-  }
   return trimmed;
 }
 
-function canonicaliseOpenAlexAuthorId(value = "") {
-  const match = String(value || "").trim().match(OPENALEX_AUTHOR_ID_RE)?.[1];
-  if (!match) return "";
-  return `https://openalex.org/${match.toUpperCase()}`;
-}
-
-function openAlexShortId(value = "") {
-  return String(value || "").trim().match(OPENALEX_AUTHOR_ID_RE)?.[1]?.toUpperCase() || "";
-}
-
-async function fetchOpenAlexAuthorById(shortId, signal) {
-  const id = openAlexShortId(shortId);
-  if (!id) return null;
-  if (openAlexAuthorEntityCache.has(id)) return openAlexAuthorEntityCache.get(id);
-  try {
-    const url = `${OPENALEX_API_BASE}/authors/${id}?select=id,display_name,display_name_alternatives,orcid`;
-    const res = await fetch(url, { signal });
-    if (!res.ok) return null;
-    const data = await res.json();
-    openAlexAuthorEntityCache.set(id, data);
-    return data;
-  } catch (_) {
-    return null;
-  }
-}
-
-async function searchOpenAlexAuthors(query, signal) {
-  const q = String(query || "").trim();
-  if (!q) return [];
-  const cacheKey = q.toLowerCase();
-  if (openAlexAuthorSearchCache.has(cacheKey)) return openAlexAuthorSearchCache.get(cacheKey);
-  try {
-    const url = `${OPENALEX_API_BASE}/authors?search=${encodeURIComponent(q)}&per-page=${OPENALEX_PER_PAGE}&select=id,display_name,display_name_alternatives,orcid`;
-    const res = await fetch(url, { signal });
-    if (!res.ok) return [];
-    const data = await res.json();
-    const results = Array.isArray(data?.results) ? data.results : [];
-    openAlexAuthorSearchCache.set(cacheKey, results);
-    return results;
-  } catch (_) {
-    return [];
-  }
+function buildUnifiedAuthorMeta({ variantsCount = 0, orcid = "", openAlexId = "" } = {}) {
+  const parts = [];
+  if (variantsCount > 1) parts.push(`${variantsCount} variants`);
+  if (orcid) parts.push(`ORCID ${orcid}`);
+  if (openAlexId) parts.push(`OpenAlex ${openAlexId}`);
+  return parts.join(" · ");
 }
 
 function canonicaliseNameForGrouping(value = "") {
@@ -185,7 +183,6 @@ function canonicaliseNameForGrouping(value = "") {
     .split(" ")
     .map((t) => t.trim())
     .filter(Boolean)
-    .filter((t) => t.length > 1 || /\d/.test(t))
     .sort();
   return tokens.join(" ");
 }
@@ -218,16 +215,44 @@ function isLikelySamePersonName(displayName = "", candidate = "") {
   return aFirst[0] === bFirst[0];
 }
 
+async function fetchUnifiedNameVariantsForToken(token, size = 300) {
+  const seed = String(token || "").trim();
+  if (!seed) return [];
+  const fields = [
+    "authorships.author.display_name",
+    "authorships.raw_author_name",
+    "corresponding_authors.author.display_name",
+    "openalx.authorships.author.display_name",
+  ];
+  const batches = await Promise.all(
+    fields.map((field) => fetchFilterValueSuggestions({
+      field,
+      query: seed,
+      size,
+      options: { silent: true },
+    }))
+  );
+  const merged = Array.from(new Set(batches.flat().map((v) => String(v || "").trim()).filter(Boolean)));
+  return merged.filter((candidate) => isLikelySamePersonName(seed, candidate));
+}
+
 function expandUnifiedAuthorValues(values = []) {
   const names = new Set();
   const orcidUrls = new Set();
   const orcidNumbers = new Set();
-  const openalexIdUrls = new Set();
-  const openalexIdShort = new Set();
+  const openAlexUrls = new Set();
+  const openAlexIds = new Set();
 
   values.forEach((raw) => {
     const val = String(raw || "").trim();
     if (!val) return;
+
+    const openAlexId = extractOpenAlexAuthorId(val);
+    if (openAlexId) {
+      openAlexUrls.add(`https://openalex.org/${openAlexId}`);
+      openAlexIds.add(openAlexId);
+      return;
+    }
 
     const orcid = val.match(ORCID_ID_RE)?.[0];
     if (orcid) {
@@ -237,18 +262,10 @@ function expandUnifiedAuthorValues(values = []) {
       return;
     }
 
-    const openalex = canonicaliseOpenAlexAuthorId(val);
-    if (openalex) {
-      const shortId = val.match(OPENALEX_AUTHOR_ID_RE)?.[1]?.toUpperCase();
-      openalexIdUrls.add(openalex);
-      if (shortId) openalexIdShort.add(shortId);
-      return;
-    }
-
     names.add(val);
   });
 
-  return { names, orcidUrls, orcidNumbers, openalexIdUrls, openalexIdShort };
+  return { names, orcidUrls, orcidNumbers, openAlexUrls, openAlexIds };
 }
 
 function buildCombinedFilterQuery(fieldExpressions = new Map()) {
@@ -614,15 +631,25 @@ export async function fetchFilterValueSuggestions({ field, query = "", size = SU
       nameValuesB,
       nameValuesC,
       nameValuesD,
-      orcidValues,
-      openalexValues,
+      orcidValuesA,
+      orcidValuesB,
+      orcidValuesC,
+      authorIdValuesA,
+      authorIdValuesB,
+      authorIdValuesC,
+      authorIdValuesD,
     ] = await Promise.all([
       fetchFilterValueSuggestions({ field: "authorships.author.display_name", query, size, options: { ...options, silent: true }, signal }),
       fetchFilterValueSuggestions({ field: "authorships.raw_author_name", query, size, options: { ...options, silent: true }, signal }),
       fetchFilterValueSuggestions({ field: "corresponding_authors.author.display_name", query, size, options: { ...options, silent: true }, signal }),
       fetchFilterValueSuggestions({ field: "openalx.authorships.author.display_name", query, size, options: { ...options, silent: true }, signal }),
       fetchFilterValueSuggestions({ field: "authorships.author.orcid_number", query, size, options: { ...options, silent: true }, signal }),
+      fetchFilterValueSuggestions({ field: "authorships.author.orcid", query, size, options: { ...options, silent: true }, signal }),
+      fetchFilterValueSuggestions({ field: "openalx.authorships.author.orcid", query, size, options: { ...options, silent: true }, signal }),
       fetchFilterValueSuggestions({ field: "authorships.author.id", query, size, options: { ...options, silent: true }, signal }),
+      fetchFilterValueSuggestions({ field: "corresponding_authors.author.id", query, size, options: { ...options, silent: true }, signal }),
+      fetchFilterValueSuggestions({ field: "openalx.authorships.author.id", query, size, options: { ...options, silent: true }, signal }),
+      fetchFilterValueSuggestions({ field: "openalx.corresponding_author_ids", query, size, options: { ...options, silent: true }, signal }),
     ]);
 
     const nameValues = [...nameValuesA, ...nameValuesB, ...nameValuesC, ...nameValuesD]
@@ -640,64 +667,7 @@ export async function fetchFilterValueSuggestions({ field, query = "", size = SU
     });
 
     const merged = [];
-    const consumedNameKeys = new Set();
-
-    const openalexIdsFromTerms = Array.from(new Set(
-      openalexValues
-        .map((v) => openAlexShortId(v))
-        .filter(Boolean)
-    ));
-    const [openalexFromSearch, ...openalexFromIds] = await Promise.all([
-      searchOpenAlexAuthors(query, signal),
-      ...openalexIdsFromTerms.map((id) => fetchOpenAlexAuthorById(id, signal)),
-    ]);
-    const allOpenAlexAuthors = [
-      ...(Array.isArray(openalexFromSearch) ? openalexFromSearch : []),
-      ...openalexFromIds.filter(Boolean),
-    ];
-    const seenEntityIds = new Set();
-    allOpenAlexAuthors.forEach((author) => {
-      const shortId = openAlexShortId(author?.id);
-      if (!shortId || seenEntityIds.has(shortId)) return;
-      seenEntityIds.add(shortId);
-
-      const displayName = String(author?.display_name || "").trim();
-      if (!displayName) return;
-
-      const alternativesRaw = Array.isArray(author?.display_name_alternatives)
-        ? author.display_name_alternatives.map((v) => String(v || "").trim()).filter(Boolean)
-        : [];
-      const alternatives = alternativesRaw.filter((alt) => isLikelySamePersonName(displayName, alt));
-      const allNameVariants = Array.from(new Set([displayName, ...alternatives]));
-      allNameVariants.forEach((name) => {
-        const key = canonicaliseNameForGrouping(name) || name.toLowerCase();
-        if (key) consumedNameKeys.add(key);
-      });
-
-      const orcidMatch = String(author?.orcid || "").match(ORCID_ID_RE)?.[0];
-      const orcidNumber = orcidMatch ? orcidMatch.toUpperCase() : "";
-      const meta = orcidNumber ? `ORCID ${orcidNumber}` : "OpenAlex";
-
-      const expansionValues = [
-        ...allNameVariants,
-        shortId,
-        `https://openalex.org/${shortId}`,
-      ];
-      if (orcidNumber) {
-        expansionValues.push(orcidNumber, `https://orcid.org/${orcidNumber}`);
-      }
-
-      merged.push({
-        value: displayName,
-        display: displayName,
-        meta,
-        variants: Array.from(new Set(expansionValues)),
-        variantPreview: alternatives.slice(0, 3),
-      });
-    });
-
-    groupedNames.forEach(({ representative, variants }, key) => {
-      if (consumedNameKeys.has(key)) return;
+    groupedNames.forEach(({ representative, variants }) => {
       const allVariants = Array.from(variants);
       const representativeNorm = canonicaliseNameForGrouping(representative);
       const variantPreview = allVariants
@@ -706,18 +676,20 @@ export async function fetchFilterValueSuggestions({ field, query = "", size = SU
       merged.push({
         value: representative,
         display: representative,
-        meta: variants.size > 1 ? `${variants.size} variants` : "",
+        meta: buildUnifiedAuthorMeta({ variantsCount: variants.size }),
         variants: allVariants,
-        variantPreview: [],
+        variantPreview,
       });
     });
 
+    const idOnlySuggestions = [];
     const seenOrcid = new Set();
-    orcidValues.forEach((raw) => {
+    const allOrcidValues = [...orcidValuesA, ...orcidValuesB, ...orcidValuesC];
+    allOrcidValues.forEach((raw) => {
       const display = formatFilterValueForDisplay("authorships.author.orcid_number", raw);
       if (!display || seenOrcid.has(display)) return;
       seenOrcid.add(display);
-      merged.push({
+      idOnlySuggestions.push({
         value: display,
         display,
         meta: "ORCID",
@@ -725,16 +697,62 @@ export async function fetchFilterValueSuggestions({ field, query = "", size = SU
     });
 
     const seenOpenAlex = new Set();
-    openalexValues.forEach((raw) => {
+    [...authorIdValuesA, ...authorIdValuesB, ...authorIdValuesC, ...authorIdValuesD].forEach((raw) => {
       const display = formatFilterValueForDisplay("authorships.author.id", raw);
       if (!display || seenOpenAlex.has(display)) return;
       seenOpenAlex.add(display);
-      merged.push({
+      idOnlySuggestions.push({
         value: display,
         display,
-        meta: "OpenAlex",
+        meta: "OpenAlex ID",
       });
     });
+
+    // If user typed an ORCID, enrich suggestions with matching OpenAlex author entities.
+    const queryOrcid = extractOrcidNumber(query);
+    if (queryOrcid) {
+      const authors = await fetchOpenAlexAuthorsByOrcid(queryOrcid, signal);
+      const seenAuthorDisplays = new Set(merged.map((item) => (item?.display || "").toLowerCase()));
+      authors.forEach((author) => {
+        const displayName = String(author?.display_name || "").trim();
+        if (!displayName) return;
+        const key = displayName.toLowerCase();
+        if (seenAuthorDisplays.has(key)) return;
+        seenAuthorDisplays.add(key);
+
+        const authorOrcid = extractOrcidNumber(author?.orcid || queryOrcid);
+        const openAlexId = extractOpenAlexAuthorId(author?.id || "");
+        const alternatives = Array.isArray(author?.display_name_alternatives)
+          ? author.display_name_alternatives
+              .map((v) => String(v || "").trim())
+              .filter(Boolean)
+              .filter((alt) => isLikelySamePersonName(displayName, alt))
+          : [];
+        const variants = Array.from(new Set([
+          displayName,
+          ...alternatives,
+          ...(authorOrcid ? [authorOrcid, `https://orcid.org/${authorOrcid}`] : []),
+          ...(openAlexId ? [openAlexId, `https://openalex.org/${openAlexId}`] : []),
+        ]));
+
+        merged.unshift({
+          value: displayName,
+          display: displayName,
+          meta: buildUnifiedAuthorMeta({
+            variantsCount: alternatives.length + 1,
+            orcid: authorOrcid,
+            openAlexId,
+          }),
+          variants,
+          variantPreview: alternatives.filter((alt) => alt !== displayName).slice(0, 3),
+        });
+      });
+    }
+
+    // Keep unified suggestions person-first; only show raw IDs if no person suggestions exist.
+    if (!merged.length) {
+      merged.push(...idOnlySuggestions);
+    }
 
     const result = merged.slice(0, size);
     fetchFilterValueSuggestions._cache.set(cacheKey, result);
@@ -1065,7 +1083,13 @@ function addFilterRow(container) {
 
     const filtered = suggestionItems
       .map((item, originalIndex) => {
-      const normalised = normaliseText(item.display, true);
+      const searchable = [
+        item.display,
+        item.value,
+        item.meta,
+        ...(Array.isArray(item.variants) ? item.variants : []),
+      ].join(" ");
+      const normalised = normaliseText(searchable, true);
       const tokens = normalised.split(" ").filter((token) => token && !stopwords.has(token));
         return { item, originalIndex, normalised, tokens };
       })
@@ -1560,7 +1584,7 @@ export function renderActiveFiltersBanner() {
   }
 
   // Apply: gather all rows, group values by field (OR within field, AND across fields)
-  filterForm.addEventListener("submit", (event) => {
+  filterForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     const fieldMap = new Map(); // field -> array of values (strings)
 
@@ -1638,6 +1662,17 @@ export function renderActiveFiltersBanner() {
       pushVals(field, values);
     });
 
+    // Enrich unified author tokens with high-confidence local variants at apply-time.
+    if (fieldMap.has(AUTHOR_UNIFIED_FIELD)) {
+      const original = fieldMap.get(AUTHOR_UNIFIED_FIELD) || [];
+      const enrichedLists = await Promise.all(original.map((token) => fetchUnifiedNameVariantsForToken(token)));
+      const enriched = enrichedLists.flat();
+      fieldMap.set(
+        AUTHOR_UNIFIED_FIELD,
+        Array.from(new Set([...original, ...enriched]))
+      );
+    }
+
     // Merge with existing: keep existing clauses, but merge values per field (OR)
     const existingQ = getDecodedUrlQuery();
     const existingPairs = parseEsQueryToPairs(existingQ);
@@ -1695,15 +1730,10 @@ export function renderActiveFiltersBanner() {
         addFieldExpr("authorships.author.orcid_number.keyword", expanded.orcidNumbers);
         addFieldExpr("corresponding_authors.author.orcid_number.keyword", expanded.orcidNumbers);
         addFieldExpr("openalx.authorships.author.orcid_number.keyword", expanded.orcidNumbers);
-
-        addFieldExpr("authorships.author.id.keyword", expanded.openalexIdUrls);
-        addFieldExpr("corresponding_authors.author.id.keyword", expanded.openalexIdUrls);
-        addFieldExpr("openalx.authorships.author.id.keyword", expanded.openalexIdUrls);
-        addFieldExpr("authorships.author.id.keyword", expanded.openalexIdShort);
-        addFieldExpr("corresponding_authors.author.id.keyword", expanded.openalexIdShort);
-        addFieldExpr("openalx.authorships.author.id.keyword", expanded.openalexIdShort);
-        addFieldExpr("openalx.corresponding_author_ids.keyword", expanded.openalexIdUrls);
-        addFieldExpr("openalx.corresponding_author_ids.keyword", expanded.openalexIdShort);
+        addFieldExpr("authorships.author.id.keyword", expanded.openAlexUrls);
+        addFieldExpr("corresponding_authors.author.id.keyword", expanded.openAlexUrls);
+        addFieldExpr("openalx.authorships.author.id.keyword", expanded.openAlexUrls);
+        addFieldExpr("openalx.corresponding_author_ids.keyword", expanded.openAlexIds);
         return;
       }
       const quotedVals = unique.map((val) => `"${val.replace(/"/g, '\\"')}"`);
