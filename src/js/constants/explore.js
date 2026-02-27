@@ -29,6 +29,11 @@ export const EXPLORE_ITEMS_LABELS = {
     plural: "Authors",
     tooltip: "Discover information about authors"
   },
+  "author_name": {
+    singular: "Author (Name)",
+    plural: "Authors (Name)",
+    tooltip: "Discover information about authors by name"
+  },
   "year": {
     singular: "Year",
     plural: "Years",

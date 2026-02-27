@@ -64,6 +64,8 @@ const shouldAlphaSortSuggestions = (field = "") =>
   Boolean(getSearchFilterField(field)?.alphaSort);
 
 const ORCID_ID_RE = /\b\d{4}-\d{4}-\d{4}-\d{3}[\dX]\b/i;
+const AUTHOR_ORCID_FIELD = "authorships.author.orcid.keyword";
+const AUTHOR_NAME_FIELD = "authorships.author.display_name.keyword";
 
 function normaliseFilterValueForField(field = "", value = "") {
   const trimmed = String(value || "").trim();
@@ -90,6 +92,29 @@ function formatFilterValueForDisplay(field = "", value = "") {
 
   const match = trimmed.match(ORCID_ID_RE)?.[0];
   return match ? match.toUpperCase() : trimmed;
+}
+
+function buildCombinedFilterQuery(fieldExpressions = new Map()) {
+  const normalClauses = [];
+  const authorClauses = [];
+
+  for (const [field, clause] of fieldExpressions.entries()) {
+    if (!clause) continue;
+    const fieldKey = ensureKeywordField(field);
+    if (fieldKey === AUTHOR_ORCID_FIELD || fieldKey === AUTHOR_NAME_FIELD) {
+      authorClauses.push(clause);
+    } else {
+      normalClauses.push(clause);
+    }
+  }
+
+  if (authorClauses.length === 1) {
+    normalClauses.push(authorClauses[0]);
+  } else if (authorClauses.length > 1) {
+    normalClauses.push(`(${authorClauses.join(" OR ")})`);
+  }
+
+  return normalClauses.join(" AND ");
 }
 
 /**
@@ -170,12 +195,10 @@ function labelFromFieldKey(rawKey) {
  * @returns {{value:string,label:string}[]}
  */
 function buildFilterFieldOptions(exploreData) {
-  if (!Array.isArray(exploreData)) return [];
-
   const seen = new Set();
   const options = [];
 
-  exploreData.forEach((item) => {
+  (Array.isArray(exploreData) ? exploreData : []).forEach((item) => {
     const fieldKey = (item.term || "").replace(/\.keyword$/i, "");
     const normalisedKey = fieldKey.startsWith("supplements.grantid__")
       ? "supplements.grantid"
@@ -193,6 +216,17 @@ function buildFilterFieldOptions(exploreData) {
 
     options.push({ value: normalisedKey, label });
   });
+
+  // Fallback: include globally configured search fields even if the org's
+  // Explore config doesn't explicitly list them.
+  for (const [fieldKey, fieldMeta] of SEARCH_FILTER_FIELD_MAP.entries()) {
+    if (seen.has(fieldKey)) continue;
+    seen.add(fieldKey);
+    options.push({
+      value: fieldKey,
+      label: fieldMeta?.label || labelFromFieldKey(fieldKey),
+    });
+  }
 
   options.sort((a, b) => a.label.localeCompare(b.label));
   return options;
@@ -309,6 +343,11 @@ function parseEsQueryToPairs(q) {
       nested.forEach((sub) => processClause(sub));
       return;
     }
+    const nestedOr = splitTopLevel(cleanedClause, "OR");
+    if (nestedOr.length > 1) {
+      nestedOr.forEach((sub) => processClause(sub));
+      return;
+    }
     const m = cleanedClause.match(/^\s*\(?\s*([A-Za-z0-9._]+)\s*:\s*(.+?)\s*\)?\s*$/);
     if (!m) return;
     const rawKey = m[1];
@@ -357,23 +396,22 @@ function removeValueFromField(q, field, value) {
   const targetField = ensureKeywordField(field);
   const targetValue = normaliseFilterValueForField(targetField, value);
   const pairs = parseEsQueryToPairs(q);
-  const clauses = [];
+  const fieldExpressions = new Map();
   pairs.forEach((p) => {
     const pairField = ensureKeywordField(p.field);
-    if (pairField !== targetField) {
-      clauses.push(p.clause);
-      return;
-    }
     const remaining = (p.values || [])
       .map((v) => v.trim())
       .filter(Boolean)
-      .filter((v) => normaliseFilterValueForField(pairField, v) !== targetValue);
+      .filter((v) => (
+        pairField !== targetField ||
+        normaliseFilterValueForField(pairField, v) !== targetValue
+      ));
     if (!remaining.length) return;
     const quotedVals = remaining.map((val) => `"${val.replace(/"/g, '\\"')}"`);
     const valueExpr = quotedVals.length === 1 ? quotedVals[0] : `(${quotedVals.join(" OR ")})`;
-    clauses.push(`${ensureKeywordField(p.field)}:${valueExpr}`);
+    fieldExpressions.set(pairField, `${pairField}:${valueExpr}`);
   });
-  return clauses.join(" AND ");
+  return buildCombinedFilterQuery(fieldExpressions);
 }
 
 /**
@@ -1287,22 +1325,24 @@ export function renderActiveFiltersBanner() {
       normaliseValuesForField(fieldKey, vals).forEach((v) => entry.values.add(v));
     });
 
-    const clauses = [];
+    const fieldExpressions = new Map();
     mergedFields.forEach((entry, field) => {
       const unique = Array.from(entry.values);
       if (!unique.length) return;
       const quotedVals = unique.map((val) => `"${val.replace(/"/g, '\\"')}"`);
       const valueExpr = quotedVals.length === 1 ? quotedVals[0] : `(${quotedVals.join(" OR ")})`;
-      clauses.push(`${ensureKeywordField(field)}:${valueExpr}`);
+      const fieldKey = ensureKeywordField(field);
+      fieldExpressions.set(fieldKey, `${fieldKey}:${valueExpr}`);
     });
 
-    if (!clauses.length) {
+    const nextQ = buildCombinedFilterQuery(fieldExpressions);
+    if (!nextQ) {
       tip.hide();
       return;
     }
 
     updateURLParams({
-      q: clauses.join(" AND "),
+      q: nextQ,
     });
 
     handleFiltersChanged();
