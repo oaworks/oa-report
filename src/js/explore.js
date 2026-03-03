@@ -256,8 +256,12 @@ async function addExploreButtonsToDOM(exploreData) {
 
     // "See more/See fewer" button logic
     seeMoreButton.querySelector('span').textContent = moreButtonsVisible ? 'See fewer' : 'See more';
+    seeMoreButton.setAttribute('aria-expanded', moreButtonsVisible ? 'true' : 'false');
 
-    seeMoreButton.addEventListener('click', function() {
+    seeMoreButton.addEventListener('click', function(event) {
+      const focusTarget = (!moreButtonsVisible && event.detail === 0)
+        ? moreButtons.find((item) => item.classList.contains('hidden'))?.querySelector('button')
+        : null;
       moreButtonsVisible = !moreButtonsVisible; // Toggle visibility state
 
       moreButtons.forEach((item, index) => {
@@ -270,6 +274,8 @@ async function addExploreButtonsToDOM(exploreData) {
 
       // Update the text of the button
       seeMoreButton.querySelector('span').textContent = moreButtonsVisible ? 'See fewer' : 'See more';
+      seeMoreButton.setAttribute('aria-expanded', moreButtonsVisible ? 'true' : 'false');
+      if (focusTarget) requestAnimationFrame(() => focusTarget.focus());
     });
   }
 
