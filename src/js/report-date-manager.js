@@ -455,8 +455,49 @@ function createDateRangeForm() {
       const ePop = /** @type {HTMLInputElement|null} */ (document.getElementById("end-date-pop"));
       if (s && sPop) sPop.value = s.value || "";
       if (e && ePop) ePop.value = e.value || "";
+      // Keep values in sync before mount/shown hooks move focus.
+    },
+    onMount(instance) {
+      const firstDateInput = instance.popper.querySelector("#start-date-pop");
+      if (firstDateInput instanceof HTMLInputElement) {
+        requestAnimationFrame(() => firstDateInput.focus());
+      }
+    },
+    onShown(instance) {
+      const firstDateInput = instance.popper.querySelector("#start-date-pop");
+      if (firstDateInput instanceof HTMLInputElement) {
+        firstDateInput.focus();
+      }
     },
     onHide() { triggerBtn.setAttribute("aria-expanded", "false"); }
+  });
+
+  const focusNextAfterPopover = () => {
+    const filtersTrigger = document.getElementById("js-filters-trigger");
+    if (filtersTrigger instanceof HTMLElement) {
+      filtersTrigger.focus();
+      return;
+    }
+    triggerBtn.focus();
+  };
+
+  const startPopInput = /** @type {HTMLInputElement|null} */ (pop.querySelector("#start-date-pop"));
+  if (startPopInput) {
+    startPopInput.addEventListener("keydown", (event) => {
+      if (event.key === "Tab" && event.shiftKey) {
+        event.preventDefault();
+        tip.hide();
+        requestAnimationFrame(() => triggerBtn.focus());
+      }
+    });
+  }
+
+  applyBtn.addEventListener("keydown", (event) => {
+    if (event.key === "Tab" && !event.shiftKey) {
+      event.preventDefault();
+      tip.hide();
+      requestAnimationFrame(focusNextAfterPopover);
+    }
   });
 
   // Handle Apply: validate, update URL, sync hidden inputs, call existing handlers, close
