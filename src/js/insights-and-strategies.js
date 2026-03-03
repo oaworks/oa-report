@@ -299,12 +299,22 @@ export function initInsightsAndStrategies(org) {
           });
           cardContents._insightTooltip = instance;
         }
-        tooltipTarget.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            instance.show();
-          }
-        });
+        if (!cardContents._insightTooltipEventsBound) {
+          tooltipTarget.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              instance.show();
+            } else if (e.key === 'Tab') {
+              instance.hide();
+            }
+          });
+
+          tooltipTarget.addEventListener('blur', () => {
+            instance.hide();
+          });
+
+          cardContents._insightTooltipEventsBound = true;
+        }
         const updateTooltipContent = () => {
           const detailHtml = figureDetails
             ? `<div class="mb-2 font-semibold text-neutral-900">${figureDetails.innerHTML}</div>`
@@ -317,6 +327,7 @@ export function initInsightsAndStrategies(org) {
         const tooltipID = instance.popper.id;
         tooltipTarget.setAttribute('aria-controls', tooltipID);
         tooltipTarget.setAttribute('aria-labelledby', tooltipTargetId);
+        tooltipTarget.setAttribute('aria-description', 'Press Enter to show more information for this metric.');
         tooltipTarget.setAttribute('title', 'More information on this metric');
         tooltipTarget.setAttribute('aria-haspopup', 'dialog');
 
