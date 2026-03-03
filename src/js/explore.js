@@ -275,7 +275,7 @@ async function addExploreButtonsToDOM(exploreData) {
       // Update the text of the button
       seeMoreButton.querySelector('span').textContent = moreButtonsVisible ? 'See fewer' : 'See more';
       seeMoreButton.setAttribute('aria-expanded', moreButtonsVisible ? 'true' : 'false');
-      if (focusTarget) requestAnimationFrame(() => focusTarget.focus());
+      if (focusTarget) setTimeout(() => focusTarget.focus(), 80);
     });
   }
 
@@ -461,7 +461,7 @@ function createExploreFilterRadioButton(id, isChecked) {
   Object.assign(radioInput, {
     type: 'radio',
     id: `filter_${id}`,
-    className: 'sr-only',
+    className: 'peer sr-only',
     name: 'filter_by',
     value: id,
     checked: isChecked
@@ -472,7 +472,7 @@ function createExploreFilterRadioButton(id, isChecked) {
   const labelElement = document.createElement('label');
   Object.assign(labelElement, {
     htmlFor: `filter_${id}`,
-    className: FILTER_PILL_CLASSES.base,
+    className: `${FILTER_PILL_CLASSES.base} peer-focus-visible:ring-2 peer-focus-visible:ring-carnation-400 peer-focus-visible:ring-offset-1 peer-focus-visible:ring-offset-neutral-800`,
     innerHTML: '<span>' + label + '</span>'
   });
   filterRadioButton.appendChild(labelElement);
@@ -489,7 +489,7 @@ function createExploreFilterRadioButton(id, isChecked) {
  * @param {boolean} isActive
  */
 function setFilterPillState(labelElement, isActive) {
-  labelElement.className = `${FILTER_PILL_CLASSES.base} ${isActive ? FILTER_PILL_CLASSES.active : FILTER_PILL_CLASSES.inactive}`;
+  labelElement.className = `${FILTER_PILL_CLASSES.base} peer-focus-visible:ring-2 peer-focus-visible:ring-carnation-400 peer-focus-visible:ring-offset-1 peer-focus-visible:ring-offset-neutral-800 ${isActive ? FILTER_PILL_CLASSES.active : FILTER_PILL_CLASSES.inactive}`;
 }
 
 /**
