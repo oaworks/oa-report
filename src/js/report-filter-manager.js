@@ -12,7 +12,8 @@ import {
   updateURLParams,
   removeURLParams,
   normaliseFieldId,
-  pluraliseNoun
+  pluraliseNoun,
+  createPopoverKeyboardFlow
 } from "./utils.js";
 import { API_BASE_URL } from "./constants/api.js";
 
@@ -1191,7 +1192,30 @@ export function renderActiveFiltersBanner() {
   filterForm.appendChild(applyBtn);
 
   // Tippy instance, same pattern as custom date range
-  const tip = tippy(triggerBtn, {
+  let tip;
+  const popoverFlow = createPopoverKeyboardFlow({
+    popover: pop,
+    trigger: triggerBtn,
+    firstSelector: "#js-clear-q-popover, .js-filter-field, #js-apply-filters",
+    lastSelector: "#js-apply-filters",
+    onBackwardTab: () => {
+      tip.hide();
+      requestAnimationFrame(() => triggerBtn.focus());
+    },
+    onForwardTab: () => {
+      tip.hide();
+      const nextControl = document.querySelector(".js_section_tab");
+      requestAnimationFrame(() => {
+        if (nextControl instanceof HTMLElement) {
+          nextControl.focus();
+        } else {
+          triggerBtn.focus();
+        }
+      });
+    }
+  });
+
+  tip = tippy(triggerBtn, {
     content: pop,
     allowHTML: true,
     interactive: true,
@@ -1202,6 +1226,12 @@ export function renderActiveFiltersBanner() {
     arrow: false,
     onShow() {
       triggerBtn.setAttribute("aria-expanded", "true");
+    },
+    onMount() {
+      requestAnimationFrame(() => popoverFlow.focusFirst());
+    },
+    onShown() {
+      popoverFlow.focusFirst();
     },
     onHide() {
       triggerBtn.setAttribute("aria-expanded", "false");

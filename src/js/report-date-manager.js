@@ -9,7 +9,7 @@
 // =================================================
 
 import { DATE_SELECTION_BUTTON_CLASSES } from './constants.js';
-import { createDate, replaceDateRange, initDropdown, getAllURLParams, updateURLParams, dateRange, getURLParam } from './utils.js';
+import { createDate, replaceDateRange, initDropdown, getAllURLParams, updateURLParams, dateRange, getURLParam, createPopoverKeyboardFlow } from './utils.js';
 import { initInsightsAndStrategies } from './insights-and-strategies.js';
 import { currentActiveExploreItemButton, currentActiveExploreItemData, processExploreDataTable } from './explore.js';
 
@@ -436,8 +436,31 @@ function createDateRangeForm() {
   applyBtn.textContent = "Apply";
   pop.appendChild(applyBtn);
 
+  let tip;
+  const popoverFlow = createPopoverKeyboardFlow({
+    popover: pop,
+    trigger: triggerBtn,
+    firstSelector: "#start-date-pop",
+    lastSelector: "#js-date-range-apply-button",
+    onBackwardTab: () => {
+      tip.hide();
+      requestAnimationFrame(() => triggerBtn.focus());
+    },
+    onForwardTab: () => {
+      tip.hide();
+      requestAnimationFrame(() => {
+        const filtersTrigger = document.getElementById("js-filters-trigger");
+        if (filtersTrigger instanceof HTMLElement) {
+          filtersTrigger.focus();
+        } else {
+          triggerBtn.focus();
+        }
+      });
+    }
+  });
+
   // Initialise a dedicated Tippy instance
-  const tip = tippy(triggerBtn, {
+  tip = tippy(triggerBtn, {
     content: pop,
     allowHTML: true,
     interactive: true,
@@ -457,47 +480,13 @@ function createDateRangeForm() {
       if (e && ePop) ePop.value = e.value || "";
       // Keep values in sync before mount/shown hooks move focus.
     },
-    onMount(instance) {
-      const firstDateInput = instance.popper.querySelector("#start-date-pop");
-      if (firstDateInput instanceof HTMLInputElement) {
-        requestAnimationFrame(() => firstDateInput.focus());
-      }
+    onMount() {
+      requestAnimationFrame(() => popoverFlow.focusFirst());
     },
-    onShown(instance) {
-      const firstDateInput = instance.popper.querySelector("#start-date-pop");
-      if (firstDateInput instanceof HTMLInputElement) {
-        firstDateInput.focus();
-      }
+    onShown() {
+      popoverFlow.focusFirst();
     },
     onHide() { triggerBtn.setAttribute("aria-expanded", "false"); }
-  });
-
-  const focusNextAfterPopover = () => {
-    const filtersTrigger = document.getElementById("js-filters-trigger");
-    if (filtersTrigger instanceof HTMLElement) {
-      filtersTrigger.focus();
-      return;
-    }
-    triggerBtn.focus();
-  };
-
-  const startPopInput = /** @type {HTMLInputElement|null} */ (pop.querySelector("#start-date-pop"));
-  if (startPopInput) {
-    startPopInput.addEventListener("keydown", (event) => {
-      if (event.key === "Tab" && event.shiftKey) {
-        event.preventDefault();
-        tip.hide();
-        requestAnimationFrame(() => triggerBtn.focus());
-      }
-    });
-  }
-
-  applyBtn.addEventListener("keydown", (event) => {
-    if (event.key === "Tab" && !event.shiftKey) {
-      event.preventDefault();
-      tip.hide();
-      requestAnimationFrame(focusNextAfterPopover);
-    }
   });
 
   // Handle Apply: validate, update URL, sync hidden inputs, call existing handlers, close
@@ -538,7 +527,7 @@ function createDateRangeForm() {
     updateYearButtonStyling(form, true);
 
     // Close the popover
-    if (tip && tip[0]) tip[0].hide();
+    if (tip) tip.hide();
   });
 
   return form;
