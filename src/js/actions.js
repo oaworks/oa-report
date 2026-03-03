@@ -79,9 +79,7 @@ function updateStrategyButtonStyling(event) {
       badge.classList.remove("bg-neutral-900", "text-neutral-200");
       badge.classList.add("bg-neutral-700", "text-neutral-100");
     }
-    btn.setAttribute("aria-selected", "false");
     btn.setAttribute("aria-pressed", "false");
-    btn.setAttribute("tabindex", "-1");
   });
 
   tabBtn.classList.add("bg-neutral-100", "text-neutral-900", "shadow-inner");
@@ -91,9 +89,7 @@ function updateStrategyButtonStyling(event) {
     activeBadge.classList.add("bg-neutral-900", "text-neutral-200");
     activeBadge.classList.remove("bg-neutral-700", "text-neutral-100");
   }
-  tabBtn.setAttribute("aria-selected", "true");
   tabBtn.setAttribute("aria-pressed", "true");
-  tabBtn.setAttribute("tabindex", "0");
 
   // Update URL params
   if (shouldUpdateActionUrl) {

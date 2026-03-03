@@ -10,7 +10,7 @@
 // =================================================
 
 import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter } from './utils.js';
-import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, ACTION_LABELS, ACTION_ORDER } from './constants.js';
+import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS } from './constants.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { initActionTabs } from './actions.js';
 
@@ -188,15 +188,17 @@ function renderActionTabs(strategy = {}) {
 
   visibleStrategies.forEach((id, index) => {
     const label = ACTION_LABELS[id] || id.replaceAll("_", " ");
-    const tab = document.createElement("li");
-    tab.id = `strategy_${id}`;
-    tab.className = "js_strategy_btn group cursor-pointer px-4 py-1.5 text-sm font-medium rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 transition-colors text-white bg-neutral-900/60";
-    tab.setAttribute("role", "tab");
-    tab.setAttribute("aria-controls", id);
-    tab.setAttribute("aria-selected", index === 0 ? "true" : "false");
-    tab.setAttribute("tabindex", index === 0 ? "0" : "-1");
-    tab.innerHTML = `<span>${label}</span><span id="count_${id}" class="bg-neutral-900 text-neutral-100 ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block group-hover:bg-neutral-800">0</span>`;
-    tabsContainer.appendChild(tab);
+    const item = document.createElement("li");
+    item.className = "list-none";
+    const tabBtn = document.createElement("button");
+    tabBtn.type = "button";
+    tabBtn.id = `strategy_${id}`;
+    tabBtn.className = "js_strategy_btn group cursor-pointer px-4 py-1.5 text-sm font-medium rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 transition-colors text-white bg-neutral-900/60";
+    tabBtn.setAttribute("aria-controls", id);
+    tabBtn.setAttribute("aria-pressed", index === 0 ? "true" : "false");
+    tabBtn.innerHTML = `<span>${label}</span><span id="count_${id}" class="bg-neutral-900 text-neutral-100 ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block group-hover:bg-neutral-800">0</span>`;
+    item.appendChild(tabBtn);
+    tabsContainer.appendChild(item);
   });
 }
 
@@ -597,8 +599,10 @@ export function initInsightsAndStrategies(org) {
         var tabItem = document.getElementById(tabID),
             tabContent = document.getElementById(strategy);
 
-        if (tabItem || tabContent) {
+        if (tabItem) {
           tabItem.remove();
+        }
+        if (tabContent) {
           tabContent.remove();
         }
       };
@@ -656,80 +660,9 @@ export function initInsightsAndStrategies(org) {
     //   </td>"
     // );
     
-    displayStrategy(
-      "apc_followup",
-      ['published_date', 'title', 'journal', 'DOI', 'publisher', 'publisher_license', 'journal_oa_type', 'oa_status', 'supplements.apc_cost', 'supplements.invoice_number', 'supplements.invoice_date'],
-      "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 font-medium text-neutral-900'>${action.publisher}</div>\
-        <div class='mb-3 text-neutral-900'>${action.journal}</div>\
-        <div class='text-neutral-600'>OA type: <span class='font-medium'>${action.journal_oa_type}</span></div>\
-      </td>\
-      <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
-        <div class='mb-1 text-neutral-900 hover:text-carnation-500'>\
-          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
-        </div>\
-        <div class='mb-3 text-neutral-600'>${action.DOI}</div>\
-        <div class='text-neutral-600'>OA status: <span class='font-medium'>${action.oa_status}<span></div>\
-        <div class='text-neutral-600'>License: <span class='font-medium uppercase'>${action.publisher_license}</span></div>\
-      </td>\
-      <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-3 text-neutral-600'>${action.invoice_date}</div>\
-        <div class='mb-3 text-neutral-900'>${action.invoice_number}</div>\
-        <div class='text-neutral-600 uppercase'>US$${action.apc_cost}</div>\
-      </td>"
-    );
-
-    displayStrategy(
-      "unanswered_requests",
-      ['title', 'journal', 'author_email_name', 'email', 'DOI', 'supplements.program__bmgf', 'supplements.grantid__bmgf', 'mailto'],
-      "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 font-medium text-neutral-900'>${action.program__bmgf}</div>\
-        <div class='text-neutral-900'>${action.grantid__bmgf}</div>\
-      </td>\
-      <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 font-medium text-neutral-900'>${action.author_email_name}</div>\
-        <div class='mb-1 text-neutral-900'>\
-          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
-        </div>\
-        <div class='text-neutral-600'>${action.journal}</div>\
-      </td>\
-      <td class='whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium'>\
-        <button \
-          class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
-          data-email='${action.email}'\
-          data-doi='${action.DOI}'\
-          data-mailto='${action.mailto}'\
-          onclick='handleDecryptEmailClick(this)'>\
-          <i class='ph ph-envelope inline-block text-[16px] leading-none duration-500' aria-hidden='true'></i>\
-        </button>\
-      </td>"
-    );
-
-    displayStrategy(
-      "email_author_deposit",
-      ['published_date', 'title', 'journal', 'author_email_name', 'email', 'DOI', 'mailto'],
-      "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
-        <div class='mb-1 font-medium text-neutral-900 hover:text-carnation-500'>\
-          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
-        </div>\
-        <div class='text-neutral-600'>${action.journal}</div>\
-      </td>\
-      <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
-        <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
-      </td>\
-      <td class='hidden px-3 py-4 text-sm text-center text-neutral-600 align-top break-words sm:table-cell'>\
-        <button \
-          class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
-          data-email='${action.email}'\
-          data-doi='${action.DOI}'\
-          data-mailto='${action.mailto}'\
-          onclick='handleDecryptEmailClick(this)'>\
-          <i class='ph ph-envelope inline-block text-[16px] leading-none duration-500' aria-hidden='true'></i>\
-        </button>\
-      </td>"
-    );
+    ACTION_TABLE_CONFIGS.forEach(({ id, keys, rowTemplate }) => {
+      displayStrategy(id, keys, rowTemplate);
+    });
     
   }).catch(error => {
     console.log(`Report ERROR: ${error}`);
