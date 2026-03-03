@@ -56,6 +56,13 @@
     tooltips.forEach((tooltip) => {
       tooltip.setAttribute('role', 'tooltip');
     });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key !== 'Escape') return;
+      if (typeof tippy.hideAll === 'function') {
+        tippy.hideAll();
+      }
+    });
   });
 </script>
 <script>

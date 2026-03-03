@@ -692,6 +692,16 @@ export function initDropdown(dropdownSelector) {
 
   const dropdownButton = dropdownContainer.querySelector('button[aria-haspopup="true"]');
   const dropdownContent = dropdownContainer.querySelector('.js_dropdown_content');
+  if (!dropdownButton || !dropdownContent) return;
+
+  const closeDropdown = (restoreFocus = false) => {
+    dropdownContent.classList.add('hidden');
+    dropdownContent.setAttribute('hidden', 'true');
+    dropdownButton.setAttribute('aria-expanded', 'false');
+    if (restoreFocus) {
+      requestAnimationFrame(() => dropdownButton.focus());
+    }
+  };
 
   dropdownButton.addEventListener('click', function(event) {
     event.stopPropagation();
@@ -699,19 +709,23 @@ export function initDropdown(dropdownSelector) {
     this.setAttribute('aria-expanded', !isExpanded);
 
     if (isExpanded) {
-      dropdownContent.classList.add('hidden');
-      dropdownContent.setAttribute('hidden', 'true');
+      closeDropdown();
     } else {
       dropdownContent.classList.remove('hidden');
       dropdownContent.removeAttribute('hidden');
     }
   });
 
+  dropdownContainer.addEventListener('keydown', function(event) {
+    if (event.key !== 'Escape') return;
+    if (dropdownContent.classList.contains('hidden')) return;
+    event.preventDefault();
+    closeDropdown(true);
+  });
+
   document.addEventListener('click', function() {
     if (!dropdownContent.classList.contains('hidden')) {
-      dropdownContent.classList.add('hidden');
-      dropdownContent.setAttribute('hidden', 'true');
-      dropdownButton.setAttribute('aria-expanded', 'false');
+      closeDropdown();
     }
   });
 }
@@ -751,6 +765,18 @@ export function createPopoverKeyboardFlow(options) {
   };
 
   popover.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      if (trigger instanceof HTMLElement) {
+        const isExpanded = trigger.getAttribute("aria-expanded") === "true";
+        if (isExpanded) {
+          trigger.click();
+        }
+        requestAnimationFrame(() => trigger.focus());
+      }
+      return;
+    }
+
     if (event.key !== "Tab") return;
 
     const active = document.activeElement;
