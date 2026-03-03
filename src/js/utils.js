@@ -717,6 +717,70 @@ export function initDropdown(dropdownSelector) {
 }
 
 /**
+ * Wires minimal keyboard flow for popovers:
+ * - Shift+Tab on first control
+ * - Tab on last control
+ * Call `focusFirst()` when popover opens.
+ *
+ * @param {{
+ *   popover: HTMLElement,
+ *   trigger: HTMLElement,
+ *   firstSelector: string,
+ *   lastSelector: string,
+ *   onForwardTab?: () => void,
+ *   onBackwardTab?: () => void
+ * }} options
+ * @returns {{ focusFirst: () => void }}
+ */
+export function createPopoverKeyboardFlow(options) {
+  const {
+    popover,
+    trigger,
+    firstSelector,
+    lastSelector,
+    onForwardTab,
+    onBackwardTab
+  } = options;
+
+  const getFirst = () => popover.querySelector(firstSelector);
+  const getLast = () => popover.querySelector(lastSelector);
+
+  const focusFirst = () => {
+    const first = getFirst();
+    if (first instanceof HTMLElement) first.focus();
+  };
+
+  popover.addEventListener("keydown", (event) => {
+    if (event.key !== "Tab") return;
+
+    const active = document.activeElement;
+    const first = getFirst();
+    const last = getLast();
+
+    if (event.shiftKey && first && active === first) {
+      event.preventDefault();
+      if (typeof onBackwardTab === "function") {
+        onBackwardTab();
+      } else {
+        trigger.focus();
+      }
+      return;
+    }
+
+    if (!event.shiftKey && last && active === last) {
+      event.preventDefault();
+      if (typeof onForwardTab === "function") {
+        onForwardTab();
+      } else {
+        trigger.focus();
+      }
+    }
+  });
+
+  return { focusFirst };
+}
+
+/**
  * Parses a comma-separated string of filters and processes each element to create an array of objects.
  * Each object represents one element from the input string, processed to remove certain prefixes or suffixes.
  * 

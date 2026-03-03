@@ -440,6 +440,10 @@ function createExploreFilterRadioButton(id, isChecked) {
       content: generateTooltipContent(labelData),
       allowHTML: true,
       interactive: true,
+      aria: {
+        content: null,
+        expanded: false
+      },
       placement: 'bottom',
       appendTo: document.body,
       theme: 'tooltip-white'
@@ -1437,11 +1441,14 @@ function enableExploreTableScroll() {
  * The tooltip is only shown if the cell's content is actually truncated and the user hovers over it with intent.
  */
 function enableTooltipsForTruncatedCells() {
-  document.querySelectorAll('.truncate').forEach(cell => {
+  document.querySelectorAll('#export_table .truncate').forEach(cell => {
       tippy(cell, {
           content: cell.textContent,
           allowHTML: true,
-          interactive: true,
+          interactive: false,
+          aria: {
+            expanded: false
+          },
           placement: 'bottom',
           appendTo: document.body,
           delay: [500, 0], // 500 ms delay before showing, 0 ms delay before hiding
