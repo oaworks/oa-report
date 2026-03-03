@@ -10,7 +10,7 @@
 import { bindSmoothScrollLinks, adjustNavOnScroll } from './utils.js';
 import { DEFAULT_YEAR, FIRST_YEAR, currentDate, bindDynamicYearButtons, setDefaultYear, initDateManager } from './report-date-manager.js';
 import { initDataExplore } from './explore.js';
-import { initStrategyTabs } from './strategies.js';
+import { initActionTabs } from './actions.js';
 
 // Flag to check if initDataExplore has already been initialised
 let isDataExploreInitialised = false;
@@ -48,7 +48,7 @@ function initialise() {
     bindSmoothScrollLinks(); 
   }
 
-  initStrategyTabs();
+  initActionTabs();
 }
 
 // Initialise the report when the DOM is ready

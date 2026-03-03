@@ -10,8 +10,9 @@
 // =================================================
 
 import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter } from './utils.js';
-import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS } from './constants.js';
+import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, ACTION_LABELS, ACTION_ORDER } from './constants.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
+import { initActionTabs } from './actions.js';
 
 // Cache identical count queries so we only hit the API once per unique URL
 const countQueryCache = new Map();
@@ -167,6 +168,38 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
   return renderedIds;
 }
 
+function renderActionTabs(strategy = {}) {
+  const tabsContainer = document.getElementById("actions_buttons");
+  if (!tabsContainer) return;
+
+  const visibleStrategies = Object.entries(strategy)
+    .filter(([, config]) => config?.show_on_web === true)
+    .map(([id]) => id)
+    .filter((id) => document.getElementById(id)) // Keep only strategies with an existing panel for this pass.
+    .sort((a, b) => {
+      const aIndex = ACTION_ORDER.indexOf(a);
+      const bIndex = ACTION_ORDER.indexOf(b);
+      const aRank = aIndex === -1 ? Number.MAX_SAFE_INTEGER : aIndex;
+      const bRank = bIndex === -1 ? Number.MAX_SAFE_INTEGER : bIndex;
+      return aRank - bRank;
+    });
+
+  tabsContainer.innerHTML = "";
+
+  visibleStrategies.forEach((id, index) => {
+    const label = ACTION_LABELS[id] || id.replaceAll("_", " ");
+    const tab = document.createElement("li");
+    tab.id = `strategy_${id}`;
+    tab.className = "js_strategy_btn group cursor-pointer px-4 py-1.5 text-sm font-medium rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 transition-colors text-white bg-neutral-900/60";
+    tab.setAttribute("role", "tab");
+    tab.setAttribute("aria-controls", id);
+    tab.setAttribute("aria-selected", index === 0 ? "true" : "false");
+    tab.setAttribute("tabindex", index === 0 ? "0" : "-1");
+    tab.innerHTML = `<span>${label}</span><span id="count_${id}" class="bg-neutral-900 text-neutral-100 ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block group-hover:bg-neutral-800">0</span>`;
+    tabsContainer.appendChild(tab);
+  });
+}
+
 // Generate report’s UI for any given date range
 export function initInsightsAndStrategies(org) {
   // Ensure counts are fetched fresh for the current date range
@@ -190,6 +223,8 @@ export function initInsightsAndStrategies(org) {
       showUnique,
       isGates
     });
+    renderActionTabs(orgData?.hits?.hits?.[0]?._source?.strategy || {});
+    initActionTabs();
 
     /** Decrypt emails if user has an orgKey **/
     window.handleDecryptEmailClick = function(buttonElement) {
