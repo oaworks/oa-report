@@ -113,5 +113,53 @@ export const ACTION_TABLE_CONFIGS = [
           <i class='ph ph-envelope inline-block text-[16px] leading-none duration-500' aria-hidden='true'></i>\
         </button>\
       </td>"
+  },
+  {
+    id: "email_author_aam",
+    keys: ["published_date", "title", "journal", "author_email_name", "email", "DOI", "mailto"],
+    rowTemplate: "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
+        <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
+        <div class='mb-1 font-medium text-neutral-900 hover:text-carnation-500'>\
+          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
+        </div>\
+        <div class='text-neutral-600'>${action.journal}</div>\
+      </td>\
+      <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
+        <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
+      </td>\
+      <td class='hidden px-3 py-4 text-sm text-center text-neutral-600 align-top break-words sm:table-cell'>\
+        <button \
+          class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
+          data-email='${action.email}'\
+          data-doi='${action.DOI}'\
+          data-mailto='${action.mailto}'\
+          onclick='handleDecryptEmailClick(this)'>\
+          <i class='ph ph-envelope inline-block text-[16px] leading-none duration-500' aria-hidden='true'></i>\
+        </button>\
+      </td>"
+  },
+  {
+    id: "email_author_vor",
+    keys: ["published_date", "title", "journal", "author_email_name", "email", "DOI", "mailto"],
+    rowTemplate: "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
+        <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
+        <div class='mb-1 font-medium text-neutral-900 hover:text-carnation-500'>\
+          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
+        </div>\
+        <div class='text-neutral-600'>${action.journal}</div>\
+      </td>\
+      <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
+        <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
+      </td>\
+      <td class='hidden px-3 py-4 text-sm text-center text-neutral-600 align-top break-words sm:table-cell'>\
+        <button \
+          class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
+          data-email='${action.email}'\
+          data-doi='${action.DOI}'\
+          data-mailto='${action.mailto}'\
+          onclick='handleDecryptEmailClick(this)'>\
+          <i class='ph ph-envelope inline-block text-[16px] leading-none duration-500' aria-hidden='true'></i>\
+        </button>\
+      </td>"
   }
 ];
