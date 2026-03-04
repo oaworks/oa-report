@@ -7,7 +7,7 @@
 // Imports
 // =================================================
 
-import { updateURLParams, getAllURLParams } from './utils.js';
+import { updateURLParams, getAllURLParams, announce } from './utils.js';
 
 /**
  * Initialises event listeners for action tab buttons.
@@ -90,6 +90,11 @@ function updateStrategyButtonStyling(event) {
     activeBadge.classList.remove("bg-neutral-700", "text-neutral-100");
   }
   tabBtn.setAttribute("aria-pressed", "true");
+
+  const actionName = tabBtn.textContent?.trim().replace(/\s+/g, " ");
+  if (actionName) {
+    announce(`Action type: ${actionName}.`);
+  }
 
   // Update URL params
   if (shouldUpdateActionUrl) {

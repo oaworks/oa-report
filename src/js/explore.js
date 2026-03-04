@@ -7,7 +7,7 @@
 // Imports
 // =================================================
 
-import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, normaliseFieldId, makeNumberReadable } from "./utils.js";
+import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, normaliseFieldId, makeNumberReadable, announce } from "./utils.js";
 import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, FILTER_PILL_CLASSES, SEGMENTED_PILL_CLASSES } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { toggleLoadingIndicator } from "./components.js";
@@ -536,6 +536,7 @@ function addRecordsShownSelectToDOM() {
 
   // Create the label element
   const label = document.createElement("label");
+  label.id = "records_shown_select_label";
   label.setAttribute("for", "records_shown_select");
   label.className = "sr-only"; // Hide the label visually
   label.textContent = "Records shown:"; 
@@ -1522,6 +1523,7 @@ async function handleRecordsShownChange(event) {
       currentActiveExploreItemSize
     );
     updateURLParams({ records: newSize });
+    announce(`Rows shown: ${newSize}.`);
   } catch (error) {
     console.error('Error updating records shown: ', error);
   }
@@ -1543,6 +1545,7 @@ async function handleFilterChange(filterId) {
   currentActiveExploreItemQuery = filterId;
   updateExploreFilterHeader(filterId);
   updateFilterPillStates(filterId);
+  announce(`Explore filter: ${EXPLORE_FILTERS_LABELS[filterId] || filterId}.`);
   toggleLoadingIndicator(false, 'explore_loading'); // Hide loading indicator once data is loaded
 }
 
@@ -1572,6 +1575,7 @@ function handleDataDisplayToggle() {
         toggleDot.classList.replace('translate-x-5', 'translate-x-100');
         currentActiveDataDisplayToggle = true; // Update the global toggle state
     }
+    announce(`Explore view: ${currentActiveDataDisplayToggle ? "Pretty table" : "Raw values"}.`);
     // Fetch and display data with the updated pretty/raw format
     fetchAndDisplayExploreData(currentActiveExploreItemData, currentActiveExploreItemQuery, currentActiveExploreItemSize);
   });

@@ -189,6 +189,43 @@ export function createDate(year, month, day) {
 // DOM helpers
 
 /**
+ * Announces dynamic UI updates to assistive technology via a shared live region.
+ *
+ * @param {string} message - Message to announce.
+ */
+export function announce(message) {
+  const text = String(message || "").trim();
+  if (!text) return;
+
+  const id = "oar-live-region";
+  let liveRegion = document.getElementById(id);
+
+  if (!liveRegion) {
+    liveRegion = document.createElement("div");
+    liveRegion.id = id;
+    liveRegion.setAttribute("aria-live", "polite");
+    liveRegion.setAttribute("aria-atomic", "true");
+    liveRegion.setAttribute("role", "status");
+    liveRegion.style.position = "absolute";
+    liveRegion.style.width = "1px";
+    liveRegion.style.height = "1px";
+    liveRegion.style.margin = "-1px";
+    liveRegion.style.padding = "0";
+    liveRegion.style.border = "0";
+    liveRegion.style.overflow = "hidden";
+    liveRegion.style.clip = "rect(0 0 0 0)";
+    liveRegion.style.clipPath = "inset(50%)";
+    liveRegion.style.whiteSpace = "nowrap";
+    document.body.appendChild(liveRegion);
+  }
+
+  liveRegion.textContent = "";
+  window.setTimeout(() => {
+    liveRegion.textContent = text;
+  }, 30);
+}
+
+/**
  * Hides an HTML element by setting its display style to 'none'.
  *
  * @param {string} id - The ID of the HTML element to be hidden.
