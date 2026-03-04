@@ -4,9 +4,8 @@ on:
   push:
     branches:
       - dev
-  pull_request:
-    branches:
-      - dev
+      - staging
+      - main
   workflow_dispatch:
     inputs:
       force_fail:
@@ -18,17 +17,25 @@ jobs:
   lighthouse:
     name: Run Lighthouse CI
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: read
 
     strategy:
       matrix:
         include:
-          - branch: dev # Only run on dev for now, as it is the only one set up for preview branches
-            # Run on both Netlify and CF Pages
+          - branch: dev
             urls: |
               https://dev.oa.report/
               https://dev.oa.report/test/
-              https://dev-oa-report.pages.dev/
-              https://dev-oa-report.pages.dev/test/
+          - branch: staging
+            urls: |
+              https://staging.oa.report/
+              https://staging.oa.report/test/
+          - branch: main
+            urls: |
+              https://oa.report/
+              https://oa.report/test/
 
     steps:
       - name: Checkout
@@ -41,6 +48,95 @@ jobs:
           exit 0
         env:
           MATRIX_BRANCH: ${{ matrix.branch }}
+
+      - name: Wait for Cloudflare deployment check to succeed
+        if: ${{ github.ref_name == matrix.branch }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          echo "Waiting for Cloudflare Pages deployment check on commit ${SHA}..."
+
+          for attempt in $(seq 1 60); do
+            response="$(curl -sS -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${REPO}/commits/${SHA}/check-runs?per_page=100")"
+
+            status="$(python3 - <<'PY' "${response}"
+import json, sys
+data = json.loads(sys.argv[1])
+runs = data.get("check_runs", [])
+cf_runs = [
+    r for r in runs
+    if "cloudflare" in r.get("name", "").lower() and "pages" in r.get("name", "").lower()
+]
+if not cf_runs:
+    print("missing")
+    raise SystemExit(0)
+
+cf_runs.sort(key=lambda r: r.get("started_at") or "", reverse=True)
+run = cf_runs[0]
+conclusion = run.get("conclusion")
+state = run.get("status")
+if state != "completed":
+    print("waiting")
+elif conclusion == "success":
+    print("success")
+elif conclusion in {"failure", "cancelled", "timed_out", "action_required", "stale"}:
+    print("failed")
+else:
+    print("waiting")
+PY
+)"
+
+            if [ "${status}" = "success" ]; then
+              echo "Cloudflare Pages deployment check is successful."
+              break
+            fi
+
+            if [ "${status}" = "failed" ]; then
+              echo "Cloudflare Pages deployment check completed but did not succeed."
+              exit 1
+            fi
+
+            if [ "${attempt}" -eq 60 ]; then
+              echo "Timed out waiting for Cloudflare Pages deployment check."
+              exit 1
+            fi
+
+            echo "Cloudflare deployment not ready yet (${status}). Retry ${attempt}/60..."
+            sleep 15
+          done
+
+      - name: Wait for branch URLs to be live
+        if: ${{ github.ref_name == matrix.branch }}
+        env:
+          TARGET_URLS: ${{ matrix.urls }}
+        run: |
+          set -euo pipefail
+          echo "Waiting for branch URLs to return HTTP 200..."
+
+          while IFS= read -r url; do
+            [ -z "${url}" ] && continue
+            echo "Checking ${url}"
+
+            ok="false"
+            for attempt in $(seq 1 40); do
+              code="$(curl -sS -o /dev/null -w "%{http_code}" -L "${url}" || true)"
+              if [ "${code}" = "200" ]; then
+                ok="true"
+                echo "  Live (${code})"
+                break
+              fi
+              echo "  Not live yet (HTTP ${code:-000}) retry ${attempt}/40..."
+              sleep 15
+            done
+
+            if [ "${ok}" != "true" ]; then
+              echo "Timed out waiting for ${url} to become live."
+              exit 1
+            fi
+          done <<< "${TARGET_URLS}"
 
       # Run Lighthouse against two audit targets:
       # - index.html
