@@ -328,11 +328,9 @@ export function initInsightsAndActions(org) {
         }
 
         // On-click tooltip to contain Insight info + figure details
-        const tooltipTarget = cardContents;
-        const tooltipTargetId = tooltipTarget.id || `${numerator}-card`;
+        const tooltipTarget = cardContents.querySelector('.js_insight_trigger') || cardContents;
+        const tooltipTargetId = tooltipTarget.id || `${numerator}-card-trigger`;
         tooltipTarget.id = tooltipTargetId;
-        tooltipTarget.setAttribute('role', 'button');
-        tooltipTarget.setAttribute('tabindex', '0');
         let instance = cardContents._insightTooltip;
         if (!instance) {
           instance = tippy(tooltipTarget, {
@@ -373,7 +371,6 @@ export function initInsightsAndActions(org) {
         // Accessibility / tooltip IDs
         const tooltipID = instance.popper.id;
         tooltipTarget.setAttribute('aria-controls', tooltipID);
-        tooltipTarget.setAttribute('aria-labelledby', tooltipTargetId);
         tooltipTarget.setAttribute('aria-description', 'Press Enter to show more information for this metric.');
         tooltipTarget.setAttribute('title', 'More information on this metric');
         tooltipTarget.setAttribute('aria-haspopup', 'dialog');
