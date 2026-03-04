@@ -617,6 +617,7 @@ export function convertTextToLinks(text, forceLink = false, urlPrefix = '') {
  */
 export function bindSmoothScrollLinks() {
   const additionalSpacing = 20; // Extra spacing in pixels
+  const focusable = 'a[href], button, input, select, textarea, details, [tabindex]:not([tabindex="-1"])';
 
   document.querySelectorAll('a[href^="#"]').forEach(link => {
     link.addEventListener('click', function(event) {
@@ -633,6 +634,21 @@ export function bindSmoothScrollLinks() {
         window.scrollTo({
           top: offsetPosition,
           behavior: 'smooth'
+        });
+
+        requestAnimationFrame(() => {
+          const focusTarget = targetElement.getAttribute("aria-hidden") === "true"
+            ? targetElement.nextElementSibling
+            : targetElement;
+
+          if (!(focusTarget instanceof HTMLElement)) return;
+
+          const hadTabIndex = focusTarget.hasAttribute("tabindex");
+          if (!focusTarget.matches(focusable) && !hadTabIndex) {
+            focusTarget.setAttribute("tabindex", "-1");
+            focusTarget.addEventListener("blur", () => focusTarget.removeAttribute("tabindex"), { once: true });
+          }
+          focusTarget.focus({ preventScroll: true });
         });
       } else {
         console.error('Target element not found:', targetId);
