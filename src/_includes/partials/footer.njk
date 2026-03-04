@@ -1,9 +1,11 @@
-<footer class="bg-neutral-900 text-white md:flex md:justify-between p-8 md:px-8">
+<footer class="bg-neutral-900 text-white md:flex md:justify-between p-8 md:px-8" aria-labelledby="footer-heading">
+  <h2 id="footer-heading" class="sr-only">Site footer</h2>
   <a href="/" class="block">
     {% set logo_size = 'w-20 md:w-24 lg:w-32' %}
     {% include 'partials/app-name.njk' %}
   </a>
-  <nav class="mt-8 md:mt-0 md:flex" aria-label="Footer">
+  <nav class="mt-8 md:mt-0 md:flex" aria-labelledby="footer-nav-heading">
+    <h3 id="footer-nav-heading" class="sr-only">Footer links</h3>
     <ul class="flex flex-col items-start gap-2 text-left md:flex-row md:items-center md:gap-12 md:justify-center">
       {% for item in nav_footer %}
       <li>
