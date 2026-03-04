@@ -47,7 +47,7 @@
     <!-- Hamburger Button -->
     <button id="menu-toggle" aria-expanded="false" aria-controls="mobile-menu" class="sm:hidden flex items-center justify-center p-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-carnation-500">
       {% icon_small "menu" %}
-      <span class="sr-only">Open menu</span>
+      <span id="menu-toggle-label" class="sr-only">Open menu</span>
     </button>
 
     <!-- Menu Items -->
@@ -117,11 +117,14 @@
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     const menuToggle = document.getElementById('menu-toggle');
+    const menuToggleLabel = document.getElementById('menu-toggle-label');
     const mobileMenu = document.getElementById('mobile-menu');
 
     menuToggle.addEventListener('click', function () {
       const isExpanded = menuToggle.getAttribute('aria-expanded') === 'true';
-      menuToggle.setAttribute('aria-expanded', !isExpanded);
+      const nextExpanded = !isExpanded;
+      menuToggle.setAttribute('aria-expanded', String(nextExpanded));
+      if (menuToggleLabel) menuToggleLabel.textContent = nextExpanded ? 'Close menu' : 'Open menu';
 
       if (!isExpanded) {
         mobileMenu.classList.remove('hidden');
