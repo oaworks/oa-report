@@ -886,11 +886,9 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
     tableHeader.removeChild(tableHeader.firstChild);
   }
 
-  records = Object.keys(records); // Only extract the keys from the records
-
   const headerRow = document.createElement('tr');
-  records.forEach((key, index) => {
-    key = normaliseFieldId(key);
+  Object.keys(records).forEach((rawKey, index) => {
+    const key = normaliseFieldId(rawKey);
 
     const cssClass = index === 0
       ? DATA_TABLE_HEADER_CLASSES[dataType].firstHeaderCol
@@ -899,11 +897,45 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
         : DATA_TABLE_HEADER_CLASSES[dataType].otherHeaderCols;
 
     const headerCell = createTableCell('', cssClass, null, null, true); 
+    if (index > 1) {
+      headerCell.classList.add(
+        shouldRightAlignExploreColumn(rawKey, records[rawKey]) ? "text-right" : "text-left"
+      );
+    }
     setupHeaderTooltip(headerCell, key, dataType);
 
     headerRow.appendChild(headerCell);
   });
   tableHeader.appendChild(headerRow);
+}
+
+/**
+ * Determines whether an Explore column should be right-aligned.
+ *
+ * @param {string} key
+ * @param {*} sampleValue
+ * @returns {boolean}
+ */
+function shouldRightAlignExploreColumn(key, sampleValue) {
+  const normalizedKey = normaliseFieldId(key).toLowerCase();
+  const numericFieldPattern = /(^|_)(count|counts|pct|percent|percentage|total|amount|cost|apc|usd|value|avg|mean|median|min|max|sum|price|year)(_|$)/;
+
+  if (numericFieldPattern.test(normalizedKey)) return true;
+  return isNumericLikeValue(sampleValue);
+}
+
+/**
+ * Returns true when a value is likely numeric in table output.
+ *
+ * @param {*} value
+ * @returns {boolean}
+ */
+function isNumericLikeValue(value) {
+  if (typeof value === "number") return Number.isFinite(value);
+  if (typeof value !== "string") return false;
+  const trimmed = value.trim();
+  if (!trimmed || /^n\/a$/i.test(trimmed)) return false;
+  return /^-?\$?\d[\d,]*(\.\d+)?%?$/.test(trimmed);
 }
 
 /**
@@ -1009,7 +1041,8 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
     let columnIndex = 0; // Keep track of column index for CSS class assignment
 
     for (const key in record) {
-      let content = record[key];
+      const rawContent = record[key];
+      let content = rawContent;
 
       // Special processing for articles data type
       // DOI key
@@ -1032,7 +1065,11 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
       else if (columnIndex === 1) cssClass = DATA_TABLE_BODY_CLASSES[dataType].secondCol;
       else cssClass = DATA_TABLE_BODY_CLASSES[dataType].otherCols;
 
-      row.appendChild(createTableCell(content, cssClass, exploreItemId, key, false));
+      const cell = createTableCell(content, cssClass, exploreItemId, key, false);
+      if (columnIndex > 1) {
+        cell.classList.add(shouldRightAlignExploreColumn(key, rawContent) ? "text-right" : "text-left");
+      }
+      row.appendChild(cell);
       columnIndex++;
     }
     tableBody.appendChild(row);
@@ -1044,14 +1081,19 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
     let columnIndex = 0;
 
     for (const key in allValuesRecord) {
-      let content = allValuesRecord[key];
+      const rawContent = allValuesRecord[key];
+      let content = rawContent;
 
       let cssClass;
       if (columnIndex === 0) cssClass = DATA_TABLE_FOOT_CLASSES[dataType].firstCol;
       else if (columnIndex === 1) cssClass = DATA_TABLE_FOOT_CLASSES[dataType].secondCol;
       else cssClass = DATA_TABLE_FOOT_CLASSES[dataType].otherCols;
 
-      footerRow.appendChild(createTableCell(content, cssClass, exploreItemId, key, false));
+      const footerCell = createTableCell(content, cssClass, exploreItemId, key, false);
+      if (columnIndex > 1) {
+        footerCell.classList.add(shouldRightAlignExploreColumn(key, rawContent) ? "text-right" : "text-left");
+      }
+      footerRow.appendChild(footerCell);
       columnIndex++;
     }
     tableFooter.appendChild(footerRow);
@@ -1390,11 +1432,11 @@ function enableExploreRowHighlighting() {
 
       if (isRowHighlighted) {
         rowCells.forEach(cell => cell.classList.remove('!bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900'));
-        secondCell.classList.add('bg-neutral-600');
+        secondCell.classList.add('bg-white');
         selectedRowKeys = selectedRowKeys.filter(key => key !== firstCellContent); // Remove key from array for persistent active keys
       } else {
         rowCells.forEach(cell => cell.classList.add('!bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900'));
-        secondCell.classList.remove('bg-neutral-600');
+        secondCell.classList.remove('bg-white');
         selectedRowKeys.push(firstCellContent); // Add key to array for persistent active keys 
       }
     }
