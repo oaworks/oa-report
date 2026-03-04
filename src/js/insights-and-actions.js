@@ -528,11 +528,12 @@ export function initInsightsAndActions(org) {
                 // Get full list of actions for this strategy 
                 axios.get(listQuery)
                   .then(function (listResponse) {
-                    var list = listResponse.data.hits.hits,
+                    var list = listResponse?.data?.hits?.hits || [],
+                        rowsToRender = Math.min(count, list.length),
                         tableRows = ""; // Contents of the list to be displayed in the UI as a table
                 
                     // For each individual action, create a row
-                    for (let i = 0; i < count; i++) {
+                    for (let i = 0; i < rowsToRender; i++) {
                       var action = {}; // Create object to store key-value pairs for each action
                       tableRows += "<tr>";
 
