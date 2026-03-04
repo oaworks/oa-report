@@ -27,7 +27,7 @@ import {
 } from "./constants.js";
 import { SEARCH_FILTER_FIELD_MAP, iconForField } from "./constants/filter-fields.js";
 
-import { orgDataPromise } from './insights-and-strategies.js';
+import { orgDataPromise } from './insights-and-actions.js';
 
 import { handleFiltersChanged } from './explore.js';
 

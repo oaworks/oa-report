@@ -13,7 +13,7 @@ import { iconForFilterId } from "./constants/filter-fields.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
 import { renderActiveFiltersBanner } from './report-filter-manager.js';
-import { orgDataPromise, initInsightsAndStrategies } from './insights-and-strategies.js';
+import { orgDataPromise, initInsightsAndActions } from './insights-and-actions.js';
 import { getAggregatedDataQuery } from './aggregated-data-query.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 
@@ -104,7 +104,7 @@ let exploreItemDataById = new Map();
 let selectedRowKeys = [];
 
 /**
- * Re-runs Insights / Strategies and the current Explore table
+ * Re-runs Insights / Actions and the current Explore table
  * after the top-level filters (?q=) change, then re-renders
  * the Filters banner.
  */
@@ -118,10 +118,10 @@ export async function handleFiltersChanged() {
 
 async function _runHandleFiltersChanged() {
   _handleFiltersChangedTimer = null;
-  // 1. Refresh Insights & Strategies
+  // 1. Refresh Insights & Actions
   const slug = orgData?.hits?.hits?.[0]?._source?.objectID;
   if (slug) {
-    initInsightsAndStrategies(slug);
+    initInsightsAndActions(slug);
   }
 
   // 2. Refresh Explore table (current item if set, otherwise default)

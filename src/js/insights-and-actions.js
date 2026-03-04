@@ -1,5 +1,5 @@
 // ================================================
-// insights-and-strategies.js
+// insights-and-actions.js
 // State & DOM manipulation specific to Insights
 // and Actions sections
 // Needs to be completely refactored
@@ -44,7 +44,7 @@ const authState = initAuth(org);
 loggedIn = authState.loggedIn;
 orgKey = authState.orgKey ? `&orgkey=${authState.orgKey}` : "";
 applyAuthVisibility({
-  showWhenLoggedIn: ["logout", "strategies"],
+  showWhenLoggedIn: ["logout", "actions"],
   hideWhenLoggedIn: ["login"]
 });
 
@@ -52,7 +52,7 @@ onAuthChange(({ loggedIn: isLoggedIn, orgKey: key }) => {
   loggedIn = isLoggedIn;
   orgKey = key ? `&orgkey=${key}` : "";
   applyAuthVisibility({
-    showWhenLoggedIn: ["logout", "strategies"],
+    showWhenLoggedIn: ["logout", "actions"],
     hideWhenLoggedIn: ["login"]
   });
 });
@@ -172,13 +172,13 @@ function renderActionTabs(strategy = {}) {
   const tabsContainer = document.getElementById("actions_buttons");
   if (!tabsContainer) return;
   const actionsTabLink = document.getElementById("section-tab-actions");
-  const actionsAnchor = document.getElementById("strategies");
+  const actionsAnchor = document.getElementById("actions");
   const actionsSection = actionsAnchor?.nextElementSibling;
 
-  const visibleStrategies = Object.entries(strategy)
+  const visibleActions = Object.entries(strategy)
     .filter(([, config]) => config?.show_on_web === true)
     .map(([id]) => id)
-    .filter((id) => document.getElementById(id)) // Keep only strategies with an existing panel for this pass.
+    .filter((id) => document.getElementById(id)) // Keep only actions with an existing panel for this pass.
     .sort((a, b) => {
       const aIndex = ACTION_ORDER.indexOf(a);
       const bIndex = ACTION_ORDER.indexOf(b);
@@ -187,7 +187,7 @@ function renderActionTabs(strategy = {}) {
       return aRank - bRank;
     });
 
-  const hasVisibleActions = visibleStrategies.length > 0;
+  const hasVisibleActions = visibleActions.length > 0;
   [actionsTabLink, actionsAnchor, actionsSection].forEach((el) => {
     if (el instanceof HTMLElement) {
       el.classList.toggle("hidden", !hasVisibleActions);
@@ -196,7 +196,7 @@ function renderActionTabs(strategy = {}) {
 
   tabsContainer.innerHTML = "";
 
-  visibleStrategies.forEach((id, index) => {
+  visibleActions.forEach((id, index) => {
     const label = ACTION_LABELS[id] || id.replaceAll("_", " ");
     const item = document.createElement("li");
     item.className = "list-none";
@@ -213,7 +213,7 @@ function renderActionTabs(strategy = {}) {
 }
 
 // Generate report’s UI for any given date range
-export function initInsightsAndStrategies(org) {
+export function initInsightsAndActions(org) {
   // Ensure counts are fetched fresh for the current date range
   countQueryCache.clear();
 
@@ -514,7 +514,7 @@ export function initInsightsAndStrategies(org) {
             }
             tableCountContents.textContent = makeNumberReadable(count);
 
-            // If user is logged in, show full list of strategies
+            // If user is logged in, show full list of actions
             if (loggedIn) {
               // If no actions are available, show message
               if (count === 0) {
@@ -594,9 +594,9 @@ export function initInsightsAndStrategies(org) {
               }
             }
 
-            // Otherwise, display a message prompting user to log or contact us to access strategies
+            // Otherwise, display a message prompting user to log in or contact us to access actions
             else {
-              tableBody.innerHTML = `<tr><td class='py-4 pl-4 pr-3 text-base text-center align-top break-words' colspan='3'><p class='font-bold'>Strategies help you take action to make your institution’s research more open.</p> <p>Find out more about them by <a href='mailto:hello@oa.works?subject=OA.Report%20&mdash;%20${decodeURIComponent(org)}' class='underline underline-offset-2 decoration-1'>contacting us</a> or <a href='https://about.oa.report/docs/user-accounts' class='underline underline-offset-2 decoration-1' title='Information on user accounts'>logging in to your account</a> to access them.</p></td></tr>`;
+              tableBody.innerHTML = `<tr><td class='py-4 pl-4 pr-3 text-base text-center align-top break-words' colspan='3'><p class='font-bold'>Actions help you take steps to make your institution’s research more open.</p> <p>Find out more about them by <a href='mailto:hello@oa.works?subject=OA.Report%20&mdash;%20${decodeURIComponent(org)}' class='underline underline-offset-2 decoration-1'>contacting us</a> or <a href='https://about.oa.report/docs/user-accounts' class='underline underline-offset-2 decoration-1' title='Information on user accounts'>logging in to your account</a> to access them.</p></td></tr>`;
               displayNone(`form_${strategy}`);
             }
           })
@@ -680,17 +680,18 @@ export function initInsightsAndStrategies(org) {
   });
 };
 
+
 /**
- * Calls the getStrategyExportLink function with the necessary orgData.
+ * Calls the getActionExportLink function with the necessary orgData.
  * This function is designed to be called from HTML templates and handles
- * fetching the organization data before executing getStrategyExportLink.
+ * fetching the organization data before executing getActionExportLink.
  *
- * @param {string} id - The identifier for the strategy export link.
+ * @param {string} id - The identifier for the action export link.
  */
-window.callGetStrategyExportLink = function(id) {
+window.callGetActionExportLink = function(id) {
   orgDataPromise.then(function (response) {
       const orgData = response.data;
-      getStrategyExportLink(id, orgData);
+      getActionExportLink(id, orgData);
   }).catch(function (error) {
       console.error(`Error fetching orgData: ${error}`);
   });
@@ -701,15 +702,15 @@ window.callGetStrategyExportLink = function(id) {
 
 
 /**
-* Handles the creation and sending of a strategy export link request.
-* This function is called with organizational data and an identifier to
-* construct the appropriate export link.
-*
-* @param {string} id - The identifier for the strategy export link.
-* @param {Object} orgData - The organization data required for the export link.
-* @returns {boolean} - Always returns false to prevent default form submission.
+ * Handles the creation and sending of an action export link request.
+ * This function is called with organizational data and an identifier to
+ * construct the appropriate export link.
+ *
+ * @param {string} id - The identifier for the action export link.
+ * @param {Object} orgData - The organization data required for the export link.
+ * @returns {boolean} - Always returns false to prevent default form submission.
 */
-export function getStrategyExportLink(id, orgData) {
+export function getActionExportLink(id, orgData) {
   let hasCustomExportIncludes = orgData.hits.hits[0]._source.strategy[id].export_includes,
       strategyQuery           = orgData.hits.hits[0]._source.strategy[id].query,
       strategySort            = orgData.hits.hits[0]._source.strategy[id].sort;

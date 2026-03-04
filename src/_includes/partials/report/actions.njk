@@ -1,32 +1,32 @@
 {# Actions section #}
 {% from "partials/report/section-wrapper.njk" import sectionWrapper %}
 
-{% call sectionWrapper("strategies", "Actions") %}
+{% call sectionWrapper("actions", "Actions") %}
 
   {# Actions tabs / pills #}
   <nav class="hidden sm:block flex flex-wrap items-center gap-4 p-2 rounded-md bg-neutral-800/90 border border-neutral-700 shadow-lg" aria-label="Actions">
     <ul class="flex flex-wrap items-center gap-4 m-0 p-0 list-none" id="actions_buttons">
-      {{ component("strategy-pill", {
+      {{ component("action-pill", {
         id: "email_author_deposit",
         txt: "Self-archive articles",
         first: true
       }) }}
 
-      {{ component("strategy-pill", {
+      {{ component("action-pill", {
         id: "email_author_vor",
         txt: "Deposit publisher PDFs",
         class: "font-semibold bg-carnation-300"
       }) }}
-      {{ component("strategy-pill", {
+      {{ component("action-pill", {
         id: "email_author_aam",
         txt: "Deposit accepted manuscripts"
       }) }}
-      {{ component("strategy-pill", {
+      {{ component("action-pill", {
         id: "apc_followup",
         txt: "Correct publisher errors"
       }) }}
 
-      {{ component("strategy-pill", {
+      {{ component("action-pill", {
         id: "unanswered_requests",
         txt: "Escalate unanswered requests"
       }) }}
@@ -38,8 +38,8 @@
     <div class="grid grid-cols-2 gap-3 sm:gap-6 md:gap-12">
       <div class="col-span-2">
 
-        <div class="hidden sm:block js_strategies">
-          {{ component("strategy-contents", {
+        <div class="hidden sm:block js_actions">
+          {{ component("action-contents", {
             id: "email_author_vor",
             heading: "Deposit publisher PDFs",
             desc: "Send emails to authors to request they make their work free to read. In these cases, they can do that by making a <strong>publisher PDF (version of record, VOR)</strong> available in a repository.",
@@ -50,7 +50,7 @@
             hidden: false
           }) }}
 
-          {{ component("strategy-contents", {
+          {{ component("action-contents", {
             id: "email_author_aam",
             heading: "Deposit accepted manuscripts",
             desc: "Send emails to authors to request they make their work free to read. In these cases, they can do that by making an <strong>author accepted manuscript (AAM)</strong> available in a repository.",
@@ -61,7 +61,7 @@
             hidden: true
           }) }}
 
-          {{ component("strategy-contents", {
+          {{ component("action-contents", {
             id: "email_author_deposit",
             heading: "Self-archive articles",
             desc: "Send emails to authors requesting that they make their work freely available in a repository.",
@@ -72,7 +72,7 @@
             hidden: false
           }) }}
 
-          {{ component("strategy-contents", {
+          {{ component("action-contents", {
             id: "apc_followup",
             heading: "Correct publisher errors",
             desc: "These are articles where an APC has been paid, but they still aren’t compliant with the policy. Use this list to follow up with publishers. If it is made compliant, and the metadata is updated, it will be removed.",
@@ -84,7 +84,7 @@
             hidden: true
           }) }}
 
-          {{ component("strategy-contents", {
+          {{ component("action-contents", {
             id: "unanswered_requests",
             heading: "Escalate unanswered requests",
             desc: "These articles are not compliant with policy, and their authors haven’t answered multiple requests to comply. Use this list to escalate requests to authors and request they make their work freely available.",

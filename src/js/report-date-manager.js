@@ -10,7 +10,7 @@
 
 import { DATE_SELECTION_BUTTON_CLASSES } from './constants.js';
 import { createDate, replaceDateRange, initDropdown, getAllURLParams, updateURLParams, dateRange, getURLParam, createPopoverKeyboardFlow } from './utils.js';
-import { initInsightsAndStrategies } from './insights-and-strategies.js';
+import { initInsightsAndActions } from './insights-and-actions.js';
 import { currentActiveExploreItemButton, currentActiveExploreItemData, processExploreDataTable } from './explore.js';
 
 // =================================================
@@ -581,7 +581,7 @@ function handleYearButtonLogic(button, startDate, endDate) {
   }
 
   replaceDateRange(startDate, endDate);
-  initInsightsAndStrategies(org);
+  initInsightsAndActions(org);
   if (currentActiveExploreItemButton) {
     processExploreDataTable(currentActiveExploreItemButton, currentActiveExploreItemData);
   }

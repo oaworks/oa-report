@@ -53,7 +53,7 @@ function updateStrategyButtonStyling(event) {
   if (!tabBtn) return;
 
   const selectedAction = tabBtn.getAttribute("aria-controls");
-  const selectedTabContents = document.querySelector(`.js_strategies #${selectedAction}`);
+  const selectedTabContents = document.querySelector(`.js_actions #${selectedAction}`);
 
   if (!selectedTabContents) {
     console.error(`No tab content found with ID ${selectedAction}`);
