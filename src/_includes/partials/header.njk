@@ -71,15 +71,15 @@
   {% if isReportPage and org._source.paid == true %}
   <nav class="pt-3" aria-labelledby="report-nav-heading">
     <h2 id="report-nav-heading" class="sr-only">Report navigation</h2>
-    <section class="flex items-center flex-wrap justify-between px-3 md:px-4 gap-x-2 gap-y-1 md:gap-x-3 md:gap-y-0">
-      <div class="flex items-center flex-wrap gap-x-2 gap-y-1 md:gap-x-3 md:gap-y-0">
+    <section class="flex items-center flex-wrap md:flex-nowrap justify-between px-3 md:px-4 gap-x-2 gap-y-1 md:gap-x-3 md:gap-y-0">
+      <div class="flex items-center flex-wrap md:flex-nowrap gap-x-2 gap-y-1 md:gap-x-3 md:gap-y-0">
         <h3 class="sr-only">View this report by year or by custom date range</h3>
         <div
           id="js-year-buttons"
-          class="flex flex-wrap gap-2 text-xs md:text-sm"
+          class="flex flex-wrap md:flex-nowrap gap-2 text-xs md:text-sm"
         ></div>
 
-        <div class="flex items-center flex-wrap gap-2" id="report-filters">
+        <div class="flex items-center flex-wrap md:flex-nowrap gap-2" id="report-filters">
           {# Active filters panel #}
           <aside
             class="text-neutral-900 text-xs md:text-sm md:border-b-0 js-active-filters-wrapper hidden"
@@ -102,7 +102,7 @@
           </div>
       </div>
 
-      <div class="flex flex-wrap gap-x-2 gap-y-1 text-sm">
+      <div class="flex flex-wrap md:flex-nowrap gap-x-2 gap-y-1 text-sm">
         <a id="section-tab-insights" class="border border-neutral-600 text-white bg-neutral-900/60 hover:bg-neutral-700 px-2 py-1 md:px-3 md:py-1.5 mt-1 md:mt-0 rounded-full font-medium transition duration-200 js_section_tab" href="#insights">Insights</a>
         <a id="section-tab-explore" class="border border-neutral-600 text-white bg-neutral-900/60 hover:bg-neutral-700 px-2 py-1 md:px-3 md:py-1.5 mt-1 md:mt-0 rounded-full font-medium transition duration-200 js_section_tab" href="#explore">Explore</a>
         <a id="section-tab-actions" class="border border-neutral-600 text-white bg-neutral-900/60 hover:bg-neutral-700 px-2 py-1 md:px-3 md:py-1.5 mt-1 md:mt-0 rounded-full font-medium transition duration-200 js_section_tab" href="#actions">Actions</a>
