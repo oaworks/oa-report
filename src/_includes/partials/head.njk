@@ -37,7 +37,8 @@
 
   {# Load TailwindCSS #}
   <link rel="stylesheet" href="/tailwind.css">
-  <link rel="stylesheet" href="/phosphor/style.css">
+  <link rel="preload" href="/phosphor/style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="/phosphor/style.css"></noscript>
 
   {# Load homepage-specific CSS and JS for Sal.js #}
   {% if page.url == '/' %}
