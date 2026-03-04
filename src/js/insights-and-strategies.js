@@ -171,6 +171,7 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
 function renderActionTabs(strategy = {}) {
   const tabsContainer = document.getElementById("actions_buttons");
   if (!tabsContainer) return;
+  const actionsTabLink = document.getElementById("section-tab-actions");
   const actionsAnchor = document.getElementById("strategies");
   const actionsSection = actionsAnchor?.nextElementSibling;
 
@@ -187,12 +188,11 @@ function renderActionTabs(strategy = {}) {
     });
 
   const hasVisibleActions = visibleStrategies.length > 0;
-  if (actionsAnchor instanceof HTMLElement) {
-    actionsAnchor.classList.toggle("hidden", !hasVisibleActions);
-  }
-  if (actionsSection instanceof HTMLElement) {
-    actionsSection.classList.toggle("hidden", !hasVisibleActions);
-  }
+  [actionsTabLink, actionsAnchor, actionsSection].forEach((el) => {
+    if (el instanceof HTMLElement) {
+      el.classList.toggle("hidden", !hasVisibleActions);
+    }
+  });
 
   tabsContainer.innerHTML = "";
 
