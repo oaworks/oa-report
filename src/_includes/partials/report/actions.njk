@@ -4,7 +4,8 @@
 {% call sectionWrapper("actions", "Actions") %}
 
   {# Actions tabs / pills #}
-  <nav class="hidden sm:block flex flex-wrap items-center gap-4 p-2 rounded-md bg-neutral-800/90 border border-neutral-700 shadow-lg" aria-label="Actions">
+  <nav class="hidden sm:block flex flex-wrap items-center gap-4 p-2 rounded-md bg-neutral-800/90 border border-neutral-700 shadow-lg" aria-label="Action types" aria-labelledby="actions-nav-title">
+    <h3 id="actions-nav-title" class="sr-only">Action types</h3>
     <ul class="flex flex-wrap items-center gap-4 m-0 p-0 list-none" id="actions_buttons">
       {{ component("action-pill", {
         id: "email_author_deposit",
