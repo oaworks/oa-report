@@ -664,7 +664,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       enableExploreTableScroll();
       enableTooltipsForTruncatedCells();
 
-      const downloadCSVForm = document.getElementById('download_csv_form');
+      const downloadCSVFormContainer = document.getElementById('download_csv_form_container');
       const exploreArticlesTableHelp = document.getElementById('explore_articles_records_shown_help');
       const exploreTermsTableHelp = document.getElementById('explore_terms_records_shown_help');
 
@@ -672,13 +672,21 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
         // Only show CSV form and help if logged in
         exploreArticlesTableHelp.style.display = loggedIn ? "block" : "none";
         exploreTermsTableHelp.style.display = "none";
-        downloadCSVForm.style.display = "block"; // Show CSV form for article-based tables
+        if (downloadCSVFormContainer) {
+          downloadCSVFormContainer.classList.remove("invisible", "opacity-0", "pointer-events-none");
+          downloadCSVFormContainer.setAttribute("aria-hidden", "false");
+          if ("inert" in downloadCSVFormContainer) downloadCSVFormContainer.inert = false;
+        }
         displayNone("explore_display_style_field");
       } else {
         // Show display-style toggle and terms tooltip
         exploreTermsTableHelp.style.display = "block";
         exploreArticlesTableHelp.style.display = "none";
-        downloadCSVForm.style.display = "none"; // Hide CSV form for terms-based tables
+        if (downloadCSVFormContainer) {
+          downloadCSVFormContainer.classList.add("invisible", "opacity-0", "pointer-events-none");
+          downloadCSVFormContainer.setAttribute("aria-hidden", "true");
+          if ("inert" in downloadCSVFormContainer) downloadCSVFormContainer.inert = true;
+        }
         removeDisplayStyle("explore_display_style_field");
       }
     } else {
