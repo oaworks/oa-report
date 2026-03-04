@@ -29,6 +29,9 @@
   <link rel="stylesheet" href="/tailwind.css">
   <link rel="preload" href="/phosphor/style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="/phosphor/style.css"></noscript>
+  <style>
+    @font-face{font-family:"Phosphor";src:url("/phosphor/Phosphor.woff2") format("woff2");font-display:swap}
+  </style>
 
   {# Load homepage-specific CSS and JS for Sal.js #}
   {% if page.url == '/' %}
