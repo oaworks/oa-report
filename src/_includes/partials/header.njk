@@ -82,9 +82,10 @@
         <div class="flex items-center flex-wrap md:flex-nowrap gap-2" id="report-filters">
           {# Active filters panel #}
           <aside
-            class="text-neutral-900 text-xs md:text-sm md:border-b-0 js-active-filters-wrapper hidden"
+            class="text-neutral-900 text-xs md:text-sm md:border-b-0 js-active-filters-wrapper min-h-[2rem] md:min-h-[2.25rem] invisible opacity-0 pointer-events-none"
             id="js-active-filters-wrapper"
-              aria-labelledby="js-active-filters-title"
+            aria-labelledby="js-active-filters-title"
+            aria-hidden="true"
             >
               <h3 id="js-active-filters-title" class="sr-only">
                 Active filters

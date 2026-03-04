@@ -1018,7 +1018,9 @@ export function renderActiveFiltersBanner() {
   const pairs = parseEsQueryToPairs(q);
   const count = pairs.reduce((sum, p) => sum + (Array.isArray(p.values) ? p.values.length : 1), 0); // total values count across all fields, instead of just fields count
 
-  wrapper.classList.remove("hidden");
+  wrapper.classList.remove("invisible", "opacity-0", "pointer-events-none");
+  wrapper.setAttribute("aria-hidden", "false");
+  if ("inert" in wrapper) wrapper.inert = false;
   mount.innerHTML = "";
 
   // Trigger form styled like other date/year chips
