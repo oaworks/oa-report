@@ -27,9 +27,7 @@
       <div class="sr-only" id="loading_message">Loading, please wait.</div>
     </div>
 
-    <div id="explore_layout_reserve" class="min-h-[34rem] md:min-h-[42rem]" aria-hidden="true"></div>
-
-    <div id="export_table" class="hidden">
+    <div id="export_table">
       <header class="mb-10 space-y-2">
         <h3 class="mb-3 text-base md:text-lg font-semibold uppercase tracking-wide text-neutral-100" aria-live="polite">
           <span class="inline-flex items-center gap-2">
@@ -38,7 +36,9 @@
             <strong class="uppercase font-semibold explore_type">articles</strong>
           </span>
         </h3>
-        <p id="explore_count_summary" class="text-sm md:text-base text-white hidden" aria-live="polite"></p>
+        <p id="explore_count_summary" class="inline-block text-sm md:text-base text-white" aria-live="polite">
+          Showing 0 of 0 journal articles · Sorted by published date
+        </p>
       </header>
       {# Data table controls #}
       <div class="my-4 gap-3 md:gap-12 flex justify-between">
