@@ -171,6 +171,8 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
 function renderActionTabs(strategy = {}) {
   const tabsContainer = document.getElementById("actions_buttons");
   if (!tabsContainer) return;
+  const actionsAnchor = document.getElementById("strategies");
+  const actionsSection = actionsAnchor?.nextElementSibling;
 
   const visibleStrategies = Object.entries(strategy)
     .filter(([, config]) => config?.show_on_web === true)
@@ -183,6 +185,14 @@ function renderActionTabs(strategy = {}) {
       const bRank = bIndex === -1 ? Number.MAX_SAFE_INTEGER : bIndex;
       return aRank - bRank;
     });
+
+  const hasVisibleActions = visibleStrategies.length > 0;
+  if (actionsAnchor instanceof HTMLElement) {
+    actionsAnchor.classList.toggle("hidden", !hasVisibleActions);
+  }
+  if (actionsSection instanceof HTMLElement) {
+    actionsSection.classList.toggle("hidden", !hasVisibleActions);
+  }
 
   tabsContainer.innerHTML = "";
 
