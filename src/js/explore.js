@@ -674,7 +674,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
         exploreArticlesTableHelp.style.display = loggedIn ? "block" : "none";
         exploreTermsTableHelp.style.display = "none";
         if (downloadCSVFormContainer) {
-          downloadCSVFormContainer.classList.remove("invisible", "opacity-0", "pointer-events-none");
+          downloadCSVFormContainer.classList.remove("hidden", "invisible", "opacity-0", "pointer-events-none");
           downloadCSVFormContainer.setAttribute("aria-hidden", "false");
           if ("inert" in downloadCSVFormContainer) downloadCSVFormContainer.inert = false;
         }
@@ -684,7 +684,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
         exploreTermsTableHelp.style.display = "block";
         exploreArticlesTableHelp.style.display = "none";
         if (downloadCSVFormContainer) {
-          downloadCSVFormContainer.classList.add("invisible", "opacity-0", "pointer-events-none");
+          downloadCSVFormContainer.classList.add("hidden", "invisible", "opacity-0", "pointer-events-none");
           downloadCSVFormContainer.setAttribute("aria-hidden", "true");
           if ("inert" in downloadCSVFormContainer) downloadCSVFormContainer.inert = true;
         }
