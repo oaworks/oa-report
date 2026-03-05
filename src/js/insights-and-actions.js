@@ -328,8 +328,7 @@ export function initInsightsAndActions(org) {
         }
 
         // On-click tooltip to contain Insight info + figure details
-        const tooltipTarget = cardContents.querySelector('.js_insight_trigger');
-        if (!(tooltipTarget instanceof HTMLElement)) return;
+        const tooltipTarget = cardContents;
         const tooltipTargetId = tooltipTarget.id || `${numerator}-card-trigger`;
         tooltipTarget.id = tooltipTargetId;
         let instance = cardContents._insightTooltip;
