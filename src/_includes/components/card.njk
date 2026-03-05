@@ -16,13 +16,7 @@
     focus-within:bg-white focus-within:shadow-md focus-within:-translate-y-0.5
   "
 >
-  <button
-    type="button"
-    class="js_insight_trigger block w-full h-full p-4 text-left"
-    aria-expanded="false"
-    aria-labelledby="{{ params.id }}_title"
-    title="More information on this metric"
-  >
+  <div class="p-4">
   <div class="flex items-stretch h-full gap-4">
     {# Vertical bar chart on the left #}
     <footer
@@ -44,9 +38,15 @@
           <h3 id="{{ params.id }}_title" class="text-sm font-medium inline-flex items-center">
             <span class="inline-flex items-center">{{ params.title }}</span>
           </h3>
-          <span class="inline-flex h-5 w-5 items-center justify-center text-neutral-600 leading-none">
+          <button
+            type="button"
+            class="js_insight_trigger inline-flex h-5 w-5 items-center justify-center text-neutral-600 leading-none rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-white"
+            aria-expanded="false"
+            aria-labelledby="{{ params.id }}_title"
+            title="More information on this metric"
+          >
             {% icon_small "more-vertical" %}
-          </span>
+          </button>
         </header>
 
         {# Body and icon aligned to bottom #}
@@ -70,5 +70,5 @@
       </div>
     </div>
   </div>
-  </button>
+  </div>
 </article>
