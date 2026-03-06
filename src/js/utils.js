@@ -189,6 +189,43 @@ export function createDate(year, month, day) {
 // DOM helpers
 
 /**
+ * Announces dynamic UI updates to assistive technology via a shared live region.
+ *
+ * @param {string} message - Message to announce.
+ */
+export function announce(message) {
+  const text = String(message || "").trim();
+  if (!text) return;
+
+  const id = "oar-live-region";
+  let liveRegion = document.getElementById(id);
+
+  if (!liveRegion) {
+    liveRegion = document.createElement("div");
+    liveRegion.id = id;
+    liveRegion.setAttribute("aria-live", "polite");
+    liveRegion.setAttribute("aria-atomic", "true");
+    liveRegion.setAttribute("role", "status");
+    liveRegion.style.position = "absolute";
+    liveRegion.style.width = "1px";
+    liveRegion.style.height = "1px";
+    liveRegion.style.margin = "-1px";
+    liveRegion.style.padding = "0";
+    liveRegion.style.border = "0";
+    liveRegion.style.overflow = "hidden";
+    liveRegion.style.clip = "rect(0 0 0 0)";
+    liveRegion.style.clipPath = "inset(50%)";
+    liveRegion.style.whiteSpace = "nowrap";
+    document.body.appendChild(liveRegion);
+  }
+
+  liveRegion.textContent = "";
+  window.setTimeout(() => {
+    liveRegion.textContent = text;
+  }, 30);
+}
+
+/**
  * Hides an HTML element by setting its display style to 'none'.
  *
  * @param {string} id - The ID of the HTML element to be hidden.
@@ -580,6 +617,7 @@ export function convertTextToLinks(text, forceLink = false, urlPrefix = '') {
  */
 export function bindSmoothScrollLinks() {
   const additionalSpacing = 20; // Extra spacing in pixels
+  const focusable = 'a[href], button, input, select, textarea, details, [tabindex]:not([tabindex="-1"])';
 
   document.querySelectorAll('a[href^="#"]').forEach(link => {
     link.addEventListener('click', function(event) {
@@ -596,6 +634,21 @@ export function bindSmoothScrollLinks() {
         window.scrollTo({
           top: offsetPosition,
           behavior: 'smooth'
+        });
+
+        requestAnimationFrame(() => {
+          const focusTarget = targetElement.getAttribute("aria-hidden") === "true"
+            ? targetElement.nextElementSibling
+            : targetElement;
+
+          if (!(focusTarget instanceof HTMLElement)) return;
+
+          const hadTabIndex = focusTarget.hasAttribute("tabindex");
+          if (!focusTarget.matches(focusable) && !hadTabIndex) {
+            focusTarget.setAttribute("tabindex", "-1");
+            focusTarget.addEventListener("blur", () => focusTarget.removeAttribute("tabindex"), { once: true });
+          }
+          focusTarget.focus({ preventScroll: true });
         });
       } else {
         console.error('Target element not found:', targetId);
@@ -692,6 +745,16 @@ export function initDropdown(dropdownSelector) {
 
   const dropdownButton = dropdownContainer.querySelector('button[aria-haspopup="true"]');
   const dropdownContent = dropdownContainer.querySelector('.js_dropdown_content');
+  if (!dropdownButton || !dropdownContent) return;
+
+  const closeDropdown = (restoreFocus = false) => {
+    dropdownContent.classList.add('hidden');
+    dropdownContent.setAttribute('hidden', 'true');
+    dropdownButton.setAttribute('aria-expanded', 'false');
+    if (restoreFocus) {
+      requestAnimationFrame(() => dropdownButton.focus());
+    }
+  };
 
   dropdownButton.addEventListener('click', function(event) {
     event.stopPropagation();
@@ -699,21 +762,101 @@ export function initDropdown(dropdownSelector) {
     this.setAttribute('aria-expanded', !isExpanded);
 
     if (isExpanded) {
-      dropdownContent.classList.add('hidden');
-      dropdownContent.setAttribute('hidden', 'true');
+      closeDropdown();
     } else {
       dropdownContent.classList.remove('hidden');
       dropdownContent.removeAttribute('hidden');
     }
   });
 
+  dropdownContainer.addEventListener('keydown', function(event) {
+    if (event.key !== 'Escape') return;
+    if (dropdownContent.classList.contains('hidden')) return;
+    event.preventDefault();
+    closeDropdown(true);
+  });
+
   document.addEventListener('click', function() {
     if (!dropdownContent.classList.contains('hidden')) {
-      dropdownContent.classList.add('hidden');
-      dropdownContent.setAttribute('hidden', 'true');
-      dropdownButton.setAttribute('aria-expanded', 'false');
+      closeDropdown();
     }
   });
+}
+
+/**
+ * Wires minimal keyboard flow for popovers:
+ * - Shift+Tab on first control
+ * - Tab on last control
+ * Call `focusFirst()` when popover opens.
+ *
+ * @param {{
+ *   popover: HTMLElement,
+ *   trigger: HTMLElement,
+ *   firstSelector: string,
+ *   lastSelector: string,
+ *   onForwardTab?: () => void,
+ *   onBackwardTab?: () => void
+ * }} options
+ * @returns {{ focusFirst: () => void }}
+ */
+export function createPopoverKeyboardFlow(options) {
+  const {
+    popover,
+    trigger,
+    firstSelector,
+    lastSelector,
+    onForwardTab,
+    onBackwardTab
+  } = options;
+
+  const getFirst = () => popover.querySelector(firstSelector);
+  const getLast = () => popover.querySelector(lastSelector);
+
+  const focusFirst = () => {
+    const first = getFirst();
+    if (first instanceof HTMLElement) first.focus();
+  };
+
+  popover.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      if (trigger instanceof HTMLElement) {
+        const isExpanded = trigger.getAttribute("aria-expanded") === "true";
+        if (isExpanded) {
+          trigger.click();
+        }
+        requestAnimationFrame(() => trigger.focus());
+      }
+      return;
+    }
+
+    if (event.key !== "Tab") return;
+
+    const active = document.activeElement;
+    const first = getFirst();
+    const last = getLast();
+
+    if (event.shiftKey && first && active === first) {
+      event.preventDefault();
+      if (typeof onBackwardTab === "function") {
+        onBackwardTab();
+      } else {
+        trigger.focus();
+      }
+      return;
+    }
+
+    if (!event.shiftKey && last && active === last) {
+      event.preventDefault();
+      if (typeof onForwardTab === "function") {
+        onForwardTab();
+      } else {
+        trigger.focus();
+      }
+    }
+  });
+
+  return { focusFirst };
 }
 
 /**

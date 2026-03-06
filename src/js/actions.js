@@ -1,34 +1,45 @@
 // ================================================
-// strategies.js
-// State & DOM manipulation specific to Strategies
+// actions.js
+// State & DOM manipulation specific to Actions
 // ================================================
 
 // =================================================
 // Imports
 // =================================================
 
-import { updateURLParams, getAllURLParams } from './utils.js';
+import { updateURLParams, getAllURLParams, announce } from './utils.js';
 
 /**
- * Initialises event listeners for strategy tab buttons.
+ * Initialises event listeners for action tab buttons.
  */
-export function initStrategyTabs() {
-  const strategyTabBtns = document.querySelectorAll(".js_strategy_btn");
+export function initActionTabs() {
+  const actionsButtons = document.getElementById("actions_buttons");
+  if (!actionsButtons) return;
 
-  strategyTabBtns.forEach((tabBtn) => {
-    tabBtn.addEventListener("click", updateStrategyButtonStyling);
-  });
+  if (actionsButtons.dataset.bound !== "true") {
+    actionsButtons.addEventListener("click", updateStrategyButtonStyling);
+    actionsButtons.dataset.bound = "true";
+  }
+
+  const actionTabBtns = actionsButtons.querySelectorAll(".js_strategy_btn");
+  if (!actionTabBtns.length) return;
 
   // Apply ?action=... on load (after buttons exist)
   const params = getAllURLParams();
   const action = params.action;
   if (action) {
-    document.getElementById(`strategy_${action}`)?.click();
-  } else if (strategyTabBtns.length) {
-    shouldUpdateStrategyUrl = false;
-    strategyTabBtns[0].click();
-    shouldUpdateStrategyUrl = true;
+    const preferred = document.getElementById(`strategy_${action}`);
+    if (preferred) {
+      preferred.click();
+      return;
+    }
   }
+
+  if (actionTabBtns.length) {
+    shouldUpdateActionUrl = false;
+    actionTabBtns[0].click();
+    shouldUpdateActionUrl = true;
+  } 
 }
 
 /**
@@ -41,11 +52,11 @@ function updateStrategyButtonStyling(event) {
   const tabBtn = event.target.closest(".js_strategy_btn");
   if (!tabBtn) return;
 
-  const selectedStrategy = tabBtn.getAttribute("aria-controls");
-  const selectedTabContents = document.querySelector(`.js_strategies #${selectedStrategy}`);
+  const selectedAction = tabBtn.getAttribute("aria-controls");
+  const selectedTabContents = document.querySelector(`.js_actions #${selectedAction}`);
 
   if (!selectedTabContents) {
-    console.error(`No tab content found with ID ${selectedStrategy}`);
+    console.error(`No tab content found with ID ${selectedAction}`);
     return;
   }
 
@@ -68,9 +79,7 @@ function updateStrategyButtonStyling(event) {
       badge.classList.remove("bg-neutral-900", "text-neutral-200");
       badge.classList.add("bg-neutral-700", "text-neutral-100");
     }
-    btn.setAttribute("aria-selected", "false");
     btn.setAttribute("aria-pressed", "false");
-    btn.setAttribute("tabindex", "-1");
   });
 
   tabBtn.classList.add("bg-neutral-100", "text-neutral-900", "shadow-inner");
@@ -80,14 +89,17 @@ function updateStrategyButtonStyling(event) {
     activeBadge.classList.add("bg-neutral-900", "text-neutral-200");
     activeBadge.classList.remove("bg-neutral-700", "text-neutral-100");
   }
-  tabBtn.setAttribute("aria-selected", "true");
   tabBtn.setAttribute("aria-pressed", "true");
-  tabBtn.setAttribute("tabindex", "0");
+
+  const actionName = tabBtn.textContent?.trim().replace(/\s+/g, " ");
+  if (actionName) {
+    announce(`Action type: ${actionName}.`);
+  }
 
   // Update URL params
-  if (shouldUpdateStrategyUrl) {
-    updateURLParams({ 'action': selectedStrategy });
+  if (shouldUpdateActionUrl) {
+    updateURLParams({ 'action': selectedAction });
   }
 }
 
-let shouldUpdateStrategyUrl = true;
+let shouldUpdateActionUrl = true;

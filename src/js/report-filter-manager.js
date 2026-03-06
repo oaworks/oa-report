@@ -12,7 +12,8 @@ import {
   updateURLParams,
   removeURLParams,
   normaliseFieldId,
-  pluraliseNoun
+  pluraliseNoun,
+  createPopoverKeyboardFlow
 } from "./utils.js";
 import { API_BASE_URL } from "./constants/api.js";
 
@@ -26,7 +27,7 @@ import {
 } from "./constants.js";
 import { SEARCH_FILTER_FIELD_MAP, iconForField } from "./constants/filter-fields.js";
 
-import { orgDataPromise } from './insights-and-strategies.js';
+import { orgDataPromise } from './insights-and-actions.js';
 
 import { handleFiltersChanged } from './explore.js';
 
@@ -1377,7 +1378,9 @@ export function renderActiveFiltersBanner() {
   const pairs = parseEsQueryToPairs(q);
   const count = pairs.reduce((sum, p) => sum + (Array.isArray(p.values) ? p.values.length : 1), 0); // total values count across all fields, instead of just fields count
 
-  wrapper.classList.remove("hidden");
+  wrapper.classList.remove("invisible", "opacity-0", "pointer-events-none");
+  wrapper.setAttribute("aria-hidden", "false");
+  if ("inert" in wrapper) wrapper.inert = false;
   mount.innerHTML = "";
 
   // Trigger form styled like other date/year chips
@@ -1551,7 +1554,30 @@ export function renderActiveFiltersBanner() {
   filterForm.appendChild(applyBtn);
 
   // Tippy instance, same pattern as custom date range
-  const tip = tippy(triggerBtn, {
+  let tip;
+  const popoverFlow = createPopoverKeyboardFlow({
+    popover: pop,
+    trigger: triggerBtn,
+    firstSelector: "#js-clear-q-popover, .js-filter-field, #js-apply-filters",
+    lastSelector: "#js-apply-filters",
+    onBackwardTab: () => {
+      tip.hide();
+      requestAnimationFrame(() => triggerBtn.focus());
+    },
+    onForwardTab: () => {
+      tip.hide();
+      const nextControl = document.querySelector(".js_section_tab");
+      requestAnimationFrame(() => {
+        if (nextControl instanceof HTMLElement) {
+          nextControl.focus();
+        } else {
+          triggerBtn.focus();
+        }
+      });
+    }
+  });
+
+  tip = tippy(triggerBtn, {
     content: pop,
     allowHTML: true,
     interactive: true,
@@ -1562,6 +1588,12 @@ export function renderActiveFiltersBanner() {
     arrow: false,
     onShow() {
       triggerBtn.setAttribute("aria-expanded", "true");
+    },
+    onMount() {
+      requestAnimationFrame(() => popoverFlow.focusFirst());
+    },
+    onShown() {
+      popoverFlow.focusFirst();
     },
     onHide() {
       triggerBtn.setAttribute("aria-expanded", "false");

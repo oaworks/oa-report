@@ -1,5 +1,5 @@
-{# Tab contents component: use with strategy-pill
-{{ component("strategy-contents", {
+{# Tab contents component: use with action-pill
+{{ component("action-contents", {
   id: "",
   heading: "",
   desc: "",
@@ -9,18 +9,14 @@
 }) }}
 #}
 
-<section class="grid grid-cols-12 gap-3 lg:gap-6 md:gap-12 js_strategy {% if params.hidden %} hidden{% else %}{% endif %}" role="tabpanel" tabindex="0" aria-labelledby="strategy_{{ params.id }}" id="{{ params.id }}"{% if params.hidden %} hidden{% else %}{% endif %}>
+<section class="grid grid-cols-12 gap-3 lg:gap-6 md:gap-12 js_strategy {% if params.hidden %} hidden{% else %}{% endif %}" id="{{ params.id }}"{% if params.hidden %} hidden{% else %}{% endif %}>
   <header class="md:mb-12 col-span-12 lg:col-span-4">
     <div class=" lg:sticky lg:top-3">
       <h3 class="mb-3 text-base md:text-lg font-semibold uppercase tracking-wide text-neutral-100 md:mb-6">{{ params.heading }}</h3>
       <p class="text-sm md:text-base text-white mb-3 md:mb-6">{{ params.desc|safe }}</p>
-      <form id="form_{{ params.id }}" onsubmit="return window.callGetStrategyExportLink('{{ params.id }}')">
-        <h2 class="mb-4">
-          <div class="mb-2 text-sm font-semibold uppercase">
-            Get this dataset in CSV
-          </div> 
-          <div class="text-sm">Download the list of <span class="py-1 px-2 my-1 bg-opacity-10 bg-carnation-200 text-neutral-100 rounded-full lowercase strategy_type">actions</span> for <span class="py-1 px-2 my-1 bg-opacity-10 bg-carnation-200 text-neutral-100 rounded-full"><span class="report_readable_start_date"></span> — <span class="report_readable_end_date"></span></span> 
-        </h2>
+      <form id="form_{{ params.id }}" onsubmit="return window.callGetActionExportLink('{{ params.id }}')">
+        <h4 class="mb-2 text-sm font-semibold uppercase">Get this dataset in CSV</h4>
+        <p class="mb-4 text-sm">Download the list of <span class="py-1 px-2 my-1 bg-opacity-10 bg-carnation-200 text-neutral-100 rounded-full lowercase action_type">actions</span> for <span class="inline-flex items-center gap-1 py-1 px-2 my-1 bg-opacity-10 bg-carnation-200 text-neutral-100 rounded-full"><span class="report_readable_start_date min-w-0"></span> — <span class="report_readable_end_date min-w-0"></span></span></p>
         <label for="email" class="sr-only">Email address</label>
         <div class="mt-1 mb-3 flex shadow-sm">
           <div class="relative flex items-stretch flex-grow focus-within:z-10 text-neutral-900">
@@ -30,7 +26,7 @@
             <input type="email" name="email" id="email-{{ params.id }}" class="focus:ring-carnation-300 focus:border-carnation-500 block w-full pl-10 py-2 sm:text-sm border border-neutral-100 bg-transparent text-white" placeholder="you@example.com" required>
           </div>
           <button type="submit" class="--ml-px relative inline-flex items-center space-x-2 px-2 py-2 text-sm font-medium border border-neutral-100 text-white hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 border-l-0 whitespace-nowrap">
-            <span>Get list of <span class="strategy_type">actions</span></span>
+            <span>Get list of <span class="action_type">actions</span></span>
           </button>
         </div>
         <p class="leading-5 text-xs text-white" id="msg-{{ params.id }}"></p>

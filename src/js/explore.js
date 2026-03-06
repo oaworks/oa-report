@@ -7,13 +7,13 @@
 // Imports
 // =================================================
 
-import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, normaliseFieldId, makeNumberReadable } from "./utils.js";
+import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, normaliseFieldId, makeNumberReadable, announce } from "./utils.js";
 import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, FILTER_PILL_CLASSES, SEGMENTED_PILL_CLASSES } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
 import { renderActiveFiltersBanner } from './report-filter-manager.js';
-import { orgDataPromise, initInsightsAndStrategies } from './insights-and-strategies.js';
+import { orgDataPromise, initInsightsAndActions } from './insights-and-actions.js';
 import { getAggregatedDataQuery } from './aggregated-data-query.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 
@@ -104,7 +104,7 @@ let exploreItemDataById = new Map();
 let selectedRowKeys = [];
 
 /**
- * Re-runs Insights / Strategies and the current Explore table
+ * Re-runs Insights / Actions and the current Explore table
  * after the top-level filters (?q=) change, then re-renders
  * the Filters banner.
  */
@@ -118,10 +118,10 @@ export async function handleFiltersChanged() {
 
 async function _runHandleFiltersChanged() {
   _handleFiltersChangedTimer = null;
-  // 1. Refresh Insights & Strategies
+  // 1. Refresh Insights & Actions
   const slug = orgData?.hits?.hits?.[0]?._source?.objectID;
   if (slug) {
-    initInsightsAndStrategies(slug);
+    initInsightsAndActions(slug);
   }
 
   // 2. Refresh Explore table (current item if set, otherwise default)
@@ -215,27 +215,6 @@ async function addExploreButtonsToDOM(exploreData) {
   const seeMoreListItem = document.getElementById('explore_see_more_item');
   const seeMoreButton = seeMoreListItem?.querySelector('button');
 
-  // Keep ORCID and name lookups separate by exposing a dedicated author-name breakdown.
-  // Reuse the existing author config for query/includes/sort and only swap id+term.
-  if (Array.isArray(exploreData)) {
-    const hasAuthor = exploreData.some((item) => item?.id === "author");
-    const hasAuthorName = exploreData.some((item) => item?.id === "author_name");
-    if (hasAuthor && !hasAuthorName) {
-      const authorItem = exploreData.find((item) => item?.id === "author");
-      if (authorItem) {
-        exploreData = [
-          ...exploreData,
-          {
-            ...authorItem,
-            id: "author_name",
-            term: "authorships.author.display_name",
-            featured: false
-          }
-        ];
-      }
-    }
-  }
-
   // Only show 'articles' Explore list when logged out
   if (!loggedIn) {
     exploreData = exploreData.filter(item => item.id === 'articles');
@@ -277,8 +256,12 @@ async function addExploreButtonsToDOM(exploreData) {
 
     // "See more/See fewer" button logic
     seeMoreButton.querySelector('span').textContent = moreButtonsVisible ? 'See fewer' : 'See more';
+    seeMoreButton.setAttribute('aria-expanded', moreButtonsVisible ? 'true' : 'false');
 
-    seeMoreButton.addEventListener('click', function() {
+    seeMoreButton.addEventListener('click', function(event) {
+      const focusTarget = (!moreButtonsVisible && event.detail === 0)
+        ? moreButtons.find((item) => item.classList.contains('hidden'))?.querySelector('button')
+        : null;
       moreButtonsVisible = !moreButtonsVisible; // Toggle visibility state
 
       moreButtons.forEach((item, index) => {
@@ -291,6 +274,8 @@ async function addExploreButtonsToDOM(exploreData) {
 
       // Update the text of the button
       seeMoreButton.querySelector('span').textContent = moreButtonsVisible ? 'See fewer' : 'See more';
+      seeMoreButton.setAttribute('aria-expanded', moreButtonsVisible ? 'true' : 'false');
+      if (focusTarget) setTimeout(() => focusTarget.focus(), 80);
     });
   }
 
@@ -461,6 +446,10 @@ function createExploreFilterRadioButton(id, isChecked) {
       content: generateTooltipContent(labelData),
       allowHTML: true,
       interactive: true,
+      aria: {
+        content: null,
+        expanded: false
+      },
       placement: 'bottom',
       appendTo: document.body,
       theme: 'tooltip-white'
@@ -472,7 +461,7 @@ function createExploreFilterRadioButton(id, isChecked) {
   Object.assign(radioInput, {
     type: 'radio',
     id: `filter_${id}`,
-    className: 'sr-only',
+    className: 'peer sr-only',
     name: 'filter_by',
     value: id,
     checked: isChecked
@@ -483,7 +472,7 @@ function createExploreFilterRadioButton(id, isChecked) {
   const labelElement = document.createElement('label');
   Object.assign(labelElement, {
     htmlFor: `filter_${id}`,
-    className: FILTER_PILL_CLASSES.base,
+    className: `${FILTER_PILL_CLASSES.base} peer-focus-visible:ring-2 peer-focus-visible:ring-carnation-400 peer-focus-visible:ring-offset-1 peer-focus-visible:ring-offset-neutral-800`,
     innerHTML: '<span>' + label + '</span>'
   });
   filterRadioButton.appendChild(labelElement);
@@ -500,7 +489,7 @@ function createExploreFilterRadioButton(id, isChecked) {
  * @param {boolean} isActive
  */
 function setFilterPillState(labelElement, isActive) {
-  labelElement.className = `${FILTER_PILL_CLASSES.base} ${isActive ? FILTER_PILL_CLASSES.active : FILTER_PILL_CLASSES.inactive}`;
+  labelElement.className = `${FILTER_PILL_CLASSES.base} peer-focus-visible:ring-2 peer-focus-visible:ring-carnation-400 peer-focus-visible:ring-offset-1 peer-focus-visible:ring-offset-neutral-800 ${isActive ? FILTER_PILL_CLASSES.active : FILTER_PILL_CLASSES.inactive}`;
 }
 
 /**
@@ -547,6 +536,7 @@ function addRecordsShownSelectToDOM() {
 
   // Create the label element
   const label = document.createElement("label");
+  label.id = "records_shown_select_label";
   label.setAttribute("for", "records_shown_select");
   label.className = "sr-only"; // Hide the label visually
   label.textContent = "Records shown:"; 
@@ -675,7 +665,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       enableExploreTableScroll();
       enableTooltipsForTruncatedCells();
 
-      const downloadCSVForm = document.getElementById('download_csv_form');
+      const downloadCSVFormContainer = document.getElementById('download_csv_form_container');
       const exploreArticlesTableHelp = document.getElementById('explore_articles_records_shown_help');
       const exploreTermsTableHelp = document.getElementById('explore_terms_records_shown_help');
 
@@ -683,13 +673,21 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
         // Only show CSV form and help if logged in
         exploreArticlesTableHelp.style.display = loggedIn ? "block" : "none";
         exploreTermsTableHelp.style.display = "none";
-        downloadCSVForm.style.display = "block"; // Show CSV form for article-based tables
+        if (downloadCSVFormContainer) {
+          downloadCSVFormContainer.classList.remove("hidden", "invisible", "opacity-0", "pointer-events-none");
+          downloadCSVFormContainer.setAttribute("aria-hidden", "false");
+          if ("inert" in downloadCSVFormContainer) downloadCSVFormContainer.inert = false;
+        }
         displayNone("explore_display_style_field");
       } else {
         // Show display-style toggle and terms tooltip
         exploreTermsTableHelp.style.display = "block";
         exploreArticlesTableHelp.style.display = "none";
-        downloadCSVForm.style.display = "none"; // Hide CSV form for terms-based tables
+        if (downloadCSVFormContainer) {
+          downloadCSVFormContainer.classList.add("hidden", "invisible", "opacity-0", "pointer-events-none");
+          downloadCSVFormContainer.setAttribute("aria-hidden", "true");
+          if ("inert" in downloadCSVFormContainer) downloadCSVFormContainer.inert = true;
+        }
         removeDisplayStyle("explore_display_style_field");
       }
     } else {
@@ -813,7 +811,6 @@ function updateExploreCountSummary({ type, id, total, shown }) {
   const sortLabel = document.querySelector(".explore_sort")?.textContent?.trim() || "published date";
 
   summaryEl.innerHTML = `Showing <span class="font-semibold">${formatCount(shown)} of ${formatCount(total)}</span> <span class="lowercase">${label}</span> · Sorted by ${sortLabel}`;
-  summaryEl.classList.remove("hidden");
 }
 
 /**
@@ -889,11 +886,9 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
     tableHeader.removeChild(tableHeader.firstChild);
   }
 
-  records = Object.keys(records); // Only extract the keys from the records
-
   const headerRow = document.createElement('tr');
-  records.forEach((key, index) => {
-    key = normaliseFieldId(key);
+  Object.keys(records).forEach((rawKey, index) => {
+    const key = normaliseFieldId(rawKey);
 
     const cssClass = index === 0
       ? DATA_TABLE_HEADER_CLASSES[dataType].firstHeaderCol
@@ -902,11 +897,45 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
         : DATA_TABLE_HEADER_CLASSES[dataType].otherHeaderCols;
 
     const headerCell = createTableCell('', cssClass, null, null, true); 
+    if (index > 1) {
+      headerCell.classList.add(
+        shouldRightAlignExploreColumn(rawKey, records[rawKey]) ? "text-right" : "text-left"
+      );
+    }
     setupHeaderTooltip(headerCell, key, dataType);
 
     headerRow.appendChild(headerCell);
   });
   tableHeader.appendChild(headerRow);
+}
+
+/**
+ * Determines whether an Explore column should be right-aligned.
+ *
+ * @param {string} key
+ * @param {*} sampleValue
+ * @returns {boolean}
+ */
+function shouldRightAlignExploreColumn(key, sampleValue) {
+  const normalizedKey = normaliseFieldId(key).toLowerCase();
+  const numericFieldPattern = /(^|_)(count|counts|pct|percent|percentage|total|amount|cost|apc|usd|value|avg|mean|median|min|max|sum|price|year)(_|$)/;
+
+  if (numericFieldPattern.test(normalizedKey)) return true;
+  return isNumericLikeValue(sampleValue);
+}
+
+/**
+ * Returns true when a value is likely numeric in table output.
+ *
+ * @param {*} value
+ * @returns {boolean}
+ */
+function isNumericLikeValue(value) {
+  if (typeof value === "number") return Number.isFinite(value);
+  if (typeof value !== "string") return false;
+  const trimmed = value.trim();
+  if (!trimmed || /^n\/a$/i.test(trimmed)) return false;
+  return /^-?\$?\d[\d,]*(\.\d+)?%?$/.test(trimmed);
 }
 
 /**
@@ -1012,7 +1041,8 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
     let columnIndex = 0; // Keep track of column index for CSS class assignment
 
     for (const key in record) {
-      let content = record[key];
+      const rawContent = record[key];
+      let content = rawContent;
 
       // Special processing for articles data type
       // DOI key
@@ -1035,7 +1065,11 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
       else if (columnIndex === 1) cssClass = DATA_TABLE_BODY_CLASSES[dataType].secondCol;
       else cssClass = DATA_TABLE_BODY_CLASSES[dataType].otherCols;
 
-      row.appendChild(createTableCell(content, cssClass, exploreItemId, key, false));
+      const cell = createTableCell(content, cssClass, exploreItemId, key, false);
+      if (columnIndex > 1) {
+        cell.classList.add(shouldRightAlignExploreColumn(key, rawContent) ? "text-right" : "text-left");
+      }
+      row.appendChild(cell);
       columnIndex++;
     }
     tableBody.appendChild(row);
@@ -1047,14 +1081,19 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
     let columnIndex = 0;
 
     for (const key in allValuesRecord) {
-      let content = allValuesRecord[key];
+      const rawContent = allValuesRecord[key];
+      let content = rawContent;
 
       let cssClass;
       if (columnIndex === 0) cssClass = DATA_TABLE_FOOT_CLASSES[dataType].firstCol;
       else if (columnIndex === 1) cssClass = DATA_TABLE_FOOT_CLASSES[dataType].secondCol;
       else cssClass = DATA_TABLE_FOOT_CLASSES[dataType].otherCols;
 
-      footerRow.appendChild(createTableCell(content, cssClass, exploreItemId, key, false));
+      const footerCell = createTableCell(content, cssClass, exploreItemId, key, false);
+      if (columnIndex > 1) {
+        footerCell.classList.add(shouldRightAlignExploreColumn(key, rawContent) ? "text-right" : "text-left");
+      }
+      footerRow.appendChild(footerCell);
       columnIndex++;
     }
     tableFooter.appendChild(footerRow);
@@ -1393,11 +1432,11 @@ function enableExploreRowHighlighting() {
 
       if (isRowHighlighted) {
         rowCells.forEach(cell => cell.classList.remove('!bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900'));
-        secondCell.classList.add('bg-neutral-600');
+        secondCell.classList.add('bg-white');
         selectedRowKeys = selectedRowKeys.filter(key => key !== firstCellContent); // Remove key from array for persistent active keys
       } else {
         rowCells.forEach(cell => cell.classList.add('!bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900'));
-        secondCell.classList.remove('bg-neutral-600');
+        secondCell.classList.remove('bg-white');
         selectedRowKeys.push(firstCellContent); // Add key to array for persistent active keys 
       }
     }
@@ -1458,11 +1497,14 @@ function enableExploreTableScroll() {
  * The tooltip is only shown if the cell's content is actually truncated and the user hovers over it with intent.
  */
 function enableTooltipsForTruncatedCells() {
-  document.querySelectorAll('.truncate').forEach(cell => {
+  document.querySelectorAll('#export_table .truncate').forEach(cell => {
       tippy(cell, {
           content: cell.textContent,
           allowHTML: true,
-          interactive: true,
+          interactive: false,
+          aria: {
+            expanded: false
+          },
           placement: 'bottom',
           appendTo: document.body,
           delay: [500, 0], // 500 ms delay before showing, 0 ms delay before hiding
@@ -1523,6 +1565,7 @@ async function handleRecordsShownChange(event) {
       currentActiveExploreItemSize
     );
     updateURLParams({ records: newSize });
+    announce(`Rows shown: ${newSize}.`);
   } catch (error) {
     console.error('Error updating records shown: ', error);
   }
@@ -1544,6 +1587,7 @@ async function handleFilterChange(filterId) {
   currentActiveExploreItemQuery = filterId;
   updateExploreFilterHeader(filterId);
   updateFilterPillStates(filterId);
+  announce(`Explore filter: ${EXPLORE_FILTERS_LABELS[filterId] || filterId}.`);
   toggleLoadingIndicator(false, 'explore_loading'); // Hide loading indicator once data is loaded
 }
 
@@ -1573,6 +1617,7 @@ function handleDataDisplayToggle() {
         toggleDot.classList.replace('translate-x-5', 'translate-x-100');
         currentActiveDataDisplayToggle = true; // Update the global toggle state
     }
+    announce(`Explore view: ${currentActiveDataDisplayToggle ? "Pretty table" : "Raw values"}.`);
     // Fetch and display data with the updated pretty/raw format
     fetchAndDisplayExploreData(currentActiveExploreItemData, currentActiveExploreItemQuery, currentActiveExploreItemSize);
   });

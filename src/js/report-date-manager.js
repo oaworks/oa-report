@@ -9,8 +9,8 @@
 // =================================================
 
 import { DATE_SELECTION_BUTTON_CLASSES } from './constants.js';
-import { createDate, replaceDateRange, initDropdown, getAllURLParams, updateURLParams, dateRange, getURLParam } from './utils.js';
-import { initInsightsAndStrategies } from './insights-and-strategies.js';
+import { createDate, replaceDateRange, initDropdown, getAllURLParams, updateURLParams, dateRange, getURLParam, createPopoverKeyboardFlow, makeDateReadable, announce } from './utils.js';
+import { initInsightsAndActions } from './insights-and-actions.js';
 import { currentActiveExploreItemButton, currentActiveExploreItemData, processExploreDataTable } from './explore.js';
 
 // =================================================
@@ -436,8 +436,31 @@ function createDateRangeForm() {
   applyBtn.textContent = "Apply";
   pop.appendChild(applyBtn);
 
+  let tip;
+  const popoverFlow = createPopoverKeyboardFlow({
+    popover: pop,
+    trigger: triggerBtn,
+    firstSelector: "#start-date-pop",
+    lastSelector: "#js-date-range-apply-button",
+    onBackwardTab: () => {
+      tip.hide();
+      requestAnimationFrame(() => triggerBtn.focus());
+    },
+    onForwardTab: () => {
+      tip.hide();
+      requestAnimationFrame(() => {
+        const filtersTrigger = document.getElementById("js-filters-trigger");
+        if (filtersTrigger instanceof HTMLElement) {
+          filtersTrigger.focus();
+        } else {
+          triggerBtn.focus();
+        }
+      });
+    }
+  });
+
   // Initialise a dedicated Tippy instance
-  const tip = tippy(triggerBtn, {
+  tip = tippy(triggerBtn, {
     content: pop,
     allowHTML: true,
     interactive: true,
@@ -455,6 +478,13 @@ function createDateRangeForm() {
       const ePop = /** @type {HTMLInputElement|null} */ (document.getElementById("end-date-pop"));
       if (s && sPop) sPop.value = s.value || "";
       if (e && ePop) ePop.value = e.value || "";
+      // Keep values in sync before mount/shown hooks move focus.
+    },
+    onMount() {
+      requestAnimationFrame(() => popoverFlow.focusFirst());
+    },
+    onShown() {
+      popoverFlow.focusFirst();
     },
     onHide() { triggerBtn.setAttribute("aria-expanded", "false"); }
   });
@@ -497,7 +527,7 @@ function createDateRangeForm() {
     updateYearButtonStyling(form, true);
 
     // Close the popover
-    if (tip && tip[0]) tip[0].hide();
+    if (tip) tip.hide();
   });
 
   return form;
@@ -551,7 +581,8 @@ function handleYearButtonLogic(button, startDate, endDate) {
   }
 
   replaceDateRange(startDate, endDate);
-  initInsightsAndStrategies(org);
+  announce(`Date range: ${makeDateReadable(startDate)} to ${makeDateReadable(endDate)}.`);
+  initInsightsAndActions(org);
   if (currentActiveExploreItemButton) {
     processExploreDataTable(currentActiveExploreItemButton, currentActiveExploreItemData);
   }

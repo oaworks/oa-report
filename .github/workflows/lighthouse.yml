@@ -4,9 +4,19 @@ on:
   push:
     branches:
       - dev
+      - staging
+      - main
   pull_request:
     branches:
       - dev
+      - staging
+      - main
+  workflow_dispatch:
+    inputs:
+      force_fail:
+        description: "Force this workflow to fail (for testing notifications)"
+        required: false
+        default: "false"
 
 jobs:
   lighthouse:
@@ -16,13 +26,18 @@ jobs:
     strategy:
       matrix:
         include:
-          - branch: dev # Only run on dev for now, as it is the only one set up for preview branches
-            # Run on both Netlify and CF Pages
+          - branch: dev
             urls: |
               https://dev.oa.report/
               https://dev.oa.report/test/
-              https://dev-oa-report.pages.dev/
-              https://dev-oa-report.pages.dev/test/
+          - branch: staging
+            urls: |
+              https://staging.oa.report/
+              https://staging.oa.report/test/
+          - branch: main
+            urls: |
+              https://oa.report/
+              https://oa.report/test/
 
     steps:
       - name: Checkout
@@ -36,9 +51,6 @@ jobs:
         env:
           MATRIX_BRANCH: ${{ matrix.branch }}
 
-      # Run Lighthouse against two audit targets:
-      # - index.html
-      # - test/index.html
       - name: Run Lighthouse CI
         if: ${{ github.ref_name == matrix.branch }}
         uses: treosh/lighthouse-ci-action@v12
@@ -48,3 +60,9 @@ jobs:
           configPath: ./lighthouserc.json
           uploadArtifacts: true
           temporaryPublicStorage: true
+
+      - name: Force failure (notification test)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.force_fail == 'true' }}
+        run: |
+          echo "Intentionally failing to test email routing to Front."
+          exit 1

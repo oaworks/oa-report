@@ -1,0 +1,21 @@
+{# Tab item component: use with action-contents
+{{ component("action-pill", {
+  id: "",
+  txt: "",
+  class: "",
+  first: false
+}) }}
+#}
+
+<li class="list-none">
+  <button
+    type="button"
+    aria-pressed="{% if params.first %}true{% else %}false{% endif %}"
+    aria-controls="{{ params.id }}"
+    class="js_strategy_btn group cursor-pointer px-4 py-1.5 text-sm font-medium rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 transition-colors text-white bg-neutral-900/60 {{ params.class }}"
+    id="strategy_{{ params.id }}"
+  >
+    <span>{{ params.txt }}</span>
+    <span id="count_{{ params.id }}" class="bg-neutral-900 text-neutral-100 ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block group-hover:bg-neutral-800">0</span>
+  </button>
+</li>

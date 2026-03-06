@@ -18,14 +18,14 @@ export const DATE_SELECTION_BUTTON_CLASSES = {
  */
 export const DATA_TABLE_HEADER_CLASSES = {
   terms: {
-    firstHeaderCol: "border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-32 md:w-60 align-bottom",
-    secondHeaderCol: "border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-600 p-2 w-24 md:w-32 align-bottom break-words",
-    otherHeaderCols: "border-b border-neutral-500 p-2 w-32 align-bottom break-words text-right"
+    firstHeaderCol: "border-b border-neutral-700 sticky left-0 bg-neutral-900 px-2 py-3 w-32 md:w-60 align-bottom text-white",
+    secondHeaderCol: "border-b border-neutral-700 sticky left-32 md:left-60 bg-neutral-900 px-2 py-3 w-24 md:w-32 align-bottom break-words text-white",
+    otherHeaderCols: "border-b border-neutral-700 bg-neutral-700 px-2 py-3 w-32 align-bottom break-words text-white"
   },
   articles: {
-    firstHeaderCol: "border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-32 md:w-60 lg:w-80 align-bottom",
-    secondHeaderCol: "border-b border-neutral-500 sticky left-32 md:left-60 lg:left-80 bg-neutral-600 p-2 w-24 md:w-32 align-bottom break-words",
-    otherHeaderCols: "border-b border-r border-b-neutral-500 border-r-neutral-700 p-2 w-64 max-w-4xl align-bottom break-words"
+    firstHeaderCol: "border-b border-neutral-700 sticky left-0 bg-neutral-900 px-2 py-3 w-32 md:w-60 lg:w-80 align-bottom text-white",
+    secondHeaderCol: "border-b border-neutral-700 sticky left-32 md:left-60 lg:left-80 bg-neutral-900 px-2 py-3 w-24 md:w-32 align-bottom break-words text-white",
+    otherHeaderCols: "border-b border-r border-b-neutral-700 border-r-neutral-700 bg-neutral-700 px-2 py-3 w-64 max-w-4xl align-bottom break-words text-white"
   }
 };
 
@@ -34,14 +34,14 @@ export const DATA_TABLE_HEADER_CLASSES = {
  */
 export const DATA_TABLE_BODY_CLASSES = {
   terms: {
-    firstCol: "border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-32 md:w-60 text-left",
-    secondCol: "border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-600 p-2 w-24 md:w-32 whitespace-nowrap truncate",
-    otherCols: "border-b border-neutral-500 p-2 whitespace-nowrap truncate text-right hover:bg-neutral-600"
+    firstCol: "border-b border-neutral-200 sticky left-0 bg-neutral-100 p-2 w-32 md:w-60 text-left text-neutral-900",
+    secondCol: "border-b border-neutral-200 sticky left-32 md:left-60 bg-neutral-50 p-2 w-24 md:w-32 whitespace-nowrap truncate text-neutral-900",
+    otherCols: "border-b border-neutral-200 p-2 whitespace-nowrap truncate text-neutral-900 hover:bg-neutral-50"
   },
   articles: {
-    firstCol: "border-b border-neutral-500 sticky left-0 bg-neutral-700 p-2 w-32 md:w-60 lg:w-80 text-left",
-    secondCol: "border-b border-neutral-500 sticky left-32 md:left-60 lg:left-80 bg-neutral-600 p-2 w-24 md:w-32 whitespace-nowrap truncate",
-    otherCols: "border-b border-neutral-500 p-2 w-64 max-w-4xl whitespace-nowrap truncate text-right hover:bg-neutral-600"
+    firstCol: "border-b border-neutral-200 sticky left-0 bg-neutral-100 p-2 w-32 md:w-60 lg:w-80 text-left text-neutral-900",
+    secondCol: "border-b border-neutral-200 sticky left-32 md:left-60 lg:left-80 bg-neutral-50 p-2 w-24 md:w-32 whitespace-nowrap truncate text-neutral-900",
+    otherCols: "border-b border-neutral-200 p-2 w-64 max-w-4xl whitespace-nowrap truncate text-neutral-900 hover:bg-neutral-50"
   }
 };
 
@@ -50,14 +50,14 @@ export const DATA_TABLE_BODY_CLASSES = {
  */
 export const DATA_TABLE_FOOT_CLASSES = {
   terms: {
-    firstCol: "border-b border-neutral-500 sticky left-0 bg-neutral-600 p-2 w-32 md:w-60 text-left",
-    secondCol: "border-b border-neutral-500 sticky left-32 md:left-60 bg-neutral-500 p-2 w-24 md:w-32 whitespace-nowrap truncate",
-    otherCols: "border-b border-neutral-500 p-2 whitespace-nowrap truncate text-right hover:bg-neutral-500"
+    firstCol: "border-b border-neutral-300 sticky left-0 bg-neutral-200 p-2 w-32 md:w-60 text-left text-neutral-900",
+    secondCol: "border-b border-neutral-300 sticky left-32 md:left-60 bg-neutral-100 p-2 w-24 md:w-32 whitespace-nowrap truncate text-neutral-900",
+    otherCols: "border-b border-neutral-300 p-2 whitespace-nowrap truncate text-neutral-900 hover:bg-neutral-100"
   },
   articles: {
-    firstCol: "border-b border-neutral-500 sticky left-0 bg-neutral-600 p-2 w-32 md:w-60 lg:w-80 text-left",
-    secondCol: "border-b border-neutral-500 sticky left-32 md:left-60 lg:left-80 bg-neutral-500 p-2 w-24 md:w-32 whitespace-nowrap truncate",
-    otherCols: "border-b border-neutral-500 p-2 w-64 max-w-4xl whitespace-nowrap truncate text-right hover:bg-neutral-500"
+    firstCol: "border-b border-neutral-300 sticky left-0 bg-neutral-200 p-2 w-32 md:w-60 lg:w-80 text-left text-neutral-900",
+    secondCol: "border-b border-neutral-300 sticky left-32 md:left-60 lg:left-80 bg-neutral-100 p-2 w-24 md:w-32 whitespace-nowrap truncate text-neutral-900",
+    otherCols: "border-b border-neutral-300 p-2 w-64 max-w-4xl whitespace-nowrap truncate text-neutral-900 hover:bg-neutral-100"
   }
 };
 
