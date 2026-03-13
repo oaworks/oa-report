@@ -17,13 +17,13 @@
       <form id="form_{{ params.id }}" onsubmit="return window.callGetActionExportLink('{{ params.id }}')">
         <h4 class="mb-2 text-sm font-semibold uppercase">Get this dataset in CSV</h4>
         <p class="mb-4 text-sm">Download the list of <span class="py-1 px-2 my-1 bg-opacity-10 bg-carnation-200 text-neutral-100 rounded-full lowercase action_type">actions</span> for <span class="inline-flex items-center gap-1 py-1 px-2 my-1 bg-opacity-10 bg-carnation-200 text-neutral-100 rounded-full"><span class="report_readable_start_date min-w-0"></span> — <span class="report_readable_end_date min-w-0"></span></span></p>
-        <label for="email" class="sr-only">Email address</label>
+        <label for="email-{{ params.id }}" class="sr-only">Email address</label>
         <div class="mt-1 mb-3 flex shadow-sm">
           <div class="relative flex items-stretch flex-grow focus-within:z-10 text-neutral-900">
             <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none text-white">
               {% icon_small "envelope-simple" %}
             </div>
-            <input type="email" name="email" id="email-{{ params.id }}" class="focus:ring-carnation-300 focus:border-carnation-500 block w-full pl-10 py-2 sm:text-sm border border-neutral-100 bg-transparent text-white" placeholder="you@example.com" required>
+            <input type="email" name="email" id="email-{{ params.id }}" autocomplete="email" class="focus:ring-carnation-300 focus:border-carnation-500 block w-full pl-10 py-2 sm:text-sm border border-neutral-100 bg-transparent text-white" placeholder="you@example.com" required>
           </div>
           <button type="submit" class="--ml-px relative inline-flex items-center space-x-2 px-2 py-2 text-sm font-medium border border-neutral-100 text-white hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 border-l-0 whitespace-nowrap">
             <span>Get list of <span class="action_type">actions</span></span>
