@@ -546,7 +546,7 @@ function addFilterRow(container) {
   fieldWrapper.appendChild(fieldSelect);
 
   const textWrapper = document.createElement("div");
-  textWrapper.className = "w-full relative transition-all duration-200 ease-out max-h-0 opacity-0 pointer-events-none";
+  textWrapper.className = "w-full relative hidden transition-all duration-200 ease-out max-h-0 opacity-0 pointer-events-none";
   textWrapper.setAttribute("aria-hidden", "true");
 
   const textLabel = document.createElement("div");
@@ -958,6 +958,7 @@ function addFilterRow(container) {
     if (!nextFieldVal) {
       input.disabled = true;
       input.setAttribute("aria-disabled", "true");
+      textWrapper.classList.add("hidden");
       textWrapper.classList.add("max-h-0", "opacity-0", "pointer-events-none");
       textWrapper.classList.remove("max-h-48", "opacity-100", "pointer-events-auto");
       textWrapper.setAttribute("aria-hidden", "true");
@@ -966,6 +967,7 @@ function addFilterRow(container) {
     }
     input.disabled = false;
     input.setAttribute("aria-disabled", "false");
+    textWrapper.classList.remove("hidden");
     textWrapper.classList.remove("max-h-0", "opacity-0", "pointer-events-none");
     textWrapper.classList.add("max-h-48", "opacity-100", "pointer-events-auto");
     textWrapper.setAttribute("aria-hidden", "false");
