@@ -1722,6 +1722,10 @@ window.getExportLink = function() {
     var xhr = new XMLHttpRequest();
     xhr.open("GET", query);
     xhr.onload = function () {
+      const csvEmailHint = document.getElementById("csv-email-hint");
+      if (csvEmailHint) {
+        csvEmailHint.hidden = true;
+      }
       document.getElementById("csv_email_msg").innerHTML = `OA.Report has started building your CSV export at <a href='${this.response}' target='_blank' class='underline underline-offset-2 decoration-1'>this URL</a>. Please check your email to get the full data once it’s ready.`;
 
       // Reset the form after the request is sent

@@ -746,6 +746,10 @@ export function getActionExportLink(id, orgData) {
   const xhr = new XMLHttpRequest();
   xhr.open("GET", exportUrl);
   xhr.onload = function () {
+    const emailHint = document.getElementById(`email-hint-${id}`);
+    if (emailHint) {
+      emailHint.hidden = true;
+    }
     document.getElementById(`msg-${id}`).innerHTML = `OA.Report has started building your CSV export at <a href='${this.response}' target='_blank' class='underline underline-offset-2 decoration-1'>this URL</a>. Please check your email to get the full data once it’s ready.`;
   };
   xhr.send();
