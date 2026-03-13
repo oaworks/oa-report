@@ -1246,8 +1246,9 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
         const licenseName = licenseInfo?.name || "Unknown license";
         const licenseUrl = licenseInfo?.url || null;
 
-        labelWrapper = document.createElement('span');
-        labelWrapper.className = 'js-filter-target cursor-pointer hover:underline';
+        labelWrapper = document.createElement('button');
+        labelWrapper.type = 'button';
+        labelWrapper.className = 'js-filter-target cursor-pointer hover:underline text-left focus:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm';
 
         const codeEl = document.createElement('strong');
         codeEl.className = 'uppercase';
@@ -1291,8 +1292,9 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
           pill.className = 'ml-2 bg-neutral-200 text-neutral-900 text-xs px-2 py-0.5 rounded-full whitespace-nowrap hover:bg-carnation-200 js-external-pill';
           pill.textContent = 'ORCID ↗';
 
-          labelWrapper = document.createElement('span');
-          labelWrapper.className = 'js-filter-target cursor-pointer hover:underline';
+          labelWrapper = document.createElement('button');
+          labelWrapper.type = 'button';
+          labelWrapper.className = 'js-filter-target cursor-pointer hover:underline text-left focus:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm';
 
           const nameSpan = document.createElement('span');
           nameSpan.textContent = 'Loading ORCID data...';
@@ -1325,8 +1327,9 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
 
     // Wrap plain key values in a filter-target span (countries, grant IDs, etc.)
     if (!labelWrapper) {
-      labelWrapper = document.createElement('span');
-      labelWrapper.className = 'js-filter-target cursor-pointer hover:underline';
+      labelWrapper = document.createElement('button');
+      labelWrapper.type = 'button';
+      labelWrapper.className = 'js-filter-target cursor-pointer hover:underline text-left focus:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm';
       labelWrapper.textContent = displayContent;
       cell.appendChild(labelWrapper);
     }
