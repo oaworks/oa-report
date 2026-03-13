@@ -577,6 +577,12 @@ export function initInsightsAndActions(org) {
 
                         // And add it to the action array
                         action["mailto"] = encodeURI(newMailto);
+                        action["draft_aria_label"] = `Open draft for ${action.author_email_name || "unknown author"}, article: ${action.title || action.DOI || "unknown article"}`
+                          .replaceAll("&", "&amp;")
+                          .replaceAll("\"", "&quot;")
+                          .replaceAll("\'", "&#39;")
+                          .replaceAll("<", "&lt;")
+                          .replaceAll(">", "&gt;");
                       };
 
                       var tableRowLiteral = tableRow.replace(/\$\{action\.([^}]+)\}/g, function(match, key) {
