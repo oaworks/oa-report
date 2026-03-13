@@ -679,7 +679,11 @@ function addFilterRow(container) {
       const selected = optionIndex === activeIndex;
       li.setAttribute("aria-selected", selected ? "true" : "false");
       li.classList.toggle("bg-neutral-900", selected);
+      li.classList.toggle("hover:bg-neutral-700", selected);
+      li.classList.toggle("hover:bg-carnation-100", !selected);
       li.classList.toggle("text-white", selected);
+      li.classList.toggle("hover:text-white", selected);
+      li.classList.toggle("hover:text-neutral-900", !selected);
     });
     const activeOption = options[activeIndex];
     if (activeOption && activeOption.id) {
@@ -772,7 +776,7 @@ function addFilterRow(container) {
       li.setAttribute("role", "option");
       li.setAttribute("aria-selected", "false");
       li.setAttribute("aria-disabled", "false");
-      li.className = "px-2 py-1 cursor-pointer hover:bg-carnation-100 text-xs md:text-sm";
+      li.className = "px-2 py-1 cursor-pointer hover:bg-carnation-100 hover:text-neutral-900 text-xs md:text-sm";
       li.id = `${listboxId}-option-${listbox.childElementCount}`;
       li.innerHTML = highlight(val);
       li.addEventListener("mousedown", (e) => {
