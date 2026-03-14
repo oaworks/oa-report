@@ -423,19 +423,18 @@ async function addExploreFiltersToDOM(query) {
 }
 
 /**
- * Creates a radio button for an explore item's filter. Configures it with a specified
- * ID, label, and CSS classes. Attaches an event listener to the radio button that
- * calls handleFilterChange when a user interacts with the filter.
+ * Creates a filter button for an explore item's table switcher. Configures it with a
+ * specified ID, label, and CSS classes. Styles it like a pill.
  * 
  * @param {string} id - The ID of the filter.
- * @param {boolean} isChecked - True if the filter should be checked by default.
- * @returns {HTMLDivElement} The div element containing the configured radio button and label.
+ * @param {boolean} isChecked - True if the filter should be active by default.
+ * @returns {HTMLDivElement} The div element containing the configured filter button.
  */
 function createExploreFilterRadioButton(id, isChecked) {
   const labelData = EXPLORE_FILTERS_LABELS[id];
   const label = labelData ? labelData.label || id : id; // Use label from filters or default to ID
 
-  // Create div to contain radio input and label
+  // Create div to contain the filter button
   const filterRadioButton = document.createElement('div');
   filterRadioButton.className = 'mr-2 md:mr-4 mb-2';
   filterRadioButton.setAttribute('data-filter-id', id);
@@ -456,40 +455,32 @@ function createExploreFilterRadioButton(id, isChecked) {
     });
   }
 
-  // Create and append radio input
-  const radioInput = document.createElement('input');
-  Object.assign(radioInput, {
-    type: 'radio',
+  const buttonElement = document.createElement('button');
+  Object.assign(buttonElement, {
     id: `filter_${id}`,
-    className: 'peer sr-only',
-    name: 'filter_by',
+    type: 'button',
     value: id,
-    checked: isChecked
-  });
-  filterRadioButton.appendChild(radioInput);
-
-  // Create and append label
-  const labelElement = document.createElement('label');
-  Object.assign(labelElement, {
-    htmlFor: `filter_${id}`,
-    className: `${FILTER_PILL_CLASSES.base} peer-focus-visible:ring-2 peer-focus-visible:ring-carnation-400 peer-focus-visible:ring-offset-1 peer-focus-visible:ring-offset-neutral-800`,
+    className: FILTER_PILL_CLASSES.base,
     innerHTML: '<span>' + label + '</span>'
   });
-  filterRadioButton.appendChild(labelElement);
+  buttonElement.setAttribute('aria-pressed', isChecked ? 'true' : 'false');
+  buttonElement.setAttribute('aria-label', label);
+  filterRadioButton.appendChild(buttonElement);
 
-  setFilterPillState(labelElement, isChecked);
+  setFilterPillState(buttonElement, isChecked);
 
   return filterRadioButton;
 }
 
 /**
- * Sets state-driven classes/attributes for a filter pill label.
+ * Sets state-driven classes/attributes for a filter pill button.
  * Tailwind classes are applied from a single base string to keep this lean.
- * @param {HTMLElement} labelElement
+ * @param {HTMLButtonElement} buttonElement
  * @param {boolean} isActive
  */
-function setFilterPillState(labelElement, isActive) {
-  labelElement.className = `${FILTER_PILL_CLASSES.base} peer-focus-visible:ring-2 peer-focus-visible:ring-carnation-400 peer-focus-visible:ring-offset-1 peer-focus-visible:ring-offset-neutral-800 ${isActive ? FILTER_PILL_CLASSES.active : FILTER_PILL_CLASSES.inactive}`;
+function setFilterPillState(buttonElement, isActive) {
+  buttonElement.className = `${FILTER_PILL_CLASSES.base} ${isActive ? FILTER_PILL_CLASSES.active : FILTER_PILL_CLASSES.inactive}`;
+  buttonElement.setAttribute('aria-pressed', isActive ? 'true' : 'false');
 }
 
 /**
@@ -498,8 +489,9 @@ function setFilterPillState(labelElement, isActive) {
  */
 function updateFilterPillStates(activeId) {
   document.querySelectorAll('#explore_filters [data-filter-id]').forEach((wrapper) => {
-    const label = wrapper.querySelector('label');
-    setFilterPillState(label, wrapper.getAttribute('data-filter-id') === activeId);
+    const button = wrapper.querySelector('button');
+    if (!(button instanceof HTMLButtonElement)) return;
+    setFilterPillState(button, wrapper.getAttribute('data-filter-id') === activeId);
   });
 }
 
