@@ -328,7 +328,8 @@ export function initInsightsAndActions(org) {
         }
 
         // On-click tooltip to contain Insight info + figure details
-        const tooltipTarget = cardContents;
+        const tooltipTarget = cardContents.querySelector('.js_insight_trigger');
+        if (!(tooltipTarget instanceof HTMLButtonElement)) return;
         const tooltipTargetId = tooltipTarget.id || `${numerator}-card-trigger`;
         tooltipTarget.id = tooltipTargetId;
         let instance = cardContents._insightTooltip;
@@ -337,7 +338,6 @@ export function initInsightsAndActions(org) {
             allowHTML: true,
             interactive: true,
             placement: 'right',
-            appendTo: document.body,
             theme: 'tooltip-white',
             trigger: 'click',
             content: ''
@@ -349,13 +349,7 @@ export function initInsightsAndActions(org) {
             if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault();
               instance.show();
-            } else if (e.key === 'Tab') {
-              instance.hide();
             }
-          });
-
-          tooltipTarget.addEventListener('blur', () => {
-            instance.hide();
           });
 
           cardContents._insightTooltipEventsBound = true;
