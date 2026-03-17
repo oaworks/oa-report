@@ -1,11 +1,12 @@
 {%- from "system/component.njk" import component -%}
 
-<header class="z-50{% if page.url == '/' %} drop-shadow-md h-auto sticky top-0{% endif %}">
+{% set isReportPage = org and org._source and org._source.name %}
+{% set isMarketingHeader = not isReportPage %}
+
+<header class="z-50{% if page.url == '/' %} drop-shadow-md h-auto lg:sticky top-0{% endif %}">
   <h2 class="sr-only">
     OA.Report
   </h2>
-  {% set isReportPage = org and org._source and org._source.name %}
-  {% set isMarketingHeader = not isReportPage %}
   {% if isMarketingHeader %}
     {% set nav_styles = 'py-3 md:py-4 lg:py-5 bg-neutral-100 text-neutral-900' %}
   {% else %}
@@ -69,7 +70,7 @@
   </nav>
 
   {% if isReportPage and org._source.paid == true %}
-  <nav class="pt-3" aria-labelledby="report-nav-heading">
+  <nav id="js-report-nav" class="pt-3" aria-labelledby="report-nav-heading">
     <h2 id="report-nav-heading" class="sr-only">Report navigation</h2>
     <section class="flex items-center flex-wrap md:flex-nowrap justify-between px-3 md:px-4 gap-x-2 gap-y-1 md:gap-x-3 md:gap-y-0">
       <div class="flex items-center flex-wrap md:flex-nowrap gap-x-2 gap-y-1 md:gap-x-3 md:gap-y-0">
