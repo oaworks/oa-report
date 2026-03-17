@@ -103,7 +103,7 @@ export function setDefaultYear() {
     if (elementToUpdate && elementToUpdate.classList.contains("js_dropdown_item")) {
       const dropdownButton = document.querySelector(".js_dropdown_button");
       if (dropdownButton) {
-        dropdownButton.innerHTML = `${startDate.getFullYear()} <span class='ml-1 text-xs'>&#9660;</span>`;
+        dropdownButton.innerHTML = `${startDate.getFullYear()} <span class='ml-1 text-xs' aria-hidden='true'>&#9660;</span>`;
       }
     }
   } else {
@@ -244,7 +244,7 @@ function createDropdownContainer(id = null) {
   if (id) dropdownButton.id = id;
   dropdownButton.setAttribute("aria-haspopup", "true");
   dropdownButton.setAttribute("aria-expanded", "false");
-  dropdownButton.innerHTML = "More <span class='sr-only'>years</span> <span class='ml-1 text-xs'>&#9660;</span>";
+  dropdownButton.innerHTML = "More <span class='sr-only'>years</span> <span class='ml-1 text-xs' aria-hidden='true'>&#9660;</span>";
 
   const dropdownContent = document.createElement("div");
   dropdownContent.classList.add(
@@ -325,7 +325,7 @@ function createDropdownItem(buttonId, buttonText, startDate, endDate, dropdownBu
     handleYearButtonLogic(item, startDate, endDate);
 
     // Update visible label on the More chip
-    dropdownButton.innerHTML = `${buttonText} <span class='ml-1 text-xs'>&#9660;</span>`;
+    dropdownButton.innerHTML = `${buttonText} <span class='ml-1 text-xs' aria-hidden='true'>&#9660;</span>`;
 
     // Close the dropdown
     const dropdownContainer = dropdownButton.closest(".js_dropdown");
@@ -413,7 +413,7 @@ function createDateRangeForm() {
   // Trigger button to open the popover
   const triggerBtn = document.createElement("button");
   triggerBtn.type = "button";
-  triggerBtn.innerHTML = "Custom date range <span class='ml-1 text-xs'>▼</span>";
+  triggerBtn.innerHTML = "Custom date range <span class='ml-1 text-xs' aria-hidden='true'>&#9660;</span>";
   triggerBtn.setAttribute("aria-haspopup", "dialog");
   triggerBtn.setAttribute("aria-expanded", "false");
   triggerBtn.style.color = "inherit";
@@ -679,7 +679,7 @@ function resetDropdown() {
   // Reset the dropdown button text to 'More years'
   const dropdownButton = document.querySelector('.js_dropdown_button');
   if (dropdownButton) {
-    dropdownButton.innerHTML = `More <span class='sr-only'>years</span> <span class='ml-1 text-xs'>&#9660;</span>`;
+    dropdownButton.innerHTML = `More <span class='sr-only'>years</span> <span class='ml-1 text-xs' aria-hidden='true'>&#9660;</span>`;
   }
 
   // Reset styling for all dropdown items to their original state
