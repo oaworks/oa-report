@@ -4,16 +4,15 @@
 {% set isMarketingHeader = not isReportPage %}
 
 <header class="z-50{% if page.url == '/' %} drop-shadow-md h-auto lg:sticky top-0{% endif %}">
-  <h2 class="sr-only">
+  <span class="sr-only">
     OA.Report
-  </h2>
+  </span>
   {% if isMarketingHeader %}
     {% set nav_styles = 'py-3 md:py-4 lg:py-5 bg-neutral-100 text-neutral-900' %}
   {% else %}
     {% set nav_styles = 'py-2 md:py-3' %}
   {% endif %}
-  <nav class="mx-auto flex max-w-10xl items-center justify-between gap-4 px-3 md:px-4 {{ nav_styles }}" aria-label="Global">
-    <h3 class="sr-only">Site navigation</h3>
+  <nav class="mx-auto flex max-w-10xl items-center justify-between gap-4 px-3 md:px-4 {{ nav_styles }}" aria-label="Primary navigation">
 
     {% if isMarketingHeader %}
     <div class="flex items-center gap-3 shrink-0">
