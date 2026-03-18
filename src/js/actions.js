@@ -8,6 +8,7 @@
 // =================================================
 
 import { updateURLParams, getAllURLParams, announce } from './utils.js';
+import { SEGMENTED_PILL_CLASSES } from './constants.js';
 
 /**
  * Initialises event listeners for action tab buttons.
@@ -51,6 +52,7 @@ export function initActionTabs() {
 function updateStrategyButtonStyling(event) {
   const tabBtn = event.target.closest(".js_strategy_btn");
   if (!tabBtn) return;
+  const activeClasses = SEGMENTED_PILL_CLASSES.active.split(" ");
 
   const selectedAction = tabBtn.getAttribute("aria-controls");
   const selectedTabContents = document.querySelector(`.js_actions #${selectedAction}`);
@@ -72,7 +74,7 @@ function updateStrategyButtonStyling(event) {
 
   // Update button styles
   document.querySelectorAll(".js_strategy_btn").forEach((btn) => {
-    btn.classList.remove("bg-neutral-100", "text-neutral-900", "shadow-inner");
+    btn.classList.remove(...activeClasses);
     btn.classList.add("text-white", "hover:bg-neutral-700/70", "bg-neutral-900/60");
     const badge = btn.querySelector("[id^='count_']");
     if (badge) {
@@ -82,7 +84,7 @@ function updateStrategyButtonStyling(event) {
     btn.setAttribute("aria-pressed", "false");
   });
 
-  tabBtn.classList.add("bg-neutral-100", "text-neutral-900", "shadow-inner");
+  tabBtn.classList.add(...activeClasses);
   tabBtn.classList.remove("text-white", "hover:bg-neutral-700/70", "bg-neutral-900/60");
   const activeBadge = tabBtn.querySelector("[id^='count_']");
   if (activeBadge) {
