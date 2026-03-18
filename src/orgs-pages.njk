@@ -10,13 +10,20 @@ permalink: "{{ org._source.objectID | slug }}/"
 
 {%- from "system/component.njk" import component with context -%}
 
+<a
+  href="#main-content"
+  class="fixed inset-x-0 top-0 z-[100] block -translate-y-full bg-carnation-700 px-4 py-3 text-center text-sm font-medium text-white shadow-lg transition-transform focus:translate-y-0 focus:outline-none"
+>
+  Skip to main content
+</a>
+
 {% block header %}
 <div id="js-report-nav" class="bg-neutral-900 text-neutral-100 border-b border-neutral-700 lg:sticky top-0 z-50 pb-3 md:pb-6">
   {% include 'partials/header.njk' %}
 </div>
 {% endblock %}
 
-<main>
+<main id="main-content" tabindex="-1">
   {% include 'partials/report/insights.njk' %}
   {% include 'partials/report/explore.njk' %}
   {% include 'partials/report/actions.njk' %}
