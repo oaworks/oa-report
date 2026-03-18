@@ -203,7 +203,7 @@ function renderActionTabs(strategy = {}) {
     const tabBtn = document.createElement("button");
     tabBtn.type = "button";
     tabBtn.id = `strategy_${id}`;
-    tabBtn.className = "js_strategy_btn group cursor-pointer px-4 py-1.5 text-sm font-medium rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 transition-colors text-white bg-neutral-900/60";
+    tabBtn.className = "js_strategy_btn group cursor-pointer px-4 py-1.5 text-sm font-medium rounded-md outline outline-1 outline-transparent outline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 transition-colors text-white bg-neutral-900/60";
     tabBtn.setAttribute("aria-controls", id);
     tabBtn.setAttribute("aria-pressed", index === 0 ? "true" : "false");
     tabBtn.innerHTML = `<span>${label}</span><span id="count_${id}" class="bg-neutral-900 text-neutral-100 ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block group-hover:bg-neutral-800">0</span>`;
