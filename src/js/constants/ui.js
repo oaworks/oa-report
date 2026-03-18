@@ -71,6 +71,7 @@ export const FILTER_PILL_CLASSES = {
 };
 
 // Segmented pill styles for tab-like groups
+// TODO: Refactor Actions pills to consume these shared classes so Explore and Actions stay visually aligned from one source of truth.
 export const SEGMENTED_PILL_CLASSES = {
   base: "px-4 py-1.5 text-sm font-medium rounded-md outline outline-1 outline-transparent outline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 transition-colors",
   active: "bg-neutral-100 text-neutral-900 shadow-inner border border-1 border-neutral-100",
