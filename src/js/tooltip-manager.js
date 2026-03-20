@@ -45,6 +45,17 @@ function contains(node, target) {
   return target instanceof Node && node.contains(target);
 }
 
+function getFallbackPlacements(placement) {
+  const [side, align] = String(placement || "top").split("-");
+  const opposite = { top: "bottom", right: "left", bottom: "top", left: "right" }[side] || "bottom";
+  return [
+    align ? `${opposite}-${align}` : opposite,
+    opposite,
+    side === "top" || side === "bottom" ? "right" : "top",
+    side === "top" || side === "bottom" ? "left" : "bottom",
+  ];
+}
+
 function setContent(target, value, allowHTML) {
   target.replaceChildren();
 
@@ -176,7 +187,17 @@ function createFloating(trigger, initialContent, overrides = {}) {
   const { popper, box, content, arrowEl } = createElements(options);
   const [showDelay, hideDelay] = parseDelay(options.delay);
   const appendTarget = resolveAppendTarget(options.appendTo, trigger);
-  const middleware = [offset(10), flip(), shift({ padding: 8 })];
+  const middleware = [
+    offset(options.arrow === false ? 8 : 7),
+    flip({
+      padding: 8,
+      fallbackPlacements: getFallbackPlacements(options.placement),
+    }),
+    shift({
+      padding: 8,
+      crossAxis: true,
+    }),
+  ];
 
   if (arrowEl) middleware.push(floatingArrow({ element: arrowEl }));
 
