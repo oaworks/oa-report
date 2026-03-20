@@ -312,12 +312,12 @@ function initDeclarativeTooltips() {
   document.querySelectorAll(".tooltip").forEach((element) => {
     if (element._tippy) return;
 
-    const content = element.getAttribute("data-tippy-content");
+    const content = element.getAttribute("data-tooltip-content");
     if (!content) return;
 
     createTooltip(element, content, {
-      placement: element.getAttribute("data-tippy-placement") || "top",
-      theme: element.getAttribute("data-tippy-theme") || "",
+      placement: element.getAttribute("data-tooltip-placement") || "top",
+      theme: element.getAttribute("data-tooltip-theme") || "",
     });
 
     element.setAttribute("role", "tooltip");
