@@ -1016,8 +1016,8 @@ export function renderActiveFiltersBanner() {
 
   // Clean up any previous Tippy instance on the trigger
   const oldTrigger = document.getElementById("js-filters-trigger");
-  if (oldTrigger && oldTrigger._tippy) {
-    oldTrigger._tippy.destroy();
+  if (oldTrigger && oldTrigger._tooltip) {
+    oldTrigger._tooltip.destroy();
   }
 
   const q = getDecodedUrlQuery();

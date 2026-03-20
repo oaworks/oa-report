@@ -87,7 +87,7 @@ function createElements(options) {
   });
 
   const box = document.createElement("div");
-  box.className = "tippy-box";
+  box.className = "tooltip-box";
   box.tabIndex = -1;
   box.dataset.state = "hidden";
   if (options.theme) box.dataset.theme = options.theme;
@@ -97,12 +97,12 @@ function createElements(options) {
   }
 
   const content = document.createElement("div");
-  content.className = "tippy-content";
+  content.className = "tooltip-content";
   box.appendChild(content);
 
   const arrowEl = options.arrow === false
     ? null
-    : Object.assign(document.createElement("div"), { className: "tippy-arrow" });
+    : Object.assign(document.createElement("div"), { className: "tooltip-arrow" });
 
   if (arrowEl) box.appendChild(arrowEl);
   popper.appendChild(box);
@@ -273,8 +273,8 @@ function createFloating(trigger, initialContent, overrides = {}) {
     destroyed = true;
     cleanups.forEach((cleanup) => cleanup());
     instances.delete(instance);
-    if (trigger._tippy === instance) delete trigger._tippy;
-    if (popper._tippy === instance) delete popper._tippy;
+    if (trigger._tooltip === instance) delete trigger._tooltip;
+    if (popper._tooltip === instance) delete popper._tooltip;
     options.onDestroy?.(instance);
   }
 
@@ -307,8 +307,8 @@ function createFloating(trigger, initialContent, overrides = {}) {
     isVisible,
   });
 
-  trigger._tippy = instance;
-  popper._tippy = instance;
+  trigger._tooltip = instance;
+  popper._tooltip = instance;
   instances.add(instance);
 
   return instance;
@@ -316,7 +316,7 @@ function createFloating(trigger, initialContent, overrides = {}) {
 
 function initDeclarativeTooltips() {
   document.querySelectorAll(".tooltip").forEach((element) => {
-    if (element._tippy) return;
+    if (element._tooltip) return;
 
     const content = element.getAttribute("data-tooltip-content");
     if (!content) return;
