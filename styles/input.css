@@ -203,42 +203,115 @@
   z-index: -1;
 }
 
+/* Base tooltip/popover styling now that positioning is handled in-app */
+.tooltip-box {
+  position: relative;
+  width: max-content;
+  max-width: min(45ch, calc(100vw - 1rem));
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  white-space: normal;
+  overflow-wrap: break-word;
+  outline: 0;
+}
+
+.tooltip-content {
+  position: relative;
+  z-index: 1;
+  padding: 0.5rem 0.75rem;
+}
+
+.tooltip-arrow {
+  position: absolute;
+  width: 1rem;
+  height: 1rem;
+  color: inherit;
+  pointer-events: none;
+}
+
+.tooltip-arrow::before {
+  content: "";
+  position: absolute;
+  border-color: transparent;
+  border-style: solid;
+}
+
+.tooltip-box[data-placement^='top'] > .tooltip-arrow {
+  bottom: 0;
+}
+
+.tooltip-box[data-placement^='top'] > .tooltip-arrow::before {
+  bottom: -7px;
+  left: 0;
+  border-width: 8px 8px 0;
+  border-top-color: currentColor;
+}
+
+.tooltip-box[data-placement^='bottom'] > .tooltip-arrow {
+  top: 0;
+}
+
+.tooltip-box[data-placement^='bottom'] > .tooltip-arrow::before {
+  top: -7px;
+  left: 0;
+  border-width: 0 8px 8px;
+  border-bottom-color: currentColor;
+}
+
+.tooltip-box[data-placement^='left'] > .tooltip-arrow {
+  right: 0;
+}
+
+.tooltip-box[data-placement^='left'] > .tooltip-arrow::before {
+  right: -7px;
+  border-width: 8px 0 8px 8px;
+  border-left-color: currentColor;
+}
+
+.tooltip-box[data-placement^='right'] > .tooltip-arrow {
+  left: 0;
+}
+
+.tooltip-box[data-placement^='right'] > .tooltip-arrow::before {
+  left: -7px;
+  border-width: 8px 8px 8px 0;
+  border-right-color: currentColor;
+}
+
 /* Custom tooltip styling */
-.tippy-box[data-theme~='tooltip-pink'] {
+.tooltip-box[data-theme~='tooltip-pink'] {
   background-color: #ffaeac;
   color: #24201e;
-  font-weight: normal;
-  line-height: 1.5;
   text-transform: none; 
   --tw-drop-shadow: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
-.tippy-box[data-theme~='tooltip-pink'] .tippy-arrow {
+.tooltip-box[data-theme~='tooltip-pink'] .tooltip-arrow {
   color: #ffaeac;
 }
 
-.tippy-box[data-theme~='tooltip-white'] {
+.tooltip-box[data-theme~='tooltip-white'] {
   background-color: #fff;
   color: #24201e;
-  font-weight: normal;
-  line-height: 1.5;
   text-transform: none;
   --tw-drop-shadow: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
-.tippy-box[data-theme~='tooltip-white'] .tippy-arrow {
+.tooltip-box[data-theme~='tooltip-white'] .tooltip-arrow {
   color: #fff;
 }
 
-[data-tippy-content], sup > svg {
+[data-tooltip-content], sup > svg {
   cursor: pointer;
 }
 
-.tippy-box[data-theme~='popover'] {
+.tooltip-box[data-theme~='popover'] {
   background-color: #fff;
   color: #24201e;
+  max-width: min(36rem, calc(100vw - 1rem));
   --tw-drop-shadow: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }

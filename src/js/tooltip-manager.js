@@ -45,6 +45,17 @@ function contains(node, target) {
   return target instanceof Node && node.contains(target);
 }
 
+function getFallbackPlacements(placement) {
+  const [side, align] = String(placement || "top").split("-");
+  const opposite = { top: "bottom", right: "left", bottom: "top", left: "right" }[side] || "bottom";
+  return [
+    align ? `${opposite}-${align}` : opposite,
+    opposite,
+    side === "top" || side === "bottom" ? "right" : "top",
+    side === "top" || side === "bottom" ? "left" : "bottom",
+  ];
+}
+
 function setContent(target, value, allowHTML) {
   target.replaceChildren();
 
@@ -64,14 +75,10 @@ function setContent(target, value, allowHTML) {
 function setArrowPosition(box, arrowEl, placement, arrowData) {
   if (!arrowEl) return;
 
-  const side = placement.split("-")[0];
-  const opposite = { top: "bottom", right: "left", bottom: "top", left: "right" }[side];
-
   arrowEl.style.left = typeof arrowData?.x === "number" ? `${arrowData.x}px` : "";
   arrowEl.style.top = typeof arrowData?.y === "number" ? `${arrowData.y}px` : "";
   arrowEl.style.right = "";
   arrowEl.style.bottom = "";
-  arrowEl.style[opposite] = "-8px";
 
   box.setAttribute("data-placement", placement);
 }
@@ -115,6 +122,12 @@ function bind(cleanups, element, eventName, handler) {
   cleanups.push(() => element.removeEventListener(eventName, handler));
 }
 
+function getFocusableElements(container) {
+  return Array.from(container.querySelectorAll(
+    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+  )).filter((element) => !element.hasAttribute("hidden"));
+}
+
 function attachTriggers({
   trigger,
   popper,
@@ -151,6 +164,24 @@ function attachTriggers({
       if (options.interactive && contains(popper, event.relatedTarget)) return;
       queueHide();
     });
+
+    bind(cleanups, trigger, "keydown", (event) => {
+      if (event.key !== "Tab" || !isVisible()) return;
+
+      const focusable = getFocusableElements(popper);
+      if (!focusable.length) return;
+
+      event.preventDefault();
+      (event.shiftKey ? focusable[focusable.length - 1] : focusable[0]).focus();
+    });
+  }
+
+  if (options.interactive) {
+    bind(cleanups, popper, "focusin", cancelHide);
+    bind(cleanups, popper, "focusout", (event) => {
+      if (contains(trigger, event.relatedTarget) || contains(popper, event.relatedTarget)) return;
+      queueHide();
+    });
   }
 
   if (modes.includes("click")) {
@@ -176,7 +207,17 @@ function createFloating(trigger, initialContent, overrides = {}) {
   const { popper, box, content, arrowEl } = createElements(options);
   const [showDelay, hideDelay] = parseDelay(options.delay);
   const appendTarget = resolveAppendTarget(options.appendTo, trigger);
-  const middleware = [offset(10), flip(), shift({ padding: 8 })];
+  const middleware = [
+    offset(options.arrow === false ? 8 : 7),
+    flip({
+      padding: 8,
+      fallbackPlacements: getFallbackPlacements(options.placement),
+    }),
+    shift({
+      padding: 8,
+      crossAxis: true,
+    }),
+  ];
 
   if (arrowEl) middleware.push(floatingArrow({ element: arrowEl }));
 
