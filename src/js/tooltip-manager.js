@@ -21,6 +21,7 @@ const DEFAULTS = {
   theme: "",
   trigger: "mouseenter focus",
 };
+const INTERACTIVE_HIDE_GRACE_MS = 120;
 
 let hasInitialised = false;
 let nextId = 0;
@@ -136,6 +137,14 @@ function focusTooltipContent(popper, reverse = false) {
   return true;
 }
 
+function scheduleHideIfOutside(trigger, popper, queueHide) {
+  requestAnimationFrame(() => {
+    const active = document.activeElement;
+    if (contains(trigger, active) || contains(popper, active)) return;
+    queueHide();
+  });
+}
+
 function attachTriggers({
   trigger,
   popper,
@@ -168,13 +177,17 @@ function attachTriggers({
 
   if (modes.includes("focus")) {
     bind(cleanups, trigger, "focus", queueShow);
-    bind(cleanups, trigger, "blur", (event) => {
-      if (options.interactive && contains(popper, event.relatedTarget)) return;
-      queueHide();
+    bind(cleanups, trigger, "blur", () => {
+      if (!options.interactive) {
+        queueHide();
+        return;
+      }
+      scheduleHideIfOutside(trigger, popper, queueHide);
     });
 
     bind(cleanups, trigger, "keydown", (event) => {
-      if (event.key !== "Tab" || !isVisible()) return;
+      if (event.key !== "Tab") return;
+      if (!isVisible()) show();
       if (!focusTooltipContent(popper, event.shiftKey)) return;
       event.preventDefault();
     });
@@ -182,9 +195,8 @@ function attachTriggers({
 
   if (options.interactive) {
     bind(cleanups, popper, "focusin", cancelHide);
-    bind(cleanups, popper, "focusout", (event) => {
-      if (contains(trigger, event.relatedTarget) || contains(popper, event.relatedTarget)) return;
-      queueHide();
+    bind(cleanups, popper, "focusout", () => {
+      scheduleHideIfOutside(trigger, popper, queueHide);
     });
 
     bind(cleanups, popper, "keydown", (event) => {
@@ -363,7 +375,8 @@ function createFloating(trigger, initialContent, overrides = {}) {
   function queueHide() {
     clearTimeout(showTimer);
     cancelHide();
-    hideTimer = setTimeout(hide, hideDelay);
+    const delay = options.interactive ? Math.max(hideDelay, INTERACTIVE_HIDE_GRACE_MS) : hideDelay;
+    hideTimer = setTimeout(hide, delay);
   }
 
   function cancelHide() {
