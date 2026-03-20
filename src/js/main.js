@@ -11,6 +11,7 @@ import { bindSmoothScrollLinks, adjustNavOnScroll } from './utils.js';
 import { DEFAULT_YEAR, FIRST_YEAR, currentDate, bindDynamicYearButtons, setDefaultYear, initDateManager } from './report-date-manager.js';
 import { initDataExplore } from './explore.js';
 import { initActionTabs } from './actions.js';
+import { initTooltipManager } from './tooltip-manager.js';
 
 // Flag to check if initDataExplore has already been initialised
 let isDataExploreInitialised = false;
@@ -26,6 +27,8 @@ function initialise() {
   if (isDataExploreInitialised) {
     return;
   }
+
+  initTooltipManager();
 
   // 1) Process URL params and orgkey first
   initDateManager();

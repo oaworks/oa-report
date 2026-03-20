@@ -22,52 +22,6 @@
 <script defer src="/js/popper.min.js"></script>
 <script defer src="/js/tippy-bundle.umd.min.js"></script>
 <script>
-  window.addEventListener('load', function () {
-    if (typeof window.tippy !== 'function') {
-      return;
-    }
-
-    tippy(document.querySelectorAll('.tooltip'), {
-      allowHTML: true,
-      interactive: true,
-      placement: 'top',
-      appendTo: document.body,
-    });
-
-    tippy(document.querySelectorAll('.dropdown'), {
-      arrow: false,
-      allowHTML: true,
-      interactive: true,
-      placement: 'bottom-start',
-      appendTo: document.body,
-      theme: 'dropdown',
-    });
-
-    tippy(document.querySelectorAll('.popover'), {
-      allowHTML: true,
-      interactive: true,
-      placement: 'bottom',
-      appendTo: document.body,
-      trigger: 'click',
-      theme: 'popover',
-      arrow: false,
-    });
-
-    // Update ARIA attributes for tooltips
-    const tooltips = document.querySelectorAll('.tooltip');
-    tooltips.forEach((tooltip) => {
-      tooltip.setAttribute('role', 'tooltip');
-    });
-
-    document.addEventListener('keydown', function (event) {
-      if (event.key !== 'Escape') return;
-      if (typeof tippy.hideAll === 'function') {
-        tippy.hideAll();
-      }
-    });
-  });
-</script>
-<script>
   const org = ("{{ org._source.objectID | urlencode }}"),
         orgSlug = ("{{ org._source.objectID | slug }}"),
         orgName = ("{{ org._source.name|safe }}"),
