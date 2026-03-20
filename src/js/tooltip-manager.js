@@ -58,3 +58,26 @@ export function initTooltipManager() {
     });
   }, { once: true });
 }
+
+function getTippy() {
+  return typeof window.tippy === "function" ? window.tippy : null;
+}
+
+export function createPopover(trigger, content, options = {}) {
+  const tippy = getTippy();
+  if (!tippy) {
+    throw new Error("Tippy is not available.");
+  }
+
+  return tippy(trigger, {
+    content,
+    allowHTML: true,
+    interactive: true,
+    placement: "bottom",
+    appendTo: document.body,
+    trigger: "click",
+    theme: "popover",
+    arrow: false,
+    ...options,
+  });
+}

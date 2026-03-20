@@ -12,6 +12,7 @@ import { DATE_SELECTION_BUTTON_CLASSES } from './constants.js';
 import { createDate, replaceDateRange, initDropdown, getAllURLParams, updateURLParams, dateRange, getURLParam, createPopoverKeyboardFlow, makeDateReadable, announce } from './utils.js';
 import { initInsightsAndActions } from './insights-and-actions.js';
 import { currentActiveExploreItemButton, currentActiveExploreItemData, processExploreDataTable } from './explore.js';
+import { createPopover } from './tooltip-manager.js';
 
 // =================================================
 // Global variables
@@ -465,16 +466,7 @@ function createDateRangeForm() {
     }
   });
 
-  // Initialise a dedicated Tippy instance
-  tip = tippy(triggerBtn, {
-    content: pop,
-    allowHTML: true,
-    interactive: true,
-    placement: "bottom",
-    appendTo: document.body,
-    trigger: "click",
-    theme: "popover",
-    arrow: false,
+  tip = createPopover(triggerBtn, pop, {
     onShow() {
       triggerBtn.setAttribute("aria-expanded", "true");
       // Prefill popover inputs from hidden values (if any)
