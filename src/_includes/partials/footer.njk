@@ -18,9 +18,6 @@
 
 {# Load JS for org report pages only #}
 {% if org._source.name %}
-{# For tooltips #}
-<script defer src="/js/popper.min.js"></script>
-<script defer src="/js/tippy-bundle.umd.min.js"></script>
 <script>
   const org = ("{{ org._source.objectID | urlencode }}"),
         orgSlug = ("{{ org._source.objectID | slug }}"),
