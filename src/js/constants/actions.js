@@ -19,7 +19,7 @@ export const ACTION_ORDER = [
   "unanswered_requests"
 ];
 
-const ACTION_ARTICLE_LINK_CLASSES = "ml-2 inline-flex items-center bg-neutral-200 text-neutral-900 text-xs px-2 py-0.5 rounded-full whitespace-nowrap hover:bg-carnation-200";
+const ACTION_ARTICLE_LINK_CLASSES = "inline-flex items-center bg-neutral-200 text-neutral-900 text-xs px-2 py-0.5 rounded-full whitespace-nowrap hover:bg-carnation-200";
 
 // Config for rendering Actions tables
 export const ACTION_TABLE_CONFIGS = [
