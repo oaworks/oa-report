@@ -13,6 +13,7 @@ import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateRead
 import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS } from './constants.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { initActionTabs } from './actions.js';
+import { createTooltip } from './tooltip-manager.js';
 
 // Cache identical count queries so we only hit the API once per unique URL
 const countQueryCache = new Map();
@@ -333,14 +334,10 @@ export function initInsightsAndActions(org) {
         tooltipTarget.id = tooltipTargetId;
         let instance = cardContents._insightTooltip;
         if (!instance) {
-          instance = tippy(tooltipTarget, {
-            allowHTML: true,
-            interactive: true,
+          instance = createTooltip(tooltipTarget, '', {
             placement: 'right',
-            appendTo: document.body,
             theme: 'tooltip-white',
-            trigger: 'click',
-            content: ''
+            trigger: 'click'
           });
           cardContents._insightTooltip = instance;
         }
