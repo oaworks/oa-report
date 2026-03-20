@@ -30,6 +30,7 @@ import { SEARCH_FILTER_FIELD_MAP, iconForField } from "./constants/filter-fields
 import { orgDataPromise } from './insights-and-actions.js';
 
 import { handleFiltersChanged } from './explore.js';
+import { createPopover } from './tooltip-manager.js';
 
 const SUGGESTIONS_API_URL = `${API_BASE_URL}suggestions`;
 
@@ -1201,7 +1202,6 @@ export function renderActiveFiltersBanner() {
   applyBtn.textContent = "Apply";
   filterForm.appendChild(applyBtn);
 
-  // Tippy instance, same pattern as custom date range
   let tip;
   const popoverFlow = createPopoverKeyboardFlow({
     popover: pop,
@@ -1225,15 +1225,8 @@ export function renderActiveFiltersBanner() {
     }
   });
 
-  tip = tippy(triggerBtn, {
-    content: pop,
-    allowHTML: true,
-    interactive: true,
+  tip = createPopover(triggerBtn, pop, {
     placement: "bottom-start",
-    appendTo: document.body,
-    trigger: "click",
-    theme: "popover",
-    arrow: false,
     onShow() {
       triggerBtn.setAttribute("aria-expanded", "true");
     },
