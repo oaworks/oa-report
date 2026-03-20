@@ -41,6 +41,10 @@ function resolveAppendTarget(appendTo, trigger) {
   return appendTo instanceof HTMLElement ? appendTo : document.body;
 }
 
+function contains(node, target) {
+  return target instanceof Node && node.contains(target);
+}
+
 function setContent(target, value, allowHTML) {
   target.replaceChildren();
 
@@ -111,59 +115,60 @@ function bind(cleanups, element, eventName, handler) {
   cleanups.push(() => element.removeEventListener(eventName, handler));
 }
 
-function bindHoverEvents(state) {
-  const { trigger, popper, options, clearTimers, queueShow, queueHide, cleanups } = state;
+function attachTriggers({
+  trigger,
+  popper,
+  options,
+  cleanups,
+  queueShow,
+  queueHide,
+  cancelHide,
+  show,
+  hide,
+  isVisible,
+}) {
+  const modes = String(options.trigger).split(" ").filter(Boolean);
 
-  bind(cleanups, trigger, "mouseenter", queueShow);
-  bind(cleanups, trigger, "mouseleave", (event) => {
-    if (options.interactive && event.relatedTarget instanceof Node && popper.contains(event.relatedTarget)) return;
-    queueHide();
-  });
+  if (modes.includes("mouseenter")) {
+    bind(cleanups, trigger, "mouseenter", queueShow);
+    bind(cleanups, trigger, "mouseleave", (event) => {
+      if (options.interactive && contains(popper, event.relatedTarget)) return;
+      queueHide();
+    });
 
-  if (!options.interactive) return;
-
-  bind(cleanups, popper, "mouseenter", () => clearTimeout(state.hideTimer));
-  bind(cleanups, popper, "mouseleave", (event) => {
-    if (event.relatedTarget instanceof Node && trigger.contains(event.relatedTarget)) return;
-    queueHide();
-  });
-}
-
-function bindFocusEvents(state) {
-  const { trigger, popper, options, queueShow, queueHide, cleanups } = state;
-
-  bind(cleanups, trigger, "focus", queueShow);
-  bind(cleanups, trigger, "blur", (event) => {
-    if (options.interactive && event.relatedTarget instanceof Node && popper.contains(event.relatedTarget)) return;
-    queueHide();
-  });
-}
-
-function bindClickEvents(state) {
-  const { trigger, popper, options, cleanups, show, hide, isVisible } = state;
-
-  bind(cleanups, trigger, "click", (event) => {
-    event.preventDefault();
-    if (isVisible()) {
-      if (options.hideOnClick !== false) hide();
-      return;
+    if (options.interactive) {
+      bind(cleanups, popper, "mouseenter", cancelHide);
+      bind(cleanups, popper, "mouseleave", (event) => {
+        if (contains(trigger, event.relatedTarget)) return;
+        queueHide();
+      });
     }
-    show();
-  });
+  }
 
-  bind(cleanups, document, "pointerdown", (event) => {
-    if (!isVisible()) return;
-    const target = event.target;
-    if (target instanceof Node && (trigger.contains(target) || popper.contains(target))) return;
-    hide();
-  });
-}
+  if (modes.includes("focus")) {
+    bind(cleanups, trigger, "focus", queueShow);
+    bind(cleanups, trigger, "blur", (event) => {
+      if (options.interactive && contains(popper, event.relatedTarget)) return;
+      queueHide();
+    });
+  }
 
-function attachTriggers(state) {
-  const modes = String(state.options.trigger).split(" ").filter(Boolean);
-  if (modes.includes("mouseenter")) bindHoverEvents(state);
-  if (modes.includes("focus")) bindFocusEvents(state);
-  if (modes.includes("click")) bindClickEvents(state);
+  if (modes.includes("click")) {
+    bind(cleanups, trigger, "click", (event) => {
+      event.preventDefault();
+      if (isVisible()) {
+        if (options.hideOnClick !== false) hide();
+        return;
+      }
+      show();
+    });
+
+    bind(cleanups, document, "pointerdown", (event) => {
+      if (!isVisible()) return;
+      if (contains(trigger, event.target) || contains(popper, event.target)) return;
+      hide();
+    });
+  }
 }
 
 function createFloating(trigger, initialContent, overrides = {}) {
@@ -274,15 +279,19 @@ function createFloating(trigger, initialContent, overrides = {}) {
   }
 
   function queueShow() {
-    clearTimeout(hideTimer);
+    cancelHide();
     clearTimeout(showTimer);
     showTimer = setTimeout(show, showDelay);
   }
 
   function queueHide() {
     clearTimeout(showTimer);
-    clearTimeout(hideTimer);
+    cancelHide();
     hideTimer = setTimeout(hide, hideDelay);
+  }
+
+  function cancelHide() {
+    clearTimeout(hideTimer);
   }
 
   attachTriggers({
@@ -290,15 +299,12 @@ function createFloating(trigger, initialContent, overrides = {}) {
     popper,
     options,
     cleanups,
-    clearTimers,
     queueShow,
     queueHide,
+    cancelHide,
     show,
     hide,
     isVisible,
-    get hideTimer() {
-      return hideTimer;
-    },
   });
 
   trigger._tippy = instance;
