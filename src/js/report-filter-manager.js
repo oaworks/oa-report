@@ -30,7 +30,7 @@ import { SEARCH_FILTER_FIELD_MAP, iconForField } from "./constants/filter-fields
 import { orgDataPromise } from './insights-and-actions.js';
 
 import { handleFiltersChanged } from './explore.js';
-import { createPopover } from './tooltip-manager.js';
+import { createPopover, createTooltip } from './tooltip-manager.js';
 
 const SUGGESTIONS_API_URL = `${API_BASE_URL}suggestions`;
 
@@ -573,12 +573,9 @@ function addFilterRow(container) {
     </div>
   `;
 
-  tippy(helpIcon, {
-    content: helpText,
-    allowHTML: true,
+  createTooltip(helpIcon, helpText, {
     theme: "popover",
     maxWidth: 320,
-    interactive: true,
     placement: "bottom",
   });
 

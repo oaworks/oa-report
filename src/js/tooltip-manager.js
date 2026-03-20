@@ -81,3 +81,19 @@ export function createPopover(trigger, content, options = {}) {
     ...options,
   });
 }
+
+export function createTooltip(trigger, content, options = {}) {
+  const tippy = getTippy();
+  if (!tippy) {
+    throw new Error("Tippy is not available.");
+  }
+
+  return tippy(trigger, {
+    content,
+    allowHTML: true,
+    interactive: true,
+    placement: "top",
+    appendTo: document.body,
+    ...options,
+  });
+}
