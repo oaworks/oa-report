@@ -128,6 +128,14 @@ function getFocusableElements(container) {
   )).filter((element) => !element.hasAttribute("hidden"));
 }
 
+function focusTooltipContent(popper, reverse = false) {
+  const focusable = getFocusableElements(popper);
+  if (!focusable.length) return false;
+
+  (reverse ? focusable[focusable.length - 1] : focusable[0]).focus();
+  return true;
+}
+
 function attachTriggers({
   trigger,
   popper,
@@ -167,12 +175,8 @@ function attachTriggers({
 
     bind(cleanups, trigger, "keydown", (event) => {
       if (event.key !== "Tab" || !isVisible()) return;
-
-      const focusable = getFocusableElements(popper);
-      if (!focusable.length) return;
-
+      if (!focusTooltipContent(popper, event.shiftKey)) return;
       event.preventDefault();
-      (event.shiftKey ? focusable[focusable.length - 1] : focusable[0]).focus();
     });
   }
 
@@ -181,6 +185,37 @@ function attachTriggers({
     bind(cleanups, popper, "focusout", (event) => {
       if (contains(trigger, event.relatedTarget) || contains(popper, event.relatedTarget)) return;
       queueHide();
+    });
+
+    bind(cleanups, popper, "keydown", (event) => {
+      if (!isVisible()) return;
+
+      if (event.key === "Escape") {
+        event.preventDefault();
+        hide();
+        trigger.focus();
+        return;
+      }
+
+      if (event.key !== "Tab") return;
+
+      const focusable = getFocusableElements(popper);
+      if (!focusable.length) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = document.activeElement;
+
+      if (event.shiftKey && active === first) {
+        event.preventDefault();
+        hide();
+        trigger.focus();
+        return;
+      }
+
+      if (!event.shiftKey && active === last) {
+        hide();
+      }
     });
   }
 
