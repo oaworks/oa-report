@@ -240,7 +240,7 @@ function createDropdownContainer(id = null) {
   dropdown.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " relative inline-block js_dropdown";
 
   const dropdownButton = document.createElement("button");
-  dropdownButton.className = "h-full w-full js_dropdown_button";
+  dropdownButton.className = "h-full w-full rounded-t-sm js_dropdown_button focus:outline-none focus:ring-2 focus:ring-neutral-600";
   if (id) dropdownButton.id = id;
   dropdownButton.setAttribute("aria-haspopup", "true");
   dropdownButton.setAttribute("aria-expanded", "false");
