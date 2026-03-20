@@ -85,6 +85,23 @@
   font-display: swap;
 }
 
+@layer base {
+  :where(
+    a,
+    button,
+    input,
+    select,
+    textarea,
+    summary,
+    [role="button"],
+    [tabindex]:not([tabindex="-1"])
+  ):focus-visible {
+    outline: 2px solid theme('colors.carnation.400') !important;
+    outline-offset: 2px !important;
+    box-shadow: none !important;
+  }
+}
+
 /* Spinner/loader */
 @layer utilities {
   .loader {
