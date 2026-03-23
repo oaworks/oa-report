@@ -982,6 +982,7 @@ function setupHeaderTooltip(element, key, dataType) {
     // Get additional help text from orgData if available
     const additionalHelpText = orgData.hits.hits[0]?._source.policy?.help_text?.[key] ?? null;
 
+    element.tabIndex = 0;
     createTooltip(element, generateTooltipContent(labelData, additionalHelpText), {
       placement: 'bottom',
       theme: 'tooltip-white'
