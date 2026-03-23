@@ -440,18 +440,6 @@ function createExploreFilterRadioButton(id, isChecked) {
   filterRadioButton.className = 'mr-2 md:mr-4 mb-2';
   filterRadioButton.setAttribute('data-filter-id', id);
 
-  // Generate and set tooltip if info is present and non-empty
-  if (labelData && labelData.info && labelData.info.trim()) {
-    createTooltip(filterRadioButton, generateTooltipContent(labelData), {
-      aria: {
-        content: null,
-        expanded: false
-      },
-      placement: 'bottom',
-      theme: 'tooltip-white'
-    });
-  }
-
   const buttonElement = document.createElement('button');
   Object.assign(buttonElement, {
     id: `filter_${id}`,
@@ -463,6 +451,17 @@ function createExploreFilterRadioButton(id, isChecked) {
   buttonElement.setAttribute('aria-pressed', isChecked ? 'true' : 'false');
   buttonElement.setAttribute('aria-label', label);
   filterRadioButton.appendChild(buttonElement);
+
+  if (labelData && labelData.info && labelData.info.trim()) {
+    createTooltip(buttonElement, generateTooltipContent(labelData), {
+      aria: {
+        content: null,
+        expanded: false
+      },
+      placement: 'bottom',
+      theme: 'tooltip-white'
+    });
+  }
 
   setFilterPillState(buttonElement, isChecked);
 

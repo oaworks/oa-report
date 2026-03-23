@@ -319,6 +319,11 @@
   color: #fff;
 }
 
+.tooltip-box[data-theme~='popover'] .tooltip-content {
+  max-height: calc(100vh - 6rem);
+  overflow-y: auto;
+}
+
 .striped-bg {
   background-image: repeating-linear-gradient(
     -45deg,
