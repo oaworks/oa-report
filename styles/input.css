@@ -316,6 +316,10 @@
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
+.tooltip-box[data-theme~='popover'] .tooltip-arrow {
+  color: #fff;
+}
+
 .striped-bg {
   background-image: repeating-linear-gradient(
     -45deg,

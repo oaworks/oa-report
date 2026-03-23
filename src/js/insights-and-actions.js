@@ -13,7 +13,7 @@ import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateRead
 import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS } from './constants.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { initActionTabs } from './actions.js';
-import { createTooltip } from './tooltip-manager.js';
+import { createPopover } from './tooltip-manager.js';
 
 // Cache identical count queries so we only hit the API once per unique URL
 const countQueryCache = new Map();
@@ -329,15 +329,17 @@ export function initInsightsAndActions(org) {
         }
 
         // On-click tooltip to contain Insight info + figure details
-        const tooltipTarget = cardContents;
+        const tooltipTarget = cardContents.querySelector('.js_insight_trigger');
+        if (!(tooltipTarget instanceof HTMLButtonElement)) return;
         const tooltipTargetId = tooltipTarget.id || `${numerator}-card-trigger`;
         tooltipTarget.id = tooltipTargetId;
         let instance = cardContents._insightTooltip;
         if (!instance) {
-          instance = createTooltip(tooltipTarget, '', {
+          instance = createPopover(tooltipTarget, '', {
             placement: 'right',
             theme: 'tooltip-white',
-            trigger: 'click'
+            arrow: true,
+            role: 'dialog'
           });
           cardContents._insightTooltip = instance;
         }
@@ -346,13 +348,7 @@ export function initInsightsAndActions(org) {
             if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault();
               instance.show();
-            } else if (e.key === 'Tab') {
-              instance.hide();
             }
-          });
-
-          tooltipTarget.addEventListener('blur', () => {
-            instance.hide();
           });
 
           cardContents._insightTooltipEventsBound = true;

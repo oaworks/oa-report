@@ -129,6 +129,40 @@ function getFocusableElements(container) {
   )).filter((element) => !element.hasAttribute("hidden"));
 }
 
+function isFocusableElement(element) {
+  return element instanceof HTMLElement
+    && !element.hasAttribute("hidden")
+    && !element.hasAttribute("disabled")
+    && element.tabIndex >= 0;
+}
+
+function getDocumentFocusableElements() {
+  return Array.from(document.querySelectorAll(
+    'a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
+  )).filter(isFocusableElement);
+}
+
+function moveFocusOutsidePopover(trigger, popper, reverse = false) {
+  const focusables = getDocumentFocusableElements().filter(
+    (element) => !contains(popper, element)
+  );
+  const current = reverse ? trigger : document.activeElement;
+  const index = focusables.indexOf(current);
+
+  if (reverse) {
+    const target = index > 0 ? focusables[index - 1] : trigger;
+    target?.focus();
+    return;
+  }
+
+  const triggerIndex = focusables.indexOf(trigger);
+  const target = triggerIndex > -1 && triggerIndex < focusables.length - 1
+    ? focusables[triggerIndex + 1]
+    : null;
+
+  target?.focus();
+}
+
 function focusTooltipContent(popper, reverse = false) {
   const focusable = getFocusableElements(popper);
   if (!focusable.length) return false;
@@ -185,10 +219,17 @@ function attachTriggers({
       scheduleHideIfOutside(trigger, popper, queueHide);
     });
 
+  }
+
+  if (options.interactive) {
+    bind(cleanups, trigger, "focusout", () => {
+      scheduleHideIfOutside(trigger, popper, queueHide);
+    });
+
     bind(cleanups, trigger, "keydown", (event) => {
-      if (event.key !== "Tab") return;
-      if (!isVisible()) show();
-      if (!focusTooltipContent(popper, event.shiftKey)) return;
+      if (event.key !== "Tab" || event.shiftKey) return;
+      if (!isVisible()) return;
+      if (!focusTooltipContent(popper)) return;
       event.preventDefault();
     });
   }
@@ -221,12 +262,15 @@ function attachTriggers({
       if (event.shiftKey && active === first) {
         event.preventDefault();
         hide();
-        trigger.focus();
+        moveFocusOutsidePopover(trigger, popper, true);
         return;
       }
 
       if (!event.shiftKey && active === last) {
+        event.preventDefault();
         hide();
+        moveFocusOutsidePopover(trigger, popper);
+        return;
       }
     });
   }
