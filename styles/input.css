@@ -320,7 +320,7 @@
 }
 
 .tooltip-box[data-theme~='popover'] .tooltip-content {
-  max-height: calc(100vh - 6rem);
+  max-height: calc(100dvh - 2rem);
   overflow-y: auto;
 }
 
