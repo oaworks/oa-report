@@ -205,7 +205,6 @@
 
 /* Base tooltip/popover styling now that positioning is handled in-app */
 .tooltip-box {
-  position: relative;
   width: max-content;
   max-width: min(45ch, calc(100vw - 1rem));
   border-radius: 0.25rem;
