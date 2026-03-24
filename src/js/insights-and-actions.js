@@ -339,7 +339,13 @@ export function initInsightsAndActions(org) {
             placement: 'right',
             theme: 'tooltip-white',
             arrow: true,
-            role: 'dialog'
+            role: 'dialog',
+            onShow() {
+              tooltipTarget.setAttribute('aria-expanded', 'true');
+            },
+            onHide() {
+              tooltipTarget.setAttribute('aria-expanded', 'false');
+            }
           });
           cardContents._insightTooltip = instance;
         }
