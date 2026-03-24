@@ -123,23 +123,31 @@ function bind(cleanups, element, eventName, handler) {
   cleanups.push(() => element.removeEventListener(eventName, handler));
 }
 
+const FOCUSABLE_SELECTOR = [
+  'a[href]',
+  'button:not([disabled])',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])',
+].join(", ");
+
 function getFocusableElements(container) {
-  return Array.from(container.querySelectorAll(
-    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-  )).filter((element) => !element.hasAttribute("hidden"));
+  return Array.from(container.querySelectorAll(FOCUSABLE_SELECTOR)).filter(isFocusableElement);
 }
 
 function isFocusableElement(element) {
   return element instanceof HTMLElement
     && !element.hasAttribute("hidden")
     && !element.hasAttribute("disabled")
+    && !element.closest("[inert]")
     && element.tabIndex >= 0;
 }
 
 function getDocumentFocusableElements() {
-  return Array.from(document.querySelectorAll(
-    'a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
-  )).filter(isFocusableElement);
+  return Array.from(document.querySelectorAll(FOCUSABLE_SELECTOR)).filter(
+    (element) => isFocusableElement(element) && element.getClientRects().length > 0
+  );
 }
 
 function moveFocusOutsidePopover(trigger, popper, reverse = false) {
