@@ -7,6 +7,10 @@ import {
   shift,
 } from "@floating-ui/dom";
 
+/**
+ * Shared tooltip/popover manager built on Floating UI.
+ * Provides the app's common positioning, trigger, and focus behavior.
+ */
 const instances = new Set();
 const DEFAULTS = {
   allowHTML: true,
@@ -136,6 +140,13 @@ function getFocusableElements(container) {
   return Array.from(container.querySelectorAll(FOCUSABLE_SELECTOR)).filter(isFocusableElement);
 }
 
+/**
+ * Returns whether an element should be treated as keyboard-focusable for
+ * tooltip/popover navigation.
+ *
+ * @param {Element} element
+ * @returns {boolean}
+ */
 function isFocusableElement(element) {
   return element instanceof HTMLElement
     && !element.hasAttribute("hidden")
@@ -150,6 +161,15 @@ function getDocumentFocusableElements() {
   );
 }
 
+/**
+ * Moves focus to the previous or next page element when the user tabs out of
+ * an interactive popover.
+ *
+ * @param {HTMLElement} trigger
+ * @param {HTMLElement} popper
+ * @param {boolean} [reverse=false]
+ * @returns {void}
+ */
 function moveFocusOutsidePopover(trigger, popper, reverse = false) {
   const focusables = getDocumentFocusableElements().filter(
     (element) => !contains(popper, element)
@@ -171,6 +191,13 @@ function moveFocusOutsidePopover(trigger, popper, reverse = false) {
   target?.focus();
 }
 
+/**
+ * Moves focus to the first or last focusable element inside a popover.
+ *
+ * @param {HTMLElement} popper
+ * @param {boolean} [reverse=false]
+ * @returns {boolean}
+ */
 function focusTooltipContent(popper, reverse = false) {
   const focusable = getFocusableElements(popper);
   if (!focusable.length) return false;
@@ -179,6 +206,15 @@ function focusTooltipContent(popper, reverse = false) {
   return true;
 }
 
+/**
+ * Hides the panel only if focus has moved outside both the trigger and the
+ * floating content.
+ *
+ * @param {HTMLElement} trigger
+ * @param {HTMLElement} popper
+ * @param {() => void} queueHide
+ * @returns {void}
+ */
 function scheduleHideIfOutside(trigger, popper, queueHide) {
   requestAnimationFrame(() => {
     const active = document.activeElement;
@@ -187,6 +223,23 @@ function scheduleHideIfOutside(trigger, popper, queueHide) {
   });
 }
 
+/**
+ * Attaches trigger and panel event handlers for showing, hiding, and keyboard
+ * navigation.
+ *
+ * @param {Object} params
+ * @param {HTMLElement} params.trigger
+ * @param {HTMLElement} params.popper
+ * @param {Object} params.options
+ * @param {Array<() => void>} params.cleanups
+ * @param {() => void} params.queueShow
+ * @param {() => void} params.queueHide
+ * @param {() => void} params.cancelHide
+ * @param {() => void} params.show
+ * @param {(options?: { skipHook?: boolean }) => void} params.hide
+ * @param {() => boolean} params.isVisible
+ * @returns {void}
+ */
 function attachTriggers({
   trigger,
   popper,
@@ -301,6 +354,22 @@ function attachTriggers({
   }
 }
 
+/**
+ * Creates a floating panel instance with shared tooltip/popover behavior.
+ *
+ * @param {HTMLElement} trigger
+ * @param {string | Node} initialContent
+ * @param {Object} [overrides={}]
+ * @returns {{
+ *   reference: HTMLElement,
+ *   popper: HTMLElement,
+ *   props: Object,
+ *   show: () => void,
+ *   hide: (options?: { skipHook?: boolean }) => void,
+ *   destroy: () => void,
+ *   setContent: (value: string | Node) => void,
+ * }}
+ */
 function createFloating(trigger, initialContent, overrides = {}) {
   const options = { ...DEFAULTS, ...overrides };
   const { popper, box, content, arrowEl } = createElements(options);
@@ -455,6 +524,11 @@ function createFloating(trigger, initialContent, overrides = {}) {
   return instance;
 }
 
+/**
+ * Initialises tooltip elements configured with `data-tooltip-*` attributes.
+ *
+ * @returns {void}
+ */
 function initDeclarativeTooltips() {
   document.querySelectorAll(".tooltip").forEach((element) => {
     if (element._tooltip) return;
@@ -471,6 +545,11 @@ function initDeclarativeTooltips() {
   });
 }
 
+/**
+ * Initialises declarative tooltips and the global Escape-to-close behavior.
+ *
+ * @returns {void}
+ */
 export function initTooltipManager() {
   if (hasInitialised) return;
   hasInitialised = true;
@@ -484,6 +563,14 @@ export function initTooltipManager() {
   }, { once: true });
 }
 
+/**
+ * Creates a click-open popover with the app's default behavior.
+ *
+ * @param {HTMLElement} trigger
+ * @param {string | Node} content
+ * @param {Object} [options={}]
+ * @returns {ReturnType<typeof createFloating>}
+ */
 export function createPopover(trigger, content, options = {}) {
   return createFloating(trigger, content, {
     interactive: true,
@@ -495,6 +582,14 @@ export function createPopover(trigger, content, options = {}) {
   });
 }
 
+/**
+ * Creates a hover/focus tooltip with the app's default behavior.
+ *
+ * @param {HTMLElement} trigger
+ * @param {string | Node} content
+ * @param {Object} [options={}]
+ * @returns {ReturnType<typeof createFloating>}
+ */
 export function createTooltip(trigger, content, options = {}) {
   return createFloating(trigger, content, {
     interactive: true,
