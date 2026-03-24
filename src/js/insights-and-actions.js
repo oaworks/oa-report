@@ -159,7 +159,7 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
 
   const gridClass =
     visibleSections.length === 3
-      ? "grid gap-4 grid-cols-1 sm:grid-cols-2"
+      ? "grid gap-4 grid-cols-1 xl:grid-cols-2"
       : "grid gap-4 grid-cols-2 md:grid-cols-3 xl:grid-cols-6";
 
   document.querySelectorAll(".js_insights_card_grid").forEach((grid) => {
