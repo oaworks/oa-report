@@ -437,10 +437,15 @@ export function prettifyRecords(records, pretty = true) {
           if (key.endsWith('_pct')) {
             formattedRecord[key] = Math.round(parseFloat(record[key])).toString() + '%';
           }
-          // Format numbers starting with 'total_', 'median_', or 'mean_' or ending with '_amount'
+          // Format numeric aggregates, coercing missing/invalid values to 0 so
+          // currency and summary columns do not render as NaN in term tables.
           if (key.startsWith('total_') || key.startsWith('median_') || key.startsWith('mean_') || key.endsWith('_amount')) {
             const isCurrency = key.endsWith('_amount');
-            formattedRecord[key] = makeNumberReadable(parseFloat(record[key]), isCurrency);
+            const numericValue = parseFloat(record[key]);
+            formattedRecord[key] = makeNumberReadable(
+              Number.isFinite(numericValue) ? numericValue : 0,
+              isCurrency
+            );
           }
         } else {
           // Include all fields except percentages in raw mode
