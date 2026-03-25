@@ -437,15 +437,14 @@ export function prettifyRecords(records, pretty = true) {
           if (key.endsWith('_pct')) {
             formattedRecord[key] = Math.round(parseFloat(record[key])).toString() + '%';
           }
-          // Format numeric aggregates, coercing missing/invalid values to 0 so
-          // currency and summary columns do not render as NaN in term tables.
+          // Format numeric aggregates, falling back to "N/A" when the source
+          // value is missing or invalid so term tables do not render as NaN.
           if (key.startsWith('total_') || key.startsWith('median_') || key.startsWith('mean_') || key.endsWith('_amount')) {
             const isCurrency = key.endsWith('_amount');
             const numericValue = parseFloat(record[key]);
-            formattedRecord[key] = makeNumberReadable(
-              Number.isFinite(numericValue) ? numericValue : 0,
-              isCurrency
-            );
+            formattedRecord[key] = Number.isFinite(numericValue)
+              ? makeNumberReadable(numericValue, isCurrency)
+              : "N/A";
           }
         } else {
           // Include all fields except percentages in raw mode
