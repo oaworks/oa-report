@@ -1126,10 +1126,12 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
   }
 
   /**
-   * Helper: add a small dot indicating selected term for any term already active in the URL ?q=.
+   * Adds a visual selected indicator to a term label when its filter clause
+   * already exists in the current `?q=` expression.
    *
-   * @param {HTMLElement} wrapper - The span wrapping the clickable term text.
-   * @param {string|number} rawValue - The raw bucket key value to match against the active filters.
+   * @param {HTMLElement} wrapper
+   * @param {string|number} rawValue
+   * @returns {void}
    */
   function addSelectedDotIfNeeded(wrapper, rawValue) {
     if (key !== 'key' || !termField) return;
@@ -1152,6 +1154,174 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
     sr.textContent = 'Selected filter';
     wrapper.appendChild(sr);
   }
+
+  /**
+   * Creates the standard clickable label used for filterable term values.
+   *
+   * @param {string} [text='']
+   * @returns {HTMLButtonElement}
+   */
+  function createFilterTargetButton(text = '') {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = FILTER_TARGET_BUTTON_CLASS;
+    if (text) {
+      button.textContent = text;
+    }
+    return button;
+  }
+
+  /**
+   * Creates the small outbound-link pill shown beside some special values
+   * such as licenses and ORCID identifiers.
+   *
+   * @param {string} href
+   * @param {string} text
+   * @returns {HTMLAnchorElement}
+   */
+  function createExternalPill(href, text) {
+    const pill = document.createElement('a');
+    pill.href = href;
+    pill.target = '_blank';
+    pill.rel = 'noopener noreferrer';
+    pill.className = EXTERNAL_LINK_PILL_CLASS;
+    pill.textContent = text;
+    return pill;
+  }
+
+  /**
+   * Renders an ORCID-backed label with async name resolution and a companion
+   * ORCID pill link. Used both for filterable key cells and plain value cells.
+   *
+   * @param {string} orcidUrl
+   * @param {HTMLElement} container
+   * @param {boolean} [asFilterTarget=false]
+   * @returns {HTMLElement}
+   */
+  function createAsyncOrcidLabel(orcidUrl, container, asFilterTarget = false) {
+    const orcidId = orcidUrl.split('/').pop();
+    const nameSpan = document.createElement('span');
+    nameSpan.textContent = 'Loading ORCID data...';
+
+    const label = asFilterTarget ? createFilterTargetButton() : document.createElement('span');
+    label.appendChild(nameSpan);
+    container.appendChild(label);
+    container.appendChild(createExternalPill(orcidUrl, 'ORCID ↗'));
+
+    getORCiDFullName(orcidId)
+      .then(fullName => {
+        nameSpan.textContent = fullName || 'Name not found';
+      })
+      .catch(() => {
+        nameSpan.textContent = orcidUrl;
+      });
+
+    return label;
+  }
+
+  /**
+   * Renders the first-column term label cell for known Explore breakdowns that
+   * need special formatting, while preserving click-to-filter behavior.
+   *
+   * @param {string|number} rawValue
+   * @returns {HTMLElement}
+   */
+  function renderSpecialKeyCell(rawValue) {
+    let labelWrapper = null;
+
+    switch (exploreItemId) {
+      case 'country':
+        labelWrapper = createFilterTargetButton(COUNTRY_CODES[rawValue] || "Unknown country");
+        break;
+
+      case 'language':
+        labelWrapper = createFilterTargetButton(LANGUAGE_CODES[rawValue] || "Unknown language");
+        break;
+
+      case 'publisher_license':
+      case 'repository_license':
+      case 'license':
+      case 'dataset_license': {
+        const licenseInfo = LICENSE_CODES[rawValue];
+        const licenseName = licenseInfo?.name || "Unknown license";
+        const licenseUrl = licenseInfo?.url || null;
+
+        labelWrapper = createFilterTargetButton();
+
+        const codeEl = document.createElement('strong');
+        codeEl.className = 'uppercase';
+        codeEl.textContent = rawValue;
+
+        const nameEl = document.createElement('span');
+        nameEl.textContent = ` – ${licenseName}`;
+
+        labelWrapper.appendChild(codeEl);
+        labelWrapper.appendChild(document.createElement('br'));
+        labelWrapper.appendChild(nameEl);
+        cell.appendChild(labelWrapper);
+
+        if (licenseUrl) {
+          cell.appendChild(createExternalPill(licenseUrl, 'CC License ↗'));
+        }
+        break;
+      }
+
+      case 'all_lab_head':
+      case 'janelia_lab_head':
+      case 'investigator':
+      case 'freeman_hrabowski_scholar':
+      case 'author':
+        if (typeof rawValue === 'string' && rawValue.includes('orcid.org')) {
+          labelWrapper = createAsyncOrcidLabel(rawValue, cell, true);
+          break;
+        }
+        labelWrapper = createFilterTargetButton(rawValue);
+        break;
+
+      default:
+        labelWrapper = createFilterTargetButton(rawValue);
+    }
+
+    if (!cell.contains(labelWrapper)) {
+      cell.appendChild(labelWrapper);
+    }
+
+    addSelectedDotIfNeeded(labelWrapper, rawValue);
+    attachTermClickFilter(rawValue);
+    return cell;
+  }
+
+  /**
+   * Renders non-key cell values using the existing display rules for nulls,
+   * booleans, object lists, and special fallback values.
+   *
+   * @param {*} value
+   * @returns {HTMLElement}
+   */
+  function renderGenericCellValue(value) {
+    if (content === 'US$NaN') {
+      cell.innerHTML = "N/A";
+      return cell;
+    }
+
+    if (typeof value === 'object' && value !== null) {
+      cell.innerHTML = `<ul>${formatObjectValuesAsList(value, true)}</ul>`;
+      return cell;
+    }
+
+    if (value === null || value === 'null') {
+      cell.innerHTML = "";
+      return cell;
+    }
+
+    if (typeof value === 'boolean') {
+      cell.innerHTML = value.toString();
+      return cell;
+    }
+
+    cell.innerHTML = value;
+    return cell;
+  }
   
   // Early handling for common 'all_values' and 'no_values' cases in terms-based data
   // Display either 'All [explore item]]' or 'No [explore item]'
@@ -1163,174 +1333,18 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
 
   // Safely check and process content based on its type and the context
   if (key === 'key' && content) {
-    let displayContent = "";
-    /** @type {HTMLElement|null} */
-    let labelWrapper = null;
-
-    switch (exploreItemId) {
-      case 'country': {
-        // Fetch and display country name using country code
-        displayContent = COUNTRY_CODES[content] || "Unknown country";
-        break;
-      }
-
-      case 'language': {
-        // Fetch and display language name using language code
-        displayContent = LANGUAGE_CODES[content] || "Unknown language";
-        break;
-      }
-
-      case 'publisher_license':
-      case 'repository_license':
-      case 'license':
-      case 'dataset_license': {
-        // License label + separate CC pill
-        const licenseInfo = LICENSE_CODES[content];
-        const licenseName = licenseInfo?.name || "Unknown license";
-        const licenseUrl = licenseInfo?.url || null;
-
-        labelWrapper = document.createElement('button');
-        labelWrapper.type = 'button';
-        labelWrapper.className = FILTER_TARGET_BUTTON_CLASS;
-
-        const codeEl = document.createElement('strong');
-        codeEl.className = 'uppercase';
-        codeEl.textContent = content;
-
-        const nameEl = document.createElement('span');
-        nameEl.textContent = ` – ${licenseName}`;
-
-        labelWrapper.appendChild(codeEl);
-        labelWrapper.appendChild(document.createElement('br'));
-        labelWrapper.appendChild(nameEl);
-
-        cell.appendChild(labelWrapper);
-
-        if (licenseUrl) {
-          const pill = document.createElement('a');
-          pill.href = licenseUrl;
-          pill.target = '_blank';
-          pill.rel = 'noopener noreferrer';
-          pill.className = EXTERNAL_LINK_PILL_CLASS;
-          pill.textContent = 'CC License ↗';
-          cell.appendChild(pill);
-        }
-
-        break;
-      }
-
-      case 'all_lab_head': // TODO: remove these cases once we settle on a naming convention
-      case 'janelia_lab_head':
-      case 'investigator':
-      case 'freeman_hrabowski_scholar':
-      case 'author': {
-        // ORCID-based author (or investigator, etc.): show name + ORCID pill
-        if (typeof content === 'string' && content.includes('orcid.org')) {
-          const orcidId = content.split('/').pop();
-
-          const pill = document.createElement('a');
-          pill.href = content;
-          pill.target = '_blank';
-          pill.rel = 'noopener noreferrer';
-          pill.className = EXTERNAL_LINK_PILL_CLASS;
-          pill.textContent = 'ORCID ↗';
-
-          labelWrapper = document.createElement('button');
-          labelWrapper.type = 'button';
-          labelWrapper.className = FILTER_TARGET_BUTTON_CLASS;
-
-          const nameSpan = document.createElement('span');
-          nameSpan.textContent = 'Loading ORCID data...';
-
-          labelWrapper.appendChild(nameSpan);
-
-          cell.appendChild(labelWrapper);
-          cell.appendChild(pill);
-
-          getORCiDFullName(orcidId)
-            .then(fullName => {
-              nameSpan.textContent = fullName || 'Name not found';
-            })
-            .catch(() => {
-              nameSpan.textContent = content;
-            });
-
-          break;
-        }
-
-        // Non-ORCID value, just show as-is and let it be filterable
-        displayContent = content;
-        break;
-      }
-
-      default: {
-        displayContent = content;
-      }
-    }
-
-    // Wrap plain key values in a filter-target span (countries, grant IDs, etc.)
-    if (!labelWrapper) {
-      labelWrapper = document.createElement('button');
-      labelWrapper.type = 'button';
-      labelWrapper.className = FILTER_TARGET_BUTTON_CLASS;
-      labelWrapper.textContent = displayContent;
-      cell.appendChild(labelWrapper);
-    }
-
-    // Where the active-filter-dot is added for ALL term cells
-    addSelectedDotIfNeeded(labelWrapper, content);
-
-    attachTermClickFilter(content);
-    return cell;
+    return renderSpecialKeyCell(content);
   }
 
   // Non-`key` cells, or cases outside terms tables
 
   // Handle ORCID links (e.g. in non-key author cells) as: name + pill
   if (exploreItemId === 'author' && typeof content === 'string' && content.includes('orcid.org')) {
-    const orcidId = content.split('/').pop();
-
-    const nameSpan = document.createElement('span');
-    nameSpan.textContent = 'Loading ORCID data...';
-
-    const pill = document.createElement('a');
-    pill.href = content;
-    pill.target = '_blank';
-    pill.rel = 'noopener noreferrer';
-    pill.className = EXTERNAL_LINK_PILL_CLASS;
-    pill.textContent = 'ORCID ↗';
-
-    cell.appendChild(nameSpan);
-    cell.appendChild(pill);
-
-    getORCiDFullName(orcidId)
-      .then(fullName => {
-        nameSpan.textContent = fullName || 'Name not found';
-      })
-      .catch(() => {
-        nameSpan.textContent = content;
-      });
-
+    createAsyncOrcidLabel(content, cell, false);
     return cell;
   }
 
-  if (content === 'US$NaN') {
-    cell.innerHTML = "N/A"; // Display NaN as the more user-friendly "N/A"
-  } else if (typeof content === 'object' && content !== null) {
-    // If content is an object, format its values as a list
-    cell.innerHTML = `<ul>${formatObjectValuesAsList(content, true)}</ul>`;
-  } else if (content === null || content === 'null') {
-    // Replace null, undefined, and similar values with an empty string
-    cell.innerHTML = "";
-  } else if (typeof content === 'boolean') {
-    // Handle boolean values
-    cell.innerHTML = content.toString();
-  } else {
-    // Default case for handling plain content
-    cell.innerHTML = content;
-  }
-
-  return cell;
+  return renderGenericCellValue(content);
 }
 
 /**
@@ -1438,6 +1452,15 @@ function enableExploreTableScroll() {
   syncExploreTableScrollButton(tableContainer, scrollRightButton);
 }
 
+/**
+ * Returns the configured class string for a table column based on the table
+ * section, Explore data type, and column index.
+ *
+ * @param {'header'|'body'|'foot'} section
+ * @param {'terms'|'articles'} dataType
+ * @param {number} columnIndex
+ * @returns {string}
+ */
 function getExploreColumnClass(section, dataType, columnIndex) {
   const classMap = section === 'header'
     ? DATA_TABLE_HEADER_CLASSES[dataType]
@@ -1456,6 +1479,13 @@ function getExploreColumnClass(section, dataType, columnIndex) {
   return classMap.otherCols;
 }
 
+/**
+ * Applies the article-vs-terms UI state for the Explore panel without
+ * changing the underlying rendered table content.
+ *
+ * @param {string} type
+ * @returns {void}
+ */
 function setExploreModeUI(type) {
   const isArticles = type === "articles";
   const downloadCSVFormContainer = document.getElementById('download_csv_form_container');
@@ -1492,6 +1522,14 @@ function setExploreModeUI(type) {
   }
 }
 
+/**
+ * Updates the scroll affordance based on the table container's current
+ * horizontal scroll position.
+ *
+ * @param {Element} tableContainer
+ * @param {HTMLElement} scrollRightButton
+ * @returns {void}
+ */
 function syncExploreTableScrollButton(tableContainer, scrollRightButton) {
   const currentScroll = tableContainer.scrollLeft;
   const maxScroll = tableContainer.scrollWidth - tableContainer.clientWidth;
