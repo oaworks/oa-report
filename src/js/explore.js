@@ -97,6 +97,9 @@ export let currentActiveDataDisplayToggle = true;
  */
 let exploreItemDataById = new Map();
 
+const FILTER_TARGET_BUTTON_CLASS = 'js-filter-target cursor-pointer hover:underline text-left focus:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm';
+const EXTERNAL_LINK_PILL_CLASS = 'ml-2 bg-neutral-200 text-neutral-900 text-xs px-2 py-0.5 rounded-full whitespace-nowrap hover:bg-carnation-200 js-external-pill';
+
 /**
  * Tracks currently selected row keys for use in enableExploreRowHighlighting.
  * @global
@@ -584,15 +587,12 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       return;
     }
 
-    const { type, id, term, sort, includes } = itemData;
+    const { type, id, term, sort } = itemData;
     document.getElementById("csv_email_msg").innerHTML = ""; // Clear any existing message in CSV download form
     const exportTable = document.getElementById('export_table');
     exportTable.classList.remove('hidden');
 
     let query = orgData.hits.hits[0]._source.analysis[filter]?.query; // Get the query string for the selected filter
-    let suffix = orgData.hits.hits[0]._source.key_suffix; // Get the suffix for the org
-    let records = [];
-    let totalRecords = 0;
 
     pretty = currentActiveDataDisplayToggle;
     size = currentActiveExploreItemSize;
@@ -603,34 +603,11 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       return;
     }
 
-    // Terms-based data
-    if (type === "terms") {
-      query = decodeAndReplaceUrlEncodedChars(query);
-      query = andQueryStrings(query, getDecodedUrlQuery()); // Combine with additional query strings from URL params
-      const { records: termRecords, total: termTotal } = await fetchTermBasedData(suffix, query, term, sort, size);
-      records = termRecords;
-      records = reorderTermRecords(records, includes);
-      records = prettifyRecords(records, pretty);
-      totalRecords = termTotal;
+    const { records, total: totalRecords } = await loadExploreRecords(itemData, query, size, pretty);
 
-      replaceText("explore_sort", getExploreSortLabel({ type, id, term, sort }), { allowHTML: true });
-      replaceText("report_sort_adjective", getExploreSortAdjective({ type, sort }));
-      removeCSVExportLink(); // no CSV export for term-based tables
-    }
-
-    // Article-based data
-    else if (type === "articles") {
-      query = decodeAndReplaceUrlEncodedChars(query); // Decode and replace URL-encoded characters for JSON parsing
-      query = andQueryStrings(query, getDecodedUrlQuery()); // Combine with additional query strings from URL params
-      const { records: articleRecords, total } = await fetchArticleBasedData(query, includes, sort, size);
-      records = reorderArticleRecords(articleRecords, includes);
-      totalRecords = total;
-
-      replaceText("explore_sort", getExploreSortLabel({ type, id, term, sort }), { allowHTML: true });
-      replaceText("report_sort_adjective", getExploreSortAdjective({ type, sort }));
-
-      addCSVExportLink();
-    }
+    replaceText("explore_sort", getExploreSortLabel({ type, id, term, sort }), { allowHTML: true });
+    replaceText("report_sort_adjective", getExploreSortAdjective({ type, sort }));
+    setExploreModeUI(type);
 
     const shownCount = type === "terms"
       ? records.filter(record => record.key !== "all_values" && record.key !== "no_values").length
@@ -652,33 +629,8 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       // Add functionalities to the table
       enableExploreTableScroll();
       enableTooltipsForTruncatedCells();
-
-      const downloadCSVFormContainer = document.getElementById('download_csv_form_container');
-      const exploreArticlesTableHelp = document.getElementById('explore_articles_records_shown_help');
-      const exploreTermsTableHelp = document.getElementById('explore_terms_records_shown_help');
-
-      if (type === "articles") {
-        // Only show CSV form and help if logged in
-        exploreArticlesTableHelp.style.display = loggedIn ? "block" : "none";
-        exploreTermsTableHelp.style.display = "none";
-        if (downloadCSVFormContainer) {
-          downloadCSVFormContainer.classList.remove("hidden", "invisible", "opacity-0", "pointer-events-none");
-          downloadCSVFormContainer.setAttribute("aria-hidden", "false");
-          if ("inert" in downloadCSVFormContainer) downloadCSVFormContainer.inert = false;
-        }
-        displayNone("explore_display_style_field");
-      } else {
-        // Show display-style toggle and terms tooltip
-        exploreTermsTableHelp.style.display = "block";
-        exploreArticlesTableHelp.style.display = "none";
-        if (downloadCSVFormContainer) {
-          downloadCSVFormContainer.classList.add("hidden", "invisible", "opacity-0", "pointer-events-none");
-          downloadCSVFormContainer.setAttribute("aria-hidden", "true");
-          if ("inert" in downloadCSVFormContainer) downloadCSVFormContainer.inert = true;
-        }
-        removeDisplayStyle("explore_display_style_field");
-      }
     } else {
+      setExploreModeUI(type);
       showNoResultsRow(10, "export_table_body", "js_export_table");
     }
 
@@ -689,6 +641,35 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     // Always hide loader once finished
     toggleLoadingIndicator(false, 'explore_loading');
   }
+}
+
+async function loadExploreRecords(itemData, query, size, pretty) {
+  const { type, term, sort, includes } = itemData;
+  const decodedQuery = andQueryStrings(
+    decodeAndReplaceUrlEncodedChars(query),
+    getDecodedUrlQuery()
+  );
+
+  if (type === "terms") {
+    const suffix = orgData.hits.hits[0]._source.key_suffix;
+    const { records: termRecords, total } = await fetchTermBasedData(suffix, decodedQuery, term, sort, size);
+
+    return {
+      records: prettifyRecords(reorderTermRecords(termRecords, includes), pretty),
+      total
+    };
+  }
+
+  if (type === "articles") {
+    const { records: articleRecords, total } = await fetchArticleBasedData(decodedQuery, includes, sort, size);
+
+    return {
+      records: reorderArticleRecords(articleRecords, includes),
+      total
+    };
+  }
+
+  return { records: [], total: 0 };
 }
 
 /**
@@ -877,12 +858,7 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
   const headerRow = document.createElement('tr');
   Object.keys(records).forEach((rawKey, index) => {
     const key = normaliseFieldId(rawKey);
-
-    const cssClass = index === 0
-      ? DATA_TABLE_HEADER_CLASSES[dataType].firstHeaderCol
-      : index === 1
-        ? DATA_TABLE_HEADER_CLASSES[dataType].secondHeaderCol
-        : DATA_TABLE_HEADER_CLASSES[dataType].otherHeaderCols;
+    const cssClass = getExploreColumnClass('header', dataType, index);
 
     const headerCell = createTableCell('', cssClass, null, null, true); 
     if (index > 1) {
@@ -1020,68 +996,50 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
   // Limit the number of rows to the specified size
   otherRecords.length = Math.min(otherRecords.length, currentActiveExploreItemSize);
 
-  // Add rows from other records to the tbody
-  otherRecords.forEach(record => {
+  function appendRow(target, record, section) {
     const row = document.createElement('tr');
-    let columnIndex = 0; // Keep track of column index for CSS class assignment
 
-    for (const key in record) {
-      const rawContent = record[key];
+    Object.entries(record).forEach(([key, rawContent], columnIndex) => {
       let content = rawContent;
 
-      // Special processing for articles data type
-      // DOI key
       if (dataType === 'articles' && key === 'DOI') {
         content = convertTextToLinks(content, true, 'https://doi.org/');
       }
 
-      // Date
       if (dataType === 'articles' && key === 'published_date') {
         content = makeDateReadable(new Date(content));
       }
 
-      // Remove duplicates if content is an array
       if (Array.isArray(content)) {
         content = removeArrayDuplicates(content);
       }
 
-      let cssClass;
-      if (columnIndex === 0) cssClass = DATA_TABLE_BODY_CLASSES[dataType].firstCol;
-      else if (columnIndex === 1) cssClass = DATA_TABLE_BODY_CLASSES[dataType].secondCol;
-      else cssClass = DATA_TABLE_BODY_CLASSES[dataType].otherCols;
+      const cell = createTableCell(
+        content,
+        getExploreColumnClass(section, dataType, columnIndex),
+        exploreItemId,
+        key,
+        false
+      );
 
-      const cell = createTableCell(content, cssClass, exploreItemId, key, false);
       if (columnIndex > 1) {
         cell.classList.add(shouldRightAlignExploreColumn(key, rawContent) ? "text-right" : "text-left");
       }
+
       row.appendChild(cell);
-      columnIndex++;
-    }
-    tableBody.appendChild(row);
+    });
+
+    target.appendChild(row);
+  }
+
+  // Add rows from other records to the tbody
+  otherRecords.forEach(record => {
+    appendRow(tableBody, record, 'body');
   });
 
   // Add the 'all_values' record to the tfoot if it exists
   if (allValuesRecord) {
-    const footerRow = document.createElement('tr');
-    let columnIndex = 0;
-
-    for (const key in allValuesRecord) {
-      const rawContent = allValuesRecord[key];
-      let content = rawContent;
-
-      let cssClass;
-      if (columnIndex === 0) cssClass = DATA_TABLE_FOOT_CLASSES[dataType].firstCol;
-      else if (columnIndex === 1) cssClass = DATA_TABLE_FOOT_CLASSES[dataType].secondCol;
-      else cssClass = DATA_TABLE_FOOT_CLASSES[dataType].otherCols;
-
-      const footerCell = createTableCell(content, cssClass, exploreItemId, key, false);
-      if (columnIndex > 1) {
-        footerCell.classList.add(shouldRightAlignExploreColumn(key, rawContent) ? "text-right" : "text-left");
-      }
-      footerRow.appendChild(footerCell);
-      columnIndex++;
-    }
-    tableFooter.appendChild(footerRow);
+    appendRow(tableFooter, allValuesRecord, 'foot');
   }
 
   // Highlight the selected rows if they exist in the new data
@@ -1233,7 +1191,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
 
         labelWrapper = document.createElement('button');
         labelWrapper.type = 'button';
-        labelWrapper.className = 'js-filter-target cursor-pointer hover:underline text-left focus:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm';
+        labelWrapper.className = FILTER_TARGET_BUTTON_CLASS;
 
         const codeEl = document.createElement('strong');
         codeEl.className = 'uppercase';
@@ -1253,7 +1211,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
           pill.href = licenseUrl;
           pill.target = '_blank';
           pill.rel = 'noopener noreferrer';
-          pill.className = 'ml-2 bg-neutral-200 text-neutral-900 text-xs px-2 py-0.5 rounded-full whitespace-nowrap hover:bg-carnation-200 js-external-pill';
+          pill.className = EXTERNAL_LINK_PILL_CLASS;
           pill.textContent = 'CC License ↗';
           cell.appendChild(pill);
         }
@@ -1274,12 +1232,12 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
           pill.href = content;
           pill.target = '_blank';
           pill.rel = 'noopener noreferrer';
-          pill.className = 'ml-2 bg-neutral-200 text-neutral-900 text-xs px-2 py-0.5 rounded-full whitespace-nowrap hover:bg-carnation-200 js-external-pill';
+          pill.className = EXTERNAL_LINK_PILL_CLASS;
           pill.textContent = 'ORCID ↗';
 
           labelWrapper = document.createElement('button');
           labelWrapper.type = 'button';
-          labelWrapper.className = 'js-filter-target cursor-pointer hover:underline text-left focus:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm';
+          labelWrapper.className = FILTER_TARGET_BUTTON_CLASS;
 
           const nameSpan = document.createElement('span');
           nameSpan.textContent = 'Loading ORCID data...';
@@ -1314,7 +1272,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
     if (!labelWrapper) {
       labelWrapper = document.createElement('button');
       labelWrapper.type = 'button';
-      labelWrapper.className = 'js-filter-target cursor-pointer hover:underline text-left focus:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm';
+      labelWrapper.className = FILTER_TARGET_BUTTON_CLASS;
       labelWrapper.textContent = displayContent;
       cell.appendChild(labelWrapper);
     }
@@ -1339,7 +1297,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
     pill.href = content;
     pill.target = '_blank';
     pill.rel = 'noopener noreferrer';
-    pill.className = 'ml-2 bg-neutral-200 text-neutral-900 text-xs px-2 py-0.5 rounded-full whitespace-nowrap hover:bg-carnation-200 js-external-pill';
+    pill.className = EXTERNAL_LINK_PILL_CLASS;
     pill.textContent = 'ORCID ↗';
 
     cell.appendChild(nameSpan);
@@ -1447,6 +1405,11 @@ function clearRowHighlights() {
 function enableExploreTableScroll() {
   const tableContainer = document.querySelector(".js_export_table_container");
   const scrollRightButton = document.getElementById("js_scroll_table_btn");
+  if (!tableContainer || !scrollRightButton) return;
+  if (scrollRightButton.dataset.bound === "true") {
+    syncExploreTableScrollButton(tableContainer, scrollRightButton);
+    return;
+  }
 
   scrollRightButton.addEventListener("click", () => {
     const scrollAmount = 200; 
@@ -1468,15 +1431,71 @@ function enableExploreTableScroll() {
   });
 
   tableContainer.addEventListener("scroll", () => {
-    const currentScroll = tableContainer.scrollLeft;
-    const maxScroll = tableContainer.scrollWidth - tableContainer.clientWidth;
-
-    if (currentScroll >= maxScroll) {
-      scrollRightButton.style.display = "none";
-    } else {
-      scrollRightButton.style.display = "block";
-    }
+    syncExploreTableScrollButton(tableContainer, scrollRightButton);
   });
+
+  scrollRightButton.dataset.bound = "true";
+  syncExploreTableScrollButton(tableContainer, scrollRightButton);
+}
+
+function getExploreColumnClass(section, dataType, columnIndex) {
+  const classMap = section === 'header'
+    ? DATA_TABLE_HEADER_CLASSES[dataType]
+    : section === 'foot'
+      ? DATA_TABLE_FOOT_CLASSES[dataType]
+      : DATA_TABLE_BODY_CLASSES[dataType];
+
+  if (section === 'header') {
+    if (columnIndex === 0) return classMap.firstHeaderCol;
+    if (columnIndex === 1) return classMap.secondHeaderCol;
+    return classMap.otherHeaderCols;
+  }
+
+  if (columnIndex === 0) return classMap.firstCol;
+  if (columnIndex === 1) return classMap.secondCol;
+  return classMap.otherCols;
+}
+
+function setExploreModeUI(type) {
+  const isArticles = type === "articles";
+  const downloadCSVFormContainer = document.getElementById('download_csv_form_container');
+  const exploreArticlesTableHelp = document.getElementById('explore_articles_records_shown_help');
+  const exploreTermsTableHelp = document.getElementById('explore_terms_records_shown_help');
+
+  if (isArticles) {
+    addCSVExportLink();
+  } else {
+    removeCSVExportLink();
+  }
+
+  if (exploreArticlesTableHelp) {
+    exploreArticlesTableHelp.style.display = isArticles && loggedIn ? "block" : "none";
+  }
+
+  if (exploreTermsTableHelp) {
+    exploreTermsTableHelp.style.display = isArticles ? "none" : "block";
+  }
+
+  if (downloadCSVFormContainer) {
+    downloadCSVFormContainer.classList.toggle("hidden", !isArticles);
+    downloadCSVFormContainer.classList.toggle("invisible", !isArticles);
+    downloadCSVFormContainer.classList.toggle("opacity-0", !isArticles);
+    downloadCSVFormContainer.classList.toggle("pointer-events-none", !isArticles);
+    downloadCSVFormContainer.setAttribute("aria-hidden", isArticles ? "false" : "true");
+    if ("inert" in downloadCSVFormContainer) downloadCSVFormContainer.inert = !isArticles;
+  }
+
+  if (isArticles) {
+    displayNone("explore_display_style_field");
+  } else {
+    removeDisplayStyle("explore_display_style_field");
+  }
+}
+
+function syncExploreTableScrollButton(tableContainer, scrollRightButton) {
+  const currentScroll = tableContainer.scrollLeft;
+  const maxScroll = tableContainer.scrollWidth - tableContainer.clientWidth;
+  scrollRightButton.style.display = currentScroll >= maxScroll ? "none" : "block";
 }
 
 /**
