@@ -99,6 +99,11 @@
         </form>
       </div>
       <div class="relative">
+        <div id="explore_cards_view" class="hidden mb-4" aria-live="polite">
+          <div id="explore_cards_list" class="flex flex-col gap-2"></div>
+        </div>
+
+        <div id="explore_table_view">
         {# Scroll table button #}
         <button
           id="js_scroll_table_btn"
@@ -127,6 +132,7 @@
             </div>
             <span>Copy to clipboard</span>
           </button>
+        </div>
         </div>
       </div>
       {# <div class="flex justify-between" id="explore_export_container"></div> #}

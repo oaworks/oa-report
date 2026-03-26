@@ -599,6 +599,10 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 
     // Check if query is blank or undefined and abort if so
     if (!query || query.trim() === '') {
+      setExploreDataLayout(type);
+      if (type === "articles") {
+        renderArticleCards([]);
+      }
       showNoResultsRow(10, "export_table_body", "js_export_table");
       return;
     }
@@ -619,23 +623,39 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     updateExploreCountSummary({ type, id, total: totalCount, shown: shownCount });
 
     if (records.length > 0) {
-      // Populate table with data
-      populateTableHeader(records[0], 'export_table_head', type);
-      populateTableBody(records, 'export_table_body', id, type);
+      if (type === "articles") {
+        renderArticleCards(records);
+        setExploreDataLayout(type);
+      } else {
+        setExploreDataLayout(type);
+        // Populate table with data
+        populateTableHeader(records[0], 'export_table_head', type);
+        populateTableBody(records, 'export_table_body', id, type);
+      }
       
       // Update any mentions of the explore data type with plural version of the ID
       replaceText("explore_type", EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id), { allowHTML: true });
     
       // Add functionalities to the table
-      enableExploreTableScroll();
-      enableTooltipsForTruncatedCells();
+      if (type !== "articles") {
+        enableExploreTableScroll();
+        enableTooltipsForTruncatedCells();
+      }
     } else {
       setExploreModeUI(type);
+      setExploreDataLayout(type);
+      if (type === "articles") {
+        renderArticleCards([]);
+      }
       showNoResultsRow(10, "export_table_body", "js_export_table");
     }
 
   } catch (error) {
     console.error('Error fetching and displaying explore data:', error);
+    setExploreDataLayout(itemData?.type);
+    if (itemData?.type === "articles") {
+      renderArticleCards([]);
+    }
     showNoResultsRow(10, "export_table_body", "js_export_table");
   } finally {
     // Always hide loader once finished
@@ -1054,6 +1074,244 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
       }
     });
   }
+}
+
+/**
+ * Returns the human-readable label for an article field.
+ *
+ * @param {string} key
+ * @returns {string}
+ */
+function getArticleFieldLabel(key) {
+  return EXPLORE_HEADER_ARTICLES_LABELS?.[normaliseFieldId(key)]?.label
+    || EXPLORE_HEADER_ARTICLES_LABELS?.[key]?.label
+    || normaliseFieldId(key)
+        .replace(/\./g, ' ')
+        .replace(/_/g, ' ')
+        .trim();
+}
+
+/**
+ * Formats article values for card display.
+ *
+ * @param {*} value
+ * @param {string} key
+ * @returns {string}
+ */
+function formatArticleCardValue(value, key) {
+  if (value === null || value === undefined || value === 'null' || value === '') return '';
+
+  if (key === 'published_date') {
+    return makeDateReadable(new Date(value));
+  }
+
+  if (key === 'DOI') {
+    return convertTextToLinks(value, true, 'https://doi.org/');
+  }
+
+  if (typeof value === 'string') {
+    if (/^https?:\/\//.test(value)) return convertTextToLinks(value);
+    if (key.toLowerCase().includes('doi') && !value.includes('<a ')) {
+      return convertTextToLinks(value, true, 'https://doi.org/');
+    }
+    return value;
+  }
+
+  if (Array.isArray(value)) {
+    const items = removeArrayDuplicates(value).filter((item) => item !== null && item !== '' && item !== 'null');
+    if (!items.length) return '';
+    return items
+      .map((item) => formatArticleCardValue(item, key))
+      .filter(Boolean)
+      .join(', ');
+  }
+
+  if (typeof value === 'object') {
+    return formatObjectValuesAsList(value, true);
+  }
+
+  return String(value);
+}
+
+function createCompactArticleMetadataRow(key, label, value, isHtml = false) {
+  const row = document.createElement('div');
+  row.className = 'min-w-0 py-1';
+
+  const dt = document.createElement('dt');
+  dt.className = 'mb-0.5 text-[10px] font-semibold uppercase tracking-wide text-neutral-500';
+  dt.textContent = label;
+
+  const dd = document.createElement('dd');
+  dd.className = 'min-w-0 text-sm leading-5 text-neutral-800';
+
+  const valueEl = document.createElement('span');
+  valueEl.className = 'block truncate js_article_card_truncate';
+
+  if (isHtml) {
+    valueEl.innerHTML = value;
+  } else {
+    valueEl.textContent = value;
+  }
+
+  valueEl.dataset.fullContent = valueEl.textContent.replace(/\s+/g, ' ').trim();
+  dd.appendChild(valueEl);
+
+  row.appendChild(dt);
+  row.appendChild(dd);
+  return row;
+}
+
+function createArticleCard(record) {
+  const article = document.createElement('article');
+  article.className = 'rounded-lg border border-neutral-200 bg-white shadow-sm overflow-hidden';
+
+  const title = formatArticleCardValue(record.title, 'title') || 'Untitled article';
+  const doi = formatArticleCardValue(record.DOI, 'DOI');
+  const publishedDate = formatArticleCardValue(record.published_date, 'published_date');
+  const publisher = formatArticleCardValue(record.publisher, 'publisher');
+  const journal = formatArticleCardValue(record.journal, 'journal');
+
+  const header = document.createElement('header');
+  header.className = 'border-b border-neutral-200 bg-carnation-100/40 px-4 py-3';
+
+  if (publishedDate) {
+    const dateText = document.createElement('p');
+    dateText.className = 'mb-1 text-[11px] font-semibold uppercase tracking-wide text-neutral-500';
+    dateText.textContent = publishedDate;
+    header.appendChild(dateText);
+  }
+
+  const heroMeta = document.createElement('div');
+  heroMeta.className = 'space-y-1';
+
+  const titleEl = document.createElement('h4');
+  titleEl.className = 'text-base font-semibold leading-snug text-neutral-900 md:text-lg';
+  if (record.DOI) {
+    const titleLink = document.createElement('a');
+    titleLink.href = `https://doi.org/${record.DOI}`;
+    titleLink.target = '_blank';
+    titleLink.rel = 'noopener noreferrer';
+    titleLink.className = 'underline underline-offset-2 decoration-1 hover:text-neutral-700';
+    titleLink.innerHTML = title;
+    titleEl.appendChild(titleLink);
+  } else {
+    titleEl.innerHTML = title;
+  }
+
+  heroMeta.appendChild(titleEl);
+
+  if (doi) {
+    const doiEl = document.createElement('p');
+    doiEl.className = 'text-xs text-neutral-700 break-all [&_a]:font-mono [&_a]:underline [&_a]:underline-offset-2';
+    doiEl.innerHTML = doi;
+    heroMeta.appendChild(doiEl);
+  }
+
+  const secondary = document.createElement('div');
+  secondary.className = 'mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-neutral-700';
+
+  if (publisher) {
+    const publisherEl = document.createElement('span');
+    publisherEl.className = 'inline-flex items-center gap-1';
+    publisherEl.innerHTML = `<span class="text-neutral-500">Publisher</span><span class="font-medium text-neutral-800">${publisher}</span>`;
+    secondary.appendChild(publisherEl);
+  }
+
+  if (journal) {
+    const journalEl = document.createElement('span');
+    journalEl.className = 'inline-flex items-center gap-1';
+    journalEl.innerHTML = `<span class="text-neutral-500">Journal</span><span class="font-medium text-neutral-800">${journal}</span>`;
+    secondary.appendChild(journalEl);
+  }
+
+  header.appendChild(heroMeta);
+  if (secondary.children.length) {
+    header.appendChild(secondary);
+  }
+  article.appendChild(header);
+
+  const body = document.createElement('div');
+  body.className = 'bg-neutral-50/50 px-4 py-2.5';
+
+  const metadata = document.createElement('dl');
+  metadata.className = 'grid grid-cols-1 gap-x-4 gap-y-1 md:grid-cols-2 xl:grid-cols-3';
+
+  const skipKeys = new Set(['title', 'DOI', 'published_date', 'publisher', 'journal']);
+
+  Object.entries(record).forEach(([key, rawValue]) => {
+    if (skipKeys.has(key)) return;
+    const formatted = formatArticleCardValue(rawValue, key);
+    if (!formatted) return;
+
+    const isHtml = /<a\b|<ul\b|<li\b|<i\b|<em\b|<strong\b/i.test(formatted);
+    metadata.appendChild(createCompactArticleMetadataRow(key, getArticleFieldLabel(key), formatted, isHtml));
+  });
+
+  if (metadata.children.length) {
+    body.appendChild(metadata);
+  }
+
+  article.appendChild(body);
+  return article;
+}
+
+function renderArticleCards(records) {
+  const cardsList = document.getElementById('explore_cards_list');
+  if (!cardsList) return;
+
+  cardsList.innerHTML = '';
+
+  if (!records.length) {
+    const empty = document.createElement('p');
+    empty.className = 'rounded-lg border border-neutral-200 bg-white p-6 text-sm text-neutral-700';
+    empty.textContent = 'No results found.';
+    cardsList.appendChild(empty);
+    return;
+  }
+
+  records.forEach((record) => {
+    cardsList.appendChild(createArticleCard(record));
+  });
+
+  enableArticleCardTooltips();
+}
+
+function setExploreDataLayout(type) {
+  const cardsView = document.getElementById('explore_cards_view');
+  const tableView = document.getElementById('explore_table_view');
+  const copyButton = document.getElementById('explore_copy_clipboard');
+  const isArticles = type === 'articles';
+
+  cardsView?.classList.toggle('hidden', !isArticles);
+  tableView?.classList.toggle('hidden', isArticles);
+  if (copyButton) {
+    copyButton.classList.toggle('hidden', isArticles);
+  }
+}
+
+function enableArticleCardTooltips() {
+  document.querySelectorAll('#explore_cards_list .js_article_card_truncate').forEach((element) => {
+    if (element._tooltip) return;
+
+    createTooltip(element, element.dataset.fullContent || element.textContent, {
+      aria: {
+        expanded: false
+      },
+      interactive: false,
+      placement: 'bottom',
+      delay: [350, 0],
+      trigger: 'mouseenter focus',
+      hideOnClick: false,
+      theme: 'tooltip-white',
+      onShow(instance) {
+        if (element.offsetWidth < element.scrollWidth) {
+          instance.setContent(element.dataset.fullContent || element.textContent);
+          return true;
+        }
+        return false;
+      }
+    });
+  });
 }
 
 /**
