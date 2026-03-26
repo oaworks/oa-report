@@ -106,6 +106,8 @@ const EXTERNAL_LINK_PILL_CLASS = 'ml-2 bg-neutral-200 text-neutral-900 text-xs p
  * @type {Array<string>}
  */
 let selectedRowKeys = [];
+let exploreArticleDrawerInit = false;
+let activeArticleDrawerTrigger = null;
 
 /**
  * Re-runs Insights / Actions and the current Explore table
@@ -1245,37 +1247,17 @@ function getGroupedArticleMetadata(record) {
   return groups;
 }
 
-function getArticleMetadataSectionClasses(groupId) {
-  return {
-    summary: groupId === 'other_metadata' ? 'bg-neutral-50/90' : 'bg-neutral-50/70',
-  };
-}
-
-function createArticleMetadataSection(group) {
-  const sectionClasses = getArticleMetadataSectionClasses(group.id);
-  const section = document.createElement('details');
-  section.className = 'group border-t border-neutral-200 first:border-t-0';
-
-  const summary = document.createElement('summary');
-  summary.className = `flex cursor-pointer list-none items-center justify-between gap-3 py-2 [&::-webkit-details-marker]:hidden ${sectionClasses.summary}`;
+function createArticleDrawerSection(group) {
+  const section = document.createElement('section');
+  section.className = 'border-t border-neutral-200 py-4 first:border-t-0 first:pt-0';
 
   const heading = document.createElement('h5');
-  heading.className = 'm-0 text-sm leading-none text-neutral-900';
+  heading.className = 'mb-3 text-sm font-medium leading-none text-neutral-900';
   heading.textContent = group.label;
-
-  const indicator = document.createElement('span');
-  indicator.className = 'w-4 text-center text-sm font-semibold leading-none text-neutral-700 transition-transform group-open:rotate-90';
-  indicator.textContent = '›';
-
-  summary.appendChild(heading);
-  const spacer = document.createElement('span');
-  spacer.className = 'ml-auto';
-  summary.appendChild(spacer);
-  summary.appendChild(indicator);
-  section.appendChild(summary);
+  section.appendChild(heading);
 
   const metadata = document.createElement('dl');
-  metadata.className = 'grid grid-cols-1 gap-x-4 divide-y divide-neutral-200/80 py-2';
+  metadata.className = 'grid grid-cols-1 gap-x-6 gap-y-2 md:grid-cols-2 xl:grid-cols-3';
 
   group.items.forEach((item) => {
     metadata.appendChild(createCompactArticleMetadataRow(item.key, item.label, item.value, item.isHtml));
@@ -1285,9 +1267,148 @@ function createArticleMetadataSection(group) {
   return section;
 }
 
+function getArticleDrawerElements() {
+  return {
+    drawer: document.getElementById('explore_article_drawer'),
+    backdrop: document.getElementById('explore_article_drawer_backdrop'),
+    panel: document.getElementById('explore_article_drawer_panel'),
+    title: document.getElementById('explore_article_drawer_title'),
+    meta: document.getElementById('explore_article_drawer_meta'),
+    summary: document.getElementById('explore_article_drawer_summary'),
+    body: document.getElementById('explore_article_drawer_body'),
+    close: document.getElementById('explore_article_drawer_close')
+  };
+}
+
+function getArticleDrawerFocusableElements(panel) {
+  return Array.from(panel.querySelectorAll('a[href], button:not([disabled]), summary, [tabindex]:not([tabindex="-1"])'))
+    .filter((element) => !element.hasAttribute('disabled') && element.getAttribute('aria-hidden') !== 'true');
+}
+
+function closeArticleDrawer() {
+  const { drawer, backdrop, panel } = getArticleDrawerElements();
+  if (!drawer || !backdrop || !panel || drawer.classList.contains('hidden')) return;
+
+  backdrop.classList.remove('bg-opacity-60');
+  backdrop.classList.add('bg-opacity-0');
+  panel.classList.remove('translate-y-0');
+  panel.classList.add('translate-y-full');
+
+  window.setTimeout(() => {
+    drawer.classList.add('hidden');
+    drawer.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('overflow-hidden');
+    if (activeArticleDrawerTrigger) {
+      activeArticleDrawerTrigger.focus();
+      activeArticleDrawerTrigger = null;
+    }
+  }, 300);
+}
+
+function openArticleDrawer(record, trigger) {
+  const { drawer, backdrop, panel, title, meta, summary, body, close } = getArticleDrawerElements();
+  if (!drawer || !backdrop || !panel || !title || !meta || !summary || !body || !close) return;
+
+  activeArticleDrawerTrigger = trigger;
+
+  const publishedDate = formatArticleCardValue(record.published_date, 'published_date');
+  const citedByCount = formatArticleCardValue(record.cited_by_count, 'cited_by_count');
+  const doi = formatArticleCardValue(record.DOI, 'DOI');
+  const subtitle = formatArticleCardValue(record.subtitle, 'subtitle');
+  const publisher = formatArticleCardValue(record.publisher, 'publisher');
+  const journal = formatArticleCardValue(record.journal, 'journal');
+  const identifiers = [
+    record.published_year ? `Year: ${formatArticleCardValue(record.published_year, 'published_year')}` : null,
+    record.PMID ? `PMID: ${formatArticleCardValue(record.PMID, 'PMID')}` : null,
+    record.PMCID ? `PMCID: ${formatArticleCardValue(record.PMCID, 'PMCID')}` : null,
+    record.volume ? `Volume: ${formatArticleCardValue(record.volume, 'volume')}` : null,
+    record.issue ? `Issue: ${formatArticleCardValue(record.issue, 'issue')}` : null,
+    record.issn ? `ISSN: ${formatArticleCardValue(record.issn, 'issn')}` : null
+  ].filter(Boolean);
+
+  title.textContent = record.title || 'Untitled article';
+  meta.textContent = [publishedDate, citedByCount ? `${getArticleFieldLabel('cited_by_count')}: ${citedByCount}` : null]
+    .filter(Boolean)
+    .join(' · ');
+
+  const summaryParts = [];
+  if (doi) {
+    summaryParts.push(`<p class="m-0 text-sm text-neutral-800 break-all [&_a]:font-mono [&_a]:underline [&_a]:underline-offset-2">${doi}</p>`);
+  }
+  if (subtitle) {
+    summaryParts.push(`<p class="m-0 text-sm text-neutral-800">${subtitle}</p>`);
+  }
+  if (publisher || journal) {
+    summaryParts.push(`
+      <p class="m-0 text-sm text-neutral-800">
+        ${publisher ? `<span class="text-neutral-700">Publisher</span> ${publisher}` : ''}
+        ${publisher && journal ? `<span class="mx-2 text-neutral-400">·</span>` : ''}
+        ${journal ? `<span class="text-neutral-700">Journal</span> ${journal}` : ''}
+      </p>
+    `);
+  }
+  if (identifiers.length) {
+    summaryParts.push(`<p class="m-0 text-xs text-neutral-700">${identifiers.join(' · ')}</p>`);
+  }
+
+  summary.innerHTML = summaryParts.join('');
+  body.innerHTML = '';
+  getGroupedArticleMetadata(record).forEach((group) => {
+    body.appendChild(createArticleDrawerSection(group));
+  });
+
+  drawer.classList.remove('hidden');
+  drawer.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('overflow-hidden');
+
+  requestAnimationFrame(() => {
+    backdrop.classList.remove('bg-opacity-0');
+    backdrop.classList.add('bg-opacity-60');
+    panel.classList.remove('translate-y-full');
+    panel.classList.add('translate-y-0');
+  });
+
+  close.focus();
+}
+
+function initArticleDrawer() {
+  if (exploreArticleDrawerInit) return;
+  const { drawer, backdrop, panel, close } = getArticleDrawerElements();
+  if (!drawer || !backdrop || !panel || !close) return;
+
+  close.addEventListener('click', closeArticleDrawer);
+  backdrop.addEventListener('click', closeArticleDrawer);
+
+  drawer.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      closeArticleDrawer();
+      return;
+    }
+
+    if (event.key !== 'Tab') return;
+
+    const focusable = getArticleDrawerFocusableElements(panel);
+    if (!focusable.length) return;
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  });
+
+  exploreArticleDrawerInit = true;
+}
+
 function createArticleCard(record) {
   const article = document.createElement('article');
-  article.className = 'overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-sm';
+  article.className = 'h-full overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-sm';
 
   const title = formatArticleCardValue(record.title, 'title') || 'Untitled article';
   const doi = formatArticleCardValue(record.DOI, 'DOI');
@@ -1304,7 +1425,10 @@ function createArticleCard(record) {
   const journal = formatArticleCardValue(record.journal, 'journal');
 
   const header = document.createElement('header');
-  header.className = 'border-b border-neutral-200 bg-carnation-100/40 px-3 py-3';
+  header.className = 'flex h-full flex-col bg-white';
+
+  const hero = document.createElement('div');
+  hero.className = 'px-3 py-3';
 
   if (publishedDate || citedByCount) {
     const headerTop = document.createElement('div');
@@ -1322,7 +1446,7 @@ function createArticleCard(record) {
       headerTop.appendChild(citedBy);
     }
 
-    header.appendChild(headerTop);
+    hero.appendChild(headerTop);
   }
 
   const heroMeta = document.createElement('div');
@@ -1330,23 +1454,21 @@ function createArticleCard(record) {
 
   const titleEl = document.createElement('h4');
   titleEl.className = 'm-0 text-base font-semibold leading-snug text-neutral-900';
-  if (record.DOI) {
-    const titleLink = document.createElement('a');
-    titleLink.href = `https://doi.org/${record.DOI}`;
-    titleLink.target = '_blank';
-    titleLink.rel = 'noopener noreferrer';
-    titleLink.className = 'text-neutral-900 decoration-1 hover:text-carnation-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm';
-    titleLink.innerHTML = title;
-    titleEl.appendChild(titleLink);
-  } else {
-    titleEl.innerHTML = title;
-  }
+  const titleButton = document.createElement('button');
+  titleButton.type = 'button';
+  titleButton.className = 'text-left text-neutral-900 hover:text-carnation-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm overflow-hidden [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:4]';
+  titleButton.setAttribute('aria-haspopup', 'dialog');
+  titleButton.setAttribute('aria-controls', 'explore_article_drawer_panel');
+  titleButton.setAttribute('aria-label', `View details for ${title.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()}`);
+  titleButton.innerHTML = title;
+  titleButton.addEventListener('click', () => openArticleDrawer(record, titleButton));
+  titleEl.appendChild(titleButton);
 
   heroMeta.appendChild(titleEl);
 
   if (subtitle) {
     const subtitleEl = document.createElement('p');
-    subtitleEl.className = 'm-0 text-sm text-neutral-800';
+    subtitleEl.className = 'm-0 text-sm text-neutral-800 overflow-hidden [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]';
     subtitleEl.innerHTML = subtitle;
     heroMeta.appendChild(subtitleEl);
   }
@@ -1359,26 +1481,23 @@ function createArticleCard(record) {
   }
 
   const secondary = document.createElement('div');
-  secondary.className = 'mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-neutral-800';
+  secondary.className = 'space-y-1 text-xs text-neutral-800';
 
   if (publisher) {
-    const publisherEl = document.createElement('span');
-    publisherEl.className = 'inline-flex items-center gap-1';
-    publisherEl.innerHTML = `<span class="text-neutral-700">Publisher</span><span class="text-neutral-900">${publisher}</span>`;
+    const publisherEl = document.createElement('p');
+    publisherEl.className = 'm-0 flex min-w-0 items-baseline gap-1';
+    publisherEl.innerHTML = `<span class="font-medium text-neutral-700">Publisher</span><span class="min-w-0 truncate text-neutral-900">${publisher}</span>`;
     secondary.appendChild(publisherEl);
   }
 
   if (journal) {
-    const journalEl = document.createElement('span');
-    journalEl.className = 'inline-flex items-center gap-1';
-    journalEl.innerHTML = `<span class="text-neutral-700">Journal</span><span class="text-neutral-900">${journal}</span>`;
+    const journalEl = document.createElement('p');
+    journalEl.className = 'm-0 flex min-w-0 items-baseline gap-1';
+    journalEl.innerHTML = `<span class="font-medium text-neutral-700">Journal</span><span class="min-w-0 truncate text-neutral-900">${journal}</span>`;
     secondary.appendChild(journalEl);
   }
 
-  header.appendChild(heroMeta);
-  if (secondary.children.length) {
-    header.appendChild(secondary);
-  }
+  hero.appendChild(heroMeta);
 
   const identifiers = [
     publishedYear ? `Year: ${publishedYear}` : null,
@@ -1389,28 +1508,16 @@ function createArticleCard(record) {
     issn ? `ISSN: ${issn}` : null,
   ].filter(Boolean);
 
-  if (identifiers.length) {
-    const identifiersEl = document.createElement('p');
-    identifiersEl.className = 'mt-1 text-xs text-neutral-700';
-    identifiersEl.textContent = identifiers.join(' · ');
-    header.appendChild(identifiersEl);
+  header.appendChild(hero);
+
+  if (secondary.children.length) {
+    const footer = document.createElement('div');
+    footer.className = 'mt-auto border-t border-neutral-200 bg-carnation-100/70 px-3 py-3';
+    footer.appendChild(secondary);
+    header.appendChild(footer);
   }
 
   article.appendChild(header);
-
-  const body = document.createElement('div');
-  body.className = 'space-y-1 bg-neutral-50/50 px-3 py-2';
-
-  const sections = document.createElement('div');
-  sections.className = 'flex flex-col';
-
-  getGroupedArticleMetadata(record).forEach((group) => {
-    sections.appendChild(createArticleMetadataSection(group));
-  });
-
-  body.appendChild(sections);
-
-  article.appendChild(body);
   return article;
 }
 
@@ -1418,6 +1525,7 @@ function renderArticleCards(records) {
   const cardsList = document.getElementById('explore_cards_list');
   if (!cardsList) return;
 
+  closeArticleDrawer();
   cardsList.innerHTML = '';
 
   if (!records.length) {
@@ -1432,6 +1540,7 @@ function renderArticleCards(records) {
     cardsList.appendChild(createArticleCard(record));
   });
 
+  initArticleDrawer();
   enableArticleCardTooltips();
 }
 
@@ -1440,6 +1549,10 @@ function setExploreDataLayout(type) {
   const tableView = document.getElementById('explore_table_view');
   const copyButton = document.getElementById('explore_copy_clipboard');
   const isArticles = type === 'articles';
+
+  if (!isArticles) {
+    closeArticleDrawer();
+  }
 
   cardsView?.classList.toggle('hidden', !isArticles);
   tableView?.classList.toggle('hidden', isArticles);

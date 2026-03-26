@@ -103,6 +103,43 @@
           <div id="explore_cards_list" class="grid grid-cols-1 gap-8 md:gap-10 lg:grid-cols-2 xl:grid-cols-4"></div>
         </div>
 
+        <div
+          id="explore_article_drawer"
+          class="hidden fixed inset-0 z-50"
+          aria-hidden="true"
+        >
+          <div
+            id="explore_article_drawer_backdrop"
+            class="absolute inset-0 bg-neutral-900 bg-opacity-0 transition-opacity duration-300"
+          ></div>
+          <section
+            id="explore_article_drawer_panel"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="explore_article_drawer_title"
+            class="absolute inset-x-0 bottom-0 mx-auto flex max-h-[88vh] w-full max-w-6xl translate-y-full flex-col overflow-hidden rounded-t-2xl border border-neutral-200 bg-white shadow-2xl transition-transform duration-300"
+          >
+            <header class="border-b border-neutral-200 bg-carnation-100/40 px-4 py-4 md:px-6">
+              <div class="flex items-start justify-between gap-4">
+                <div class="min-w-0">
+                  <p id="explore_article_drawer_meta" class="mb-1 text-xs font-medium uppercase tracking-wide text-neutral-700"></p>
+                  <h4 id="explore_article_drawer_title" class="m-0 text-lg font-semibold leading-snug text-neutral-900"></h4>
+                  <div id="explore_article_drawer_summary" class="mt-2 space-y-1 text-sm text-neutral-800"></div>
+                </div>
+                <button
+                  id="explore_article_drawer_close"
+                  type="button"
+                  class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-800 transition-colors hover:bg-neutral-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400"
+                  aria-label="Close article details"
+                >
+                  ×
+                </button>
+              </div>
+            </header>
+            <div id="explore_article_drawer_body" class="overflow-y-auto bg-neutral-50/70 px-4 py-4 md:px-6 md:py-5"></div>
+          </section>
+        </div>
+
         <div id="explore_table_view">
         {# Scroll table button #}
         <button
