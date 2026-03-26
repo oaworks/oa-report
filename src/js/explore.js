@@ -1138,11 +1138,11 @@ function createCompactArticleMetadataRow(key, label, value, isHtml = false) {
   row.className = 'min-w-0 py-0.5';
 
   const dt = document.createElement('dt');
-  dt.className = 'mb-0.5 text-xs font-semibold uppercase tracking-wide text-neutral-500';
-  dt.textContent = label;
+  dt.className = 'mb-0.5 text-xs font-semibold uppercase tracking-wide text-neutral-700';
+  dt.innerHTML = label;
 
   const dd = document.createElement('dd');
-  dd.className = 'min-w-0 text-sm leading-5 text-neutral-800';
+  dd.className = 'min-w-0 text-sm leading-5 text-neutral-900';
 
   const valueEl = document.createElement('span');
   valueEl.className = 'block truncate js_article_card_truncate';
@@ -1161,15 +1161,25 @@ function createCompactArticleMetadataRow(key, label, value, isHtml = false) {
   return row;
 }
 
-function buildArticleMetadataSummary(items) {
-  return items
-    .slice(0, 3)
-    .map((item) => `${item.label}: ${item.value.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()}`)
-    .join(' · ');
-}
-
 function getGroupedArticleMetadata(record) {
-  const skipKeys = new Set(['title', 'DOI', 'published_date', 'publisher', 'journal']);
+  const skipKeys = new Set([
+    'title',
+    'DOI',
+    'subtitle',
+    'publisher',
+    'journal',
+    'published_date',
+    'published_year',
+    'issn',
+    'volume',
+    'issue',
+    'PMID',
+    'PMCID',
+    'cited_by_count'
+  ]);
+  const normalisedRecordKeys = new Map(
+    Object.keys(record).map((key) => [normaliseFieldId(key), key])
+  );
   const usedKeys = new Set();
   const groups = [];
 
@@ -1177,15 +1187,16 @@ function getGroupedArticleMetadata(record) {
     const items = [];
 
     group.fields.forEach((field) => {
-      if (skipKeys.has(field) || !(field in record)) return;
+      const actualKey = normalisedRecordKeys.get(normaliseFieldId(field)) || field;
+      if (skipKeys.has(normaliseFieldId(actualKey)) || !(actualKey in record)) return;
 
-      const formatted = formatArticleCardValue(record[field], field);
+      const formatted = formatArticleCardValue(record[actualKey], actualKey);
       if (!formatted) return;
 
-      usedKeys.add(field);
+      usedKeys.add(actualKey);
       items.push({
-        key: field,
-        label: getArticleFieldLabel(field),
+        key: actualKey,
+        label: getArticleFieldLabel(actualKey),
         value: formatted,
         isHtml: /<a\b|<ul\b|<li\b|<i\b|<em\b|<strong\b/i.test(formatted)
       });
@@ -1200,7 +1211,7 @@ function getGroupedArticleMetadata(record) {
   });
 
   const otherItems = Object.entries(record)
-    .filter(([key]) => !skipKeys.has(key) && !usedKeys.has(key))
+    .filter(([key]) => !skipKeys.has(normaliseFieldId(key)) && !usedKeys.has(key))
     .map(([key, rawValue]) => {
       const formatted = formatArticleCardValue(rawValue, key);
       if (!formatted) return null;
@@ -1226,36 +1237,30 @@ function getGroupedArticleMetadata(record) {
 
 function createArticleMetadataSection(group) {
   const section = document.createElement('details');
-  section.className = 'group rounded-md border border-neutral-200/70 bg-white/70 px-3 py-2';
+  section.className = 'group rounded-md border border-neutral-200/70 bg-white/70 px-2.5 py-1.5';
 
   const summary = document.createElement('summary');
-  summary.className = 'flex cursor-pointer list-none items-start justify-between gap-3 [&::-webkit-details-marker]:hidden';
-
-  const summaryCopy = document.createElement('div');
-  summaryCopy.className = 'min-w-0 flex-1';
+  summary.className = 'flex cursor-pointer list-none items-center justify-between gap-2 [&::-webkit-details-marker]:hidden';
 
   const heading = document.createElement('h5');
-  heading.className = 'text-xs font-semibold uppercase tracking-wide text-neutral-500';
+  heading.className = 'm-0 text-xs font-semibold uppercase tracking-wide text-neutral-700';
   heading.textContent = group.label;
 
-  const preview = document.createElement('p');
-  preview.className = 'mt-0.5 truncate text-sm leading-5 text-neutral-700 js_article_card_truncate';
-  preview.textContent = buildArticleMetadataSummary(group.items);
-  preview.dataset.fullContent = preview.textContent;
-
-  summaryCopy.appendChild(heading);
-  summaryCopy.appendChild(preview);
+  const meta = document.createElement('span');
+  meta.className = 'ml-auto text-xs leading-none text-neutral-700';
+  meta.textContent = `${group.items.length} field${group.items.length === 1 ? '' : 's'}`;
 
   const indicator = document.createElement('span');
-  indicator.className = 'mt-0.5 text-xs font-semibold uppercase tracking-wide text-neutral-500 transition-transform group-open:rotate-45';
+  indicator.className = 'w-3 text-center text-xs font-semibold leading-none text-neutral-700 transition-transform group-open:rotate-45';
   indicator.textContent = '+';
 
-  summary.appendChild(summaryCopy);
+  summary.appendChild(heading);
+  summary.appendChild(meta);
   summary.appendChild(indicator);
   section.appendChild(summary);
 
   const metadata = document.createElement('dl');
-  metadata.className = 'mt-2 grid grid-cols-1 gap-x-4 gap-y-1 border-t border-neutral-200/80 pt-2 sm:grid-cols-2 xl:grid-cols-3';
+  metadata.className = 'mt-1.5 grid grid-cols-1 gap-x-4 gap-y-0.5 border-t border-neutral-200/80 pt-1.5 sm:grid-cols-2 xl:grid-cols-3';
 
   group.items.forEach((item) => {
     metadata.appendChild(createCompactArticleMetadataRow(item.key, item.label, item.value, item.isHtml));
@@ -1271,31 +1276,51 @@ function createArticleCard(record) {
 
   const title = formatArticleCardValue(record.title, 'title') || 'Untitled article';
   const doi = formatArticleCardValue(record.DOI, 'DOI');
+  const subtitle = formatArticleCardValue(record.subtitle, 'subtitle');
   const publishedDate = formatArticleCardValue(record.published_date, 'published_date');
+  const publishedYear = formatArticleCardValue(record.published_year, 'published_year');
+  const issn = formatArticleCardValue(record.issn, 'issn');
+  const volume = formatArticleCardValue(record.volume, 'volume');
+  const issue = formatArticleCardValue(record.issue, 'issue');
+  const pmid = formatArticleCardValue(record.PMID, 'PMID');
+  const pmcid = formatArticleCardValue(record.PMCID, 'PMCID');
+  const citedByCount = formatArticleCardValue(record.cited_by_count, 'cited_by_count');
   const publisher = formatArticleCardValue(record.publisher, 'publisher');
   const journal = formatArticleCardValue(record.journal, 'journal');
 
   const header = document.createElement('header');
-  header.className = 'border-b border-neutral-200 bg-carnation-100/40 px-3 py-2.5';
+  header.className = 'border-b border-neutral-200 bg-carnation-100/40 px-3 py-3';
 
-  if (publishedDate) {
+  if (publishedDate || citedByCount) {
+    const headerTop = document.createElement('div');
+    headerTop.className = 'mb-1.5 flex items-start justify-between gap-3';
+
     const dateText = document.createElement('p');
-    dateText.className = 'mb-1 text-xs font-semibold uppercase tracking-wide text-neutral-500';
-    dateText.textContent = publishedDate;
-    header.appendChild(dateText);
+    dateText.className = 'text-xs font-semibold uppercase tracking-wide text-neutral-700';
+    dateText.textContent = publishedDate || '';
+    headerTop.appendChild(dateText);
+
+    if (citedByCount) {
+      const citedBy = document.createElement('p');
+      citedBy.className = 'whitespace-nowrap text-xs font-semibold text-neutral-800';
+      citedBy.textContent = `${getArticleFieldLabel('cited_by_count')}: ${citedByCount}`;
+      headerTop.appendChild(citedBy);
+    }
+
+    header.appendChild(headerTop);
   }
 
   const heroMeta = document.createElement('div');
-  heroMeta.className = 'space-y-0.5';
+  heroMeta.className = 'space-y-1';
 
   const titleEl = document.createElement('h4');
-  titleEl.className = 'text-base font-semibold leading-snug text-neutral-900';
+  titleEl.className = 'm-0 text-base font-semibold leading-snug text-neutral-900';
   if (record.DOI) {
     const titleLink = document.createElement('a');
     titleLink.href = `https://doi.org/${record.DOI}`;
     titleLink.target = '_blank';
     titleLink.rel = 'noopener noreferrer';
-    titleLink.className = 'underline underline-offset-2 decoration-1 hover:text-neutral-700';
+    titleLink.className = 'text-neutral-900 underline underline-offset-2 decoration-1 hover:text-neutral-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm';
     titleLink.innerHTML = title;
     titleEl.appendChild(titleLink);
   } else {
@@ -1304,27 +1329,34 @@ function createArticleCard(record) {
 
   heroMeta.appendChild(titleEl);
 
+  if (subtitle) {
+    const subtitleEl = document.createElement('p');
+    subtitleEl.className = 'm-0 text-sm text-neutral-800';
+    subtitleEl.innerHTML = subtitle;
+    heroMeta.appendChild(subtitleEl);
+  }
+
   if (doi) {
     const doiEl = document.createElement('p');
-    doiEl.className = 'text-xs text-neutral-700 break-all [&_a]:font-mono [&_a]:underline [&_a]:underline-offset-2';
+    doiEl.className = 'm-0 text-xs text-neutral-800 break-all [&_a]:font-mono [&_a]:underline [&_a]:underline-offset-2';
     doiEl.innerHTML = doi;
     heroMeta.appendChild(doiEl);
   }
 
   const secondary = document.createElement('div');
-  secondary.className = 'mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-neutral-700';
+  secondary.className = 'mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-neutral-800';
 
   if (publisher) {
     const publisherEl = document.createElement('span');
     publisherEl.className = 'inline-flex items-center gap-1';
-    publisherEl.innerHTML = `<span class="text-neutral-500">Publisher</span><span class="font-medium text-neutral-800">${publisher}</span>`;
+    publisherEl.innerHTML = `<span class="text-neutral-700">Publisher</span><span class="font-medium text-neutral-900">${publisher}</span>`;
     secondary.appendChild(publisherEl);
   }
 
   if (journal) {
     const journalEl = document.createElement('span');
     journalEl.className = 'inline-flex items-center gap-1';
-    journalEl.innerHTML = `<span class="text-neutral-500">Journal</span><span class="font-medium text-neutral-800">${journal}</span>`;
+    journalEl.innerHTML = `<span class="text-neutral-700">Journal</span><span class="font-medium text-neutral-900">${journal}</span>`;
     secondary.appendChild(journalEl);
   }
 
@@ -1332,10 +1364,27 @@ function createArticleCard(record) {
   if (secondary.children.length) {
     header.appendChild(secondary);
   }
+
+  const identifiers = [
+    publishedYear ? `Year: ${publishedYear}` : null,
+    volume ? `Volume: ${volume}` : null,
+    issue ? `Issue: ${issue}` : null,
+    issn ? `ISSN: ${issn}` : null,
+    pmid ? `PMID: ${pmid}` : null,
+    pmcid ? `PMCID: ${pmcid}` : null
+  ].filter(Boolean);
+
+  if (identifiers.length) {
+    const identifiersEl = document.createElement('p');
+    identifiersEl.className = 'mt-1 text-xs text-neutral-700';
+    identifiersEl.textContent = identifiers.join(' · ');
+    header.appendChild(identifiersEl);
+  }
+
   article.appendChild(header);
 
   const body = document.createElement('div');
-  body.className = 'space-y-1.5 bg-neutral-50/50 px-3 py-2';
+  body.className = 'space-y-1 bg-neutral-50/50 px-3 py-2';
 
   getGroupedArticleMetadata(record).forEach((group) => {
     body.appendChild(createArticleMetadataSection(group));
