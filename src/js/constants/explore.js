@@ -945,3 +945,153 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
     info: ""
   }
 };
+
+/**
+ * Semantic field groups for article card rendering.
+ * Fields not listed here should fall back to an "Other metadata" section.
+ */
+export const ARTICLE_CARD_GROUPS = [
+  {
+    id: "citation",
+    label: "Citation details",
+    fields: [
+      "subtitle",
+      "published_year",
+      "issn",
+      "volume",
+      "issue",
+      "PMID",
+      "PMCID"
+    ]
+  },
+  {
+    id: "people_orgs",
+    label: "People & organisations",
+    fields: [
+      "authorships.author.display_name",
+      "authorships.author.orcid",
+      "authorships.institutions.display_name",
+      "authorships.institutions.ror",
+      "funder.name",
+      "funder.award",
+      "grantid",
+      "program",
+      "lab-heads",
+      "authorship",
+      "acknowledgement_ic",
+      "funding_statement_ic"
+    ]
+  },
+  {
+    id: "access_policy",
+    label: "Access & policy",
+    fields: [
+      "is_oa",
+      "openalx.open_access.oa_status",
+      "journal_oa_type",
+      "is_compliant",
+      "is_covered_by_policy",
+      "is_compliant_with_current_policy",
+      "is_covered_by_current_policy",
+      "is_compliant_with_old_policy",
+      "is_covered_by_old_policy",
+      "publisher_license_best",
+      "publisher_license",
+      "has_repository_copy",
+      "repository_license_best",
+      "repository_license",
+      "repository_version",
+      "repository_url",
+      "has_oa_locations_embargoed",
+      "can_archive",
+      "version",
+      "oasupport.status"
+    ]
+  },
+  {
+    id: "preprints_versions",
+    label: "Preprints & versions",
+    fields: [
+      "is_preprint",
+      "has_preprint_copy",
+      "preprint_doi",
+      "preprint_license",
+      "relation.is-same-as.id",
+      "relation.is-version-of.id",
+      "relation.has-version.id"
+    ]
+  },
+  {
+    id: "research_classification",
+    label: "Research classification",
+    fields: [
+      "is_original_research",
+      "pubtype",
+      "subject",
+      "concepts.display_name",
+      "keywords",
+      "chemical_names",
+      "mesh_terms",
+      "has_ppmi_mention",
+      "has_ppmi_biospecimen_use"
+    ]
+  },
+  {
+    id: "data_code",
+    label: "Data & code",
+    fields: [
+      "has_data_availability_statement",
+      "data_availability_statement",
+      "pmc_has_data_availability_statement",
+      "has_made_data",
+      "has_shared_data",
+      "has_open_data",
+      "resource_licence",
+      "resource_doi",
+      "resource_location_name",
+      "resource_location_url",
+      "has_made_code",
+      "has_shared_code",
+      "has_open_code",
+      "dev.code.accession",
+      "dev.code.doi",
+      "dev.code.evidence",
+      "dev.code.has_made_code",
+      "dev.code.has_open_code",
+      "dev.code.has_shared_code",
+      "dev.code.licence",
+      "dev.code.location",
+      "dev.code.url",
+      "dev.data.accession",
+      "dev.data.doi",
+      "dev.data.evidence",
+      "dev.data.has_open_data",
+      "dev.data.has_shared_data",
+      "dev.data.licence",
+      "dev.data.location",
+      "dev.data.url"
+    ]
+  },
+  {
+    id: "impact_admin",
+    label: "Impact & admin",
+    fields: [
+      "cited_by_count",
+      "apc_cost",
+      "invoice_date",
+      "invoice_number",
+      "sheets",
+      "is_new",
+      "no_grantid_ic",
+      "best_oa_location_url_status_code"
+    ]
+  },
+  {
+    id: "abstract_long_text",
+    label: "Abstract & long text",
+    fields: [
+      "abstract",
+      "openalx.abstract"
+    ]
+  }
+];

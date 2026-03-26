@@ -8,7 +8,7 @@
 // =================================================
 
 import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, normaliseFieldId, makeNumberReadable, announce } from "./utils.js";
-import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, FILTER_PILL_CLASSES, SEGMENTED_PILL_CLASSES } from "./constants.js";
+import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, ARTICLE_CARD_GROUPS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, FILTER_PILL_CLASSES, SEGMENTED_PILL_CLASSES } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
@@ -1135,10 +1135,10 @@ function formatArticleCardValue(value, key) {
 
 function createCompactArticleMetadataRow(key, label, value, isHtml = false) {
   const row = document.createElement('div');
-  row.className = 'min-w-0 py-1';
+  row.className = 'min-w-0 py-0.5';
 
   const dt = document.createElement('dt');
-  dt.className = 'mb-0.5 text-[10px] font-semibold uppercase tracking-wide text-neutral-500';
+  dt.className = 'mb-0.5 text-xs font-semibold uppercase tracking-wide text-neutral-500';
   dt.textContent = label;
 
   const dd = document.createElement('dd');
@@ -1161,9 +1161,113 @@ function createCompactArticleMetadataRow(key, label, value, isHtml = false) {
   return row;
 }
 
+function buildArticleMetadataSummary(items) {
+  return items
+    .slice(0, 3)
+    .map((item) => `${item.label}: ${item.value.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()}`)
+    .join(' · ');
+}
+
+function getGroupedArticleMetadata(record) {
+  const skipKeys = new Set(['title', 'DOI', 'published_date', 'publisher', 'journal']);
+  const usedKeys = new Set();
+  const groups = [];
+
+  ARTICLE_CARD_GROUPS.forEach((group) => {
+    const items = [];
+
+    group.fields.forEach((field) => {
+      if (skipKeys.has(field) || !(field in record)) return;
+
+      const formatted = formatArticleCardValue(record[field], field);
+      if (!formatted) return;
+
+      usedKeys.add(field);
+      items.push({
+        key: field,
+        label: getArticleFieldLabel(field),
+        value: formatted,
+        isHtml: /<a\b|<ul\b|<li\b|<i\b|<em\b|<strong\b/i.test(formatted)
+      });
+    });
+
+    if (items.length) {
+      groups.push({
+        label: group.label,
+        items
+      });
+    }
+  });
+
+  const otherItems = Object.entries(record)
+    .filter(([key]) => !skipKeys.has(key) && !usedKeys.has(key))
+    .map(([key, rawValue]) => {
+      const formatted = formatArticleCardValue(rawValue, key);
+      if (!formatted) return null;
+
+      return {
+        key,
+        label: getArticleFieldLabel(key),
+        value: formatted,
+        isHtml: /<a\b|<ul\b|<li\b|<i\b|<em\b|<strong\b/i.test(formatted)
+      };
+    })
+    .filter(Boolean);
+
+  if (otherItems.length) {
+    groups.push({
+      label: 'Other metadata',
+      items: otherItems
+    });
+  }
+
+  return groups;
+}
+
+function createArticleMetadataSection(group) {
+  const section = document.createElement('details');
+  section.className = 'group rounded-md border border-neutral-200/70 bg-white/70 px-3 py-2';
+
+  const summary = document.createElement('summary');
+  summary.className = 'flex cursor-pointer list-none items-start justify-between gap-3 [&::-webkit-details-marker]:hidden';
+
+  const summaryCopy = document.createElement('div');
+  summaryCopy.className = 'min-w-0 flex-1';
+
+  const heading = document.createElement('h5');
+  heading.className = 'text-xs font-semibold uppercase tracking-wide text-neutral-500';
+  heading.textContent = group.label;
+
+  const preview = document.createElement('p');
+  preview.className = 'mt-0.5 truncate text-sm leading-5 text-neutral-700 js_article_card_truncate';
+  preview.textContent = buildArticleMetadataSummary(group.items);
+  preview.dataset.fullContent = preview.textContent;
+
+  summaryCopy.appendChild(heading);
+  summaryCopy.appendChild(preview);
+
+  const indicator = document.createElement('span');
+  indicator.className = 'mt-0.5 text-xs font-semibold uppercase tracking-wide text-neutral-500 transition-transform group-open:rotate-45';
+  indicator.textContent = '+';
+
+  summary.appendChild(summaryCopy);
+  summary.appendChild(indicator);
+  section.appendChild(summary);
+
+  const metadata = document.createElement('dl');
+  metadata.className = 'mt-2 grid grid-cols-1 gap-x-4 gap-y-1 border-t border-neutral-200/80 pt-2 sm:grid-cols-2 xl:grid-cols-3';
+
+  group.items.forEach((item) => {
+    metadata.appendChild(createCompactArticleMetadataRow(item.key, item.label, item.value, item.isHtml));
+  });
+
+  section.appendChild(metadata);
+  return section;
+}
+
 function createArticleCard(record) {
   const article = document.createElement('article');
-  article.className = 'rounded-lg border border-neutral-200 bg-white shadow-sm overflow-hidden';
+  article.className = 'overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-sm';
 
   const title = formatArticleCardValue(record.title, 'title') || 'Untitled article';
   const doi = formatArticleCardValue(record.DOI, 'DOI');
@@ -1172,20 +1276,20 @@ function createArticleCard(record) {
   const journal = formatArticleCardValue(record.journal, 'journal');
 
   const header = document.createElement('header');
-  header.className = 'border-b border-neutral-200 bg-carnation-100/40 px-4 py-3';
+  header.className = 'border-b border-neutral-200 bg-carnation-100/40 px-3 py-2.5';
 
   if (publishedDate) {
     const dateText = document.createElement('p');
-    dateText.className = 'mb-1 text-[11px] font-semibold uppercase tracking-wide text-neutral-500';
+    dateText.className = 'mb-1 text-xs font-semibold uppercase tracking-wide text-neutral-500';
     dateText.textContent = publishedDate;
     header.appendChild(dateText);
   }
 
   const heroMeta = document.createElement('div');
-  heroMeta.className = 'space-y-1';
+  heroMeta.className = 'space-y-0.5';
 
   const titleEl = document.createElement('h4');
-  titleEl.className = 'text-base font-semibold leading-snug text-neutral-900 md:text-lg';
+  titleEl.className = 'text-base font-semibold leading-snug text-neutral-900';
   if (record.DOI) {
     const titleLink = document.createElement('a');
     titleLink.href = `https://doi.org/${record.DOI}`;
@@ -1208,7 +1312,7 @@ function createArticleCard(record) {
   }
 
   const secondary = document.createElement('div');
-  secondary.className = 'mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-neutral-700';
+  secondary.className = 'mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-neutral-700';
 
   if (publisher) {
     const publisherEl = document.createElement('span');
@@ -1231,25 +1335,11 @@ function createArticleCard(record) {
   article.appendChild(header);
 
   const body = document.createElement('div');
-  body.className = 'bg-neutral-50/50 px-4 py-2.5';
+  body.className = 'space-y-1.5 bg-neutral-50/50 px-3 py-2';
 
-  const metadata = document.createElement('dl');
-  metadata.className = 'grid grid-cols-1 gap-x-4 gap-y-1 md:grid-cols-2 xl:grid-cols-3';
-
-  const skipKeys = new Set(['title', 'DOI', 'published_date', 'publisher', 'journal']);
-
-  Object.entries(record).forEach(([key, rawValue]) => {
-    if (skipKeys.has(key)) return;
-    const formatted = formatArticleCardValue(rawValue, key);
-    if (!formatted) return;
-
-    const isHtml = /<a\b|<ul\b|<li\b|<i\b|<em\b|<strong\b/i.test(formatted);
-    metadata.appendChild(createCompactArticleMetadataRow(key, getArticleFieldLabel(key), formatted, isHtml));
+  getGroupedArticleMetadata(record).forEach((group) => {
+    body.appendChild(createArticleMetadataSection(group));
   });
-
-  if (metadata.children.length) {
-    body.appendChild(metadata);
-  }
 
   article.appendChild(body);
   return article;
