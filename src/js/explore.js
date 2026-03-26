@@ -90,6 +90,7 @@ export let currentActiveExploreItemSize = 10;
  * @type {boolean}
  */
 export let currentActiveDataDisplayToggle = true;
+export let currentActiveArticleViewMode = "cards";
 
 /** 
  * Map of explore button id -> its data object, used to render without synthesising a click.
@@ -194,6 +195,8 @@ export async function initDataExplore(org) {
       refreshFiltersBanner(); // respects logged-in state
       addRecordsShownSelectToDOM();
       handleDataDisplayToggle();
+      addArticleViewToggleToDOM();
+      handleArticleViewToggle();
       enableExploreRowHighlighting();
       copyToClipboard('explore_copy_clipboard', 'explore_table');
     } else {
@@ -572,6 +575,35 @@ function addRecordsShownSelectToDOM() {
   }
 }
 
+function addArticleViewToggleToDOM() {
+  const container = document.getElementById("explore_article_view_toggle");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  [
+    { id: "cards", label: "Cards" },
+    { id: "table", label: "Table" }
+  ].forEach(({ id, label }) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.id = `explore_article_view_${id}`;
+    button.dataset.viewMode = id;
+    button.className = `${SEGMENTED_PILL_CLASSES.base} ${currentActiveArticleViewMode === id ? SEGMENTED_PILL_CLASSES.active : SEGMENTED_PILL_CLASSES.inactive}`;
+    button.setAttribute("aria-pressed", currentActiveArticleViewMode === id ? "true" : "false");
+    button.textContent = label;
+    container.appendChild(button);
+  });
+}
+
+function updateArticleViewToggleState() {
+  document.querySelectorAll('#explore_article_view_toggle [data-view-mode]').forEach((button) => {
+    const isActive = button.dataset.viewMode === currentActiveArticleViewMode;
+    button.className = `${SEGMENTED_PILL_CLASSES.base} ${isActive ? SEGMENTED_PILL_CLASSES.active : SEGMENTED_PILL_CLASSES.inactive}`;
+    button.setAttribute("aria-pressed", isActive ? "true" : "false");
+  });
+}
+
 /**
  * Fetches and displays Explore data for the selected item.
  * Handles login state (e.g. hides CSV export for logged-out users).
@@ -602,7 +634,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     // Check if query is blank or undefined and abort if so
     if (!query || query.trim() === '') {
       setExploreDataLayout(type);
-      if (type === "articles") {
+      if (type === "articles" && currentActiveArticleViewMode === "cards") {
         renderArticleCards([]);
       }
       showNoResultsRow(10, "export_table_body", "js_export_table");
@@ -626,8 +658,15 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 
     if (records.length > 0) {
       if (type === "articles") {
-        renderArticleCards(records);
         setExploreDataLayout(type);
+        if (currentActiveArticleViewMode === "cards") {
+          renderArticleCards(records);
+        } else {
+          populateTableHeader(records[0], 'export_table_head', type);
+          populateTableBody(records, 'export_table_body', id, type);
+          enableExploreTableScroll();
+          enableTooltipsForTruncatedCells();
+        }
       } else {
         setExploreDataLayout(type);
         // Populate table with data
@@ -646,7 +685,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     } else {
       setExploreModeUI(type);
       setExploreDataLayout(type);
-      if (type === "articles") {
+      if (type === "articles" && currentActiveArticleViewMode === "cards") {
         renderArticleCards([]);
       }
       showNoResultsRow(10, "export_table_body", "js_export_table");
@@ -655,7 +694,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
   } catch (error) {
     console.error('Error fetching and displaying explore data:', error);
     setExploreDataLayout(itemData?.type);
-    if (itemData?.type === "articles") {
+    if (itemData?.type === "articles" && currentActiveArticleViewMode === "cards") {
       renderArticleCards([]);
     }
     showNoResultsRow(10, "export_table_body", "js_export_table");
@@ -1549,15 +1588,17 @@ function setExploreDataLayout(type) {
   const tableView = document.getElementById('explore_table_view');
   const copyButton = document.getElementById('explore_copy_clipboard');
   const isArticles = type === 'articles';
+  const showCards = isArticles && currentActiveArticleViewMode === 'cards';
+  const showTable = !isArticles || currentActiveArticleViewMode === 'table';
 
-  if (!isArticles) {
+  if (!showCards) {
     closeArticleDrawer();
   }
 
-  cardsView?.classList.toggle('hidden', !isArticles);
-  tableView?.classList.toggle('hidden', isArticles);
+  cardsView?.classList.toggle('hidden', !showCards);
+  tableView?.classList.toggle('hidden', !showTable);
   if (copyButton) {
-    copyButton.classList.toggle('hidden', isArticles);
+    copyButton.classList.toggle('hidden', !showTable);
   }
 }
 
@@ -2021,6 +2062,7 @@ function setExploreModeUI(type) {
   const downloadCSVFormContainer = document.getElementById('download_csv_form_container');
   const exploreArticlesTableHelp = document.getElementById('explore_articles_records_shown_help');
   const exploreTermsTableHelp = document.getElementById('explore_terms_records_shown_help');
+  const articleViewField = document.getElementById('explore_article_view_field');
 
   if (isArticles) {
     addCSVExportLink();
@@ -2047,8 +2089,14 @@ function setExploreModeUI(type) {
 
   if (isArticles) {
     displayNone("explore_display_style_field");
+    removeDisplayStyle("explore_article_view_field");
   } else {
     removeDisplayStyle("explore_display_style_field");
+    displayNone("explore_article_view_field");
+  }
+
+  if (articleViewField) {
+    articleViewField.classList.toggle("hidden", !isArticles);
   }
 }
 
@@ -2192,6 +2240,33 @@ function handleDataDisplayToggle() {
     announce(`Explore view: ${currentActiveDataDisplayToggle ? "Pretty table" : "Raw values"}.`);
     // Fetch and display data with the updated pretty/raw format
     fetchAndDisplayExploreData(currentActiveExploreItemData, currentActiveExploreItemQuery, currentActiveExploreItemSize);
+  });
+}
+
+function handleArticleViewToggle() {
+  const container = document.getElementById('explore_article_view_toggle');
+  if (!container) return;
+
+  container.addEventListener('click', async (event) => {
+    const button = event.target.closest('[data-view-mode]');
+    if (!button) return;
+
+    const nextMode = button.dataset.viewMode;
+    if (!nextMode || nextMode === currentActiveArticleViewMode) return;
+
+    currentActiveArticleViewMode = nextMode;
+    updateArticleViewToggleState();
+    announce(`Explore article view: ${nextMode === "cards" ? "Cards" : "Table"}.`);
+
+    if (currentActiveExploreItemData?.type === 'articles') {
+      toggleLoadingIndicator(true, 'explore_loading');
+      await fetchAndDisplayExploreData(
+        currentActiveExploreItemData,
+        currentActiveExploreItemQuery,
+        currentActiveExploreItemSize
+      );
+      toggleLoadingIndicator(false, 'explore_loading');
+    }
   });
 }
 
