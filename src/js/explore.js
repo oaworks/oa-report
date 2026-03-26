@@ -1135,17 +1135,24 @@ function formatArticleCardValue(value, key) {
 
 function createCompactArticleMetadataRow(key, label, value, isHtml = false) {
   const row = document.createElement('div');
-  row.className = 'min-w-0 py-0.5';
+  row.className = 'min-w-0 py-1';
 
   const dt = document.createElement('dt');
-  dt.className = 'mb-0.5 text-xs font-semibold uppercase tracking-wide text-neutral-700';
+  dt.className = 'mb-0.5 text-xs font-medium tracking-wide text-neutral-700';
   dt.innerHTML = label;
 
   const dd = document.createElement('dd');
   dd.className = 'min-w-0 text-sm leading-5 text-neutral-900';
 
   const valueEl = document.createElement('span');
-  valueEl.className = 'block truncate js_article_card_truncate';
+  const plainTextValue = isHtml
+    ? value.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+    : String(value).replace(/\s+/g, ' ').trim();
+  const shouldTruncate = plainTextValue.length > 140;
+
+  valueEl.className = shouldTruncate
+    ? 'block truncate js_article_card_truncate'
+    : 'block break-words';
 
   if (isHtml) {
     valueEl.innerHTML = value;
@@ -1204,6 +1211,7 @@ function getGroupedArticleMetadata(record) {
 
     if (items.length) {
       groups.push({
+        id: group.id,
         label: group.label,
         items
       });
@@ -1223,10 +1231,12 @@ function getGroupedArticleMetadata(record) {
         isHtml: /<a\b|<ul\b|<li\b|<i\b|<em\b|<strong\b/i.test(formatted)
       };
     })
-    .filter(Boolean);
+    .filter(Boolean)
+    .sort((a, b) => a.label.localeCompare(b.label));
 
   if (otherItems.length) {
     groups.push({
+      id: 'other_metadata',
       label: 'Other metadata',
       items: otherItems
     });
@@ -1235,32 +1245,37 @@ function getGroupedArticleMetadata(record) {
   return groups;
 }
 
+function getArticleMetadataSectionClasses(groupId) {
+  return {
+    summary: groupId === 'other_metadata' ? 'bg-neutral-50/90' : 'bg-neutral-50/70',
+  };
+}
+
 function createArticleMetadataSection(group) {
+  const sectionClasses = getArticleMetadataSectionClasses(group.id);
   const section = document.createElement('details');
-  section.className = 'group rounded-md border border-neutral-200/70 bg-white/70 px-2.5 py-1.5';
+  section.className = 'group border-t border-neutral-200 first:border-t-0';
 
   const summary = document.createElement('summary');
-  summary.className = 'flex cursor-pointer list-none items-center justify-between gap-2 [&::-webkit-details-marker]:hidden';
+  summary.className = `flex cursor-pointer list-none items-center justify-between gap-3 py-2 [&::-webkit-details-marker]:hidden ${sectionClasses.summary}`;
 
   const heading = document.createElement('h5');
-  heading.className = 'm-0 text-xs font-semibold uppercase tracking-wide text-neutral-700';
+  heading.className = 'm-0 text-sm leading-none text-neutral-900';
   heading.textContent = group.label;
 
-  const meta = document.createElement('span');
-  meta.className = 'ml-auto text-xs leading-none text-neutral-700';
-  meta.textContent = `${group.items.length} field${group.items.length === 1 ? '' : 's'}`;
-
   const indicator = document.createElement('span');
-  indicator.className = 'w-3 text-center text-xs font-semibold leading-none text-neutral-700 transition-transform group-open:rotate-45';
-  indicator.textContent = '+';
+  indicator.className = 'w-4 text-center text-sm font-semibold leading-none text-neutral-700 transition-transform group-open:rotate-90';
+  indicator.textContent = '›';
 
   summary.appendChild(heading);
-  summary.appendChild(meta);
+  const spacer = document.createElement('span');
+  spacer.className = 'ml-auto';
+  summary.appendChild(spacer);
   summary.appendChild(indicator);
   section.appendChild(summary);
 
   const metadata = document.createElement('dl');
-  metadata.className = 'mt-1.5 grid grid-cols-1 gap-x-4 gap-y-0.5 border-t border-neutral-200/80 pt-1.5 sm:grid-cols-2 xl:grid-cols-3';
+  metadata.className = 'grid grid-cols-1 gap-x-4 divide-y divide-neutral-200/80 py-2';
 
   group.items.forEach((item) => {
     metadata.appendChild(createCompactArticleMetadataRow(item.key, item.label, item.value, item.isHtml));
@@ -1296,13 +1311,13 @@ function createArticleCard(record) {
     headerTop.className = 'mb-1.5 flex items-start justify-between gap-3';
 
     const dateText = document.createElement('p');
-    dateText.className = 'text-xs font-semibold uppercase tracking-wide text-neutral-700';
+    dateText.className = 'text-xs font-medium uppercase tracking-wide text-neutral-700';
     dateText.textContent = publishedDate || '';
     headerTop.appendChild(dateText);
 
     if (citedByCount) {
       const citedBy = document.createElement('p');
-      citedBy.className = 'whitespace-nowrap text-xs font-semibold text-neutral-800';
+      citedBy.className = 'whitespace-nowrap text-xs font-medium text-neutral-800';
       citedBy.textContent = `${getArticleFieldLabel('cited_by_count')}: ${citedByCount}`;
       headerTop.appendChild(citedBy);
     }
@@ -1320,7 +1335,7 @@ function createArticleCard(record) {
     titleLink.href = `https://doi.org/${record.DOI}`;
     titleLink.target = '_blank';
     titleLink.rel = 'noopener noreferrer';
-    titleLink.className = 'text-neutral-900 underline underline-offset-2 decoration-1 hover:text-neutral-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm';
+    titleLink.className = 'text-neutral-900 decoration-1 hover:text-carnation-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm';
     titleLink.innerHTML = title;
     titleEl.appendChild(titleLink);
   } else {
@@ -1349,14 +1364,14 @@ function createArticleCard(record) {
   if (publisher) {
     const publisherEl = document.createElement('span');
     publisherEl.className = 'inline-flex items-center gap-1';
-    publisherEl.innerHTML = `<span class="text-neutral-700">Publisher</span><span class="font-medium text-neutral-900">${publisher}</span>`;
+    publisherEl.innerHTML = `<span class="text-neutral-700">Publisher</span><span class="text-neutral-900">${publisher}</span>`;
     secondary.appendChild(publisherEl);
   }
 
   if (journal) {
     const journalEl = document.createElement('span');
     journalEl.className = 'inline-flex items-center gap-1';
-    journalEl.innerHTML = `<span class="text-neutral-700">Journal</span><span class="font-medium text-neutral-900">${journal}</span>`;
+    journalEl.innerHTML = `<span class="text-neutral-700">Journal</span><span class="text-neutral-900">${journal}</span>`;
     secondary.appendChild(journalEl);
   }
 
@@ -1367,11 +1382,11 @@ function createArticleCard(record) {
 
   const identifiers = [
     publishedYear ? `Year: ${publishedYear}` : null,
+    pmid ? `PMID: ${pmid}` : null,
+    pmcid ? `PMCID: ${pmcid}` : null,
     volume ? `Volume: ${volume}` : null,
     issue ? `Issue: ${issue}` : null,
     issn ? `ISSN: ${issn}` : null,
-    pmid ? `PMID: ${pmid}` : null,
-    pmcid ? `PMCID: ${pmcid}` : null
   ].filter(Boolean);
 
   if (identifiers.length) {
@@ -1386,9 +1401,14 @@ function createArticleCard(record) {
   const body = document.createElement('div');
   body.className = 'space-y-1 bg-neutral-50/50 px-3 py-2';
 
+  const sections = document.createElement('div');
+  sections.className = 'flex flex-col';
+
   getGroupedArticleMetadata(record).forEach((group) => {
-    body.appendChild(createArticleMetadataSection(group));
+    sections.appendChild(createArticleMetadataSection(group));
   });
+
+  body.appendChild(sections);
 
   article.appendChild(body);
   return article;
