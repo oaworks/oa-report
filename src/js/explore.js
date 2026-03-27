@@ -569,32 +569,29 @@ function addRecordsShownSelectToDOM() {
 }
 
 function addArticleViewToggleToDOM() {
-  const container = document.getElementById("explore_article_view_toggle");
-  if (!container) return;
+  const params = getAllURLParams();
+  if (params.article_view === 'table' || params.article_view === 'cards') {
+    currentActiveArticleViewMode = params.article_view;
+  }
 
-  container.innerHTML = "";
-
-  [
-    { id: "cards", label: "Cards" },
-    { id: "table", label: "Table" }
-  ].forEach(({ id, label }) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.id = `explore_article_view_${id}`;
-    button.dataset.viewMode = id;
-    button.className = `${SEGMENTED_PILL_CLASSES.base} ${currentActiveArticleViewMode === id ? SEGMENTED_PILL_CLASSES.active : SEGMENTED_PILL_CLASSES.inactive}`;
-    button.setAttribute("aria-pressed", currentActiveArticleViewMode === id ? "true" : "false");
-    button.textContent = label;
-    container.appendChild(button);
-  });
+  updateArticleViewToggleState();
 }
 
 function updateArticleViewToggleState() {
-  document.querySelectorAll('#explore_article_view_toggle [data-view-mode]').forEach((button) => {
-    const isActive = button.dataset.viewMode === currentActiveArticleViewMode;
-    button.className = `${SEGMENTED_PILL_CLASSES.base} ${isActive ? SEGMENTED_PILL_CLASSES.active : SEGMENTED_PILL_CLASSES.inactive}`;
-    button.setAttribute("aria-pressed", isActive ? "true" : "false");
-  });
+  const toggleButton = document.getElementById('toggle-article-view');
+  if (!toggleButton) return;
+
+  const toggleBg = toggleButton.querySelector('span.pointer-events-none');
+  const toggleDot = toggleButton.querySelector('span.translate-x-100, span.translate-x-5');
+  const isCards = currentActiveArticleViewMode === 'cards';
+
+  toggleButton.setAttribute('aria-checked', isCards ? 'true' : 'false');
+  if (!toggleBg || !toggleDot) return;
+
+  toggleBg.classList.toggle('bg-carnation-500', isCards);
+  toggleBg.classList.toggle('bg-neutral-200', !isCards);
+  toggleDot.classList.toggle('translate-x-100', isCards);
+  toggleDot.classList.toggle('translate-x-5', !isCards);
 }
 
 /**
@@ -2519,19 +2516,14 @@ function handleDataDisplayToggle() {
 }
 
 function handleArticleViewToggle() {
-  const container = document.getElementById('explore_article_view_toggle');
-  if (!container) return;
+  const toggleButton = document.getElementById('toggle-article-view');
+  if (!toggleButton || toggleButton.dataset.bound === 'true') return;
 
-  container.addEventListener('click', async (event) => {
-    const button = event.target.closest('[data-view-mode]');
-    if (!button) return;
-
-    const nextMode = button.dataset.viewMode;
-    if (!nextMode || nextMode === currentActiveArticleViewMode) return;
-
-    currentActiveArticleViewMode = nextMode;
+  toggleButton.addEventListener('click', async () => {
+    currentActiveArticleViewMode = currentActiveArticleViewMode === 'cards' ? 'table' : 'cards';
     updateArticleViewToggleState();
-    announce(`Explore article view: ${nextMode === "cards" ? "Cards" : "Table"}.`);
+    updateURLParams({ article_view: currentActiveArticleViewMode });
+    announce(`Explore article view: ${currentActiveArticleViewMode === "cards" ? "Cards" : "Table"}.`);
 
     if (currentActiveExploreItemData?.type === 'articles') {
       toggleLoadingIndicator(true, 'explore_loading');
@@ -2543,6 +2535,8 @@ function handleArticleViewToggle() {
       toggleLoadingIndicator(false, 'explore_loading');
     }
   });
+
+  toggleButton.dataset.bound = 'true';
 }
 
 /**
