@@ -40,26 +40,34 @@ module.exports = {
         800: 'rgb(153, 44, 44)',
         900: 'rgb(128, 35, 35)', // Deepest shade for text or strong accents
       },
-      // Accent colours
-      'yellow': {
-        DEFAULT: 'rgb(255, 199, 44)',
-        light: 'rgb(255, 231, 161)',
-      },
-      'green': {
-        DEFAULT: 'rgb(44, 165, 141)',
-        light: 'rgb(168, 215, 197)',
-      },
-      'blue': {
-        DEFAULT: 'rgb(56, 120, 255)',
-        light: 'rgb(184, 213, 255)', 
-      },
-      'purple': {
-        DEFAULT: 'rgb(125, 77, 211)',
-        light: 'rgb(216, 191, 247)',
-      },
-      'peach': {
-        DEFAULT: 'rgb(248, 177, 149)',
-        light: 'rgb(255, 226, 213)',
+      'oa': {
+        gold: {
+          DEFAULT: 'rgb(255, 209, 92)',
+          border: 'rgb(196, 148, 28)',
+        },
+        green: {
+          DEFAULT: 'rgb(92, 194, 169)',
+          border: 'rgb(30, 129, 108)',
+        },
+        closed: {
+          DEFAULT: 'rgb(46, 46, 47)',
+          border: 'rgb(26, 26, 27)',
+        },
+        bronze: {
+          DEFAULT: 'rgb(205, 127, 50)',
+          border: 'rgb(154, 89, 26)',
+        },
+        diamond: {
+          DEFAULT: 'rgb(187, 232, 240)',
+          border: 'rgb(108, 191, 204)',
+        },
+        hybrid: {
+          border: 'rgb(26, 26, 27)',
+        },
+        transformative: {
+          DEFAULT: 'rgb(255, 209, 92)',
+          border: 'rgb(26, 26, 27)',
+        },
       },
       'neutral': {
         50:  'rgb(249, 249, 250)',
@@ -76,7 +84,32 @@ module.exports = {
     },
   },
   plugins: [
-    plugin(function ({ matchUtilities, theme }) {
+    plugin(function ({ addUtilities, matchUtilities, theme }) {
+      addUtilities({
+        '.bg-oa-hybrid': {
+          backgroundImage: `linear-gradient(
+            90deg,
+            ${theme('colors.oa.closed.DEFAULT')} 0%,
+            ${theme('colors.oa.closed.DEFAULT')} 50%,
+            ${theme('colors.white')} 50%,
+            ${theme('colors.white')} 100%
+          )`,
+        },
+        '.bg-oa-transformative': {
+          backgroundImage: `linear-gradient(
+            90deg,
+            ${theme('colors.oa.closed.DEFAULT')} 0%,
+            ${theme('colors.oa.closed.DEFAULT')} 25%,
+            rgb(96, 74, 44) 25%,
+            rgb(96, 74, 44) 50%,
+            rgb(170, 112, 40) 50%,
+            rgb(170, 112, 40) 75%,
+            ${theme('colors.oa.transformative.DEFAULT')} 75%,
+            ${theme('colors.oa.transformative.DEFAULT')} 100%
+          )`,
+        },
+      });
+
       // Flatten the theme colours and ignore `DEFAULT`
       const flattenColours = (colors, prefix = '') =>
         Object.entries(colors).reduce((acc, [key, value]) => {
