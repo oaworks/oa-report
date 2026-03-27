@@ -1151,34 +1151,139 @@ function formatArticleCardValue(value, key) {
   return String(value);
 }
 
+function isArticleStatusLikeField(key) {
+  const normalisedKey = normaliseFieldId(key);
+  const oaStatusKeys = new Set([
+    'journal_oa_type',
+    'article_oa_type',
+    'openalx.open_access.oa_status',
+    'oa_status'
+  ]);
+  const explicitStatusKeys = new Set([
+    'is_compliant',
+    'is_covered_by_policy',
+    'is_compliant_with_current_policy',
+    'is_covered_by_current_policy',
+    'is_compliant_with_old_policy',
+    'is_covered_by_old_policy',
+    'is_oa',
+    'has_repository_copy',
+    'has_oa_locations_embargoed',
+    'can_archive',
+    'is_original_research',
+    'is_preprint',
+    'has_preprint_copy',
+    'has_data_availability_statement',
+    'pmc_has_data_availability_statement',
+    'has_made_data',
+    'has_shared_data',
+    'has_open_data',
+    'has_made_code',
+    'has_shared_code',
+    'has_open_code',
+    'is_new',
+    'has_ppmi_mention',
+    'has_ppmi_biospecimen_use'
+  ]);
+
+  return oaStatusKeys.has(normalisedKey)
+    || explicitStatusKeys.has(normalisedKey);
+}
+
 function createCompactArticleMetadataRow(key, label, value, isHtml = false) {
   const row = document.createElement('div');
   row.className = 'min-w-0 py-1';
 
-  const dt = document.createElement('dt');
-  dt.className = 'mb-0.5 text-xs font-medium tracking-wide text-neutral-700';
-  dt.innerHTML = label;
-
-  const dd = document.createElement('dd');
-  dd.className = 'min-w-0 text-sm leading-5 text-neutral-900';
-
-  const valueEl = document.createElement('span');
   const plainTextValue = isHtml
     ? value.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
     : String(value).replace(/\s+/g, ' ').trim();
-  const shouldTruncate = plainTextValue.length > 140;
+  const normalisedKey = normaliseFieldId(key);
+  const booleanTokens = plainTextValue
+    .split(/\s*[;,]\s*/)
+    .map((token) => token.trim().toLowerCase())
+    .filter(Boolean);
+  const isBlankValue = plainTextValue.length === 0;
+  const isBooleanLike = booleanTokens.length > 0
+    && booleanTokens.every((token) => token === 'true' || token === 'false');
+  const isOaTypeLike = ['journal_oa_type', 'article_oa_type', 'openalx.open_access.oa_status', 'oa_status']
+    .includes(normalisedKey);
+  const isSingleWordValue = !isHtml && !plainTextValue.includes(' ') && !plainTextValue.includes(',') && plainTextValue.length <= 28;
+  const shouldInline = isBlankValue || isBooleanLike || isOaTypeLike || isSingleWordValue;
 
-  valueEl.className = shouldTruncate
-    ? 'block truncate js_article_card_truncate'
-    : 'block break-words';
-
-  if (isHtml) {
-    valueEl.innerHTML = value;
-  } else {
-    valueEl.textContent = value;
+  if (shouldInline) {
+    row.className = 'flex min-w-0 items-center justify-between gap-3 py-1';
   }
 
-  valueEl.dataset.fullContent = valueEl.textContent.replace(/\s+/g, ' ').trim();
+  const dt = document.createElement('dt');
+  dt.className = shouldInline
+    ? 'min-w-0 text-xs font-medium tracking-wide text-neutral-700'
+    : 'mb-0.5 text-xs font-medium tracking-wide text-neutral-700';
+  dt.innerHTML = label;
+
+  const dd = document.createElement('dd');
+  dd.className = shouldInline
+    ? 'shrink-0 text-sm leading-5 text-neutral-900 text-right'
+    : 'min-w-0 text-sm leading-5 text-neutral-900';
+
+  const valueEl = document.createElement('span');
+  const shouldTruncate = plainTextValue.length > 140;
+
+  if (isBlankValue) {
+    valueEl.className = 'inline-flex items-center justify-end js_article_card_tooltip';
+    valueEl.innerHTML = `
+      <span aria-hidden="true" class="inline-flex h-5 w-5 items-center justify-center rounded-full border border-neutral-400 bg-neutral-100 text-neutral-600 text-xs font-medium">
+        –
+      </span>
+      <span class="sr-only">No value provided</span>
+    `;
+  } else if (isBooleanLike) {
+    const hasTrue = booleanTokens.includes('true');
+    const hasFalse = booleanTokens.includes('false');
+    const isMixedBoolean = hasTrue && hasFalse;
+    valueEl.className = 'inline-flex items-center justify-end js_article_card_tooltip';
+    valueEl.innerHTML = `
+      <span aria-hidden="true" class="inline-flex h-5 w-5 items-center justify-center rounded-full border ${
+        isMixedBoolean
+          ? 'bg-[linear-gradient(90deg,rgb(92,194,169)_0%,rgb(92,194,169)_50%,rgb(249,207,207)_50%,rgb(249,207,207)_100%)] border-neutral-700 text-neutral-900'
+          : hasTrue
+            ? 'border-oa-green-border bg-oa-green text-neutral-900'
+            : 'border-carnation-500 bg-carnation-200 text-carnation-900'
+      } text-xs font-medium">
+        ${isMixedBoolean ? '↔' : hasTrue ? '✓' : '×'}
+      </span>
+      <span class="sr-only">${isMixedBoolean ? 'mixed true and false values' : plainTextValue.toLowerCase()}</span>
+    `;
+  } else if (isOaTypeLike) {
+    const oaType = plainTextValue.toLowerCase();
+    const oaDotClasses = {
+      gold: 'bg-oa-gold border-oa-gold-border',
+      hybrid: 'bg-oa-hybrid border-oa-hybrid-border',
+      closed: 'bg-oa-closed border-oa-closed-border',
+      diamond: 'bg-oa-diamond border-oa-diamond-border',
+      green: 'bg-oa-green border-oa-green-border',
+      bronze: 'bg-oa-bronze border-oa-bronze-border',
+      transformative: 'bg-oa-transformative border-oa-transformative-border'
+    };
+    const dotClass = oaDotClasses[oaType] || 'bg-neutral-300 border-neutral-300';
+    const displayValue = oaType ? `${oaType.charAt(0).toUpperCase()}${oaType.slice(1)}` : plainTextValue;
+    valueEl.className = 'inline-flex items-center justify-end gap-2 js_article_card_tooltip';
+    valueEl.innerHTML = `
+      <span>${displayValue}</span>
+      <span aria-hidden="true" class="inline-flex h-5 w-5 shrink-0 rounded-full border ${dotClass}"></span>
+    `;
+  } else {
+    valueEl.className = shouldTruncate
+      ? 'block truncate js_article_card_truncate'
+      : 'block break-words';
+
+    if (isHtml) {
+      valueEl.innerHTML = value;
+    } else {
+      valueEl.textContent = value;
+    }
+  }
+
+  valueEl.dataset.fullContent = isBlankValue ? 'No value provided' : plainTextValue;
   dd.appendChild(valueEl);
 
   row.appendChild(dt);
@@ -1216,13 +1321,13 @@ function getGroupedArticleMetadata(record) {
       if (skipKeys.has(normaliseFieldId(actualKey)) || !(actualKey in record)) return;
 
       const formatted = formatArticleCardValue(record[actualKey], actualKey);
-      if (!formatted) return;
+      if (!formatted && !isArticleStatusLikeField(actualKey)) return;
 
       usedKeys.add(actualKey);
       items.push({
         key: actualKey,
         label: getArticleFieldLabel(actualKey),
-        value: formatted,
+        value: formatted || '',
         isHtml: /<a\b|<ul\b|<li\b|<i\b|<em\b|<strong\b/i.test(formatted)
       });
     });
@@ -1240,12 +1345,12 @@ function getGroupedArticleMetadata(record) {
     .filter(([key]) => !skipKeys.has(normaliseFieldId(key)) && !usedKeys.has(key))
     .map(([key, rawValue]) => {
       const formatted = formatArticleCardValue(rawValue, key);
-      if (!formatted) return null;
+      if (!formatted && !isArticleStatusLikeField(key)) return null;
 
       return {
         key,
         label: getArticleFieldLabel(key),
-        value: formatted,
+        value: formatted || '',
         isHtml: /<a\b|<ul\b|<li\b|<i\b|<em\b|<strong\b/i.test(formatted)
       };
     })
@@ -1274,12 +1379,12 @@ function getArticleGroupItems(record, group, skipKeys = new Set()) {
     if (skipKeys.has(normaliseFieldId(actualKey)) || !(actualKey in record)) return;
 
     const formatted = formatArticleCardValue(record[actualKey], actualKey);
-    if (!formatted) return;
+    if (!formatted && !isArticleStatusLikeField(actualKey)) return;
 
     items.push({
       key: actualKey,
       label: getArticleFieldLabel(actualKey),
-      value: formatted,
+      value: formatted || '',
       isHtml: /<a\b|<ul\b|<li\b|<i\b|<em\b|<strong\b/i.test(formatted)
     });
   });
@@ -1299,12 +1404,12 @@ function getGroupedArticleTableData(record) {
     .filter(([key]) => !usedKeys.has(key))
     .map(([key, rawValue]) => {
       const formatted = formatArticleCardValue(rawValue, key);
-      if (!formatted) return null;
+      if (!formatted && !isArticleStatusLikeField(key)) return null;
 
       return {
         key,
         label: getArticleFieldLabel(key),
-        value: formatted,
+        value: formatted || '',
         isHtml: /<a\b|<ul\b|<li\b|<i\b|<em\b|<strong\b/i.test(formatted)
       };
     })
@@ -1803,8 +1908,9 @@ function setExploreDataLayout(type) {
 }
 
 function enableArticleCardTooltips() {
-  document.querySelectorAll('#explore_cards_list .js_article_card_truncate').forEach((element) => {
+  document.querySelectorAll('#explore .js_article_card_truncate, #explore .js_article_card_tooltip').forEach((element) => {
     if (element._tooltip) return;
+    const isAlwaysTooltip = element.classList.contains('js_article_card_tooltip');
 
     createTooltip(element, element.dataset.fullContent || element.textContent, {
       aria: {
@@ -1817,6 +1923,11 @@ function enableArticleCardTooltips() {
       hideOnClick: false,
       theme: 'tooltip-white',
       onShow(instance) {
+        if (isAlwaysTooltip) {
+          instance.setContent(element.dataset.fullContent || element.textContent);
+          return true;
+        }
+
         if (element.offsetWidth < element.scrollWidth) {
           instance.setContent(element.dataset.fullContent || element.textContent);
           return true;
