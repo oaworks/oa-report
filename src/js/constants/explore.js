@@ -1008,44 +1008,7 @@ export const ARTICLE_CARD_GROUPS = [
       "best_oa_location_url_status_code",
       "can_archive",
       "version",
-      "is_original_research"
-    ]
-  },
-  {
-    id: "licences_versions_and_relationships",
-    label: "Licences, versions, and repository/preprint relationships",
-    fields: [
-      "publisher_license_best",
-      "publisher_license",
-      "repository_license_best",
-      "repository_license",
-      "repository_version",
-      "repository_url",
-      "is_preprint",
-      "has_preprint_copy",
-      "preprint_doi",
-      "preprint_license",
-      "relation.is-same-as.id",
-      "relation.is-version-of.id",
-      "relation.has-version.id"
-    ]
-  },
-  {
-    id: "discovery_and_subject_metadata",
-    label: "Discovery and subject metadata",
-    fields: [
-      "concepts.display_name",
-      "subject",
-      "keywords",
-      "chemical_names",
-      "mesh_terms",
-      "pubtype"
-    ]
-  },
-  {
-    id: "data_and_code_availability",
-    label: "Data and code availability",
-    fields: [
+      "is_original_research",
       "has_data_availability_statement",
       "data_availability_statement",
       "pmc_has_data_availability_statement",
@@ -1079,9 +1042,34 @@ export const ARTICLE_CARD_GROUPS = [
     ]
   },
   {
-    id: "operational_reporting_fields",
-    label: "Operational / reporting fields",
+    id: "licences_versions_and_relationships",
+    label: "Licences, versions, and repository/preprint relationships",
     fields: [
+      "publisher_license_best",
+      "publisher_license",
+      "repository_license_best",
+      "repository_license",
+      "repository_version",
+      "repository_url",
+      "is_preprint",
+      "has_preprint_copy",
+      "preprint_doi",
+      "preprint_license",
+      "relation.is-same-as.id",
+      "relation.is-version-of.id",
+      "relation.has-version.id"
+    ]
+  },
+  {
+    id: "discovery_and_subject_metadata",
+    label: "Discovery & impact",
+    fields: [
+      "concepts.display_name",
+      "subject",
+      "keywords",
+      "chemical_names",
+      "mesh_terms",
+      "pubtype",
       "cited_by_count",
       "apc_cost",
       "invoice_date",
@@ -1094,3 +1082,12 @@ export const ARTICLE_CARD_GROUPS = [
     ]
   }
 ];
+
+export const ARTICLE_TABLE_VISIBLE_FIELDS = {
+  core_bibliographic_metadata: ["DOI", "title", "publisher", "journal", "published_date"],
+  people_institutions_and_funding: ["authorships.author.display_name", "authorships.institutions.display_name", "funder.name"],
+  oa_status_and_policy_compliance: ["is_oa", "openalx.open_access.oa_status", "journal_oa_type", "has_repository_copy"],
+  licences_versions_and_relationships: ["publisher_license_best", "repository_license_best", "repository_version"],
+  discovery_and_subject_metadata: ["concepts.display_name", "cited_by_count"],
+  other_metadata: []
+};

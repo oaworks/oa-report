@@ -8,7 +8,7 @@
 // =================================================
 
 import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, normaliseFieldId, makeNumberReadable, announce } from "./utils.js";
-import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, ARTICLE_CARD_GROUPS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, FILTER_PILL_CLASSES, SEGMENTED_PILL_CLASSES } from "./constants.js";
+import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, ARTICLE_CARD_GROUPS, ARTICLE_TABLE_VISIBLE_FIELDS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, FILTER_PILL_CLASSES, SEGMENTED_PILL_CLASSES } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
@@ -101,12 +101,6 @@ let exploreItemDataById = new Map();
 const FILTER_TARGET_BUTTON_CLASS = 'js-filter-target cursor-pointer hover:underline text-left focus:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm';
 const EXTERNAL_LINK_PILL_CLASS = 'ml-2 bg-neutral-200 text-neutral-900 text-xs px-2 py-0.5 rounded-full whitespace-nowrap hover:bg-carnation-200 js-external-pill';
 
-/**
- * Tracks currently selected row keys for use in enableExploreRowHighlighting.
- * @global
- * @type {Array<string>}
- */
-let selectedRowKeys = [];
 let exploreArticleDrawerInit = false;
 let activeArticleDrawerTrigger = null;
 
@@ -197,7 +191,6 @@ export async function initDataExplore(org) {
       handleDataDisplayToggle();
       addArticleViewToggleToDOM();
       handleArticleViewToggle();
-      enableExploreRowHighlighting();
       copyToClipboard('explore_copy_clipboard', 'explore_table');
     } else {
       displayNone("explore"); // Hide the explore section if no data is available
@@ -662,8 +655,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
         if (currentActiveArticleViewMode === "cards") {
           renderArticleCards(records);
         } else {
-          populateTableHeader(records[0], 'export_table_head', type);
-          populateTableBody(records, 'export_table_body', id, type);
+          renderGroupedArticleTable(records);
           enableExploreTableScroll();
           enableTooltipsForTruncatedCells();
         }
@@ -1047,9 +1039,6 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
   tableBody.innerHTML = '';
   tableFooter.innerHTML = '';
 
-  // Clear any highlighted rows if user has already interacted with the table
-  clearRowHighlights();
-
   // Separate the 'all_values' record from other records
   const allValuesRecord = data.find(record => record.key === 'all_values');
   const otherRecords = data.filter(record => record.key !== 'all_values');
@@ -1103,18 +1092,6 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
     appendRow(tableFooter, allValuesRecord, 'foot');
   }
 
-  // Highlight the selected rows if they exist in the new data
-  if (selectedRowKeys.length > 0) {
-    otherRecords.forEach((record, index) => {
-      if (selectedRowKeys.includes(record.key)) {
-        const row = tableBody.children[index]; // Get the corresponding row
-        const secondCell = row.children[1]; // Get the second cell in the row
-        const rowCells = row.querySelectorAll('td');
-        rowCells.forEach(cell => cell.classList.add('!bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900'));
-        secondCell.classList.remove('bg-neutral-600');
-      }
-    });
-  }
 }
 
 /**
@@ -1284,6 +1261,229 @@ function getGroupedArticleMetadata(record) {
   }
 
   return groups;
+}
+
+function getArticleGroupItems(record, group, skipKeys = new Set()) {
+  const normalisedRecordKeys = new Map(
+    Object.keys(record).map((key) => [normaliseFieldId(key), key])
+  );
+  const items = [];
+
+  group.fields.forEach((field) => {
+    const actualKey = normalisedRecordKeys.get(normaliseFieldId(field)) || field;
+    if (skipKeys.has(normaliseFieldId(actualKey)) || !(actualKey in record)) return;
+
+    const formatted = formatArticleCardValue(record[actualKey], actualKey);
+    if (!formatted) return;
+
+    items.push({
+      key: actualKey,
+      label: getArticleFieldLabel(actualKey),
+      value: formatted,
+      isHtml: /<a\b|<ul\b|<li\b|<i\b|<em\b|<strong\b/i.test(formatted)
+    });
+  });
+
+  return items;
+}
+
+function getGroupedArticleTableData(record) {
+  const groups = ARTICLE_CARD_GROUPS.map((group) => ({
+    id: group.id,
+    label: group.label,
+    items: getArticleGroupItems(record, group)
+  })).filter((group) => group.items.length > 0);
+
+  const usedKeys = new Set(groups.flatMap((group) => group.items.map((item) => item.key)));
+  const otherItems = Object.entries(record)
+    .filter(([key]) => !usedKeys.has(key))
+    .map(([key, rawValue]) => {
+      const formatted = formatArticleCardValue(rawValue, key);
+      if (!formatted) return null;
+
+      return {
+        key,
+        label: getArticleFieldLabel(key),
+        value: formatted,
+        isHtml: /<a\b|<ul\b|<li\b|<i\b|<em\b|<strong\b/i.test(formatted)
+      };
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.label.localeCompare(b.label));
+
+  if (otherItems.length) {
+    groups.push({
+      id: 'other_metadata',
+      label: 'Other metadata',
+      items: otherItems
+    });
+  }
+
+  return groups;
+}
+
+function getVisibleArticleTableGroups(records) {
+  const visibleGroups = new Map();
+
+  records.forEach((record) => {
+    getGroupedArticleTableData(record).forEach((group) => {
+      if (!visibleGroups.has(group.id)) {
+        visibleGroups.set(group.id, {
+          id: group.id,
+          label: group.label
+        });
+      }
+    });
+  });
+
+  return visibleGroups;
+}
+
+function getVisibleArticleGroupItems(group) {
+  const preferredKeys = ARTICLE_TABLE_VISIBLE_FIELDS[group.id] || [];
+  if (!preferredKeys.length) {
+    return {
+      visibleItems: group.items.slice(0, 2),
+      hiddenCount: Math.max(0, group.items.length - 2)
+    };
+  }
+
+  const visibleKeys = new Set(preferredKeys.map((key) => normaliseFieldId(key)));
+  const visibleItems = group.items.filter((item) => visibleKeys.has(normaliseFieldId(item.key)));
+  const hiddenCount = Math.max(0, group.items.length - visibleItems.length);
+
+  return { visibleItems, hiddenCount };
+}
+
+function createArticleGroupedTableCell(record, group) {
+  const cell = document.createElement('td');
+  cell.className = group.id === 'core_bibliographic_metadata'
+    ? 'border-b border-neutral-200 sticky left-0 bg-neutral-100 p-2 w-[20rem] min-w-[20rem] align-top text-neutral-900'
+    : 'border-b border-neutral-200 p-2 w-[16rem] min-w-[16rem] align-top text-neutral-900';
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'space-y-2';
+
+  const { visibleItems, hiddenCount } = getVisibleArticleGroupItems(group);
+
+  visibleItems.forEach((item) => {
+    if (group.id === 'core_bibliographic_metadata' && item.key === 'title') {
+      const titleBlock = document.createElement('div');
+      titleBlock.className = 'space-y-1';
+
+      const titleHeading = document.createElement('h4');
+      titleHeading.className = 'm-0 text-sm font-medium leading-snug text-neutral-900';
+
+      const titleButton = document.createElement('button');
+      titleButton.type = 'button';
+      titleButton.className = 'text-left text-neutral-900 hover:text-carnation-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm';
+      titleButton.setAttribute('aria-haspopup', 'dialog');
+      titleButton.setAttribute('aria-controls', 'explore_article_drawer_panel');
+      titleButton.setAttribute('aria-label', `View details for ${String(item.value).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()}`);
+      titleButton.innerHTML = item.value;
+      titleButton.addEventListener('click', () => openArticleDrawer(record, titleButton));
+      titleHeading.appendChild(titleButton);
+      titleBlock.appendChild(titleHeading);
+      wrapper.appendChild(titleBlock);
+      return;
+    }
+
+    if (group.id === 'core_bibliographic_metadata' && item.key === 'DOI') {
+      const doiEl = document.createElement('div');
+      doiEl.className = 'text-xs text-neutral-800 break-all [&_a]:font-mono [&_a]:underline [&_a]:underline-offset-2';
+      doiEl.innerHTML = item.value;
+      wrapper.appendChild(doiEl);
+      return;
+    }
+
+    if (group.id === 'core_bibliographic_metadata' && item.key === 'publisher') {
+      const publisherEl = document.createElement('p');
+      publisherEl.className = 'm-0 text-sm text-neutral-900';
+      publisherEl.innerHTML = item.value;
+      wrapper.appendChild(publisherEl);
+      return;
+    }
+
+    if (group.id === 'core_bibliographic_metadata' && item.key === 'journal') {
+      const journalEl = document.createElement('p');
+      journalEl.className = 'm-0 text-sm text-neutral-800';
+      journalEl.innerHTML = item.value;
+      wrapper.appendChild(journalEl);
+      return;
+    }
+
+    if (group.id === 'core_bibliographic_metadata' && ['published_date', 'published_year', 'issn', 'PMID', 'PMCID', 'volume', 'issue', 'subtitle'].includes(item.key)) {
+      const metaEl = document.createElement('p');
+      metaEl.className = 'm-0 text-xs text-neutral-700';
+      metaEl.innerHTML = item.value;
+      wrapper.appendChild(metaEl);
+      return;
+    }
+
+    wrapper.appendChild(createCompactArticleMetadataRow(item.key, item.label, item.value, item.isHtml));
+  });
+
+  if (hiddenCount > 0) {
+    const remainingItems = group.items.filter((item) => !visibleItems.includes(item));
+    const moreDetails = document.createElement('details');
+    moreDetails.className = 'pt-1';
+
+    const moreSummary = document.createElement('summary');
+    moreSummary.className = 'cursor-pointer text-xs font-medium text-neutral-700 underline underline-offset-2 hover:text-carnation-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm';
+    moreSummary.textContent = `+${hiddenCount} more`;
+    moreDetails.appendChild(moreSummary);
+
+    const moreContent = document.createElement('div');
+    moreContent.className = 'mt-2 space-y-2 border-t border-neutral-200 pt-2';
+
+    remainingItems.forEach((item) => {
+      moreContent.appendChild(createCompactArticleMetadataRow(item.key, item.label, item.value, item.isHtml));
+    });
+
+    moreDetails.appendChild(moreContent);
+    wrapper.appendChild(moreDetails);
+  }
+
+  cell.appendChild(wrapper);
+  return cell;
+}
+
+function renderGroupedArticleTable(records) {
+  const tableHeader = document.getElementById('export_table_head');
+  const tableBody = document.getElementById('export_table_body');
+  const tableFooter = document.getElementById('export_table_foot');
+  if (!tableHeader || !tableBody || !tableFooter) return;
+
+  tableHeader.innerHTML = '';
+  tableBody.innerHTML = '';
+  tableFooter.innerHTML = '';
+
+  const visibleGroups = Array.from(getVisibleArticleTableGroups(records).values());
+  const headerRow = document.createElement('tr');
+
+  visibleGroups.forEach((group, index) => {
+    const headerCell = document.createElement('th');
+    headerCell.className = index === 0
+      ? 'border-b border-neutral-700 sticky left-0 bg-neutral-900 px-2 py-3 w-[20rem] min-w-[20rem] align-bottom text-white text-left'
+      : 'border-b border-r border-b-neutral-700 border-r-neutral-700 bg-neutral-700 px-2 py-3 w-[16rem] min-w-[16rem] align-bottom text-white text-left';
+    headerCell.textContent = group.label;
+    headerRow.appendChild(headerCell);
+  });
+
+  tableHeader.appendChild(headerRow);
+
+  records.slice(0, currentActiveExploreItemSize).forEach((record) => {
+    const row = document.createElement('tr');
+    const groups = getGroupedArticleTableData(record);
+    const groupsById = new Map(groups.map((group) => [group.id, group]));
+
+    visibleGroups.forEach((group) => {
+      const resolvedGroup = groupsById.get(group.id) || { ...group, items: [] };
+      row.appendChild(createArticleGroupedTableCell(record, resolvedGroup));
+    });
+
+    tableBody.appendChild(row);
+  });
 }
 
 function createArticleDrawerSection(group) {
@@ -1946,42 +2146,6 @@ export async function displayDefaultArticlesData() {
 // =================================================
 // Interactive feature functions
 // =================================================
-
-/**
- * Enables row highlighting functionality for a table in the data exploration section.
- * Clicking on a cell in any row will highlight all cells in that row.
- */
-function enableExploreRowHighlighting() {
-  const tableBody = document.getElementById('export_table_body');
-
-  tableBody.addEventListener('click', function(event) {
-    if (event.target.tagName === 'TD') {
-      const rowCells = event.target.parentElement.querySelectorAll('td');
-      const firstCellContent = rowCells[0].textContent;
-      const secondCell = rowCells[1];
-      const isRowHighlighted = rowCells[0].classList.contains('!bg-neutral-200');
-
-      if (isRowHighlighted) {
-        rowCells.forEach(cell => cell.classList.remove('!bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900'));
-        secondCell.classList.add('bg-white');
-        selectedRowKeys = selectedRowKeys.filter(key => key !== firstCellContent); // Remove key from array for persistent active keys
-      } else {
-        rowCells.forEach(cell => cell.classList.add('!bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900'));
-        secondCell.classList.remove('bg-white');
-        selectedRowKeys.push(firstCellContent); // Add key to array for persistent active keys 
-      }
-    }
-  });
-}
-
-/**
- * Clears highlighted rows in the table.
- */
-function clearRowHighlights() {
-  document.querySelectorAll('.js_export_table_container td').forEach(cell => {
-    cell.classList.remove('!bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900');
-  });
-}
 
 /**
  * Enables horizontal scrolling functionality for the table in the data exploration section.
