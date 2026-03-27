@@ -1049,12 +1049,12 @@ export const ARTICLE_CARD_GROUPS = [
       "publisher_license",
       "repository_license_best",
       "repository_license",
-      "repository_version",
-      "repository_url",
-      "is_preprint",
       "has_preprint_copy",
+      "is_preprint",
       "preprint_doi",
       "preprint_license",
+      "repository_url",
+      "repository_version",
       "relation.is-same-as.id",
       "relation.is-version-of.id",
       "relation.has-version.id"
@@ -1087,7 +1087,7 @@ export const ARTICLE_TABLE_VISIBLE_FIELDS = {
   core_bibliographic_metadata: ["DOI", "title", "publisher", "journal", "published_date"],
   people_institutions_and_funding: ["authorships.author.display_name", "authorships.institutions.display_name", "funder.name"],
   oa_status_and_policy_compliance: ["is_oa", "openalx.open_access.oa_status", "journal_oa_type", "has_repository_copy"],
-  licences_versions_and_relationships: ["publisher_license_best", "repository_license_best", "repository_version"],
+  licences_versions_and_relationships: ["publisher_license_best", "repository_license_best", "has_preprint_copy"],
   discovery_and_subject_metadata: ["concepts.display_name", "cited_by_count"],
   other_metadata: []
 };

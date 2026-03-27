@@ -1467,8 +1467,8 @@ function getVisibleArticleGroupItems(group) {
 function createArticleGroupedTableCell(record, group) {
   const cell = document.createElement('td');
   cell.className = group.id === 'core_bibliographic_metadata'
-    ? 'border-b border-neutral-200 sticky left-0 bg-neutral-100 p-2 w-[20rem] min-w-[20rem] align-top text-neutral-900'
-    : 'border-b border-neutral-200 p-2 w-[16rem] min-w-[16rem] align-top text-neutral-900';
+    ? 'border-b-[3px] border-b-neutral-800 border-r border-r-neutral-300 sticky left-0 bg-neutral-100 p-2 w-[20rem] min-w-[20rem] align-top text-neutral-900'
+    : 'border-b-[3px] border-b-neutral-800 border-r border-r-neutral-300 p-2 w-[16rem] min-w-[16rem] align-top text-neutral-900';
 
   const wrapper = document.createElement('div');
   wrapper.className = 'space-y-2';
