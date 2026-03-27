@@ -1442,6 +1442,13 @@ function getVisibleArticleTableGroups(records) {
 }
 
 function getVisibleArticleGroupItems(group) {
+  if (group.items.length <= 2) {
+    return {
+      visibleItems: group.items,
+      hiddenCount: 0
+    };
+  }
+
   const preferredKeys = ARTICLE_TABLE_VISIBLE_FIELDS[group.id] || [];
   if (!preferredKeys.length) {
     return {
