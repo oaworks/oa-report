@@ -407,17 +407,18 @@ async function addExploreFiltersToDOM(query) {
   const exploreFiltersElement = document.getElementById("explore_filters");
   exploreFiltersElement.innerHTML = ""; // Clear existing radio buttons
   const filters = parseCommaSeparatedQueries(query); // Parse the query string into an array of filters
+  const visibleFilters = loggedIn ? filters : filters.slice(0, 1); // Logged-out users only see the default filter.
 
   // Check if the currentActiveExploreItemQuery is in the new set of filters
-  let currentFilterExists = filters.some(filter => filter.id === currentActiveExploreItemQuery);
+  let currentFilterExists = visibleFilters.some(filter => filter.id === currentActiveExploreItemQuery);
 
   // If currentActiveExploreItemQuery does not exist in the new set, reset it to the first filter
-  if (!currentFilterExists && filters.length > 0) {
-    currentActiveExploreItemQuery = filters[0].id;
+  if (!currentFilterExists && visibleFilters.length > 0) {
+    currentActiveExploreItemQuery = visibleFilters[0].id;
   }
   
  // Create radio buttons for each filter and append them to the DOM
-  filters.forEach((filter, index) => {
+  visibleFilters.forEach((filter) => {
     const radioButton = createExploreFilterRadioButton(filter.id, filter.id === currentActiveExploreItemQuery);
     exploreFiltersElement.appendChild(radioButton);
   });
