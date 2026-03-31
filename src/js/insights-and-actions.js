@@ -173,8 +173,8 @@ function renderActionTabs(strategy = {}) {
   const tabsContainer = document.getElementById("actions_buttons");
   if (!tabsContainer) return;
   const actionsTabLink = document.getElementById("section-tab-actions");
-  const actionsAnchor = document.getElementById("actions");
-  const actionsSection = actionsAnchor?.nextElementSibling;
+  const actionsAnchor = document.getElementById("actions-anchor");
+  const actionsSection = document.getElementById("actions");
 
   const visibleActions = Object.entries(strategy)
     .filter(([, config]) => config?.show_on_web === true)
