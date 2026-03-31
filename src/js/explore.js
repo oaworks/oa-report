@@ -219,9 +219,9 @@ async function addExploreButtonsToDOM(exploreData) {
   const seeMoreListItem = document.getElementById('explore_see_more_item');
   const seeMoreButton = seeMoreListItem?.querySelector('button');
 
-  // Only show 'articles' Explore list when logged out
+  // Logged-out users only see the public article AND preprint breakdowns.
   if (!loggedIn) {
-    exploreData = exploreData.filter(item => item.id === 'articles');
+    exploreData = exploreData.filter(item => item.id === 'articles' || item.id === 'preprint');
   }
 
   for (const exploreDataItem of exploreData) {
