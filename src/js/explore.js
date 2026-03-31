@@ -240,8 +240,8 @@ async function addExploreButtonsToDOM(exploreData) {
     }
   }
 
-  // Hide 'See More/Fewer' button if only the 'articles' button is present
-  if (exploreData.length <= 1) {
+  // Hide 'See More/Fewer' when there is nothing extra to reveal.
+  if (!loggedIn || exploreData.length <= 1) {
     if (seeMoreListItem) {
       seeMoreListItem.style.display = 'none';
     } else {
