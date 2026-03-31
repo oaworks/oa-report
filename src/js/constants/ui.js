@@ -51,7 +51,7 @@ export const DATA_TABLE_BODY_CLASSES = {
 export const DATA_TABLE_FOOT_CLASSES = {
   terms: {
     firstCol: "border-b border-neutral-300 sticky left-0 bg-neutral-200 p-2 w-32 md:w-60 text-left text-neutral-900",
-    secondCol: "border-b border-neutral-300 sticky left-32 md:left-60 bg-neutral-100 p-2 w-24 md:w-32 whitespace-nowrap truncate text-neutral-900",
+    secondCol: "border-b border-neutral-300 sticky left-32 md:left-60 bg-neutral-200 p-2 w-24 md:w-32 whitespace-nowrap truncate text-neutral-900",
     otherCols: "border-b border-neutral-300 p-2 whitespace-nowrap truncate text-neutral-900 hover:bg-neutral-100"
   },
   articles: {
