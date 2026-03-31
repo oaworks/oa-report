@@ -405,9 +405,15 @@ export async function processExploreDataTable(button, itemData) {
  */
 async function addExploreFiltersToDOM(query) {
   const exploreFiltersElement = document.getElementById("explore_filters");
+  const exploreFilterField = document.getElementById("explore_filter_field");
   exploreFiltersElement.innerHTML = ""; // Clear existing radio buttons
   const filters = parseCommaSeparatedQueries(query); // Parse the query string into an array of filters
   const visibleFilters = loggedIn ? filters : filters.slice(0, 1); // Logged-out users only see the default filter.
+
+  // Only display list of filters when logged in and there is more than one
+  if (exploreFilterField) {
+    exploreFilterField.style.display = loggedIn && visibleFilters.length > 0 ? "" : "none";
+  }
 
   // Check if the currentActiveExploreItemQuery is in the new set of filters
   let currentFilterExists = visibleFilters.some(filter => filter.id === currentActiveExploreItemQuery);
