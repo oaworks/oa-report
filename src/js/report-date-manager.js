@@ -9,7 +9,7 @@
 // =================================================
 
 import { DATE_SELECTION_BUTTON_CLASSES } from './constants.js';
-import { createDate, replaceDateRange, initDropdown, getAllURLParams, updateURLParams, dateRange, getURLParam, createPopoverKeyboardFlow, makeDateReadable, announce } from './utils.js';
+import { createDate, replaceDateRange, initDropdown, getAllURLParams, updateURLParams, removeURLParams, dateRange, getURLParam, createPopoverKeyboardFlow, makeDateReadable, announce } from './utils.js';
 import { initInsightsAndActions } from './insights-and-actions.js';
 import { currentActiveExploreItemButton, currentActiveExploreItemData, processExploreDataTable } from './explore.js';
 import { createPopover } from './tooltip-manager.js';
@@ -41,6 +41,8 @@ export const DEFAULT_YEAR_FREE = 2023;
  * @constant {number}
  */
 export const FIRST_YEAR = 2015;
+const ALL_TIME_RANGE_PARAM = 'all-time';
+const ALL_TIME_START_DATE = createDate(1980, 0, 1);
 
 // =================================================
 // Helpers
@@ -60,11 +62,37 @@ function isQuarterTwoOrLater() {
 // =================================================
 
 /**
- * Sets up the default year, depending on whether the user is a paid user or not.
+ * Resolves the initial report range from URL state or defaults.
+ *
+ * Precedence is:
+ * 1. `range=all-time`, which is treated as a live preset from 1980-01-01 to today.
+ * 2. Explicit `start` and `end` query params, which are treated as fixed shared/bookmarked ranges.
+ * 3. The app's normal default year logic, depending on report type and current date.
  */
 export function setDefaultYear() {
+  const rangeParam = getURLParam('range');
   const startParam = getURLParam('start');
   const endParam = getURLParam('end');
+
+  if (rangeParam === ALL_TIME_RANGE_PARAM) {
+    const startDate = ALL_TIME_START_DATE;
+    const endDate = new Date();
+    const allTimeButton = document.getElementById("all-time");
+    const dateRangeForm = document.getElementById("date_range_form");
+
+    if (dateRangeForm) {
+      document.getElementById('start-date').value = startDate.toISOString().split('T')[0];
+      document.getElementById('end-date').value = endDate.toISOString().split('T')[0];
+    }
+
+    if (allTimeButton) {
+      handleYearButtonLogic(allTimeButton, startDate, endDate);
+      updateYearButtonStyling(allTimeButton);
+    } else {
+      handleYearButtonLogic(null, startDate, endDate);
+    }
+    return;
+  }
 
   // Check if there’s a start and end date in the URL
   // TODO: handle start and end date parameters in a separate function and similar to how
@@ -149,11 +177,19 @@ export function setDefaultYear() {
  */
 export function initDateManager() {
   const params = getAllURLParams();
+  const range = params.range;
 
   // Process other parameters
   const start = params.start;
   const end = params.end;
-  if (start && end) {
+  if (range === ALL_TIME_RANGE_PARAM) {
+    const startDateInput = document.getElementById('start-date');
+    const endDateInput = document.getElementById('end-date');
+    if (startDateInput && endDateInput) {
+      startDateInput.value = ALL_TIME_START_DATE.toISOString().split('T')[0];
+      endDateInput.value = new Date().toISOString().split('T')[0];
+    }
+  } else if (start && end) {
     const startDate = new Date(start);
     const endDate = new Date(end);
 
@@ -319,6 +355,8 @@ function createDropdownItem(buttonId, buttonText, startDate, endDate, dropdownBu
   item.addEventListener("click", (event) => {
     event.preventDefault();
 
+    removeURLParams('range');
+
     // Update URL with the selected year
     updateURLParams({
       start: startDate.toISOString().split("T")[0],
@@ -346,12 +384,16 @@ function createDropdownItem(buttonId, buttonText, startDate, endDate, dropdownBu
 }
 
 /**
- * Creates a button element for year selection.
+ * Creates a date-range chip for fixed years or the semantic `All time` preset.
  * 
+ * For regular year chips, clicking writes explicit `start` and `end` params.
+ * For the `all-time` chip, clicking removes `start`/`end` and writes
+ * `range=all-time`, then computes the live end date at click time.
+ *
  * @param {string} buttonId - The ID to be assigned to the button.
  * @param {string} buttonText - The text to be displayed on the button.
- * @param {Date} startDate - The start date for the report.
- * @param {Date} endDate - The end date for the report.
+ * @param {Date} startDate - The default start date for the report.
+ * @param {Date} endDate - The default end date for the report.
  * @returns {HTMLElement} The created button element.
  */
 function createYearButton(buttonId, buttonText, startDate, endDate) {
@@ -365,16 +407,24 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
 
   // Add event listener
   button.addEventListener("click", function() {
+    const selectedStartDate = buttonId === "all-time" ? ALL_TIME_START_DATE : startDate;
+    const selectedEndDate = buttonId === "all-time" ? new Date() : endDate;
+
     // Reset the date range form when a year button is clicked
     document.getElementById('date_range_form').reset();
 
-    // Update URL with the selected year
-    updateURLParams({ 
-      'start': startDate.toISOString().split('T')[0], 
-      'end': endDate.toISOString().split('T')[0] 
-    });
+    if (buttonId === "all-time") {
+      removeURLParams(['start', 'end']);
+      updateURLParams({ range: ALL_TIME_RANGE_PARAM });
+    } else {
+      removeURLParams('range');
+      updateURLParams({ 
+        'start': selectedStartDate.toISOString().split('T')[0], 
+        'end': selectedEndDate.toISOString().split('T')[0] 
+      });
+    }
 
-    handleYearButtonLogic(button, startDate, endDate);
+    handleYearButtonLogic(button, selectedStartDate, selectedEndDate);
   });
 
   return button;
@@ -510,6 +560,7 @@ function createDateRangeForm() {
     }
 
     // Update URL with query parameters (YYYY-MM-DD via toISOString split as before)
+    removeURLParams('range');
     updateURLParams({
       start: startDate.toISOString().split("T")[0],
       end: endDate.toISOString().split("T")[0]
