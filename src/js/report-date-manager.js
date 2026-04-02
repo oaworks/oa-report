@@ -41,7 +41,7 @@ export const DEFAULT_YEAR_FREE = 2023;
  * @constant {number}
  */
 export const FIRST_YEAR = 2015;
-const ALL_TIME_RANGE_PARAM = 'all-time';
+const ALL_TIME_RANGE_PARAM = 'all';
 const ALL_TIME_START_DATE = createDate(1980, 0, 1);
 
 // =================================================
@@ -65,7 +65,7 @@ function isQuarterTwoOrLater() {
  * Resolves the initial report range from URL state or defaults.
  *
  * Precedence is:
- * 1. `range=all-time`, which is treated as a live preset from 1980-01-01 to today.
+ * 1. `range=all`, which is treated as a live preset from 1980-01-01 to today.
  * 2. Explicit `start` and `end` query params, which are treated as fixed shared/bookmarked ranges.
  * 3. The app's normal default year logic, depending on report type and current date.
  */
@@ -388,7 +388,7 @@ function createDropdownItem(buttonId, buttonText, startDate, endDate, dropdownBu
  * 
  * For regular year chips, clicking writes explicit `start` and `end` params.
  * For the `all-time` chip, clicking removes `start`/`end` and writes
- * `range=all-time`, then computes the live end date at click time.
+ * `range=all`, then computes the live end date at click time.
  *
  * @param {string} buttonId - The ID to be assigned to the button.
  * @param {string} buttonText - The text to be displayed on the button.
