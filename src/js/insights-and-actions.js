@@ -307,7 +307,8 @@ export function initInsightsAndActions(org) {
         card.numerator,
         card.denominator,
         card.denominatorText,
-        card.info
+        card.info,
+        card.details
       );
     });
 
@@ -319,9 +320,10 @@ export function initInsightsAndActions(org) {
      * @param {string|null} denominator - Optional analysis key used for the denominator.
      * @param {string} denominatorText - Human-readable denominator label.
      * @param {string} insightInfo - Explanatory tooltip copy for the card.
+     * @param {string} insightDetails - Optional methodology copy for the card.
      * @returns {void}
      */
-    function getInsight(numerator, denominator, denominatorText, insightInfo) {
+    function getInsight(numerator, denominator, denominatorText, insightInfo, insightDetails) {
       // Check if the data for this "numerator" (i.e. Insights data card) exists in orgData
       const analysisEntry = orgData.hits.hits[0]._source.analysis[numerator];
       if (!analysisEntry) return;
@@ -386,10 +388,12 @@ export function initInsightsAndActions(org) {
           const figureHtml = figureDetails
             ? `<div class="font-semibold text-neutral-900">${figureDetails.innerHTML}</div>`
             : "";
-          const infoHtml = insightInfo ? `<div class="space-y-2">${insightInfo}</div>` : "";
+          const infoHtml = insightInfo || "";
+          const detailsHtml = insightDetails || "";
           instance.setContent(buildTooltipContent({
             leadHtml: figureHtml,
-            helpHtml: infoHtml
+            helpHtml: infoHtml,
+            detailsHtml
           }));
         };
 

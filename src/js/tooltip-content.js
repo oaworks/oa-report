@@ -21,11 +21,13 @@ export function buildTooltipContent({
   detailsLabel = 'Methodology'
 } = {}) {
   const hasDetails = !!detailsHtml;
+  const hasLead = !!leadHtml;
+  const hasHelp = !!helpHtml;
 
   return `
-    <p class='${hasDetails ? "mb-2" : ""}'>${leadHtml}</p>
-    ${helpHtml ? `<p class='mb-2'>${helpHtml}</p>` : ""}
-    ${hasDetails ? `<details><summary class='hover:cursor-pointer'>${detailsLabel}</summary><p class='mt-2'>${detailsHtml}</p></details>` : ""}
+    ${hasLead ? `<div class='${hasDetails ? "mb-2" : ""}'>${leadHtml}</div>` : ""}
+    ${hasHelp ? `<div class='${hasDetails ? "mb-2" : ""}'>${helpHtml}</div>` : ""}
+    ${hasDetails ? `<details><summary class='hover:cursor-pointer'>${detailsLabel}</summary><div class='mt-2'>${detailsHtml}</div></details>` : ""}
   `;
 }
 
