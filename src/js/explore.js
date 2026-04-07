@@ -17,7 +17,7 @@ import { orgDataPromise, initInsightsAndActions } from './insights-and-actions.j
 import { getAggregatedDataQuery } from './aggregated-data-query.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { createTooltip } from './tooltip-manager.js';
-import { buildTooltipContent, getTooltipPlainText } from './tooltip-content.js';
+import { buildTooltipContent } from './tooltip-content.js';
 
 // =================================================
 // Global variables
@@ -933,12 +933,12 @@ function generateTooltipContent(labelData, additionalHelpText = null) {
   const infoHtml = injectOrgFields(labelData.info);
   const helpHtml = additionalHelpText ? injectOrgFields(additionalHelpText) : '';
   const detailsHtml = injectOrgFields(labelData.details);
-  const showHelp = helpHtml && !getTooltipPlainText(infoHtml).includes(getTooltipPlainText(helpHtml));
 
   return buildTooltipContent({
     leadHtml: infoHtml,
-    helpHtml: showHelp ? helpHtml : '',
-    detailsHtml
+    helpHtml,
+    detailsHtml,
+    dedupeHelpTextAgainstLead: true
   });
 }
 

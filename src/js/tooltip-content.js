@@ -12,21 +12,28 @@
  * @param {string} [options.helpHtml=''] - Optional supplementary HTML shown below the lead content.
  * @param {string} [options.detailsHtml=''] - Optional HTML shown inside a collapsible section.
  * @param {string} [options.detailsLabel='Methodology'] - Label shown on the collapsible section.
+ * @param {boolean} [options.dedupeHelpTextAgainstLead=false] - Whether to
+ * suppress supplementary help text when it duplicates the lead content.
  * @returns {string} Tooltip HTML.
  */
 export function buildTooltipContent({
   leadHtml = '',
   helpHtml = '',
   detailsHtml = '',
-  detailsLabel = 'Methodology'
+  detailsLabel = 'Methodology',
+  dedupeHelpTextAgainstLead = false
 } = {}) {
+  const shouldHideHelp = dedupeHelpTextAgainstLead
+    && helpHtml
+    && getTooltipPlainText(leadHtml).includes(getTooltipPlainText(helpHtml));
+  const resolvedHelpHtml = shouldHideHelp ? '' : helpHtml;
   const hasDetails = !!detailsHtml;
   const hasLead = !!leadHtml;
-  const hasHelp = !!helpHtml;
+  const hasHelp = !!resolvedHelpHtml;
 
   return `
     ${hasLead ? `<div class='${hasDetails ? "mb-2" : ""}'>${leadHtml}</div>` : ""}
-    ${hasHelp ? `<div class='${hasDetails ? "mb-2" : ""}'>${helpHtml}</div>` : ""}
+    ${hasHelp ? `<div class='${hasDetails ? "mb-2" : ""}'>${resolvedHelpHtml}</div>` : ""}
     ${hasDetails ? `<details><summary class='hover:cursor-pointer'>${detailsLabel}</summary><div class='mt-2'>${detailsHtml}</div></details>` : ""}
   `;
 }
