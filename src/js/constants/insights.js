@@ -13,7 +13,7 @@ export const INSIGHTS_CARDS = [
     denominator: null,
     denominatorText: "articles",
     info: "<p>The total number of journal articles published by grantees or authors at your organization.</p>",
-    details: "Test"
+    details: ""
   },
   {
     numerator: "is_preprint",
