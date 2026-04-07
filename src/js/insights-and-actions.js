@@ -14,6 +14,7 @@ import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EM
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { initActionTabs } from './actions.js';
 import { createPopover } from './tooltip-manager.js';
+import { buildTooltipContent } from './tooltip-content.js';
 
 // Cache identical count queries so we only hit the API once per unique URL
 const countQueryCache = new Map();
@@ -310,6 +311,16 @@ export function initInsightsAndActions(org) {
       );
     });
 
+    /**
+     * Renders one Insight card and keeps its tooltip content in sync with the
+     * fetched counts.
+     *
+     * @param {string} numerator - Analysis key used for the card value.
+     * @param {string|null} denominator - Optional analysis key used for the denominator.
+     * @param {string} denominatorText - Human-readable denominator label.
+     * @param {string} insightInfo - Explanatory tooltip copy for the card.
+     * @returns {void}
+     */
     function getInsight(numerator, denominator, denominatorText, insightInfo) {
       // Check if the data for this "numerator" (i.e. Insights data card) exists in orgData
       const analysisEntry = orgData.hits.hits[0]._source.analysis[numerator];
@@ -372,11 +383,14 @@ export function initInsightsAndActions(org) {
           cardContents._insightTooltipEventsBound = true;
         }
         const updateTooltipContent = () => {
-          const detailHtml = figureDetails
-            ? `<div class="mb-2 font-semibold text-neutral-900">${figureDetails.innerHTML}</div>`
+          const figureHtml = figureDetails
+            ? `<div class="font-semibold text-neutral-900">${figureDetails.innerHTML}</div>`
             : "";
           const infoHtml = insightInfo ? `<div class="space-y-2">${insightInfo}</div>` : "";
-          instance.setContent(`${detailHtml}${infoHtml}`);
+          instance.setContent(buildTooltipContent({
+            leadHtml: figureHtml,
+            helpHtml: infoHtml
+          }));
         };
 
         // Accessibility / tooltip IDs
