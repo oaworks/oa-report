@@ -45,17 +45,27 @@ const authState = initAuth(org);
 loggedIn = authState.loggedIn;
 orgKey = authState.orgKey ? `&orgkey=${authState.orgKey}` : "";
 applyAuthVisibility({
-  showWhenLoggedIn: ["logout", "actions"],
+  showWhenLoggedIn: ["logout", "section-tab-actions", "actions-anchor", "actions"],
   hideWhenLoggedIn: ["login"]
 });
+if (!loggedIn) {
+  ["section-tab-actions", "actions-anchor", "actions"].forEach((id) => {
+    document.getElementById(id)?.remove();
+  });
+}
 
 onAuthChange(({ loggedIn: isLoggedIn, orgKey: key }) => {
   loggedIn = isLoggedIn;
   orgKey = key ? `&orgkey=${key}` : "";
   applyAuthVisibility({
-    showWhenLoggedIn: ["logout", "actions"],
+    showWhenLoggedIn: ["logout", "section-tab-actions", "actions-anchor", "actions"],
     hideWhenLoggedIn: ["login"]
   });
+  if (!loggedIn) {
+    ["section-tab-actions", "actions-anchor", "actions"].forEach((id) => {
+      document.getElementById(id)?.remove();
+    });
+  }
 });
 
 // =================================================
@@ -173,8 +183,8 @@ function renderActionTabs(strategy = {}) {
   const tabsContainer = document.getElementById("actions_buttons");
   if (!tabsContainer) return;
   const actionsTabLink = document.getElementById("section-tab-actions");
-  const actionsAnchor = document.getElementById("actions");
-  const actionsSection = actionsAnchor?.nextElementSibling;
+  const actionsAnchor = document.getElementById("actions-anchor");
+  const actionsSection = document.getElementById("actions");
 
   const visibleActions = Object.entries(strategy)
     .filter(([, config]) => config?.show_on_web === true)
@@ -236,8 +246,10 @@ export function initInsightsAndActions(org) {
       showUnique,
       isGates
     });
-    renderActionTabs(orgData?.hits?.hits?.[0]?._source?.strategy || {});
-    initActionTabs();
+    if (loggedIn) {
+      renderActionTabs(orgData?.hits?.hits?.[0]?._source?.strategy || {});
+      initActionTabs();
+    }
 
     /** Decrypt emails if user has an orgKey **/
     window.handleDecryptEmailClick = function(buttonElement) {
@@ -480,6 +492,10 @@ export function initInsightsAndActions(org) {
 
     /* Get Strategy data and display it */
     function displayStrategy(strategy, keys, tableRow) {
+      if (!loggedIn) {
+        return;
+      }
+
       var shown  = orgData.hits.hits[0]._source.strategy[strategy].show_on_web,
           sort   = `&sort=${orgData.hits.hits[0]._source.strategy[strategy].sort}`,
           tabID  = `strategy_${strategy}`;
@@ -510,97 +526,88 @@ export function initInsightsAndActions(org) {
             }
             tableCountContents.textContent = makeNumberReadable(count);
 
-            // If user is logged in, show full list of actions
-            if (loggedIn) {
-              // If no actions are available, show message
-              if (count === 0) {
-                tableCountContents.textContent = "No ";
-                tableBody.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
-              }
-
-              // Otherwise, generate list of actions
-              else if (count > 0) {
-
-                // Get full list of actions for this strategy 
-                axios.get(listQuery)
-                  .then(function (listResponse) {
-                    var list = listResponse?.data?.hits?.hits || [],
-                        rowsToRender = Math.min(count, list.length),
-                        tableRows = ""; // Contents of the list to be displayed in the UI as a table
-                
-                    // For each individual action, create a row
-                    for (let i = 0; i < rowsToRender; i++) {
-                      var action = {}; // Create object to store key-value pairs for each action
-                      tableRows += "<tr>";
-
-                      // Populate action array with values for each key
-                      for (var key of keys) {
-                        // If it’s from the supplements array, loop over supplements to access data without index number
-                        if (key.startsWith('supplements.')) {
-                          key = key.replace('supplements.', ''); // Remove prefix 
-                          var suppKey = list[i]._source.supplements.find(
-                            function(i) {
-                              return (i[key]);
-                            }
-                          );
-
-                          if (suppKey == null) {
-                            action[key] = "N/A";
-                          } else {
-                            var value = suppKey[key];
-                            action[key] = value;
-                          }
-                          
-                          if (key.includes('invoice_date')) action[key] = makeDateReadable(new Date(action[key]));
-                          if (key.includes('apc_cost')) action[key] = makeNumberReadable(action[key]);
-                        } else { 
-                          var value = list[i]._source[key];
-                          action[key] = value;
-
-                          if (key === 'published_date') action[key] = makeDateReadable(new Date(action[key]));
-                        }
-
-                        if (action[key] == null) {
-                          action[key] = "N/A";
-                        }
-                      };
-                      
-                      // If mailto is included, replace its body’s content with the action’s values
-                      if ("mailto" in action) {
-                        var mailto = orgData.hits.hits[0]._source.strategy[strategy].mailto;
-
-                        var newMailto = mailto.replaceAll("\'", "’");
-                        newMailto = newMailto.replaceAll("{doi}", (action.DOI ? action.DOI : "[No DOI found]"));
-                        newMailto = newMailto.replaceAll("{author_email_name}", (action.author_email_name ? action.author_email_name.replaceAll("\'", "’") : "[No author’s name found]"));
-                        newMailto = newMailto.replaceAll("{title}", (action.title ? action.title.replaceAll("\'", "’") : "[No title found]"));
-
-                        // And add it to the action array
-                        action["mailto"] = encodeURI(newMailto);
-                        action["draft_aria_label"] = `Open draft for ${action.author_email_name || "unknown author"}, article: ${action.title || action.DOI || "unknown article"}`
-                          .replaceAll("&", "&amp;")
-                          .replaceAll("\"", "&quot;")
-                          .replaceAll("\'", "&#39;")
-                          .replaceAll("<", "&lt;")
-                          .replaceAll(">", "&gt;");
-                      };
-
-                      var tableRowLiteral = tableRow.replace(/\$\{action\.([^}]+)\}/g, function(match, key) {
-                        return action[key] ?? "";
-                      });
-                      tableRows += tableRowLiteral; // Populate the table with a row w/ replaced placeholders for each action 
-                      tableRows += "</tr>";
-                    }
-
-                    tableBody.innerHTML = tableRows; // Fill table with all actions
-                  }
-                )
-              }
+            // If no actions are available, show message
+            if (count === 0) {
+              tableCountContents.textContent = "No ";
+              tableBody.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
             }
 
-            // Otherwise, display a message prompting user to log in or contact us to access actions
-            else {
-              tableBody.innerHTML = `<tr><td class='py-4 pl-4 pr-3 text-base text-center align-top break-words' colspan='3'><p class='font-bold'>Actions help you take steps to make your institution’s research more open.</p> <p>Find out more about them by <a href='mailto:hello@oa.works?subject=OA.Report%20&mdash;%20${decodeURIComponent(org)}' class='underline underline-offset-2 decoration-1'>contacting us</a> or <a href='https://about.oa.report/docs/user-accounts' class='underline underline-offset-2 decoration-1' title='Information on user accounts'>logging in to your account</a> to access them.</p></td></tr>`;
-              displayNone(`form_${strategy}`);
+            // Otherwise, generate list of actions
+            else if (count > 0) {
+
+              // Get full list of actions for this strategy 
+              axios.get(listQuery)
+                .then(function (listResponse) {
+                  var list = listResponse?.data?.hits?.hits || [],
+                      rowsToRender = Math.min(count, list.length),
+                      tableRows = ""; // Contents of the list to be displayed in the UI as a table
+              
+                  // For each individual action, create a row
+                  for (let i = 0; i < rowsToRender; i++) {
+                    var action = {}; // Create object to store key-value pairs for each action
+                    tableRows += "<tr>";
+
+                    // Populate action array with values for each key
+                    for (var key of keys) {
+                      // If it’s from the supplements array, loop over supplements to access data without index number
+                      if (key.startsWith('supplements.')) {
+                        key = key.replace('supplements.', ''); // Remove prefix 
+                        var suppKey = list[i]._source.supplements.find(
+                          function(i) {
+                            return (i[key]);
+                          }
+                        );
+
+                        if (suppKey == null) {
+                          action[key] = "N/A";
+                        } else {
+                          var value = suppKey[key];
+                          action[key] = value;
+                        }
+                        
+                        if (key.includes('invoice_date')) action[key] = makeDateReadable(new Date(action[key]));
+                        if (key.includes('apc_cost')) action[key] = makeNumberReadable(action[key]);
+                      } else { 
+                        var value = list[i]._source[key];
+                        action[key] = value;
+
+                        if (key === 'published_date') action[key] = makeDateReadable(new Date(action[key]));
+                      }
+
+                      if (action[key] == null) {
+                        action[key] = "N/A";
+                      }
+                    };
+                    
+                    // If mailto is included, replace its body’s content with the action’s values
+                    if ("mailto" in action) {
+                      var mailto = orgData.hits.hits[0]._source.strategy[strategy].mailto;
+
+                      var newMailto = mailto.replaceAll("\'", "’");
+                      newMailto = newMailto.replaceAll("{doi}", (action.DOI ? action.DOI : "[No DOI found]"));
+                      newMailto = newMailto.replaceAll("{author_email_name}", (action.author_email_name ? action.author_email_name.replaceAll("\'", "’") : "[No author’s name found]"));
+                      newMailto = newMailto.replaceAll("{title}", (action.title ? action.title.replaceAll("\'", "’") : "[No title found]"));
+
+                      // And add it to the action array
+                      action["mailto"] = encodeURI(newMailto);
+                      action["draft_aria_label"] = `Open draft for ${action.author_email_name || "unknown author"}, article: ${action.title || action.DOI || "unknown article"}`
+                        .replaceAll("&", "&amp;")
+                        .replaceAll("\"", "&quot;")
+                        .replaceAll("\'", "&#39;")
+                        .replaceAll("<", "&lt;")
+                        .replaceAll(">", "&gt;");
+                    };
+
+                    var tableRowLiteral = tableRow.replace(/\$\{action\.([^}]+)\}/g, function(match, key) {
+                      return action[key] ?? "";
+                    });
+                    tableRows += tableRowLiteral; // Populate the table with a row w/ replaced placeholders for each action 
+                    tableRows += "</tr>";
+                  }
+
+                  tableBody.innerHTML = tableRows; // Fill table with all actions
+                }
+              )
             }
           })
           .catch(function (error) { console.log(`${strategy} error: ${error}`); })
@@ -673,9 +680,11 @@ export function initInsightsAndActions(org) {
     //   </td>"
     // );
     
-    ACTION_TABLE_CONFIGS.forEach(({ id, keys, rowTemplate }) => {
-      displayStrategy(id, keys, rowTemplate);
-    });
+    if (loggedIn) {
+      ACTION_TABLE_CONFIGS.forEach(({ id, keys, rowTemplate }) => {
+        displayStrategy(id, keys, rowTemplate);
+      });
+    }
     
   }).catch(error => {
     console.log(`Report ERROR: ${error}`);

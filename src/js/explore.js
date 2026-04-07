@@ -217,9 +217,9 @@ async function addExploreButtonsToDOM(exploreData) {
   const seeMoreListItem = document.getElementById('explore_see_more_item');
   const seeMoreButton = seeMoreListItem?.querySelector('button');
 
-  // Only show 'articles' Explore list when logged out
+  // Logged-out users only see the public article AND preprint breakdowns.
   if (!loggedIn) {
-    exploreData = exploreData.filter(item => item.id === 'articles');
+    exploreData = exploreData.filter(item => item.id === 'articles' || item.id === 'preprint');
   }
 
   for (const exploreDataItem of exploreData) {
@@ -238,8 +238,8 @@ async function addExploreButtonsToDOM(exploreData) {
     }
   }
 
-  // Hide 'See More/Fewer' button if only the 'articles' button is present
-  if (exploreData.length <= 1) {
+  // Hide 'See More/Fewer' when there is nothing extra to reveal.
+  if (!loggedIn || exploreData.length <= 1) {
     if (seeMoreListItem) {
       seeMoreListItem.style.display = 'none';
     } else {
@@ -403,19 +403,26 @@ export async function processExploreDataTable(button, itemData) {
  */
 async function addExploreFiltersToDOM(query) {
   const exploreFiltersElement = document.getElementById("explore_filters");
+  const exploreFilterField = document.getElementById("explore_filter_field");
   exploreFiltersElement.innerHTML = ""; // Clear existing radio buttons
   const filters = parseCommaSeparatedQueries(query); // Parse the query string into an array of filters
+  const visibleFilters = loggedIn ? filters : filters.slice(0, 1); // Logged-out users only see the default filter.
+
+  // Only display list of filters when logged in and there is more than one
+  if (exploreFilterField) {
+    exploreFilterField.style.display = loggedIn && visibleFilters.length > 0 ? "" : "none";
+  }
 
   // Check if the currentActiveExploreItemQuery is in the new set of filters
-  let currentFilterExists = filters.some(filter => filter.id === currentActiveExploreItemQuery);
+  let currentFilterExists = visibleFilters.some(filter => filter.id === currentActiveExploreItemQuery);
 
   // If currentActiveExploreItemQuery does not exist in the new set, reset it to the first filter
-  if (!currentFilterExists && filters.length > 0) {
-    currentActiveExploreItemQuery = filters[0].id;
+  if (!currentFilterExists && visibleFilters.length > 0) {
+    currentActiveExploreItemQuery = visibleFilters[0].id;
   }
   
  // Create radio buttons for each filter and append them to the DOM
-  filters.forEach((filter, index) => {
+  visibleFilters.forEach((filter) => {
     const radioButton = createExploreFilterRadioButton(filter.id, filter.id === currentActiveExploreItemQuery);
     exploreFiltersElement.appendChild(radioButton);
   });
