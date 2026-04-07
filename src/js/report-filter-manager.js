@@ -1057,7 +1057,7 @@ export function renderActiveFiltersBanner() {
 
   // Popover content (wider than date range)
   const pop = document.createElement("div");
-  pop.className = "p-3 md:p-4 text-xs md:text-sm";
+  pop.className = "js-filters-popover p-3 md:p-4 text-xs md:text-sm";
   pop.setAttribute("role", "dialog");
   pop.setAttribute("aria-labelledby", "js-filters-form-title");
   pop.style.maxWidth = "90vw";
@@ -1227,7 +1227,8 @@ export function renderActiveFiltersBanner() {
     onShow() {
       triggerBtn.setAttribute("aria-expanded", "true");
     },
-    onMount() {
+    onMount(instance) {
+      instance?.popper?.querySelector(".tooltip-box")?.classList.add("filters-popover-box");
       requestAnimationFrame(() => popoverFlow.focusFirst());
     },
     onShown() {
