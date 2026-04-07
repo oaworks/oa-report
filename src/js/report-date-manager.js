@@ -42,6 +42,7 @@ export const DEFAULT_YEAR_FREE = 2023;
  */
 export const FIRST_YEAR = 2015;
 const ALL_TIME_RANGE_PARAM = 'all';
+const CURRENT_YEAR_RANGE_PARAM = 'this-year';
 const ALL_TIME_START_DATE = createDate(1980, 0, 1);
 
 // =================================================
@@ -57,6 +58,127 @@ function isQuarterTwoOrLater() {
   return currentMonth >= 3; // Q2 starts in April (Month 3)
 }
 
+/**
+ * Syncs the hidden form inputs used by the custom date popover with the
+ * currently active date range.
+ *
+ * @param {Date} startDate - The active range start date.
+ * @param {Date} endDate - The active range end date.
+ * @returns {void}
+ */
+function syncHiddenDateInputs(startDate, endDate) {
+  const startDateInput = document.getElementById('start-date');
+  const endDateInput = document.getElementById('end-date');
+  if (!startDateInput || !endDateInput) return;
+
+  startDateInput.value = startDate.toISOString().split('T')[0];
+  endDateInput.value = endDate.toISOString().split('T')[0];
+}
+
+/**
+ * Resolves semantic `range` query params into a concrete date range and the
+ * chip that should be shown as active.
+ *
+ * @param {string|null} rangeParam - The current `range` query param.
+ * @returns {{buttonId: string, startDate: Date, endDate: Date}|null} The
+ * resolved selection, or null for non-semantic ranges.
+ */
+function getSemanticRangeSelection(rangeParam) {
+  switch (rangeParam) {
+  case ALL_TIME_RANGE_PARAM:
+    return {
+      buttonId: "all-time",
+      startDate: ALL_TIME_START_DATE,
+      endDate: new Date()
+    };
+  case CURRENT_YEAR_RANGE_PARAM:
+    return {
+      buttonId: `year-${currentDate.getFullYear()}`,
+      startDate: createDate(currentDate.getFullYear(), 0, 1),
+      endDate: new Date()
+    };
+  default:
+    return null;
+  }
+}
+
+/**
+ * Applies a resolved selection to the report by syncing hidden inputs and
+ * activating the matching chip when one exists.
+ *
+ * @param {{buttonId: string, startDate: Date, endDate: Date}} selection - The
+ * resolved range selection to apply.
+ * @returns {void}
+ */
+function applyResolvedRange({ buttonId, startDate, endDate }) {
+  syncHiddenDateInputs(startDate, endDate);
+  const button = buttonId ? document.getElementById(buttonId) : null;
+
+  if (button) {
+    handleYearButtonLogic(button, startDate, endDate);
+    updateYearButtonStyling(button);
+  } else {
+    handleYearButtonLogic(null, startDate, endDate);
+  }
+}
+
+/**
+ * Derives the URL state and effective dates for a clicked year chip.
+ *
+ * Completed years remain fixed `start`/`end` ranges, while the live presets
+ * (`all-time` and the current year) are converted into semantic `range` params.
+ *
+ * @param {string} buttonId - The clicked button's id.
+ * @param {Date} startDate - The button's default start date.
+ * @param {Date} endDate - The button's default end date.
+ * @returns {{rangeParam: string|null, startDate: Date, endDate: Date}} The
+ * URL state and concrete dates to apply.
+ */
+function getButtonSelection(buttonId, startDate, endDate) {
+  if (buttonId === "all-time") {
+    return {
+      rangeParam: ALL_TIME_RANGE_PARAM,
+      startDate: ALL_TIME_START_DATE,
+      endDate: new Date()
+    };
+  }
+
+  if (buttonId === `year-${currentDate.getFullYear()}`) {
+    return {
+      rangeParam: CURRENT_YEAR_RANGE_PARAM,
+      startDate: createDate(currentDate.getFullYear(), 0, 1),
+      endDate: new Date()
+    };
+  }
+
+  return {
+    rangeParam: null,
+    startDate,
+    endDate
+  };
+}
+
+/**
+ * Writes the selected range state back to the URL without reloading the page.
+ *
+ * @param {{rangeParam: string|null, startDate: Date, endDate: Date}} selection - The
+ * selection to serialise into query params.
+ * @returns {void}
+ */
+function writeSelectionToURL({ rangeParam, startDate, endDate }) {
+  if (rangeParam) {
+    removeURLParams(['start', 'end']);
+    updateURLParams({ range: rangeParam });
+    return;
+  }
+
+  removeURLParams('range');
+  updateURLParams({
+    start: startDate.toISOString().split('T')[0],
+    end: endDate.toISOString().split('T')[0]
+  });
+}
+
 // =================================================
 // Initialisation
 // =================================================
@@ -66,31 +188,18 @@ function isQuarterTwoOrLater() {
  *
  * Precedence is:
  * 1. `range=all`, which is treated as a live preset from 1980-01-01 to today.
- * 2. Explicit `start` and `end` query params, which are treated as fixed shared/bookmarked ranges.
- * 3. The app's normal default year logic, depending on report type and current date.
+ * 2. `range=this-year`, which is treated as a live preset from 1 January of the current year to today.
+ * 3. Explicit `start` and `end` query params, which are treated as fixed shared/bookmarked ranges.
+ * 4. The app's normal default year logic, depending on report type and current date.
  */
 export function setDefaultYear() {
   const rangeParam = getURLParam('range');
   const startParam = getURLParam('start');
   const endParam = getURLParam('end');
+  const semanticSelection = getSemanticRangeSelection(rangeParam);
 
-  if (rangeParam === ALL_TIME_RANGE_PARAM) {
-    const startDate = ALL_TIME_START_DATE;
-    const endDate = new Date();
-    const allTimeButton = document.getElementById("all-time");
-    const dateRangeForm = document.getElementById("date_range_form");
-
-    if (dateRangeForm) {
-      document.getElementById('start-date').value = startDate.toISOString().split('T')[0];
-      document.getElementById('end-date').value = endDate.toISOString().split('T')[0];
-    }
-
-    if (allTimeButton) {
-      handleYearButtonLogic(allTimeButton, startDate, endDate);
-      updateYearButtonStyling(allTimeButton);
-    } else {
-      handleYearButtonLogic(null, startDate, endDate);
-    }
+  if (semanticSelection) {
+    applyResolvedRange(semanticSelection);
     return;
   }
 
@@ -104,11 +213,7 @@ export function setDefaultYear() {
     const endDate = new Date(`${endParam}T12:00:00Z`);
 
     // Replace the date range, if present, with the one from the URL
-    const dateRangeForm = document.getElementById("date_range_form");
-    if (dateRangeForm) {
-      document.getElementById('start-date').value = startDate.toISOString().split('T')[0];
-      document.getElementById('end-date').value = endDate.toISOString().split('T')[0];
-    }
+    syncHiddenDateInputs(startDate, endDate);
 
     let elementToUpdate;
 
@@ -178,28 +283,19 @@ export function setDefaultYear() {
 export function initDateManager() {
   const params = getAllURLParams();
   const range = params.range;
+  const semanticSelection = getSemanticRangeSelection(range);
 
   // Process other parameters
   const start = params.start;
   const end = params.end;
-  if (range === ALL_TIME_RANGE_PARAM) {
-    const startDateInput = document.getElementById('start-date');
-    const endDateInput = document.getElementById('end-date');
-    if (startDateInput && endDateInput) {
-      startDateInput.value = ALL_TIME_START_DATE.toISOString().split('T')[0];
-      endDateInput.value = new Date().toISOString().split('T')[0];
-    }
+  if (semanticSelection) {
+    syncHiddenDateInputs(semanticSelection.startDate, semanticSelection.endDate);
   } else if (start && end) {
     const startDate = new Date(start);
     const endDate = new Date(end);
 
     // Update the UI with these dates if the elements exist
-    const startDateInput = document.getElementById('start-date');
-    const endDateInput = document.getElementById('end-date');
-    if (startDateInput && endDateInput) {
-      startDateInput.value = startDate.toISOString().split('T')[0];
-      endDateInput.value = endDate.toISOString().split('T')[0];
-    }
+    syncHiddenDateInputs(startDate, endDate);
   }
 
   // Update the URL without losing parameters
@@ -222,8 +318,7 @@ export function initDateManager() {
  */
 export function bindDynamicYearButtons(startYear, endYear, visibleYears = 3) {
   const yearsContainer = document.getElementById("js-year-buttons");
-  const currentYear = new Date().getFullYear(); // Get current year
-  const currentDate = new Date(); // Get current date
+  const renderedCurrentDate = new Date(); // Get current date
   const { dropdown, dropdownContent, dropdownButton } = createDropdownContainer("date_range_more_dropdown");
 
   for (let year = endYear; year >= startYear; year--) {
@@ -231,8 +326,8 @@ export function bindDynamicYearButtons(startYear, endYear, visibleYears = 3) {
     let endDate;
 
     // Check if the current year is being processed
-    if (year === currentYear) {
-      endDate = currentDate; // Set endDate to today's date for the current year
+    if (year === currentDate.getFullYear()) {
+      endDate = renderedCurrentDate; // Set endDate to today's date for the current year
     } else {
       endDate = createDate(year, 11, 31); // Use December 31st for other years
     }
@@ -257,7 +352,7 @@ export function bindDynamicYearButtons(startYear, endYear, visibleYears = 3) {
   }
 
   // Create an 'All time' button with a fixed start date and the current date as the end date
-  let allTimeButton = createYearButton("all-time", "All time", createDate(1980, 0, 1), currentDate);
+  let allTimeButton = createYearButton("all-time", "All time", ALL_TIME_START_DATE, renderedCurrentDate);
   yearsContainer.appendChild(allTimeButton);
 
   // Create and append the date range form for paid users, initialise the dropdown menu
@@ -384,9 +479,11 @@ function createDropdownItem(buttonId, buttonText, startDate, endDate, dropdownBu
 }
 
 /**
- * Creates a date-range chip for fixed years or the semantic `All time` preset.
+ * Creates a date-range chip for fixed years, All time, or the live current-year view.
  * 
- * For regular year chips, clicking writes explicit `start` and `end` params.
+ * For completed year chips, clicking writes explicit `start` and `end` params.
+ * For the current ongoing year chip, clicking removes `start`/`end` and writes
+ * `range=this-year`, then computes the live end date at click time.
  * For the `all-time` chip, clicking removes `start`/`end` and writes
  * `range=all`, then computes the live end date at click time.
  *
@@ -407,24 +504,13 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
 
   // Add event listener
   button.addEventListener("click", function() {
-    const selectedStartDate = buttonId === "all-time" ? ALL_TIME_START_DATE : startDate;
-    const selectedEndDate = buttonId === "all-time" ? new Date() : endDate;
+    const selection = getButtonSelection(buttonId, startDate, endDate);
 
     // Reset the date range form when a year button is clicked
     document.getElementById('date_range_form').reset();
 
-    if (buttonId === "all-time") {
-      removeURLParams(['start', 'end']);
-      updateURLParams({ range: ALL_TIME_RANGE_PARAM });
-    } else {
-      removeURLParams('range');
-      updateURLParams({ 
-        'start': selectedStartDate.toISOString().split('T')[0], 
-        'end': selectedEndDate.toISOString().split('T')[0] 
-      });
-    }
-
-    handleYearButtonLogic(button, selectedStartDate, selectedEndDate);
+    writeSelectionToURL(selection);
+    handleYearButtonLogic(button, selection.startDate, selection.endDate);
   });
 
   return button;
