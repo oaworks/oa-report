@@ -17,6 +17,7 @@ import { orgDataPromise, initInsightsAndActions } from './insights-and-actions.j
 import { getAggregatedDataQuery } from './aggregated-data-query.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { createTooltip } from './tooltip-manager.js';
+import { buildTooltipContent, getTooltipPlainText } from './tooltip-content.js';
 
 // =================================================
 // Global variables
@@ -910,9 +911,13 @@ function isNumericLikeValue(value) {
 }
 
 /**
- * Generates the HTML content for a tooltip, including information and optional methodology details.
+ * Generates the HTML content for an Explore tooltip, including information
+ * and optional methodology details.
  *
- * @param {Object} labelData - The object containing the label, info, and optionally details for the tooltip.
+ * @param {Object} labelData - The object containing the label, info,
+ * and optionally details for the tooltip.
+ * @param {string|null} [additionalHelpText=null] - Optional supplementary
+ * help text supplied by the organisation record.
  * @returns {string} The generated HTML content for the tooltip.
  */
 function generateTooltipContent(labelData, additionalHelpText = null) {
@@ -925,24 +930,16 @@ function generateTooltipContent(labelData, additionalHelpText = null) {
     .replace(/class=['"]org-policy-url['"][^>]*href=['"][^'"]*['"]/g, match => match.replace(/href=['"][^'"]*['"]/, `href='${orgPolicyUrl ?? '#'}'`))
   : html;
 
-  // Reuse a single off-DOM element to avoid repeated creation
-  const textBuffer = generateTooltipContent.textBuffer || (generateTooltipContent.textBuffer = document.createElement('div'));
-
-  // Get plain text version of HTML content
-  const plainText = (html = '') => {
-    textBuffer.innerHTML = html;
-    return textBuffer.textContent.replace(/\s+/g, ' ').trim();
-  };
   const infoHtml = injectOrgFields(labelData.info);
   const helpHtml = additionalHelpText ? injectOrgFields(additionalHelpText) : '';
   const detailsHtml = injectOrgFields(labelData.details);
-  const showHelp = helpHtml && !plainText(infoHtml).includes(plainText(helpHtml));
-  const hasDetails = !!labelData.details;
-  return `
-    <p class='${hasDetails ? "mb-2" : ""}'>${infoHtml}</p>
-    ${showHelp ? `<p class='mb-2'>${helpHtml}</p>` : ""}
-    ${hasDetails ? `<details><summary class='hover:cursor-pointer'>Methodology</summary><p class='mt-2'>${detailsHtml}</p></details>` : ""}
-  `;
+  const showHelp = helpHtml && !getTooltipPlainText(infoHtml).includes(getTooltipPlainText(helpHtml));
+
+  return buildTooltipContent({
+    leadHtml: infoHtml,
+    helpHtml: showHelp ? helpHtml : '',
+    detailsHtml
+  });
 }
 
 /**
