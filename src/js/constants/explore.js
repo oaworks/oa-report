@@ -357,12 +357,12 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   "compliant": {
     label: "Compliant",
     info: "Publications that comply with the requirements of the Open Access policy and are covered by the policy. <span class='org-policy-compliance'></span>",
-    details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex."
+    details: "We use data from OpenAlex and Crossref, supplemented with Europe PMC and manual checks (as required)."
   },
   "compliant_and_covered_by_policy": {
     label: "Compliant (all)",
     info: "All publications that comply with the requirements of the Open Access policy, even if they are not covered by said policy. <p><span class='org-policy-compliance'></span></p>",
-    details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex."
+    details: "We use data from OpenAlex and Crossref, supplemented with Europe PMC and manual checks (as required)."
   },
   "covered_by_policy": {
     label: "Covered by policy",
@@ -371,12 +371,12 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   "free_to_read": {
     label: "Free-to-read",
     info: "Publications that are free to read on the publisher’s website or any online repository, including temporarily accessible articles (“bronze Open Access”).",
-    details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex."
+    details: "We use data from OpenAlex and Crossref."
   },
   "in_repository": {
     label: "In repository",
     info: "Publications that have a copy of the work freely available and discoverable in any repository.",
-    details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex."
+    details: "We use data from OpenAlex and Crossref."
   },
   "mean_apc_amount": {
     label: "Mean APC amount",
@@ -394,7 +394,7 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   "open_access": {
     label: "Open Access",
     info: "Publications that are free and CC BY or CC0 (in the public domain) on the publisher’s website, a repository or a preprint server.",
-    details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref, OpenAlex, Europe PMC and manual checks (as required). If a work has the required license at any location it is considered Open Access."
+    details: "We use data from OpenAlex and Crossref, supplemented with Europe PMC and manual checks (as required). If a work has the required license at any location it is considered Open Access."
   },
   "publications": {
     label: "Publications"
@@ -486,12 +486,12 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   "with_preprint": {
     label: "With preprint",
     info: "Publications that have a preprint associated with them.",
-    details: "We used data from Unpaywall and Crossref."
+    details: "We use data from OpenAlex and Crossref."
   },
   "with_peer_reviewed_version": {
     label: "With peer reviewed version",
     info: "Preprints that have a peer reviewed version associated with them.",
-    details: "We used data from Unpaywall and Crossref."
+    details: "We used data from OpenAlex and Crossref."
   },
   "with_rors": {
     label: "With ROR<span style='text-transform: lowercase;'>s</span>",
