@@ -1138,15 +1138,21 @@ export const TERMS_BREAKDOWN_GROUPS = [
     ]
   },
   {
-    id: "data_sharing",
-    label: "Data sharing",
+    id: "data_status",
+    label: "Data status",
     fields: [
       "with_data",
       "without_data",
       "unknown_data_status",
       "with_shared_data",
       "without_shared_data",
-      "unknown_shared_data_status",
+      "unknown_shared_data_status"
+    ]
+  },
+  {
+    id: "data_sharing",
+    label: "Data sharing",
+    fields: [
       "with_shared_data_in_repository",
       "with_open_data",
       "with_open_data_in_repository",
@@ -1155,15 +1161,21 @@ export const TERMS_BREAKDOWN_GROUPS = [
     ]
   },
   {
-    id: "code_sharing",
-    label: "Code sharing",
+    id: "code_status",
+    label: "Code status",
     fields: [
       "with_code",
       "without_code",
       "unknown_code_status",
       "with_shared_code",
       "without_shared_code",
-      "unknown_shared_code_status",
+      "unknown_shared_code_status"
+    ]
+  },
+  {
+    id: "code_sharing",
+    label: "Code sharing",
+    fields: [
       "with_shared_code_in_repository",
       "with_open_code",
       "with_open_code_in_repository",
@@ -1189,8 +1201,10 @@ export const TERMS_TABLE_VISIBLE_FIELDS = {
   coverage_and_oa: ["covered_by_policy", "compliant", "open_access", "in_repository"],
   cost_and_impact: ["total_citations", "mean_citations", "with_apc"],
   data_availability_statements: ["with_data_availability_statement", "without_data_availability_statement", "unknown_data_availability_statement"],
-  data_sharing: ["with_data", "with_shared_data", "with_open_data", "with_data_dois"],
-  code_sharing: ["with_code", "with_shared_code", "with_open_code", "with_code_dois"],
+  data_status: ["with_data", "with_shared_data", "without_data", "unknown_data_status"],
+  data_sharing: ["with_open_data", "with_shared_data_in_repository", "with_data_dois", "with_data_accession_number"],
+  code_status: ["with_code", "with_shared_code", "without_code", "unknown_code_status"],
+  code_sharing: ["with_open_code", "with_shared_code_in_repository", "with_code_dois", "with_code_accession_number"],
   identifiers: ["with_dois", "with_orcids", "with_rors"],
   other_metrics: []
 };

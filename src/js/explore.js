@@ -92,6 +92,7 @@ export let currentActiveExploreItemSize = 10;
 export let currentActiveDataDisplayToggle = true;
 export let currentActiveArticleViewMode = "table";
 export let currentActiveExploreSort = null;
+export let currentActiveTermsGroupId = null;
 
 /** 
  * Map of explore button id -> its data object, used to render without synthesising a click.
@@ -1137,6 +1138,14 @@ function getArticleFieldLabel(key) {
         .trim();
 }
 
+/**
+ * Returns the label used for a terms field.
+ *
+ * Falls back to a cleaned version of the field key when no custom label exists.
+ *
+ * @param {string} key
+ * @returns {string}
+ */
 function getTermsFieldLabel(key) {
   return EXPLORE_HEADER_TERMS_LABELS?.[normaliseFieldId(key)]?.label
     || normaliseFieldId(key)
@@ -1145,12 +1154,65 @@ function getTermsFieldLabel(key) {
       .trim();
 }
 
+/**
+ * Returns the sort arrow for a terms header.
+ *
+ * @param {string} key
+ * @returns {string}
+ */
 function getTermsSortIndicator(key) {
   const { field, direction } = parseTermsSort(currentActiveExploreSort || currentActiveExploreItemData?.sort);
   if (normaliseFieldId(field) !== normaliseFieldId(key)) return '';
   return direction === 'asc' ? ' ↑' : ' ↓';
 }
 
+/**
+ * Creates a sort button for grouped terms tables.
+ *
+ * @param {string} labelHtml
+ * @param {string} indicator
+ * @param {() => void} onClick
+ * @param {{ fullWidth?: boolean, align?: 'left' | 'right' }} [options={}]
+ * @returns {HTMLButtonElement}
+ */
+function createTermsSortButton(labelHtml, indicator, onClick, {
+  fullWidth = false,
+  align = 'left'
+} = {}) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = [
+    fullWidth ? 'flex w-full' : 'inline-flex',
+    'items-end',
+    'min-h-[2.75rem]',
+    align === 'right' ? 'justify-end text-right' : 'text-left',
+    'leading-tight hover:text-carnation-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm'
+  ].join(' ');
+
+  const label = document.createElement('span');
+  label.className = 'block min-w-0';
+  label.innerHTML = labelHtml;
+  button.appendChild(label);
+
+  if (indicator) {
+    const indicatorEl = document.createElement('span');
+    indicatorEl.className = 'ml-1 shrink-0';
+    indicatorEl.textContent = indicator.trim();
+    button.appendChild(indicatorEl);
+  }
+
+  button.addEventListener('click', onClick);
+  return button;
+}
+
+/**
+ * Splits a terms sort value into field and direction.
+ *
+ * If no direction is given, descending is used.
+ *
+ * @param {string | null | undefined} sort
+ * @returns {{ field: string, direction: 'asc' | 'desc' }}
+ */
 function parseTermsSort(sort) {
   const rawSort = String(sort || '_count');
   const [field, direction = 'desc'] = rawSort.split(':');
@@ -1160,6 +1222,12 @@ function parseTermsSort(sort) {
   };
 }
 
+/**
+ * Returns the valid sort fields for the current terms item.
+ *
+ * @param {{ includes?: string } | null | undefined} itemData
+ * @returns {Set<string>}
+ */
 function getValidTermsSortFields(itemData) {
   const includeFields = (itemData?.includes || '')
     .split(',')
@@ -1169,6 +1237,15 @@ function getValidTermsSortFields(itemData) {
   return new Set(['_count', 'doc_count', '_key', 'key', ...includeFields]);
 }
 
+/**
+ * Chooses the active Explore sort.
+ *
+ * For terms views this checks the URL, current state and saved item sort,
+ * and returns the first valid option.
+ *
+ * @param {{ type?: string, sort?: string, includes?: string } | null | undefined} itemData
+ * @returns {string | null}
+ */
 function resolveExploreSort(itemData) {
   const urlSort = getAllURLParams().sort;
   if (itemData?.type !== 'terms') return itemData?.sort || null;
@@ -1187,6 +1264,12 @@ function resolveExploreSort(itemData) {
   return '_count:desc';
 }
 
+/**
+ * Updates the active sort for a terms table and reloads the data.
+ *
+ * @param {string} field
+ * @returns {Promise<void>}
+ */
 async function handleTermsSortChange(field) {
   if (!currentActiveExploreItemData || currentActiveExploreItemData.type !== 'terms') return;
 
@@ -1411,6 +1494,14 @@ function createCompactTermsMetadataRow(key, value) {
   return row;
 }
 
+/**
+ * Groups one terms record into the configured metric sections.
+ *
+ * Fields that do not belong to a named group are placed in `other_metrics`.
+ *
+ * @param {Record<string, any>} record
+ * @returns {Array<{ id: string, label: string, items: Array<{ key: string, value: any }> }>}
+ */
 function getGroupedTermsBreakdownData(record) {
   const normalisedRecordKeys = new Map(
     Object.keys(record).map((key) => [normaliseFieldId(key), key])
@@ -1460,41 +1551,132 @@ function getGroupedTermsBreakdownData(record) {
   return groups;
 }
 
+/**
+ * Returns the group tabs that have data for the current terms results.
+ *
+ * @param {Array<{ groups: Array<{ id: string }> }>} groupedRecords
+ * @returns {Array<{ id: string, label: string }>}
+ */
+function getAvailableTermsGroups(groupedRecords) {
+  const groups = TERMS_BREAKDOWN_GROUPS
+    .filter((group) => groupedRecords.some(({ groups: recordGroups }) => recordGroups.some((entry) => entry.id === group.id)))
+    .map((group) => ({ id: group.id, label: group.label }));
+
+  const hasOtherMetrics = groupedRecords.some(({ groups: recordGroups }) => recordGroups.some((entry) => entry.id === 'other_metrics'));
+  if (hasOtherMetrics) {
+    groups.push({ id: 'other_metrics', label: 'Other metrics' });
+  }
+
+  return groups;
+}
+
+/**
+ * Chooses the active terms group tab.
+ *
+ * It prefers the URL value, then the current in-memory value, then the first
+ * available group.
+ *
+ * @param {Array<{ id: string, label: string }>} availableGroups
+ * @returns {string | null}
+ */
+function resolveActiveTermsGroup(availableGroups) {
+  const urlGroup = getAllURLParams().terms_group;
+  const validIds = new Set(availableGroups.map((group) => group.id));
+
+  if (urlGroup && validIds.has(urlGroup)) return urlGroup;
+  if (currentActiveTermsGroupId && validIds.has(currentActiveTermsGroupId)) return currentActiveTermsGroupId;
+  return availableGroups[0]?.id || null;
+}
+
+/**
+ * Renders the tabs used to switch between grouped terms tables.
+ *
+ * @param {HTMLElement} container
+ * @param {Array<{ id: string, label: string }>} availableGroups
+ * @returns {void}
+ */
+function renderTermsGroupTabs(container, availableGroups) {
+  const tabs = document.createElement('div');
+  tabs.className = 'mb-4 flex flex-wrap items-center gap-2.5 rounded-md border border-neutral-700 bg-neutral-900/70 p-2';
+  tabs.setAttribute('role', 'tablist');
+  tabs.setAttribute('aria-label', 'Explore terms groups');
+
+  availableGroups.forEach((group) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.setAttribute('role', 'tab');
+    button.setAttribute('aria-selected', currentActiveTermsGroupId === group.id ? 'true' : 'false');
+    button.className = `px-3.5 py-1.5 text-xs font-medium rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 transition-colors ${currentActiveTermsGroupId === group.id ? 'bg-neutral-100 text-neutral-900 shadow-sm' : 'text-neutral-100 hover:bg-neutral-700'}`;
+    button.textContent = group.label;
+    button.addEventListener('click', () => {
+      if (currentActiveTermsGroupId === group.id) return;
+      currentActiveTermsGroupId = group.id;
+      updateURLParams({ terms_group: currentActiveTermsGroupId });
+      if (currentActiveExploreItemData?.type === 'terms') {
+        renderGroupedTermsTable(
+          currentActiveExploreItemData.__lastRenderedRecords || [],
+          currentActiveExploreItemData.id
+        );
+      }
+    });
+    tabs.appendChild(button);
+  });
+
+  container.appendChild(tabs);
+}
+
+/**
+ * Creates the sticky first cell for a grouped terms table row.
+ *
+ * @param {Record<string, any>} record
+ * @param {string} exploreItemId
+ * @param {boolean} [isFooter=false]
+ * @returns {HTMLTableCellElement}
+ */
 function createGroupedTermsTermCell(record, exploreItemId, isFooter = false) {
   const cell = createTableCell(
     record.key,
     isFooter
-      ? 'border-t border-neutral-700 sticky left-0 bg-neutral-200 p-3 align-top text-neutral-900'
-      : 'border-b border-neutral-200 sticky left-0 bg-neutral-100 p-3 align-top text-neutral-900',
+      ? 'border-t border-neutral-300 sticky left-0 bg-neutral-200 p-2.5 w-[12rem] min-w-[12rem] align-top text-neutral-900'
+      : 'border-b border-neutral-200 sticky left-0 bg-neutral-50 p-2.5 w-[12rem] min-w-[12rem] align-top text-neutral-900',
     exploreItemId,
     'key',
     false
   );
 
-  const wrapper = document.createElement('div');
-  wrapper.className = 'space-y-2';
-
   const keyContent = cell.innerHTML;
   cell.innerHTML = '';
 
   const keyBlock = document.createElement('div');
-  keyBlock.className = 'text-sm font-medium text-neutral-900';
+  keyBlock.className = 'text-sm font-medium leading-snug text-neutral-900';
   keyBlock.innerHTML = keyContent;
-  wrapper.appendChild(keyBlock);
-
-  cell.appendChild(wrapper);
+  cell.appendChild(keyBlock);
   return cell;
 }
 
+/**
+ * Creates a value cell for a grouped terms table.
+ *
+ * @param {string | number | null | undefined} value
+ * @param {boolean} [isFooter=false]
+ * @param {boolean} [subtle=false]
+ * @returns {HTMLTableCellElement}
+ */
 function createGroupedTermsValueCell(value, isFooter = false, subtle = false) {
   const cell = document.createElement('td');
   cell.className = isFooter
-    ? `border-b border-neutral-300 ${subtle ? 'bg-neutral-200' : 'bg-neutral-100'} p-2 whitespace-nowrap text-right text-neutral-900`
-    : `border-b border-neutral-200 ${subtle ? 'bg-neutral-50' : 'bg-white'} p-2 whitespace-nowrap text-right text-neutral-900`;
+    ? `border-b border-neutral-300 ${subtle ? 'bg-neutral-200' : 'bg-neutral-100'} px-2 py-2.5 whitespace-nowrap text-right text-neutral-900`
+    : `border-b border-neutral-200 ${subtle ? 'bg-neutral-50' : 'bg-white'} px-2 py-2.5 whitespace-nowrap text-right text-neutral-900`;
   cell.textContent = value ?? '';
   return cell;
 }
 
+/**
+ * Shows an empty state in the grouped terms view.
+ *
+ * @param {string} [message='No results found.']
+ * @returns {void}
+ */
 function renderGroupedTermsEmptyState(message = 'No results found.') {
   const groupedTermsView = document.getElementById('explore_terms_groups_view');
   if (!groupedTermsView) return;
@@ -1506,6 +1688,20 @@ function renderGroupedTermsEmptyState(message = 'No results found.') {
   groupedTermsView.appendChild(empty);
 }
 
+/**
+ * Builds one grouped terms table for the active tab.
+ *
+ * @param {{
+ *   groupId: string,
+ *   groupLabel: string,
+ *   fields: string[],
+ *   exploreItemId: string,
+ *   groupedRecords: Array<{ record: Record<string, any>, groups: Array<{ id: string, items: Array<{ key: string, value: any }> }> }>,
+ *   allValuesRecord: Record<string, any> | undefined,
+ *   groupedSummary: Array<{ id: string, items: Array<{ key: string, value: any }> }>
+ * }} params
+ * @returns {HTMLElement}
+ */
 function createGroupedTermsSection({
   groupId,
   groupLabel,
@@ -1516,52 +1712,53 @@ function createGroupedTermsSection({
   groupedSummary
 }) {
   const section = document.createElement('section');
-  section.className = 'mb-6 last:mb-0';
-
-  const heading = document.createElement('h4');
-  heading.className = 'mb-2 px-1 text-xs font-semibold uppercase tracking-[0.14em] text-carnation-200';
-  heading.textContent = groupLabel;
-  section.appendChild(heading);
+  section.className = 'last:mb-0';
 
   const wrapper = document.createElement('div');
-  wrapper.className = 'overflow-x-auto rounded-md border border-neutral-700 bg-neutral-800';
+  wrapper.className = 'overflow-x-auto';
+
+  const frame = document.createElement('div');
+  frame.className = 'inline-block min-w-fit overflow-hidden rounded-md border border-neutral-700 bg-neutral-800 shadow-sm';
 
   const table = document.createElement('table');
-  table.className = 'w-full border-collapse table-fixed bg-white';
+  table.className = 'border-collapse bg-white';
 
   const thead = document.createElement('thead');
-  thead.className = 'border-b border-neutral-700 bg-neutral-900 text-left text-xs font-medium uppercase tracking-wider text-white';
+  thead.className = 'border-b border-neutral-700 bg-neutral-900 text-left text-xs font-medium uppercase tracking-[0.06em] text-white';
   const headerRow = document.createElement('tr');
+  const sharedDataColumnClass = 'w-[8.5rem] min-w-[8.5rem]';
 
   const termHeader = document.createElement('th');
-  termHeader.className = 'border-b border-neutral-700 sticky left-0 bg-neutral-900 px-3 py-2.5 w-[16rem] min-w-[16rem] align-bottom text-left text-white';
-  const termButton = document.createElement('button');
-  termButton.type = 'button';
-  termButton.className = 'inline-flex items-center gap-1 hover:text-carnation-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm';
-  termButton.innerHTML = `${EXPLORE_ITEMS_LABELS[exploreItemId]?.singular || 'Term'}${getTermsSortIndicator('key')}`;
-  termButton.addEventListener('click', () => handleTermsSortChange('key'));
+  termHeader.className = 'border-b border-neutral-700 sticky left-0 bg-neutral-900 px-3 py-2 w-[12rem] min-w-[12rem] align-bottom text-left text-white';
+  const termButton = createTermsSortButton(
+    EXPLORE_ITEMS_LABELS[exploreItemId]?.singular || 'Term',
+    getTermsSortIndicator('key'),
+    () => handleTermsSortChange('key')
+  );
   termHeader.appendChild(termButton);
   headerRow.appendChild(termHeader);
 
   const countHeader = document.createElement('th');
-  countHeader.className = 'border-b border-neutral-700 bg-neutral-900 px-2 py-2.5 w-[6.5rem] min-w-[6.5rem] align-bottom text-right text-white';
-  const countButton = document.createElement('button');
-  countButton.type = 'button';
-  countButton.className = 'inline-flex items-center gap-1 hover:text-carnation-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm';
-  countButton.innerHTML = `${getTermsFieldLabel('doc_count')}${getTermsSortIndicator('_count')}`;
-  countButton.addEventListener('click', () => handleTermsSortChange('_count'));
+  countHeader.className = `border-b border-neutral-700 bg-neutral-900 px-2 py-2 align-bottom text-right text-white ${sharedDataColumnClass}`;
+  const countButton = createTermsSortButton(
+    getTermsFieldLabel('doc_count'),
+    getTermsSortIndicator('_count'),
+    () => handleTermsSortChange('_count'),
+    { align: 'right' }
+  );
   countHeader.appendChild(countButton);
   headerRow.appendChild(countHeader);
 
   fields.forEach((field) => {
     const headerCell = document.createElement('th');
-    headerCell.className = 'border-b border-r border-b-neutral-700 border-r-neutral-700 bg-neutral-700 px-2 py-2.5 w-[9.5rem] min-w-[9.5rem] align-bottom text-right text-white';
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'inline-flex w-full items-center justify-end gap-1 text-right leading-tight hover:text-carnation-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm';
-    button.innerHTML = `${getTermsFieldLabel(field)}${getTermsSortIndicator(field)}`;
+    headerCell.className = `border-b border-r border-b-neutral-700 border-r-neutral-700 bg-neutral-700 px-2 py-2 align-bottom text-right text-white ${sharedDataColumnClass}`;
+    const button = createTermsSortButton(
+      getTermsFieldLabel(field),
+      getTermsSortIndicator(field),
+      () => handleTermsSortChange(field),
+      { fullWidth: true, align: 'right' }
+    );
     enhanceTermsMetricLabel(button, field);
-    button.addEventListener('click', () => handleTermsSortChange(field));
     headerCell.appendChild(button);
     headerRow.appendChild(headerCell);
   });
@@ -1603,11 +1800,22 @@ function createGroupedTermsSection({
     table.appendChild(tfoot);
   }
 
-  wrapper.appendChild(table);
+  frame.appendChild(table);
+  wrapper.appendChild(frame);
   section.appendChild(wrapper);
   return section;
 }
 
+/**
+ * Renders the grouped terms interface for the current terms results.
+ *
+ * This clears the standard table output and replaces it with the active
+ * grouped terms tab and table.
+ *
+ * @param {Array<Record<string, any>>} records
+ * @param {string} exploreItemId
+ * @returns {void}
+ */
 function renderGroupedTermsTable(records, exploreItemId) {
   const groupedTermsView = document.getElementById('explore_terms_groups_view');
   const tableHeader = document.getElementById('export_table_head');
@@ -1635,57 +1843,66 @@ function renderGroupedTermsTable(records, exploreItemId) {
     groups: getGroupedTermsBreakdownData(record)
   }));
   const groupedSummary = allValuesRecord ? getGroupedTermsBreakdownData(allValuesRecord) : [];
-  const groupIdsWithData = new Set(groupedRecords.flatMap(({ groups }) => groups.map((group) => group.id)));
+  const availableGroups = getAvailableTermsGroups(groupedRecords);
+  currentActiveTermsGroupId = resolveActiveTermsGroup(availableGroups);
+  if (currentActiveExploreItemData?.type === 'terms') {
+    currentActiveExploreItemData.__lastRenderedRecords = records;
+  }
 
-  TERMS_BREAKDOWN_GROUPS
-    .filter((group) => groupIdsWithData.has(group.id))
-    .forEach((group) => {
-      const preferredFields = TERMS_TABLE_VISIBLE_FIELDS[group.id]?.length
-        ? TERMS_TABLE_VISIBLE_FIELDS[group.id]
-        : group.fields;
-      const remainingFields = group.fields.filter((field) => !preferredFields.includes(field));
-      const resolvedFields = [...preferredFields, ...remainingFields].filter((field) =>
-        groupedRecords.some(({ groups }) =>
-          groups.some((entry) =>
-            entry.id === group.id && entry.items.some((item) => normaliseFieldId(item.key) === normaliseFieldId(field))
+  if (!currentActiveTermsGroupId) {
+    renderGroupedTermsEmptyState();
+    return;
+  }
+
+  renderTermsGroupTabs(groupedTermsView, availableGroups);
+
+  const activeGroupConfig = currentActiveTermsGroupId === 'other_metrics'
+    ? { id: 'other_metrics', label: 'Other metrics', fields: [] }
+    : TERMS_BREAKDOWN_GROUPS.find((group) => group.id === currentActiveTermsGroupId);
+
+  if (!activeGroupConfig) {
+    renderGroupedTermsEmptyState();
+    return;
+  }
+
+  const sourceFields = activeGroupConfig.id === 'other_metrics'
+    ? Array.from(
+        new Set(
+          groupedRecords.flatMap(({ groups }) =>
+            groups
+              .filter((group) => group.id === 'other_metrics')
+              .flatMap((group) => group.items.map((item) => normaliseFieldId(item.key)))
           )
         )
-      );
+      )
+    : activeGroupConfig.fields;
 
-      if (!resolvedFields.length) return;
-
-      groupedTermsView.appendChild(createGroupedTermsSection({
-        groupId: group.id,
-        groupLabel: group.label,
-        fields: resolvedFields,
-        exploreItemId,
-        groupedRecords,
-        allValuesRecord,
-        groupedSummary
-      }));
-    });
-
-  const otherMetricKeys = Array.from(
-    new Set(
-      groupedRecords.flatMap(({ groups }) =>
-        groups
-          .filter((group) => group.id === 'other_metrics')
-          .flatMap((group) => group.items.map((item) => normaliseFieldId(item.key)))
+  const preferredFields = TERMS_TABLE_VISIBLE_FIELDS[activeGroupConfig.id]?.length
+    ? TERMS_TABLE_VISIBLE_FIELDS[activeGroupConfig.id]
+    : sourceFields;
+  const remainingFields = sourceFields.filter((field) => !preferredFields.includes(field));
+  const resolvedFields = [...preferredFields, ...remainingFields].filter((field) =>
+    groupedRecords.some(({ groups }) =>
+      groups.some((entry) =>
+        entry.id === activeGroupConfig.id && entry.items.some((item) => normaliseFieldId(item.key) === normaliseFieldId(field))
       )
     )
   );
 
-  if (otherMetricKeys.length) {
-    groupedTermsView.appendChild(createGroupedTermsSection({
-      groupId: 'other_metrics',
-      groupLabel: 'Other metrics',
-      fields: otherMetricKeys,
-      exploreItemId,
-      groupedRecords,
-      allValuesRecord,
-      groupedSummary
-    }));
+  if (!resolvedFields.length) {
+    renderGroupedTermsEmptyState();
+    return;
   }
+
+  groupedTermsView.appendChild(createGroupedTermsSection({
+    groupId: activeGroupConfig.id,
+    groupLabel: activeGroupConfig.label,
+    fields: resolvedFields,
+    exploreItemId,
+    groupedRecords,
+    allValuesRecord,
+    groupedSummary
+  }));
 }
 
 function getGroupedArticleMetadata(record) {
