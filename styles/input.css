@@ -324,6 +324,11 @@
   overflow-y: auto;
 }
 
+.tooltip-box.filters-popover-box .tooltip-content {
+  max-height: none;
+  overflow: visible;
+}
+
 .striped-bg {
   background-image: repeating-linear-gradient(
     -45deg,
