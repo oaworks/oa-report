@@ -90,7 +90,7 @@ export let currentActiveExploreItemSize = 10;
  * @type {boolean}
  */
 export let currentActiveDataDisplayToggle = true;
-export let currentActiveArticleViewMode = "cards";
+export let currentActiveArticleViewMode = "table";
 
 /** 
  * Map of explore button id -> its data object, used to render without synthesising a click.
@@ -577,8 +577,10 @@ function addRecordsShownSelectToDOM() {
 
 function addArticleViewToggleToDOM() {
   const params = getAllURLParams();
-  if (params.article_view === 'table' || params.article_view === 'cards') {
+  if (params.article_view === 'table' || params.article_view === 'grid') {
     currentActiveArticleViewMode = params.article_view;
+  } else if (params.article_view === 'cards') {
+    currentActiveArticleViewMode = 'grid';
   }
 
   updateArticleViewToggleState();
@@ -590,15 +592,15 @@ function updateArticleViewToggleState() {
 
   const toggleBg = toggleButton.querySelector('span.pointer-events-none');
   const toggleDot = toggleButton.querySelector('span.translate-x-100, span.translate-x-5');
-  const isCards = currentActiveArticleViewMode === 'cards';
+  const isTable = currentActiveArticleViewMode === 'table';
 
-  toggleButton.setAttribute('aria-checked', isCards ? 'true' : 'false');
+  toggleButton.setAttribute('aria-checked', isTable ? 'true' : 'false');
   if (!toggleBg || !toggleDot) return;
 
-  toggleBg.classList.toggle('bg-carnation-500', isCards);
-  toggleBg.classList.toggle('bg-neutral-200', !isCards);
-  toggleDot.classList.toggle('translate-x-100', isCards);
-  toggleDot.classList.toggle('translate-x-5', !isCards);
+  toggleBg.classList.toggle('bg-carnation-500', isTable);
+  toggleBg.classList.toggle('bg-neutral-200', !isTable);
+  toggleDot.classList.toggle('translate-x-100', isTable);
+  toggleDot.classList.toggle('translate-x-5', !isTable);
 }
 
 /**
@@ -631,7 +633,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     // Check if query is blank or undefined and abort if so
     if (!query || query.trim() === '') {
       setExploreDataLayout(type);
-      if (type === "articles" && currentActiveArticleViewMode === "cards") {
+      if (type === "articles" && currentActiveArticleViewMode === "grid") {
         renderArticleCards([]);
       }
       showNoResultsRow(10, "export_table_body", "js_export_table");
@@ -656,7 +658,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     if (records.length > 0) {
       if (type === "articles") {
         setExploreDataLayout(type);
-        if (currentActiveArticleViewMode === "cards") {
+        if (currentActiveArticleViewMode === "grid") {
           renderArticleCards(records);
         } else {
           renderGroupedArticleTable(records);
@@ -681,7 +683,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     } else {
       setExploreModeUI(type);
       setExploreDataLayout(type);
-      if (type === "articles" && currentActiveArticleViewMode === "cards") {
+      if (type === "articles" && currentActiveArticleViewMode === "grid") {
         renderArticleCards([]);
       }
       showNoResultsRow(10, "export_table_body", "js_export_table");
@@ -690,7 +692,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
   } catch (error) {
     console.error('Error fetching and displaying explore data:', error);
     setExploreDataLayout(itemData?.type);
-    if (itemData?.type === "articles" && currentActiveArticleViewMode === "cards") {
+    if (itemData?.type === "articles" && currentActiveArticleViewMode === "grid") {
       renderArticleCards([]);
     }
     showNoResultsRow(10, "export_table_body", "js_export_table");
@@ -1904,7 +1906,7 @@ function setExploreDataLayout(type) {
   const tableView = document.getElementById('explore_table_view');
   const copyButton = document.getElementById('explore_copy_clipboard');
   const isArticles = type === 'articles';
-  const showCards = isArticles && currentActiveArticleViewMode === 'cards';
+  const showCards = isArticles && currentActiveArticleViewMode === 'grid';
   const showTable = !isArticles || currentActiveArticleViewMode === 'table';
 
   if (!showCards) {
@@ -2534,10 +2536,10 @@ function handleArticleViewToggle() {
   if (!toggleButton || toggleButton.dataset.bound === 'true') return;
 
   toggleButton.addEventListener('click', async () => {
-    currentActiveArticleViewMode = currentActiveArticleViewMode === 'cards' ? 'table' : 'cards';
+    currentActiveArticleViewMode = currentActiveArticleViewMode === 'grid' ? 'table' : 'grid';
     updateArticleViewToggleState();
     updateURLParams({ article_view: currentActiveArticleViewMode });
-    announce(`Explore article view: ${currentActiveArticleViewMode === "cards" ? "Cards" : "Table"}.`);
+    announce(`Explore article view: ${currentActiveArticleViewMode === "grid" ? "Grid" : "Table"}.`);
 
     if (currentActiveExploreItemData?.type === 'articles') {
       toggleLoadingIndicator(true, 'explore_loading');
