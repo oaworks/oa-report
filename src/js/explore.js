@@ -8,7 +8,7 @@
 // =================================================
 
 import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, normaliseFieldId, makeNumberReadable, announce } from "./utils.js";
-import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, ARTICLE_CARD_GROUPS, ARTICLE_TABLE_VISIBLE_FIELDS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, FILTER_PILL_CLASSES, SEGMENTED_PILL_CLASSES } from "./constants.js";
+import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, ARTICLE_CARD_GROUPS, ARTICLE_TABLE_VISIBLE_FIELDS, TERMS_BREAKDOWN_GROUPS, TERMS_TABLE_VISIBLE_FIELDS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, FILTER_PILL_CLASSES, SEGMENTED_PILL_CLASSES } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
@@ -91,6 +91,7 @@ export let currentActiveExploreItemSize = 10;
  */
 export let currentActiveDataDisplayToggle = true;
 export let currentActiveArticleViewMode = "table";
+export let currentActiveExploreSort = null;
 
 /** 
  * Map of explore button id -> its data object, used to render without synthesising a click.
@@ -311,7 +312,17 @@ async function applyURLSelectionsOrDefault() {
   if (breakdown) {
     // Honour the user/bookmarked URL
     const preferredBtn = document.getElementById(`explore_${breakdown}_button`);
-    preferredBtn?.click();
+    if (preferredBtn) {
+      const data = exploreItemDataById.get(preferredBtn.id);
+      if (data) {
+        const availableFilters = parseCommaSeparatedQueries(data.query).map(({ id }) => id);
+        const activeFilter = getAllURLParams().explore_filter || currentActiveExploreItemQuery;
+        currentActiveExploreItemQuery = availableFilters.includes(activeFilter) ? activeFilter : (availableFilters[0] || null);
+        await processExploreDataTable(preferredBtn, data);
+      } else {
+        preferredBtn.click();
+      }
+    }
     return;
   }
 
@@ -355,6 +366,8 @@ function createExploreButton(exploreDataItem) {
     if (activeFilter && activeFilter !== currentActiveExploreItemQuery) removeURLParams('explore_filter');
 
     updateURLParams({ 'breakdown': exploreDataItem.id });
+    removeURLParams('sort');
+    currentActiveExploreSort = null;
     processExploreDataTable(button, exploreDataItem);
   }, 500));
 
@@ -382,6 +395,7 @@ const updateExploreHeadingIcon = (id) => {
 export async function processExploreDataTable(button, itemData) {
   currentActiveExploreItemButton = button; // Set the currently active explore item button
   currentActiveExploreItemData = itemData; // Set the currently active explore item data
+  currentActiveExploreSort = resolveExploreSort(itemData);
 
   toggleLoadingIndicator(true, 'explore_loading'); // Display loading indicator on button click
   updateButtonActiveStyles(button.id);
@@ -620,7 +634,8 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       return;
     }
 
-    const { type, id, term, sort } = itemData;
+    const { type, id, term } = itemData;
+    const sort = currentActiveExploreSort || itemData.sort;
     document.getElementById("csv_email_msg").innerHTML = ""; // Clear any existing message in CSV download form
     const exportTable = document.getElementById('export_table');
     exportTable.classList.remove('hidden');
@@ -667,9 +682,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
         }
       } else {
         setExploreDataLayout(type);
-        // Populate table with data
-        populateTableHeader(records[0], 'export_table_head', type);
-        populateTableBody(records, 'export_table_body', id, type);
+        renderGroupedTermsTable(records, id);
       }
       
       // Update any mentions of the explore data type with plural version of the ID
@@ -685,6 +698,9 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       setExploreDataLayout(type);
       if (type === "articles" && currentActiveArticleViewMode === "grid") {
         renderArticleCards([]);
+      } else if (type === "terms") {
+        renderGroupedTermsEmptyState();
+        return;
       }
       showNoResultsRow(10, "export_table_body", "js_export_table");
     }
@@ -694,6 +710,9 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     setExploreDataLayout(itemData?.type);
     if (itemData?.type === "articles" && currentActiveArticleViewMode === "grid") {
       renderArticleCards([]);
+    } else if (itemData?.type === "terms") {
+      renderGroupedTermsEmptyState();
+      return;
     }
     showNoResultsRow(10, "export_table_body", "js_export_table");
   } finally {
@@ -703,7 +722,8 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 }
 
 async function loadExploreRecords(itemData, query, size, pretty) {
-  const { type, term, sort, includes } = itemData;
+  const { type, term, includes } = itemData;
+  const sort = currentActiveExploreSort || itemData.sort;
   const decodedQuery = andQueryStrings(
     decodeAndReplaceUrlEncodedChars(query),
     getDecodedUrlQuery()
@@ -763,10 +783,9 @@ async function fetchTermBasedData(suffix, query, term, sort, size) {
   // Filter out buckets with doc_count of 0
   buckets = buckets.filter(bucket => bucket.doc_count > 0);
 
-  // TODO: implement sorting in https://github.com/oaworks/discussion/issues/1917
-  // Sort all buckets based on 'doc_count'
-  if (sort.includes('_count')) {
-    buckets.sort((a, b) => b.doc_count - a.doc_count); // Sort in descending order as default for now
+  const { field: sortField, direction } = parseTermsSort(sort);
+  if (sortField === '_count' || sortField === 'doc_count') {
+    buckets.sort((a, b) => direction === 'asc' ? a.doc_count - b.doc_count : b.doc_count - a.doc_count);
   }
 
   return { records: buckets, total: totalUniqueTerms };
@@ -862,14 +881,16 @@ function getExploreSortLabel({ type, id, term, sort }) {
 
   if (!sort) return "publication count";
 
-  if (sort.includes("_count")) return "publication count";
+  const { field: sortField } = parseTermsSort(sort);
 
-  if (sort.includes("_key") || sort === "key") {
+  if (sortField === "_count" || sortField === "doc_count") return "publication count";
+
+  if (sortField === "_key" || sortField === "key") {
     const label = EXPLORE_ITEMS_LABELS[id]?.singular || EXPLORE_ITEMS_LABELS[id]?.plural || "Label";
     return lowerCaseLabels.has(label) ? label.toLowerCase() : label;
   }
 
-  const label = EXPLORE_HEADER_TERMS_LABELS?.[sort]?.label
+  const label = EXPLORE_HEADER_TERMS_LABELS?.[sortField]?.label
     || (term ? EXPLORE_HEADER_TERMS_LABELS?.[term]?.label : null)
     || "Publication count";
   if (label === "Publication count") return "publication count";
@@ -893,8 +914,9 @@ function getExploreSortAdjective({ type, sort }) {
   }
 
   if (!sort) return "Top";
-  if (sort.includes("_key") || sort === "key") return "By";
-  return "Top";
+  const { field: sortField, direction } = parseTermsSort(sort);
+  if (sortField === "_key" || sortField === "key") return "By";
+  return direction === "asc" ? "Bottom" : "Top";
 }
 
 /**
@@ -1115,6 +1137,78 @@ function getArticleFieldLabel(key) {
         .trim();
 }
 
+function getTermsFieldLabel(key) {
+  return EXPLORE_HEADER_TERMS_LABELS?.[normaliseFieldId(key)]?.label
+    || normaliseFieldId(key)
+      .replace(/\./g, ' ')
+      .replace(/_/g, ' ')
+      .trim();
+}
+
+function getTermsSortIndicator(key) {
+  const { field, direction } = parseTermsSort(currentActiveExploreSort || currentActiveExploreItemData?.sort);
+  if (normaliseFieldId(field) !== normaliseFieldId(key)) return '';
+  return direction === 'asc' ? ' ↑' : ' ↓';
+}
+
+function parseTermsSort(sort) {
+  const rawSort = String(sort || '_count');
+  const [field, direction = 'desc'] = rawSort.split(':');
+  return {
+    field,
+    direction: direction === 'asc' ? 'asc' : 'desc'
+  };
+}
+
+function getValidTermsSortFields(itemData) {
+  const includeFields = (itemData?.includes || '')
+    .split(',')
+    .map((field) => normaliseFieldId(field))
+    .filter(Boolean);
+
+  return new Set(['_count', 'doc_count', '_key', 'key', ...includeFields]);
+}
+
+function resolveExploreSort(itemData) {
+  const urlSort = getAllURLParams().sort;
+  if (itemData?.type !== 'terms') return itemData?.sort || null;
+
+  const validFields = getValidTermsSortFields(itemData);
+  const candidateSorts = [urlSort, currentActiveExploreSort, itemData?.sort, '_count:desc'];
+
+  for (const candidate of candidateSorts) {
+    if (!candidate) continue;
+    const { field, direction } = parseTermsSort(candidate);
+    if (validFields.has(normaliseFieldId(field)) || validFields.has(field)) {
+      return `${field}:${direction}`;
+    }
+  }
+
+  return '_count:desc';
+}
+
+async function handleTermsSortChange(field) {
+  if (!currentActiveExploreItemData || currentActiveExploreItemData.type !== 'terms') return;
+
+  const { field: currentField, direction: currentDirection } = parseTermsSort(currentActiveExploreSort || currentActiveExploreItemData.sort);
+  const nextDirection = normaliseFieldId(currentField) === normaliseFieldId(field) && currentDirection === 'desc'
+    ? 'asc'
+    : 'desc';
+
+  currentActiveExploreSort = `${field}:${nextDirection}`;
+  updateURLParams({ sort: currentActiveExploreSort });
+
+  toggleLoadingIndicator(true, 'explore_loading');
+  await fetchAndDisplayExploreData(
+    currentActiveExploreItemData,
+    currentActiveExploreItemQuery,
+    currentActiveExploreItemSize,
+    currentActiveDataDisplayToggle
+  );
+  announce(`Explore sort: ${getTermsFieldLabel(field)} ${nextDirection === 'asc' ? 'ascending' : 'descending'}.`);
+  toggleLoadingIndicator(false, 'explore_loading');
+}
+
 /**
  * Formats article values for card display.
  *
@@ -1295,6 +1389,303 @@ function createCompactArticleMetadataRow(key, label, value, isHtml = false) {
   row.appendChild(dt);
   row.appendChild(dd);
   return row;
+}
+
+function enhanceTermsMetricLabel(dt, key) {
+  const labelData = EXPLORE_HEADER_TERMS_LABELS?.[normaliseFieldId(key)];
+  if (!labelData?.info?.trim()) return;
+
+  const additionalHelpText = orgData.hits.hits[0]?._source.policy?.help_text?.[normaliseFieldId(key)] ?? null;
+  dt.tabIndex = 0;
+  dt.classList.add('cursor-help');
+  createTooltip(dt, generateTooltipContent(labelData, additionalHelpText), {
+    placement: 'bottom',
+    theme: 'tooltip-white'
+  });
+}
+
+function createCompactTermsMetadataRow(key, value) {
+  const row = createCompactArticleMetadataRow(key, getTermsFieldLabel(key), value);
+  const label = row.querySelector('dt');
+  if (label) enhanceTermsMetricLabel(label, key);
+  return row;
+}
+
+function getGroupedTermsBreakdownData(record) {
+  const normalisedRecordKeys = new Map(
+    Object.keys(record).map((key) => [normaliseFieldId(key), key])
+  );
+  const usedKeys = new Set(['key', 'doc_count']);
+  const groups = [];
+
+  TERMS_BREAKDOWN_GROUPS.forEach((group) => {
+    const items = [];
+
+    group.fields.forEach((field) => {
+      const actualKey = normalisedRecordKeys.get(normaliseFieldId(field));
+      if (!actualKey || usedKeys.has(actualKey)) return;
+
+      const value = record[actualKey];
+      if (value === null || value === undefined || value === '' || value === 'null') return;
+
+      usedKeys.add(actualKey);
+      items.push({
+        key: actualKey,
+        value
+      });
+    });
+
+    if (items.length) {
+      groups.push({
+        id: group.id,
+        label: group.label,
+        items
+      });
+    }
+  });
+
+  const otherItems = Object.entries(record)
+    .filter(([key, value]) => !usedKeys.has(key) && value !== null && value !== undefined && value !== '' && value !== 'null')
+    .map(([key, value]) => ({ key, value }))
+    .sort((a, b) => getTermsFieldLabel(a.key).localeCompare(getTermsFieldLabel(b.key)));
+
+  if (otherItems.length) {
+    groups.push({
+      id: 'other_metrics',
+      label: 'Other metrics',
+      items: otherItems
+    });
+  }
+
+  return groups;
+}
+
+function createGroupedTermsTermCell(record, exploreItemId, isFooter = false) {
+  const cell = createTableCell(
+    record.key,
+    isFooter
+      ? 'border-t border-neutral-700 sticky left-0 bg-neutral-200 p-3 align-top text-neutral-900'
+      : 'border-b border-neutral-200 sticky left-0 bg-neutral-100 p-3 align-top text-neutral-900',
+    exploreItemId,
+    'key',
+    false
+  );
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'space-y-2';
+
+  const keyContent = cell.innerHTML;
+  cell.innerHTML = '';
+
+  const keyBlock = document.createElement('div');
+  keyBlock.className = 'text-sm font-medium text-neutral-900';
+  keyBlock.innerHTML = keyContent;
+  wrapper.appendChild(keyBlock);
+
+  cell.appendChild(wrapper);
+  return cell;
+}
+
+function createGroupedTermsValueCell(value, isFooter = false, subtle = false) {
+  const cell = document.createElement('td');
+  cell.className = isFooter
+    ? `border-b border-neutral-300 ${subtle ? 'bg-neutral-200' : 'bg-neutral-100'} p-2 whitespace-nowrap text-right text-neutral-900`
+    : `border-b border-neutral-200 ${subtle ? 'bg-neutral-50' : 'bg-white'} p-2 whitespace-nowrap text-right text-neutral-900`;
+  cell.textContent = value ?? '';
+  return cell;
+}
+
+function renderGroupedTermsEmptyState(message = 'No results found.') {
+  const groupedTermsView = document.getElementById('explore_terms_groups_view');
+  if (!groupedTermsView) return;
+  groupedTermsView.innerHTML = '';
+
+  const empty = document.createElement('p');
+  empty.className = 'rounded-lg border border-neutral-200 bg-white p-6 text-sm text-neutral-700';
+  empty.textContent = message;
+  groupedTermsView.appendChild(empty);
+}
+
+function createGroupedTermsSection({
+  groupId,
+  groupLabel,
+  fields,
+  exploreItemId,
+  groupedRecords,
+  allValuesRecord,
+  groupedSummary
+}) {
+  const section = document.createElement('section');
+  section.className = 'mb-6 last:mb-0';
+
+  const heading = document.createElement('h4');
+  heading.className = 'mb-2 px-1 text-xs font-semibold uppercase tracking-[0.14em] text-carnation-200';
+  heading.textContent = groupLabel;
+  section.appendChild(heading);
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'overflow-x-auto rounded-md border border-neutral-700 bg-neutral-800';
+
+  const table = document.createElement('table');
+  table.className = 'w-full border-collapse table-fixed bg-white';
+
+  const thead = document.createElement('thead');
+  thead.className = 'border-b border-neutral-700 bg-neutral-900 text-left text-xs font-medium uppercase tracking-wider text-white';
+  const headerRow = document.createElement('tr');
+
+  const termHeader = document.createElement('th');
+  termHeader.className = 'border-b border-neutral-700 sticky left-0 bg-neutral-900 px-3 py-2.5 w-[16rem] min-w-[16rem] align-bottom text-left text-white';
+  const termButton = document.createElement('button');
+  termButton.type = 'button';
+  termButton.className = 'inline-flex items-center gap-1 hover:text-carnation-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm';
+  termButton.innerHTML = `${EXPLORE_ITEMS_LABELS[exploreItemId]?.singular || 'Term'}${getTermsSortIndicator('key')}`;
+  termButton.addEventListener('click', () => handleTermsSortChange('key'));
+  termHeader.appendChild(termButton);
+  headerRow.appendChild(termHeader);
+
+  const countHeader = document.createElement('th');
+  countHeader.className = 'border-b border-neutral-700 bg-neutral-900 px-2 py-2.5 w-[6.5rem] min-w-[6.5rem] align-bottom text-right text-white';
+  const countButton = document.createElement('button');
+  countButton.type = 'button';
+  countButton.className = 'inline-flex items-center gap-1 hover:text-carnation-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm';
+  countButton.innerHTML = `${getTermsFieldLabel('doc_count')}${getTermsSortIndicator('_count')}`;
+  countButton.addEventListener('click', () => handleTermsSortChange('_count'));
+  countHeader.appendChild(countButton);
+  headerRow.appendChild(countHeader);
+
+  fields.forEach((field) => {
+    const headerCell = document.createElement('th');
+    headerCell.className = 'border-b border-r border-b-neutral-700 border-r-neutral-700 bg-neutral-700 px-2 py-2.5 w-[9.5rem] min-w-[9.5rem] align-bottom text-right text-white';
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'inline-flex w-full items-center justify-end gap-1 text-right leading-tight hover:text-carnation-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm';
+    button.innerHTML = `${getTermsFieldLabel(field)}${getTermsSortIndicator(field)}`;
+    enhanceTermsMetricLabel(button, field);
+    button.addEventListener('click', () => handleTermsSortChange(field));
+    headerCell.appendChild(button);
+    headerRow.appendChild(headerCell);
+  });
+
+  thead.appendChild(headerRow);
+  table.appendChild(thead);
+
+  const tbody = document.createElement('tbody');
+  tbody.className = 'text-xs md:text-sm text-neutral-900';
+  groupedRecords.forEach(({ record, groups }) => {
+    const row = document.createElement('tr');
+    row.appendChild(createGroupedTermsTermCell(record, exploreItemId));
+    row.appendChild(createGroupedTermsValueCell(record.doc_count, false, true));
+
+    const resolvedGroup = groups.find((entry) => entry.id === groupId);
+    fields.forEach((field) => {
+      const item = resolvedGroup?.items.find((entry) => normaliseFieldId(entry.key) === normaliseFieldId(field));
+      row.appendChild(createGroupedTermsValueCell(item?.value));
+    });
+
+    tbody.appendChild(row);
+  });
+  table.appendChild(tbody);
+
+  if (allValuesRecord) {
+    const tfoot = document.createElement('tfoot');
+    tfoot.className = 'text-xs md:text-sm bg-neutral-100 text-neutral-900';
+    const footerRow = document.createElement('tr');
+    footerRow.appendChild(createGroupedTermsTermCell(allValuesRecord, exploreItemId, true));
+    footerRow.appendChild(createGroupedTermsValueCell(allValuesRecord.doc_count, true, true));
+
+    const summaryGroup = groupedSummary.find((entry) => entry.id === groupId);
+    fields.forEach((field) => {
+      const item = summaryGroup?.items.find((entry) => normaliseFieldId(entry.key) === normaliseFieldId(field));
+      footerRow.appendChild(createGroupedTermsValueCell(item?.value, true));
+    });
+
+    tfoot.appendChild(footerRow);
+    table.appendChild(tfoot);
+  }
+
+  wrapper.appendChild(table);
+  section.appendChild(wrapper);
+  return section;
+}
+
+function renderGroupedTermsTable(records, exploreItemId) {
+  const groupedTermsView = document.getElementById('explore_terms_groups_view');
+  const tableHeader = document.getElementById('export_table_head');
+  const tableBody = document.getElementById('export_table_body');
+  const tableFooter = document.getElementById('export_table_foot');
+  if (!groupedTermsView || !tableHeader || !tableBody || !tableFooter) return;
+
+  groupedTermsView.innerHTML = '';
+  tableHeader.innerHTML = '';
+  tableBody.innerHTML = '';
+  tableFooter.innerHTML = '';
+
+  const allValuesRecord = records.find(record => record.key === 'all_values');
+  const otherRecords = records
+    .filter(record => record.key !== 'all_values')
+    .slice(0, currentActiveExploreItemSize);
+
+  if (!otherRecords.length && !allValuesRecord) {
+    renderGroupedTermsEmptyState();
+    return;
+  }
+
+  const groupedRecords = otherRecords.map((record) => ({
+    record,
+    groups: getGroupedTermsBreakdownData(record)
+  }));
+  const groupedSummary = allValuesRecord ? getGroupedTermsBreakdownData(allValuesRecord) : [];
+  const groupIdsWithData = new Set(groupedRecords.flatMap(({ groups }) => groups.map((group) => group.id)));
+
+  TERMS_BREAKDOWN_GROUPS
+    .filter((group) => groupIdsWithData.has(group.id))
+    .forEach((group) => {
+      const preferredFields = TERMS_TABLE_VISIBLE_FIELDS[group.id]?.length
+        ? TERMS_TABLE_VISIBLE_FIELDS[group.id]
+        : group.fields;
+      const remainingFields = group.fields.filter((field) => !preferredFields.includes(field));
+      const resolvedFields = [...preferredFields, ...remainingFields].filter((field) =>
+        groupedRecords.some(({ groups }) =>
+          groups.some((entry) =>
+            entry.id === group.id && entry.items.some((item) => normaliseFieldId(item.key) === normaliseFieldId(field))
+          )
+        )
+      );
+
+      if (!resolvedFields.length) return;
+
+      groupedTermsView.appendChild(createGroupedTermsSection({
+        groupId: group.id,
+        groupLabel: group.label,
+        fields: resolvedFields,
+        exploreItemId,
+        groupedRecords,
+        allValuesRecord,
+        groupedSummary
+      }));
+    });
+
+  const otherMetricKeys = Array.from(
+    new Set(
+      groupedRecords.flatMap(({ groups }) =>
+        groups
+          .filter((group) => group.id === 'other_metrics')
+          .flatMap((group) => group.items.map((item) => normaliseFieldId(item.key)))
+      )
+    )
+  );
+
+  if (otherMetricKeys.length) {
+    groupedTermsView.appendChild(createGroupedTermsSection({
+      groupId: 'other_metrics',
+      groupLabel: 'Other metrics',
+      fields: otherMetricKeys,
+      exploreItemId,
+      groupedRecords,
+      allValuesRecord,
+      groupedSummary
+    }));
+  }
 }
 
 function getGroupedArticleMetadata(record) {
@@ -1904,10 +2295,15 @@ function renderArticleCards(records) {
 function setExploreDataLayout(type) {
   const cardsView = document.getElementById('explore_cards_view');
   const tableView = document.getElementById('explore_table_view');
+  const groupedTermsView = document.getElementById('explore_terms_groups_view');
+  const standardTableView = document.getElementById('explore_standard_table_view');
   const copyButton = document.getElementById('explore_copy_clipboard');
   const isArticles = type === 'articles';
+  const isTerms = type === 'terms';
   const showCards = isArticles && currentActiveArticleViewMode === 'grid';
   const showTable = !isArticles || currentActiveArticleViewMode === 'table';
+  const showGroupedTerms = isTerms;
+  const showStandardTable = showTable && !showGroupedTerms;
 
   if (!showCards) {
     closeArticleDrawer();
@@ -1915,8 +2311,10 @@ function setExploreDataLayout(type) {
 
   cardsView?.classList.toggle('hidden', !showCards);
   tableView?.classList.toggle('hidden', !showTable);
+  groupedTermsView?.classList.toggle('hidden', !showGroupedTerms);
+  standardTableView?.classList.toggle('hidden', !showStandardTable);
   if (copyButton) {
-    copyButton.classList.toggle('hidden', !showTable);
+    copyButton.classList.toggle('hidden', !showStandardTable);
   }
 }
 

@@ -1099,3 +1099,98 @@ export const ARTICLE_TABLE_VISIBLE_FIELDS = {
   discovery_and_subject_metadata: ["concepts.display_name", "cited_by_count"],
   other_metadata: []
 };
+
+export const TERMS_BREAKDOWN_GROUPS = [
+  {
+    id: "coverage_and_oa",
+    label: "Coverage & OA",
+    fields: [
+      "covered_by_policy",
+      "compliant",
+      "compliant_and_covered_by_policy",
+      "free_to_read",
+      "open_access",
+      "in_repository",
+      "in_approved_repository",
+      "with_preprint",
+      "with_peer_reviewed_version"
+    ]
+  },
+  {
+    id: "cost_and_impact",
+    label: "Cost & impact",
+    fields: [
+      "total_citations",
+      "mean_citations",
+      "with_apc",
+      "total_apc_amount",
+      "mean_apc_amount",
+      "median_apc_amount"
+    ]
+  },
+  {
+    id: "data_availability_statements",
+    label: "Data availability statements",
+    fields: [
+      "with_data_availability_statement",
+      "without_data_availability_statement",
+      "unknown_data_availability_statement"
+    ]
+  },
+  {
+    id: "data_sharing",
+    label: "Data sharing",
+    fields: [
+      "with_data",
+      "without_data",
+      "unknown_data_status",
+      "with_shared_data",
+      "without_shared_data",
+      "unknown_shared_data_status",
+      "with_shared_data_in_repository",
+      "with_open_data",
+      "with_open_data_in_repository",
+      "with_data_dois",
+      "with_data_accession_number"
+    ]
+  },
+  {
+    id: "code_sharing",
+    label: "Code sharing",
+    fields: [
+      "with_code",
+      "without_code",
+      "unknown_code_status",
+      "with_shared_code",
+      "without_shared_code",
+      "unknown_shared_code_status",
+      "with_shared_code_in_repository",
+      "with_open_code",
+      "with_open_code_in_repository",
+      "with_code_dois",
+      "with_code_accession_number"
+    ]
+  },
+  {
+    id: "identifiers",
+    label: "Identifiers",
+    fields: [
+      "with_dois",
+      "with_orcids",
+      "with_rors",
+      "with_fundref_dois",
+      "with_grant_id",
+      "with_grant_dois"
+    ]
+  }
+];
+
+export const TERMS_TABLE_VISIBLE_FIELDS = {
+  coverage_and_oa: ["covered_by_policy", "compliant", "open_access", "in_repository"],
+  cost_and_impact: ["total_citations", "mean_citations", "with_apc"],
+  data_availability_statements: ["with_data_availability_statement", "without_data_availability_statement", "unknown_data_availability_statement"],
+  data_sharing: ["with_data", "with_shared_data", "with_open_data", "with_data_dois"],
+  code_sharing: ["with_code", "with_shared_code", "with_open_code", "with_code_dois"],
+  identifiers: ["with_dois", "with_orcids", "with_rors"],
+  other_metrics: []
+};

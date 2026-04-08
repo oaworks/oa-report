@@ -693,6 +693,8 @@ export function getAggregatedDataQuery(
   size = 20,
   sort = "_count",
 ) {
+  const [sortField, sortDirection = "desc"] = String(sort || "_count").split(":");
+
   // `published_year` on the live API is already keyword-type; others need `.keyword`.
   let termField = term;
   if (!(term === "published_year" && ELEVENTY_API_ENDPOINT === "api")) {
@@ -724,7 +726,7 @@ export function getAggregatedDataQuery(
         cardinality: { field: termField },
       },
       values: {
-        terms: { field: termField, size, order: { [sort]: "desc" } },
+        terms: { field: termField, size, order: { [sortField]: sortDirection } },
         aggs,
       },
     },
