@@ -109,7 +109,7 @@ export function setDefaultYear() {
     }
   } else {
     // Otherwise, set default dates or years based on user type
-    let defaultStartDate, defaultEndDate;
+    let defaultStartDate, defaultEndDate, defaultButtonYear;
 
     if (paid) {
       // For paid users, use the full year unless it's Q2 or later
@@ -117,21 +117,24 @@ export function setDefaultYear() {
         // Switch to the current year for Q2 and beyond
         defaultStartDate = createDate(currentDate.getFullYear(), 0, 1); // Jan 1 of the current year
         defaultEndDate = new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate())); // Today’s date
+        defaultButtonYear = currentDate.getFullYear();
       } else {
         // Default to the previous year
         defaultStartDate = createDate(DEFAULT_YEAR, 0, 1); // January 1st
         defaultEndDate = createDate(DEFAULT_YEAR, 11, 31); // December 31st
+        defaultButtonYear = DEFAULT_YEAR;
       }
     } else {
       // For non-paid users, restrict the date range from Jan 1 to Jun 30 of DEFAULT_YEAR_FREE
       defaultStartDate = createDate(DEFAULT_YEAR_FREE, 0, 1); // January 1st
       defaultEndDate = createDate(DEFAULT_YEAR_FREE, 5, 30); // June 30th
+      defaultButtonYear = DEFAULT_YEAR_FREE;
     }
 
     replaceDateRange(defaultStartDate, defaultEndDate);
 
     // Select the default year button and style it as selected
-    const defaultButton = document.getElementById(`year-${DEFAULT_YEAR}`);
+    const defaultButton = document.getElementById(`year-${defaultButtonYear}`);
     if (defaultButton) {
       handleYearButtonLogic(defaultButton, defaultStartDate, defaultEndDate);
       updateYearButtonStyling(defaultButton);
@@ -358,7 +361,7 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
 
   // Add classes for styling
   button.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " px-3";
-  button.setAttribute("aria-pressed", buttonText === `${DEFAULT_YEAR}` ? "true" : "false");
+  button.setAttribute("aria-pressed", "false");
 
   // Add event listener
   button.addEventListener("click", function() {
