@@ -17,6 +17,7 @@ import { orgDataPromise, initInsightsAndActions } from './insights-and-actions.j
 import { getAggregatedDataQuery } from './aggregated-data-query.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { createTooltip } from './tooltip-manager.js';
+import { buildDefinitionTooltipContent } from './tooltip-content.js';
 
 // =================================================
 // Global variables
@@ -916,33 +917,12 @@ function isNumericLikeValue(value) {
  * @returns {string} The generated HTML content for the tooltip.
  */
 function generateTooltipContent(labelData, additionalHelpText = null) {
-  // Org-specific fields to inject with text content
-  // Only run regex if fields are present in the HTML
-  const injectOrgFields = (html = '') => /org-(name|policy-(coverage|compliance|url))/.test(html) ? html
-    .replace(/<span class=['"]org-name['"]><\/span>/g, orgName ?? '')
-    .replace(/<span class=['"]org-policy-coverage['"]><\/span>/g, orgPolicyCoverage ?? '')
-    .replace(/<span class=['"]org-policy-compliance['"]><\/span>/g, orgPolicyCompliance ?? '')
-    .replace(/class=['"]org-policy-url['"][^>]*href=['"][^'"]*['"]/g, match => match.replace(/href=['"][^'"]*['"]/, `href='${orgPolicyUrl ?? '#'}'`))
-  : html;
-
-  // Reuse a single off-DOM element to avoid repeated creation
-  const textBuffer = generateTooltipContent.textBuffer || (generateTooltipContent.textBuffer = document.createElement('div'));
-
-  // Get plain text version of HTML content
-  const plainText = (html = '') => {
-    textBuffer.innerHTML = html;
-    return textBuffer.textContent.replace(/\s+/g, ' ').trim();
-  };
-  const infoHtml = injectOrgFields(labelData.info);
-  const helpHtml = additionalHelpText ? injectOrgFields(additionalHelpText) : '';
-  const detailsHtml = injectOrgFields(labelData.details);
-  const showHelp = helpHtml && !plainText(infoHtml).includes(plainText(helpHtml));
-  const hasDetails = !!labelData.details;
-  return `
-    <p class='${hasDetails ? "mb-2" : ""}'>${infoHtml}</p>
-    ${showHelp ? `<p class='mb-2'>${helpHtml}</p>` : ""}
-    ${hasDetails ? `<details><summary class='hover:cursor-pointer'>Methodology</summary><p class='mt-2'>${detailsHtml}</p></details>` : ""}
-  `;
+  return buildDefinitionTooltipContent(labelData, additionalHelpText, {
+    orgName,
+    orgPolicyCoverage,
+    orgPolicyCompliance,
+    orgPolicyUrl
+  });
 }
 
 /**
