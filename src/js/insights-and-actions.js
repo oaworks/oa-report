@@ -26,14 +26,30 @@ const fetchCountQuery = (url) => {
 };
 
 const INSIGHT_CARD_BY_NUMERATOR = new Map(INSIGHTS_CARDS.map((card) => [card.numerator, card]));
+const INSIGHT_TOOLTIP_HEADING = 'Definition';
+
+function buildInsightTooltipSection(contentHtml = '') {
+  if (!contentHtml) return '';
+
+  return `
+    <section class="space-y-2">
+      <h4 class="font-semibold text-neutral-900">${INSIGHT_TOOLTIP_HEADING}</h4>
+      ${contentHtml}
+    </section>
+  `;
+}
 
 function buildInsightDefinitionsHtml(numerator, insightInfo = '', helpTextByKey = {}) {
   const matchingCard = INSIGHT_CARD_BY_NUMERATOR.get(numerator);
   const definitionKey = matchingCard?.definition_key;
-  if (!definitionKey) return '';
+  if (!definitionKey) {
+    return buildInsightTooltipSection(insightInfo);
+  }
 
   const fieldDefinition = getFieldDefinition(definitionKey, 'insights');
-  if (!fieldDefinition?.details?.trim()) return '';
+  if (!fieldDefinition) {
+    return buildInsightTooltipSection(insightInfo);
+  }
 
   const orgMeta = {
     orgName,
@@ -54,12 +70,7 @@ function buildInsightDefinitionsHtml(numerator, insightInfo = '', helpTextByKey 
     dedupeHelpTextAgainstLead: fieldDefinition.help_text_style !== 'bullets'
   });
 
-  return `
-    <section class="space-y-2">
-      <div class="font-semibold text-neutral-900">${fieldDefinition.label}</div>
-      ${contentHtml}
-    </section>
-  `;
+  return buildInsightTooltipSection(contentHtml);
 }
 
 // =================================================
@@ -415,9 +426,8 @@ export function initInsightsAndActions(org) {
           const detailHtml = figureDetails
             ? `<div class="mb-2 font-semibold text-neutral-900">${figureDetails.innerHTML}</div>`
             : "";
-          const infoHtml = insightInfo ? `<div class="space-y-2">${insightInfo}</div>` : "";
-          const definitionsHtml = buildInsightDefinitionsHtml(numerator, insightInfo, helpTextByKey);
-          instance.setContent(`${detailHtml}${definitionsHtml || infoHtml}`);
+          const definitionHtml = buildInsightDefinitionsHtml(numerator, insightInfo, helpTextByKey);
+          instance.setContent(`${detailHtml}${definitionHtml}`);
         };
 
         // Accessibility / tooltip IDs
