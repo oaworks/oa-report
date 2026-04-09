@@ -3,6 +3,8 @@
 // Insight card copy/config
 // =================================================
 
+import { getFieldDefinition } from './field-definitions.js';
+
 /**
  * Insight card configurations and copy.
  * @type {Array<Object>}
@@ -30,49 +32,57 @@ export const INSIGHTS_CARDS = [
     numerator: "is_free_to_read",
     denominator: "is_paper",
     denominatorText: "articles",
-    info: "<p>Journal articles that are free to read on the publisher website or any online repository, including temporarily accessible articles (“bronze Open Access”).</p>"
+    definition_key: "free_to_read",
+    info: getFieldDefinition("free_to_read", "insights", { subject: "Journal articles" }).info
   },
   {
     numerator: "is_free_to_read_preprint",
     denominator: "is_preprint",
     denominatorText: "preprints",
-    info: "<p>Preprints that are free to read on the publisher website or any online repository, including temporarily accessible articles (“bronze Open Access”).</p>"
+    definition_key: "free_to_read",
+    info: getFieldDefinition("free_to_read", "insights", { subject: "Preprints" }).info
   },
   {
     numerator: "is_compliant",
     denominator: "is_covered_by_policy",
     denominatorText: "articles covered by policy",
-    info: `<p>The percentage of journal articles covered by <a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
+    definition_key: "compliant",
+    info: getFieldDefinition("compliant", "insights", { subject: "journal articles" }).info
   },
   {
     numerator: "is_compliant_preprint",
     denominator: "is_covered_by_policy_preprint",
     denominatorText: "preprints covered by policy",
-    info: `<p>The percentage of preprints covered by <a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
+    definition_key: "compliant",
+    info: getFieldDefinition("compliant", "insights", { subject: "preprints" }).info
   },
   {
     numerator: "is_compliant_article",
     denominator: "is_paper",
     denominatorText: "articles covered by policy",
-    info: `<p>The percentage of journal articles covered by <a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
+    definition_key: "compliant",
+    info: getFieldDefinition("compliant", "insights", { subject: "journal articles" }).info
   },
   {
     numerator: "is_oa",
     denominator: "is_paper",
     denominatorText: "articles",
-    info: "<p>The number of journal articles that are free and <a href='https://creativecommons.org/licenses/by/4.0/' class='underline underline-offset-2 decoration-1' target='_blank' rel='noopener'>CC BY</a> <strong class='bold'>or</strong> <a href='https://creativecommons.org/publicdomain/zero/1.0/' class='underline underline-offset-2 decoration-1' target='_blank' rel='noopener'>CC0</a> (in the public domain) on the publisher’s website, a repository or a preprint server.</p>"
+    definition_key: "open_access",
+    info: getFieldDefinition("open_access", "insights", { subject: "journal articles" }).info
   },
   {
     numerator: "has_data_availability_statement",
     denominator: "has_checked_data_availability_statement",
     denominatorText: "articles checked to date",
-    info: `<p>This number tells you how many journal articles that we’ve analyzed have a data availability statement.</p> <p>To check if a paper has a data availability statement, we use data from PubMed and review articles manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data).</p>`
+    definition_key: "data_availability_statement",
+    info: getFieldDefinition("data_availability_statement", "insights", { subject: "journal articles", review_subject: "articles" }).info
   },
   {
     numerator: "has_data_availability_statement_preprint",
     denominator: "has_checked_data_availability_statement_preprint",
     denominatorText: "preprints checked to date",
-    info: `<p>This number tells you how many preprints that we’ve analyzed have a data availability statement.</p> <p>To check if a paper has a data availability statement, we use data from PubMed and review preprints manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data).</p>`
+    definition_key: "data_availability_statement",
+    info: getFieldDefinition("data_availability_statement", "insights", { subject: "preprints", review_subject: "preprints" }).info
   },
   {
     numerator: "has_open_data",
@@ -90,6 +100,7 @@ export const INSIGHTS_CARDS = [
     numerator: "is_compliant_publication",
     denominator: "is_covered_by_policy",
     denominatorText: "unique publications covered by policy",
-    info: `<p>The percentage of unique publications covered by <a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
+    definition_key: "compliant",
+    info: getFieldDefinition("compliant", "insights", { subject: "unique publications" }).info
   }
 ];

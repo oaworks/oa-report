@@ -8,5 +8,6 @@ export * from './constants/formatting.js';
 export * from './constants/ui.js';
 export * from './constants/insights.js';
 export * from './constants/explore.js';
+export * from './constants/field-definitions.js';
 export * from './constants/codes.js';
 export * from './constants/actions.js';

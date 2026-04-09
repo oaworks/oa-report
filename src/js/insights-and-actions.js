@@ -10,11 +10,11 @@
 // =================================================
 
 import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter } from './utils.js';
-import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS, EXPLORE_HEADER_TERMS_LABELS } from './constants.js';
+import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS, getFieldDefinition } from './constants.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { initActionTabs } from './actions.js';
 import { createPopover } from './tooltip-manager.js';
-import { buildTooltipContent, injectOrgFields } from './tooltip-content.js';
+import { buildTooltipContent, buildDefinitionHelpHtml, injectOrgFields } from './tooltip-content.js';
 
 // Cache identical count queries so we only hit the API once per unique URL
 const countQueryCache = new Map();
@@ -25,44 +25,38 @@ const fetchCountQuery = (url) => {
   return countQueryCache.get(url);
 };
 
-const POLICY_INSIGHT_NUMERATORS = new Set([
-  'is_compliant',
-  'is_compliant_article',
-  'is_compliant_preprint',
-  'is_compliant_publication'
-]);
+const INSIGHT_CARD_BY_NUMERATOR = new Map(INSIGHTS_CARDS.map((card) => [card.numerator, card]));
 
 function buildInsightDefinitionsHtml(numerator, insightInfo = '', helpTextByKey = {}) {
-  if (!POLICY_INSIGHT_NUMERATORS.has(numerator)) return '';
+  const matchingCard = INSIGHT_CARD_BY_NUMERATOR.get(numerator);
+  const definitionKey = matchingCard?.definition_key;
+  if (!definitionKey) return '';
 
-  const compliantLabelData = EXPLORE_HEADER_TERMS_LABELS.compliant;
-  if (!compliantLabelData?.details?.trim()) return '';
+  const fieldDefinition = getFieldDefinition(definitionKey, 'insights');
+  if (!fieldDefinition?.details?.trim()) return '';
 
-  const compliantHelpText = helpTextByKey.compliant?.trim() || '';
-  const coveredHelpText = helpTextByKey.covered_by_policy?.trim() || '';
   const orgMeta = {
     orgName,
     orgPolicyCoverage,
     orgPolicyCompliance,
     orgPolicyUrl
   };
-  const bulletItems = [
-    compliantHelpText && `<li>${injectOrgFields(compliantHelpText, orgMeta)}</li>`,
-    coveredHelpText && `<li>${injectOrgFields(coveredHelpText, orgMeta)}</li>`
-  ].filter(Boolean).join('');
-  const helpHtml = bulletItems
-    ? `<ul class="list-disc list-outside pl-5 space-y-1">${bulletItems}</ul>`
-    : '';
+  const helpHtml = buildDefinitionHelpHtml({
+    help_text: fieldDefinition.help_text,
+    help_text_by_key: helpTextByKey,
+    org_meta: orgMeta,
+    help_text_style: fieldDefinition.help_text_style
+  });
   const contentHtml = buildTooltipContent({
     leadHtml: injectOrgFields(insightInfo, orgMeta),
     helpHtml,
-    detailsHtml: injectOrgFields(compliantLabelData.details, orgMeta),
-    dedupeHelpTextAgainstLead: true
+    detailsHtml: injectOrgFields(fieldDefinition.details, orgMeta),
+    dedupeHelpTextAgainstLead: fieldDefinition.help_text_style !== 'bullets'
   });
 
   return `
     <section class="space-y-2">
-      <div class="font-semibold text-neutral-900">${compliantLabelData.label}</div>
+      <div class="font-semibold text-neutral-900">${fieldDefinition.label}</div>
       ${contentHtml}
     </section>
   `;

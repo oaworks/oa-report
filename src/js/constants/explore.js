@@ -3,6 +3,8 @@
 // Explore labels and headers
 // =================================================
 
+import { getFieldDefinition } from "./field-definitions.js";
+
 export const EXPLORE_ITEMS_LABELS = {
   "articles": {
     singular: "Journal article",
@@ -354,25 +356,14 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   "doc_count": {
     label: "Publications"
   },
-  "compliant": {
-    label: "Compliant",
-    info: "Publications covered by <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>your organization’s Open Access policy</a> that are compliant with the policy. <span class='org-policy-compliance'></span>",
-    details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex."
-  },
+  "compliant": getFieldDefinition("compliant", "explore"),
   "compliant_and_covered_by_policy": {
     label: "Compliant (all)",
     info: "All publications that comply with the requirements of the Open Access policy, even if they are not covered by said policy. <p><span class='org-policy-compliance'></span></p>",
     details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex."
   },
-  "covered_by_policy": {
-    label: "Covered by policy",
-    info: "Publications covered by <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>your organization’s Open Access policy</a>. <span class='org-policy-coverage'></span>",
-  },
-  "free_to_read": {
-    label: "Free-to-read",
-    info: "Publications that are free to read on the publisher’s website or any online repository, including temporarily accessible articles (“bronze Open Access”).",
-    details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex."
-  },
+  "covered_by_policy": getFieldDefinition("covered_by_policy", "explore"),
+  "free_to_read": getFieldDefinition("free_to_read", "explore"),
   "in_repository": {
     label: "In repository",
     info: "Publications that have a copy of the work freely available and discoverable in any repository.",
@@ -391,11 +382,7 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
     label: "Median APC amount",
     info: "Median of article-processing charges (APCs) paid by <span class='org-name'></span>."
   },
-  "open_access": {
-    label: "Open Access",
-    info: "Publications that are free and CC BY or CC0 (in the public domain) on the publisher’s website, a repository or a preprint server.",
-    details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref, OpenAlex, Europe PMC and manual checks (as required). If a work has the required license at any location it is considered Open Access."
-  },
+  "open_access": getFieldDefinition("open_access", "explore"),
   "publications": {
     label: "Publications"
   },
@@ -440,11 +427,7 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   "with_code_accession_number": {
     label: "With code accession number"
   },
-  "with_data_availability_statement": {
-    label: "With data availability statement",
-    info: "Publications that include a data availability statement. These statements (also called ‘data access’, ‘resource availability’ or ‘code availability’ statements) tell readers where the underlying data or code can be found and how to access it. This figure doesn’t specify the kind of statement provided (e.g., whether the data are openly available or not)",
-    details: "To confirm that a paper has a data availability statement, we first use PubMed’s data availability filter and then review articles manually."
-  },
+  "with_data_availability_statement": getFieldDefinition("data_availability_statement", "explore"),
   "with_data_dois": {
     label: "With data DOI<span style='text-transform: lowercase;'>s</span>"
   },

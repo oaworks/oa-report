@@ -77,3 +77,32 @@ export function buildDefinitionTooltipContent(labelData, additionalHelpText = nu
     dedupeHelpTextAgainstLead: true
   });
 }
+
+/**
+ * Builds supplementary help HTML from one or more org help-text keys.
+ *
+ * @param {Object} options - Help content options.
+ * @param {string[]} [options.help_text=[]] - Ordered help-text keys to resolve.
+ * @param {Object.<string, string>} [options.help_text_by_key={}] - Org-specific help text keyed by field id.
+ * @param {Object} [options.org_meta={}] - Org-specific values for placeholder injection.
+ * @param {string} [options.help_text_style='paragraph'] - Output style, e.g. "paragraph" or "bullets".
+ * @returns {string} Rendered help HTML.
+ */
+export function buildDefinitionHelpHtml({
+  help_text = [],
+  help_text_by_key = {},
+  org_meta = {},
+  help_text_style = 'paragraph'
+} = {}) {
+  const helpItems = help_text
+    .map((key) => help_text_by_key[key]?.trim())
+    .filter(Boolean)
+    .map((html) => injectOrgFields(html, org_meta));
+
+  if (!helpItems.length) return '';
+  if (help_text_style === 'bullets') {
+    return `<ul class="list-disc list-outside pl-5 space-y-1">${helpItems.map((item) => `<li>${item}</li>`).join('')}</ul>`;
+  }
+
+  return helpItems.join(' ');
+}
