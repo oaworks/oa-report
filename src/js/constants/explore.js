@@ -356,7 +356,7 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   },
   "compliant": {
     label: "Compliant",
-    info: "Publications that comply with the requirements of the Open Access policy and are covered by the policy. <span class='org-policy-compliance'></span>",
+    info: "Publications covered by <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>your organization’s Open Access policy</a> that are compliant with the policy. <span class='org-policy-compliance'></span>",
     details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex."
   },
   "compliant_and_covered_by_policy": {
@@ -366,7 +366,7 @@ export const EXPLORE_HEADER_TERMS_LABELS = {
   },
   "covered_by_policy": {
     label: "Covered by policy",
-    info: "Publications that are covered by the Open Access policy. <span class='org-policy-coverage'></span>",
+    info: "Publications covered by <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>your organization’s Open Access policy</a>. <span class='org-policy-coverage'></span>",
   },
   "free_to_read": {
     label: "Free-to-read",
