@@ -8,7 +8,7 @@
 // =================================================
 
 import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, normaliseFieldId, makeNumberReadable, announce } from "./utils.js";
-import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, FILTER_PILL_CLASSES, SEGMENTED_PILL_CLASSES, getFieldDefinition } from "./constants.js";
+import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, FILTER_PILL_CLASSES, SEGMENTED_PILL_CLASSES, resolveFieldDefinition } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
@@ -811,8 +811,8 @@ function getExploreSortLabel({ type, id, term, sort }) {
     return lowerCaseLabels.has(label) ? label.toLowerCase() : label;
   }
 
-  const label = getFieldDefinition(sort, 'explore')?.label
-    || (term ? getFieldDefinition(term, 'explore')?.label : null)
+  const label = resolveFieldDefinition(sort, 'explore')?.label
+    || (term ? resolveFieldDefinition(term, 'explore')?.label : null)
     || "Publication count";
   if (label === "Publication count") return "publication count";
   return lowerCaseLabels.has(label) ? label.toLowerCase() : label;
@@ -929,7 +929,7 @@ function generateTooltipContent(labelData, additionalHelpText = null) {
  */
 function setupHeaderTooltip(element, key, dataType) {
   const labelData = dataType === 'terms'
-    ? getFieldDefinition(key, 'explore')
+    ? resolveFieldDefinition(key, 'explore')
     : EXPLORE_HEADER_ARTICLES_LABELS[key];
   const label = labelData && labelData.label ? labelData.label : key;
   element.innerHTML = `<span>${label}</span>`;

@@ -3,6 +3,17 @@
 // Shared tooltip content helpers
 // =================================================
 
+/**
+ * Replaces org-specific placeholder spans/links inside tooltip HTML.
+ *
+ * @param {string} [html=''] - HTML fragment that may contain org placeholder markup.
+ * @param {Object} [orgMeta={}] - Org-specific values used for substitution.
+ * @param {string} [orgMeta.orgName] - Organisation display name.
+ * @param {string} [orgMeta.orgPolicyCoverage] - Org-specific policy coverage text.
+ * @param {string} [orgMeta.orgPolicyCompliance] - Org-specific policy compliance text.
+ * @param {string} [orgMeta.orgPolicyUrl] - Policy URL used to replace placeholder links.
+ * @returns {string} HTML with org placeholders resolved.
+ */
 export function injectOrgFields(html = '', orgMeta = {}) {
   return /org-(name|policy-(coverage|compliance|url))/.test(html) ? html
     .replace(/<span class=['"]org-name['"]><\/span>/g, orgMeta.orgName ?? '')

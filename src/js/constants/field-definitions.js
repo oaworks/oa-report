@@ -7,8 +7,8 @@ const POLICY_LINK_EXPLORE = "<a href='' target='_blank' rel='noopener noreferrer
 const POLICY_LINK_INSIGHTS = "<a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a>";
 
 /**
- * Canonical field definitions shared across UI surfaces.
- * Surface-specific wording lives under `explore` and `insights`.
+ * Canonical field definitions shared across report sections.
+ * Section-specific wording lives under `explore` and `insights`.
  *
  * @type {Object.<string, Object>}
  */
@@ -220,23 +220,23 @@ function interpolateDefinitionTokens(html = '', context = {}) {
 }
 
 /**
- * Returns a field definition resolved for a specific UI surface.
+ * Resolves a field definition for a specific report section.
  *
  * @param {string} key - Canonical field definition key.
- * @param {"explore"|"insights"} surface - UI surface to resolve.
- * @param {Object} [context={}] - Optional token replacements for the surface copy.
+ * @param {"explore"|"insights"} section - Report section to resolve.
+ * @param {Object} [context={}] - Optional token replacements for the section copy.
  * @returns {Object|null} Resolved definition config, or null when not found.
  */
-export function getFieldDefinition(key, surface, context = {}) {
+export function resolveFieldDefinition(key, section, context = {}) {
   const definition = FIELD_DEFINITIONS[key];
-  const surfaceDefinition = definition?.[surface];
-  if (!definition || !surfaceDefinition) return null;
+  const sectionDefinition = definition?.[section];
+  if (!definition || !sectionDefinition) return null;
 
   return {
     label: definition.label,
-    info: interpolateDefinitionTokens(surfaceDefinition.info, context),
+    info: interpolateDefinitionTokens(sectionDefinition.info, context),
     details: definition.details,
-    help_text: surfaceDefinition.help_text || [],
-    help_text_style: surfaceDefinition.help_text_style || 'paragraph'
+    help_text: sectionDefinition.help_text || [],
+    help_text_style: sectionDefinition.help_text_style || 'paragraph'
   };
 }

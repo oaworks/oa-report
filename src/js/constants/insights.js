@@ -3,7 +3,7 @@
 // Insight card copy/config
 // =================================================
 
-import { getFieldDefinition } from './field-definitions.js';
+import { resolveFieldDefinition } from './field-definitions.js';
 
 /**
  * Insight card configurations and copy.
@@ -33,56 +33,56 @@ export const INSIGHTS_CARDS = [
     denominator: "is_paper",
     denominatorText: "articles",
     definition_key: "free_to_read",
-    info: getFieldDefinition("free_to_read", "insights", { subject: "Journal articles" }).info
+    info: resolveFieldDefinition("free_to_read", "insights", { subject: "Journal articles" }).info
   },
   {
     numerator: "is_free_to_read_preprint",
     denominator: "is_preprint",
     denominatorText: "preprints",
     definition_key: "free_to_read",
-    info: getFieldDefinition("free_to_read", "insights", { subject: "Preprints" }).info
+    info: resolveFieldDefinition("free_to_read", "insights", { subject: "Preprints" }).info
   },
   {
     numerator: "is_compliant",
     denominator: "is_covered_by_policy",
     denominatorText: "articles covered by policy",
     definition_key: "compliant",
-    info: getFieldDefinition("compliant", "insights", { subject: "journal articles" }).info
+    info: resolveFieldDefinition("compliant", "insights", { subject: "journal articles" }).info
   },
   {
     numerator: "is_compliant_preprint",
     denominator: "is_covered_by_policy_preprint",
     denominatorText: "preprints covered by policy",
     definition_key: "compliant",
-    info: getFieldDefinition("compliant", "insights", { subject: "preprints" }).info
+    info: resolveFieldDefinition("compliant", "insights", { subject: "preprints" }).info
   },
   {
     numerator: "is_compliant_article",
     denominator: "is_paper",
     denominatorText: "articles covered by policy",
     definition_key: "compliant",
-    info: getFieldDefinition("compliant", "insights", { subject: "journal articles" }).info
+    info: resolveFieldDefinition("compliant", "insights", { subject: "journal articles" }).info
   },
   {
     numerator: "is_oa",
     denominator: "is_paper",
     denominatorText: "articles",
     definition_key: "open_access",
-    info: getFieldDefinition("open_access", "insights", { subject: "journal articles" }).info
+    info: resolveFieldDefinition("open_access", "insights", { subject: "journal articles" }).info
   },
   {
     numerator: "has_data_availability_statement",
     denominator: "has_checked_data_availability_statement",
     denominatorText: "articles checked to date",
     definition_key: "data_availability_statement",
-    info: getFieldDefinition("data_availability_statement", "insights", { subject: "journal articles", review_subject: "articles" }).info
+    info: resolveFieldDefinition("data_availability_statement", "insights", { subject: "journal articles", review_subject: "articles" }).info
   },
   {
     numerator: "has_data_availability_statement_preprint",
     denominator: "has_checked_data_availability_statement_preprint",
     denominatorText: "preprints checked to date",
     definition_key: "data_availability_statement",
-    info: getFieldDefinition("data_availability_statement", "insights", { subject: "preprints", review_subject: "preprints" }).info
+    info: resolveFieldDefinition("data_availability_statement", "insights", { subject: "preprints", review_subject: "preprints" }).info
   },
   {
     numerator: "has_open_data",
@@ -101,6 +101,6 @@ export const INSIGHTS_CARDS = [
     denominator: "is_covered_by_policy",
     denominatorText: "unique publications covered by policy",
     definition_key: "compliant",
-    info: getFieldDefinition("compliant", "insights", { subject: "unique publications" }).info
+    info: resolveFieldDefinition("compliant", "insights", { subject: "unique publications" }).info
   }
 ];

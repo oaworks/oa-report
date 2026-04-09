@@ -21,7 +21,7 @@ import {
   EXPLORE_ITEMS_LABELS,
   EXPLORE_FILTERS_LABELS,
   EXPLORE_HEADER_ARTICLES_LABELS,
-  getFieldDefinition,
+  resolveFieldDefinition,
   COUNTRY_CODES,
   DATE_SELECTION_BUTTON_CLASSES
 } from "./constants.js";
@@ -170,8 +170,8 @@ function labelFromFieldKey(rawKey) {
     EXPLORE_HEADER_ARTICLES_LABELS[normalised];
 
   const fromTerms =
-    getFieldDefinition(lookupKey, "explore") ||
-    getFieldDefinition(normalised, "explore");
+    resolveFieldDefinition(lookupKey, "explore") ||
+    resolveFieldDefinition(normalised, "explore");
 
   if (!label) {
     label =

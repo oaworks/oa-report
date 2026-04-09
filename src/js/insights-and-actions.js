@@ -10,7 +10,7 @@
 // =================================================
 
 import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter } from './utils.js';
-import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS, getFieldDefinition } from './constants.js';
+import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS, resolveFieldDefinition } from './constants.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { initActionTabs } from './actions.js';
 import { createPopover } from './tooltip-manager.js';
@@ -46,7 +46,7 @@ function buildInsightDefinitionsHtml(numerator, insightInfo = '', helpTextByKey 
     return buildInsightTooltipSection(insightInfo);
   }
 
-  const fieldDefinition = getFieldDefinition(definitionKey, 'insights');
+  const fieldDefinition = resolveFieldDefinition(definitionKey, 'insights');
   if (!fieldDefinition) {
     return buildInsightTooltipSection(insightInfo);
   }
