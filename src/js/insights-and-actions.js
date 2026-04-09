@@ -39,11 +39,21 @@ function buildInsightTooltipSection(contentHtml = '') {
   `;
 }
 
-function buildInsightDefinitionsHtml(numerator, insightInfo = '', helpTextByKey = {}) {
+function buildInsightDefinitionsHtml(numerator, insightInfo = '', helpTextByKey = {}, analysisHelpText = '') {
   const matchingCard = INSIGHT_CARD_BY_NUMERATOR.get(numerator);
   const definitionKey = matchingCard?.definition_key;
+  const orgMeta = {
+    orgName,
+    orgPolicyCoverage,
+    orgPolicyCompliance,
+    orgPolicyUrl
+  };
   if (!definitionKey) {
-    return buildInsightTooltipSection(insightInfo);
+    const contentHtml = buildTooltipContent({
+      leadHtml: insightInfo,
+      helpHtml: injectOrgFields(analysisHelpText, orgMeta)
+    });
+    return buildInsightTooltipSection(contentHtml);
   }
 
   const fieldDefinition = resolveFieldDefinition(definitionKey, 'insights');
@@ -51,12 +61,6 @@ function buildInsightDefinitionsHtml(numerator, insightInfo = '', helpTextByKey 
     return buildInsightTooltipSection(insightInfo);
   }
 
-  const orgMeta = {
-    orgName,
-    orgPolicyCoverage,
-    orgPolicyCompliance,
-    orgPolicyUrl
-  };
   const helpHtml = buildDefinitionHelpHtml({
     help_text: fieldDefinition.help_text,
     help_text_by_key: helpTextByKey,
@@ -426,7 +430,12 @@ export function initInsightsAndActions(org) {
           const detailHtml = figureDetails
             ? `<div class="mb-2 font-semibold text-neutral-900">${figureDetails.innerHTML}</div>`
             : "";
-          const definitionHtml = buildInsightDefinitionsHtml(numerator, insightInfo, helpTextByKey);
+          const definitionHtml = buildInsightDefinitionsHtml(
+            numerator,
+            insightInfo,
+            helpTextByKey,
+            analysisEntry.help_text || ''
+          );
           instance.setContent(`${detailHtml}${definitionHtml}`);
         };
 

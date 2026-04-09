@@ -28,9 +28,11 @@ export function injectOrgFields(html = '', orgMeta = {}) {
  * and a collapsible details section.
  *
  * @param {Object} options - Tooltip content options.
+ * All HTML arguments are treated as trusted HTML from our own constants/API.
+ *
  * @param {string} [options.leadHtml=''] - Primary HTML shown at the top of the tooltip.
- * @param {string} [options.helpHtml=''] - Optional supplementary HTML shown below the lead content.
- * @param {string} [options.detailsHtml=''] - Optional HTML shown inside a collapsible section.
+ * @param {string} [options.helpHtml=''] - Optional supplementary trusted HTML shown below the lead content.
+ * @param {string} [options.detailsHtml=''] - Optional trusted HTML shown inside a collapsible section.
  * @param {string} [options.detailsLabel='Methodology'] - Label shown on the collapsible section.
  * @param {boolean} [options.dedupeHelpTextAgainstLead=false] - Whether to
  * suppress supplementary help text when it duplicates the lead content.
@@ -76,7 +78,7 @@ export function getTooltipPlainText(html = '') {
  * optional organisation-specific help text.
  *
  * @param {Object} labelData - Labels config entry with info/details fields.
- * @param {string|null} [additionalHelpText=null] - Optional org-specific help text.
+ * @param {string|null} [additionalHelpText=null] - Optional org-specific help text as trusted HTML.
  * @param {Object} [orgMeta={}] - Org-specific field values for placeholder injection.
  * @returns {string} Tooltip HTML.
  */
@@ -94,7 +96,7 @@ export function buildDefinitionTooltipContent(labelData, additionalHelpText = nu
  *
  * @param {Object} options - Help content options.
  * @param {string[]} [options.help_text=[]] - Ordered help-text keys to resolve.
- * @param {Object.<string, string>} [options.help_text_by_key={}] - Org-specific help text keyed by field id.
+ * @param {Object.<string, string>} [options.help_text_by_key={}] - Org-specific help text keyed by field id, as trusted HTML.
  * @param {Object} [options.org_meta={}] - Org-specific values for placeholder injection.
  * @param {string} [options.help_text_style='paragraph'] - Output style, e.g. "paragraph" or "bullets".
  * @returns {string} Rendered help HTML.
