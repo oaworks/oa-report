@@ -8,7 +8,7 @@
 // =================================================
 
 import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, normaliseFieldId, makeNumberReadable, announce } from "./utils.js";
-import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, FILTER_PILL_CLASSES, SEGMENTED_PILL_CLASSES } from "./constants.js";
+import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, FILTER_PILL_CLASSES, SEGMENTED_PILL_CLASSES, getFieldDefinition } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
@@ -42,13 +42,6 @@ onAuthChange(({ loggedIn: isLoggedIn, orgKey: key }) => {
   applyAuthVisibility({ hideWhenLoggedOut: ["report-filters"] });
   refreshFiltersBanner();
 });
-
-/**
- * Allows the EXPLORE_HEADER_TERMS_LABELS constant to be accessible via a browser.
- * @global
- * @type {Object}
- */
-window.EXPLORE_HEADER_TERMS_LABELS = EXPLORE_HEADER_TERMS_LABELS;
 
 /**
  * Flag indicating whether the data explore section has been initialised.
@@ -818,8 +811,8 @@ function getExploreSortLabel({ type, id, term, sort }) {
     return lowerCaseLabels.has(label) ? label.toLowerCase() : label;
   }
 
-  const label = EXPLORE_HEADER_TERMS_LABELS?.[sort]?.label
-    || (term ? EXPLORE_HEADER_TERMS_LABELS?.[term]?.label : null)
+  const label = getFieldDefinition(sort, 'explore')?.label
+    || (term ? getFieldDefinition(term, 'explore')?.label : null)
     || "Publication count";
   if (label === "Publication count") return "publication count";
   return lowerCaseLabels.has(label) ? label.toLowerCase() : label;
@@ -935,8 +928,9 @@ function generateTooltipContent(labelData, additionalHelpText = null) {
  * @param {string} dataType - Indicates the type of data ('terms' or 'articles'), which determines the labels configuration to use.
  */
 function setupHeaderTooltip(element, key, dataType) {
-  const labelsConfig = dataType === 'terms' ? EXPLORE_HEADER_TERMS_LABELS : EXPLORE_HEADER_ARTICLES_LABELS;
-  const labelData = labelsConfig[key];
+  const labelData = dataType === 'terms'
+    ? getFieldDefinition(key, 'explore')
+    : EXPLORE_HEADER_ARTICLES_LABELS[key];
   const label = labelData && labelData.label ? labelData.label : key;
   element.innerHTML = `<span>${label}</span>`;
 

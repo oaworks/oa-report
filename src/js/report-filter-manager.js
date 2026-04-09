@@ -20,8 +20,8 @@ import { API_BASE_URL } from "./constants/api.js";
 import {
   EXPLORE_ITEMS_LABELS,
   EXPLORE_FILTERS_LABELS,
-  EXPLORE_HEADER_TERMS_LABELS,
   EXPLORE_HEADER_ARTICLES_LABELS,
+  getFieldDefinition,
   COUNTRY_CODES,
   DATE_SELECTION_BUTTON_CLASSES
 } from "./constants.js";
@@ -170,8 +170,8 @@ function labelFromFieldKey(rawKey) {
     EXPLORE_HEADER_ARTICLES_LABELS[normalised];
 
   const fromTerms =
-    EXPLORE_HEADER_TERMS_LABELS[lookupKey] ||
-    EXPLORE_HEADER_TERMS_LABELS[normalised];
+    getFieldDefinition(lookupKey, "explore") ||
+    getFieldDefinition(normalised, "explore");
 
   if (!label) {
     label =
