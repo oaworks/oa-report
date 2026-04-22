@@ -31,7 +31,7 @@
     "@floating-ui/dom": "^1.7.6",
     "@phosphor-icons/web": "^2.1.1",
     "@tryghost/content-api": "^1.12.6",
-    "axios": "^1.13.6",
+    "axios": "^1.15.0",
     "caniuse-lite": "^1.0.30001781",
     "canvas": "^3.2.2",
     "dotenv": "^17.3.1",
