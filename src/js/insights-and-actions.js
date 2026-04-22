@@ -131,12 +131,6 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
       const card = template.content.querySelector(`#${cardId}`);
       if (!card) return;
       const clonedCard = card.cloneNode(true);
-      if (cardId === "is_preprint") {
-        const titleEl = clonedCard.querySelector("h3 span");
-        if (titleEl) {
-          titleEl.textContent = section.sectionId === "insights_preprints" ? "Total" : "Preprint";
-        }
-      }
       // Show a placeholder when the API returns no data for a displayed card.
       if (!analysisEntry) {
         showUnavailableCard(clonedCard);
