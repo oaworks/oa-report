@@ -863,20 +863,22 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
   }
 
   const headerRow = document.createElement('tr');
-  Object.keys(records).forEach((rawKey, index) => {
-    const key = normaliseFieldId(rawKey);
-    const cssClass = getExploreColumnClass('header', dataType, index);
+  Object.keys(records)
+    .filter((rawKey) => !(dataType === 'terms' && rawKey === 'display_name'))
+    .forEach((rawKey, index) => {
+      const key = normaliseFieldId(rawKey);
+      const cssClass = getExploreColumnClass('header', dataType, index);
 
-    const headerCell = createTableCell('', cssClass, null, null, true); 
-    if (index > 1) {
-      headerCell.classList.add(
-        shouldRightAlignExploreColumn(rawKey, records[rawKey]) ? "text-right" : "text-left"
-      );
-    }
-    setupHeaderTooltip(headerCell, key, dataType);
+      const headerCell = createTableCell('', cssClass, null, null, true); 
+      if (index > 1) {
+        headerCell.classList.add(
+          shouldRightAlignExploreColumn(rawKey, records[rawKey]) ? "text-right" : "text-left"
+        );
+      }
+      setupHeaderTooltip(headerCell, key, dataType);
 
-    headerRow.appendChild(headerCell);
-  });
+      headerRow.appendChild(headerCell);
+    });
   tableHeader.appendChild(headerRow);
 }
 
@@ -1005,9 +1007,15 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
 
   function appendRow(target, record, section) {
     const row = document.createElement('tr');
+    const visibleEntries = Object.entries(record)
+      .filter(([key]) => !(dataType === 'terms' && key === 'display_name'));
 
-    Object.entries(record).forEach(([key, rawContent], columnIndex) => {
+    visibleEntries.forEach(([key, rawContent], columnIndex) => {
       let content = rawContent;
+      const displayName =
+        dataType === 'terms' && key === 'key' && exploreItemId === 'author'
+          ? record.display_name
+          : null;
 
       if (dataType === 'articles' && key === 'DOI') {
         content = convertTextToLinks(content, true, 'https://doi.org/');
@@ -1026,7 +1034,8 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
         getExploreColumnClass(section, dataType, columnIndex),
         exploreItemId,
         key,
-        false
+        false,
+        displayName
       );
 
       if (columnIndex > 1) {
@@ -1071,9 +1080,10 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
  * @param {string} [exploreItemId=null] - The ID of the selected explore item.
  * @param {string} [key=null] - The key of the selected explore item.
  * @param {boolean} [isHeader=false] - Indicates if the cell is a header cell (th) or a regular cell (td).
+ * @param {string|null} [displayName=null] - Optional display label for metadata-backed term keys.
  * @returns {HTMLElement} The created table cell element.
  */
-function createTableCell(content, cssClass, exploreItemId = null, key = null, isHeader = false) {
+function createTableCell(content, cssClass, exploreItemId = null, key = null, isHeader = false, displayName = null) {
   const cell = document.createElement(isHeader ? 'th' : 'td');
   cell.className = cssClass;
   const termBase = currentActiveExploreItemData?.term?.trim() || "";
@@ -1233,7 +1243,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
    * @param {string|number} rawValue
    * @returns {HTMLElement}
    */
-  function renderSpecialKeyCell(rawValue) {
+  function renderSpecialKeyCell(rawValue, displayValue = rawValue) {
     let labelWrapper = null;
 
     switch (exploreItemId) {
@@ -1278,15 +1288,21 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
       case 'investigator':
       case 'freeman_hrabowski_scholar':
       case 'author':
+        if (displayValue && displayValue !== rawValue) {
+          labelWrapper = createFilterTargetButton(displayValue);
+          cell.appendChild(labelWrapper);
+          cell.appendChild(createExternalPill(rawValue, 'ORCID ↗'));
+          break;
+        }
         if (typeof rawValue === 'string' && rawValue.includes('orcid.org')) {
           labelWrapper = createAsyncOrcidLabel(rawValue, cell, true);
           break;
         }
-        labelWrapper = createFilterTargetButton(rawValue);
+        labelWrapper = createFilterTargetButton(displayValue);
         break;
 
       default:
-        labelWrapper = createFilterTargetButton(rawValue);
+        labelWrapper = createFilterTargetButton(displayValue);
     }
 
     if (!cell.contains(labelWrapper)) {
@@ -1340,7 +1356,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
 
   // Safely check and process content based on its type and the context
   if (key === 'key' && content) {
-    return renderSpecialKeyCell(content);
+    return renderSpecialKeyCell(content, displayName || content);
   }
 
   // Non-`key` cells, or cases outside terms tables
