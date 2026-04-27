@@ -8,7 +8,7 @@
 // Imports
 // =================================================
 
-import { ELEVENTY_API_ENDPOINT } from "./constants.js";
+import { AUTHOR_BREAKDOWN_TERM, ELEVENTY_API_ENDPOINT } from "./constants.js";
 
 // =================================================
 // Helpers
@@ -667,13 +667,13 @@ function createAggregationTemplate(suffix) {
 }
 
 /**
- * Returns extra bucket metadata aggregations for author id breakdowns.
+ * Returns extra bucket metadata aggregations for author breakdowns.
  *
  * @param {string} term - Field used for the current terms aggregation.
  * @returns {Object} Extra aggregations to merge into each terms bucket.
  */
 function createAuthorBucketMetadataAggs(term) {
-  if (term !== "authorships.author.id") {
+  if (term !== AUTHOR_BREAKDOWN_TERM) {
     return {};
   }
 

@@ -547,10 +547,6 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
     label: "Author(s)",
     info: ""
   },
-  "authorships.author.id": {
-    label: "Author(s)",
-    info: ""
-  },
   "authorships.author.orcid": {
     label: "ORCiD<span class='lowercase'>s</span>",
     info: ""
@@ -957,3 +953,28 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
     info: "The license applied to the full text in Europe PMC"
   }
 };
+
+/**
+ * Field used to group author breakdowns.
+ *
+ * @type {string}
+ */
+export const AUTHOR_BREAKDOWN_TERM = "authorships.author.orcid";
+
+/**
+ * Returns the author value used as the author breakdown key.
+ *
+ * @param {Object} [author={}]
+ * @returns {string|null}
+ */
+export function getAuthorBreakdownKey(author = {}) {
+  if (AUTHOR_BREAKDOWN_TERM === "authorships.author.id") {
+    return author?.id || null;
+  }
+
+  if (AUTHOR_BREAKDOWN_TERM === "authorships.author.orcid") {
+    return author?.orcid || null;
+  }
+
+  return null;
+}

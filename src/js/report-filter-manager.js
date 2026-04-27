@@ -66,7 +66,6 @@ const shouldAlphaSortSuggestions = (field = "") =>
   Boolean(getSearchFilterField(field)?.alphaSort);
 
 const ORCID_ID_RE = /\b\d{4}-\d{4}-\d{4}-\d{3}[\dX]\b/i;
-const AUTHOR_ID_FIELD = "authorships.author.id.keyword";
 const AUTHOR_ORCID_FIELD = "authorships.author.orcid.keyword";
 const AUTHOR_NAME_FIELD = "authorships.author.display_name.keyword";
 
@@ -104,7 +103,7 @@ function buildCombinedFilterQuery(fieldExpressions = new Map()) {
   for (const [field, clause] of fieldExpressions.entries()) {
     if (!clause) continue;
     const fieldKey = ensureKeywordField(field);
-    if (fieldKey === AUTHOR_ID_FIELD || fieldKey === AUTHOR_ORCID_FIELD || fieldKey === AUTHOR_NAME_FIELD) {
+    if (fieldKey === AUTHOR_ORCID_FIELD || fieldKey === AUTHOR_NAME_FIELD) {
       authorClauses.push(clause);
     } else {
       normalClauses.push(clause);

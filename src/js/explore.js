@@ -8,7 +8,7 @@
 // =================================================
 
 import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, normaliseFieldId, makeNumberReadable, announce } from "./utils.js";
-import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, FILTER_PILL_CLASSES, SEGMENTED_PILL_CLASSES } from "./constants.js";
+import { AUTHOR_BREAKDOWN_TERM, getAuthorBreakdownKey, ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, FILTER_PILL_CLASSES, SEGMENTED_PILL_CLASSES } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
@@ -652,10 +652,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 
 async function loadExploreRecords(itemData, query, size, pretty) {
   const { type, sort, includes } = itemData;
-  // Use OpenAlex author id for author breakdowns.
-  const term = itemData?.id === "author" && itemData?.term === "authorships.author.orcid"
-    ? "authorships.author.id"
-    : itemData?.term;
+  const term = itemData?.id === "author" ? AUTHOR_BREAKDOWN_TERM : itemData?.term;
   const decodedQuery = andQueryStrings(
     decodeAndReplaceUrlEncodedChars(query),
     getDecodedUrlQuery()
@@ -735,26 +732,25 @@ async function fetchTermBasedData(suffix, query, term, sort, size) {
 function formatBucket(bucket, term = "") {
   const formattedBucket = {};
   Object.keys(bucket).forEach(key => {
-      if (key.startsWith("median_")) {
-          formattedBucket[key] = bucket[key].values["50.0"];
-      } else if (key === "top_author_record") {
-          const hit = bucket[key]?.hits?.hits?.[0]?._source;
-          const authorships = Array.isArray(hit?.authorships) ? hit.authorships : [];
-          // Match the bucket key back to the author entry so we can read its display metadata.
-          const matchingAuthorship = authorships.find((authorship) => {
-            const authorId = authorship?.author?.id;
-            return term === "authorships.author.id" && authorId === bucket.key;
-          });
+    if (key.startsWith("median_")) {
+      formattedBucket[key] = bucket[key].values["50.0"];
+    } else if (key === "top_author_record") {
+      const hit = bucket[key]?.hits?.hits?.[0]?._source;
+      const authorships = Array.isArray(hit?.authorships) ? hit.authorships : [];
+      const matchingAuthorship = authorships.find((authorship) => {
+        return term === AUTHOR_BREAKDOWN_TERM
+          && getAuthorBreakdownKey(authorship?.author) === bucket.key;
+      });
 
-          formattedBucket.display_name = matchingAuthorship?.author?.display_name || null;
-          formattedBucket.orcid = matchingAuthorship?.author?.orcid || null;
-      } else if (bucket[key].doc_count !== undefined) {
-          formattedBucket[key] = bucket[key].doc_count;
-      } else if (bucket[key].value !== undefined) {
-          formattedBucket[key] = bucket[key].value;
-      } else {
-          formattedBucket[key] = bucket[key];
-      }
+      formattedBucket.display_name = matchingAuthorship?.author?.display_name || null;
+      formattedBucket.orcid = matchingAuthorship?.author?.orcid || null;
+    } else if (bucket[key].doc_count !== undefined) {
+      formattedBucket[key] = bucket[key].doc_count;
+    } else if (bucket[key].value !== undefined) {
+      formattedBucket[key] = bucket[key].value;
+    } else {
+      formattedBucket[key] = bucket[key];
+    }
   });
   return formattedBucket;
 }
@@ -1109,8 +1105,8 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
 function createTableCell(content, cssClass, exploreItemId = null, key = null, isHeader = false, displayName = null, authorOrcid = null) {
   const cell = document.createElement(isHeader ? 'th' : 'td');
   cell.className = cssClass;
-  const termBase = currentActiveExploreItemData?.id === "author" && currentActiveExploreItemData?.term === "authorships.author.orcid"
-    ? "authorships.author.id"
+  const termBase = currentActiveExploreItemData?.id === "author"
+    ? AUTHOR_BREAKDOWN_TERM
     : (currentActiveExploreItemData?.term?.trim() || "");
   const termField = termBase
     ? ((termBase === "published_year" && ELEVENTY_API_ENDPOINT === "api")
