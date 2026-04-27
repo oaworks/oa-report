@@ -651,7 +651,11 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 }
 
 async function loadExploreRecords(itemData, query, size, pretty) {
-  const { type, term, sort, includes } = itemData;
+  const { type, sort, includes } = itemData;
+  // Use OpenAlex author id for author breakdowns.
+  const term = itemData?.id === "author" && itemData?.term === "authorships.author.orcid"
+    ? "authorships.author.id"
+    : itemData?.term;
   const decodedQuery = andQueryStrings(
     decodeAndReplaceUrlEncodedChars(query),
     getDecodedUrlQuery()
@@ -697,13 +701,13 @@ async function fetchTermBasedData(suffix, query, term, sort, size) {
   const totalUniqueTerms = response?.aggregations?.values_total?.value ?? 0;
 
   if (response && response.aggregations && response.aggregations.values && response.aggregations.values.buckets) {
-    buckets = response.aggregations.values.buckets.map(bucket => formatBucket(bucket));
+    buckets = response.aggregations.values.buckets.map(bucket => formatBucket(bucket, term));
   }
 
   // Process 'all_values' and 'no_values' similarly using the helper function
   ['all_values', 'no_values'].forEach(aggregationKey => {
     if (response && response.aggregations && response.aggregations[aggregationKey]) {
-      const additionalBucket = {'key': aggregationKey, ...formatBucket(response.aggregations[aggregationKey])};
+      const additionalBucket = {'key': aggregationKey, ...formatBucket(response.aggregations[aggregationKey], term)};
       buckets.push(additionalBucket);
     }
   });
@@ -725,13 +729,25 @@ async function fetchTermBasedData(suffix, query, term, sort, size) {
  * Formats a single bucket or aggregation result for a term-based table.
  * 
  * @param {Object} bucket - The raw bucket data from the API response.
+ * @param {string} [term=""] - The field used for the current term breakdown.
  * @returns {Object} The formatted bucket data.
  */
-function formatBucket(bucket) {
+function formatBucket(bucket, term = "") {
   const formattedBucket = {};
   Object.keys(bucket).forEach(key => {
       if (key.startsWith("median_")) {
           formattedBucket[key] = bucket[key].values["50.0"];
+      } else if (key === "top_author_record") {
+          const hit = bucket[key]?.hits?.hits?.[0]?._source;
+          const authorships = Array.isArray(hit?.authorships) ? hit.authorships : [];
+          // Match the bucket key back to the author entry so we can read its display metadata.
+          const matchingAuthorship = authorships.find((authorship) => {
+            const authorId = authorship?.author?.id;
+            return term === "authorships.author.id" && authorId === bucket.key;
+          });
+
+          formattedBucket.display_name = matchingAuthorship?.author?.display_name || null;
+          formattedBucket.orcid = matchingAuthorship?.author?.orcid || null;
       } else if (bucket[key].doc_count !== undefined) {
           formattedBucket[key] = bucket[key].doc_count;
       } else if (bucket[key].value !== undefined) {
@@ -864,7 +880,8 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
 
   const headerRow = document.createElement('tr');
   Object.keys(records)
-    .filter((rawKey) => !(dataType === 'terms' && rawKey === 'display_name'))
+    // Hide author bucket metadata from the rendered table.
+    .filter((rawKey) => !(dataType === 'terms' && currentActiveExploreItemData?.id === 'author' && (rawKey === 'display_name' || rawKey === 'orcid')))
     .forEach((rawKey, index) => {
       const key = normaliseFieldId(rawKey);
       const cssClass = getExploreColumnClass('header', dataType, index);
@@ -1008,13 +1025,17 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
   function appendRow(target, record, section) {
     const row = document.createElement('tr');
     const visibleEntries = Object.entries(record)
-      .filter(([key]) => !(dataType === 'terms' && key === 'display_name'));
+      .filter(([key]) => !(dataType === 'terms' && exploreItemId === 'author' && (key === 'display_name' || key === 'orcid')));
 
     visibleEntries.forEach(([key, rawContent], columnIndex) => {
       let content = rawContent;
       const displayName =
         dataType === 'terms' && key === 'key' && exploreItemId === 'author'
           ? record.display_name
+          : null;
+      const authorOrcid =
+        dataType === 'terms' && key === 'key' && exploreItemId === 'author'
+          ? record.orcid
           : null;
 
       if (dataType === 'articles' && key === 'DOI') {
@@ -1035,7 +1056,8 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
         exploreItemId,
         key,
         false,
-        displayName
+        displayName,
+        authorOrcid
       );
 
       if (columnIndex > 1) {
@@ -1081,12 +1103,15 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
  * @param {string} [key=null] - The key of the selected explore item.
  * @param {boolean} [isHeader=false] - Indicates if the cell is a header cell (th) or a regular cell (td).
  * @param {string|null} [displayName=null] - Optional display label for metadata-backed term keys.
+ * @param {string|null} [authorOrcid=null] - Optional ORCID URL associated with an author bucket.
  * @returns {HTMLElement} The created table cell element.
  */
-function createTableCell(content, cssClass, exploreItemId = null, key = null, isHeader = false, displayName = null) {
+function createTableCell(content, cssClass, exploreItemId = null, key = null, isHeader = false, displayName = null, authorOrcid = null) {
   const cell = document.createElement(isHeader ? 'th' : 'td');
   cell.className = cssClass;
-  const termBase = currentActiveExploreItemData?.term?.trim() || "";
+  const termBase = currentActiveExploreItemData?.id === "author" && currentActiveExploreItemData?.term === "authorships.author.orcid"
+    ? "authorships.author.id"
+    : (currentActiveExploreItemData?.term?.trim() || "");
   const termField = termBase
     ? ((termBase === "published_year" && ELEVENTY_API_ENDPOINT === "api")
       ? termBase.replace(/\.keyword$/i, "")
@@ -1287,7 +1312,6 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
       case 'janelia_lab_head':
       case 'investigator':
       case 'freeman_hrabowski_scholar':
-      case 'author':
         if (displayValue && displayValue !== rawValue) {
           labelWrapper = createFilterTargetButton(displayValue);
           cell.appendChild(labelWrapper);
@@ -1299,6 +1323,20 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
           break;
         }
         labelWrapper = createFilterTargetButton(displayValue);
+        break;
+
+      case 'author':
+        labelWrapper = createFilterTargetButton(displayValue);
+        if (authorOrcid) {
+          cell.appendChild(labelWrapper);
+          cell.appendChild(createExternalPill(authorOrcid, 'ORCID ↗'));
+          break;
+        }
+        if (typeof rawValue === 'string' && rawValue.includes('orcid.org')) {
+          cell.appendChild(labelWrapper);
+          cell.appendChild(createExternalPill(rawValue, 'ORCID ↗'));
+          break;
+        }
         break;
 
       default:
@@ -1361,9 +1399,12 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
 
   // Non-`key` cells, or cases outside terms tables
 
-  // Handle ORCID links (e.g. in non-key author cells) as: name + pill
+  // Render author metadata directly from the API response when present.
   if (exploreItemId === 'author' && typeof content === 'string' && content.includes('orcid.org')) {
-    createAsyncOrcidLabel(content, cell, false);
+    const label = document.createElement('span');
+    label.textContent = displayName || authorOrcid || content;
+    cell.appendChild(label);
+    cell.appendChild(createExternalPill(content, 'ORCID ↗'));
     return cell;
   }
 

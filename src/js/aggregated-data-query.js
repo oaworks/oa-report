@@ -666,6 +666,33 @@ function createAggregationTemplate(suffix) {
   };
 }
 
+/**
+ * Returns extra bucket metadata aggregations for author id breakdowns.
+ *
+ * @param {string} term - Field used for the current terms aggregation.
+ * @returns {Object} Extra aggregations to merge into each terms bucket.
+ */
+function createAuthorBucketMetadataAggs(term) {
+  if (term !== "authorships.author.id") {
+    return {};
+  }
+
+  return {
+    top_author_record: {
+      top_hits: {
+        size: 1,
+        _source: {
+          includes: [
+            "authorships.author.id",
+            "authorships.author.display_name",
+            "authorships.author.orcid"
+          ]
+        }
+      }
+    }
+  };
+}
+
 // =================================================
 // Exports
 // =================================================
@@ -700,6 +727,7 @@ export function getAggregatedDataQuery(
   }
 
   const aggs = createAggregationTemplate(suffix);
+  const bucketMetadataAggs = createAuthorBucketMetadataAggs(term);
 
   return {
     query: {
@@ -725,7 +753,10 @@ export function getAggregatedDataQuery(
       },
       values: {
         terms: { field: termField, size, order: { [sort]: "desc" } },
-        aggs,
+        aggs: {
+          ...aggs,
+          ...bucketMetadataAggs
+        },
       },
     },
   };

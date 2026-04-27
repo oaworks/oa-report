@@ -547,6 +547,10 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
     label: "Author(s)",
     info: ""
   },
+  "authorships.author.id": {
+    label: "Author(s)",
+    info: ""
+  },
   "authorships.author.orcid": {
     label: "ORCiD<span class='lowercase'>s</span>",
     info: ""
