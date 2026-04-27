@@ -8,11 +8,36 @@
 // Imports
 // =================================================
 
-import { AUTHOR_BREAKDOWN_TERM, ELEVENTY_API_ENDPOINT } from "./constants.js";
+import { ELEVENTY_API_ENDPOINT } from "./constants.js";
 
 // =================================================
 // Helpers
 // =================================================
+
+/**
+ * Field used to group author breakdowns.
+ *
+ * @type {string}
+ */
+export const AUTHOR_BREAKDOWN_TERM = "authorships.author.orcid";
+
+/**
+ * Returns the author value used as the author breakdown key.
+ *
+ * @param {Object} [author={}]
+ * @returns {string|null}
+ */
+export function getAuthorBreakdownKey(author = {}) {
+  if (AUTHOR_BREAKDOWN_TERM === "authorships.author.id") {
+    return author?.id || null;
+  }
+
+  if (AUTHOR_BREAKDOWN_TERM === "authorships.author.orcid") {
+    return author?.orcid || null;
+  }
+
+  return null;
+}
 
 /**
  * Generates the aggregation buckets template for Elasticsearch queries.
