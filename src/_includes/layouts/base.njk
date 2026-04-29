@@ -4,7 +4,7 @@
   <body class="flex flex-col min-h-screen justify-between antialiased text-neutral-900 tracking-wide leading-relaxed text-xs md:text-sm lg:text-lg" data-api-endpoint="{{ env.ELEVENTY_API_ENDPOINT }}">
     {# General alert, managed via /_data/site.js #}
     {% if site.banner and page.url != '/' %}
-    <section class="py-4 bg-carnation-700 text-white font-medium text-center text-xs">
+    <section class="py-4 bg-carnation-700 text-white font-medium text-center text-xs [&_a]:underline [&_a]:underline-offset-2 [&_a]:decoration-white [&_a]:font-semibold">
       <p>{{ site.banner | safe }}</p>
     </section>
     {% endif %}
