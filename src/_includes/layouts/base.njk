@@ -3,7 +3,7 @@
   {% include 'partials/head.njk' %}
   <body class="flex flex-col min-h-screen justify-between antialiased text-neutral-900 tracking-wide leading-relaxed text-xs md:text-sm lg:text-lg" data-api-endpoint="{{ env.ELEVENTY_API_ENDPOINT }}">
     {% if site.banner %}
-    <section class="sticky top-0 z-[60] py-4 bg-carnation-700 text-white font-medium text-center text-xs">
+    <section class="py-4 bg-carnation-700 text-white font-medium text-center text-xs">
       <p>{{ site.banner | safe }}</p>
     </section>
     {% endif %}
