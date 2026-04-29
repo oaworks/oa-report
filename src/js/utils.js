@@ -676,8 +676,11 @@ export function adjustNavOnScroll() {
     // Re-query so dynamically added buttons (e.g. Clear filters) are included
     const yearButtons = nav.querySelectorAll(".js-nav-chip");
     const rect = nav.getBoundingClientRect();
+    const topBannerHeight = Array.from(document.querySelectorAll(".js-top-banner, #js-alert"))
+      .filter((el) => el.offsetParent !== null)
+      .reduce((sum, el) => sum + el.getBoundingClientRect().height, 0);
 
-    if (rect.top <= 0) {
+    if (rect.top <= topBannerHeight) {
       // Nav is at the top of the viewport
       yearButtons.forEach((button) => {
         button.classList.remove("md:border-b-0");
