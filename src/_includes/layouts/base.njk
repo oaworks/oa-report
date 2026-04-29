@@ -10,7 +10,7 @@
     {% endif %}
     {# Per-report alert, managed via /report/orgs #}
     {% if org and org._source and org._source.alert_text %}
-    <section class="py-4 bg-carnation-800 text-white font-medium text-center text-xs">
+    <section class="py-4 bg-carnation-800 text-white font-medium text-center text-xs [&_a]:underline [&_a]:underline-offset-2 [&_a]:decoration-white [&_a]:font-semibold">
       <p>{{ org._source.alert_text | safe }}</p>
     </section>
     {% endif %}
