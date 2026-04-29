@@ -7,7 +7,9 @@
       <p>{{ site.banner | safe }}</p>
     </section>
     {% endif %}
+    {% if page.url != '/' %}
     <p id="js-alert" class="sticky top-0 z-[60] hidden py-4 bg-carnation-500 text-white font-medium text-center text-xs"></p>
+    {% endif %}
     {% set env = (site.base_url or '') | lower %}
     {% if 'cf-stg.oa.report' in env %}
       {% set envLabel = 'staging cf' %}
