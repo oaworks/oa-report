@@ -47,15 +47,20 @@
   <meta name="theme-color" content="#25201E">
 
   {# Detect any console errors and display in UI #}
+  {% if page.url != '/' %}
   <script>
     window.addEventListener('error', function (event) {
       if (event.message?.includes('404') || event.message?.toLowerCase().includes('error')) {
         const alertMsg = document.getElementById("js-alert");
+        if (!alertMsg) {
+          return;
+        }
         alertMsg.textContent = "An error has occurred. Please try again later.";
         alertMsg.style.display = 'block';
       }
     }, true);
   </script>
+  {% endif %}
 
   {# Apply login state class early to avoid nav layout shifts #}
   <script>
