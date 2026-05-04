@@ -3,7 +3,7 @@ const axios = require("axios");
 
 module.exports = async () => {
   const size = process.env.ELEVENTY_NUMBER_REPORTS || 500;
-  const url = `https://bg.api.oa.works/report/orgs?q=*&excludes=aliases,fundref,sheets,analysis,strategy,export_includes,search,allow_tdm,grantid_regex,source&size=${size}`;
+  const url = `https://bg.${process.env.ELEVENTY_API_ENDPOINT}.oa.works/report/orgs?q=*&excludes=aliases,fundref,sheets,analysis,strategy,export_includes,search,allow_tdm,grantid_regex,source&size=${size}`;
   const { data } = await axios.get(url);
 
   // Deduplicate by ES _id (fallback to _source.objectID) to avoid duplicate org pages
