@@ -29,7 +29,7 @@ const fetchCountQuery = (url) => {
 // =================================================
 
 // Set report org index URL’s base path
-export const orgApiUrl = `https://api.oa.works/report/orgs?q=objectID:%22${org}%22`;
+export const orgApiUrl = `${API_BASE_URL}orgs?q=objectID:%22${org}%22`;
 
 // Fetch and store organisational data in a constant
 export const orgDataPromise = axios.get(orgApiUrl);
