@@ -754,7 +754,7 @@ function formatBucket(bucket) {
  */
 async function fetchArticleBasedData(query, includes, sort, size) {
   const qParam = encodeURIComponent(`${dateRange}(${query})`); // Encode the query with date range
-  const getDataUrl = `https://${ELEVENTY_API_ENDPOINT}.oa.works/report/works/?q=${qParam}&size=${size}&include=${includes}&sort=${sort}`;
+  const getDataUrl = `https://beta.oa.works/report/works/?q=${qParam}&size=${size}&include=${includes}&sort=${sort}`;
 
   const response = await fetchGetData(getDataUrl); // No need to generate POST request
   const hits = response?.hits?.hits ?? [];
