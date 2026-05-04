@@ -25,19 +25,19 @@ export const API_BG_BASE_URL = `https://bg.${ELEVENTY_API_ENDPOINT}.oa.works/rep
  * Endpoint for querying works with a default size of 100.
  * @type {string}
  */
-export const QUERY_BASE = `${API_BASE_URL}works?size=100&`;
+export const QUERY_BASE = `https://beta.oa.works/report/works?size=100&`;
 
 /**
  * Endpoint for counting the number of works.
  * @type {string}
  */
-export const COUNT_QUERY_BASE = `${API_BASE_URL}works/count?`;
+export const COUNT_QUERY_BASE = `https://beta.oa.works/report/works/count?`;
 
 /**
  * Endpoint for exporting works data in CSV format.
  * @type {string}
  */
-export const CSV_EXPORT_BASE = `${API_BASE_URL}works.csv?size=all&`;
+export const CSV_EXPORT_BASE = `https://beta.oa.works/report/works.csv?size=all&`;
 
 /**
  * Endpoint for sending articles via email.
