@@ -1078,9 +1078,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
   cell.className = cssClass;
   const termBase = currentActiveExploreItemData?.term?.trim() || "";
   const termField = termBase
-    ? ((termBase === "published_year" && ELEVENTY_API_ENDPOINT === "api")
-      ? termBase.replace(/\.keyword$/i, "")
-      : `${termBase.replace(/\.keyword$/i, "")}.keyword`)
+    ? `${termBase.replace(/\.keyword$/i, "")}.keyword`
     : "";
 
   /**
