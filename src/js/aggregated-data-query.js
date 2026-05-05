@@ -693,8 +693,11 @@ export function getAggregatedDataQuery(
   size = 20,
   sort = "_count",
 ) {
+  // `published_year` on the live API is already keyword-type; others need `.keyword`.
   let termField = term;
-  termField += ".keyword";
+  if (!(term === "published_year" && ELEVENTY_API_ENDPOINT === "api")) {
+    termField += ".keyword";
+  }
 
   const aggs = createAggregationTemplate(suffix);
 
