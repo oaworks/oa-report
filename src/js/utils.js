@@ -3,7 +3,7 @@
 // Utility/helper functions
 // ========================
 
-import { ELEVENTY_API_ENDPOINT, READABLE_DATE_OPTIONS, USER_LOCALE, EXPLORE_FILTERS_LABELS } from './constants.js';
+import { WORKS_REPORT_BG_API_BASE_URL, READABLE_DATE_OPTIONS, USER_LOCALE, EXPLORE_FILTERS_LABELS } from './constants.js';
 
 // =================================================
 // Network and caching helpers
@@ -29,7 +29,7 @@ export function isCacheExpired(timestamp, expiryDuration = 86400000) { // 24 hou
  */
 export async function fetchPostData(postData) {
   try {
-    const response = await axios.post(`https://bg.${ELEVENTY_API_ENDPOINT}.oa.works/report/works`, postData);
+    const response = await axios.post(`${WORKS_REPORT_BG_API_BASE_URL}works`, postData);
     return response.data; 
   } catch (error) {
     console.error("There was a problem with the POST request: ", error.message);
