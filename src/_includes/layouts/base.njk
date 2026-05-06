@@ -2,22 +2,27 @@
 <html class="no-js scroll-smooth" lang="en">
   {% include 'partials/head.njk' %}
   <body class="flex flex-col min-h-screen justify-between antialiased text-neutral-900 tracking-wide leading-relaxed text-xs md:text-sm lg:text-lg" data-api-endpoint="{{ env.ELEVENTY_API_ENDPOINT }}">
-    {% if site.banner %}
-    <section class="py-4 bg-carnation-400 font-medium text-center text-xs" style="z-index: 5; position: sticky; top: 0;">
+    {# General alert, managed via /_data/site.js #}
+    {% if site.banner and page.url != '/' %}
+    <section class="js-top-banner py-4 bg-carnation-700 text-white font-medium text-center text-xs [&_a]:underline [&_a]:underline-offset-2 [&_a]:decoration-white [&_a]:font-semibold">
       <p>{{ site.banner | safe }}</p>
     </section>
     {% endif %}
-    <p id="js-alert" class="sticky top-0 z-[60] hidden py-4 bg-carnation-500 text-white font-medium text-center text-xs"></p>
+    {# Per-report alert, managed via /report/orgs #}
+    {% if org and org._source and org._source.alert_text %}
+    <section class="js-top-banner p-4 bg-carnation-800 text-white font-medium text-center text-xs [&_a]:underline [&_a]:underline-offset-2 [&_a]:decoration-white [&_a]:font-semibold">
+      <p>{{ org._source.alert_text | safe }}</p>
+    </section>
+    {% endif %}
+    {% if page.url != '/' %}
+    <p id="js-alert" class="sticky top-0 z-[60] hidden p-4 bg-carnation-500 text-white font-medium text-center text-xs"></p>
+    {% endif %}
     {% set env = (site.base_url or '') | lower %}
-    {% if 'cf-stg.oa.report' in env %}
+    {% if 'staging.oa.report' in env or 'stg.oa.report' in env %}
       {% set envLabel = 'staging cf' %}
-    {% elif 'staging.oa.report' in env %}
-      {% set envLabel = 'staging netlify' %}
-    {% elif 'cf-dev.oa.report' in env %}
-      {% set envLabel = 'development cf' %}
     {% elif 'dev.oa.report' in env %}
-      {% set envLabel = 'development netlify' %}
-    {% elif 'localhost' in env %}
+      {% set envLabel = 'development cf' %}
+    {% elif 'localhost' in env or '127.0.0.1' in env %}
       {% set envLabel = 'development local' %}
     {% else %}
       {% set envLabel = '' %}

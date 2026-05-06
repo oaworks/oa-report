@@ -131,12 +131,6 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
       const card = template.content.querySelector(`#${cardId}`);
       if (!card) return;
       const clonedCard = card.cloneNode(true);
-      if (cardId === "is_preprint") {
-        const titleEl = clonedCard.querySelector("h3 span");
-        if (titleEl) {
-          titleEl.textContent = section.sectionId === "insights_preprints" ? "Total" : "Preprint";
-        }
-      }
       // Show a placeholder when the API returns no data for a displayed card.
       if (!analysisEntry) {
         showUnavailableCard(clonedCard);
@@ -268,8 +262,8 @@ export function initInsightsAndActions(org) {
       }
   
       // if email is not undefined and there is an orgkey, try to decrypt the author’s email
-      if (email !== 'undefined' && loggedIn) {
-          axios.get(`${ARTICLE_EMAIL_BASE + doi}?${orgKey}`)
+      if (email !== 'undefined' && doi && doi !== 'N/A' && loggedIn) {
+          axios.get(`${ARTICLE_EMAIL_BASE}${encodeURIComponent(doi)}${orgKey ? `?${orgKey.slice(1)}` : ""}`)
               .then(function (response) {
                   let authorEmail = response.data;
                   mailto = mailto.replaceAll("{email}", authorEmail);
@@ -749,7 +743,7 @@ export function getActionExportLink(id, orgData) {
     : "";
 
   // Build final URL
-  const exportUrl = `${CSV_EXPORT_BASE}${query}${include}&sort=${strategySort}${email}`;
+  const exportUrl = `${CSV_EXPORT_BASE}${query}${include}&sort=${strategySort}${email}${orgKey}`;
 
   const xhr = new XMLHttpRequest();
   xhr.open("GET", exportUrl);
