@@ -693,9 +693,9 @@ export function getAggregatedDataQuery(
   size = 20,
   sort = "_count",
 ) {
-  // `published_year` on the live API is already keyword-type; others need `.keyword`.
+  // `published_year` is already keyword-type; append `.keyword` for other term fields.
   let termField = term;
-  if (!(term === "published_year" && ELEVENTY_API_ENDPOINT === "api")) {
+  if (!(term === "published_year")) {
     termField += ".keyword";
   }
 
