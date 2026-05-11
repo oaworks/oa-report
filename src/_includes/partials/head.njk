@@ -89,8 +89,10 @@
   {% endif %}
 
   {# Preconnect to the API endpoint #}
-  <link rel="preconnect" href="https://bg.{{ env.ELEVENTY_API_ENDPOINT }}.oa.works">
-  <link rel="preconnect" href="https://{{ env.ELEVENTY_API_ENDPOINT }}.oa.works">
+  <link rel="preconnect" href="https://bg.{{ env.ELEVENTY_API_HOST_ORGS }}.oa.works">
+  <link rel="preconnect" href="https://{{ env.ELEVENTY_API_HOST_ORGS }}.oa.works">
+  <link rel="preconnect" href="https://bg.{{ env.ELEVENTY_API_HOST_WORKS }}.oa.works">
+  <link rel="preconnect" href="https://{{ env.ELEVENTY_API_HOST_WORKS }}.oa.works">
 
   {# SimpleAnalytics tracking code (load early to capture URL params) #}
   <script 

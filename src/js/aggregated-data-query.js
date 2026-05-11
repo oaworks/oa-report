@@ -5,12 +5,6 @@
 // =================================================
 
 // =================================================
-// Imports
-// =================================================
-
-import { ELEVENTY_API_ENDPOINT } from "./constants.js";
-
-// =================================================
 // Helpers
 // =================================================
 
@@ -693,8 +687,11 @@ export function getAggregatedDataQuery(
   size = 20,
   sort = "_count",
 ) {
+  // `published_year` is already keyword-type; append `.keyword` for other term fields.
   let termField = term;
-  termField += ".keyword";
+  if (!(term === "published_year")) {
+    termField += ".keyword";
+  }
 
   const aggs = createAggregationTemplate(suffix);
 

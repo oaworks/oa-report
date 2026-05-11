@@ -3,7 +3,7 @@
 // Utility/helper functions
 // ========================
 
-import { ELEVENTY_API_ENDPOINT, READABLE_DATE_OPTIONS, USER_LOCALE, EXPLORE_FILTERS_LABELS } from './constants.js';
+import { WORKS_REPORT_BG_API_BASE_URL, READABLE_DATE_OPTIONS, USER_LOCALE, EXPLORE_FILTERS_LABELS } from './constants.js';
 
 // =================================================
 // Network and caching helpers
