@@ -30,7 +30,7 @@
     "18": "^0.0.0",
     "@floating-ui/dom": "^1.7.6",
     "@phosphor-icons/web": "^2.1.1",
-    "@tryghost/content-api": "^1.12.6",
+    "@tryghost/content-api": "^1.12.8",
     "axios": "1.16.0",
     "caniuse-lite": "^1.0.30001781",
     "canvas": "^3.2.2",
