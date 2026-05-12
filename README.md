@@ -11,7 +11,8 @@ Prerequisites:
 3. Install Eleventy for this project: `npm install @11ty/eleventy`
 4. Set up environment variables so that you can access the API: 
    - Create a file named `.env` at the root of the project directory
-   - Set either `ELEVENTY_API_ENDPOINT = "api"`(live API endpoint) or `ELEVENTY_API_ENDPOINT = "beta"` (dev)
+   - Set `ELEVENTY_API_HOST_ORGS` to either `"api"` (live API endpoint) or `"beta"` (dev)
+   - Set `ELEVENTY_API_HOST_WORKS` to either `"api"` (live API endpoint) or `"beta"` (dev)
    - Set `ELEVENTY_BASE_URL` to your localhost
    - Set `ELEVENTY_NUMBER_REPORTS` to the number of reports you’d like to generate 
    - Don’t forget to restart your local server whenever you make a change to this file
