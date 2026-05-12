@@ -3,7 +3,7 @@
 // Utility/helper functions
 // ========================
 
-import { ELEVENTY_API_ENDPOINT, READABLE_DATE_OPTIONS, USER_LOCALE, EXPLORE_FILTERS_LABELS } from './constants.js';
+import { WORKS_REPORT_BG_API_BASE_URL, READABLE_DATE_OPTIONS, USER_LOCALE, EXPLORE_FILTERS_LABELS } from './constants.js';
 
 // =================================================
 // Network and caching helpers
@@ -29,7 +29,7 @@ export function isCacheExpired(timestamp, expiryDuration = 86400000) { // 24 hou
  */
 export async function fetchPostData(postData) {
   try {
-    const response = await axios.post(`https://bg.${ELEVENTY_API_ENDPOINT}.oa.works/report/works`, postData);
+    const response = await axios.post(`${WORKS_REPORT_BG_API_BASE_URL}works`, postData);
     return response.data; 
   } catch (error) {
     console.error("There was a problem with the POST request: ", error.message);
@@ -676,8 +676,11 @@ export function adjustNavOnScroll() {
     // Re-query so dynamically added buttons (e.g. Clear filters) are included
     const yearButtons = nav.querySelectorAll(".js-nav-chip");
     const rect = nav.getBoundingClientRect();
+    const topBannerHeight = Array.from(document.querySelectorAll(".js-top-banner, #js-alert"))
+      .filter((el) => el.offsetParent !== null)
+      .reduce((sum, el) => sum + el.getBoundingClientRect().height, 0);
 
-    if (rect.top <= 0) {
+    if (rect.top <= topBannerHeight) {
       // Nav is at the top of the viewport
       yearButtons.forEach((button) => {
         button.classList.remove("md:border-b-0");

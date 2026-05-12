@@ -15,7 +15,7 @@ import {
   pluraliseNoun,
   createPopoverKeyboardFlow
 } from "./utils.js";
-import { API_BASE_URL } from "./constants/api.js";
+import { ORGS_REPORT_API_BASE_URL } from "./constants/api.js";
 
 import {
   EXPLORE_ITEMS_LABELS,
@@ -32,7 +32,7 @@ import { orgDataPromise } from './insights-and-actions.js';
 import { handleFiltersChanged } from './explore.js';
 import { createPopover, createTooltip } from './tooltip-manager.js';
 
-const SUGGESTIONS_API_URL = `${API_BASE_URL}suggestions`;
+const SUGGESTIONS_API_URL = `${ORGS_REPORT_API_BASE_URL}suggestions`;
 
 const SUGGESTIONS_SIZE_DEFAULT = 10000;
 
