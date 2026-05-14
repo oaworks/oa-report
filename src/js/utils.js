@@ -22,29 +22,60 @@ export function isCacheExpired(timestamp, expiryDuration = 86400000) { // 24 hou
 }
 
 /**
- * Fetches data from the OA Works API using Axios with a POST request.
+ * Performs a fetch request and parses the response body as JSON.
+ *
+ * @param {string} url - The URL to request.
+ * @param {RequestInit} [options={}] - Fetch options such as method, headers, and body.
+ * @returns {Promise<*>} Parsed JSON response body.
+ * @throws {Error} Throws if the response status is not successful.
+ */
+export async function fetchJson(url, options = {}) {
+  const response = await fetch(url, options);
+
+  if (!response.ok) {
+    throw new Error(`Request failed with status ${response.status}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * Performs a fetch request and parses the response body as text.
+ *
+ * @param {string} url - The URL to request.
+ * @param {RequestInit} [options={}] - Fetch options such as method and headers.
+ * @returns {Promise<string>} Response body as text.
+ * @throws {Error} Throws if the response status is not successful.
+ */
+export async function fetchText(url, options = {}) {
+  const response = await fetch(url, options);
+
+  if (!response.ok) {
+    throw new Error(`Request failed with status ${response.status}`);
+  }
+
+  return response.text();
+}
+
+/**
+ * Fetches data from the OA Works API using a POST request.
  * 
  * @param {Object} postData - The data to be sent in the POST request.
  * @returns {Object|null} The response data from the API, or null if an error occurs.
  */
 export async function fetchPostData(postData) {
   try {
-    const response = await axios.post(`${WORKS_REPORT_BG_API_BASE_URL}works`, postData);
-    return response.data; 
+    return await fetchJson(`${WORKS_REPORT_BG_API_BASE_URL}works`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(postData)
+    });
   } catch (error) {
     console.error("There was a problem with the POST request: ", error.message);
     return null; 
   }
-}
-
-/**
- * Fetches JSON data from the given URL using Axios with a GET request.
- *
- * @param {string} url - The URL to fetch data from.
- * @returns {Promise<Object>} A promise that resolves to the JSON data.
- */
-export async function fetchGetData(url) {
-  return axios.get(url).then(response => response.data);
 }
 
 // Define external variables used for managing the date range and yearly navigation
@@ -534,15 +565,15 @@ export function getORCiDFullName(orcidInput) {
     const orcidId = orcidInput.split('/').pop();
     const url = `https://pub.orcid.org/v3.0/${orcidId}/person`;
 
-    axios.get(url, {
-        headers: {
-            'Accept': 'application/json'
-        }
+    fetchJson(url, {
+      headers: {
+        Accept: "application/json"
+      }
     })
-    .then(response => {
+    .then(data => {
         try {
-            const givenName = response.data.name['given-names'].value;
-            const familyName = response.data.name['family-name'].value;
+            const givenName = data.name['given-names'].value;
+            const familyName = data.name['family-name'].value;
             const fullName = `${givenName} ${familyName}`;
             resolve(fullName);
         } catch (error) {
