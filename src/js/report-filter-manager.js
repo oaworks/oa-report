@@ -45,7 +45,7 @@ const SUGGESTIONS_SIZE_DEFAULT = 10000;
  * @type {Object|undefined}
  */
 let orgData;
-orgDataPromise.then((res) => { orgData = res.data; });
+orgDataPromise.then((data) => { orgData = data; });
 
 const ensureKeywordField = (field = "") => {
   if (!field) return "";

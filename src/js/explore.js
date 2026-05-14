@@ -183,8 +183,7 @@ export async function initDataExplore(org) {
   }
 
   try {
-    const response = await orgDataPromise; // Await the promise to resolve
-    orgData = response.data;
+    orgData = await orgDataPromise; // Await the promise to resolve
 
     // Check if explore data exists and is not empty
     if (orgData.hits.hits.length > 0 && orgData.hits.hits[0]._source.explore && orgData.hits.hits[0]._source.explore.length > 0) {
@@ -1747,8 +1746,7 @@ function removeCSVExportLink() {
  * @returns {boolean} - Always returns false to prevent default form submission.
  */
 window.getExportLink = function() {
-  orgDataPromise.then(function (response) {
-    const orgData = response.data;
+  orgDataPromise.then(function (orgData) {
     const currentId = currentActiveExploreItemData.id;
 
     // Get the custom includes for the specific item based on the current active explore item ID
