@@ -94,33 +94,18 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy("./src/*.txt");
   eleventyConfig.addPassthroughCopy("./_redirects");
 
-  /* ─── WebP helper shortcode (unchanged) ────────────────── */
+  /* ─── WebP helper shortcode ────────────────────────────── */
   eleventyConfig.addShortcode("webpImg", function (filename, altText, width, height, classes = '', loading = false) {
     const webpFilename = filename.replace(/\.[^.]+$/, ".webp");
-
-    // Call checkWebPSupport() here to determine WebP support
-    let hasWebPSupport = false;
-    checkWebPSupport(() => { hasWebPSupport = true; });
 
     const imgClasses  = classes ? `class="${classes}"` : '';
     const loadingAttr = loading ? 'loading="lazy"' : '';
 
-    if (hasWebPSupport) {
-      return `<picture>
-                <source srcset="${webpFilename}" type="image/webp">
-                <img src="${filename}" alt="${altText}" width="${width}" height="${height}" ${imgClasses} ${loadingAttr}>
-              </picture>`;
-    } else {
-      return `<img src="${filename}" alt="${altText}" ${imgClasses} ${loadingAttr}>`;
-    }
+    return `<picture>
+              <source srcset="${webpFilename}" type="image/webp">
+              <img src="${filename}" alt="${altText}" width="${width}" height="${height}" ${imgClasses} ${loadingAttr}>
+            </picture>`;
   });
-
-  function checkWebPSupport(callback) {
-    const img = new (require('canvas').Image)();
-    img.onerror = () => callback(false);
-    img.onload  = () => callback(true);
-    img.src     = 'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IBgAAAAwAQCdASoBAAEAAwA0JaQAA3AA/vuUAAA=';
-  }
 
   /* ─── Liquid options ───────────────────────────────────── */
   eleventyConfig.setLiquidOptions({ dynamicPartials: true });
