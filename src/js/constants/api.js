@@ -3,44 +3,64 @@
 // API endpoints and base URLs
 // =================================================
 
-/**
- * The API endpoint for the orgindex.
- * @type {string}
- */
-export const ELEVENTY_API_ENDPOINT = document.body.getAttribute('data-api-endpoint');
+const bodyDataset = document.body.dataset;
 
 /**
- * Base URL for the API endpoint.
+ * The host selector for org index requests.
  * @type {string}
  */
-export const API_BASE_URL = `https://${ELEVENTY_API_ENDPOINT}.oa.works/report/`;
+export const API_HOST_ORGS = bodyDataset.apiHostOrgs;
 
 /**
- * Base URL for the bg API endpoint.
+ * The host selector for works requests.
  * @type {string}
  */
-export const API_BG_BASE_URL = `https://bg.${ELEVENTY_API_ENDPOINT}.oa.works/report/`;
+export const API_HOST_WORKS = bodyDataset.apiHostWorks;
+
+/**
+ * Base URL for org index requests.
+ * @type {string}
+ */
+export const ORGS_REPORT_API_BASE_URL = `https://${API_HOST_ORGS}.oa.works/report/`;
+
+/**
+ * Base URL for org index bg requests.
+ * @type {string}
+ */
+export const ORGS_REPORT_BG_API_BASE_URL = `https://bg.${API_HOST_ORGS}.oa.works/report/`;
+
+/**
+ * Base URL for works requests.
+ * @type {string}
+ */
+export const WORKS_REPORT_API_BASE_URL = `https://${API_HOST_WORKS}.oa.works/report/`;
+
+/**
+ * Base URL for works bg requests.
+ * @type {string}
+ */
+export const WORKS_REPORT_BG_API_BASE_URL = `https://bg.${API_HOST_WORKS}.oa.works/report/`;
 
 /**
  * Endpoint for querying works with a default size of 100.
  * @type {string}
  */
-export const QUERY_BASE = `${API_BASE_URL}works?size=100&`;
+export const QUERY_BASE = `${WORKS_REPORT_API_BASE_URL}works?size=100&`;
 
 /**
  * Endpoint for counting the number of works.
  * @type {string}
  */
-export const COUNT_QUERY_BASE = `${API_BASE_URL}works/count?`;
+export const COUNT_QUERY_BASE = `${WORKS_REPORT_API_BASE_URL}works/count?`;
 
 /**
  * Endpoint for exporting works data in CSV format.
  * @type {string}
  */
-export const CSV_EXPORT_BASE = `${API_BASE_URL}works.csv?size=all&`;
+export const CSV_EXPORT_BASE = `${WORKS_REPORT_API_BASE_URL}works.csv?size=all&`;
 
 /**
  * Endpoint for sending articles via email.
  * @type {string}
  */
-export const ARTICLE_EMAIL_BASE = `${API_BG_BASE_URL}email/`;
+export const ARTICLE_EMAIL_BASE = `${WORKS_REPORT_BG_API_BASE_URL}email/`;

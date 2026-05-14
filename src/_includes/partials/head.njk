@@ -83,14 +83,15 @@
 
   {# Load UI-related JS for org report pages only #} 
   {% if org._source.name %}
-  <script defer src="/js/axios.min.js"></script>
   <script defer src="/js/oaworksKeys.js"></script>
   <script type="module" src="/js/main.min.js"></script>
   {% endif %}
 
   {# Preconnect to the API endpoint #}
-  <link rel="preconnect" href="https://bg.{{ env.ELEVENTY_API_ENDPOINT }}.oa.works">
-  <link rel="preconnect" href="https://{{ env.ELEVENTY_API_ENDPOINT }}.oa.works">
+  <link rel="preconnect" href="https://bg.{{ env.ELEVENTY_API_HOST_ORGS }}.oa.works">
+  <link rel="preconnect" href="https://{{ env.ELEVENTY_API_HOST_ORGS }}.oa.works">
+  <link rel="preconnect" href="https://bg.{{ env.ELEVENTY_API_HOST_WORKS }}.oa.works">
+  <link rel="preconnect" href="https://{{ env.ELEVENTY_API_HOST_WORKS }}.oa.works">
 
   {# SimpleAnalytics tracking code (load early to capture URL params) #}
   <script 
