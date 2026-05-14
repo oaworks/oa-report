@@ -78,16 +78,6 @@ export async function fetchPostData(postData) {
   }
 }
 
-/**
- * Fetches JSON data from the given URL using a GET request.
- *
- * @param {string} url - The URL to fetch data from.
- * @returns {Promise<Object>} A promise that resolves to the JSON data.
- */
-export async function fetchGetData(url) {
-  return fetchJson(url);
-}
-
 // Define external variables used for managing the date range and yearly navigation
 export let dateRange, startDate, endDate, startYear, endYear;
 

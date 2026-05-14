@@ -7,7 +7,7 @@
 // Imports
 // =================================================
 
-import { displayNone, makeDateReadable, fetchGetData, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, normaliseFieldId, makeNumberReadable, announce } from "./utils.js";
+import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, normaliseFieldId, makeNumberReadable, announce } from "./utils.js";
 import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, FILTER_PILL_CLASSES, SEGMENTED_PILL_CLASSES } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { toggleLoadingIndicator } from "./components.js";
@@ -756,7 +756,7 @@ async function fetchArticleBasedData(query, includes, sort, size) {
   const qParam = encodeURIComponent(`${dateRange}(${query})`); // Encode the query with date range
   const getDataUrl = `${WORKS_REPORT_API_BASE_URL}works/?q=${qParam}&size=${size}&include=${includes}&sort=${sort}`;
 
-  const response = await fetchGetData(getDataUrl); // No need to generate POST request
+  const response = await fetchJson(getDataUrl); // No need to generate POST request
   const hits = response?.hits?.hits ?? [];
   const totalRaw = response?.hits?.total;
 
