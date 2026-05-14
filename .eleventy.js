@@ -4,7 +4,7 @@ require('dotenv').config();
 const { DateTime } = require("luxon");
 
 // HTML minifier
-const htmlmin = require("html-minifier");
+const { minify } = require("html-minifier-terser");
 
 // Markdown
 const markdownIt = require('markdown-it');
@@ -60,9 +60,9 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addShortcode('version', () => now);
 
   /* ─── Minify HTML output ───────────────────────────────── */
-  eleventyConfig.addTransform("htmlmin", function (content) {
+  eleventyConfig.addTransform("htmlmin", async function (content) {
     if (this.page.outputPath && this.page.outputPath.endsWith(".html")) {
-      return htmlmin.minify(content, {
+      return await minify(content, {
         useShortDoctype: true,
         removeComments:  true,
         collapseWhitespace: true
