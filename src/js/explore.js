@@ -7,7 +7,7 @@
 // Imports
 // =================================================
 
-import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, normaliseFieldId, makeNumberReadable, announce } from "./utils.js";
+import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, normaliseFieldId, makeNumberReadable, announce } from "./utils.js";
 import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, FILTER_PILL_CLASSES, SEGMENTED_PILL_CLASSES } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { toggleLoadingIndicator } from "./components.js";
@@ -1227,36 +1227,6 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
   }
 
   /**
-   * Renders an ORCID-backed label with async name resolution and a companion
-   * ORCID pill link. Used both for filterable key cells and plain value cells.
-   *
-   * @param {string} orcidUrl
-   * @param {HTMLElement} container
-   * @param {boolean} [asFilterTarget=false]
-   * @returns {HTMLElement}
-   */
-  function createAsyncOrcidLabel(orcidUrl, container, asFilterTarget = false) {
-    const orcidId = orcidUrl.split('/').pop();
-    const nameSpan = document.createElement('span');
-    nameSpan.textContent = 'Loading ORCID data...';
-
-    const label = asFilterTarget ? createFilterTargetButton() : document.createElement('span');
-    label.appendChild(nameSpan);
-    container.appendChild(label);
-    container.appendChild(createExternalPill(orcidUrl, 'ORCID ↗'));
-
-    getORCiDFullName(orcidId)
-      .then(fullName => {
-        nameSpan.textContent = fullName || 'Name not found';
-      })
-      .catch(() => {
-        nameSpan.textContent = orcidUrl;
-      });
-
-    return label;
-  }
-
-  /**
    * Renders the first-column term label cell for known Explore breakdowns that
    * need special formatting, while preserving click-to-filter behavior.
    *
@@ -1307,14 +1277,10 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
       case 'janelia_lab_head':
       case 'investigator':
       case 'freeman_hrabowski_scholar':
-        if (displayValue && displayValue !== rawValue) {
+        if (typeof rawValue === 'string' && rawValue.includes('orcid.org')) {
           labelWrapper = createFilterTargetButton(displayValue);
           cell.appendChild(labelWrapper);
           cell.appendChild(createExternalPill(rawValue, 'ORCID ↗'));
-          break;
-        }
-        if (typeof rawValue === 'string' && rawValue.includes('orcid.org')) {
-          labelWrapper = createAsyncOrcidLabel(rawValue, cell, true);
           break;
         }
         labelWrapper = createFilterTargetButton(displayValue);

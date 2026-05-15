@@ -13,7 +13,7 @@
  *
  * @type {string}
  */
-export const AUTHOR_BREAKDOWN_TERM = "authorships.author.orcid";
+export const AUTHOR_BREAKDOWN_TERM = "authorships.author.id";
 
 /**
  * Returns the author value used as the author breakdown key.
@@ -685,6 +685,33 @@ function createAggregationTemplate(suffix) {
   };
 }
 
+/**
+ * Returns extra bucket metadata aggregations for author id breakdowns.
+ *
+ * @param {string} term - Field used for the current terms aggregation.
+ * @returns {Object} Extra aggregations to merge into each terms bucket.
+ */
+function createAuthorBucketMetadataAggs(term) {
+  if (term !== AUTHOR_BREAKDOWN_TERM) {
+    return {};
+  }
+
+  return {
+    top_author_record: {
+      top_hits: {
+        size: 1,
+        _source: {
+          includes: [
+            "authorships.author.id",
+            "authorships.author.display_name",
+            "authorships.author.orcid"
+          ]
+        }
+      }
+    }
+  };
+}
+
 // =================================================
 // Exports
 // =================================================
@@ -719,7 +746,7 @@ export function getAggregatedDataQuery(
   }
 
   const aggs = createAggregationTemplate(suffix);
-  const bucketMetadataAggs = {};
+  const bucketMetadataAggs = createAuthorBucketMetadataAggs(term);
 
   return {
     query: {
