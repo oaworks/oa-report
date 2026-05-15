@@ -9,9 +9,10 @@
 // =================================================
 
 import { DATE_SELECTION_BUTTON_CLASSES } from './constants.js';
-import { createDate, replaceDateRange, initDropdown, getAllURLParams, updateURLParams, dateRange, getURLParam } from './utils.js';
-import { initInsightsAndStrategies } from './insights-and-strategies.js';
+import { createDate, replaceDateRange, initDropdown, getAllURLParams, updateURLParams, dateRange, getURLParam, createPopoverKeyboardFlow, makeDateReadable, announce } from './utils.js';
+import { initInsightsAndActions } from './insights-and-actions.js';
 import { currentActiveExploreItemButton, currentActiveExploreItemData, processExploreDataTable } from './explore.js';
+import { createPopover } from './tooltip-manager.js';
 
 // =================================================
 // Global variables
@@ -103,12 +104,12 @@ export function setDefaultYear() {
     if (elementToUpdate && elementToUpdate.classList.contains("js_dropdown_item")) {
       const dropdownButton = document.querySelector(".js_dropdown_button");
       if (dropdownButton) {
-        dropdownButton.innerHTML = `${startDate.getFullYear()} <span class='ml-1 text-xs'>&#9660;</span>`;
+        dropdownButton.innerHTML = `${startDate.getFullYear()} <span class='ml-1 text-xs' aria-hidden='true'>&#9660;</span>`;
       }
     }
   } else {
     // Otherwise, set default dates or years based on user type
-    let defaultStartDate, defaultEndDate;
+    let defaultStartDate, defaultEndDate, defaultButtonYear;
 
     if (paid) {
       // For paid users, use the full year unless it's Q2 or later
@@ -116,21 +117,24 @@ export function setDefaultYear() {
         // Switch to the current year for Q2 and beyond
         defaultStartDate = createDate(currentDate.getFullYear(), 0, 1); // Jan 1 of the current year
         defaultEndDate = new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate())); // Today’s date
+        defaultButtonYear = currentDate.getFullYear();
       } else {
         // Default to the previous year
         defaultStartDate = createDate(DEFAULT_YEAR, 0, 1); // January 1st
         defaultEndDate = createDate(DEFAULT_YEAR, 11, 31); // December 31st
+        defaultButtonYear = DEFAULT_YEAR;
       }
     } else {
       // For non-paid users, restrict the date range from Jan 1 to Jun 30 of DEFAULT_YEAR_FREE
       defaultStartDate = createDate(DEFAULT_YEAR_FREE, 0, 1); // January 1st
       defaultEndDate = createDate(DEFAULT_YEAR_FREE, 5, 30); // June 30th
+      defaultButtonYear = DEFAULT_YEAR_FREE;
     }
 
     replaceDateRange(defaultStartDate, defaultEndDate);
 
     // Select the default year button and style it as selected
-    const defaultButton = document.getElementById(`year-${DEFAULT_YEAR}`);
+    const defaultButton = document.getElementById(`year-${defaultButtonYear}`);
     if (defaultButton) {
       handleYearButtonLogic(defaultButton, defaultStartDate, defaultEndDate);
       updateYearButtonStyling(defaultButton);
@@ -240,18 +244,24 @@ function createDropdownContainer(id = null) {
   dropdown.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " relative inline-block js_dropdown";
 
   const dropdownButton = document.createElement("button");
-  dropdownButton.className = "h-full w-full js_dropdown_button";
+  dropdownButton.className = "h-full w-full rounded-t-sm js_dropdown_button focus:outline-none focus:ring-2 focus:ring-neutral-600";
   if (id) dropdownButton.id = id;
   dropdownButton.setAttribute("aria-haspopup", "true");
   dropdownButton.setAttribute("aria-expanded", "false");
-  dropdownButton.innerHTML = "More <span class='sr-only'>years</span> <span class='ml-1 text-xs'>&#9660;</span>";
+  dropdownButton.innerHTML = "More <span class='sr-only'>years</span> <span class='ml-1 text-xs' aria-hidden='true'>&#9660;</span>";
 
   const dropdownContent = document.createElement("div");
   dropdownContent.classList.add(
     "absolute",
     "left-0",
+    "top-full",
     "mt-3",
     "w-full",
+    "z-20",
+    "max-h-[min(20rem,calc(100vh-6rem))]",
+    "overflow-y-auto",
+    "overscroll-contain",
+    "rounded-sm",
     "shadow-lg",
     "border",
     "border-neutral-600",
@@ -319,7 +329,7 @@ function createDropdownItem(buttonId, buttonText, startDate, endDate, dropdownBu
     handleYearButtonLogic(item, startDate, endDate);
 
     // Update visible label on the More chip
-    dropdownButton.innerHTML = `${buttonText} <span class='ml-1 text-xs'>&#9660;</span>`;
+    dropdownButton.innerHTML = `${buttonText} <span class='ml-1 text-xs' aria-hidden='true'>&#9660;</span>`;
 
     // Close the dropdown
     const dropdownContainer = dropdownButton.closest(".js_dropdown");
@@ -351,7 +361,7 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
 
   // Add classes for styling
   button.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " px-3";
-  button.setAttribute("aria-pressed", buttonText === `${DEFAULT_YEAR}` ? "true" : "false");
+  button.setAttribute("aria-pressed", "false");
 
   // Add event listener
   button.addEventListener("click", function() {
@@ -407,7 +417,7 @@ function createDateRangeForm() {
   // Trigger button to open the popover
   const triggerBtn = document.createElement("button");
   triggerBtn.type = "button";
-  triggerBtn.innerHTML = "Custom date range <span class='ml-1 text-xs'>▼</span>";
+  triggerBtn.innerHTML = "Custom date range <span class='ml-1 text-xs' aria-hidden='true'>&#9660;</span>";
   triggerBtn.setAttribute("aria-haspopup", "dialog");
   triggerBtn.setAttribute("aria-expanded", "false");
   triggerBtn.style.color = "inherit";
@@ -436,16 +446,30 @@ function createDateRangeForm() {
   applyBtn.textContent = "Apply";
   pop.appendChild(applyBtn);
 
-  // Initialise a dedicated Tippy instance
-  const tip = tippy(triggerBtn, {
-    content: pop,
-    allowHTML: true,
-    interactive: true,
-    placement: "bottom",
-    appendTo: document.body,
-    trigger: "click",
-    theme: "popover",
-    arrow: false,
+  let tip;
+  const popoverFlow = createPopoverKeyboardFlow({
+    popover: pop,
+    trigger: triggerBtn,
+    firstSelector: "#start-date-pop",
+    lastSelector: "#js-date-range-apply-button",
+    onBackwardTab: () => {
+      tip.hide();
+      requestAnimationFrame(() => triggerBtn.focus());
+    },
+    onForwardTab: () => {
+      tip.hide();
+      requestAnimationFrame(() => {
+        const filtersTrigger = document.getElementById("js-filters-trigger");
+        if (filtersTrigger instanceof HTMLElement) {
+          filtersTrigger.focus();
+        } else {
+          triggerBtn.focus();
+        }
+      });
+    }
+  });
+
+  tip = createPopover(triggerBtn, pop, {
     onShow() {
       triggerBtn.setAttribute("aria-expanded", "true");
       // Prefill popover inputs from hidden values (if any)
@@ -455,6 +479,13 @@ function createDateRangeForm() {
       const ePop = /** @type {HTMLInputElement|null} */ (document.getElementById("end-date-pop"));
       if (s && sPop) sPop.value = s.value || "";
       if (e && ePop) ePop.value = e.value || "";
+      // Keep values in sync before mount/shown hooks move focus.
+    },
+    onMount() {
+      requestAnimationFrame(() => popoverFlow.focusFirst());
+    },
+    onShown() {
+      popoverFlow.focusFirst();
     },
     onHide() { triggerBtn.setAttribute("aria-expanded", "false"); }
   });
@@ -497,7 +528,7 @@ function createDateRangeForm() {
     updateYearButtonStyling(form, true);
 
     // Close the popover
-    if (tip && tip[0]) tip[0].hide();
+    if (tip) tip.hide();
   });
 
   return form;
@@ -551,7 +582,8 @@ function handleYearButtonLogic(button, startDate, endDate) {
   }
 
   replaceDateRange(startDate, endDate);
-  initInsightsAndStrategies(org);
+  announce(`Date range: ${makeDateReadable(startDate)} to ${makeDateReadable(endDate)}.`);
+  initInsightsAndActions(org);
   if (currentActiveExploreItemButton) {
     processExploreDataTable(currentActiveExploreItemButton, currentActiveExploreItemData);
   }
@@ -642,7 +674,7 @@ function resetDropdown() {
   // Reset the dropdown button text to 'More years'
   const dropdownButton = document.querySelector('.js_dropdown_button');
   if (dropdownButton) {
-    dropdownButton.innerHTML = `More <span class='sr-only'>years</span> <span class='ml-1 text-xs'>&#9660;</span>`;
+    dropdownButton.innerHTML = `More <span class='sr-only'>years</span> <span class='ml-1 text-xs' aria-hidden='true'>&#9660;</span>`;
   }
 
   // Reset styling for all dropdown items to their original state

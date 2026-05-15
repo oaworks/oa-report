@@ -5,7 +5,7 @@
   <meta name="robots" content="noindex">
   {% endif %}
   {% set env = (site.base_url or '') | lower %}
-  {% set titlePrefix = '[STG] ' if 'staging.oa.report' in env or 'cf-stg.oa.report' in env else ('[DEV] ' if 'dev.oa.report' in env or 'cf-dev.oa.report' in env or 'localhost' in env else '') %}
+  {% set titlePrefix = '[STG] ' if 'staging.oa.report' in env or 'stg.oa.report' in env else ('[DEV] ' if 'dev.oa.report' in env or 'localhost' in env or '127.0.0.1' in env else '') %}
   <title>{% if titlePrefix %}{{ titlePrefix }}{% endif %}{% if org._source.name %}{{ org._source.name }} — {% endif %}OA.Report: Unlock your research, simply</title>
   <meta name="description" content="{% if org._source.name %}Insights and actions for Open Access and OA policies at {{ org._source.name | safe }}{% else %}Find your publications, measure their openness, and take action to increase your Open Access policy compliance{% endif %}.">
 
@@ -25,22 +25,17 @@
   <meta name="twitter:description" content="{% if org._source.name %}Insights and actions for Open Access and OA policies at {{ org._source.name | safe }}{% else %}Find your publications, measure their openness, and take action to increase your Open Access policy compliance{% endif %}.">
   <meta name="twitter:image" content="https://oa.report/img/twitter_meta.png">
 
-  {# Preconnect to the CDN for our sans-serif font #}
-  <link rel="preconnect" href="https://rsms.me/">
-
-  {# Preload self-hosted Inter variable font #}
-  <link rel="preload" href="../fonts/inter/InterVariable.woff2" as="font" type="font/woff2" crossorigin="anonymous">
-
-  {# Preload self-hosted Redaction font #}
-  <link rel="preload" href="../fonts/redaction/Redaction-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
-  <link rel="preload" href="../fonts/redaction/Redaction-Bold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
-
   {# Load TailwindCSS #}
-  <link rel="stylesheet" href="../tailwind.css">
+  <link rel="stylesheet" href="/tailwind.css">
+  <link rel="preload" href="/phosphor/style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="/phosphor/style.css"></noscript>
+  <style>
+    @font-face{font-family:"Phosphor";src:url("/phosphor/Phosphor.woff2") format("woff2");font-display:swap}
+  </style>
 
   {# Load homepage-specific CSS and JS for Sal.js #}
   {% if page.url == '/' %}
-  <link rel="stylesheet" href="../sal.css">
+  <link rel="stylesheet" href="/sal.css">
   {% endif %}
 
   {# Favicons #}
@@ -52,15 +47,20 @@
   <meta name="theme-color" content="#25201E">
 
   {# Detect any console errors and display in UI #}
+  {% if page.url != '/' %}
   <script>
     window.addEventListener('error', function (event) {
       if (event.message?.includes('404') || event.message?.toLowerCase().includes('error')) {
         const alertMsg = document.getElementById("js-alert");
+        if (!alertMsg) {
+          return;
+        }
         alertMsg.textContent = "An error has occurred. Please try again later.";
         alertMsg.style.display = 'block';
       }
     }, true);
   </script>
+  {% endif %}
 
   {# Apply login state class early to avoid nav layout shifts #}
   <script>
@@ -83,14 +83,16 @@
 
   {# Load UI-related JS for org report pages only #} 
   {% if org._source.name %}
-  <script defer src="../js/axios.min.js"></script>
-  <script defer src="../js/oaworksKeys.js"></script>
-  <script type="module" src="../js/main.min.js"></script>
+  <script defer src="/js/axios.min.js"></script>
+  <script defer src="/js/oaworksKeys.js"></script>
+  <script type="module" src="/js/main.min.js"></script>
   {% endif %}
 
   {# Preconnect to the API endpoint #}
-  <link rel="preconnect" href="https://bg.{{ env.ELEVENTY_API_ENDPOINT }}.oa.works">
-  <link rel="preconnect" href="https://{{ env.ELEVENTY_API_ENDPOINT }}.oa.works">
+  <link rel="preconnect" href="https://bg.{{ env.ELEVENTY_API_HOST_ORGS }}.oa.works">
+  <link rel="preconnect" href="https://{{ env.ELEVENTY_API_HOST_ORGS }}.oa.works">
+  <link rel="preconnect" href="https://bg.{{ env.ELEVENTY_API_HOST_WORKS }}.oa.works">
+  <link rel="preconnect" href="https://{{ env.ELEVENTY_API_HOST_WORKS }}.oa.works">
 
   {# SimpleAnalytics tracking code (load early to capture URL params) #}
   <script 

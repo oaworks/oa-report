@@ -1,5 +1,5 @@
 // ================================================
-// insights-and-strategies.js
+// insights-and-actions.js
 // State & DOM manipulation specific to Insights
 // and Actions sections
 // Needs to be completely refactored
@@ -10,8 +10,10 @@
 // =================================================
 
 import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter } from './utils.js';
-import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS } from './constants.js';
+import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS } from './constants.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
+import { initActionTabs } from './actions.js';
+import { createPopover } from './tooltip-manager.js';
 
 // Cache identical count queries so we only hit the API once per unique URL
 const countQueryCache = new Map();
@@ -27,7 +29,7 @@ const fetchCountQuery = (url) => {
 // =================================================
 
 // Set report org index URL’s base path
-export const orgApiUrl = `${API_BASE_URL}orgs?q=objectID:%22${org}%22`;
+export const orgApiUrl = `${ORGS_REPORT_API_BASE_URL}orgs?q=objectID:%22${org}%22`;
 
 // Fetch and store organisational data in a constant
 export const orgDataPromise = axios.get(orgApiUrl);
@@ -43,17 +45,27 @@ const authState = initAuth(org);
 loggedIn = authState.loggedIn;
 orgKey = authState.orgKey ? `&orgkey=${authState.orgKey}` : "";
 applyAuthVisibility({
-  showWhenLoggedIn: ["logout", "strategies"],
+  showWhenLoggedIn: ["logout", "section-tab-actions", "actions-anchor", "actions"],
   hideWhenLoggedIn: ["login"]
 });
+if (!loggedIn) {
+  ["section-tab-actions", "actions-anchor", "actions"].forEach((id) => {
+    document.getElementById(id)?.remove();
+  });
+}
 
 onAuthChange(({ loggedIn: isLoggedIn, orgKey: key }) => {
   loggedIn = isLoggedIn;
   orgKey = key ? `&orgkey=${key}` : "";
   applyAuthVisibility({
-    showWhenLoggedIn: ["logout", "strategies"],
+    showWhenLoggedIn: ["logout", "section-tab-actions", "actions-anchor", "actions"],
     hideWhenLoggedIn: ["login"]
   });
+  if (!loggedIn) {
+    ["section-tab-actions", "actions-anchor", "actions"].forEach((id) => {
+      document.getElementById(id)?.remove();
+    });
+  }
 });
 
 // =================================================
@@ -119,12 +131,6 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
       const card = template.content.querySelector(`#${cardId}`);
       if (!card) return;
       const clonedCard = card.cloneNode(true);
-      if (cardId === "is_preprint") {
-        const titleEl = clonedCard.querySelector("h3 span");
-        if (titleEl) {
-          titleEl.textContent = section.sectionId === "insights_preprints" ? "Total" : "Preprint";
-        }
-      }
       // Show a placeholder when the API returns no data for a displayed card.
       if (!analysisEntry) {
         showUnavailableCard(clonedCard);
@@ -157,7 +163,7 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
 
   const gridClass =
     visibleSections.length === 3
-      ? "grid gap-4 grid-cols-1 sm:grid-cols-2"
+      ? "grid gap-4 grid-cols-1 xl:grid-cols-2"
       : "grid gap-4 grid-cols-2 md:grid-cols-3 xl:grid-cols-6";
 
   document.querySelectorAll(".js_insights_card_grid").forEach((grid) => {
@@ -167,8 +173,52 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
   return renderedIds;
 }
 
+function renderActionTabs(strategy = {}) {
+  const tabsContainer = document.getElementById("actions_buttons");
+  if (!tabsContainer) return;
+  const actionsTabLink = document.getElementById("section-tab-actions");
+  const actionsAnchor = document.getElementById("actions-anchor");
+  const actionsSection = document.getElementById("actions");
+
+  const visibleActions = Object.entries(strategy)
+    .filter(([, config]) => config?.show_on_web === true)
+    .map(([id]) => id)
+    .filter((id) => document.getElementById(id)) // Keep only actions with an existing panel for this pass.
+    .sort((a, b) => {
+      const aIndex = ACTION_ORDER.indexOf(a);
+      const bIndex = ACTION_ORDER.indexOf(b);
+      const aRank = aIndex === -1 ? Number.MAX_SAFE_INTEGER : aIndex;
+      const bRank = bIndex === -1 ? Number.MAX_SAFE_INTEGER : bIndex;
+      return aRank - bRank;
+    });
+
+  const hasVisibleActions = visibleActions.length > 0;
+  [actionsTabLink, actionsAnchor, actionsSection].forEach((el) => {
+    if (el instanceof HTMLElement) {
+      el.classList.toggle("hidden", !hasVisibleActions);
+    }
+  });
+
+  tabsContainer.innerHTML = "";
+
+  visibleActions.forEach((id, index) => {
+    const label = ACTION_LABELS[id] || id.replaceAll("_", " ");
+    const item = document.createElement("li");
+    item.className = "list-none";
+    const tabBtn = document.createElement("button");
+    tabBtn.type = "button";
+    tabBtn.id = `strategy_${id}`;
+    tabBtn.className = "js_strategy_btn group cursor-pointer px-4 py-1.5 text-sm font-medium rounded-md outline outline-1 outline-transparent outline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 transition-colors text-white bg-neutral-900/60";
+    tabBtn.setAttribute("aria-controls", id);
+    tabBtn.setAttribute("aria-pressed", index === 0 ? "true" : "false");
+    tabBtn.innerHTML = `<span>${label}</span><span id="count_${id}" class="bg-neutral-900 text-neutral-100 ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block group-hover:bg-neutral-800">0</span>`;
+    item.appendChild(tabBtn);
+    tabsContainer.appendChild(item);
+  });
+}
+
 // Generate report’s UI for any given date range
-export function initInsightsAndStrategies(org) {
+export function initInsightsAndActions(org) {
   // Ensure counts are fetched fresh for the current date range
   countQueryCache.clear();
 
@@ -190,6 +240,10 @@ export function initInsightsAndStrategies(org) {
       showUnique,
       isGates
     });
+    if (loggedIn) {
+      renderActionTabs(orgData?.hits?.hits?.[0]?._source?.strategy || {});
+      initActionTabs();
+    }
 
     /** Decrypt emails if user has an orgKey **/
     window.handleDecryptEmailClick = function(buttonElement) {
@@ -208,8 +262,8 @@ export function initInsightsAndStrategies(org) {
       }
   
       // if email is not undefined and there is an orgkey, try to decrypt the author’s email
-      if (email !== 'undefined' && loggedIn) {
-          axios.get(`${ARTICLE_EMAIL_BASE + doi}?${orgKey}`)
+      if (email !== 'undefined' && doi && doi !== 'N/A' && loggedIn) {
+          axios.get(`${ARTICLE_EMAIL_BASE}${encodeURIComponent(doi)}${orgKey ? `?${orgKey.slice(1)}` : ""}`)
               .then(function (response) {
                   let authorEmail = response.data;
                   mailto = mailto.replaceAll("{email}", authorEmail);
@@ -281,30 +335,36 @@ export function initInsightsAndStrategies(org) {
         }
 
         // On-click tooltip to contain Insight info + figure details
-        const tooltipTarget = cardContents;
-        const tooltipTargetId = tooltipTarget.id || `${numerator}-card`;
+        const tooltipTarget = cardContents.querySelector('.js_insight_trigger');
+        if (!(tooltipTarget instanceof HTMLButtonElement)) return;
+        const tooltipTargetId = tooltipTarget.id || `${numerator}-card-trigger`;
         tooltipTarget.id = tooltipTargetId;
-        tooltipTarget.setAttribute('role', 'button');
-        tooltipTarget.setAttribute('tabindex', '0');
         let instance = cardContents._insightTooltip;
         if (!instance) {
-          instance = tippy(tooltipTarget, {
-            allowHTML: true,
-            interactive: true,
+          instance = createPopover(tooltipTarget, '', {
             placement: 'right',
-            appendTo: document.body,
             theme: 'tooltip-white',
-            trigger: 'click',
-            content: ''
+            arrow: true,
+            role: 'dialog',
+            onShow() {
+              tooltipTarget.setAttribute('aria-expanded', 'true');
+            },
+            onHide() {
+              tooltipTarget.setAttribute('aria-expanded', 'false');
+            }
           });
           cardContents._insightTooltip = instance;
         }
-        tooltipTarget.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            instance.show();
-          }
-        });
+        if (!cardContents._insightTooltipEventsBound) {
+          tooltipTarget.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              instance.show();
+            }
+          });
+
+          cardContents._insightTooltipEventsBound = true;
+        }
         const updateTooltipContent = () => {
           const detailHtml = figureDetails
             ? `<div class="mb-2 font-semibold text-neutral-900">${figureDetails.innerHTML}</div>`
@@ -316,7 +376,7 @@ export function initInsightsAndStrategies(org) {
         // Accessibility / tooltip IDs
         const tooltipID = instance.popper.id;
         tooltipTarget.setAttribute('aria-controls', tooltipID);
-        tooltipTarget.setAttribute('aria-labelledby', tooltipTargetId);
+        tooltipTarget.setAttribute('aria-description', 'Press Enter to show more information for this metric.');
         tooltipTarget.setAttribute('title', 'More information on this metric');
         tooltipTarget.setAttribute('aria-haspopup', 'dialog');
 
@@ -426,6 +486,10 @@ export function initInsightsAndStrategies(org) {
 
     /* Get Strategy data and display it */
     function displayStrategy(strategy, keys, tableRow) {
+      if (!loggedIn) {
+        return;
+      }
+
       var shown  = orgData.hits.hits[0]._source.strategy[strategy].show_on_web,
           sort   = `&sort=${orgData.hits.hits[0]._source.strategy[strategy].sort}`,
           tabID  = `strategy_${strategy}`;
@@ -456,90 +520,88 @@ export function initInsightsAndStrategies(org) {
             }
             tableCountContents.textContent = makeNumberReadable(count);
 
-            // If user is logged in, show full list of strategies
-            if (loggedIn) {
-              // If no actions are available, show message
-              if (count === 0) {
-                tableCountContents.textContent = "No ";
-                tableBody.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
-              }
-
-              // Otherwise, generate list of actions
-              else if (count > 0) {
-
-                // Get full list of actions for this strategy 
-                axios.get(listQuery)
-                  .then(function (listResponse) {
-                    var list = listResponse.data.hits.hits,
-                        tableRows = ""; // Contents of the list to be displayed in the UI as a table
-                
-                    // For each individual action, create a row
-                    for (let i = 0; i < count; i++) {
-                      var action = {}; // Create object to store key-value pairs for each action
-                      tableRows += "<tr>";
-
-                      // Populate action array with values for each key
-                      for (var key of keys) {
-                        // If it’s from the supplements array, loop over supplements to access data without index number
-                        if (key.startsWith('supplements.')) {
-                          key = key.replace('supplements.', ''); // Remove prefix 
-                          var suppKey = list[i]._source.supplements.find(
-                            function(i) {
-                              return (i[key]);
-                            }
-                          );
-
-                          if (suppKey == null) {
-                            action[key] = "N/A";
-                          } else {
-                            var value = suppKey[key];
-                            action[key] = value;
-                          }
-                          
-                          if (key.includes('invoice_date')) action[key] = makeDateReadable(new Date(action[key]));
-                          if (key.includes('apc_cost')) action[key] = makeNumberReadable(action[key]);
-                        } else { 
-                          var value = list[i]._source[key];
-                          action[key] = value;
-
-                          if (key === 'published_date') action[key] = makeDateReadable(new Date(action[key]));
-                        }
-
-                        if (action[key] == null) {
-                          action[key] = "N/A";
-                        }
-                      };
-                      
-                      // If mailto is included, replace its body’s content with the action’s values
-                      if ("mailto" in action) {
-                        var mailto = orgData.hits.hits[0]._source.strategy[strategy].mailto;
-
-                        var newMailto = mailto.replaceAll("\'", "’");
-                        newMailto = newMailto.replaceAll("{doi}", (action.DOI ? action.DOI : "[No DOI found]"));
-                        newMailto = newMailto.replaceAll("{author_email_name}", (action.author_email_name ? action.author_email_name.replaceAll("\'", "’") : "[No author’s name found]"));
-                        newMailto = newMailto.replaceAll("{title}", (action.title ? action.title.replaceAll("\'", "’") : "[No title found]"));
-
-                        // And add it to the action array
-                        action["mailto"] = encodeURI(newMailto);
-                      };
-
-                      var tableRowLiteral = tableRow.replace(/\$\{action\.([^}]+)\}/g, function(match, key) {
-                        return action[key] ?? "";
-                      });
-                      tableRows += tableRowLiteral; // Populate the table with a row w/ replaced placeholders for each action 
-                      tableRows += "</tr>";
-                    }
-
-                    tableBody.innerHTML = tableRows; // Fill table with all actions
-                  }
-                )
-              }
+            // If no actions are available, show message
+            if (count === 0) {
+              tableCountContents.textContent = "No ";
+              tableBody.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
             }
 
-            // Otherwise, display a message prompting user to log or contact us to access strategies
-            else {
-              tableBody.innerHTML = `<tr><td class='py-4 pl-4 pr-3 text-base text-center align-top break-words' colspan='3'><p class='font-bold'>Strategies help you take action to make your institution’s research more open.</p> <p>Find out more about them by <a href='mailto:hello@oa.works?subject=OA.Report%20&mdash;%20${decodeURIComponent(org)}' class='underline underline-offset-2 decoration-1'>contacting us</a> or <a href='https://about.oa.report/docs/user-accounts' class='underline underline-offset-2 decoration-1' title='Information on user accounts'>logging in to your account</a> to access them.</p></td></tr>`;
-              displayNone(`form_${strategy}`);
+            // Otherwise, generate list of actions
+            else if (count > 0) {
+
+              // Get full list of actions for this strategy 
+              axios.get(listQuery)
+                .then(function (listResponse) {
+                  var list = listResponse?.data?.hits?.hits || [],
+                      rowsToRender = Math.min(count, list.length),
+                      tableRows = ""; // Contents of the list to be displayed in the UI as a table
+              
+                  // For each individual action, create a row
+                  for (let i = 0; i < rowsToRender; i++) {
+                    var action = {}; // Create object to store key-value pairs for each action
+                    tableRows += "<tr>";
+
+                    // Populate action array with values for each key
+                    for (var key of keys) {
+                      // If it’s from the supplements array, loop over supplements to access data without index number
+                      if (key.startsWith('supplements.')) {
+                        key = key.replace('supplements.', ''); // Remove prefix 
+                        var suppKey = list[i]._source.supplements.find(
+                          function(i) {
+                            return (i[key]);
+                          }
+                        );
+
+                        if (suppKey == null) {
+                          action[key] = "N/A";
+                        } else {
+                          var value = suppKey[key];
+                          action[key] = value;
+                        }
+                        
+                        if (key.includes('invoice_date')) action[key] = makeDateReadable(new Date(action[key]));
+                        if (key.includes('apc_cost')) action[key] = makeNumberReadable(action[key]);
+                      } else { 
+                        var value = list[i]._source[key];
+                        action[key] = value;
+
+                        if (key === 'published_date') action[key] = makeDateReadable(new Date(action[key]));
+                      }
+
+                      if (action[key] == null) {
+                        action[key] = "N/A";
+                      }
+                    };
+                    
+                    // If mailto is included, replace its body’s content with the action’s values
+                    if ("mailto" in action) {
+                      var mailto = orgData.hits.hits[0]._source.strategy[strategy].mailto;
+
+                      var newMailto = mailto.replaceAll("\'", "’");
+                      newMailto = newMailto.replaceAll("{doi}", (action.DOI ? action.DOI : "[No DOI found]"));
+                      newMailto = newMailto.replaceAll("{author_email_name}", (action.author_email_name ? action.author_email_name.replaceAll("\'", "’") : "[No author’s name found]"));
+                      newMailto = newMailto.replaceAll("{title}", (action.title ? action.title.replaceAll("\'", "’") : "[No title found]"));
+
+                      // And add it to the action array
+                      action["mailto"] = encodeURI(newMailto);
+                      action["draft_aria_label"] = `Open draft for ${action.author_email_name || "unknown author"}, article: ${action.title || action.DOI || "unknown article"}`
+                        .replaceAll("&", "&amp;")
+                        .replaceAll("\"", "&quot;")
+                        .replaceAll("\'", "&#39;")
+                        .replaceAll("<", "&lt;")
+                        .replaceAll(">", "&gt;");
+                    };
+
+                    var tableRowLiteral = tableRow.replace(/\$\{action\.([^}]+)\}/g, function(match, key) {
+                      return action[key] ?? "";
+                    });
+                    tableRows += tableRowLiteral; // Populate the table with a row w/ replaced placeholders for each action 
+                    tableRows += "</tr>";
+                  }
+
+                  tableBody.innerHTML = tableRows; // Fill table with all actions
+                }
+              )
             }
           })
           .catch(function (error) { console.log(`${strategy} error: ${error}`); })
@@ -551,8 +613,10 @@ export function initInsightsAndStrategies(org) {
         var tabItem = document.getElementById(tabID),
             tabContent = document.getElementById(strategy);
 
-        if (tabItem || tabContent) {
+        if (tabItem) {
           tabItem.remove();
+        }
+        if (tabContent) {
           tabContent.remove();
         }
       };
@@ -580,7 +644,7 @@ export function initInsightsAndStrategies(org) {
     //       data-doi='${action.DOI}'\
     //       data-mailto='${action.mailto}'\
     //       onclick='handleDecryptEmailClick(this)'>\
-    //       <svg class='h-4 w-4' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-mail inline-block h-4 duration-500'><path d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'></path><polyline points='22,6 12,13 2,6'></polyline></svg>\
+    //       <i class='ph ph-envelope inline-block text-[16px] leading-none duration-500' aria-hidden='true'></i>\
     //     </button>\
     //   </td>"
     // );
@@ -605,85 +669,16 @@ export function initInsightsAndStrategies(org) {
     //       data-doi='${action.DOI}'\
     //       data-mailto='${action.mailto}'\
     //       onclick='handleDecryptEmailClick(this)'>\
-    //       <svg class='h-4 w-4' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-mail inline-block h-4 duration-500'><path d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'></path><polyline points='22,6 12,13 2,6'></polyline></svg>\
+    //       <i class='ph ph-envelope inline-block text-[16px] leading-none duration-500' aria-hidden='true'></i>\
     //     </button>\
     //   </td>"
     // );
     
-    displayStrategy(
-      "apc_followup",
-      ['published_date', 'title', 'journal', 'DOI', 'publisher', 'publisher_license', 'journal_oa_type', 'oa_status', 'supplements.apc_cost', 'supplements.invoice_number', 'supplements.invoice_date'],
-      "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 font-medium text-neutral-900'>${action.publisher}</div>\
-        <div class='mb-3 text-neutral-900'>${action.journal}</div>\
-        <div class='text-neutral-600'>OA type: <span class='font-medium'>${action.journal_oa_type}</span></div>\
-      </td>\
-      <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
-        <div class='mb-1 text-neutral-900 hover:text-carnation-500'>\
-          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
-        </div>\
-        <div class='mb-3 text-neutral-600'>${action.DOI}</div>\
-        <div class='text-neutral-600'>OA status: <span class='font-medium'>${action.oa_status}<span></div>\
-        <div class='text-neutral-600'>License: <span class='font-medium uppercase'>${action.publisher_license}</span></div>\
-      </td>\
-      <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-3 text-neutral-600'>${action.invoice_date}</div>\
-        <div class='mb-3 text-neutral-900'>${action.invoice_number}</div>\
-        <div class='text-neutral-600 uppercase'>US$${action.apc_cost}</div>\
-      </td>"
-    );
-
-    displayStrategy(
-      "unanswered_requests",
-      ['title', 'journal', 'author_email_name', 'email', 'DOI', 'supplements.program__bmgf', 'supplements.grantid__bmgf', 'mailto'],
-      "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 font-medium text-neutral-900'>${action.program__bmgf}</div>\
-        <div class='text-neutral-900'>${action.grantid__bmgf}</div>\
-      </td>\
-      <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 font-medium text-neutral-900'>${action.author_email_name}</div>\
-        <div class='mb-1 text-neutral-900'>\
-          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
-        </div>\
-        <div class='text-neutral-600'>${action.journal}</div>\
-      </td>\
-      <td class='whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium'>\
-        <button \
-          class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
-          data-email='${action.email}'\
-          data-doi='${action.DOI}'\
-          data-mailto='${action.mailto}'\
-          onclick='handleDecryptEmailClick(this)'>\
-          <svg class='h-4 w-4' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-mail inline-block h-4 duration-500'><path d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'></path><polyline points='22,6 12,13 2,6'></polyline></svg>\
-        </button>\
-      </td>"
-    );
-
-    displayStrategy(
-      "email_author_deposit",
-      ['published_date', 'title', 'journal', 'author_email_name', 'email', 'DOI', 'mailto'],
-      "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
-        <div class='mb-1 font-medium text-neutral-900 hover:text-carnation-500'>\
-          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
-        </div>\
-        <div class='text-neutral-600'>${action.journal}</div>\
-      </td>\
-      <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
-        <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
-      </td>\
-      <td class='hidden px-3 py-4 text-sm text-center text-neutral-600 align-top break-words sm:table-cell'>\
-        <button \
-          class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
-          data-email='${action.email}'\
-          data-doi='${action.DOI}'\
-          data-mailto='${action.mailto}'\
-          onclick='handleDecryptEmailClick(this)'>\
-          <svg class='h-4 w-4' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-mail inline-block h-4 duration-500'><path d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'></path><polyline points='22,6 12,13 2,6'></polyline></svg>\
-        </button>\
-      </td>"
-    );
+    if (loggedIn) {
+      ACTION_TABLE_CONFIGS.forEach(({ id, keys, rowTemplate }) => {
+        displayStrategy(id, keys, rowTemplate);
+      });
+    }
     
   }).catch(error => {
     console.log(`Report ERROR: ${error}`);
@@ -691,17 +686,18 @@ export function initInsightsAndStrategies(org) {
   });
 };
 
+
 /**
- * Calls the getStrategyExportLink function with the necessary orgData.
+ * Calls the getActionExportLink function with the necessary orgData.
  * This function is designed to be called from HTML templates and handles
- * fetching the organization data before executing getStrategyExportLink.
+ * fetching the organization data before executing getActionExportLink.
  *
- * @param {string} id - The identifier for the strategy export link.
+ * @param {string} id - The identifier for the action export link.
  */
-window.callGetStrategyExportLink = function(id) {
+window.callGetActionExportLink = function(id) {
   orgDataPromise.then(function (response) {
       const orgData = response.data;
-      getStrategyExportLink(id, orgData);
+      getActionExportLink(id, orgData);
   }).catch(function (error) {
       console.error(`Error fetching orgData: ${error}`);
   });
@@ -712,15 +708,15 @@ window.callGetStrategyExportLink = function(id) {
 
 
 /**
-* Handles the creation and sending of a strategy export link request.
-* This function is called with organizational data and an identifier to
-* construct the appropriate export link.
-*
-* @param {string} id - The identifier for the strategy export link.
-* @param {Object} orgData - The organization data required for the export link.
-* @returns {boolean} - Always returns false to prevent default form submission.
+ * Handles the creation and sending of an action export link request.
+ * This function is called with organizational data and an identifier to
+ * construct the appropriate export link.
+ *
+ * @param {string} id - The identifier for the action export link.
+ * @param {Object} orgData - The organization data required for the export link.
+ * @returns {boolean} - Always returns false to prevent default form submission.
 */
-export function getStrategyExportLink(id, orgData) {
+export function getActionExportLink(id, orgData) {
   let hasCustomExportIncludes = orgData.hits.hits[0]._source.strategy[id].export_includes,
       strategyQuery           = orgData.hits.hits[0]._source.strategy[id].query,
       strategySort            = orgData.hits.hits[0]._source.strategy[id].sort;
@@ -747,11 +743,15 @@ export function getStrategyExportLink(id, orgData) {
     : "";
 
   // Build final URL
-  const exportUrl = `${CSV_EXPORT_BASE}${query}${include}&sort=${strategySort}${email}`;
+  const exportUrl = `${CSV_EXPORT_BASE}${query}${include}&sort=${strategySort}${email}${orgKey}`;
 
   const xhr = new XMLHttpRequest();
   xhr.open("GET", exportUrl);
   xhr.onload = function () {
+    const emailHint = document.getElementById(`email-hint-${id}`);
+    if (emailHint) {
+      emailHint.hidden = true;
+    }
     document.getElementById(`msg-${id}`).innerHTML = `OA.Report has started building your CSV export at <a href='${this.response}' target='_blank' class='underline underline-offset-2 decoration-1'>this URL</a>. Please check your email to get the full data once it’s ready.`;
   };
   xhr.send();
