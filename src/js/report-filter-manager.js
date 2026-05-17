@@ -8,6 +8,7 @@
 // =================================================
 
 import {
+  fetchJson,
   getDecodedUrlQuery,
   updateURLParams,
   removeURLParams,
@@ -45,7 +46,7 @@ const SUGGESTIONS_SIZE_DEFAULT = 10000;
  * @type {Object|undefined}
  */
 let orgData;
-orgDataPromise.then((res) => { orgData = res.data; });
+orgDataPromise.then((data) => { orgData = data; });
 
 const ensureKeywordField = (field = "") => {
   if (!field) return "";
@@ -463,9 +464,7 @@ export async function fetchFilterValueSuggestions({ field, query = "", size = SU
     if (options.prefix) params.push("prefix=true");
     const url = `${SUGGESTIONS_API_URL}?${params.join("&")}`;
 
-    const res = await fetch(url, { signal });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
+    const data = await fetchJson(url, { signal });
     if (!Array.isArray(data) || !data.length) throw new Error("No suggestions");
 
     const seen = new Set();
