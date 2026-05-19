@@ -15,29 +15,17 @@
   "license": "ISC",
   "devDependencies": {
     "@11ty/eleventy": "^3.1.5",
-    "@tailwindcss/forms": "^0.5.11",
-    "autoprefixer": "^10.4.27",
-    "chokidar-cli": "^3.0.0",
-    "concurrently": "^9.2.1",
-    "esbuild": "^0.27.4",
-    "html-minifier": "^4.0.0",
-    "postcss-cli": "^11.0.1",
-    "sass": "^1.98.0",
-    "tailwindcss": "^3.4.19",
-    "terser": "^5.46.1"
-  },
-  "dependencies": {
-    "18": "^0.0.0",
     "@floating-ui/dom": "^1.7.6",
     "@phosphor-icons/web": "^2.1.1",
-    "@tryghost/content-api": "^1.12.6",
-    "axios": "^1.13.6",
-    "caniuse-lite": "^1.0.30001781",
-    "canvas": "^3.2.2",
-    "dotenv": "^17.3.1",
+    "@tryghost/content-api": "^1.12.8",
+    "concurrently": "^9.2.1",
+    "dotenv": "^17.4.2",
+    "esbuild": "^0.28.0",
+    "html-minifier-terser": "^7.2.0",
+    "luxon": "^3.7.2",
+    "markdown-it": "^14.1.1",
     "markdown-it-attrs": "^4.3.1",
     "sal.js": "^0.8.5",
-    "sass-loader": "^16.0.7",
-    "tailwindcss-font-inter": "^4.0.0"
+    "tailwindcss": "^3.4.19"
   }
 }
