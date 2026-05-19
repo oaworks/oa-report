@@ -12,6 +12,7 @@ import {
   getDecodedUrlQuery,
   updateURLParams,
   removeURLParams,
+  escapeQueryValue,
   normaliseFieldId,
   pluraliseNoun,
   createPopoverKeyboardFlow
@@ -410,7 +411,7 @@ function removeValueFromField(q, field, value) {
         normaliseFilterValueForField(pairField, v) !== targetValue
       ));
     if (!remaining.length) return;
-    const quotedVals = remaining.map((val) => `"${val.replace(/"/g, '\\"')}"`);
+    const quotedVals = remaining.map((val) => `"${escapeQueryValue(val)}"`);
     const valueExpr = quotedVals.length === 1 ? quotedVals[0] : `(${quotedVals.join(" OR ")})`;
     fieldExpressions.set(pairField, `${pairField}:${valueExpr}`);
   });
@@ -1359,7 +1360,7 @@ export function renderActiveFiltersBanner() {
     mergedFields.forEach((entry, field) => {
       const unique = Array.from(entry.values);
       if (!unique.length) return;
-      const quotedVals = unique.map((val) => `"${val.replace(/"/g, '\\"')}"`);
+      const quotedVals = unique.map((val) => `"${escapeQueryValue(val)}"`);
       const valueExpr = quotedVals.length === 1 ? quotedVals[0] : `(${quotedVals.join(" OR ")})`;
       const fieldKey = ensureKeywordField(field);
       fieldExpressions.set(fieldKey, `${fieldKey}:${valueExpr}`);
