@@ -8,9 +8,12 @@
 // =================================================
 
 import {
+  fetchJson,
   getDecodedUrlQuery,
   updateURLParams,
   removeURLParams,
+  escapeQueryValue,
+  unescapeQueryValue,
   normaliseFieldId,
   pluraliseNoun,
   createPopoverKeyboardFlow
@@ -45,7 +48,7 @@ const SUGGESTIONS_SIZE_DEFAULT = 10000;
  * @type {Object|undefined}
  */
 let orgData;
-orgDataPromise.then((res) => { orgData = res.data; });
+orgDataPromise.then((data) => { orgData = data; });
 
 const ensureKeywordField = (field = "") => {
   if (!field) return "";
@@ -69,6 +72,13 @@ const ORCID_ID_RE = /\b\d{4}-\d{4}-\d{4}-\d{3}[\dX]\b/i;
 const AUTHOR_ORCID_FIELD = "authorships.author.orcid.keyword";
 const AUTHOR_NAME_FIELD = "authorships.author.display_name.keyword";
 
+/**
+ * Normalises one filter value for the given field.
+ *
+ * @param {string} field
+ * @param {string} value
+ * @returns {string}
+ */
 function normaliseFilterValueForField(field = "", value = "") {
   const trimmed = String(value || "").trim();
   if (!trimmed) return "";
@@ -80,12 +90,26 @@ function normaliseFilterValueForField(field = "", value = "") {
   return match ? `https://orcid.org/${match.toUpperCase()}` : trimmed;
 }
 
+/**
+ * Normalises a list of filter values for the given field.
+ *
+ * @param {string} field
+ * @param {string[]} values
+ * @returns {string[]}
+ */
 function normaliseValuesForField(field = "", values = []) {
   return values
     .map((v) => normaliseFilterValueForField(field, v))
     .filter(Boolean);
 }
 
+/**
+ * Formats one filter value for display in the UI.
+ *
+ * @param {string} field
+ * @param {string} value
+ * @returns {string}
+ */
 function formatFilterValueForDisplay(field = "", value = "") {
   const trimmed = String(value || "").trim();
   if (!trimmed) return "";
@@ -96,6 +120,12 @@ function formatFilterValueForDisplay(field = "", value = "") {
   return match ? match.toUpperCase() : trimmed;
 }
 
+/**
+ * Builds one combined query string from grouped field expressions.
+ *
+ * @param {Map<string, string>} fieldExpressions
+ * @returns {string}
+ */
 function buildCombinedFilterQuery(fieldExpressions = new Map()) {
   const normalClauses = [];
   const authorClauses = [];
@@ -235,7 +265,42 @@ function buildFilterFieldOptions(exploreData) {
 }
 
 /**
- * Parses the decoded ?q= string into [{label, value}] pairs.
+ * Extracts literal filter values from one existing query clause.
+ *
+ * @param {string} field
+ * @param {string} rawValue
+ * @returns {string[]}
+ */
+function extractFilterValuesFromClause(field = "", rawValue = "") {
+  const fieldKey = ensureKeywordField(field);
+  const baseField = fieldKey.replace(/\.keyword$/i, "");
+  const quotedValuePattern = /"((?:\\.|[^"\\])*)"/g;
+  const values = Array.from(
+    String(rawValue || "").matchAll(quotedValuePattern),
+    (match) => unescapeQueryValue(match[1]).trim()
+  ).filter(Boolean);
+
+  if (!values.length) {
+    const fallbackValue = unescapeQueryValue(
+      String(rawValue || "")
+        .replace(/["()]/g, "")
+        .trim()
+    );
+    if (!fallbackValue) return [];
+    return /country(_code)?$/i.test(baseField) && COUNTRY_CODES[fallbackValue]
+      ? [COUNTRY_CODES[fallbackValue]]
+      : [fallbackValue];
+  }
+
+  return values.map((value) => (
+    /country(_code)?$/i.test(baseField) && COUNTRY_CODES[value]
+      ? COUNTRY_CODES[value]
+      : value
+  ));
+}
+
+/**
+ * Parses the decoded ?q= string into field/value groups.
  * Uses the same normalisation as table headers for consistent labels.
  * Falls back to raw keys if no constant label is found.
  * 
@@ -243,16 +308,8 @@ function buildFilterFieldOptions(exploreData) {
  *   supplements.grantid__bmgf:("INV-1" OR "INV-2")
  *
  * @param {string} q
- * @returns {{label:string,value:string}[]}
+ * @returns {{field:string,label:string,values:string[],clause:string}[]}
  */
-function labelFromFieldKeyInverse(label) {
-  // We only need this to map the displayed label back to the field key when removing chips
-  for (const [key, val] of SEARCH_FILTER_FIELD_MAP.entries()) {
-    if (val?.label === label) return ensureKeywordField(key);
-  }
-  return null;
-}
-
 function parseEsQueryToPairs(q) {
   if (!q) return [];
 
@@ -274,6 +331,13 @@ function parseEsQueryToPairs(q) {
     return out;
   })();
 
+  /**
+   * Splits a query expression on a top-level keyword only.
+   *
+   * @param {string} str
+   * @param {string} keyword
+   * @returns {string[]}
+   */
   const splitTopLevel = (str, keyword) => {
     const parts = [];
     let buf = "";
@@ -283,7 +347,8 @@ function parseEsQueryToPairs(q) {
 
     for (let i = 0; i < str.length; i++) {
       const ch = str[i];
-      if (ch === '"') inQuote = !inQuote;
+      const prev = i > 0 ? str[i - 1] : "";
+      if (ch === '"' && prev !== "\\") inQuote = !inQuote;
       if (!inQuote) {
         if (ch === "(") depth++;
         if (ch === ")" && depth > 0) depth--;
@@ -301,6 +366,12 @@ function parseEsQueryToPairs(q) {
     return parts.length ? parts : [str.trim()];
   };
 
+  /**
+   * Removes one outer pair of brackets from a fully wrapped expression.
+   *
+   * @param {string} val
+   * @returns {string}
+   */
   const unwrapParens = (val) => {
     let out = val.trim();
     const balanced = (s) => {
@@ -317,25 +388,6 @@ function parseEsQueryToPairs(q) {
     }
     return out;
   };
-
-  const renderValue = (key, rawVal) =>
-    splitTopLevel(rawVal, "AND")
-      .map((segment) =>
-        splitTopLevel(unwrapParens(segment), "OR")
-          .map((part) =>
-            part
-              .replace(/["()]/g, "")
-              .trim()
-          )
-          .filter(Boolean)
-          .map((val) => {
-            const baseKey = key.replace(/\.keyword$/i, "");
-            return /country(_code)?$/i.test(baseKey) && COUNTRY_CODES[val] ? COUNTRY_CODES[val] : val;
-          })
-          .join(", ")
-      )
-      .filter(Boolean)
-      .join(" AND ");
 
   const rawClauses = [];
   const processClause = (clause) => {
@@ -354,9 +406,9 @@ function parseEsQueryToPairs(q) {
     if (!m) return;
     const rawKey = m[1];
     const fieldKey = ensureKeywordField(rawKey);
-    const value = renderValue(fieldKey, unwrapParens(m[2]));
-    if (!value) return;
-    rawClauses.push({ label: labelFromFieldKey(fieldKey), field: fieldKey, value, clause: clause.trim() });
+    const values = extractFilterValuesFromClause(fieldKey, unwrapParens(m[2]));
+    if (!values.length) return;
+    rawClauses.push({ label: labelFromFieldKey(fieldKey), field: fieldKey, values, clause: clause.trim() });
   };
 
   splitTopLevel(query, "AND").forEach((clause) => processClause(clause));
@@ -368,11 +420,7 @@ function parseEsQueryToPairs(q) {
       grouped.set(c.field, { field: c.field, values: [], clauses: [] });
     }
     const entry = grouped.get(c.field);
-    const tokens = (c.value || "")
-      .split(/\s+OR\s+/)
-      .map((v) => v.trim())
-      .filter(Boolean);
-    tokens.forEach((t) => entry.values.push(t));
+    (c.values || []).forEach((value) => entry.values.push(value));
     entry.clauses.push(c.clause);
   });
 
@@ -382,15 +430,6 @@ function parseEsQueryToPairs(q) {
     values: g.values,
     clause: g.clauses.join(" AND "),
   }));
-}
-
-function removeClauseFromQuery(q, field) {
-  if (!field) return q;
-  if (!q) return "";
-  return parseEsQueryToPairs(q)
-    .filter((p) => ensureKeywordField(p.field) !== ensureKeywordField(field))
-    .map((p) => p.clause)
-    .join(" AND ");
 }
 
 function removeValueFromField(q, field, value) {
@@ -409,7 +448,7 @@ function removeValueFromField(q, field, value) {
         normaliseFilterValueForField(pairField, v) !== targetValue
       ));
     if (!remaining.length) return;
-    const quotedVals = remaining.map((val) => `"${val.replace(/"/g, '\\"')}"`);
+    const quotedVals = remaining.map((val) => `"${escapeQueryValue(val)}"`);
     const valueExpr = quotedVals.length === 1 ? quotedVals[0] : `(${quotedVals.join(" OR ")})`;
     fieldExpressions.set(pairField, `${pairField}:${valueExpr}`);
   });
@@ -463,9 +502,7 @@ export async function fetchFilterValueSuggestions({ field, query = "", size = SU
     if (options.prefix) params.push("prefix=true");
     const url = `${SUGGESTIONS_API_URL}?${params.join("&")}`;
 
-    const res = await fetch(url, { signal });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
+    const data = await fetchJson(url, { signal });
     if (!Array.isArray(data) || !data.length) throw new Error("No suggestions");
 
     const seen = new Set();
@@ -1128,7 +1165,15 @@ export function renderActiveFiltersBanner() {
           const decodedQ = getDecodedUrlQuery();
           // Prefer the actual parsed field for clearing from active filters
           // Fall back to label-based mapping only when missing
-          const chipField = chip.getAttribute("data-field") || labelFromFieldKeyInverse(label);
+          let chipField = chip.getAttribute("data-field");
+          if (!chipField) {
+            for (const [fieldKey, fieldConfig] of SEARCH_FILTER_FIELD_MAP.entries()) {
+              if (fieldConfig?.label === label) {
+                chipField = ensureKeywordField(fieldKey);
+                break;
+              }
+            }
+          }
           const nextQ = removeValueFromField(decodedQ, chipField, val);
           if (nextQ) {
             updateURLParams({ q: nextQ });
@@ -1183,15 +1228,6 @@ export function renderActiveFiltersBanner() {
   // Start with one row
   addFilterRow(rowsContainer);
 
-  // Add another row button — not needed yet 
-  // See https://github.com/oaworks/discussion/issues/3616#issuecomment-3558260193
-  // const addRowBtn = document.createElement("button");
-  // addRowBtn.type = "button";
-  // addRowBtn.id = "js-add-filter-row";
-  // addRowBtn.className = "mt-1 mb-3 p-2 border w-full justify-center";
-  // addRowBtn.textContent = "Add another";
-  // pop.appendChild(addRowBtn);
-
   const applyBtn = document.createElement("button");
   applyBtn.type = "submit";
   applyBtn.id = "js-apply-filters";
@@ -1238,12 +1274,6 @@ export function renderActiveFiltersBanner() {
       triggerBtn.setAttribute("aria-expanded", "false");
     },
   });
-
-  // Add another filter row — not needed yet 
-  // See https://github.com/oaworks/discussion/issues/3616#issuecomment-3558260193
-  // addRowBtn.addEventListener("click", () => {
-  //   addFilterRow(rowsContainer);
-  // });
 
   // Clear filters behaviour (same as before)
   if (clearBtn) {
@@ -1333,12 +1363,7 @@ export function renderActiveFiltersBanner() {
     // Start with existing values
     existingPairs.forEach((p) => {
       const fieldKey = ensureKeywordField(p.field);
-      const vals = Array.isArray(p.values)
-        ? p.values
-        : (p.value || "")
-            .split(/\s+OR\s+/)
-            .map((v) => v.trim())
-            .filter(Boolean);
+      const vals = Array.isArray(p.values) ? p.values : [];
       const normalisedVals = normaliseValuesForField(fieldKey, vals);
       mergedFields.set(fieldKey, {
         label: p.label || labelFromFieldKey(fieldKey),
@@ -1360,7 +1385,7 @@ export function renderActiveFiltersBanner() {
     mergedFields.forEach((entry, field) => {
       const unique = Array.from(entry.values);
       if (!unique.length) return;
-      const quotedVals = unique.map((val) => `"${val.replace(/"/g, '\\"')}"`);
+      const quotedVals = unique.map((val) => `"${escapeQueryValue(val)}"`);
       const valueExpr = quotedVals.length === 1 ? quotedVals[0] : `(${quotedVals.join(" OR ")})`;
       const fieldKey = ensureKeywordField(field);
       fieldExpressions.set(fieldKey, `${fieldKey}:${valueExpr}`);
