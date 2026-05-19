@@ -1308,6 +1308,20 @@ export function escapeQueryValue(value) {
 }
 
 /**
+ * Converts escaped quoted-query text back into its literal value.
+ *
+ * @param {string|number} value
+ * @returns {string}
+ */
+export function unescapeQueryValue(value) {
+  const stringValue = String(value ?? "");
+
+  return stringValue
+    .replace(/\\"/g, '"')
+    .replace(/\\\\/g, '\\');
+}
+
+/**
  * Build an encoded `?q=` value by combining the existing query string
  * with the URL `?q=` filter.
  *
