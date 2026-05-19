@@ -8,6 +8,7 @@
 // =================================================
 
 import {
+  fetchJson,
   getDecodedUrlQuery,
   updateURLParams,
   removeURLParams,
@@ -15,7 +16,7 @@ import {
   pluraliseNoun,
   createPopoverKeyboardFlow
 } from "./utils.js";
-import { API_BASE_URL } from "./constants/api.js";
+import { ORGS_REPORT_API_BASE_URL } from "./constants/api.js";
 
 import {
   EXPLORE_ITEMS_LABELS,
@@ -30,8 +31,9 @@ import { SEARCH_FILTER_FIELD_MAP, iconForField } from "./constants/filter-fields
 import { orgDataPromise } from './insights-and-actions.js';
 
 import { handleFiltersChanged } from './explore.js';
+import { createPopover, createTooltip } from './tooltip-manager.js';
 
-const SUGGESTIONS_API_URL = `${API_BASE_URL}suggestions`;
+const SUGGESTIONS_API_URL = `${ORGS_REPORT_API_BASE_URL}suggestions`;
 
 const SUGGESTIONS_SIZE_DEFAULT = 10000;
 
@@ -44,7 +46,7 @@ const SUGGESTIONS_SIZE_DEFAULT = 10000;
  * @type {Object|undefined}
  */
 let orgData;
-orgDataPromise.then((res) => { orgData = res.data; });
+orgDataPromise.then((data) => { orgData = data; });
 
 const ensureKeywordField = (field = "") => {
   if (!field) return "";
@@ -770,13 +772,8 @@ export async function fetchFilterValueSuggestions({ field, query = "", size = SU
     if (options.prefix) params.push("prefix=true");
     const url = `${SUGGESTIONS_API_URL}?${params.join("&")}`;
 
-    const res = await fetch(url, { signal });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    if (!Array.isArray(data) || !data.length) {
-      fetchFilterValueSuggestions._cache.set(cacheKey, []);
-      return [];
-    }
+    const data = await fetchJson(url, { signal });
+    if (!Array.isArray(data) || !data.length) throw new Error("No suggestions");
 
     const seen = new Set();
     const values = [];
@@ -857,7 +854,7 @@ function addFilterRow(container) {
   fieldWrapper.appendChild(fieldSelect);
 
   const textWrapper = document.createElement("div");
-  textWrapper.className = "w-full relative transition-all duration-200 ease-out max-h-0 opacity-0 pointer-events-none";
+  textWrapper.className = "w-full relative hidden transition-all duration-200 ease-out max-h-0 opacity-0 pointer-events-none";
   textWrapper.setAttribute("aria-hidden", "true");
 
   const textLabel = document.createElement("div");
@@ -883,12 +880,9 @@ function addFilterRow(container) {
     </div>
   `;
 
-  tippy(helpIcon, {
-    content: helpText,
-    allowHTML: true,
+  createTooltip(helpIcon, helpText, {
     theme: "popover",
     maxWidth: 320,
-    interactive: true,
     placement: "bottom",
   });
 
@@ -1003,7 +997,13 @@ function addFilterRow(container) {
       const selected = optionIndex === activeIndex;
       li.setAttribute("aria-selected", selected ? "true" : "false");
       li.classList.toggle("bg-neutral-900", selected);
+      li.classList.toggle("border-neutral-900", selected);
+      li.classList.toggle("font-semibold", selected);
+      li.classList.toggle("hover:bg-neutral-700", selected);
+      li.classList.toggle("hover:bg-carnation-100", !selected);
       li.classList.toggle("text-white", selected);
+      li.classList.toggle("hover:text-white", selected);
+      li.classList.toggle("hover:text-neutral-900", !selected);
     });
     const activeOption = options[activeIndex];
     if (activeOption && activeOption.id) {
@@ -1127,7 +1127,7 @@ function addFilterRow(container) {
       li.setAttribute("role", "option");
       li.setAttribute("aria-selected", "false");
       li.setAttribute("aria-disabled", "false");
-      li.className = "px-2 py-1 cursor-pointer hover:bg-carnation-100 text-xs md:text-sm";
+      li.className = "px-2 py-1 border border-transparent cursor-pointer hover:bg-carnation-100 hover:text-neutral-900 text-xs md:text-sm";
       li.id = `${listboxId}-option-${listbox.childElementCount}`;
       const meta = item.meta ? `<span class="ml-2 text-neutral-500 font-normal">${escapeHtml(item.meta)}</span>` : "";
       const preview = item.variantPreview.length
@@ -1318,6 +1318,7 @@ function addFilterRow(container) {
     if (!nextFieldVal) {
       input.disabled = true;
       input.setAttribute("aria-disabled", "true");
+      textWrapper.classList.add("hidden");
       textWrapper.classList.add("max-h-0", "opacity-0", "pointer-events-none");
       textWrapper.classList.remove("max-h-48", "opacity-100", "pointer-events-auto");
       textWrapper.setAttribute("aria-hidden", "true");
@@ -1326,6 +1327,7 @@ function addFilterRow(container) {
     }
     input.disabled = false;
     input.setAttribute("aria-disabled", "false");
+    textWrapper.classList.remove("hidden");
     textWrapper.classList.remove("max-h-0", "opacity-0", "pointer-events-none");
     textWrapper.classList.add("max-h-48", "opacity-100", "pointer-events-auto");
     textWrapper.setAttribute("aria-hidden", "false");
@@ -1370,8 +1372,8 @@ export function renderActiveFiltersBanner() {
 
   // Clean up any previous Tippy instance on the trigger
   const oldTrigger = document.getElementById("js-filters-trigger");
-  if (oldTrigger && oldTrigger._tippy) {
-    oldTrigger._tippy.destroy();
+  if (oldTrigger && oldTrigger._tooltip) {
+    oldTrigger._tooltip.destroy();
   }
 
   const q = getDecodedUrlQuery();
@@ -1411,7 +1413,7 @@ export function renderActiveFiltersBanner() {
 
   // Popover content (wider than date range)
   const pop = document.createElement("div");
-  pop.className = "p-3 md:p-4 text-xs md:text-sm";
+  pop.className = "js-filters-popover p-3 md:p-4 text-xs md:text-sm";
   pop.setAttribute("role", "dialog");
   pop.setAttribute("aria-labelledby", "js-filters-form-title");
   pop.style.maxWidth = "90vw";
@@ -1553,7 +1555,6 @@ export function renderActiveFiltersBanner() {
   applyBtn.textContent = "Apply";
   filterForm.appendChild(applyBtn);
 
-  // Tippy instance, same pattern as custom date range
   let tip;
   const popoverFlow = createPopoverKeyboardFlow({
     popover: pop,
@@ -1577,19 +1578,13 @@ export function renderActiveFiltersBanner() {
     }
   });
 
-  tip = tippy(triggerBtn, {
-    content: pop,
-    allowHTML: true,
-    interactive: true,
+  tip = createPopover(triggerBtn, pop, {
     placement: "bottom-start",
-    appendTo: document.body,
-    trigger: "click",
-    theme: "popover",
-    arrow: false,
     onShow() {
       triggerBtn.setAttribute("aria-expanded", "true");
     },
-    onMount() {
+    onMount(instance) {
+      instance?.popper?.querySelector(".tooltip-box")?.classList.add("filters-popover-box");
       requestAnimationFrame(() => popoverFlow.focusFirst());
     },
     onShown() {

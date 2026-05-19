@@ -51,7 +51,7 @@ export const DATA_TABLE_BODY_CLASSES = {
 export const DATA_TABLE_FOOT_CLASSES = {
   terms: {
     firstCol: "border-b border-neutral-300 sticky left-0 bg-neutral-200 p-2 w-32 md:w-60 text-left text-neutral-900",
-    secondCol: "border-b border-neutral-300 sticky left-32 md:left-60 bg-neutral-100 p-2 w-24 md:w-32 whitespace-nowrap truncate text-neutral-900",
+    secondCol: "border-b border-neutral-300 sticky left-32 md:left-60 bg-neutral-200 p-2 w-24 md:w-32 whitespace-nowrap truncate text-neutral-900",
     otherCols: "border-b border-neutral-300 p-2 whitespace-nowrap truncate text-neutral-900 hover:bg-neutral-100"
   },
   articles: {
@@ -66,13 +66,14 @@ export const DATA_TABLE_FOOT_CLASSES = {
  */
 export const FILTER_PILL_CLASSES = {
   base: 'inline-flex items-center px-3 py-1 rounded-full border text-sm cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 whitespace-nowrap',
-  active: 'bg-neutral-700 text-neutral-100 border-neutral-500 shadow-sm',
+  active: 'bg-neutral-700 text-neutral-100 border-neutral-200 font-semibold shadow-sm outline outline-1 outline-neutral-500 outline-offset-4',
   inactive: 'bg-neutral-900/60 text-white border-neutral-600 hover:bg-neutral-700'
 };
 
 // Segmented pill styles for tab-like groups
+// TODO: Refactor Actions pills to consume these shared classes so Explore and Actions stay visually aligned from one source of truth.
 export const SEGMENTED_PILL_CLASSES = {
-  base: "px-4 py-1.5 text-sm font-medium rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 transition-colors",
-  active: "bg-neutral-100 text-neutral-900 shadow-inner",
+  base: "px-4 py-1.5 text-sm font-medium rounded-md outline outline-1 outline-transparent outline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 transition-colors",
+  active: "bg-neutral-100 text-neutral-900 shadow-inner border border-1 border-neutral-100",
   inactive: "bg-neutral-900/60 text-white hover:bg-neutral-700"
 };

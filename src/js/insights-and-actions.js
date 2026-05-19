@@ -9,16 +9,17 @@
 // Imports
 // =================================================
 
-import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter } from './utils.js';
-import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS } from './constants.js';
+import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText } from './utils.js';
+import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS } from './constants.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { initActionTabs } from './actions.js';
+import { createPopover } from './tooltip-manager.js';
 
 // Cache identical count queries so we only hit the API once per unique URL
 const countQueryCache = new Map();
 const fetchCountQuery = (url) => {
   if (!countQueryCache.has(url)) {
-    countQueryCache.set(url, axios.get(url));
+    countQueryCache.set(url, fetchJson(url));
   }
   return countQueryCache.get(url);
 };
@@ -28,10 +29,10 @@ const fetchCountQuery = (url) => {
 // =================================================
 
 // Set report org index URL’s base path
-export const orgApiUrl = `${API_BASE_URL}orgs?q=objectID:%22${org}%22`;
+export const orgApiUrl = `${ORGS_REPORT_API_BASE_URL}orgs?q=objectID:%22${org}%22`;
 
 // Fetch and store organisational data in a constant
-export const orgDataPromise = axios.get(orgApiUrl);
+export const orgDataPromise = fetchJson(orgApiUrl);
 
 // =================================================
 // Auth state
@@ -44,17 +45,27 @@ const authState = initAuth(org);
 loggedIn = authState.loggedIn;
 orgKey = authState.orgKey ? `&orgkey=${authState.orgKey}` : "";
 applyAuthVisibility({
-  showWhenLoggedIn: ["logout", "actions"],
+  showWhenLoggedIn: ["logout", "section-tab-actions", "actions-anchor", "actions"],
   hideWhenLoggedIn: ["login"]
 });
+if (!loggedIn) {
+  ["section-tab-actions", "actions-anchor", "actions"].forEach((id) => {
+    document.getElementById(id)?.remove();
+  });
+}
 
 onAuthChange(({ loggedIn: isLoggedIn, orgKey: key }) => {
   loggedIn = isLoggedIn;
   orgKey = key ? `&orgkey=${key}` : "";
   applyAuthVisibility({
-    showWhenLoggedIn: ["logout", "actions"],
+    showWhenLoggedIn: ["logout", "section-tab-actions", "actions-anchor", "actions"],
     hideWhenLoggedIn: ["login"]
   });
+  if (!loggedIn) {
+    ["section-tab-actions", "actions-anchor", "actions"].forEach((id) => {
+      document.getElementById(id)?.remove();
+    });
+  }
 });
 
 // =================================================
@@ -120,12 +131,6 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
       const card = template.content.querySelector(`#${cardId}`);
       if (!card) return;
       const clonedCard = card.cloneNode(true);
-      if (cardId === "is_preprint") {
-        const titleEl = clonedCard.querySelector("h3 span");
-        if (titleEl) {
-          titleEl.textContent = section.sectionId === "insights_preprints" ? "Total" : "Preprint";
-        }
-      }
       // Show a placeholder when the API returns no data for a displayed card.
       if (!analysisEntry) {
         showUnavailableCard(clonedCard);
@@ -158,7 +163,7 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
 
   const gridClass =
     visibleSections.length === 3
-      ? "grid gap-4 grid-cols-1 sm:grid-cols-2"
+      ? "grid gap-4 grid-cols-1 xl:grid-cols-2"
       : "grid gap-4 grid-cols-2 md:grid-cols-3 xl:grid-cols-6";
 
   document.querySelectorAll(".js_insights_card_grid").forEach((grid) => {
@@ -172,8 +177,8 @@ function renderActionTabs(strategy = {}) {
   const tabsContainer = document.getElementById("actions_buttons");
   if (!tabsContainer) return;
   const actionsTabLink = document.getElementById("section-tab-actions");
-  const actionsAnchor = document.getElementById("actions");
-  const actionsSection = actionsAnchor?.nextElementSibling;
+  const actionsAnchor = document.getElementById("actions-anchor");
+  const actionsSection = document.getElementById("actions");
 
   const visibleActions = Object.entries(strategy)
     .filter(([, config]) => config?.show_on_web === true)
@@ -203,7 +208,7 @@ function renderActionTabs(strategy = {}) {
     const tabBtn = document.createElement("button");
     tabBtn.type = "button";
     tabBtn.id = `strategy_${id}`;
-    tabBtn.className = "js_strategy_btn group cursor-pointer px-4 py-1.5 text-sm font-medium rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 transition-colors text-white bg-neutral-900/60";
+    tabBtn.className = "js_strategy_btn group cursor-pointer px-4 py-1.5 text-sm font-medium rounded-md outline outline-1 outline-transparent outline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 transition-colors text-white bg-neutral-900/60";
     tabBtn.setAttribute("aria-controls", id);
     tabBtn.setAttribute("aria-pressed", index === 0 ? "true" : "false");
     tabBtn.innerHTML = `<span>${label}</span><span id="count_${id}" class="bg-neutral-900 text-neutral-100 ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block group-hover:bg-neutral-800">0</span>`;
@@ -221,8 +226,7 @@ export function initInsightsAndActions(org) {
   let queryPrefix = `${QUERY_BASE}q=${dateRange}`,
       countQueryPrefix = `${COUNT_QUERY_BASE}q=${dateRange}`;
 
-  orgDataPromise.then(function (response) {
-    const orgData = response.data; // Storing the fetched data in a constant
+  orgDataPromise.then(function (orgData) {
     const analysis = orgData?.hits?.hits?.[0]?._source?.analysis || {};
     const objectID = orgData?.hits?.hits?.[0]?._source?.objectID;
     const showPreprints = analysis?.is_preprint?.show_on_web === true;
@@ -235,8 +239,10 @@ export function initInsightsAndActions(org) {
       showUnique,
       isGates
     });
-    renderActionTabs(orgData?.hits?.hits?.[0]?._source?.strategy || {});
-    initActionTabs();
+    if (loggedIn) {
+      renderActionTabs(orgData?.hits?.hits?.[0]?._source?.strategy || {});
+      initActionTabs();
+    }
 
     /** Decrypt emails if user has an orgKey **/
     window.handleDecryptEmailClick = function(buttonElement) {
@@ -255,10 +261,9 @@ export function initInsightsAndActions(org) {
       }
   
       // if email is not undefined and there is an orgkey, try to decrypt the author’s email
-      if (email !== 'undefined' && loggedIn) {
-          axios.get(`${ARTICLE_EMAIL_BASE + doi}?${orgKey}`)
-              .then(function (response) {
-                  let authorEmail = response.data;
+      if (email !== 'undefined' && doi && doi !== 'N/A' && loggedIn) {
+          fetchText(`${ARTICLE_EMAIL_BASE}${encodeURIComponent(doi)}${orgKey ? `?${orgKey.slice(1)}` : ""}`)
+              .then(function (authorEmail) {
                   mailto = mailto.replaceAll("{email}", authorEmail);
                   window.open(`mailto:${mailto}`);
               })
@@ -328,19 +333,23 @@ export function initInsightsAndActions(org) {
         }
 
         // On-click tooltip to contain Insight info + figure details
-        const tooltipTarget = cardContents;
+        const tooltipTarget = cardContents.querySelector('.js_insight_trigger');
+        if (!(tooltipTarget instanceof HTMLButtonElement)) return;
         const tooltipTargetId = tooltipTarget.id || `${numerator}-card-trigger`;
         tooltipTarget.id = tooltipTargetId;
         let instance = cardContents._insightTooltip;
         if (!instance) {
-          instance = tippy(tooltipTarget, {
-            allowHTML: true,
-            interactive: true,
+          instance = createPopover(tooltipTarget, '', {
             placement: 'right',
-            appendTo: document.body,
             theme: 'tooltip-white',
-            trigger: 'click',
-            content: ''
+            arrow: true,
+            role: 'dialog',
+            onShow() {
+              tooltipTarget.setAttribute('aria-expanded', 'true');
+            },
+            onHide() {
+              tooltipTarget.setAttribute('aria-expanded', 'false');
+            }
           });
           cardContents._insightTooltip = instance;
         }
@@ -349,13 +358,7 @@ export function initInsightsAndActions(org) {
             if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault();
               instance.show();
-            } else if (e.key === 'Tab') {
-              instance.hide();
             }
-          });
-
-          tooltipTarget.addEventListener('blur', () => {
-            instance.hide();
           });
 
           cardContents._insightTooltipEventsBound = true;
@@ -412,9 +415,9 @@ export function initInsightsAndActions(org) {
 
           Promise.all([numPromise, denomPromise, totalArticlesPromise])
             .then(function ([numResult, denomResult, totalArticlesResult]) {
-              const numeratorCount     = numResult.data,
-                    denominatorCount   = denomResult.data,
-                    totalArticlesCount = totalArticlesResult.data;
+              const numeratorCount     = numResult,
+                    denominatorCount   = denomResult,
+                    totalArticlesCount = totalArticlesResult;
 
               if (denominatorCount) {
                 // Show "X of Y" in #articles_... with some styling
@@ -454,11 +457,11 @@ export function initInsightsAndActions(org) {
           numPromise
             .then(function (result) {
               // Insert value in #percent_{numerator}
-              percentageContents.textContent = makeNumberReadable(result.data);
+              percentageContents.textContent = makeNumberReadable(result);
 
               // Put smaller label "articles" (or denominatorText) in #articles_{numerator}
               figureDetails.innerHTML = `
-                <span class="font-semibold text-carnation-600">${makeNumberReadable(result.data)}</span>
+                <span class="font-semibold text-carnation-600">${makeNumberReadable(result)}</span>
                 <span class="text-neutral-900">
                   ${denominatorText} in total
                 </span>
@@ -481,6 +484,10 @@ export function initInsightsAndActions(org) {
 
     /* Get Strategy data and display it */
     function displayStrategy(strategy, keys, tableRow) {
+      if (!loggedIn) {
+        return;
+      }
+
       var shown  = orgData.hits.hits[0]._source.strategy[strategy].show_on_web,
           sort   = `&sort=${orgData.hits.hits[0]._source.strategy[strategy].sort}`,
           tabID  = `strategy_${strategy}`;
@@ -502,7 +509,7 @@ export function initInsightsAndActions(org) {
         // Get total action (article) count for this strategy
         fetchCountQuery(countQuery)
           .then(function (countResponse) {
-            var count = parseFloat(countResponse.data);
+            var count = parseFloat(countResponse);
             
             // Show total number of actions in tab & above table
             tabCountContents.textContent = makeNumberReadable(count);
@@ -511,91 +518,88 @@ export function initInsightsAndActions(org) {
             }
             tableCountContents.textContent = makeNumberReadable(count);
 
-            // If user is logged in, show full list of actions
-            if (loggedIn) {
-              // If no actions are available, show message
-              if (count === 0) {
-                tableCountContents.textContent = "No ";
-                tableBody.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
-              }
-
-              // Otherwise, generate list of actions
-              else if (count > 0) {
-
-                // Get full list of actions for this strategy 
-                axios.get(listQuery)
-                  .then(function (listResponse) {
-                    var list = listResponse?.data?.hits?.hits || [],
-                        rowsToRender = Math.min(count, list.length),
-                        tableRows = ""; // Contents of the list to be displayed in the UI as a table
-                
-                    // For each individual action, create a row
-                    for (let i = 0; i < rowsToRender; i++) {
-                      var action = {}; // Create object to store key-value pairs for each action
-                      tableRows += "<tr>";
-
-                      // Populate action array with values for each key
-                      for (var key of keys) {
-                        // If it’s from the supplements array, loop over supplements to access data without index number
-                        if (key.startsWith('supplements.')) {
-                          key = key.replace('supplements.', ''); // Remove prefix 
-                          var suppKey = list[i]._source.supplements.find(
-                            function(i) {
-                              return (i[key]);
-                            }
-                          );
-
-                          if (suppKey == null) {
-                            action[key] = "N/A";
-                          } else {
-                            var value = suppKey[key];
-                            action[key] = value;
-                          }
-                          
-                          if (key.includes('invoice_date')) action[key] = makeDateReadable(new Date(action[key]));
-                          if (key.includes('apc_cost')) action[key] = makeNumberReadable(action[key]);
-                        } else { 
-                          var value = list[i]._source[key];
-                          action[key] = value;
-
-                          if (key === 'published_date') action[key] = makeDateReadable(new Date(action[key]));
-                        }
-
-                        if (action[key] == null) {
-                          action[key] = "N/A";
-                        }
-                      };
-                      
-                      // If mailto is included, replace its body’s content with the action’s values
-                      if ("mailto" in action) {
-                        var mailto = orgData.hits.hits[0]._source.strategy[strategy].mailto;
-
-                        var newMailto = mailto.replaceAll("\'", "’");
-                        newMailto = newMailto.replaceAll("{doi}", (action.DOI ? action.DOI : "[No DOI found]"));
-                        newMailto = newMailto.replaceAll("{author_email_name}", (action.author_email_name ? action.author_email_name.replaceAll("\'", "’") : "[No author’s name found]"));
-                        newMailto = newMailto.replaceAll("{title}", (action.title ? action.title.replaceAll("\'", "’") : "[No title found]"));
-
-                        // And add it to the action array
-                        action["mailto"] = encodeURI(newMailto);
-                      };
-
-                      var tableRowLiteral = tableRow.replace(/\$\{action\.([^}]+)\}/g, function(match, key) {
-                        return action[key] ?? "";
-                      });
-                      tableRows += tableRowLiteral; // Populate the table with a row w/ replaced placeholders for each action 
-                      tableRows += "</tr>";
-                    }
-
-                    tableBody.innerHTML = tableRows; // Fill table with all actions
-                  }
-                )
-              }
+            // If no actions are available, show message
+            if (count === 0) {
+              tableCountContents.textContent = "No ";
+              tableBody.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
             }
 
-            // Otherwise, display a message prompting user to log in or contact us to access actions
-            else {
-              tableBody.innerHTML = `<tr><td class='py-4 pl-4 pr-3 text-base text-center align-top break-words' colspan='3'><p class='font-bold'>Actions help you take steps to make your institution’s research more open.</p> <p>Find out more about them by <a href='mailto:hello@oa.works?subject=OA.Report%20&mdash;%20${decodeURIComponent(org)}' class='underline underline-offset-2 decoration-1'>contacting us</a> or <a href='https://about.oa.report/docs/user-accounts' class='underline underline-offset-2 decoration-1' title='Information on user accounts'>logging in to your account</a> to access them.</p></td></tr>`;
-              displayNone(`form_${strategy}`);
+            // Otherwise, generate list of actions
+            else if (count > 0) {
+
+              // Get full list of actions for this strategy 
+              fetchJson(listQuery)
+                .then(function (listResponse) {
+                  var list = listResponse?.hits?.hits || [],
+                      rowsToRender = Math.min(count, list.length),
+                      tableRows = ""; // Contents of the list to be displayed in the UI as a table
+              
+                  // For each individual action, create a row
+                  for (let i = 0; i < rowsToRender; i++) {
+                    var action = {}; // Create object to store key-value pairs for each action
+                    tableRows += "<tr>";
+
+                    // Populate action array with values for each key
+                    for (var key of keys) {
+                      // If it’s from the supplements array, loop over supplements to access data without index number
+                      if (key.startsWith('supplements.')) {
+                        key = key.replace('supplements.', ''); // Remove prefix 
+                        var suppKey = list[i]._source.supplements.find(
+                          function(i) {
+                            return (i[key]);
+                          }
+                        );
+
+                        if (suppKey == null) {
+                          action[key] = "N/A";
+                        } else {
+                          var value = suppKey[key];
+                          action[key] = value;
+                        }
+                        
+                        if (key.includes('invoice_date')) action[key] = makeDateReadable(new Date(action[key]));
+                        if (key.includes('apc_cost')) action[key] = makeNumberReadable(action[key]);
+                      } else { 
+                        var value = list[i]._source[key];
+                        action[key] = value;
+
+                        if (key === 'published_date') action[key] = makeDateReadable(new Date(action[key]));
+                      }
+
+                      if (action[key] == null) {
+                        action[key] = "N/A";
+                      }
+                    };
+                    
+                    // If mailto is included, replace its body’s content with the action’s values
+                    if ("mailto" in action) {
+                      var mailto = orgData.hits.hits[0]._source.strategy[strategy].mailto;
+
+                      var newMailto = mailto.replaceAll("\'", "’");
+                      newMailto = newMailto.replaceAll("{doi}", (action.DOI ? action.DOI : "[No DOI found]"));
+                      newMailto = newMailto.replaceAll("{author_email_name}", (action.author_email_name ? action.author_email_name.replaceAll("\'", "’") : "[No author’s name found]"));
+                      newMailto = newMailto.replaceAll("{title}", (action.title ? action.title.replaceAll("\'", "’") : "[No title found]"));
+
+                      // And add it to the action array
+                      action["mailto"] = encodeURI(newMailto);
+                      action["draft_aria_label"] = `Open draft for ${action.author_email_name || "unknown author"}, article: ${action.title || action.DOI || "unknown article"}`
+                        .replaceAll("&", "&amp;")
+                        .replaceAll("\"", "&quot;")
+                        .replaceAll("\'", "&#39;")
+                        .replaceAll("<", "&lt;")
+                        .replaceAll(">", "&gt;");
+                    };
+
+                    var tableRowLiteral = tableRow.replace(/\$\{action\.([^}]+)\}/g, function(match, key) {
+                      return action[key] ?? "";
+                    });
+                    tableRows += tableRowLiteral; // Populate the table with a row w/ replaced placeholders for each action 
+                    tableRows += "</tr>";
+                  }
+
+                  tableBody.innerHTML = tableRows; // Fill table with all actions
+                }
+              )
             }
           })
           .catch(function (error) { console.log(`${strategy} error: ${error}`); })
@@ -668,9 +672,11 @@ export function initInsightsAndActions(org) {
     //   </td>"
     // );
     
-    ACTION_TABLE_CONFIGS.forEach(({ id, keys, rowTemplate }) => {
-      displayStrategy(id, keys, rowTemplate);
-    });
+    if (loggedIn) {
+      ACTION_TABLE_CONFIGS.forEach(({ id, keys, rowTemplate }) => {
+        displayStrategy(id, keys, rowTemplate);
+      });
+    }
     
   }).catch(error => {
     console.log(`Report ERROR: ${error}`);
@@ -687,8 +693,7 @@ export function initInsightsAndActions(org) {
  * @param {string} id - The identifier for the action export link.
  */
 window.callGetActionExportLink = function(id) {
-  orgDataPromise.then(function (response) {
-      const orgData = response.data;
+  orgDataPromise.then(function (orgData) {
       getActionExportLink(id, orgData);
   }).catch(function (error) {
       console.error(`Error fetching orgData: ${error}`);
@@ -735,11 +740,15 @@ export function getActionExportLink(id, orgData) {
     : "";
 
   // Build final URL
-  const exportUrl = `${CSV_EXPORT_BASE}${query}${include}&sort=${strategySort}${email}`;
+  const exportUrl = `${CSV_EXPORT_BASE}${query}${include}&sort=${strategySort}${email}${orgKey}`;
 
   const xhr = new XMLHttpRequest();
   xhr.open("GET", exportUrl);
   xhr.onload = function () {
+    const emailHint = document.getElementById(`email-hint-${id}`);
+    if (emailHint) {
+      emailHint.hidden = true;
+    }
     document.getElementById(`msg-${id}`).innerHTML = `OA.Report has started building your CSV export at <a href='${this.response}' target='_blank' class='underline underline-offset-2 decoration-1'>this URL</a>. Please check your email to get the full data once it’s ready.`;
   };
   xhr.send();

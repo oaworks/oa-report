@@ -12,7 +12,7 @@
     type="button"
     aria-pressed="{% if params.first %}true{% else %}false{% endif %}"
     aria-controls="{{ params.id }}"
-    class="js_strategy_btn group cursor-pointer px-4 py-1.5 text-sm font-medium rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 transition-colors text-white bg-neutral-900/60 {{ params.class }}"
+    class="js_strategy_btn group cursor-pointer px-4 py-1.5 text-sm font-medium rounded-md outline outline-1 outline-transparent outline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 transition-colors text-white bg-neutral-900/60 {{ params.class }}"
     id="strategy_{{ params.id }}"
   >
     <span>{{ params.txt }}</span>

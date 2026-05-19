@@ -7,8 +7,8 @@
 // Imports
 // =================================================
 
-import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, normaliseFieldId, makeNumberReadable, announce } from "./utils.js";
-import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, FILTER_PILL_CLASSES, SEGMENTED_PILL_CLASSES } from "./constants.js";
+import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, normaliseFieldId, makeNumberReadable, announce } from "./utils.js";
+import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, FILTER_PILL_CLASSES, SEGMENTED_PILL_CLASSES } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
@@ -16,6 +16,7 @@ import { renderActiveFiltersBanner } from './report-filter-manager.js';
 import { orgDataPromise, initInsightsAndActions } from './insights-and-actions.js';
 import { getAggregatedDataQuery } from './aggregated-data-query.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
+import { createTooltip } from './tooltip-manager.js';
 
 // =================================================
 // Global variables
@@ -95,6 +96,9 @@ export let currentActiveDataDisplayToggle = true;
  * @type {Map<string, Object>}
  */
 let exploreItemDataById = new Map();
+
+const FILTER_TARGET_BUTTON_CLASS = 'js-filter-target cursor-pointer hover:underline text-left focus:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm';
+const EXTERNAL_LINK_PILL_CLASS = 'ml-2 bg-neutral-200 text-neutral-900 text-xs px-2 py-0.5 rounded-full whitespace-nowrap hover:bg-carnation-200 js-external-pill';
 
 /**
  * Tracks currently selected row keys for use in enableExploreRowHighlighting.
@@ -179,8 +183,7 @@ export async function initDataExplore(org) {
   }
 
   try {
-    const response = await orgDataPromise; // Await the promise to resolve
-    orgData = response.data;
+    orgData = await orgDataPromise; // Await the promise to resolve
 
     // Check if explore data exists and is not empty
     if (orgData.hits.hits.length > 0 && orgData.hits.hits[0]._source.explore && orgData.hits.hits[0]._source.explore.length > 0) {
@@ -215,9 +218,9 @@ async function addExploreButtonsToDOM(exploreData) {
   const seeMoreListItem = document.getElementById('explore_see_more_item');
   const seeMoreButton = seeMoreListItem?.querySelector('button');
 
-  // Only show 'articles' Explore list when logged out
+  // Logged-out users only see the public article AND preprint breakdowns.
   if (!loggedIn) {
-    exploreData = exploreData.filter(item => item.id === 'articles');
+    exploreData = exploreData.filter(item => item.id === 'articles' || item.id === 'preprint');
   }
 
   for (const exploreDataItem of exploreData) {
@@ -236,8 +239,8 @@ async function addExploreButtonsToDOM(exploreData) {
     }
   }
 
-  // Hide 'See More/Fewer' button if only the 'articles' button is present
-  if (exploreData.length <= 1) {
+  // Hide 'See More/Fewer' when there is nothing extra to reveal.
+  if (!loggedIn || exploreData.length <= 1) {
     if (seeMoreListItem) {
       seeMoreListItem.style.display = 'none';
     } else {
@@ -401,19 +404,26 @@ export async function processExploreDataTable(button, itemData) {
  */
 async function addExploreFiltersToDOM(query) {
   const exploreFiltersElement = document.getElementById("explore_filters");
+  const exploreFilterField = document.getElementById("explore_filter_field");
   exploreFiltersElement.innerHTML = ""; // Clear existing radio buttons
   const filters = parseCommaSeparatedQueries(query); // Parse the query string into an array of filters
+  const visibleFilters = loggedIn ? filters : filters.slice(0, 1); // Logged-out users only see the default filter.
+
+  // Only display list of filters when logged in and there is more than one
+  if (exploreFilterField) {
+    exploreFilterField.style.display = loggedIn && visibleFilters.length > 0 ? "" : "none";
+  }
 
   // Check if the currentActiveExploreItemQuery is in the new set of filters
-  let currentFilterExists = filters.some(filter => filter.id === currentActiveExploreItemQuery);
+  let currentFilterExists = visibleFilters.some(filter => filter.id === currentActiveExploreItemQuery);
 
   // If currentActiveExploreItemQuery does not exist in the new set, reset it to the first filter
-  if (!currentFilterExists && filters.length > 0) {
-    currentActiveExploreItemQuery = filters[0].id;
+  if (!currentFilterExists && visibleFilters.length > 0) {
+    currentActiveExploreItemQuery = visibleFilters[0].id;
   }
   
  // Create radio buttons for each filter and append them to the DOM
-  filters.forEach((filter, index) => {
+  visibleFilters.forEach((filter) => {
     const radioButton = createExploreFilterRadioButton(filter.id, filter.id === currentActiveExploreItemQuery);
     exploreFiltersElement.appendChild(radioButton);
   });
@@ -423,73 +433,59 @@ async function addExploreFiltersToDOM(query) {
 }
 
 /**
- * Creates a radio button for an explore item's filter. Configures it with a specified
- * ID, label, and CSS classes. Attaches an event listener to the radio button that
- * calls handleFilterChange when a user interacts with the filter.
+ * Creates a filter button for an explore item's table switcher. Configures it with a
+ * specified ID, label, and CSS classes. Styles it like a pill.
  * 
  * @param {string} id - The ID of the filter.
- * @param {boolean} isChecked - True if the filter should be checked by default.
- * @returns {HTMLDivElement} The div element containing the configured radio button and label.
+ * @param {boolean} isChecked - True if the filter should be active by default.
+ * @returns {HTMLDivElement} The div element containing the configured filter button.
  */
 function createExploreFilterRadioButton(id, isChecked) {
   const labelData = EXPLORE_FILTERS_LABELS[id];
   const label = labelData ? labelData.label || id : id; // Use label from filters or default to ID
 
-  // Create div to contain radio input and label
+  // Create div to contain the filter button
   const filterRadioButton = document.createElement('div');
   filterRadioButton.className = 'mr-2 md:mr-4 mb-2';
   filterRadioButton.setAttribute('data-filter-id', id);
 
-  // Generate and set tooltip if info is present and non-empty
+  const buttonElement = document.createElement('button');
+  Object.assign(buttonElement, {
+    id: `filter_${id}`,
+    type: 'button',
+    value: id,
+    className: FILTER_PILL_CLASSES.base,
+    innerHTML: '<span>' + label + '</span>'
+  });
+  buttonElement.setAttribute('aria-pressed', isChecked ? 'true' : 'false');
+  buttonElement.setAttribute('aria-label', label);
+  filterRadioButton.appendChild(buttonElement);
+
   if (labelData && labelData.info && labelData.info.trim()) {
-    tippy(filterRadioButton, {
-      content: generateTooltipContent(labelData),
-      allowHTML: true,
-      interactive: true,
+    createTooltip(buttonElement, generateTooltipContent(labelData), {
       aria: {
         content: null,
         expanded: false
       },
       placement: 'bottom',
-      appendTo: document.body,
       theme: 'tooltip-white'
     });
   }
 
-  // Create and append radio input
-  const radioInput = document.createElement('input');
-  Object.assign(radioInput, {
-    type: 'radio',
-    id: `filter_${id}`,
-    className: 'peer sr-only',
-    name: 'filter_by',
-    value: id,
-    checked: isChecked
-  });
-  filterRadioButton.appendChild(radioInput);
-
-  // Create and append label
-  const labelElement = document.createElement('label');
-  Object.assign(labelElement, {
-    htmlFor: `filter_${id}`,
-    className: `${FILTER_PILL_CLASSES.base} peer-focus-visible:ring-2 peer-focus-visible:ring-carnation-400 peer-focus-visible:ring-offset-1 peer-focus-visible:ring-offset-neutral-800`,
-    innerHTML: '<span>' + label + '</span>'
-  });
-  filterRadioButton.appendChild(labelElement);
-
-  setFilterPillState(labelElement, isChecked);
+  setFilterPillState(buttonElement, isChecked);
 
   return filterRadioButton;
 }
 
 /**
- * Sets state-driven classes/attributes for a filter pill label.
+ * Sets state-driven classes/attributes for a filter pill button.
  * Tailwind classes are applied from a single base string to keep this lean.
- * @param {HTMLElement} labelElement
+ * @param {HTMLButtonElement} buttonElement
  * @param {boolean} isActive
  */
-function setFilterPillState(labelElement, isActive) {
-  labelElement.className = `${FILTER_PILL_CLASSES.base} peer-focus-visible:ring-2 peer-focus-visible:ring-carnation-400 peer-focus-visible:ring-offset-1 peer-focus-visible:ring-offset-neutral-800 ${isActive ? FILTER_PILL_CLASSES.active : FILTER_PILL_CLASSES.inactive}`;
+function setFilterPillState(buttonElement, isActive) {
+  buttonElement.className = `${FILTER_PILL_CLASSES.base} ${isActive ? FILTER_PILL_CLASSES.active : FILTER_PILL_CLASSES.inactive}`;
+  buttonElement.setAttribute('aria-pressed', isActive ? 'true' : 'false');
 }
 
 /**
@@ -498,8 +494,9 @@ function setFilterPillState(labelElement, isActive) {
  */
 function updateFilterPillStates(activeId) {
   document.querySelectorAll('#explore_filters [data-filter-id]').forEach((wrapper) => {
-    const label = wrapper.querySelector('label');
-    setFilterPillState(label, wrapper.getAttribute('data-filter-id') === activeId);
+    const button = wrapper.querySelector('button');
+    if (!(button instanceof HTMLButtonElement)) return;
+    setFilterPillState(button, wrapper.getAttribute('data-filter-id') === activeId);
   });
 }
 
@@ -596,15 +593,12 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       return;
     }
 
-    const { type, id, term, sort, includes } = itemData;
+    const { type, id, term, sort } = itemData;
     document.getElementById("csv_email_msg").innerHTML = ""; // Clear any existing message in CSV download form
     const exportTable = document.getElementById('export_table');
     exportTable.classList.remove('hidden');
 
     let query = orgData.hits.hits[0]._source.analysis[filter]?.query; // Get the query string for the selected filter
-    let suffix = orgData.hits.hits[0]._source.key_suffix; // Get the suffix for the org
-    let records = [];
-    let totalRecords = 0;
 
     pretty = currentActiveDataDisplayToggle;
     size = currentActiveExploreItemSize;
@@ -615,34 +609,11 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       return;
     }
 
-    // Terms-based data
-    if (type === "terms") {
-      query = decodeAndReplaceUrlEncodedChars(query);
-      query = andQueryStrings(query, getDecodedUrlQuery()); // Combine with additional query strings from URL params
-      const { records: termRecords, total: termTotal } = await fetchTermBasedData(suffix, query, term, sort, size);
-      records = termRecords;
-      records = reorderTermRecords(records, includes);
-      records = prettifyRecords(records, pretty);
-      totalRecords = termTotal;
+    const { records, total: totalRecords } = await loadExploreRecords(itemData, query, size, pretty);
 
-      replaceText("explore_sort", getExploreSortLabel({ type, id, term, sort }), { allowHTML: true });
-      replaceText("report_sort_adjective", getExploreSortAdjective({ type, sort }));
-      removeCSVExportLink(); // no CSV export for term-based tables
-    }
-
-    // Article-based data
-    else if (type === "articles") {
-      query = decodeAndReplaceUrlEncodedChars(query); // Decode and replace URL-encoded characters for JSON parsing
-      query = andQueryStrings(query, getDecodedUrlQuery()); // Combine with additional query strings from URL params
-      const { records: articleRecords, total } = await fetchArticleBasedData(query, includes, sort, size);
-      records = reorderArticleRecords(articleRecords, includes);
-      totalRecords = total;
-
-      replaceText("explore_sort", getExploreSortLabel({ type, id, term, sort }), { allowHTML: true });
-      replaceText("report_sort_adjective", getExploreSortAdjective({ type, sort }));
-
-      addCSVExportLink();
-    }
+    replaceText("explore_sort", getExploreSortLabel({ type, id, term, sort }), { allowHTML: true });
+    replaceText("report_sort_adjective", getExploreSortAdjective({ type, sort }));
+    setExploreModeUI(type);
 
     const shownCount = type === "terms"
       ? records.filter(record => record.key !== "all_values" && record.key !== "no_values").length
@@ -664,33 +635,8 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       // Add functionalities to the table
       enableExploreTableScroll();
       enableTooltipsForTruncatedCells();
-
-      const downloadCSVFormContainer = document.getElementById('download_csv_form_container');
-      const exploreArticlesTableHelp = document.getElementById('explore_articles_records_shown_help');
-      const exploreTermsTableHelp = document.getElementById('explore_terms_records_shown_help');
-
-      if (type === "articles") {
-        // Only show CSV form and help if logged in
-        exploreArticlesTableHelp.style.display = loggedIn ? "block" : "none";
-        exploreTermsTableHelp.style.display = "none";
-        if (downloadCSVFormContainer) {
-          downloadCSVFormContainer.classList.remove("hidden", "invisible", "opacity-0", "pointer-events-none");
-          downloadCSVFormContainer.setAttribute("aria-hidden", "false");
-          if ("inert" in downloadCSVFormContainer) downloadCSVFormContainer.inert = false;
-        }
-        displayNone("explore_display_style_field");
-      } else {
-        // Show display-style toggle and terms tooltip
-        exploreTermsTableHelp.style.display = "block";
-        exploreArticlesTableHelp.style.display = "none";
-        if (downloadCSVFormContainer) {
-          downloadCSVFormContainer.classList.add("hidden", "invisible", "opacity-0", "pointer-events-none");
-          downloadCSVFormContainer.setAttribute("aria-hidden", "true");
-          if ("inert" in downloadCSVFormContainer) downloadCSVFormContainer.inert = true;
-        }
-        removeDisplayStyle("explore_display_style_field");
-      }
     } else {
+      setExploreModeUI(type);
       showNoResultsRow(10, "export_table_body", "js_export_table");
     }
 
@@ -701,6 +647,35 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     // Always hide loader once finished
     toggleLoadingIndicator(false, 'explore_loading');
   }
+}
+
+async function loadExploreRecords(itemData, query, size, pretty) {
+  const { type, term, sort, includes } = itemData;
+  const decodedQuery = andQueryStrings(
+    decodeAndReplaceUrlEncodedChars(query),
+    getDecodedUrlQuery()
+  );
+
+  if (type === "terms") {
+    const suffix = orgData.hits.hits[0]._source.key_suffix;
+    const { records: termRecords, total } = await fetchTermBasedData(suffix, decodedQuery, term, sort, size);
+
+    return {
+      records: prettifyRecords(reorderTermRecords(termRecords, includes), pretty),
+      total
+    };
+  }
+
+  if (type === "articles") {
+    const { records: articleRecords, total } = await fetchArticleBasedData(decodedQuery, includes, sort, size);
+
+    return {
+      records: reorderArticleRecords(articleRecords, includes),
+      total
+    };
+  }
+
+  return { records: [], total: 0 };
 }
 
 /**
@@ -778,9 +753,9 @@ function formatBucket(bucket) {
  */
 async function fetchArticleBasedData(query, includes, sort, size) {
   const qParam = encodeURIComponent(`${dateRange}(${query})`); // Encode the query with date range
-  const getDataUrl = `https://${ELEVENTY_API_ENDPOINT}.oa.works/report/works/?q=${qParam}&size=${size}&include=${includes}&sort=${sort}`;
+  const getDataUrl = `${WORKS_REPORT_API_BASE_URL}works/?q=${qParam}&size=${size}&include=${includes}&sort=${sort}`;
 
-  const response = await fetchGetData(getDataUrl); // No need to generate POST request
+  const response = await fetchJson(getDataUrl); // No need to generate POST request
   const hits = response?.hits?.hits ?? [];
   const totalRaw = response?.hits?.total;
 
@@ -889,12 +864,7 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
   const headerRow = document.createElement('tr');
   Object.keys(records).forEach((rawKey, index) => {
     const key = normaliseFieldId(rawKey);
-
-    const cssClass = index === 0
-      ? DATA_TABLE_HEADER_CLASSES[dataType].firstHeaderCol
-      : index === 1
-        ? DATA_TABLE_HEADER_CLASSES[dataType].secondHeaderCol
-        : DATA_TABLE_HEADER_CLASSES[dataType].otherHeaderCols;
+    const cssClass = getExploreColumnClass('header', dataType, index);
 
     const headerCell = createTableCell('', cssClass, null, null, true); 
     if (index > 1) {
@@ -994,12 +964,9 @@ function setupHeaderTooltip(element, key, dataType) {
     // Get additional help text from orgData if available
     const additionalHelpText = orgData.hits.hits[0]?._source.policy?.help_text?.[key] ?? null;
 
-    tippy(element, {
-      content: generateTooltipContent(labelData, additionalHelpText),
-      allowHTML: true,
-      interactive: true,
+    element.tabIndex = 0;
+    createTooltip(element, generateTooltipContent(labelData, additionalHelpText), {
       placement: 'bottom',
-      appendTo: document.body,
       theme: 'tooltip-white'
     });
 
@@ -1035,68 +1002,50 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
   // Limit the number of rows to the specified size
   otherRecords.length = Math.min(otherRecords.length, currentActiveExploreItemSize);
 
-  // Add rows from other records to the tbody
-  otherRecords.forEach(record => {
+  function appendRow(target, record, section) {
     const row = document.createElement('tr');
-    let columnIndex = 0; // Keep track of column index for CSS class assignment
 
-    for (const key in record) {
-      const rawContent = record[key];
+    Object.entries(record).forEach(([key, rawContent], columnIndex) => {
       let content = rawContent;
 
-      // Special processing for articles data type
-      // DOI key
       if (dataType === 'articles' && key === 'DOI') {
         content = convertTextToLinks(content, true, 'https://doi.org/');
       }
 
-      // Date
       if (dataType === 'articles' && key === 'published_date') {
         content = makeDateReadable(new Date(content));
       }
 
-      // Remove duplicates if content is an array
       if (Array.isArray(content)) {
         content = removeArrayDuplicates(content);
       }
 
-      let cssClass;
-      if (columnIndex === 0) cssClass = DATA_TABLE_BODY_CLASSES[dataType].firstCol;
-      else if (columnIndex === 1) cssClass = DATA_TABLE_BODY_CLASSES[dataType].secondCol;
-      else cssClass = DATA_TABLE_BODY_CLASSES[dataType].otherCols;
+      const cell = createTableCell(
+        content,
+        getExploreColumnClass(section, dataType, columnIndex),
+        exploreItemId,
+        key,
+        false
+      );
 
-      const cell = createTableCell(content, cssClass, exploreItemId, key, false);
       if (columnIndex > 1) {
         cell.classList.add(shouldRightAlignExploreColumn(key, rawContent) ? "text-right" : "text-left");
       }
+
       row.appendChild(cell);
-      columnIndex++;
-    }
-    tableBody.appendChild(row);
+    });
+
+    target.appendChild(row);
+  }
+
+  // Add rows from other records to the tbody
+  otherRecords.forEach(record => {
+    appendRow(tableBody, record, 'body');
   });
 
   // Add the 'all_values' record to the tfoot if it exists
   if (allValuesRecord) {
-    const footerRow = document.createElement('tr');
-    let columnIndex = 0;
-
-    for (const key in allValuesRecord) {
-      const rawContent = allValuesRecord[key];
-      let content = rawContent;
-
-      let cssClass;
-      if (columnIndex === 0) cssClass = DATA_TABLE_FOOT_CLASSES[dataType].firstCol;
-      else if (columnIndex === 1) cssClass = DATA_TABLE_FOOT_CLASSES[dataType].secondCol;
-      else cssClass = DATA_TABLE_FOOT_CLASSES[dataType].otherCols;
-
-      const footerCell = createTableCell(content, cssClass, exploreItemId, key, false);
-      if (columnIndex > 1) {
-        footerCell.classList.add(shouldRightAlignExploreColumn(key, rawContent) ? "text-right" : "text-left");
-      }
-      footerRow.appendChild(footerCell);
-      columnIndex++;
-    }
-    tableFooter.appendChild(footerRow);
+    appendRow(tableFooter, allValuesRecord, 'foot');
   }
 
   // Highlight the selected rows if they exist in the new data
@@ -1128,7 +1077,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
   cell.className = cssClass;
   const termBase = currentActiveExploreItemData?.term?.trim() || "";
   const termField = termBase
-    ? ((termBase === "published_year" && ELEVENTY_API_ENDPOINT === "api")
+    ? ((termBase === "published_year" && API_HOST_WORKS === "api")
       ? termBase.replace(/\.keyword$/i, "")
       : `${termBase.replace(/\.keyword$/i, "")}.keyword`)
     : "";
@@ -1183,10 +1132,12 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
   }
 
   /**
-   * Helper: add a small dot indicating selected term for any term already active in the URL ?q=.
+   * Adds a visual selected indicator to a term label when its filter clause
+   * already exists in the current `?q=` expression.
    *
-   * @param {HTMLElement} wrapper - The span wrapping the clickable term text.
-   * @param {string|number} rawValue - The raw bucket key value to match against the active filters.
+   * @param {HTMLElement} wrapper
+   * @param {string|number} rawValue
+   * @returns {void}
    */
   function addSelectedDotIfNeeded(wrapper, rawValue) {
     if (key !== 'key' || !termField) return;
@@ -1209,6 +1160,174 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
     sr.textContent = 'Selected filter';
     wrapper.appendChild(sr);
   }
+
+  /**
+   * Creates the standard clickable label used for filterable term values.
+   *
+   * @param {string} [text='']
+   * @returns {HTMLButtonElement}
+   */
+  function createFilterTargetButton(text = '') {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = FILTER_TARGET_BUTTON_CLASS;
+    if (text) {
+      button.textContent = text;
+    }
+    return button;
+  }
+
+  /**
+   * Creates the small outbound-link pill shown beside some special values
+   * such as licenses and ORCID identifiers.
+   *
+   * @param {string} href
+   * @param {string} text
+   * @returns {HTMLAnchorElement}
+   */
+  function createExternalPill(href, text) {
+    const pill = document.createElement('a');
+    pill.href = href;
+    pill.target = '_blank';
+    pill.rel = 'noopener noreferrer';
+    pill.className = EXTERNAL_LINK_PILL_CLASS;
+    pill.textContent = text;
+    return pill;
+  }
+
+  /**
+   * Renders an ORCID-backed label with async name resolution and a companion
+   * ORCID pill link. Used both for filterable key cells and plain value cells.
+   *
+   * @param {string} orcidUrl
+   * @param {HTMLElement} container
+   * @param {boolean} [asFilterTarget=false]
+   * @returns {HTMLElement}
+   */
+  function createAsyncOrcidLabel(orcidUrl, container, asFilterTarget = false) {
+    const orcidId = orcidUrl.split('/').pop();
+    const nameSpan = document.createElement('span');
+    nameSpan.textContent = 'Loading ORCID data...';
+
+    const label = asFilterTarget ? createFilterTargetButton() : document.createElement('span');
+    label.appendChild(nameSpan);
+    container.appendChild(label);
+    container.appendChild(createExternalPill(orcidUrl, 'ORCID ↗'));
+
+    getORCiDFullName(orcidId)
+      .then(fullName => {
+        nameSpan.textContent = fullName || 'Name not found';
+      })
+      .catch(() => {
+        nameSpan.textContent = orcidUrl;
+      });
+
+    return label;
+  }
+
+  /**
+   * Renders the first-column term label cell for known Explore breakdowns that
+   * need special formatting, while preserving click-to-filter behavior.
+   *
+   * @param {string|number} rawValue
+   * @returns {HTMLElement}
+   */
+  function renderSpecialKeyCell(rawValue) {
+    let labelWrapper = null;
+
+    switch (exploreItemId) {
+      case 'country':
+        labelWrapper = createFilterTargetButton(COUNTRY_CODES[rawValue] || "Unknown country");
+        break;
+
+      case 'language':
+        labelWrapper = createFilterTargetButton(LANGUAGE_CODES[rawValue] || "Unknown language");
+        break;
+
+      case 'publisher_license':
+      case 'repository_license':
+      case 'license':
+      case 'dataset_license': {
+        const licenseInfo = LICENSE_CODES[rawValue];
+        const licenseName = licenseInfo?.name || "Unknown license";
+        const licenseUrl = licenseInfo?.url || null;
+
+        labelWrapper = createFilterTargetButton();
+
+        const codeEl = document.createElement('strong');
+        codeEl.className = 'uppercase';
+        codeEl.textContent = rawValue;
+
+        const nameEl = document.createElement('span');
+        nameEl.textContent = ` – ${licenseName}`;
+
+        labelWrapper.appendChild(codeEl);
+        labelWrapper.appendChild(document.createElement('br'));
+        labelWrapper.appendChild(nameEl);
+        cell.appendChild(labelWrapper);
+
+        if (licenseUrl) {
+          cell.appendChild(createExternalPill(licenseUrl, 'CC License ↗'));
+        }
+        break;
+      }
+
+      case 'all_lab_head':
+      case 'janelia_lab_head':
+      case 'investigator':
+      case 'freeman_hrabowski_scholar':
+      case 'author':
+        if (typeof rawValue === 'string' && rawValue.includes('orcid.org')) {
+          labelWrapper = createAsyncOrcidLabel(rawValue, cell, true);
+          break;
+        }
+        labelWrapper = createFilterTargetButton(rawValue);
+        break;
+
+      default:
+        labelWrapper = createFilterTargetButton(rawValue);
+    }
+
+    if (!cell.contains(labelWrapper)) {
+      cell.appendChild(labelWrapper);
+    }
+
+    addSelectedDotIfNeeded(labelWrapper, rawValue);
+    attachTermClickFilter(rawValue);
+    return cell;
+  }
+
+  /**
+   * Renders non-key cell values using the existing display rules for nulls,
+   * booleans, object lists, and special fallback values.
+   *
+   * @param {*} value
+   * @returns {HTMLElement}
+   */
+  function renderGenericCellValue(value) {
+    if (content === 'US$NaN') {
+      cell.innerHTML = "N/A";
+      return cell;
+    }
+
+    if (typeof value === 'object' && value !== null) {
+      cell.innerHTML = `<ul>${formatObjectValuesAsList(value, true)}</ul>`;
+      return cell;
+    }
+
+    if (value === null || value === 'null') {
+      cell.innerHTML = "";
+      return cell;
+    }
+
+    if (typeof value === 'boolean') {
+      cell.innerHTML = value.toString();
+      return cell;
+    }
+
+    cell.innerHTML = value;
+    return cell;
+  }
   
   // Early handling for common 'all_values' and 'no_values' cases in terms-based data
   // Display either 'All [explore item]]' or 'No [explore item]'
@@ -1220,171 +1339,18 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
 
   // Safely check and process content based on its type and the context
   if (key === 'key' && content) {
-    let displayContent = "";
-    /** @type {HTMLElement|null} */
-    let labelWrapper = null;
-
-    switch (exploreItemId) {
-      case 'country': {
-        // Fetch and display country name using country code
-        displayContent = COUNTRY_CODES[content] || "Unknown country";
-        break;
-      }
-
-      case 'language': {
-        // Fetch and display language name using language code
-        displayContent = LANGUAGE_CODES[content] || "Unknown language";
-        break;
-      }
-
-      case 'publisher_license':
-      case 'repository_license':
-      case 'license':
-      case 'dataset_license': {
-        // License label + separate CC pill
-        const licenseInfo = LICENSE_CODES[content];
-        const licenseName = licenseInfo?.name || "Unknown license";
-        const licenseUrl = licenseInfo?.url || null;
-
-        labelWrapper = document.createElement('span');
-        labelWrapper.className = 'js-filter-target cursor-pointer hover:underline';
-
-        const codeEl = document.createElement('strong');
-        codeEl.className = 'uppercase';
-        codeEl.textContent = content;
-
-        const nameEl = document.createElement('span');
-        nameEl.textContent = ` – ${licenseName}`;
-
-        labelWrapper.appendChild(codeEl);
-        labelWrapper.appendChild(document.createElement('br'));
-        labelWrapper.appendChild(nameEl);
-
-        cell.appendChild(labelWrapper);
-
-        if (licenseUrl) {
-          const pill = document.createElement('a');
-          pill.href = licenseUrl;
-          pill.target = '_blank';
-          pill.rel = 'noopener noreferrer';
-          pill.className = 'ml-2 bg-neutral-200 text-neutral-900 text-xs px-2 py-0.5 rounded-full whitespace-nowrap hover:bg-carnation-200 js-external-pill';
-          pill.textContent = 'CC License ↗';
-          cell.appendChild(pill);
-        }
-
-        break;
-      }
-
-      case 'all_lab_head': // TODO: remove these cases once we settle on a naming convention
-      case 'janelia_lab_head':
-      case 'investigator':
-      case 'freeman_hrabowski_scholar':
-      case 'author': {
-        // ORCID-based author (or investigator, etc.): show name + ORCID pill
-        if (typeof content === 'string' && content.includes('orcid.org')) {
-          const orcidId = content.split('/').pop();
-
-          const pill = document.createElement('a');
-          pill.href = content;
-          pill.target = '_blank';
-          pill.rel = 'noopener noreferrer';
-          pill.className = 'ml-2 bg-neutral-200 text-neutral-900 text-xs px-2 py-0.5 rounded-full whitespace-nowrap hover:bg-carnation-200 js-external-pill';
-          pill.textContent = 'ORCID ↗';
-
-          labelWrapper = document.createElement('span');
-          labelWrapper.className = 'js-filter-target cursor-pointer hover:underline';
-
-          const nameSpan = document.createElement('span');
-          nameSpan.textContent = 'Loading ORCID data...';
-
-          labelWrapper.appendChild(nameSpan);
-
-          cell.appendChild(labelWrapper);
-          cell.appendChild(pill);
-
-          getORCiDFullName(orcidId)
-            .then(fullName => {
-              nameSpan.textContent = fullName || 'Name not found';
-            })
-            .catch(() => {
-              nameSpan.textContent = content;
-            });
-
-          break;
-        }
-
-        // Non-ORCID value, just show as-is and let it be filterable
-        displayContent = content;
-        break;
-      }
-
-      default: {
-        displayContent = content;
-      }
-    }
-
-    // Wrap plain key values in a filter-target span (countries, grant IDs, etc.)
-    if (!labelWrapper) {
-      labelWrapper = document.createElement('span');
-      labelWrapper.className = 'js-filter-target cursor-pointer hover:underline';
-      labelWrapper.textContent = displayContent;
-      cell.appendChild(labelWrapper);
-    }
-
-    // Where the active-filter-dot is added for ALL term cells
-    addSelectedDotIfNeeded(labelWrapper, content);
-
-    attachTermClickFilter(content);
-    return cell;
+    return renderSpecialKeyCell(content);
   }
 
   // Non-`key` cells, or cases outside terms tables
 
   // Handle ORCID links (e.g. in non-key author cells) as: name + pill
   if (exploreItemId === 'author' && typeof content === 'string' && content.includes('orcid.org')) {
-    const orcidId = content.split('/').pop();
-
-    const nameSpan = document.createElement('span');
-    nameSpan.textContent = 'Loading ORCID data...';
-
-    const pill = document.createElement('a');
-    pill.href = content;
-    pill.target = '_blank';
-    pill.rel = 'noopener noreferrer';
-    pill.className = 'ml-2 bg-neutral-200 text-neutral-900 text-xs px-2 py-0.5 rounded-full whitespace-nowrap hover:bg-carnation-200 js-external-pill';
-    pill.textContent = 'ORCID ↗';
-
-    cell.appendChild(nameSpan);
-    cell.appendChild(pill);
-
-    getORCiDFullName(orcidId)
-      .then(fullName => {
-        nameSpan.textContent = fullName || 'Name not found';
-      })
-      .catch(() => {
-        nameSpan.textContent = content;
-      });
-
+    createAsyncOrcidLabel(content, cell, false);
     return cell;
   }
 
-  if (content === 'US$NaN') {
-    cell.innerHTML = "N/A"; // Display NaN as the more user-friendly "N/A"
-  } else if (typeof content === 'object' && content !== null) {
-    // If content is an object, format its values as a list
-    cell.innerHTML = `<ul>${formatObjectValuesAsList(content, true)}</ul>`;
-  } else if (content === null || content === 'null') {
-    // Replace null, undefined, and similar values with an empty string
-    cell.innerHTML = "";
-  } else if (typeof content === 'boolean') {
-    // Handle boolean values
-    cell.innerHTML = content.toString();
-  } else {
-    // Default case for handling plain content
-    cell.innerHTML = content;
-  }
-
-  return cell;
+  return renderGenericCellValue(content);
 }
 
 /**
@@ -1459,6 +1425,11 @@ function clearRowHighlights() {
 function enableExploreTableScroll() {
   const tableContainer = document.querySelector(".js_export_table_container");
   const scrollRightButton = document.getElementById("js_scroll_table_btn");
+  if (!tableContainer || !scrollRightButton) return;
+  if (scrollRightButton.dataset.bound === "true") {
+    syncExploreTableScrollButton(tableContainer, scrollRightButton);
+    return;
+  }
 
   scrollRightButton.addEventListener("click", () => {
     const scrollAmount = 200; 
@@ -1480,15 +1451,95 @@ function enableExploreTableScroll() {
   });
 
   tableContainer.addEventListener("scroll", () => {
-    const currentScroll = tableContainer.scrollLeft;
-    const maxScroll = tableContainer.scrollWidth - tableContainer.clientWidth;
-
-    if (currentScroll >= maxScroll) {
-      scrollRightButton.style.display = "none";
-    } else {
-      scrollRightButton.style.display = "block";
-    }
+    syncExploreTableScrollButton(tableContainer, scrollRightButton);
   });
+
+  scrollRightButton.dataset.bound = "true";
+  syncExploreTableScrollButton(tableContainer, scrollRightButton);
+}
+
+/**
+ * Returns the configured class string for a table column based on the table
+ * section, Explore data type, and column index.
+ *
+ * @param {'header'|'body'|'foot'} section
+ * @param {'terms'|'articles'} dataType
+ * @param {number} columnIndex
+ * @returns {string}
+ */
+function getExploreColumnClass(section, dataType, columnIndex) {
+  const classMap = section === 'header'
+    ? DATA_TABLE_HEADER_CLASSES[dataType]
+    : section === 'foot'
+      ? DATA_TABLE_FOOT_CLASSES[dataType]
+      : DATA_TABLE_BODY_CLASSES[dataType];
+
+  if (section === 'header') {
+    if (columnIndex === 0) return classMap.firstHeaderCol;
+    if (columnIndex === 1) return classMap.secondHeaderCol;
+    return classMap.otherHeaderCols;
+  }
+
+  if (columnIndex === 0) return classMap.firstCol;
+  if (columnIndex === 1) return classMap.secondCol;
+  return classMap.otherCols;
+}
+
+/**
+ * Applies the article-vs-terms UI state for the Explore panel without
+ * changing the underlying rendered table content.
+ *
+ * @param {string} type
+ * @returns {void}
+ */
+function setExploreModeUI(type) {
+  const isArticles = type === "articles";
+  const downloadCSVFormContainer = document.getElementById('download_csv_form_container');
+  const exploreArticlesTableHelp = document.getElementById('explore_articles_records_shown_help');
+  const exploreTermsTableHelp = document.getElementById('explore_terms_records_shown_help');
+
+  if (isArticles) {
+    addCSVExportLink();
+  } else {
+    removeCSVExportLink();
+  }
+
+  if (exploreArticlesTableHelp) {
+    exploreArticlesTableHelp.style.display = isArticles && loggedIn ? "block" : "none";
+  }
+
+  if (exploreTermsTableHelp) {
+    exploreTermsTableHelp.style.display = isArticles ? "none" : "block";
+  }
+
+  if (downloadCSVFormContainer) {
+    downloadCSVFormContainer.classList.toggle("hidden", !isArticles);
+    downloadCSVFormContainer.classList.toggle("invisible", !isArticles);
+    downloadCSVFormContainer.classList.toggle("opacity-0", !isArticles);
+    downloadCSVFormContainer.classList.toggle("pointer-events-none", !isArticles);
+    downloadCSVFormContainer.setAttribute("aria-hidden", isArticles ? "false" : "true");
+    if ("inert" in downloadCSVFormContainer) downloadCSVFormContainer.inert = !isArticles;
+  }
+
+  if (isArticles) {
+    displayNone("explore_display_style_field");
+  } else {
+    removeDisplayStyle("explore_display_style_field");
+  }
+}
+
+/**
+ * Updates the scroll affordance based on the table container's current
+ * horizontal scroll position.
+ *
+ * @param {Element} tableContainer
+ * @param {HTMLElement} scrollRightButton
+ * @returns {void}
+ */
+function syncExploreTableScrollButton(tableContainer, scrollRightButton) {
+  const currentScroll = tableContainer.scrollLeft;
+  const maxScroll = tableContainer.scrollWidth - tableContainer.clientWidth;
+  scrollRightButton.style.display = currentScroll >= maxScroll ? "none" : "block";
 }
 
 /**
@@ -1498,15 +1549,12 @@ function enableExploreTableScroll() {
  */
 function enableTooltipsForTruncatedCells() {
   document.querySelectorAll('#export_table .truncate').forEach(cell => {
-      tippy(cell, {
-          content: cell.textContent,
-          allowHTML: true,
-          interactive: false,
+      createTooltip(cell, cell.textContent, {
           aria: {
             expanded: false
           },
+          interactive: false,
           placement: 'bottom',
-          appendTo: document.body,
           delay: [500, 0], // 500 ms delay before showing, 0 ms delay before hiding
           trigger: 'mouseenter focus', // Trigger on mouse enter and focus
           hideOnClick: false,
@@ -1672,8 +1720,7 @@ async function generateCSVLinkHref() {
   const csvLink = CSV_EXPORT_BASE + query + include + exportSort + orgKey;
 
   try {
-    const response = await axios.get(csvLink);
-    return response.data; // The CSV download link
+    return await fetchText(csvLink); // The CSV download link
   } catch (error) {
     console.error('Error fetching CSV export link: ', error);
     return ''; // Return an empty string in case of an error
@@ -1699,8 +1746,7 @@ function removeCSVExportLink() {
  * @returns {boolean} - Always returns false to prevent default form submission.
  */
 window.getExportLink = function() {
-  orgDataPromise.then(function (response) {
-    const orgData = response.data;
+  orgDataPromise.then(function (orgData) {
     const currentId = currentActiveExploreItemData.id;
 
     // Get the custom includes for the specific item based on the current active explore item ID
@@ -1722,6 +1768,10 @@ window.getExportLink = function() {
     var xhr = new XMLHttpRequest();
     xhr.open("GET", query);
     xhr.onload = function () {
+      const csvEmailHint = document.getElementById("csv-email-hint");
+      if (csvEmailHint) {
+        csvEmailHint.hidden = true;
+      }
       document.getElementById("csv_email_msg").innerHTML = `OA.Report has started building your CSV export at <a href='${this.response}' target='_blank' class='underline underline-offset-2 decoration-1'>this URL</a>. Please check your email to get the full data once it’s ready.`;
 
       // Reset the form after the request is sent

@@ -19,6 +19,8 @@ export const ACTION_ORDER = [
   "unanswered_requests"
 ];
 
+const ACTION_ARTICLE_LINK_CLASSES = "inline-flex items-center bg-neutral-200 text-neutral-900 text-xs px-2 py-0.5 rounded-full whitespace-nowrap outline outline-1 outline-transparent hover:bg-carnation-200";
+
 // Config for rendering Actions tables
 export const ACTION_TABLE_CONFIGS = [
   {
@@ -43,10 +45,13 @@ export const ACTION_TABLE_CONFIGS = [
       </td>\
       <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
         <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
-        <div class='mb-1 text-neutral-900 hover:text-carnation-500'>\
-          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
+        <div class='mb-1 text-neutral-600'>${action.DOI}</div>\
+        <div class='mb-1 text-neutral-900'>\
+          <span>${action.title}</span>\
         </div>\
-        <div class='mb-3 text-neutral-600'>${action.DOI}</div>\
+        <div class='mb-3'>\
+          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article' aria-label='Open article: ${action.title}' class='" + ACTION_ARTICLE_LINK_CLASSES + " ml-0'>Open article <span aria-hidden='true'>&#8599;</span></a>\
+        </div>\
         <div class='text-neutral-600'>OA status: <span class='font-medium'>${action.oa_status}<span></div>\
         <div class='text-neutral-600'>License: <span class='font-medium uppercase'>${action.publisher_license}</span></div>\
       </td>\
@@ -74,14 +79,18 @@ export const ACTION_TABLE_CONFIGS = [
       </td>\
       <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
         <div class='mb-1 font-medium text-neutral-900'>${action.author_email_name}</div>\
+        <div class='mb-1 text-neutral-600'>${action.journal}</div>\
         <div class='mb-1 text-neutral-900'>\
-          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
+          <span>${action.title}</span>\
         </div>\
-        <div class='text-neutral-600'>${action.journal}</div>\
+        <div class='mb-1'>\
+          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article' aria-label='Open article: ${action.title}' class='" + ACTION_ARTICLE_LINK_CLASSES + " ml-0'>Open article <span aria-hidden='true'>&#8599;</span></a>\
+        </div>\
       </td>\
       <td class='whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium'>\
         <button \
           class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
+          aria-label='${action.draft_aria_label}'\
           data-email='${action.email}'\
           data-doi='${action.DOI}'\
           data-mailto='${action.mailto}'\
@@ -95,10 +104,13 @@ export const ACTION_TABLE_CONFIGS = [
     keys: ["published_date", "title", "journal", "author_email_name", "email", "DOI", "mailto"],
     rowTemplate: "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
         <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
-        <div class='mb-1 font-medium text-neutral-900 hover:text-carnation-500'>\
-          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
+        <div class='mb-1 text-neutral-600'>${action.journal}</div>\
+        <div class='mb-1 text-neutral-900'>\
+          <span>${action.title}</span>\
         </div>\
-        <div class='text-neutral-600'>${action.journal}</div>\
+        <div class='mb-1'>\
+          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article' aria-label='Open article: ${action.title}' class='" + ACTION_ARTICLE_LINK_CLASSES + " ml-0'>Open article <span aria-hidden='true'>&#8599;</span></a>\
+        </div>\
       </td>\
       <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
         <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
@@ -106,6 +118,7 @@ export const ACTION_TABLE_CONFIGS = [
       <td class='hidden px-3 py-4 text-sm text-center text-neutral-600 align-top break-words sm:table-cell'>\
         <button \
           class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
+          aria-label='${action.draft_aria_label}'\
           data-email='${action.email}'\
           data-doi='${action.DOI}'\
           data-mailto='${action.mailto}'\
@@ -119,10 +132,13 @@ export const ACTION_TABLE_CONFIGS = [
     keys: ["published_date", "title", "journal", "author_email_name", "email", "DOI", "mailto"],
     rowTemplate: "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
         <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
-        <div class='mb-1 font-medium text-neutral-900 hover:text-carnation-500'>\
-          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
+        <div class='mb-1 text-neutral-600'>${action.journal}</div>\
+        <div class='mb-1 text-neutral-900'>\
+          <span>${action.title}</span>\
         </div>\
-        <div class='text-neutral-600'>${action.journal}</div>\
+        <div class='mb-1'>\
+          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article' aria-label='Open article: ${action.title}' class='" + ACTION_ARTICLE_LINK_CLASSES + " ml-0'>Open article <span aria-hidden='true'>&#8599;</span></a>\
+        </div>\
       </td>\
       <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
         <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
@@ -130,6 +146,7 @@ export const ACTION_TABLE_CONFIGS = [
       <td class='hidden px-3 py-4 text-sm text-center text-neutral-600 align-top break-words sm:table-cell'>\
         <button \
           class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
+          aria-label='${action.draft_aria_label}'\
           data-email='${action.email}'\
           data-doi='${action.DOI}'\
           data-mailto='${action.mailto}'\
@@ -143,10 +160,13 @@ export const ACTION_TABLE_CONFIGS = [
     keys: ["published_date", "title", "journal", "author_email_name", "email", "DOI", "mailto"],
     rowTemplate: "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
         <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
-        <div class='mb-1 font-medium text-neutral-900 hover:text-carnation-500'>\
-          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article'>${action.title}</a>\
+        <div class='mb-1 text-neutral-600'>${action.journal}</div>\
+        <div class='mb-1 text-neutral-900'>\
+          <span>${action.title}</span>\
         </div>\
-        <div class='text-neutral-600'>${action.journal}</div>\
+        <div class='mb-1'>\
+          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article' aria-label='Open article: ${action.title}' class='" + ACTION_ARTICLE_LINK_CLASSES + " ml-0'>Open article <span aria-hidden='true'>&#8599;</span></a>\
+        </div>\
       </td>\
       <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
         <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
@@ -154,6 +174,7 @@ export const ACTION_TABLE_CONFIGS = [
       <td class='hidden px-3 py-4 text-sm text-center text-neutral-600 align-top break-words sm:table-cell'>\
         <button \
           class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
+          aria-label='${action.draft_aria_label}'\
           data-email='${action.email}'\
           data-doi='${action.DOI}'\
           data-mailto='${action.mailto}'\

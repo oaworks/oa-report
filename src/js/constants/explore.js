@@ -943,5 +943,13 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   "host_venue.display_name": {
     label: "Preprint server",
     info: ""
+  },
+  "has_epmc_fulltext": {
+    label: "Europe PMC full text",
+    info: "True if the article has full text available in Europe PMC"
+  },
+  "epmc_licence": {
+    label: "Europe PMC license",
+    info: "The license applied to the full text in Europe PMC"
   }
 };
