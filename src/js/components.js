@@ -3,8 +3,6 @@
 // UI components
 // =================================================
 
-import DOMPurify from "dompurify";
-
 /**
  * Toggles the visibility of the loading indicator.
  *
@@ -106,7 +104,7 @@ class Modal {
     this.modalTitle.id = titleId; 
 
     const modalBody = this.modal.querySelector('.modal-body');
-    modalBody.innerHTML = DOMPurify.sanitize(content ?? "");
+    modalBody.innerHTML = content;
     modalBody.id = contentId;
 
     // Ensure modal background is immediately visible

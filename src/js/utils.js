@@ -3,7 +3,6 @@
 // Utility/helper functions
 // ========================
 
-import DOMPurify from 'dompurify';
 import { WORKS_REPORT_BG_API_BASE_URL, READABLE_DATE_OPTIONS, USER_LOCALE, EXPLORE_FILTERS_LABELS } from './constants.js';
 
 // =================================================
@@ -91,12 +90,7 @@ export let dateRange, startDate, endDate, startYear, endYear;
  */
 export function replaceText(className, parameter, { allowHTML = false } = {}) {
   document.querySelectorAll(`.${className}`).forEach(element => {
-    if (allowHTML) {
-      element.innerHTML = DOMPurify.sanitize(parameter ?? '');
-      return;
-    }
-
-    element.textContent = parameter;
+    element[allowHTML ? 'innerHTML' : 'textContent'] = parameter;
   });
 }
 
