@@ -86,11 +86,10 @@ export let dateRange, startDate, endDate, startYear, endYear;
  * 
  * @param {string} className - The class name indicating the elements whose text will be replaced.
  * @param {string} parameter - The content to set.
- * @param {{ allowHTML?: boolean }} [options] - Set allowHTML to true only for trusted markup.
  */
-export function replaceText(className, parameter, { allowHTML = false } = {}) {
+export function replaceText(className, parameter) {
   document.querySelectorAll(`.${className}`).forEach(element => {
-    element[allowHTML ? 'innerHTML' : 'textContent'] = parameter;
+    element.textContent = parameter;
   });
 }
 
@@ -1050,7 +1049,7 @@ export function updateExploreFilterHeader(filterId) {
     filterId === 'is_paper'
       ? EXPLORE_FILTERS_LABELS[filterId].label
       : (EXPLORE_FILTERS_LABELS[filterId]?.label || filterId);
-  replaceText("explore_filter", text, { allowHTML: true });
+  replaceText("explore_filter", text);
 }
 
 // Chart helpers

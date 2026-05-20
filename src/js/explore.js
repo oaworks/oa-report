@@ -611,7 +611,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 
     const { records, total: totalRecords } = await loadExploreRecords(itemData, query, size, pretty);
 
-    replaceText("explore_sort", getExploreSortLabel({ type, id, term, sort }), { allowHTML: true });
+    replaceText("explore_sort", getExploreSortLabel({ type, id, term, sort }));
     replaceText("report_sort_adjective", getExploreSortAdjective({ type, sort }));
     setExploreModeUI(type);
 
@@ -630,7 +630,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       populateTableBody(records, 'export_table_body', id, type);
       
       // Update any mentions of the explore data type with plural version of the ID
-      replaceText("explore_type", EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id), { allowHTML: true });
+      replaceText("explore_type", EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id));
     
       // Add functionalities to the table
       enableExploreTableScroll();
