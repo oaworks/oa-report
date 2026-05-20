@@ -778,14 +778,24 @@ async function fetchArticleBasedData(query, includes, sort, size) {
  * @param {number} params.shown - Number of records currently displayed.
  */
 function updateExploreCountSummary({ type, id, total, shown }) {
-  const summaryEl = document.getElementById("explore_count_summary");
-  if (!summaryEl) return;
+  const summaryElement = document.getElementById("explore_count_summary");
+  if (!summaryElement) return;
 
   const formatCount = (n) => makeNumberReadable(Number.isFinite(n) ? n : 0);
   const label = EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id);
   const sortLabel = document.querySelector(".explore_sort")?.textContent?.trim() || "published date";
 
-  summaryEl.innerHTML = `Showing <span class="font-semibold">${formatCount(shown)} of ${formatCount(total)}</span> <span class="lowercase">${label}</span> · Sorted by ${sortLabel}`;
+  summaryElement.replaceChildren();
+
+  const countElement = document.createElement("span");
+  countElement.className = "font-semibold";
+  countElement.textContent = `${formatCount(shown)} of ${formatCount(total)}`;
+
+  const labelElement = document.createElement("span");
+  labelElement.className = "lowercase";
+  labelElement.textContent = label;
+
+  summaryElement.append("Showing ", countElement, " ", labelElement, ` · Sorted by ${sortLabel}`);
 }
 
 /**
