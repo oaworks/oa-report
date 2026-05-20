@@ -19,7 +19,7 @@
     "@phosphor-icons/web": "^2.1.1",
     "@tryghost/content-api": "^1.12.8",
     "concurrently": "^9.2.1",
-    "dompurify": "3.4.2",
+    "dompurify": "3.4.5",
     "dotenv": "^17.4.2",
     "esbuild": "^0.28.0",
     "html-minifier-terser": "^7.2.0",
