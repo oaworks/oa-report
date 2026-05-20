@@ -7,6 +7,7 @@
 // Imports
 // =================================================
 
+import DOMPurify from "dompurify";
 import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, escapeQueryValue, normaliseFieldId, makeNumberReadable, announce } from "./utils.js";
 import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, FILTER_PILL_CLASSES, SEGMENTED_PILL_CLASSES } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
@@ -611,7 +612,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 
     const { records, total: totalRecords } = await loadExploreRecords(itemData, query, size, pretty);
 
-    replaceText("explore_sort", getExploreSortLabel({ type, id, term, sort }));
+    replaceText("explore_sort", getExploreSortLabel({ type, id, term, sort }), { allowHTML: true });
     replaceText("report_sort_adjective", getExploreSortAdjective({ type, sort }));
     setExploreModeUI(type);
 
@@ -630,7 +631,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       populateTableBody(records, 'export_table_body', id, type);
       
       // Update any mentions of the explore data type with plural version of the ID
-      replaceText("explore_type", EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id));
+      replaceText("explore_type", EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id), { allowHTML: true });
     
       // Add functionalities to the table
       enableExploreTableScroll();
@@ -793,7 +794,7 @@ function updateExploreCountSummary({ type, id, total, shown }) {
 
   const labelElement = document.createElement("span");
   labelElement.className = "lowercase";
-  labelElement.textContent = label;
+  labelElement.innerHTML = DOMPurify.sanitize(label);
 
   summaryElement.append("Showing ", countElement, " ", labelElement, ` · Sorted by ${sortLabel}`);
 }

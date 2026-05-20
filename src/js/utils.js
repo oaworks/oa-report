@@ -3,6 +3,7 @@
 // Utility/helper functions
 // ========================
 
+import DOMPurify from 'dompurify';
 import { WORKS_REPORT_BG_API_BASE_URL, READABLE_DATE_OPTIONS, USER_LOCALE, EXPLORE_FILTERS_LABELS } from './constants.js';
 
 // =================================================
@@ -86,9 +87,15 @@ export let dateRange, startDate, endDate, startYear, endYear;
  * 
  * @param {string} className - The class name indicating the elements whose text will be replaced.
  * @param {string} parameter - The content to set.
+ * @param {{ allowHTML?: boolean }} [options] - Set allowHTML to true only for trusted markup.
  */
-export function replaceText(className, parameter) {
+export function replaceText(className, parameter, { allowHTML = false } = {}) {
   document.querySelectorAll(`.${className}`).forEach(element => {
+    if (allowHTML) {
+      element.innerHTML = DOMPurify.sanitize(parameter ?? '');
+      return;
+    }
+
     element.textContent = parameter;
   });
 }
@@ -1049,7 +1056,7 @@ export function updateExploreFilterHeader(filterId) {
     filterId === 'is_paper'
       ? EXPLORE_FILTERS_LABELS[filterId].label
       : (EXPLORE_FILTERS_LABELS[filterId]?.label || filterId);
-  replaceText("explore_filter", text);
+  replaceText("explore_filter", text, { allowHTML: true });
 }
 
 // Chart helpers
