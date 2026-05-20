@@ -6,6 +6,7 @@ import {
   offset,
   shift,
 } from "@floating-ui/dom";
+import DOMPurify from "dompurify";
 
 /**
  * Shared tooltip/popover manager built on Floating UI.
@@ -70,7 +71,7 @@ function setContent(target, value, allowHTML) {
   }
 
   if (allowHTML) {
-    target.innerHTML = String(value ?? "");
+    target.innerHTML = DOMPurify.sanitize(String(value ?? ""));
     return;
   }
 
