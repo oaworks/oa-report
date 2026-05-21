@@ -6,6 +6,7 @@ import {
   offset,
   shift,
 } from "@floating-ui/dom";
+import DOMPurify from "dompurify";
 
 /**
  * Shared tooltip/popover manager built on Floating UI.
@@ -64,13 +65,8 @@ function getFallbackPlacements(placement) {
 function setContent(target, value, allowHTML) {
   target.replaceChildren();
 
-  if (value instanceof Node) {
-    target.appendChild(value);
-    return;
-  }
-
   if (allowHTML) {
-    target.innerHTML = String(value ?? "");
+    target.innerHTML = DOMPurify.sanitize(String(value ?? ""));
     return;
   }
 
@@ -358,7 +354,7 @@ function attachTriggers({
  * Creates a floating panel instance with shared tooltip/popover behavior.
  *
  * @param {HTMLElement} trigger
- * @param {string | Node} initialContent
+ * @param {string} initialContent
  * @param {Object} [overrides={}]
  * @returns {{
  *   reference: HTMLElement,
@@ -367,11 +363,12 @@ function attachTriggers({
  *   show: () => void,
  *   hide: (options?: { skipHook?: boolean }) => void,
  *   destroy: () => void,
- *   setContent: (value: string | Node) => void,
+ *   setContent: (value: string) => void,
  * }}
  */
 function createFloating(trigger, initialContent, overrides = {}) {
   const options = { ...DEFAULTS, ...overrides };
+  const contentElement = options.contentElement instanceof HTMLElement ? options.contentElement : null;
   const { popper, box, content, arrowEl } = createElements(options);
   const [showDelay, hideDelay] = parseDelay(options.delay);
   const appendTarget = resolveAppendTarget(options.appendTo, trigger);
@@ -421,6 +418,11 @@ function createFloating(trigger, initialContent, overrides = {}) {
   }
 
   function render() {
+    if (contentElement) {
+      content.replaceChildren(contentElement);
+      return;
+    }
+
     setContent(content, currentContent, options.allowHTML);
   }
 
@@ -567,26 +569,32 @@ export function initTooltipManager() {
  * Creates a click-open popover with the app's default behavior.
  *
  * @param {HTMLElement} trigger
- * @param {string | Node} content
+ * @param {string | HTMLElement} content
  * @param {Object} [options={}]
  * @returns {ReturnType<typeof createFloating>}
  */
 export function createPopover(trigger, content, options = {}) {
-  return createFloating(trigger, content, {
+  const popoverOptions = {
     interactive: true,
     placement: "bottom",
     trigger: "click",
     theme: "popover",
     arrow: false,
     ...options,
-  });
+  };
+
+  if (content instanceof HTMLElement) {
+    return createFloating(trigger, "", { ...popoverOptions, contentElement: content });
+  }
+
+  return createFloating(trigger, content, popoverOptions);
 }
 
 /**
  * Creates a hover/focus tooltip with the app's default behavior.
  *
  * @param {HTMLElement} trigger
- * @param {string | Node} content
+ * @param {string} content
  * @param {Object} [options={}]
  * @returns {ReturnType<typeof createFloating>}
  */

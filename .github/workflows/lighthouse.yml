@@ -18,6 +18,9 @@ on:
         required: false
         default: "false"
 
+permissions:
+  contents: read
+
 jobs:
   lighthouse:
     name: Run Lighthouse CI
@@ -29,15 +32,15 @@ jobs:
           - branch: dev
             urls: |
               https://dev.oa.report/
-              https://dev.oa.report/test/
+              https://dev.oa.report/gates-foundation
           - branch: staging
             urls: |
               https://staging.oa.report/
-              https://staging.oa.report/test/
+              https://staging.oa.report/gates-foundation
           - branch: main
             urls: |
               https://oa.report/
-              https://oa.report/test/
+              https://oa.report/gates-foundation/
 
     steps:
       - name: Checkout

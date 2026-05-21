@@ -7,8 +7,9 @@
 // Imports
 // =================================================
 
-import { displayNone, makeDateReadable, fetchGetData, fetchPostData, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, normaliseFieldId, makeNumberReadable, announce } from "./utils.js";
-import { ELEVENTY_API_ENDPOINT, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, ARTICLE_CARD_GROUPS, ARTICLE_TABLE_VISIBLE_FIELDS, TERMS_BREAKDOWN_GROUPS, TERMS_TABLE_VISIBLE_FIELDS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, FILTER_PILL_CLASSES, SEGMENTED_PILL_CLASSES } from "./constants.js";
+import DOMPurify from "dompurify";
+import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader, getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, escapeQueryValue, normaliseFieldId, makeNumberReadable, announce } from "./utils.js";
+import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, ARTICLE_CARD_GROUPS, ARTICLE_TABLE_VISIBLE_FIELDS, TERMS_BREAKDOWN_GROUPS, TERMS_TABLE_VISIBLE_FIELDS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, FILTER_PILL_CLASSES, SEGMENTED_PILL_CLASSES } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
@@ -182,8 +183,7 @@ export async function initDataExplore(org) {
   }
 
   try {
-    const response = await orgDataPromise; // Await the promise to resolve
-    orgData = response.data;
+    orgData = await orgDataPromise; // Await the promise to resolve
 
     // Check if explore data exists and is not empty
     if (orgData.hits.hits.length > 0 && orgData.hits.hits[0]._source.explore && orgData.hits.hits[0]._source.explore.length > 0) {
@@ -826,9 +826,9 @@ function formatBucket(bucket) {
  */
 async function fetchArticleBasedData(query, includes, sort, size) {
   const qParam = encodeURIComponent(`${dateRange}(${query})`); // Encode the query with date range
-  const getDataUrl = `https://${ELEVENTY_API_ENDPOINT}.oa.works/report/works/?q=${qParam}&size=${size}&include=${includes}&sort=${sort}`;
+  const getDataUrl = `${WORKS_REPORT_API_BASE_URL}works/?q=${qParam}&size=${size}&include=${includes}&sort=${sort}`;
 
-  const response = await fetchGetData(getDataUrl); // No need to generate POST request
+  const response = await fetchJson(getDataUrl); // No need to generate POST request
   const hits = response?.hits?.hits ?? [];
   const totalRaw = response?.hits?.total;
 
@@ -851,14 +851,24 @@ async function fetchArticleBasedData(query, includes, sort, size) {
  * @param {number} params.shown - Number of records currently displayed.
  */
 function updateExploreCountSummary({ type, id, total, shown }) {
-  const summaryEl = document.getElementById("explore_count_summary");
-  if (!summaryEl) return;
+  const summaryElement = document.getElementById("explore_count_summary");
+  if (!summaryElement) return;
 
   const formatCount = (n) => makeNumberReadable(Number.isFinite(n) ? n : 0);
   const label = EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id);
   const sortLabel = document.querySelector(".explore_sort")?.textContent?.trim() || "published date";
 
-  summaryEl.innerHTML = `Showing <span class="font-semibold">${formatCount(shown)} of ${formatCount(total)}</span> <span class="lowercase">${label}</span> · Sorted by ${sortLabel}`;
+  summaryElement.replaceChildren();
+
+  const countElement = document.createElement("span");
+  countElement.className = "font-semibold";
+  countElement.textContent = `${formatCount(shown)} of ${formatCount(total)}`;
+
+  const labelElement = document.createElement("span");
+  labelElement.className = "lowercase";
+  labelElement.innerHTML = DOMPurify.sanitize(label);
+
+  summaryElement.append("Showing ", countElement, " ", labelElement, ` · Sorted by ${sortLabel}`);
 }
 
 /**
@@ -2581,7 +2591,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
   cell.className = cssClass;
   const termBase = currentActiveExploreItemData?.term?.trim() || "";
   const termField = termBase
-    ? ((termBase === "published_year" && ELEVENTY_API_ENDPOINT === "api")
+    ? ((termBase === "published_year" && API_HOST_WORKS === "api")
       ? termBase.replace(/\.keyword$/i, "")
       : `${termBase.replace(/\.keyword$/i, "")}.keyword`)
     : "";
@@ -2600,7 +2610,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
       // Do not trigger filtering when clicking the external profile pill
       if (target && target.closest('.js-external-pill')) return;
 
-      const value = String(rawValue).replace(/"/g, '\\"');
+      const value = escapeQueryValue(rawValue);
       const clause = `${termField}:"${value}"`;
 
       const existingQuery = getDecodedUrlQuery() || '';
@@ -2646,7 +2656,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
   function addSelectedDotIfNeeded(wrapper, rawValue) {
     if (key !== 'key' || !termField) return;
 
-    const value = String(rawValue).replace(/"/g, '\\"');
+    const value = escapeQueryValue(rawValue);
     const clause = `${termField}:"${value}"`;
     const q = getDecodedUrlQuery() || '';
 
@@ -3219,8 +3229,7 @@ async function generateCSVLinkHref() {
   const csvLink = CSV_EXPORT_BASE + query + include + exportSort + orgKey;
 
   try {
-    const response = await axios.get(csvLink);
-    return response.data; // The CSV download link
+    return await fetchText(csvLink); // The CSV download link
   } catch (error) {
     console.error('Error fetching CSV export link: ', error);
     return ''; // Return an empty string in case of an error
@@ -3246,8 +3255,7 @@ function removeCSVExportLink() {
  * @returns {boolean} - Always returns false to prevent default form submission.
  */
 window.getExportLink = function() {
-  orgDataPromise.then(function (response) {
-    const orgData = response.data;
+  orgDataPromise.then(function (orgData) {
     const currentId = currentActiveExploreItemData.id;
 
     // Get the custom includes for the specific item based on the current active explore item ID

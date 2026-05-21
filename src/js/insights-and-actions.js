@@ -9,8 +9,8 @@
 // Imports
 // =================================================
 
-import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter } from './utils.js';
-import { API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS } from './constants.js';
+import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText } from './utils.js';
+import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS } from './constants.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { initActionTabs } from './actions.js';
 import { createPopover } from './tooltip-manager.js';
@@ -19,7 +19,7 @@ import { createPopover } from './tooltip-manager.js';
 const countQueryCache = new Map();
 const fetchCountQuery = (url) => {
   if (!countQueryCache.has(url)) {
-    countQueryCache.set(url, axios.get(url));
+    countQueryCache.set(url, fetchJson(url));
   }
   return countQueryCache.get(url);
 };
@@ -29,10 +29,10 @@ const fetchCountQuery = (url) => {
 // =================================================
 
 // Set report org index URL’s base path
-export const orgApiUrl = `${API_BASE_URL}orgs?q=objectID:%22${org}%22`;
+export const orgApiUrl = `${ORGS_REPORT_API_BASE_URL}orgs?q=objectID:%22${org}%22`;
 
 // Fetch and store organisational data in a constant
-export const orgDataPromise = axios.get(orgApiUrl);
+export const orgDataPromise = fetchJson(orgApiUrl);
 
 // =================================================
 // Auth state
@@ -131,12 +131,6 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
       const card = template.content.querySelector(`#${cardId}`);
       if (!card) return;
       const clonedCard = card.cloneNode(true);
-      if (cardId === "is_preprint") {
-        const titleEl = clonedCard.querySelector("h3 span");
-        if (titleEl) {
-          titleEl.textContent = section.sectionId === "insights_preprints" ? "Total" : "Preprint";
-        }
-      }
       // Show a placeholder when the API returns no data for a displayed card.
       if (!analysisEntry) {
         showUnavailableCard(clonedCard);
@@ -232,8 +226,7 @@ export function initInsightsAndActions(org) {
   let queryPrefix = `${QUERY_BASE}q=${dateRange}`,
       countQueryPrefix = `${COUNT_QUERY_BASE}q=${dateRange}`;
 
-  orgDataPromise.then(function (response) {
-    const orgData = response.data; // Storing the fetched data in a constant
+  orgDataPromise.then(function (orgData) {
     const analysis = orgData?.hits?.hits?.[0]?._source?.analysis || {};
     const objectID = orgData?.hits?.hits?.[0]?._source?.objectID;
     const showPreprints = analysis?.is_preprint?.show_on_web === true;
@@ -268,10 +261,9 @@ export function initInsightsAndActions(org) {
       }
   
       // if email is not undefined and there is an orgkey, try to decrypt the author’s email
-      if (email !== 'undefined' && loggedIn) {
-          axios.get(`${ARTICLE_EMAIL_BASE + doi}?${orgKey}`)
-              .then(function (response) {
-                  let authorEmail = response.data;
+      if (email !== 'undefined' && doi && doi !== 'N/A' && loggedIn) {
+          fetchText(`${ARTICLE_EMAIL_BASE}${encodeURIComponent(doi)}${orgKey ? `?${orgKey.slice(1)}` : ""}`)
+              .then(function (authorEmail) {
                   mailto = mailto.replaceAll("{email}", authorEmail);
                   window.open(`mailto:${mailto}`);
               })
@@ -423,9 +415,9 @@ export function initInsightsAndActions(org) {
 
           Promise.all([numPromise, denomPromise, totalArticlesPromise])
             .then(function ([numResult, denomResult, totalArticlesResult]) {
-              const numeratorCount     = numResult.data,
-                    denominatorCount   = denomResult.data,
-                    totalArticlesCount = totalArticlesResult.data;
+              const numeratorCount     = numResult,
+                    denominatorCount   = denomResult,
+                    totalArticlesCount = totalArticlesResult;
 
               if (denominatorCount) {
                 // Show "X of Y" in #articles_... with some styling
@@ -465,11 +457,11 @@ export function initInsightsAndActions(org) {
           numPromise
             .then(function (result) {
               // Insert value in #percent_{numerator}
-              percentageContents.textContent = makeNumberReadable(result.data);
+              percentageContents.textContent = makeNumberReadable(result);
 
               // Put smaller label "articles" (or denominatorText) in #articles_{numerator}
               figureDetails.innerHTML = `
-                <span class="font-semibold text-carnation-600">${makeNumberReadable(result.data)}</span>
+                <span class="font-semibold text-carnation-600">${makeNumberReadable(result)}</span>
                 <span class="text-neutral-900">
                   ${denominatorText} in total
                 </span>
@@ -517,7 +509,7 @@ export function initInsightsAndActions(org) {
         // Get total action (article) count for this strategy
         fetchCountQuery(countQuery)
           .then(function (countResponse) {
-            var count = parseFloat(countResponse.data);
+            var count = parseFloat(countResponse);
             
             // Show total number of actions in tab & above table
             tabCountContents.textContent = makeNumberReadable(count);
@@ -536,9 +528,9 @@ export function initInsightsAndActions(org) {
             else if (count > 0) {
 
               // Get full list of actions for this strategy 
-              axios.get(listQuery)
+              fetchJson(listQuery)
                 .then(function (listResponse) {
-                  var list = listResponse?.data?.hits?.hits || [],
+                  var list = listResponse?.hits?.hits || [],
                       rowsToRender = Math.min(count, list.length),
                       tableRows = ""; // Contents of the list to be displayed in the UI as a table
               
@@ -701,8 +693,7 @@ export function initInsightsAndActions(org) {
  * @param {string} id - The identifier for the action export link.
  */
 window.callGetActionExportLink = function(id) {
-  orgDataPromise.then(function (response) {
-      const orgData = response.data;
+  orgDataPromise.then(function (orgData) {
       getActionExportLink(id, orgData);
   }).catch(function (error) {
       console.error(`Error fetching orgData: ${error}`);
@@ -749,7 +740,7 @@ export function getActionExportLink(id, orgData) {
     : "";
 
   // Build final URL
-  const exportUrl = `${CSV_EXPORT_BASE}${query}${include}&sort=${strategySort}${email}`;
+  const exportUrl = `${CSV_EXPORT_BASE}${query}${include}&sort=${strategySort}${email}${orgKey}`;
 
   const xhr = new XMLHttpRequest();
   xhr.open("GET", exportUrl);
