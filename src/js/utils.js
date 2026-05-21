@@ -3,6 +3,7 @@
 // Utility/helper functions
 // ========================
 
+import DOMPurify from 'dompurify';
 import { WORKS_REPORT_BG_API_BASE_URL, READABLE_DATE_OPTIONS, USER_LOCALE, EXPLORE_FILTERS_LABELS } from './constants.js';
 
 // =================================================
@@ -90,7 +91,12 @@ export let dateRange, startDate, endDate, startYear, endYear;
  */
 export function replaceText(className, parameter, { allowHTML = false } = {}) {
   document.querySelectorAll(`.${className}`).forEach(element => {
-    element[allowHTML ? 'innerHTML' : 'textContent'] = parameter;
+    if (allowHTML) {
+      element.innerHTML = DOMPurify.sanitize(parameter ?? '');
+      return;
+    }
+
+    element.textContent = parameter;
   });
 }
 
@@ -1291,6 +1297,34 @@ export function andQueryStrings(base, extra) {
   const b = extra && extra.trim() ? `(${extra.trim()})` : '';
   if (a && b) return `${a} AND ${b}`;
   return a || b || '';
+}
+
+/**
+ * Escapes a value for safe use inside a quoted query string.
+ *
+ * @param {string|number} value
+ * @returns {string}
+ */
+export function escapeQueryValue(value) {
+  const stringValue = String(value ?? "");
+
+  return stringValue
+    .replace(/\\/g, '\\\\')
+    .replace(/"/g, '\\"');
+}
+
+/**
+ * Converts escaped quoted-query text back into its literal value.
+ *
+ * @param {string|number} value
+ * @returns {string}
+ */
+export function unescapeQueryValue(value) {
+  const stringValue = String(value ?? "");
+
+  return stringValue
+    .replace(/\\"/g, '"')
+    .replace(/\\\\/g, '\\');
 }
 
 /**

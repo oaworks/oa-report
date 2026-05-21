@@ -7,7 +7,8 @@
 // Imports
 // =================================================
 
-import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, normaliseFieldId, makeNumberReadable, announce } from "./utils.js";
+import DOMPurify from "dompurify";
+import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, escapeQueryValue, normaliseFieldId, makeNumberReadable, announce } from "./utils.js";
 import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, FILTER_PILL_CLASSES, SEGMENTED_PILL_CLASSES } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { toggleLoadingIndicator } from "./components.js";
@@ -778,14 +779,24 @@ async function fetchArticleBasedData(query, includes, sort, size) {
  * @param {number} params.shown - Number of records currently displayed.
  */
 function updateExploreCountSummary({ type, id, total, shown }) {
-  const summaryEl = document.getElementById("explore_count_summary");
-  if (!summaryEl) return;
+  const summaryElement = document.getElementById("explore_count_summary");
+  if (!summaryElement) return;
 
   const formatCount = (n) => makeNumberReadable(Number.isFinite(n) ? n : 0);
   const label = EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id);
   const sortLabel = document.querySelector(".explore_sort")?.textContent?.trim() || "published date";
 
-  summaryEl.innerHTML = `Showing <span class="font-semibold">${formatCount(shown)} of ${formatCount(total)}</span> <span class="lowercase">${label}</span> · Sorted by ${sortLabel}`;
+  summaryElement.replaceChildren();
+
+  const countElement = document.createElement("span");
+  countElement.className = "font-semibold";
+  countElement.textContent = `${formatCount(shown)} of ${formatCount(total)}`;
+
+  const labelElement = document.createElement("span");
+  labelElement.className = "lowercase";
+  labelElement.innerHTML = DOMPurify.sanitize(label);
+
+  summaryElement.append("Showing ", countElement, " ", labelElement, ` · Sorted by ${sortLabel}`);
 }
 
 /**
@@ -1096,7 +1107,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
       // Do not trigger filtering when clicking the external profile pill
       if (target && target.closest('.js-external-pill')) return;
 
-      const value = String(rawValue).replace(/"/g, '\\"');
+      const value = escapeQueryValue(rawValue);
       const clause = `${termField}:"${value}"`;
 
       const existingQuery = getDecodedUrlQuery() || '';
@@ -1142,7 +1153,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
   function addSelectedDotIfNeeded(wrapper, rawValue) {
     if (key !== 'key' || !termField) return;
 
-    const value = String(rawValue).replace(/"/g, '\\"');
+    const value = escapeQueryValue(rawValue);
     const clause = `${termField}:"${value}"`;
     const q = getDecodedUrlQuery() || '';
 
