@@ -44,6 +44,7 @@ export const FIRST_YEAR = 2015;
 const ALL_TIME_RANGE_PARAM = 'all';
 const CURRENT_YEAR_RANGE_PARAM = 'this-year';
 const ALL_TIME_START_DATE = createDate(1980, 0, 1);
+const OPEN_ENDED_RANGE_END_MODE = 'today';
 
 // =================================================
 // Helpers
@@ -59,20 +60,39 @@ function isQuarterTwoOrLater() {
 }
 
 /**
+ * Returns the effective end date for live or open-ended ranges.
+ *
+ * This currently resolves to today so future-dated records are excluded from
+ * "all time", "this year", and `start`-only custom views. If business rules
+ * change, update this helper.
+ *
+ * @returns {Date} The effective end date for live/open-ended ranges.
+ */
+function getLiveRangeEndDate() {
+  switch (OPEN_ENDED_RANGE_END_MODE) {
+  case 'today':
+  default:
+    return new Date();
+  }
+}
+
+/**
  * Syncs the hidden form inputs used by the custom date popover with the
  * currently active date range.
  *
  * @param {Date} startDate - The active range start date.
  * @param {Date} endDate - The active range end date.
+ * @param {boolean} [keepEndBlank=false] - Leave the hidden end input blank for
+ * open-ended ranges.
  * @returns {void}
  */
-function syncHiddenDateInputs(startDate, endDate) {
+function syncHiddenDateInputs(startDate, endDate, keepEndBlank = false) {
   const startDateInput = document.getElementById('start-date');
   const endDateInput = document.getElementById('end-date');
   if (!startDateInput || !endDateInput) return;
 
   startDateInput.value = startDate.toISOString().split('T')[0];
-  endDateInput.value = endDate.toISOString().split('T')[0];
+  endDateInput.value = keepEndBlank ? '' : endDate.toISOString().split('T')[0];
 }
 
 /**
@@ -89,13 +109,13 @@ function getSemanticRangeSelection(rangeParam) {
     return {
       buttonId: "all-time",
       startDate: ALL_TIME_START_DATE,
-      endDate: new Date()
+      endDate: getLiveRangeEndDate()
     };
   case CURRENT_YEAR_RANGE_PARAM:
     return {
       buttonId: `year-${currentDate.getFullYear()}`,
       startDate: createDate(currentDate.getFullYear(), 0, 1),
-      endDate: new Date()
+      endDate: getLiveRangeEndDate()
     };
   default:
     return null;
@@ -139,7 +159,7 @@ function getButtonSelection(buttonId, startDate, endDate) {
     return {
       rangeParam: ALL_TIME_RANGE_PARAM,
       startDate: ALL_TIME_START_DATE,
-      endDate: new Date()
+      endDate: getLiveRangeEndDate()
     };
   }
 
@@ -147,7 +167,7 @@ function getButtonSelection(buttonId, startDate, endDate) {
     return {
       rangeParam: CURRENT_YEAR_RANGE_PARAM,
       startDate: createDate(currentDate.getFullYear(), 0, 1),
-      endDate: new Date()
+      endDate: getLiveRangeEndDate()
     };
   }
 
@@ -189,7 +209,8 @@ function writeSelectionToURL({ rangeParam, startDate, endDate }) {
  * Precedence is:
  * 1. `range=all`, which is treated as a live preset from 1980-01-01 to today.
  * 2. `range=this-year`, which is treated as a live preset from 1 January of the current year to today.
- * 3. Explicit `start` and `end` query params, which are treated as fixed shared/bookmarked ranges.
+ * 3. Explicit `start` and optional `end` query params, where a missing `end`
+ * is treated as an open-ended range through today.
  * 4. The app's normal default year logic, depending on report type and current date.
  */
 export function setDefaultYear() {
@@ -206,16 +227,15 @@ export function setDefaultYear() {
   // Check if there’s a start and end date in the URL
   // TODO: handle start and end date parameters in a separate function and similar to how
   // the breakdown parameter is handled
-  if (startParam && endParam) {
-    // Attempt to load date range from URL parameters
-    // Interpret both dates as UTC noon to avoid timezone issues, see oaworks/discussion#2744
+  if (startParam) {
     const startDate = new Date(`${startParam}T12:00:00Z`);
-    const endDate = new Date(`${endParam}T12:00:00Z`);
+    const endDate = endParam
+      ? new Date(`${endParam}T12:00:00Z`)
+      : getLiveRangeEndDate();
 
-    // Replace the date range, if present, with the one from the URL
-    syncHiddenDateInputs(startDate, endDate);
-
-    let elementToUpdate;
+    if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+      return;
+    }
 
     const isWholeYear =
       startDate.getFullYear() === endDate.getFullYear() &&
@@ -224,17 +244,17 @@ export function setDefaultYear() {
       endDate.getMonth() === 11 &&
       endDate.getDate() === 31;
 
-    if (isWholeYear) {
-      elementToUpdate = document.getElementById(`year-${startDate.getFullYear()}`);
-    } else {
-      elementToUpdate = document.getElementById("date_range_form");
-    }
+    const elementToUpdate = isWholeYear
+      ? document.getElementById(`year-${startDate.getFullYear()}`)
+      : document.getElementById("date_range_form");
+
+    syncHiddenDateInputs(startDate, endDate, !endParam);
 
     // Trigger any additional logic needed to refresh the report and style the control
     handleYearButtonLogic(elementToUpdate, startDate, endDate);
 
     // If this is a year that lives in the More dropdown, update the visible label
-    if (elementToUpdate && elementToUpdate.classList.contains("js_dropdown_item")) {
+    if (isWholeYear && elementToUpdate && elementToUpdate.classList.contains("js_dropdown_item")) {
       const dropdownButton = document.querySelector(".js_dropdown_button");
       if (dropdownButton) {
         dropdownButton.innerHTML = `${startDate.getFullYear()} <span class='ml-1 text-xs' aria-hidden='true'>&#9660;</span>`;
@@ -249,7 +269,7 @@ export function setDefaultYear() {
       if (isQuarterTwoOrLater()) {
         // Switch to the current year for Q2 and beyond
         defaultStartDate = createDate(currentDate.getFullYear(), 0, 1); // Jan 1 of the current year
-        defaultEndDate = new Date(Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate())); // Today’s date
+        defaultEndDate = getLiveRangeEndDate();
         defaultButtonYear = currentDate.getFullYear();
       } else {
         // Default to the previous year
@@ -286,16 +306,12 @@ export function initDateManager() {
   const semanticSelection = getSemanticRangeSelection(range);
 
   // Process other parameters
-  const start = params.start;
-  const end = params.end;
   if (semanticSelection) {
     syncHiddenDateInputs(semanticSelection.startDate, semanticSelection.endDate);
-  } else if (start && end) {
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-
-    // Update the UI with these dates if the elements exist
-    syncHiddenDateInputs(startDate, endDate);
+  } else if (params.start) {
+    const startDate = new Date(params.start);
+    const endDate = params.end ? new Date(params.end) : getLiveRangeEndDate();
+    syncHiddenDateInputs(startDate, endDate, !params.end);
   }
 
   // Update the URL without losing parameters
@@ -633,11 +649,12 @@ function createDateRangeForm() {
     if (!sPop || !ePop) return;
 
     const startDate = new Date(sPop.value);
-    const endDate = new Date(ePop.value);
+    const hasEndDate = Boolean(ePop.value);
+    const endDate = hasEndDate ? new Date(ePop.value) : getLiveRangeEndDate();
 
     // Validate dates
-    if (!sPop.value || !ePop.value) {
-      console.log("Please select both start and end dates.");
+    if (!sPop.value) {
+      console.log("Please select a start date.");
       return;
     }
     if (startDate > endDate) {
@@ -645,16 +662,23 @@ function createDateRangeForm() {
       return;
     }
 
-    // Update URL with query parameters (YYYY-MM-DD via toISOString split as before)
+    // Update URL with query parameters, allowing `start`-only open-ended ranges.
     removeURLParams('range');
-    updateURLParams({
-      start: startDate.toISOString().split("T")[0],
-      end: endDate.toISOString().split("T")[0]
-    });
+    if (hasEndDate) {
+      updateURLParams({
+        start: startDate.toISOString().split("T")[0],
+        end: endDate.toISOString().split("T")[0]
+      });
+    } else {
+      removeURLParams('end');
+      updateURLParams({
+        start: startDate.toISOString().split("T")[0]
+      });
+    }
 
     // Sync hidden inputs so existing code sees them
     hiddenStart.value = sPop.value;
-    hiddenEnd.value = ePop.value;
+    hiddenEnd.value = hasEndDate ? ePop.value : '';
 
     // Build label and invoke existing handlers
     handleYearButtonLogic(
@@ -692,7 +716,7 @@ function createDateInput(id, label) {
   input.id = id;
   input.className = "mr-4 text-xs md:text-sm md:text-center uppercase bg-transparent"; 
   input.setAttribute('aria-label', label);
-  input.setAttribute('required', true);
+  input.required = label === "From";
   wrapper.appendChild(input);
 
   return wrapper;
