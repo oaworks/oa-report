@@ -225,8 +225,6 @@ export function setDefaultYear() {
   }
 
   // Check if there’s a start and end date in the URL
-  // TODO: handle start and end date parameters in a separate function and similar to how
-  // the breakdown parameter is handled
   if (startParam) {
     const startDate = new Date(`${startParam}T12:00:00Z`);
     const endDate = endParam
@@ -234,66 +232,71 @@ export function setDefaultYear() {
       : getLiveRangeEndDate();
 
     if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+      removeURLParams(['start', 'end']);
+    } else {
+      const isWholeYear =
+        startDate.getFullYear() === endDate.getFullYear() &&
+        startDate.getMonth() === 0 &&
+        startDate.getDate() === 1 &&
+        endDate.getMonth() === 11 &&
+        endDate.getDate() === 31;
+
+      const elementToUpdate = isWholeYear
+        ? document.getElementById(`year-${startDate.getFullYear()}`)
+        : document.getElementById("date_range_form");
+
+      syncHiddenDateInputs(startDate, endDate, !endParam);
+
+      // Trigger any additional logic needed to refresh the report and style the control
+      handleYearButtonLogic(elementToUpdate, startDate, endDate);
+
+      // If this is a year that lives in the More dropdown, update the visible label
+      if (isWholeYear && elementToUpdate && elementToUpdate.classList.contains("js_dropdown_item")) {
+        const dropdownButton = document.querySelector(".js_dropdown_button");
+        if (dropdownButton) {
+          dropdownButton.innerHTML = `${startDate.getFullYear()} <span class='ml-1 text-xs' aria-hidden='true'>&#9660;</span>`;
+        }
+      }
       return;
     }
+  }
 
-    const isWholeYear =
-      startDate.getFullYear() === endDate.getFullYear() &&
-      startDate.getMonth() === 0 &&
-      startDate.getDate() === 1 &&
-      endDate.getMonth() === 11 &&
-      endDate.getDate() === 31;
+  if (endParam) {
+    removeURLParams('end');
+  }
 
-    const elementToUpdate = isWholeYear
-      ? document.getElementById(`year-${startDate.getFullYear()}`)
-      : document.getElementById("date_range_form");
+  // Otherwise, set default dates or years based on user type
+  let defaultStartDate, defaultEndDate, defaultButtonYear;
 
-    syncHiddenDateInputs(startDate, endDate, !endParam);
-
-    // Trigger any additional logic needed to refresh the report and style the control
-    handleYearButtonLogic(elementToUpdate, startDate, endDate);
-
-    // If this is a year that lives in the More dropdown, update the visible label
-    if (isWholeYear && elementToUpdate && elementToUpdate.classList.contains("js_dropdown_item")) {
-      const dropdownButton = document.querySelector(".js_dropdown_button");
-      if (dropdownButton) {
-        dropdownButton.innerHTML = `${startDate.getFullYear()} <span class='ml-1 text-xs' aria-hidden='true'>&#9660;</span>`;
-      }
+  if (paid) {
+    // For paid users, use the full year unless it's Q2 or later
+    if (isQuarterTwoOrLater()) {
+      // Switch to the current year for Q2 and beyond
+      defaultStartDate = createDate(currentDate.getFullYear(), 0, 1); // Jan 1 of the current year
+      defaultEndDate = getLiveRangeEndDate();
+      defaultButtonYear = currentDate.getFullYear();
+    } else {
+      // Default to the previous year
+      defaultStartDate = createDate(DEFAULT_YEAR, 0, 1); // January 1st
+      defaultEndDate = createDate(DEFAULT_YEAR, 11, 31); // December 31st
+      defaultButtonYear = DEFAULT_YEAR;
     }
   } else {
-    // Otherwise, set default dates or years based on user type
-    let defaultStartDate, defaultEndDate, defaultButtonYear;
+    // For non-paid users, restrict the date range from Jan 1 to Jun 30 of DEFAULT_YEAR_FREE
+    defaultStartDate = createDate(DEFAULT_YEAR_FREE, 0, 1); // January 1st
+    defaultEndDate = createDate(DEFAULT_YEAR_FREE, 5, 30); // June 30th
+    defaultButtonYear = DEFAULT_YEAR_FREE;
+  }
 
-    if (paid) {
-      // For paid users, use the full year unless it's Q2 or later
-      if (isQuarterTwoOrLater()) {
-        // Switch to the current year for Q2 and beyond
-        defaultStartDate = createDate(currentDate.getFullYear(), 0, 1); // Jan 1 of the current year
-        defaultEndDate = getLiveRangeEndDate();
-        defaultButtonYear = currentDate.getFullYear();
-      } else {
-        // Default to the previous year
-        defaultStartDate = createDate(DEFAULT_YEAR, 0, 1); // January 1st
-        defaultEndDate = createDate(DEFAULT_YEAR, 11, 31); // December 31st
-        defaultButtonYear = DEFAULT_YEAR;
-      }
-    } else {
-      // For non-paid users, restrict the date range from Jan 1 to Jun 30 of DEFAULT_YEAR_FREE
-      defaultStartDate = createDate(DEFAULT_YEAR_FREE, 0, 1); // January 1st
-      defaultEndDate = createDate(DEFAULT_YEAR_FREE, 5, 30); // June 30th
-      defaultButtonYear = DEFAULT_YEAR_FREE;
-    }
+  replaceDateRange(defaultStartDate, defaultEndDate);
 
-    replaceDateRange(defaultStartDate, defaultEndDate);
-
-    // Select the default year button and style it as selected
-    const defaultButton = document.getElementById(`year-${defaultButtonYear}`);
-    if (defaultButton) {
-      handleYearButtonLogic(defaultButton, defaultStartDate, defaultEndDate);
-      updateYearButtonStyling(defaultButton);
-    } else {
-      handleYearButtonLogic(null, defaultStartDate, defaultEndDate);
-    }
+  // Select the default year button and style it as selected
+  const defaultButton = document.getElementById(`year-${defaultButtonYear}`);
+  if (defaultButton) {
+    handleYearButtonLogic(defaultButton, defaultStartDate, defaultEndDate);
+    updateYearButtonStyling(defaultButton);
+  } else {
+    handleYearButtonLogic(null, defaultStartDate, defaultEndDate);
   }
 }
 
@@ -311,7 +314,14 @@ export function initDateManager() {
   } else if (params.start) {
     const startDate = new Date(params.start);
     const endDate = params.end ? new Date(params.end) : getLiveRangeEndDate();
-    syncHiddenDateInputs(startDate, endDate, !params.end);
+    if (!Number.isNaN(startDate.getTime()) && !Number.isNaN(endDate.getTime())) {
+      syncHiddenDateInputs(startDate, endDate, !params.end);
+    } else {
+      delete params.start;
+      delete params.end;
+    }
+  } else if (params.end) {
+    delete params.end;
   }
 
   // Update the URL without losing parameters
