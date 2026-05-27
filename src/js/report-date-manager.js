@@ -587,15 +587,15 @@ function createDateRangeForm() {
 
   // Custom date range popover content
   const pop = document.createElement("div");
-  pop.className = "w-64 p-2 md:p-3 text-xs md:text-sm";
+  pop.className = "w-56 p-2 md:p-3 text-xs md:text-sm";
   pop.setAttribute("role", "dialog");
   pop.setAttribute("aria-labelledby", "js-date-range-form-title");
 
   // Create labelled inputs, but give them distinct IDs
   const startField = createDateInput("start-date-pop", "From");
   const endField = createDateInput("end-date-pop", "To");
-  startField.className = "mb-3 p-2 flex items-center justify-between";
-  endField.className = "mb-3 p-2 flex items-center justify-between";
+  startField.className = "mb-3";
+  endField.className = "mb-3";
   pop.appendChild(startField);
   pop.appendChild(endField);
 
@@ -730,13 +730,13 @@ function createDateInput(id, label) {
   const labelElement = document.createElement("label");
   labelElement.htmlFor = id;
   labelElement.textContent = label;
-  labelElement.className = "mr-3 font-semibold uppercase text-xs";
+  labelElement.className = "mb-1 block font-semibold uppercase text-xs";
   wrapper.appendChild(labelElement);
 
   const input = document.createElement("input");
   input.type = "date";
   input.id = id;
-  input.className = "mr-4 text-xs md:text-sm md:text-center uppercase bg-transparent"; 
+  input.className = "block w-full rounded-sm border border-neutral-300 bg-neutral-50 px-2 py-1 text-center font-mono text-xs text-neutral-900 md:text-sm";
   input.setAttribute('aria-label', label);
   input.required = label === "From";
   wrapper.appendChild(input);
