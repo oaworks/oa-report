@@ -189,7 +189,6 @@ export async function initDataExplore(org) {
     // Check if explore data exists and is not empty
     if (orgData.hits.hits.length > 0 && orgData.hits.hits[0]._source.explore && orgData.hits.hits[0]._source.explore.length > 0) {
       addExploreButtonsToDOM(orgData.hits.hits[0]._source.explore);
-      refreshFiltersBanner(); // respects logged-in state
       addRecordsShownSelectToDOM();
       handleDataDisplayToggle();
       enableExploreRowHighlighting();
@@ -393,6 +392,7 @@ export async function processExploreDataTable(button, itemData) {
 
   // Fetch and display data based on the current state of the data display style toggle
   await fetchAndDisplayExploreData(itemData, currentActiveExploreItemQuery, currentActiveExploreItemSize, currentActiveDataDisplayToggle);
+  refreshFiltersBanner();
 
   toggleLoadingIndicator(false, 'explore_loading'); // Once data is loaded, hide loading indicator
 }
@@ -1132,6 +1132,9 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
    */
   function attachTermClickFilter(rawValue) {
     if (key !== 'key' || !termField) return;
+
+    cell.setAttribute("data-filter-field", termField);
+    cell.setAttribute("data-filter-value", String(rawValue));
 
     cell.onclick = (event) => {
       const target = /** @type {HTMLElement} */ (event.target);

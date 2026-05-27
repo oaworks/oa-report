@@ -69,8 +69,29 @@ const shouldAlphaSortSuggestions = (field = "") =>
   Boolean(getSearchFilterField(field)?.alphaSort);
 
 const ORCID_ID_RE = /\b\d{4}-\d{4}-\d{4}-\d{3}[\dX]\b/i;
+const AUTHOR_ID_FIELD = "authorships.author.id.keyword";
 const AUTHOR_ORCID_FIELD = "authorships.author.orcid.keyword";
 const AUTHOR_NAME_FIELD = "authorships.author.display_name.keyword";
+
+function getRenderedFilterValueDisplay(field = "", value = "") {
+  const fieldKey = ensureKeywordField(field);
+  const targetValue = String(value || "").trim();
+  if (!fieldKey || !targetValue) return "";
+
+  const filterCell = Array.from(
+    document.querySelectorAll("#export_table [data-filter-field][data-filter-value]")
+  ).find((el) => (
+    el.getAttribute("data-filter-field") === fieldKey
+      && el.getAttribute("data-filter-value") === targetValue
+  ));
+
+  const labelEl = filterCell?.querySelector(".js-filter-target");
+  if (!labelEl) return "";
+
+  const labelClone = labelEl.cloneNode(true);
+  labelClone.querySelectorAll(".sr-only").forEach((el) => el.remove());
+  return labelClone.textContent?.trim() || "";
+}
 
 /**
  * Normalises one filter value for the given field.
@@ -114,6 +135,10 @@ function formatFilterValueForDisplay(field = "", value = "") {
   const trimmed = String(value || "").trim();
   if (!trimmed) return "";
 
+  if (ensureKeywordField(field) === AUTHOR_ID_FIELD) {
+    return getRenderedFilterValueDisplay(field, trimmed) || trimmed;
+  }
+
   if (normaliseSortField(field) !== "authorships.author.orcid") return trimmed;
 
   const match = trimmed.match(ORCID_ID_RE)?.[0];
@@ -133,7 +158,7 @@ function buildCombinedFilterQuery(fieldExpressions = new Map()) {
   for (const [field, clause] of fieldExpressions.entries()) {
     if (!clause) continue;
     const fieldKey = ensureKeywordField(field);
-    if (fieldKey === AUTHOR_ORCID_FIELD || fieldKey === AUTHOR_NAME_FIELD) {
+    if (fieldKey === AUTHOR_ID_FIELD || fieldKey === AUTHOR_ORCID_FIELD || fieldKey === AUTHOR_NAME_FIELD) {
       authorClauses.push(clause);
     } else {
       normalClauses.push(clause);
@@ -160,6 +185,9 @@ function labelFromFieldKey(rawKey) {
   if (!rawKey) return "";
 
   const baseKey = rawKey.replace(/\.keyword$/i, "");
+  if (baseKey === "authorships.author.id") {
+    return SEARCH_FILTER_FIELD_MAP.get("authorships.author.display_name")?.label || "Authors (Name)";
+  }
   const normalised = normaliseFieldId(baseKey);
   let label;
 
