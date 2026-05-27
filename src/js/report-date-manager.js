@@ -587,7 +587,7 @@ function createDateRangeForm() {
 
   // Custom date range popover content
   const pop = document.createElement("div");
-  pop.className = "p-2 md:p-3 text-xs md:text-sm";
+  pop.className = "w-64 p-2 md:p-3 text-xs md:text-sm";
   pop.setAttribute("role", "dialog");
   pop.setAttribute("aria-labelledby", "js-date-range-form-title");
 
@@ -607,6 +607,13 @@ function createDateRangeForm() {
   applyBtn.id = "js-date-range-apply-button";
   applyBtn.textContent = "Apply";
   pop.appendChild(applyBtn);
+
+  const validationHint = document.createElement("p");
+  validationHint.id = "js-date-range-hint";
+  validationHint.className = "mt-3 text-[11px] leading-4";
+  validationHint.setAttribute("aria-live", "polite");
+  validationHint.textContent = "";
+  pop.appendChild(validationHint);
 
   let tip;
   const popoverFlow = createPopoverKeyboardFlow({
@@ -634,6 +641,7 @@ function createDateRangeForm() {
   tip = createPopover(triggerBtn, pop, {
     onShow() {
       triggerBtn.setAttribute("aria-expanded", "true");
+      validationHint.textContent = "";
       // Prefill popover inputs from hidden values (if any)
       const s = /** @type {HTMLInputElement|null} */ (document.getElementById("start-date"));
       const e = /** @type {HTMLInputElement|null} */ (document.getElementById("end-date"));
@@ -664,13 +672,17 @@ function createDateRangeForm() {
 
     // Validate dates
     if (!sPop.value) {
-      console.log("Please select a start date.");
+      validationHint.textContent = "Choose a start date.";
       return;
     }
     if (startDate > endDate) {
-      console.log("Start date must be before end date.");
+      validationHint.textContent = hasEndDate
+        ? "Start date must be on or before the end date."
+        : "Start date cannot be in the future.";
       return;
     }
+
+    validationHint.textContent = "";
 
     // Update URL with query parameters, allowing `start`-only open-ended ranges.
     removeURLParams('range');
