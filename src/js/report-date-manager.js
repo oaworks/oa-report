@@ -696,7 +696,7 @@ function createDateRangeForm() {
       startDate,
       endDate
     );
-    updateYearButtonStyling(form, true);
+    updateYearButtonStyling(form);
 
     // Close the popover
     if (tip) tip.hide();
