@@ -152,17 +152,29 @@ export function changeDays(days, date) {
 
 /**
  * Formats a number into a human-readable string or a currency format using the user’s locale.
- * If `isCurrency` is true, the number is formatted in the currency style using US dollars. 
+ * If `isCurrency` is true, the number is formatted in the currency style using US dollars.
  *
  * @param {number} number - The number to be formatted.
  * @param {boolean} [isCurrency=false] - Flag indicating whether to format the number as currency.
+ * @param {number|null} [maximumFractionDigits=null] - Optional decimal places to display.
  * @returns {string} The formatted number as a string.
  */
-export function makeNumberReadable(number, isCurrency = false) {
+export function makeNumberReadable(number, isCurrency = false, maximumFractionDigits = null) {
+  const formatOptions = maximumFractionDigits === null
+    ? {}
+    : {
+      minimumFractionDigits: maximumFractionDigits,
+      maximumFractionDigits
+    };
+
   if (isCurrency) {
-    return new Intl.NumberFormat(USER_LOCALE, { style: 'currency', currency: 'USD' }).format(number);
+    return new Intl.NumberFormat(USER_LOCALE, {
+      style: 'currency',
+      currency: 'USD',
+      ...formatOptions
+    }).format(number);
   }
-  return number.toLocaleString(USER_LOCALE);
+  return number.toLocaleString(USER_LOCALE, formatOptions);
 }
 
 /**
@@ -492,7 +504,18 @@ export function prettifyRecords(records, pretty = true) {
         } else {
           // Include all fields except percentages in raw mode
           if (!key.endsWith('_pct')) {
-            formattedRecord[key] = record[key];
+            const numericValue = parseFloat(record[key]);
+            const shouldForceDecimalPlaces = key.startsWith('mean_') || key.startsWith('median_') || key.endsWith('_amount');
+
+            if (Number.isFinite(numericValue)) {
+              formattedRecord[key] = makeNumberReadable(
+                numericValue,
+                false,
+                shouldForceDecimalPlaces ? 2 : null
+              );
+            } else {
+              formattedRecord[key] = record[key];
+            }
           }
         }
       }
