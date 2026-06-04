@@ -498,7 +498,7 @@ export function prettifyRecords(records, pretty = true) {
             formattedRecord[key] = Number.isFinite(numericValue)
               ? makeNumberReadable(numericValue, isCurrency)
               : "N/A";
-          } else if (!key.endsWith('_pct')) {
+          } else if (!key.endsWith('_pct') && typeof record[key] !== 'number') {
             formattedRecord[key] = record[key];
           }
         } else {
