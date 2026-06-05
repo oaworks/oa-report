@@ -98,6 +98,15 @@ export let currentActiveDataDisplayToggle = true;
  */
 let exploreItemDataById = new Map();
 
+function isOrcidUrl(value) {
+  try {
+    const host = new URL(value).hostname.toLowerCase();
+    return host === 'orcid.org' || host.endsWith('.orcid.org');
+  } catch {
+    return false;
+  }
+}
+
 const FILTER_TARGET_BUTTON_CLASS = 'js-filter-target cursor-pointer hover:underline text-left focus:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm';
 const EXTERNAL_LINK_PILL_CLASS = 'ml-2 bg-neutral-200 text-neutral-900 text-xs px-2 py-0.5 rounded-full whitespace-nowrap hover:bg-carnation-200 js-external-pill';
 
@@ -1291,7 +1300,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
       case 'janelia_lab_head':
       case 'investigator':
       case 'freeman_hrabowski_scholar':
-        if (typeof rawValue === 'string' && rawValue.includes('orcid.org')) {
+        if (typeof rawValue === 'string' && isOrcidUrl(rawValue)) {
           labelWrapper = createFilterTargetButton(displayValue);
           cell.appendChild(labelWrapper);
           cell.appendChild(createExternalPill(rawValue, 'ORCID ↗'));
@@ -1302,12 +1311,12 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
 
       case 'author':
         labelWrapper = createFilterTargetButton(displayValue);
-        if (authorOrcid) {
+        if (typeof authorOrcid === 'string' && isOrcidUrl(authorOrcid)) {
           cell.appendChild(labelWrapper);
           cell.appendChild(createExternalPill(authorOrcid, 'ORCID ↗'));
           break;
         }
-        if (typeof rawValue === 'string' && rawValue.includes('orcid.org')) {
+        if (typeof rawValue === 'string' && isOrcidUrl(rawValue)) {
           cell.appendChild(labelWrapper);
           cell.appendChild(createExternalPill(rawValue, 'ORCID ↗'));
           break;
@@ -1375,7 +1384,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
   // Non-`key` cells, or cases outside terms tables
 
   // Render author metadata directly from the API response when present.
-  if (exploreItemId === 'author' && typeof content === 'string' && content.includes('orcid.org')) {
+  if (exploreItemId === 'author' && typeof content === 'string' && isOrcidUrl(content)) {
     const label = document.createElement('span');
     label.textContent = displayName || authorOrcid || content;
     cell.appendChild(label);
