@@ -742,7 +742,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "is_financial_disclosure": {
     label: "Financial disclosure",
-    info: "True if this work's funding statement is actually a financial disclosure"
+    info: "<code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if this work's funding statement is actually a financial disclosure"
   },
   "removed_from_report": {
     label: "Removed from OA.Report",
@@ -762,7 +762,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "has_epmc_fulltext": {
     label: "Europe PMC full text",
-    info: "True if the article has full text available in Europe PMC"
+    info: "<code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article has full text available in Europe PMC"
   },
   "epmc_licence": {
     label: "Europe PMC license",
