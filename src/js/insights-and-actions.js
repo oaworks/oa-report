@@ -9,12 +9,13 @@
 // Imports
 // =================================================
 
-import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText } from './utils.js';
+import { dateRange, startYear, endYear, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings } from './utils.js';
 import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS, resolveFieldDefinition } from './constants.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { initActionTabs } from './actions.js';
 import { createPopover } from './tooltip-manager.js';
 import { buildTooltipContent, buildDefinitionHelpHtml, injectOrgFields } from './tooltip-content.js';
+import { getAggregatedDataQuery, formatAggregationBucket } from './aggregated-data-query.js';
 
 // Cache identical count queries so we only hit the API once per unique URL
 const countQueryCache = new Map();
@@ -24,6 +25,70 @@ const fetchCountQuery = (url) => {
   }
   return countQueryCache.get(url);
 };
+
+/**
+ * Cache of Explore-based aggregate requests keyed by org, filter, query, and
+ * active report date range.
+ *
+ * @type {Map<string, Promise<Object|null>>}
+ */
+const insightAggregateCache = new Map();
+
+/**
+ * Fetches the Explore-style aggregate metrics for one Insights filter using the
+ * current report date range and any active top-level filters.
+ *
+ * Returns the flattened `all_values` aggregate, which contains the raw counts
+ * used by the Explore Years breakdown's summary row.
+ *
+ * @param {Object} orgData - Organisation record from the org index response.
+ * @param {string} filterId - Analysis filter ID, such as `is_paper`.
+ * @returns {Promise<Object|null>} Flattened aggregate metrics, or null when the
+ * filter cannot be resolved.
+ */
+function fetchExploreInsightMetrics(orgData, filterId) {
+  const suffix = orgData?.hits?.hits?.[0]?._source?.key_suffix;
+  const analysis = orgData?.hits?.hits?.[0]?._source?.analysis || {};
+  const filterQuery = analysis?.[filterId]?.query;
+
+  if (!suffix || !filterQuery) {
+    return Promise.resolve(null);
+  }
+
+  const decodedQuery = andQueryStrings(
+    decodeAndReplaceUrlEncodedChars(filterQuery),
+    getDecodedUrlQuery()
+  );
+  const cacheKey = JSON.stringify({
+    suffix,
+    filterId,
+    query: decodedQuery,
+    startYear,
+    endYear
+  });
+
+  if (!insightAggregateCache.has(cacheKey)) {
+    const postData = getAggregatedDataQuery(
+      suffix,
+      decodedQuery,
+      'published_year',
+      startYear,
+      endYear,
+      1,
+      '_count'
+    );
+
+    insightAggregateCache.set(
+      cacheKey,
+      fetchPostData(postData).then((response) => {
+        const allValues = response?.aggregations?.all_values;
+        return allValues ? formatAggregationBucket(allValues, 'published_year') : null;
+      })
+    );
+  }
+
+  return insightAggregateCache.get(cacheKey);
+}
 
 const INSIGHT_CARD_BY_NUMERATOR = new Map(INSIGHTS_CARDS.map((card) => [card.numerator, card]));
 const INSIGHT_TOOLTIP_HEADING = 'Definition';
