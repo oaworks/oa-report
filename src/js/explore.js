@@ -15,7 +15,7 @@ import { toggleLoadingIndicator } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
 import { renderActiveFiltersBanner } from './report-filter-manager.js';
 import { orgDataPromise, initInsightsAndActions } from './insights-and-actions.js';
-import { AUTHOR_BREAKDOWN_TERM, getAggregatedDataQuery, getAuthorBreakdownKey } from './aggregated-data-query.js';
+import { AUTHOR_BREAKDOWN_TERM, getAggregatedDataQuery, formatAggregationBucket } from './aggregated-data-query.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { createTooltip } from './tooltip-manager.js';
 import { buildDefinitionTooltipContent } from './tooltip-content.js';
@@ -701,13 +701,13 @@ async function fetchTermBasedData(suffix, query, term, sort, size) {
   const totalUniqueTerms = response?.aggregations?.values_total?.value ?? 0;
 
   if (response && response.aggregations && response.aggregations.values && response.aggregations.values.buckets) {
-    buckets = response.aggregations.values.buckets.map(bucket => formatBucket(bucket, term));
+    buckets = response.aggregations.values.buckets.map(bucket => formatAggregationBucket(bucket, term));
   }
 
   // Process 'all_values' and 'no_values' similarly using the helper function
   ['all_values', 'no_values'].forEach(aggregationKey => {
     if (response && response.aggregations && response.aggregations[aggregationKey]) {
-      const additionalBucket = {'key': aggregationKey, ...formatBucket(response.aggregations[aggregationKey], term)};
+      const additionalBucket = {'key': aggregationKey, ...formatAggregationBucket(response.aggregations[aggregationKey], term)};
       buckets.push(additionalBucket);
     }
   });
@@ -724,39 +724,6 @@ async function fetchTermBasedData(suffix, query, term, sort, size) {
   return { records: buckets, total: totalUniqueTerms };
 }
 
-
-/**
- * Formats a single bucket or aggregation result for a term-based table.
- * 
- * @param {Object} bucket - The raw bucket data from the API response.
- * @param {string} [term=""] - The field used for the current term breakdown.
- * @returns {Object} The formatted bucket data.
- */
-function formatBucket(bucket, term = "") {
-  const formattedBucket = {};
-  Object.keys(bucket).forEach(key => {
-    if (key.startsWith("median_")) {
-      formattedBucket[key] = bucket[key].values["50.0"];
-    } else if (key === "top_author_record") {
-      const hit = bucket[key]?.hits?.hits?.[0]?._source;
-      const authorships = Array.isArray(hit?.authorships) ? hit.authorships : [];
-      const matchingAuthorship = authorships.find((authorship) => {
-        return term === AUTHOR_BREAKDOWN_TERM
-          && getAuthorBreakdownKey(authorship?.author) === bucket.key;
-      });
-
-      formattedBucket.display_name = matchingAuthorship?.author?.display_name || null;
-      formattedBucket.orcid = matchingAuthorship?.author?.orcid || null;
-    } else if (bucket[key].doc_count !== undefined) {
-      formattedBucket[key] = bucket[key].doc_count;
-    } else if (bucket[key].value !== undefined) {
-      formattedBucket[key] = bucket[key].value;
-    } else {
-      formattedBucket[key] = bucket[key];
-    }
-  });
-  return formattedBucket;
-}
 
 /**
  * Fetches article-based data using provided parameters.

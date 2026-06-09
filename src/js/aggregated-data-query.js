@@ -34,6 +34,41 @@ export function getAuthorBreakdownKey(author = {}) {
 }
 
 /**
+ * Formats one aggregation bucket or summary object into plain values.
+ *
+ * @param {Object} bucket - Raw aggregation bucket or summary object.
+ * @param {string} [term=""] - Active term field for author metadata handling.
+ * @returns {Object} Flattened aggregation values.
+ */
+export function formatAggregationBucket(bucket, term = "") {
+  const formattedBucket = {};
+
+  Object.keys(bucket).forEach((key) => {
+    if (key.startsWith("median_")) {
+      formattedBucket[key] = bucket[key].values["50.0"];
+    } else if (key === "top_author_record") {
+      const hit = bucket[key]?.hits?.hits?.[0]?._source;
+      const authorships = Array.isArray(hit?.authorships) ? hit.authorships : [];
+      const matchingAuthorship = authorships.find((authorship) => {
+        return term === AUTHOR_BREAKDOWN_TERM
+          && getAuthorBreakdownKey(authorship?.author) === bucket.key;
+      });
+
+      formattedBucket.display_name = matchingAuthorship?.author?.display_name || null;
+      formattedBucket.orcid = matchingAuthorship?.author?.orcid || null;
+    } else if (bucket[key].doc_count !== undefined) {
+      formattedBucket[key] = bucket[key].doc_count;
+    } else if (bucket[key].value !== undefined) {
+      formattedBucket[key] = bucket[key].value;
+    } else {
+      formattedBucket[key] = bucket[key];
+    }
+  });
+
+  return formattedBucket;
+}
+
+/**
  * Generates the aggregation buckets template for Elasticsearch queries.
  * Returns the common aggregations used in the Data Explore breakdowns,
  * based on the provided suffix (identifier for an organisation).
