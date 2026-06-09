@@ -162,6 +162,30 @@ export const INSIGHT_EXPLORE_MAPPINGS = {
     ],
     totalMetric: "doc_count"
   },
+  has_data: {
+    exploreFilter: "is_paper",
+    numeratorMetric: "with_data",
+    denominatorMetric: "doc_count",
+    totalMetric: "doc_count"
+  },
+  has_open_data: {
+    exploreFilter: "is_paper",
+    numeratorMetric: "with_open_data",
+    denominatorMetric: "with_data",
+    totalMetric: "doc_count"
+  },
+  has_code: {
+    exploreFilter: "is_paper",
+    numeratorMetric: "with_code",
+    denominatorMetric: "doc_count",
+    totalMetric: "doc_count"
+  },
+  has_open_code: {
+    exploreFilter: "is_paper",
+    numeratorMetric: "with_open_code",
+    denominatorMetric: "with_code",
+    totalMetric: "doc_count"
+  },
   is_preprint: {
     exploreFilter: "is_preprint",
     numeratorMetric: "doc_count",
