@@ -10,7 +10,7 @@
 // =================================================
 
 import { dateRange, startYear, endYear, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings } from './utils.js';
-import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS, resolveFieldDefinition } from './constants.js';
+import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, INSIGHT_EXPLORE_MAPPINGS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS, resolveFieldDefinition } from './constants.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { initActionTabs } from './actions.js';
 import { createPopover } from './tooltip-manager.js';
@@ -503,6 +503,38 @@ export function initInsightsAndActions(org) {
         tooltipTarget.setAttribute('title', 'More information on this metric');
         tooltipTarget.setAttribute('aria-haspopup', 'dialog');
 
+        // Total-only cards can read directly from Explore's all-values aggregate.
+        const exploreMapping = !denominator ? INSIGHT_EXPLORE_MAPPINGS[numerator] : null;
+
+        if (exploreMapping) {
+          // Reuse the same aggregate source as Explore Years for matching totals.
+          fetchExploreInsightMetrics(orgData, exploreMapping.exploreFilter)
+            .then((metrics) => {
+              const totalCount = metrics?.[exploreMapping.numeratorMetric];
+
+              if (!Number.isFinite(totalCount)) {
+                showUnavailableCard(cardContents);
+                return;
+              }
+
+              percentageContents.textContent = makeNumberReadable(totalCount);
+              figureDetails.innerHTML = `
+                <span id="details_${numerator}" class="font-semibold text-carnation-600">${makeNumberReadable(totalCount)}</span>
+                <span class="text-neutral-900">
+                  ${denominatorText} in total
+                </span>
+              `;
+            })
+            .catch(function (error) {
+              console.log(`${numerator} aggregate error: ${error}`);
+              showUnavailableCard(cardContents);
+            })
+            .finally(updateTooltipContent);
+
+          changeOpacity(contentID);
+          return;
+        }
+
         // Get numerator’s count query
         let numPromise = fetchCountQuery(countQueryPrefix + buildEncodedQueryWithUrlFilter(analysisEntry.query));
 
@@ -549,7 +581,7 @@ export function initInsightsAndActions(org) {
                 figureDetails.innerHTML = `
                   <span id="details_${numerator}" class="font-semibold text-carnation-600">${makeNumberReadable(numeratorCount)}</span>
                   <span class="text-neutral-900">
-                    of ${makeNumberReadable(denominatorCount)} ${denominatorText}
+                    of <span id="denominator_${numerator}">${makeNumberReadable(denominatorCount)}</span> ${denominatorText}
                   </span>
                 `;
 
@@ -586,7 +618,7 @@ export function initInsightsAndActions(org) {
 
               // Put smaller label "articles" (or denominatorText) in #articles_{numerator}
               figureDetails.innerHTML = `
-                <span class="font-semibold text-carnation-600">${makeNumberReadable(result)}</span>
+                <span id="details_${numerator}" class="font-semibold text-carnation-600">${makeNumberReadable(result)}</span>
                 <span class="text-neutral-900">
                   ${denominatorText} in total
                 </span>
