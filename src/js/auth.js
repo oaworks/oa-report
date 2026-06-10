@@ -174,6 +174,7 @@ export function applyAuthVisibility({
   hideWhenLoggedIn = [],
   hideWhenLoggedOut = []
 } = {}) {
+  document.documentElement.classList.toggle('has-orgkey', loggedIn);
   if (loggedIn) {
     showWhenLoggedIn.forEach(removeDisplayStyle);
     hideWhenLoggedIn.forEach(displayNone);

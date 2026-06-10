@@ -3,7 +3,8 @@
 // Utility/helper functions
 // ========================
 
-import { ELEVENTY_API_ENDPOINT, READABLE_DATE_OPTIONS, USER_LOCALE, EXPLORE_FILTERS_LABELS } from './constants.js';
+import DOMPurify from 'dompurify';
+import { WORKS_REPORT_BG_API_BASE_URL, READABLE_DATE_OPTIONS, USER_LOCALE, EXPLORE_FILTERS_LABELS } from './constants.js';
 
 // =================================================
 // Network and caching helpers
@@ -22,29 +23,60 @@ export function isCacheExpired(timestamp, expiryDuration = 86400000) { // 24 hou
 }
 
 /**
- * Fetches data from the OA Works API using Axios with a POST request.
+ * Performs a fetch request and parses the response body as JSON.
+ *
+ * @param {string} url - The URL to request.
+ * @param {RequestInit} [options={}] - Fetch options such as method, headers, and body.
+ * @returns {Promise<*>} Parsed JSON response body.
+ * @throws {Error} Throws if the response status is not successful.
+ */
+export async function fetchJson(url, options = {}) {
+  const response = await fetch(url, options);
+
+  if (!response.ok) {
+    throw new Error(`Request failed with status ${response.status}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * Performs a fetch request and parses the response body as text.
+ *
+ * @param {string} url - The URL to request.
+ * @param {RequestInit} [options={}] - Fetch options such as method and headers.
+ * @returns {Promise<string>} Response body as text.
+ * @throws {Error} Throws if the response status is not successful.
+ */
+export async function fetchText(url, options = {}) {
+  const response = await fetch(url, options);
+
+  if (!response.ok) {
+    throw new Error(`Request failed with status ${response.status}`);
+  }
+
+  return response.text();
+}
+
+/**
+ * Fetches data from the OA Works API using a POST request.
  * 
  * @param {Object} postData - The data to be sent in the POST request.
  * @returns {Object|null} The response data from the API, or null if an error occurs.
  */
 export async function fetchPostData(postData) {
   try {
-    const response = await axios.post(`https://bg.${ELEVENTY_API_ENDPOINT}.oa.works/report/works`, postData);
-    return response.data; 
+    return await fetchJson(`${WORKS_REPORT_BG_API_BASE_URL}works`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(postData)
+    });
   } catch (error) {
     console.error("There was a problem with the POST request: ", error.message);
     return null; 
   }
-}
-
-/**
- * Fetches JSON data from the given URL using Axios with a GET request.
- *
- * @param {string} url - The URL to fetch data from.
- * @returns {Promise<Object>} A promise that resolves to the JSON data.
- */
-export async function fetchGetData(url) {
-  return axios.get(url).then(response => response.data);
 }
 
 // Define external variables used for managing the date range and yearly navigation
@@ -59,7 +91,12 @@ export let dateRange, startDate, endDate, startYear, endYear;
  */
 export function replaceText(className, parameter, { allowHTML = false } = {}) {
   document.querySelectorAll(`.${className}`).forEach(element => {
-    element[allowHTML ? 'innerHTML' : 'textContent'] = parameter;
+    if (allowHTML) {
+      element.innerHTML = DOMPurify.sanitize(parameter ?? '');
+      return;
+    }
+
+    element.textContent = parameter;
   });
 }
 
@@ -115,17 +152,29 @@ export function changeDays(days, date) {
 
 /**
  * Formats a number into a human-readable string or a currency format using the user’s locale.
- * If `isCurrency` is true, the number is formatted in the currency style using US dollars. 
+ * If `isCurrency` is true, the number is formatted in the currency style using US dollars.
  *
  * @param {number} number - The number to be formatted.
  * @param {boolean} [isCurrency=false] - Flag indicating whether to format the number as currency.
+ * @param {number|null} [maximumFractionDigits=null] - Optional decimal places to display.
  * @returns {string} The formatted number as a string.
  */
-export function makeNumberReadable(number, isCurrency = false) {
+export function makeNumberReadable(number, isCurrency = false, maximumFractionDigits = null) {
+  const formatOptions = maximumFractionDigits === null
+    ? {}
+    : {
+      minimumFractionDigits: maximumFractionDigits,
+      maximumFractionDigits
+    };
+
   if (isCurrency) {
-    return new Intl.NumberFormat(USER_LOCALE, { style: 'currency', currency: 'USD' }).format(number);
+    return new Intl.NumberFormat(USER_LOCALE, {
+      style: 'currency',
+      currency: 'USD',
+      ...formatOptions
+    }).format(number);
   }
-  return number.toLocaleString(USER_LOCALE);
+  return number.toLocaleString(USER_LOCALE, formatOptions);
 }
 
 /**
@@ -187,6 +236,43 @@ export function createDate(year, month, day) {
 }
 
 // DOM helpers
+
+/**
+ * Announces dynamic UI updates to assistive technology via a shared live region.
+ *
+ * @param {string} message - Message to announce.
+ */
+export function announce(message) {
+  const text = String(message || "").trim();
+  if (!text) return;
+
+  const id = "oar-live-region";
+  let liveRegion = document.getElementById(id);
+
+  if (!liveRegion) {
+    liveRegion = document.createElement("div");
+    liveRegion.id = id;
+    liveRegion.setAttribute("aria-live", "polite");
+    liveRegion.setAttribute("aria-atomic", "true");
+    liveRegion.setAttribute("role", "status");
+    liveRegion.style.position = "absolute";
+    liveRegion.style.width = "1px";
+    liveRegion.style.height = "1px";
+    liveRegion.style.margin = "-1px";
+    liveRegion.style.padding = "0";
+    liveRegion.style.border = "0";
+    liveRegion.style.overflow = "hidden";
+    liveRegion.style.clip = "rect(0 0 0 0)";
+    liveRegion.style.clipPath = "inset(50%)";
+    liveRegion.style.whiteSpace = "nowrap";
+    document.body.appendChild(liveRegion);
+  }
+
+  liveRegion.textContent = "";
+  window.setTimeout(() => {
+    liveRegion.textContent = text;
+  }, 30);
+}
 
 /**
  * Hides an HTML element by setting its display style to 'none'.
@@ -319,7 +405,11 @@ export function reorderTermRecords(records, includes) {
   if (records.some(record => record.hasOwnProperty('key'))) firstKeys.push('key');
   if (records.some(record => record.hasOwnProperty('doc_count'))) firstKeys.push('doc_count');
 
-  const keysOrder = firstKeys.concat(includes.split(',').filter(key => !firstKeys.includes(key) && key !== 'doc_count'));
+  const includeKeys = includes.split(',').filter(key => !firstKeys.includes(key) && key !== 'doc_count');
+  const metadataKeys = Array.from(new Set(
+    records.flatMap((record) => Object.keys(record))
+  )).filter((key) => !firstKeys.includes(key) && !includeKeys.includes(key) && key !== 'doc_count');
+  const keysOrder = firstKeys.concat(includeKeys, metadataKeys);
 
   return records.map(record => {
     const reorderedRecord = {};
@@ -400,15 +490,32 @@ export function prettifyRecords(records, pretty = true) {
           if (key.endsWith('_pct')) {
             formattedRecord[key] = Math.round(parseFloat(record[key])).toString() + '%';
           }
-          // Format numbers starting with 'total_', 'median_', or 'mean_' or ending with '_amount'
+          // Format numeric aggregates, falling back to "N/A" when the source
+          // value is missing or invalid so term tables do not render as NaN.
           if (key.startsWith('total_') || key.startsWith('median_') || key.startsWith('mean_') || key.endsWith('_amount')) {
             const isCurrency = key.endsWith('_amount');
-            formattedRecord[key] = makeNumberReadable(parseFloat(record[key]), isCurrency);
+            const numericValue = parseFloat(record[key]);
+            formattedRecord[key] = Number.isFinite(numericValue)
+              ? makeNumberReadable(numericValue, isCurrency)
+              : "N/A";
+          } else if (!key.endsWith('_pct') && typeof record[key] !== 'number') {
+            formattedRecord[key] = record[key];
           }
         } else {
           // Include all fields except percentages in raw mode
           if (!key.endsWith('_pct')) {
-            formattedRecord[key] = record[key];
+            const numericValue = parseFloat(record[key]);
+            const shouldForceDecimalPlaces = key.startsWith('mean_') || key.startsWith('median_') || key.endsWith('_amount');
+
+            if (Number.isFinite(numericValue)) {
+              formattedRecord[key] = makeNumberReadable(
+                numericValue,
+                false,
+                shouldForceDecimalPlaces ? 2 : null
+              );
+            } else {
+              formattedRecord[key] = record[key];
+            }
           }
         }
       }
@@ -472,40 +579,6 @@ export function pluraliseNoun(noun) {
   } else {
       return firstLetter + restOfTheWord + "s";
   }
-}
-
-/**
- * Retrieves the full name of a researcher from ORCiD using their ORCiD URL or ID.
- * 
- * @param {string} orcidInput - The ORCiD URL or ID of the researcher.
- * @returns {Promise<string>} A promise that resolves to the full name of the researcher.
- * @throws {Error} Throws an error if the request fails or if the data is not available.
- */
-export function getORCiDFullName(orcidInput) {
-  return new Promise((resolve, reject) => {
-    // Extract the ORCiD ID from the input URL or use the ID directly
-    const orcidId = orcidInput.split('/').pop();
-    const url = `https://pub.orcid.org/v3.0/${orcidId}/person`;
-
-    axios.get(url, {
-        headers: {
-            'Accept': 'application/json'
-        }
-    })
-    .then(response => {
-        try {
-            const givenName = response.data.name['given-names'].value;
-            const familyName = response.data.name['family-name'].value;
-            const fullName = `${givenName} ${familyName}`;
-            resolve(fullName);
-        } catch (error) {
-            reject(new Error('Failed to extract the full name from the response.'));
-        }
-    })
-    .catch(error => {
-        reject(new Error('Failed to retrieve data from ORCiD.'));
-    });
-  }); 
 }
 
 /**
@@ -580,6 +653,7 @@ export function convertTextToLinks(text, forceLink = false, urlPrefix = '') {
  */
 export function bindSmoothScrollLinks() {
   const additionalSpacing = 20; // Extra spacing in pixels
+  const focusable = 'a[href], button, input, select, textarea, details, [tabindex]:not([tabindex="-1"])';
 
   document.querySelectorAll('a[href^="#"]').forEach(link => {
     link.addEventListener('click', function(event) {
@@ -596,6 +670,21 @@ export function bindSmoothScrollLinks() {
         window.scrollTo({
           top: offsetPosition,
           behavior: 'smooth'
+        });
+
+        requestAnimationFrame(() => {
+          const focusTarget = targetElement.getAttribute("aria-hidden") === "true"
+            ? targetElement.nextElementSibling
+            : targetElement;
+
+          if (!(focusTarget instanceof HTMLElement)) return;
+
+          const hadTabIndex = focusTarget.hasAttribute("tabindex");
+          if (!focusTarget.matches(focusable) && !hadTabIndex) {
+            focusTarget.setAttribute("tabindex", "-1");
+            focusTarget.addEventListener("blur", () => focusTarget.removeAttribute("tabindex"), { once: true });
+          }
+          focusTarget.focus({ preventScroll: true });
         });
       } else {
         console.error('Target element not found:', targetId);
@@ -619,23 +708,24 @@ export function adjustNavOnScroll() {
     // Re-query so dynamically added buttons (e.g. Clear filters) are included
     const yearButtons = nav.querySelectorAll(".js-nav-chip");
     const rect = nav.getBoundingClientRect();
+    const topBannerHeight = Array.from(document.querySelectorAll(".js-top-banner, #js-alert"))
+      .filter((el) => el.offsetParent !== null)
+      .reduce((sum, el) => sum + el.getBoundingClientRect().height, 0);
 
-    if (rect.top <= 0) {
+    if (rect.top <= topBannerHeight) {
       // Nav is at the top of the viewport
       yearButtons.forEach((button) => {
         button.classList.remove("md:border-b-0");
         button.classList.add("rounded-b-sm");
       });
-      nav.classList.add("shadow-lg", "transition-pb-3", "md:transition-pb-6");
-      nav.classList.remove("transition-pb-0");
+      nav.classList.add("shadow-lg");
     } else {
       // Nav has scrolled away from the top
       yearButtons.forEach((button) => {
         button.classList.add("md:border-b-0");
         button.classList.remove("rounded-b-sm");
       });
-      nav.classList.remove("shadow-lg", "transition-pb-3", "md:transition-pb-6");
-      nav.classList.add("transition-pb-0");
+      nav.classList.remove("shadow-lg");
     }
   }
 
@@ -694,6 +784,16 @@ export function initDropdown(dropdownSelector) {
 
   const dropdownButton = dropdownContainer.querySelector('button[aria-haspopup="true"]');
   const dropdownContent = dropdownContainer.querySelector('.js_dropdown_content');
+  if (!dropdownButton || !dropdownContent) return;
+
+  const closeDropdown = (restoreFocus = false) => {
+    dropdownContent.classList.add('hidden');
+    dropdownContent.setAttribute('hidden', 'true');
+    dropdownButton.setAttribute('aria-expanded', 'false');
+    if (restoreFocus) {
+      requestAnimationFrame(() => dropdownButton.focus());
+    }
+  };
 
   dropdownButton.addEventListener('click', function(event) {
     event.stopPropagation();
@@ -701,21 +801,101 @@ export function initDropdown(dropdownSelector) {
     this.setAttribute('aria-expanded', !isExpanded);
 
     if (isExpanded) {
-      dropdownContent.classList.add('hidden');
-      dropdownContent.setAttribute('hidden', 'true');
+      closeDropdown();
     } else {
       dropdownContent.classList.remove('hidden');
       dropdownContent.removeAttribute('hidden');
     }
   });
 
+  dropdownContainer.addEventListener('keydown', function(event) {
+    if (event.key !== 'Escape') return;
+    if (dropdownContent.classList.contains('hidden')) return;
+    event.preventDefault();
+    closeDropdown(true);
+  });
+
   document.addEventListener('click', function() {
     if (!dropdownContent.classList.contains('hidden')) {
-      dropdownContent.classList.add('hidden');
-      dropdownContent.setAttribute('hidden', 'true');
-      dropdownButton.setAttribute('aria-expanded', 'false');
+      closeDropdown();
     }
   });
+}
+
+/**
+ * Wires minimal keyboard flow for popovers:
+ * - Shift+Tab on first control
+ * - Tab on last control
+ * Call `focusFirst()` when popover opens.
+ *
+ * @param {{
+ *   popover: HTMLElement,
+ *   trigger: HTMLElement,
+ *   firstSelector: string,
+ *   lastSelector: string,
+ *   onForwardTab?: () => void,
+ *   onBackwardTab?: () => void
+ * }} options
+ * @returns {{ focusFirst: () => void }}
+ */
+export function createPopoverKeyboardFlow(options) {
+  const {
+    popover,
+    trigger,
+    firstSelector,
+    lastSelector,
+    onForwardTab,
+    onBackwardTab
+  } = options;
+
+  const getFirst = () => popover.querySelector(firstSelector);
+  const getLast = () => popover.querySelector(lastSelector);
+
+  const focusFirst = () => {
+    const first = getFirst();
+    if (first instanceof HTMLElement) first.focus();
+  };
+
+  popover.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      if (trigger instanceof HTMLElement) {
+        const isExpanded = trigger.getAttribute("aria-expanded") === "true";
+        if (isExpanded) {
+          trigger.click();
+        }
+        requestAnimationFrame(() => trigger.focus());
+      }
+      return;
+    }
+
+    if (event.key !== "Tab") return;
+
+    const active = document.activeElement;
+    const first = getFirst();
+    const last = getLast();
+
+    if (event.shiftKey && first && active === first) {
+      event.preventDefault();
+      if (typeof onBackwardTab === "function") {
+        onBackwardTab();
+      } else {
+        trigger.focus();
+      }
+      return;
+    }
+
+    if (!event.shiftKey && last && active === last) {
+      event.preventDefault();
+      if (typeof onForwardTab === "function") {
+        onForwardTab();
+      } else {
+        trigger.focus();
+      }
+    }
+  });
+
+  return { focusFirst };
 }
 
 /**
@@ -806,6 +986,9 @@ export function updateURLParams(params) {
   const newQuery = queryParams.toString();
   const newUrl = newQuery ? `?${newQuery}` : window.location.pathname;
   history.pushState(null, '', newUrl);
+  if (typeof window !== "undefined" && typeof window.sa_pageview === "function") {
+    window.sa_pageview();
+  }
 }
 
 /**
@@ -962,15 +1145,7 @@ export function showUnavailableCard(cardContents) {
       iconEl.dataset.oarDefaultIcon = iconEl.innerHTML;
     }
     iconEl.innerHTML = `
-      <svg xmlns="http://www.w3.org/2000/svg"
-           width="16" height="16" fill="none"
-           stroke="currentColor" stroke-width="2"
-           stroke-linecap="round" stroke-linejoin="round"
-           class="feather feather-slash inline-block text-neutral-700"
-           aria-hidden="true">
-        <circle cx="8" cy="8" r="6.5"></circle>
-        <line x1="2.62" y1="2.62" x2="13.38" y2="13.38"></line>
-      </svg>
+      <i class="ph ph-prohibit inline-block text-neutral-700" aria-hidden="true"></i>
     `;
   }
 
@@ -1117,6 +1292,34 @@ export function andQueryStrings(base, extra) {
   const b = extra && extra.trim() ? `(${extra.trim()})` : '';
   if (a && b) return `${a} AND ${b}`;
   return a || b || '';
+}
+
+/**
+ * Escapes a value for safe use inside a quoted query string.
+ *
+ * @param {string|number} value
+ * @returns {string}
+ */
+export function escapeQueryValue(value) {
+  const stringValue = String(value ?? "");
+
+  return stringValue
+    .replace(/\\/g, '\\\\')
+    .replace(/"/g, '\\"');
+}
+
+/**
+ * Converts escaped quoted-query text back into its literal value.
+ *
+ * @param {string|number} value
+ * @returns {string}
+ */
+export function unescapeQueryValue(value) {
+  const stringValue = String(value ?? "");
+
+  return stringValue
+    .replace(/\\"/g, '"')
+    .replace(/\\\\/g, '\\');
 }
 
 /**

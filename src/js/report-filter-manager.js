@@ -4,42 +4,40 @@
 // =================================================
 
 // =================================================
-// Imports
+// Imports & Constants
 // =================================================
 
 import {
+  fetchJson,
   getDecodedUrlQuery,
   updateURLParams,
   removeURLParams,
+  escapeQueryValue,
+  unescapeQueryValue,
   normaliseFieldId,
-  pluraliseNoun
+  pluraliseNoun,
+  createPopoverKeyboardFlow
 } from "./utils.js";
-import { API_BG_BASE_URL } from "./constants/api.js";
+import { ORGS_REPORT_API_BASE_URL } from "./constants/api.js";
 
 import {
   EXPLORE_ITEMS_LABELS,
   EXPLORE_FILTERS_LABELS,
-  EXPLORE_HEADER_TERMS_LABELS,
   EXPLORE_HEADER_ARTICLES_LABELS,
+  resolveFieldDefinition,
   COUNTRY_CODES,
   DATE_SELECTION_BUTTON_CLASSES
 } from "./constants.js";
+import { SEARCH_FILTER_FIELD_MAP, iconForField } from "./constants/filter-fields.js";
 
-import { orgDataPromise } from './insights-and-strategies.js';
+import { orgDataPromise } from './insights-and-actions.js';
 
 import { handleFiltersChanged } from './explore.js';
+import { createPopover, createTooltip } from './tooltip-manager.js';
 
-// Only expose specific fields for search-to-filter ("Add filter")
-// See https://github.com/oaworks/discussion/issues/3616#issuecomment-3553985006
-const ALLOWED_TERMS = new Map([
-  ["supplements.grantid__bmgf", "Grants"],
-  ["authorships.institutions.display_name", "Institutions"],
-  ["journal", "Journals"],
-  ["supplements.host_venue.display_name", "Preprint servers"],
-  ["supplements.program__bmgf", "Programs"],
-  ["supplements.publisher_simple", "Publishers"],
-  ["concepts.display_name", "Subjects"]
-]);
+const SUGGESTIONS_API_URL = `${ORGS_REPORT_API_BASE_URL}suggestions`;
+
+const SUGGESTIONS_SIZE_DEFAULT = 10000;
 
 // =================================================
 // State
@@ -50,12 +48,131 @@ const ALLOWED_TERMS = new Map([
  * @type {Object|undefined}
  */
 let orgData;
-orgDataPromise.then((res) => { orgData = res.data; });
+orgDataPromise.then((data) => { orgData = data; });
 
 const ensureKeywordField = (field = "") => {
   if (!field) return "";
   return /\.keyword$/i.test(field) ? field : `${field}.keyword`;
 };
+
+const needsSuffix = (field = "") => field === "supplements.grantid" || field === "supplements.program";
+
+const normaliseSortField = (field = "") =>
+  String(field || "")
+    .replace(/\.keyword$/i, "")
+    .replace(/__[^.]+$/i, "");
+
+const getSearchFilterField = (field = "") =>
+  SEARCH_FILTER_FIELD_MAP.get(normaliseSortField(field));
+
+const shouldAlphaSortSuggestions = (field = "") =>
+  Boolean(getSearchFilterField(field)?.alphaSort);
+
+const ORCID_ID_RE = /\b\d{4}-\d{4}-\d{4}-\d{3}[\dX]\b/i;
+const AUTHOR_ID_FIELD = "authorships.author.id.keyword";
+const AUTHOR_ORCID_FIELD = "authorships.author.orcid.keyword";
+const AUTHOR_NAME_FIELD = "authorships.author.display_name.keyword";
+
+function getRenderedFilterValueDisplay(field = "", value = "") {
+  const fieldKey = ensureKeywordField(field);
+  const targetValue = String(value || "").trim();
+  if (!fieldKey || !targetValue) return "";
+
+  const filterCell = Array.from(
+    document.querySelectorAll("#export_table [data-filter-field][data-filter-value]")
+  ).find((el) => (
+    el.getAttribute("data-filter-field") === fieldKey
+      && el.getAttribute("data-filter-value") === targetValue
+  ));
+
+  const labelEl = filterCell?.querySelector(".js-filter-target");
+  if (!labelEl) return "";
+
+  const labelClone = labelEl.cloneNode(true);
+  labelClone.querySelectorAll(".sr-only").forEach((el) => el.remove());
+  return labelClone.textContent?.trim() || "";
+}
+
+/**
+ * Normalises one filter value for the given field.
+ *
+ * @param {string} field
+ * @param {string} value
+ * @returns {string}
+ */
+function normaliseFilterValueForField(field = "", value = "") {
+  const trimmed = String(value || "").trim();
+  if (!trimmed) return "";
+
+  const baseField = normaliseSortField(field);
+  if (baseField !== "authorships.author.orcid") return trimmed;
+
+  const match = trimmed.match(ORCID_ID_RE)?.[0];
+  return match ? `https://orcid.org/${match.toUpperCase()}` : trimmed;
+}
+
+/**
+ * Normalises a list of filter values for the given field.
+ *
+ * @param {string} field
+ * @param {string[]} values
+ * @returns {string[]}
+ */
+function normaliseValuesForField(field = "", values = []) {
+  return values
+    .map((v) => normaliseFilterValueForField(field, v))
+    .filter(Boolean);
+}
+
+/**
+ * Formats one filter value for display in the UI.
+ *
+ * @param {string} field
+ * @param {string} value
+ * @returns {string}
+ */
+function formatFilterValueForDisplay(field = "", value = "") {
+  const trimmed = String(value || "").trim();
+  if (!trimmed) return "";
+
+  if (ensureKeywordField(field) === AUTHOR_ID_FIELD) {
+    return getRenderedFilterValueDisplay(field, trimmed) || trimmed;
+  }
+
+  if (normaliseSortField(field) !== "authorships.author.orcid") return trimmed;
+
+  const match = trimmed.match(ORCID_ID_RE)?.[0];
+  return match ? match.toUpperCase() : trimmed;
+}
+
+/**
+ * Builds one combined query string from grouped field expressions.
+ *
+ * @param {Map<string, string>} fieldExpressions
+ * @returns {string}
+ */
+function buildCombinedFilterQuery(fieldExpressions = new Map()) {
+  const normalClauses = [];
+  const authorClauses = [];
+
+  for (const [field, clause] of fieldExpressions.entries()) {
+    if (!clause) continue;
+    const fieldKey = ensureKeywordField(field);
+    if (fieldKey === AUTHOR_ID_FIELD || fieldKey === AUTHOR_ORCID_FIELD || fieldKey === AUTHOR_NAME_FIELD) {
+      authorClauses.push(clause);
+    } else {
+      normalClauses.push(clause);
+    }
+  }
+
+  if (authorClauses.length === 1) {
+    normalClauses.push(authorClauses[0]);
+  } else if (authorClauses.length > 1) {
+    normalClauses.push(`(${authorClauses.join(" OR ")})`);
+  }
+
+  return normalClauses.join(" AND ");
+}
 
 /**
  * Derives a readable label from an ES field key.
@@ -68,6 +185,9 @@ function labelFromFieldKey(rawKey) {
   if (!rawKey) return "";
 
   const baseKey = rawKey.replace(/\.keyword$/i, "");
+  if (baseKey === "authorships.author.id") {
+    return SEARCH_FILTER_FIELD_MAP.get("authorships.author.display_name")?.label || "Authors (Name)";
+  }
   const normalised = normaliseFieldId(baseKey);
   let label;
 
@@ -108,8 +228,8 @@ function labelFromFieldKey(rawKey) {
     EXPLORE_HEADER_ARTICLES_LABELS[normalised];
 
   const fromTerms =
-    EXPLORE_HEADER_TERMS_LABELS[lookupKey] ||
-    EXPLORE_HEADER_TERMS_LABELS[normalised];
+    resolveFieldDefinition(lookupKey, "explore") ||
+    resolveFieldDefinition(normalised, "explore");
 
   if (!label) {
     label =
@@ -135,30 +255,80 @@ function labelFromFieldKey(rawKey) {
  * @returns {{value:string,label:string}[]}
  */
 function buildFilterFieldOptions(exploreData) {
-  if (!Array.isArray(exploreData)) return [];
-
   const seen = new Set();
   const options = [];
 
-  exploreData.forEach((item) => {
+  (Array.isArray(exploreData) ? exploreData : []).forEach((item) => {
     const fieldKey = (item.term || "").replace(/\.keyword$/i, "");
-    if (!ALLOWED_TERMS.has(fieldKey) || seen.has(fieldKey)) return;
-    seen.add(fieldKey);
+    const normalisedKey = fieldKey.startsWith("supplements.grantid__")
+      ? "supplements.grantid"
+      : fieldKey.startsWith("supplements.program__")
+        ? "supplements.program"
+        : fieldKey;
+    const fieldMeta = SEARCH_FILTER_FIELD_MAP.get(normalisedKey);
+    if (!fieldMeta || seen.has(normalisedKey)) return;
+    seen.add(normalisedKey);
 
     const label =
       EXPLORE_ITEMS_LABELS[item.id]?.label ||
-      ALLOWED_TERMS.get(fieldKey) ||
-      labelFromFieldKey(fieldKey);
+      fieldMeta.label ||
+      labelFromFieldKey(normalisedKey);
 
-    options.push({ value: fieldKey, label });
+    options.push({ value: normalisedKey, label });
   });
+
+  // Fallback: include globally configured search fields even if the org's
+  // Explore config doesn't explicitly list them.
+  for (const [fieldKey, fieldMeta] of SEARCH_FILTER_FIELD_MAP.entries()) {
+    if (seen.has(fieldKey)) continue;
+    seen.add(fieldKey);
+    options.push({
+      value: fieldKey,
+      label: fieldMeta?.label || labelFromFieldKey(fieldKey),
+    });
+  }
 
   options.sort((a, b) => a.label.localeCompare(b.label));
   return options;
 }
 
 /**
- * Parses the decoded ?q= string into [{label, value}] pairs.
+ * Extracts literal filter values from one existing query clause.
+ *
+ * @param {string} field
+ * @param {string} rawValue
+ * @returns {string[]}
+ */
+function extractFilterValuesFromClause(field = "", rawValue = "") {
+  const fieldKey = ensureKeywordField(field);
+  const baseField = fieldKey.replace(/\.keyword$/i, "");
+  const quotedValuePattern = /"((?:\\.|[^"\\])*)"/g;
+  const values = Array.from(
+    String(rawValue || "").matchAll(quotedValuePattern),
+    (match) => unescapeQueryValue(match[1]).trim()
+  ).filter(Boolean);
+
+  if (!values.length) {
+    const fallbackValue = unescapeQueryValue(
+      String(rawValue || "")
+        .replace(/["()]/g, "")
+        .trim()
+    );
+    if (!fallbackValue) return [];
+    return /country(_code)?$/i.test(baseField) && COUNTRY_CODES[fallbackValue]
+      ? [COUNTRY_CODES[fallbackValue]]
+      : [fallbackValue];
+  }
+
+  return values.map((value) => (
+    /country(_code)?$/i.test(baseField) && COUNTRY_CODES[value]
+      ? COUNTRY_CODES[value]
+      : value
+  ));
+}
+
+/**
+ * Parses the decoded ?q= string into field/value groups.
  * Uses the same normalisation as table headers for consistent labels.
  * Falls back to raw keys if no constant label is found.
  * 
@@ -166,16 +336,8 @@ function buildFilterFieldOptions(exploreData) {
  *   supplements.grantid__bmgf:("INV-1" OR "INV-2")
  *
  * @param {string} q
- * @returns {{label:string,value:string}[]}
+ * @returns {{field:string,label:string,values:string[],clause:string}[]}
  */
-function labelFromFieldKeyInverse(label) {
-  // We only need this to map the displayed label back to the field key when removing chips
-  for (const [key, val] of ALLOWED_TERMS.entries()) {
-    if (val === label) return ensureKeywordField(key);
-  }
-  return null;
-}
-
 function parseEsQueryToPairs(q) {
   if (!q) return [];
 
@@ -197,6 +359,13 @@ function parseEsQueryToPairs(q) {
     return out;
   })();
 
+  /**
+   * Splits a query expression on a top-level keyword only.
+   *
+   * @param {string} str
+   * @param {string} keyword
+   * @returns {string[]}
+   */
   const splitTopLevel = (str, keyword) => {
     const parts = [];
     let buf = "";
@@ -206,7 +375,8 @@ function parseEsQueryToPairs(q) {
 
     for (let i = 0; i < str.length; i++) {
       const ch = str[i];
-      if (ch === '"') inQuote = !inQuote;
+      const prev = i > 0 ? str[i - 1] : "";
+      if (ch === '"' && prev !== "\\") inQuote = !inQuote;
       if (!inQuote) {
         if (ch === "(") depth++;
         if (ch === ")" && depth > 0) depth--;
@@ -224,6 +394,12 @@ function parseEsQueryToPairs(q) {
     return parts.length ? parts : [str.trim()];
   };
 
+  /**
+   * Removes one outer pair of brackets from a fully wrapped expression.
+   *
+   * @param {string} val
+   * @returns {string}
+   */
   const unwrapParens = (val) => {
     let out = val.trim();
     const balanced = (s) => {
@@ -241,25 +417,6 @@ function parseEsQueryToPairs(q) {
     return out;
   };
 
-  const renderValue = (key, rawVal) =>
-    splitTopLevel(rawVal, "AND")
-      .map((segment) =>
-        splitTopLevel(unwrapParens(segment), "OR")
-          .map((part) =>
-            part
-              .replace(/["()]/g, "")
-              .trim()
-          )
-          .filter(Boolean)
-          .map((val) => {
-            const baseKey = key.replace(/\.keyword$/i, "");
-            return /country(_code)?$/i.test(baseKey) && COUNTRY_CODES[val] ? COUNTRY_CODES[val] : val;
-          })
-          .join(", ")
-      )
-      .filter(Boolean)
-      .join(" AND ");
-
   const rawClauses = [];
   const processClause = (clause) => {
     const cleanedClause = unwrapParens(clause);
@@ -268,13 +425,18 @@ function parseEsQueryToPairs(q) {
       nested.forEach((sub) => processClause(sub));
       return;
     }
+    const nestedOr = splitTopLevel(cleanedClause, "OR");
+    if (nestedOr.length > 1) {
+      nestedOr.forEach((sub) => processClause(sub));
+      return;
+    }
     const m = cleanedClause.match(/^\s*\(?\s*([A-Za-z0-9._]+)\s*:\s*(.+?)\s*\)?\s*$/);
     if (!m) return;
     const rawKey = m[1];
     const fieldKey = ensureKeywordField(rawKey);
-    const value = renderValue(fieldKey, unwrapParens(m[2]));
-    if (!value) return;
-    rawClauses.push({ label: labelFromFieldKey(fieldKey), field: fieldKey, value, clause: clause.trim() });
+    const values = extractFilterValuesFromClause(fieldKey, unwrapParens(m[2]));
+    if (!values.length) return;
+    rawClauses.push({ label: labelFromFieldKey(fieldKey), field: fieldKey, values, clause: clause.trim() });
   };
 
   splitTopLevel(query, "AND").forEach((clause) => processClause(clause));
@@ -286,11 +448,7 @@ function parseEsQueryToPairs(q) {
       grouped.set(c.field, { field: c.field, values: [], clauses: [] });
     }
     const entry = grouped.get(c.field);
-    const tokens = (c.value || "")
-      .split(/\s+OR\s+/)
-      .map((v) => v.trim())
-      .filter(Boolean);
-    tokens.forEach((t) => entry.values.push(t));
+    (c.values || []).forEach((value) => entry.values.push(value));
     entry.clauses.push(c.clause);
   });
 
@@ -302,86 +460,77 @@ function parseEsQueryToPairs(q) {
   }));
 }
 
-function removeClauseFromQuery(q, field) {
-  if (!field) return q;
-  if (!q) return "";
-  return parseEsQueryToPairs(q)
-    .filter((p) => ensureKeywordField(p.field) !== ensureKeywordField(field))
-    .map((p) => p.clause)
-    .join(" AND ");
-}
-
 function removeValueFromField(q, field, value) {
   if (!field || !value) return q || "";
   const targetField = ensureKeywordField(field);
+  const targetValue = normaliseFilterValueForField(targetField, value);
   const pairs = parseEsQueryToPairs(q);
-  const clauses = [];
+  const fieldExpressions = new Map();
   pairs.forEach((p) => {
-    if (ensureKeywordField(p.field) !== targetField) {
-      clauses.push(p.clause);
-      return;
-    }
+    const pairField = ensureKeywordField(p.field);
     const remaining = (p.values || [])
       .map((v) => v.trim())
       .filter(Boolean)
-      .filter((v) => v !== value);
+      .filter((v) => (
+        pairField !== targetField ||
+        normaliseFilterValueForField(pairField, v) !== targetValue
+      ));
     if (!remaining.length) return;
-    const quotedVals = remaining.map((val) => `"${val.replace(/"/g, '\\"')}"`);
+    const quotedVals = remaining.map((val) => `"${escapeQueryValue(val)}"`);
     const valueExpr = quotedVals.length === 1 ? quotedVals[0] : `(${quotedVals.join(" OR ")})`;
-    clauses.push(`${ensureKeywordField(p.field)}:${valueExpr}`);
+    fieldExpressions.set(pairField, `${pairField}:${valueExpr}`);
   });
-  return clauses.join(" AND ");
+  return buildCombinedFilterQuery(fieldExpressions);
 }
 
 /**
- * Fetch autocomplete suggestions for a given field and org.
+ * Fetch a terms list batch for a given field and org.
  *
  * @param {Object} params
  * @param {string} params.field  - ES field id (e.g., journal, concepts.display_name)
- * @param {string} params.query  - User-entered prefix/term to match
+ * @param {string} [params.query]  - User-entered prefix/term to match
  * @param {number} [params.size=100] - Max number of suggestions to return
  * @param {AbortSignal} [params.signal] - Optional abort signal
  * @returns {Promise<string[]>} Ordered list of suggested values (unique, trimmed)
  */
-export async function fetchFilterValueSuggestions({ field, query, size = 100, signal }) {
-  if (!field || !query || !query.trim()) return [];
+export async function fetchFilterValueSuggestions({ field, query = "", size = SUGGESTIONS_SIZE_DEFAULT, options = {}, signal }) {
+  if (!field) return [];
 
   // Per-session cache to avoid repeat calls
   fetchFilterValueSuggestions._cache = fetchFilterValueSuggestions._cache || new Map();
-  const cacheKey = `${ensureKeywordField(field || "")}::${query.slice(0, 50)}`;
+  const normaliseQueryForCache = (value = "") =>
+    String(value || "")
+      .normalize("NFD")
+      .replace(/\p{M}/gu, "")
+      .toLowerCase()
+      .replace(/[^\p{L}\p{N}]+/gu, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  const baseField = field.replace(/\.keyword$/i, "");
+  const orgName = orgData?.hits?.hits?.[0]?._source?.name || "";
+  const keySuffix = orgData?.hits?.hits?.[0]?._source?.key_suffix || "";
+  const requestField = (
+    keySuffix &&
+    !baseField.includes("__") &&
+    needsSuffix(baseField)
+  ) ? `${baseField}__${keySuffix}` : baseField;
+  const modeKey = options.prefix ? "prefix" : "default";
+  const cacheKey = `${orgName}::${requestField}::${normaliseQueryForCache(query).slice(0, 50)}::${size}::${modeKey}`;
   if (fetchFilterValueSuggestions._cache.has(cacheKey)) {
     return fetchFilterValueSuggestions._cache.get(cacheKey);
   }
 
-  // Scoped terms only (org + existing filters)
-  let qClean = query.trim();
   try {
-    qClean = decodeURIComponent(qClean);
-  } catch (e) {
-    // If already decoded/invalid, keep as-is
-  }
-  const baseField = field.replace(/\.keyword$/i, "");
-  const lower = qClean.toLowerCase();
-  const orgName = orgData?.hits?.hits?.[0]?._source?.name;
+    const params = [
+      `org=${encodeURIComponent(orgName)}`,
+      `field=${encodeURIComponent(requestField)}`,
+      `size=${encodeURIComponent(String(size))}`
+    ];
+    if (query) params.push(`q=${encodeURIComponent(query)}`);
+    if (options.prefix) params.push("prefix=true");
+    const url = `${SUGGESTIONS_API_URL}?${params.join("&")}`;
 
-  const targetField = ensureKeywordField(field || baseField);
-
-  try {
-    const parts = [];
-    if (orgName) {
-      const safeOrg = orgName.replace(/"/g, '\\"');
-      parts.push(`orgs.keyword:"${safeOrg}"`);
-    }
-    // Handle dashes/exact tokens, both lower/upper
-    const upper = qClean.toUpperCase();
-    parts.push(`(${baseField}:*${lower}* OR ${baseField}:*${upper}* OR ${targetField}:*${lower}* OR ${targetField}:*${upper}*)`);
-
-    const qParam = encodeURIComponent(parts.join(" AND "));
-    const url = `${API_BG_BASE_URL}works/terms/${targetField}?counts=false&size=${size}&q=${qParam}`;
-
-    const res = await fetch(url, { signal });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
+    const data = await fetchJson(url, { signal });
     if (!Array.isArray(data) || !data.length) throw new Error("No suggestions");
 
     const seen = new Set();
@@ -398,8 +547,10 @@ export async function fetchFilterValueSuggestions({ field, query, size = 100, si
       }
     });
 
-    const sorted = values.sort((a, b) => a.localeCompare(b));
-    const result = sorted.slice(0, size);
+    const ordered = shouldAlphaSortSuggestions(requestField)
+      ? values.slice().sort((a, b) => a.localeCompare(b))
+      : values;
+    const result = ordered.slice(0, size);
     fetchFilterValueSuggestions._cache.set(cacheKey, result);
     return result;
   } catch (err) {
@@ -461,7 +612,8 @@ function addFilterRow(container) {
   fieldWrapper.appendChild(fieldSelect);
 
   const textWrapper = document.createElement("div");
-  textWrapper.className = "w-full relative";
+  textWrapper.className = "w-full relative hidden transition-all duration-200 ease-out max-h-0 opacity-0 pointer-events-none";
+  textWrapper.setAttribute("aria-hidden", "true");
 
   const textLabel = document.createElement("div");
   textLabel.id = `js-filter-values-label-${idSuffix}`;
@@ -481,17 +633,14 @@ function addFilterRow(container) {
       <ul class="list-disc ml-4 text-xs text-neutral-800 space-y-1 normal-case font-normal">
         <li>Enter one or more values to match any of them; <strong>commas</strong> and <strong><code>OR</code></strong> both mean “any” (e.g., <code>INV-001, INV-002</code> or <code>INV-001 OR INV-002</code> both return publications under either grant).</li>
         <li>Use <strong><code>AND</code></strong> when all values must be present (e.g., <code>Economic growth AND Artificial intelligence</code> returns publications about both Economic growth and Artificial intelligence).</li>
-        <li>Values ignore case and match whole words (e.g., typing <code>oxford</code> or <code>OXFORD UNIVERSITY PRESS</code> finds <code>Oxford University Press</code>, but abbreviations like <code>OUP</code> will not match).</li>
+        <li>Suggestions ignore case when searching and require whole word matches (e.g., typing <code>oxford</code> or <code>OXFORD UNIVERSITY PRESS</code> finds <code>Oxford University Press</code>, but abbreviations like <code>OUP</code> will not match).</li>
       </ul>
     </div>
   `;
 
-  tippy(helpIcon, {
-    content: helpText,
-    allowHTML: true,
+  createTooltip(helpIcon, helpText, {
     theme: "popover",
     maxWidth: 320,
-    interactive: true,
     placement: "bottom",
   });
 
@@ -499,8 +648,10 @@ function addFilterRow(container) {
   const input = document.createElement("input");
   input.id = inputId;
   input.type = "text";
-  input.className = "js-filter-input mt-1 p-2 w-full h-9 border border-neutral-900 bg-white text-xs md:text-sm leading-tight focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900";
-  input.placeholder = "Search for values…";
+  input.className = "js-filter-input mt-1 p-2 w-full h-9 border border-neutral-900 bg-white text-xs md:text-sm leading-tight focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 disabled:bg-neutral-200 disabled:placeholder-neutral-800";
+  input.placeholder = "Start typing to see suggestions…";
+  input.disabled = true;
+  input.setAttribute("aria-disabled", "true");
   input.required = true;
   input.setAttribute("aria-required", "true");
   input.setAttribute("role", "combobox");
@@ -536,7 +687,29 @@ function addFilterRow(container) {
   let suggestTimer = null;
   let activeIndex = -1;
   const tokenData = [];
-  let requestSeq = 0;
+  const fieldTokens = new Map();
+  let currentFieldVal = "";
+  row._fieldTokens = fieldTokens;
+  const saveCurrentFieldTokens = () => {
+    if (currentFieldVal) {
+      fieldTokens.set(currentFieldVal, [...tokenData]);
+    }
+  };
+  const loadFieldTokens = (fieldVal) => {
+    tokenData.length = 0;
+    if (fieldVal && fieldTokens.has(fieldVal)) {
+      fieldTokens.get(fieldVal).forEach((val) => tokenData.push(val));
+    }
+  };
+  const removeTokenFromField = (fieldVal, value) => {
+    const targetList = fieldTokens.get(fieldVal) || [];
+    const idxToRemove = targetList.indexOf(value);
+    if (idxToRemove > -1) targetList.splice(idxToRemove, 1);
+    fieldTokens.set(fieldVal, targetList);
+    if (fieldVal === currentFieldVal) {
+      loadFieldTokens(fieldVal);
+    }
+  };
 
   const hideSuggestions = () => {
     listbox.classList.add("hidden");
@@ -565,11 +738,17 @@ function addFilterRow(container) {
     if (activeIndex >= options.length) {
       activeIndex = options.length - 1;
     }
-    options.forEach((li, idx) => {
-      const selected = idx === activeIndex;
+    options.forEach((li, optionIndex) => {
+      const selected = optionIndex === activeIndex;
       li.setAttribute("aria-selected", selected ? "true" : "false");
       li.classList.toggle("bg-neutral-900", selected);
+      li.classList.toggle("border-neutral-900", selected);
+      li.classList.toggle("font-semibold", selected);
+      li.classList.toggle("hover:bg-neutral-700", selected);
+      li.classList.toggle("hover:bg-carnation-100", !selected);
       li.classList.toggle("text-white", selected);
+      li.classList.toggle("hover:text-white", selected);
+      li.classList.toggle("hover:text-neutral-900", !selected);
     });
     const activeOption = options[activeIndex];
     if (activeOption && activeOption.id) {
@@ -582,7 +761,16 @@ function addFilterRow(container) {
   const renderSuggestions = (items) => {
     listbox.innerHTML = "";
     const termRaw = input.value || "";
-    const term = termRaw.toLowerCase().replace(/\s+/g, " ").trim();
+    const normaliseText = (value, stripPunct = false) => {
+      let v = (value || "").normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+      if (stripPunct) v = v.replace(/[^\p{L}\p{N}]+/gu, " ").replace(/\s+/g, " ").trim();
+      return v;
+    };
+
+    const term = normaliseText(termRaw, true);
+    const stopwords = new Set(["journal", "the", "of"]);
+    const termTokens = term.split(" ").filter((token) => token && !stopwords.has(token));
+    const termForMatch = termTokens.join(" ");
 
     // Keep a non-selectable hint at the top
     renderHint(termRaw);
@@ -591,31 +779,61 @@ function addFilterRow(container) {
       listbox.classList.remove("hidden");
       input.setAttribute("aria-expanded", "true");
       activeIndex = -1;
-      return;
+      return 0;
     }
 
     const highlight = (val) => {
       if (!term || !val) return val;
-      const idx = val.toLowerCase().indexOf(term);
-      if (idx === -1) return val;
-      const before = val.slice(0, idx);
-      const match = val.slice(idx, idx + term.length);
-      const after = val.slice(idx + term.length);
-      return `${before}<strong>${match}</strong>${after}`;
+      const tokens = term.split(" ").filter(Boolean);
+      if (!tokens.length) return val;
+      const escaped = tokens.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+      const pattern = escaped.join("[\\s\\p{P}\\p{S}]*");
+      const re = new RegExp(pattern, "iu");
+      const match = val.match(re);
+      if (!match) return val;
+      return val.replace(re, "<strong>$&</strong>");
     };
 
+    if (!termForMatch) {
+      renderHint(termRaw, "Type a more specific term…");
+      return 0;
+    }
+
+    const escapedTerm = termForMatch.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const wordStartPattern = new RegExp(`\\b${escapedTerm}`, "i");
+
     const filtered = items
-      .filter((val) => (val || "").toLowerCase().includes(term))
+      .map((val, originalIndex) => {
+      const normalised = normaliseText(val, true);
+      const tokens = normalised.split(" ").filter((token) => token && !stopwords.has(token));
+        return { val, originalIndex, normalised, tokens };
+      })
+      .filter(({ normalised, tokens }) => {
+        if (!termTokens.length) return false;
+        if (termTokens.length === 1) return normalised.includes(termForMatch);
+        const leadingTokens = termTokens.slice(0, -1);
+        const lastToken = termTokens[termTokens.length - 1];
+        return (
+          leadingTokens.every((token) => tokens.includes(token)) &&
+          tokens.some((token) => token.startsWith(lastToken))
+        );
+      })
       .sort((a, b) => {
-        const aStarts = (a || "").toLowerCase().startsWith(term);
-        const bStarts = (b || "").toLowerCase().startsWith(term);
-        if (aStarts === bStarts) return 0;
-        return aStarts ? -1 : 1;
-      });
+        const aStarts = a.normalised.startsWith(termForMatch);
+        const bStarts = b.normalised.startsWith(termForMatch);
+        if (aStarts !== bStarts) return aStarts ? -1 : 1;
+
+        const aWordStart = wordStartPattern.test(a.normalised);
+        const bWordStart = wordStartPattern.test(b.normalised);
+        if (aWordStart !== bWordStart) return aWordStart ? -1 : 1;
+
+        return a.originalIndex - b.originalIndex; // stable order for equal rank
+      })
+      .map(({ val }) => val);
 
     if (!filtered.length) {
-      renderHint(termRaw);
-      return;
+      renderHint(termRaw, "No results found");
+      return 0;
     }
 
     filtered.slice(0, 20).forEach((val) => {
@@ -623,7 +841,7 @@ function addFilterRow(container) {
       li.setAttribute("role", "option");
       li.setAttribute("aria-selected", "false");
       li.setAttribute("aria-disabled", "false");
-      li.className = "px-2 py-1 cursor-pointer hover:bg-carnation-100 text-xs md:text-sm";
+      li.className = "px-2 py-1 border border-transparent cursor-pointer hover:bg-carnation-100 hover:text-neutral-900 text-xs md:text-sm";
       li.id = `${listboxId}-option-${listbox.childElementCount}`;
       li.innerHTML = highlight(val);
       li.addEventListener("mousedown", (e) => {
@@ -636,6 +854,7 @@ function addFilterRow(container) {
     listbox.classList.remove("hidden");
     input.setAttribute("aria-expanded", "true");
     input.setAttribute("aria-activedescendant", "");
+    return filtered.length;
   };
 
   const renderHint = (termRaw = "", message) => {
@@ -653,40 +872,56 @@ function addFilterRow(container) {
     input.setAttribute("aria-activedescendant", "");
   };
 
-  // Remember the last fetched suggestions so we can reuse them for longer searches
-  let lastFetched = { field: "", query: "", items: [], size: 0 };
+  // Remember the last fetched suggestions for local filtering
+  let lastFetched = { field: "", items: [], size: 0, query: "" };
+  let lastQuery = "";
+  let lastQueryUsedPrefix = false;
+  let requestInFlight = false;
 
   const renderTokens = () => {
     tokens.innerHTML = "";
     const hasTokens = tokenData.length > 0;
     input.required = !hasTokens;
     input.setAttribute("aria-required", hasTokens ? "false" : "true");
+    saveCurrentFieldTokens();
 
-    tokenData.forEach((val) => {
+    const fieldEntries = Array.from(fieldTokens.entries()).filter(([, vals]) => Array.isArray(vals) && vals.length);
+
+    fieldEntries.forEach(([fieldName, values]) => {
+      values.forEach((val) => {
+      const displayVal = formatFilterValueForDisplay(fieldName, val);
       const chip = document.createElement("span");
       chip.className = "inline-flex items-center rounded-full bg-carnation-100 text-neutral-900 px-2 py-0.5 text-[11px] md:text-xs";
       chip.setAttribute("data-value", val);
+      chip.setAttribute("data-field", fieldName);
       chip.setAttribute("role", "listitem");
 
+      const iconName = iconForField(fieldName);
+      if (iconName) {
+        const icon = document.createElement("i");
+        icon.className = `ph ph-${iconName} mr-1 text-[14px] leading-none`;
+        icon.setAttribute("aria-hidden", "true");
+        chip.appendChild(icon);
+      }
+
       const valSpan = document.createElement("span");
-      valSpan.textContent = val;
+      valSpan.textContent = displayVal;
       chip.appendChild(valSpan);
 
       const removeBtn = document.createElement("button");
       removeBtn.type = "button";
       removeBtn.className = "ml-2 text-[10px]";
-      removeBtn.setAttribute("aria-label", `Remove ${val}`);
+      removeBtn.setAttribute("aria-label", `Remove ${displayVal}`);
       removeBtn.textContent = "✕";
       removeBtn.addEventListener("click", () => {
-        const idxToRemove = tokenData.indexOf(val);
-        if (idxToRemove > -1) {
-          tokenData.splice(idxToRemove, 1);
-        }
+        const targetField = chip.getAttribute("data-field");
+        removeTokenFromField(targetField, val);
         renderTokens();
       });
 
       chip.appendChild(removeBtn);
       tokens.appendChild(chip);
+      });
     });
   };
 
@@ -697,50 +932,58 @@ function addFilterRow(container) {
       const raw = input.value || "";
       const q = raw.replace(/\s+/g, " ").trim();
       if (!fieldVal || q.length < 2) {
-        renderHint();
-        lastFetched = { field: "", query: "", items: [] };
+        hideSuggestions();
         return;
       }
-      // If the last fetch for this field returned nothing and 
-      // the user is just extending that query (or entering gibberish),
-      // don't bother re-fetching
+      let matches = 0;
       if (
         lastFetched.field === fieldVal &&
-        q.startsWith(lastFetched.query || "") &&
         Array.isArray(lastFetched.items) &&
-        lastFetched.items.length === 0
+        lastFetched.items.length
       ) {
-        renderHint(q);
-        return;
+        if (lastFetched.query && lastFetched.query.startsWith(q)) {
+          renderSuggestions(lastFetched.items);
+          return;
+        }
+        matches = renderSuggestions(lastFetched.items);
+        if (matches > 0) return;
       }
-      // If we already have results for this field that cover the current (longer) search, reuse them
-      const lowercasedQuery = q.toLowerCase();
       if (
         lastFetched.field === fieldVal &&
-        q.startsWith(lastFetched.query || "") &&
         Array.isArray(lastFetched.items) &&
-        (
-          lastFetched.query === q || // exact same query, always reuse
-          (lastFetched.items.length < lastFetched.size && lastFetched.items.some((val) => (val || "").toLowerCase().includes(lowercasedQuery)))
-        )
+        lastFetched.items.length === 0 &&
+        lastFetched.query &&
+        q.startsWith(lastFetched.query)
       ) {
-        renderSuggestions(lastFetched.items);
+        renderHint(q, "No results. Try a different term.");
         return;
       }
-      const currentReq = ++requestSeq;
-      renderHint(q);
+      if (requestInFlight) {
+        renderHint(q, "Loading suggestions…");
+        return;
+      }
+      if (lastQuery === q && lastFetched.field === fieldVal && lastQueryUsedPrefix) {
+        renderHint(q, "No results found");
+        return;
+      }
+      requestInFlight = true;
+      lastQuery = q;
+      lastQueryUsedPrefix = false;
+      renderHint(q, "Loading suggestions…");
       try {
-        const suggestions = await fetchFilterValueSuggestions({
+        const items = await fetchFilterValueSuggestions({
           field: fieldVal,
           query: q,
+          size: SUGGESTIONS_SIZE_DEFAULT
         });
-        if (currentReq === requestSeq) {
-          lastFetched = { field: fieldVal, query: q, items: suggestions, size: suggestions.length };
-          renderSuggestions(suggestions);
-        }
+        lastFetched = { field: fieldVal, items, size: items.length, query: q };
+        renderSuggestions(items);
       } catch (err) {
         console.error("Error fetching suggestions:", err);
-        lastFetched = { field: fieldVal, query: q, items: [], size: 0 };
+        lastFetched = { field: fieldVal, items: [], size: 0, query: q };
+        renderHint(q, "No results found");
+      } finally {
+        requestInFlight = false;
       }
     }, 500);
   };
@@ -772,12 +1015,50 @@ function addFilterRow(container) {
   });
 
   fieldSelect.addEventListener("change", () => {
-    lastFetched = { field: "", query: "", items: [] };
-    triggerSuggestions();
+    const nextFieldVal = fieldSelect.value;
+    saveCurrentFieldTokens();
+    currentFieldVal = nextFieldVal;
+    lastFetched = { field: nextFieldVal, items: [], size: 0, query: "" };
+    lastQuery = "";
+    requestInFlight = false;
+    loadFieldTokens(currentFieldVal);
+    input.value = "";
+    renderTokens();
+    if (!nextFieldVal) {
+      input.disabled = true;
+      input.setAttribute("aria-disabled", "true");
+      textWrapper.classList.add("hidden");
+      textWrapper.classList.add("max-h-0", "opacity-0", "pointer-events-none");
+      textWrapper.classList.remove("max-h-48", "opacity-100", "pointer-events-auto");
+      textWrapper.setAttribute("aria-hidden", "true");
+      hideSuggestions();
+      return;
+    }
+    input.disabled = false;
+    input.setAttribute("aria-disabled", "false");
+    textWrapper.classList.remove("hidden");
+    textWrapper.classList.remove("max-h-0", "opacity-0", "pointer-events-none");
+    textWrapper.classList.add("max-h-48", "opacity-100", "pointer-events-auto");
+    textWrapper.setAttribute("aria-hidden", "false");
+      hideSuggestions();
   });
   input.addEventListener("input", triggerSuggestions);
   input.addEventListener("focus", () => {
-    renderHint();
+    const fieldVal = fieldSelect.value;
+    const raw = input.value || "";
+    const q = raw.replace(/\s+/g, " ").trim();
+    if (
+      fieldVal &&
+      q.length >= 2 &&
+      lastFetched.field === fieldVal &&
+      Array.isArray(lastFetched.items) &&
+      lastFetched.items.length &&
+      (!lastFetched.query || q.startsWith(lastFetched.query))
+    ) {
+      renderSuggestions(lastFetched.items);
+      return;
+    }
+    hideSuggestions();
   });
 
   container.appendChild(row);
@@ -800,15 +1081,17 @@ export function renderActiveFiltersBanner() {
 
   // Clean up any previous Tippy instance on the trigger
   const oldTrigger = document.getElementById("js-filters-trigger");
-  if (oldTrigger && oldTrigger._tippy) {
-    oldTrigger._tippy.destroy();
+  if (oldTrigger && oldTrigger._tooltip) {
+    oldTrigger._tooltip.destroy();
   }
 
   const q = getDecodedUrlQuery();
   const pairs = parseEsQueryToPairs(q);
   const count = pairs.reduce((sum, p) => sum + (Array.isArray(p.values) ? p.values.length : 1), 0); // total values count across all fields, instead of just fields count
 
-  wrapper.classList.remove("hidden");
+  wrapper.classList.remove("invisible", "opacity-0", "pointer-events-none");
+  wrapper.setAttribute("aria-hidden", "false");
+  if ("inert" in wrapper) wrapper.inert = false;
   mount.innerHTML = "";
 
   // Trigger form styled like other date/year chips
@@ -839,7 +1122,7 @@ export function renderActiveFiltersBanner() {
 
   // Popover content (wider than date range)
   const pop = document.createElement("div");
-  pop.className = "p-3 md:p-4 text-xs md:text-sm";
+  pop.className = "js-filters-popover p-3 md:p-4 text-xs md:text-sm";
   pop.setAttribute("role", "dialog");
   pop.setAttribute("aria-labelledby", "js-filters-form-title");
   pop.style.maxWidth = "90vw";
@@ -883,20 +1166,42 @@ export function renderActiveFiltersBanner() {
       chipsRow.setAttribute("role", "list");
 
       (values || []).forEach((val) => {
+        const displayVal = formatFilterValueForDisplay(field, val);
         const chip = document.createElement("button");
         chip.type = "button";
         chip.className = "inline-flex items-center rounded-full bg-carnation-100 text-neutral-900 px-2 py-0.5 text-[11px] md:text-xs";
         chip.setAttribute("role", "listitem");
-        chip.setAttribute("aria-label", `Remove ${label}: ${val}`);
+        chip.setAttribute("aria-label", `Remove ${label}: ${displayVal}`);
         chip.setAttribute("data-field", ensureKeywordField(field));
-        chip.innerHTML = `<span>${val}</span><span class="ml-2 text-[10px]">✕</span>`;
+        const chipIconName = iconForField(field);
+        if (chipIconName) {
+          const icon = document.createElement("i");
+          icon.className = `ph ph-${chipIconName} mr-1 text-[14px] leading-none`;
+          icon.setAttribute("aria-hidden", "true");
+          chip.appendChild(icon);
+        }
+        const chipLabel = document.createElement("span");
+        chipLabel.textContent = displayVal;
+        chip.appendChild(chipLabel);
+        const removeLabel = document.createElement("span");
+        removeLabel.className = "ml-2 text-[10px]";
+        removeLabel.textContent = "✕";
+        chip.appendChild(removeLabel);
         chip.addEventListener("click", (e) => {
           e.preventDefault();
           e.stopPropagation();
           const decodedQ = getDecodedUrlQuery();
           // Prefer the actual parsed field for clearing from active filters
           // Fall back to label-based mapping only when missing
-          const chipField = chip.getAttribute("data-field") || labelFromFieldKeyInverse(label);
+          let chipField = chip.getAttribute("data-field");
+          if (!chipField) {
+            for (const [fieldKey, fieldConfig] of SEARCH_FILTER_FIELD_MAP.entries()) {
+              if (fieldConfig?.label === label) {
+                chipField = ensureKeywordField(fieldKey);
+                break;
+              }
+            }
+          }
           const nextQ = removeValueFromField(decodedQ, chipField, val);
           if (nextQ) {
             updateURLParams({ q: nextQ });
@@ -951,15 +1256,6 @@ export function renderActiveFiltersBanner() {
   // Start with one row
   addFilterRow(rowsContainer);
 
-  // Add another row button — not needed yet 
-  // See https://github.com/oaworks/discussion/issues/3616#issuecomment-3558260193
-  // const addRowBtn = document.createElement("button");
-  // addRowBtn.type = "button";
-  // addRowBtn.id = "js-add-filter-row";
-  // addRowBtn.className = "mt-1 mb-3 p-2 border w-full justify-center";
-  // addRowBtn.textContent = "Add another";
-  // pop.appendChild(addRowBtn);
-
   const applyBtn = document.createElement("button");
   applyBtn.type = "submit";
   applyBtn.id = "js-apply-filters";
@@ -967,29 +1263,45 @@ export function renderActiveFiltersBanner() {
   applyBtn.textContent = "Apply";
   filterForm.appendChild(applyBtn);
 
-  // Tippy instance, same pattern as custom date range
-  const tip = tippy(triggerBtn, {
-    content: pop,
-    allowHTML: true,
-    interactive: true,
+  let tip;
+  const popoverFlow = createPopoverKeyboardFlow({
+    popover: pop,
+    trigger: triggerBtn,
+    firstSelector: "#js-clear-q-popover, .js-filter-field, #js-apply-filters",
+    lastSelector: "#js-apply-filters",
+    onBackwardTab: () => {
+      tip.hide();
+      requestAnimationFrame(() => triggerBtn.focus());
+    },
+    onForwardTab: () => {
+      tip.hide();
+      const nextControl = document.querySelector(".js_section_tab");
+      requestAnimationFrame(() => {
+        if (nextControl instanceof HTMLElement) {
+          nextControl.focus();
+        } else {
+          triggerBtn.focus();
+        }
+      });
+    }
+  });
+
+  tip = createPopover(triggerBtn, pop, {
     placement: "bottom-start",
-    appendTo: document.body,
-    trigger: "click",
-    theme: "popover",
-    arrow: false,
     onShow() {
       triggerBtn.setAttribute("aria-expanded", "true");
+    },
+    onMount(instance) {
+      instance?.popper?.querySelector(".tooltip-box")?.classList.add("filters-popover-box");
+      requestAnimationFrame(() => popoverFlow.focusFirst());
+    },
+    onShown() {
+      popoverFlow.focusFirst();
     },
     onHide() {
       triggerBtn.setAttribute("aria-expanded", "false");
     },
   });
-
-  // Add another filter row — not needed yet 
-  // See https://github.com/oaworks/discussion/issues/3616#issuecomment-3558260193
-  // addRowBtn.addEventListener("click", () => {
-  //   addFilterRow(rowsContainer);
-  // });
 
   // Clear filters behaviour (same as before)
   if (clearBtn) {
@@ -1011,25 +1323,42 @@ export function renderActiveFiltersBanner() {
       const tokensEl = row.querySelector(".js-filter-tokens");
       if (!fieldSelect || !input || !tokensEl) return;
 
-      const field = ensureKeywordField(fieldSelect.value);
+      const fieldTokens = row._fieldTokens instanceof Map ? row._fieldTokens : null;
+      const baseField = fieldSelect.value.replace(/\.keyword$/i, "");
+      const keySuffix = orgData?.hits?.hits?.[0]?._source?.key_suffix || "";
+      const suffixedField = (
+        keySuffix &&
+        !baseField.includes("__") &&
+        needsSuffix(baseField)
+      ) ? `${baseField}__${keySuffix}` : baseField;
+      const field = ensureKeywordField(suffixedField);
       const raw = input.value.trim();
       const chips = Array.from(tokensEl.children).map((chip) => chip.getAttribute("data-value") || "").filter(Boolean);
 
-      if (!field) return;
-
-      const pushVals = (vals) => {
+      const pushVals = (fieldName, vals) => {
+        if (!fieldName) return;
         if (!vals.length) return;
-        const list = fieldMap.get(field) || [];
-        vals.forEach((v) => list.push(v));
-        fieldMap.set(field, list);
+        const baseName = String(fieldName || "").replace(/\.keyword$/i, "");
+        const suffixedName = (
+          keySuffix &&
+          !baseName.includes("__") &&
+          needsSuffix(baseName)
+        ) ? `${baseName}__${keySuffix}` : baseName;
+        const fieldKey = ensureKeywordField(suffixedName);
+        const list = fieldMap.get(fieldKey) || [];
+        normaliseValuesForField(fieldKey, vals).forEach((v) => list.push(v));
+        fieldMap.set(fieldKey, list);
       };
 
-      if (chips.length) {
-        pushVals(chips);
-        return;
+      if (fieldTokens && fieldTokens.size) {
+        fieldTokens.forEach((vals, fieldName) => {
+          pushVals(fieldName, vals);
+        });
+      } else if (chips.length) {
+        pushVals(field, chips);
       }
 
-      if (!raw) return;
+      if (!raw || !field) return;
 
       // Fallback: support "ID1, ID2" (OR), "ID1 OR ID2", "ID1 AND ID2"
       const segments = [];
@@ -1051,7 +1380,7 @@ export function renderActiveFiltersBanner() {
           .forEach((v) => values.push(v));
       });
 
-      pushVals(values);
+      pushVals(field, values);
     });
 
     // Merge with existing: keep existing clauses, but merge values per field (OR)
@@ -1062,15 +1391,11 @@ export function renderActiveFiltersBanner() {
     // Start with existing values
     existingPairs.forEach((p) => {
       const fieldKey = ensureKeywordField(p.field);
-      const vals = Array.isArray(p.values)
-        ? p.values
-        : (p.value || "")
-            .split(/\s+OR\s+/)
-            .map((v) => v.trim())
-            .filter(Boolean);
+      const vals = Array.isArray(p.values) ? p.values : [];
+      const normalisedVals = normaliseValuesForField(fieldKey, vals);
       mergedFields.set(fieldKey, {
         label: p.label || labelFromFieldKey(fieldKey),
-        values: new Set(vals),
+        values: new Set(normalisedVals),
       });
     });
 
@@ -1081,25 +1406,27 @@ export function renderActiveFiltersBanner() {
         mergedFields.set(fieldKey, { label: labelFromFieldKey(fieldKey), values: new Set() });
       }
       const entry = mergedFields.get(fieldKey);
-      vals.filter(Boolean).forEach((v) => entry.values.add(v));
+      normaliseValuesForField(fieldKey, vals).forEach((v) => entry.values.add(v));
     });
 
-    const clauses = [];
+    const fieldExpressions = new Map();
     mergedFields.forEach((entry, field) => {
       const unique = Array.from(entry.values);
       if (!unique.length) return;
-      const quotedVals = unique.map((val) => `"${val.replace(/"/g, '\\"')}"`);
+      const quotedVals = unique.map((val) => `"${escapeQueryValue(val)}"`);
       const valueExpr = quotedVals.length === 1 ? quotedVals[0] : `(${quotedVals.join(" OR ")})`;
-      clauses.push(`${ensureKeywordField(field)}:${valueExpr}`);
+      const fieldKey = ensureKeywordField(field);
+      fieldExpressions.set(fieldKey, `${fieldKey}:${valueExpr}`);
     });
 
-    if (!clauses.length) {
+    const nextQ = buildCombinedFilterQuery(fieldExpressions);
+    if (!nextQ) {
       tip.hide();
       return;
     }
 
     updateURLParams({
-      q: clauses.join(" AND "),
+      q: nextQ,
     });
 
     handleFiltersChanged();

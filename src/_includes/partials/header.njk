@@ -1,18 +1,20 @@
 {%- from "system/component.njk" import component -%}
 
-<header class="z-50{% if page.url == '/' %} drop-shadow-md h-auto sticky top-0{% endif %}">
-  <h2 class="sr-only">
+{% set isReportPage = org and org._source and org._source.name %}
+{% set isMarketingHeader = not isReportPage %}
+
+<header class="z-50{% if page.url == '/' %} drop-shadow-md h-auto lg:sticky top-0{% endif %}">
+  <span class="sr-only">
     OA.Report
-  </h2>
-  {% if page.url == '/' %}
+  </span>
+  {% if isMarketingHeader %}
     {% set nav_styles = 'py-3 md:py-4 lg:py-5 bg-neutral-100 text-neutral-900' %}
   {% else %}
     {% set nav_styles = 'py-2 md:py-3' %}
   {% endif %}
-  <nav class="mx-auto flex max-w-10xl items-center justify-between gap-4 px-3 md:px-4 {{ nav_styles }}" aria-label="Global">
-    <h3 class="sr-only">Site navigation</h3>
+  <nav class="mx-auto flex max-w-10xl items-start sm:items-center justify-between gap-4 px-3 md:px-4 {{ nav_styles }}" aria-label="Primary navigation">
 
-    {% if page.url == '/' %}
+    {% if isMarketingHeader %}
     <div class="flex items-center gap-3 shrink-0">
       <a href="/" class="-mb-2 p-1 flex items-center">
         {% set logo_size = 'w-28 md:w-40 lg:w-48' %}
@@ -21,15 +23,17 @@
     </div>
     {% endif %}
 
-    {% if page.url != '/' %}
-    <div class="flex-1 min-w-0 flex items-center">
-      <h1 class="flex items-center gap-3 min-w-0 leading-tight text-left">
+    {% if isReportPage %}
+    <div class="flex-1 min-w-0 flex items-center pr-2">
+      <h1 class="flex min-w-0 flex-col items-start gap-1 leading-tight text-left sm:flex-row sm:items-center sm:gap-3">
         <span class="sr-only">Report for</span>
-        <span class="inline-flex items-center gap-2">
+        <span class="inline-flex min-w-0 max-w-full items-center gap-2">
           <span aria-hidden="true" class="w-4 h-4 rounded-full bg-carnation-500 flex-none"></span>
-        <span class="truncate font-serif font-semibold text-base md:text-lg lg:text-xl" title="{{ org._source.name }}">{{ org._source.name }}</span>
+        {% set env = (site.base_url or '') | lower %}
+        {% set envPrefix = '[STG] ' if 'staging.oa.report' in env or 'stg.oa.report' in env else ('[DEV] ' if 'dev.oa.report' in env or 'localhost' in env or '127.0.0.1' in env else '') %}
+        <span class="min-w-0 max-w-full break-words font-serif font-semibold text-base md:text-lg lg:text-xl sm:truncate" title="{{ org._source.name }}">{% if envPrefix %}{{ envPrefix }}{% endif %}{{ org._source.name }}</span>
         </span>
-        <span class="text-[11px] md:text-xs lg:text-sm font-medium whitespace-nowrap flex items-center gap-1 leading-tight">
+        <span class="flex max-w-full flex-wrap items-center gap-x-1 gap-y-0 text-[11px] font-medium leading-tight md:text-xs lg:text-sm sm:whitespace-nowrap">
           <span class="report_readable_start_date"></span>
           <span aria-hidden="true">—</span>
           <span class="report_readable_end_date"></span>
@@ -43,18 +47,18 @@
     <!-- Hamburger Button -->
     <button id="menu-toggle" aria-expanded="false" aria-controls="mobile-menu" class="sm:hidden flex items-center justify-center p-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-carnation-500">
       {% icon_small "menu" %}
-      <span class="sr-only">Open menu</span>
+      <span id="menu-toggle-label" class="sr-only">Open menu</span>
     </button>
 
     <!-- Menu Items -->
     <div id="mobile-menu" class="hidden absolute top-full left-0 w-full sm:static sm:flex sm:items-center sm:justify-end sm:w-auto sm:bg-transparent sm:p-0">
       <div class="flex flex-col sm:flex-row sm:items-center gap-x-3 sm:gap-x-6 md:gap-x-8">
         <a href="https://about.oa.report/" class="text-[11px] md:text-xs lg:text-sm font-medium leading-6 px-4 py-2 sm:p-0">About</a>
-        {% if page.url != "/" %}
-        <a href="?logout" id="logout" class="text-[11px] md:text-xs lg:text-sm font-medium leading-6p x-4 py-2 sm:p-0">Log out <span aria-hidden="true">&rarr;</span></a>
-        <button data-modal-title="Log in to access this OA.Report" data-modal-content="<div class='text-center'><p class='mb-2'>If you work for <strong>{{ org._source.name }}</strong>, search your inbox for an email titled <br><span class='highlight font-normal'>“OA.Report login link”</span><br> to access your report.</p><p class='mb-4'>If you can’t find it, please <a href='mailto:joe@oa.works?subject=I%20can’t%20find%20my%20OA.Report%20login%20link' class='underline underline-offset-2 decoration-1'>contact our helpdesk</a>.</p><hr><p class='pt-4'><small class='text-xs font-normal'>Find out more about <a href='https://about.oa.report/docs/user-accounts' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>OA.Report user accounts</a>.</small></p></div>" class="text-[11px] md:text-xs lg:text-sm font-medium leading-6 px-4 py-2 sm:p-0" id="login">Log in <span aria-hidden="true">&larr;</span></button>
+        {% if isReportPage %}
+        <a href="?logout" data-auth="in" id="logout" class="text-[11px] md:text-xs lg:text-sm font-medium leading-6p x-4 py-2 sm:p-0">Log out <span aria-hidden="true">&rarr;</span></a>
+        <button data-auth="out" data-modal-title="Log in to access this OA.Report" data-modal-content="<div class='text-center'><p class='mb-2'>If you work for <strong>{{ org._source.name }}</strong>, search your inbox for an email titled <br><span class='highlight font-normal'>“OA.Report login link”</span><br> to access your report.</p><p class='mb-4'>If you can’t find it, please <a href='mailto:joe@oa.works?subject=I%20can’t%20find%20my%20OA.Report%20login%20link' class='underline underline-offset-2 decoration-1'>contact our helpdesk</a>.</p><hr><p class='pt-4'><small class='text-xs font-normal'>Find out more about <a href='https://about.oa.report/docs/user-accounts' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>OA.Report user accounts</a>.</small></p></div>" class="text-[11px] md:text-xs lg:text-sm font-medium leading-6 px-4 py-2 sm:p-0" id="login">Log in <span aria-hidden="true">&larr;</span></button>
         {% endif %}
-        {% if page.url == '/' %}
+        {% if isMarketingHeader %}
         <a href="https://blog.oa.works/join-the-oa-report-for-libraries-pilot-to-simplify-compliance-checking-for-your-institutional-funders-oa-policies/" target="_blank" class="text-[11px] md:text-xs lg:text-sm font-semibold leading-6 px-4 py-2 sm:p-0">For libraries</a>
         <a href="https://savvycal.com/Joe/ed52a37f" data-savvycal-embed class="inline-block bg-carnation-600 text-white text-[11px] md:text-xs lg:text-sm p-2 md:rounded-sm hover:bg-carnation-500 transition-all duration-300 ease-in-out transform md:hover:scale-105 focus:outline-none focus:ring-4 focus:ring-carnation-200 font-semibold px-4 py-2">
           Schedule a demo
@@ -64,23 +68,24 @@
     </div>
   </nav>
 
-  {% if org and org._source.paid == true %}
-  <nav class="pt-3" aria-labelledby="report-nav-heading">
+  {% if isReportPage and org._source.paid == true %}
+  <nav id="js-report-nav" class="pt-3" aria-labelledby="report-nav-heading">
     <h2 id="report-nav-heading" class="sr-only">Report navigation</h2>
-    <section class="flex items-center flex-wrap justify-between px-3 md:px-4 gap-x-2 gap-y-1 md:gap-x-3 md:gap-y-0">
-      <div class="flex items-center flex-wrap gap-x-2 gap-y-1 md:gap-x-3 md:gap-y-0">
+    <section class="flex items-center flex-wrap md:flex-nowrap justify-between px-3 md:px-4 gap-x-2 gap-y-1 md:gap-x-3 md:gap-y-0">
+      <div class="flex items-center flex-wrap md:flex-nowrap gap-x-2 gap-y-1 md:gap-x-3 md:gap-y-0">
         <h3 class="sr-only">View this report by year or by custom date range</h3>
         <div
           id="js-year-buttons"
-          class="flex flex-wrap gap-2 text-xs md:text-sm"
+          class="flex flex-wrap md:flex-nowrap gap-2 text-xs md:text-sm"
         ></div>
 
-        <div class="flex items-center flex-wrap gap-2" id="report-filters">
+        <div class="flex items-center flex-wrap md:flex-nowrap gap-2" id="report-filters">
           {# Active filters panel #}
           <aside
-            class="text-neutral-900 text-xs md:text-sm md:border-b-0 js-active-filters-wrapper hidden"
+            class="text-neutral-900 text-xs md:text-sm md:border-b-0 js-active-filters-wrapper min-h-[2rem] md:min-h-[2.25rem] invisible opacity-0 pointer-events-none"
             id="js-active-filters-wrapper"
-              aria-labelledby="js-active-filters-title"
+            aria-labelledby="js-active-filters-title"
+            aria-hidden="true"
             >
               <h3 id="js-active-filters-title" class="sr-only">
                 Active filters
@@ -98,10 +103,10 @@
           </div>
       </div>
 
-      <div class="flex flex-wrap gap-x-2 gap-y-1 text-xs">
-        <a class="border border-neutral-600 text-neutral-100 bg-neutral-800 hover:bg-neutral-700 px-2 py-1 md:px-3 md:py-1.5 mt-1 md:mt-0 rounded-full font-medium transition duration-200 js_section_tab" href="#insights">Insights</a>
-        <a class="border border-neutral-600 text-neutral-100 bg-neutral-800 hover:bg-neutral-700 px-2 py-1 md:px-3 md:py-1.5 mt-1 md:mt-0 rounded-full font-medium transition duration-200 js_section_tab" href="#explore">Explore</a>
-        <a class="border border-neutral-600 text-neutral-100 bg-neutral-800 hover:bg-neutral-700 px-2 py-1 md:px-3 md:py-1.5 mt-1 md:mt-0 rounded-full font-medium transition duration-200 js_section_tab" href="#strategies">Actions</a>
+      <div class="flex flex-wrap md:flex-nowrap gap-x-2 gap-y-1 text-sm">
+        <a id="section-tab-insights" class="border border-neutral-600 text-white bg-neutral-900/60 hover:bg-neutral-700 px-2 py-1 md:px-3 md:py-1.5 mt-1 md:mt-0 rounded-full font-medium transition duration-200 js_section_tab" href="#insights-anchor">Insights</a>
+        <a id="section-tab-explore" class="border border-neutral-600 text-white bg-neutral-900/60 hover:bg-neutral-700 px-2 py-1 md:px-3 md:py-1.5 mt-1 md:mt-0 rounded-full font-medium transition duration-200 js_section_tab" href="#explore-anchor">Explore</a>
+        <a id="section-tab-actions" class="border border-neutral-600 text-white bg-neutral-900/60 hover:bg-neutral-700 px-2 py-1 md:px-3 md:py-1.5 mt-1 md:mt-0 rounded-full font-medium transition duration-200 js_section_tab" href="#actions-anchor">Actions</a>
       </div>
     </section>
 
@@ -112,11 +117,14 @@
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     const menuToggle = document.getElementById('menu-toggle');
+    const menuToggleLabel = document.getElementById('menu-toggle-label');
     const mobileMenu = document.getElementById('mobile-menu');
 
     menuToggle.addEventListener('click', function () {
       const isExpanded = menuToggle.getAttribute('aria-expanded') === 'true';
-      menuToggle.setAttribute('aria-expanded', !isExpanded);
+      const nextExpanded = !isExpanded;
+      menuToggle.setAttribute('aria-expanded', String(nextExpanded));
+      if (menuToggleLabel) menuToggleLabel.textContent = nextExpanded ? 'Close menu' : 'Open menu';
 
       if (!isExpanded) {
         mobileMenu.classList.remove('hidden');
