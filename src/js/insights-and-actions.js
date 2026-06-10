@@ -503,27 +503,66 @@ export function initInsightsAndActions(org) {
         tooltipTarget.setAttribute('title', 'More information on this metric');
         tooltipTarget.setAttribute('aria-haspopup', 'dialog');
 
-        // Total-only cards can read directly from Explore's all-values aggregate.
-        const exploreMapping = !denominator ? INSIGHT_EXPLORE_MAPPINGS[numerator] : null;
+        const exploreMapping = INSIGHT_EXPLORE_MAPPINGS[numerator] || null;
 
+        // Mapped cards can read directly from Explore's all-values aggregate.
         if (exploreMapping) {
           // Reuse the same aggregate source as Explore Years for matching totals.
           fetchExploreInsightMetrics(orgData, exploreMapping.exploreFilter)
             .then((metrics) => {
-              const totalCount = metrics?.[exploreMapping.numeratorMetric];
+              const numeratorCount = metrics?.[exploreMapping.numeratorMetric];
+              const denominatorCount = Array.isArray(exploreMapping.denominatorSumOf)
+                ? exploreMapping.denominatorSumOf.reduce((sum, metricKey) => {
+                  const value = metrics?.[metricKey];
+                  return sum + (Number.isFinite(value) ? value : 0);
+                }, 0)
+                : (Number.isFinite(metrics?.[exploreMapping.denominatorMetric])
+                  ? metrics[exploreMapping.denominatorMetric]
+                  : 0);
+              const totalCount = Number.isFinite(metrics?.[exploreMapping.totalMetric])
+                ? metrics[exploreMapping.totalMetric]
+                : 0;
 
-              if (!Number.isFinite(totalCount)) {
+              if (!Number.isFinite(numeratorCount)) {
                 showUnavailableCard(cardContents);
                 return;
               }
 
-              percentageContents.textContent = makeNumberReadable(totalCount);
+              if (!denominator) {
+                percentageContents.textContent = makeNumberReadable(numeratorCount);
+                figureDetails.innerHTML = `
+                  <span id="details_${numerator}" class="font-semibold text-carnation-600">${makeNumberReadable(numeratorCount)}</span>
+                  <span class="text-neutral-900">
+                    ${denominatorText} in total
+                  </span>
+                `;
+                return;
+              }
+
+              if (!denominatorCount) {
+                showUnavailableCard(cardContents);
+                return;
+              }
+
               figureDetails.innerHTML = `
-                <span id="details_${numerator}" class="font-semibold text-carnation-600">${makeNumberReadable(totalCount)}</span>
+                <span id="details_${numerator}" class="font-semibold text-carnation-600">${makeNumberReadable(numeratorCount)}</span>
                 <span class="text-neutral-900">
-                  ${denominatorText} in total
+                  of <span id="denominator_${numerator}">${makeNumberReadable(denominatorCount)}</span> ${denominatorText}
                 </span>
               `;
+
+              const pct = Math.round((numeratorCount / denominatorCount) * 100);
+              percentageContents.innerHTML = `
+                <span class="font-extrabold">${pct}%</span>
+              `;
+
+              setBarChart(
+                cardContents,
+                numeratorCount,
+                denominatorCount,
+                exploreMapping.denominatorMetric || denominator,
+                totalCount
+              );
             })
             .catch(function (error) {
               console.log(`${numerator} aggregate error: ${error}`);
