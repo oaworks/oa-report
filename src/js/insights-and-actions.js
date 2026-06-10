@@ -635,10 +635,18 @@ export function initInsightsAndActions(org) {
                     if ("mailto" in action) {
                       var mailto = orgData.hits.hits[0]._source.strategy[strategy].mailto;
 
+                      const decodeMailtoValue = function(value, fallback) {
+                        const textarea = document.createElement("textarea");
+                        const resolvedValue = typeof value === "string" && value.length > 0 ? value : fallback;
+
+                        textarea.innerHTML = resolvedValue.replaceAll("\'", "’");
+                        return textarea.value;
+                      };
+
                       var newMailto = mailto.replaceAll("\'", "’");
-                      newMailto = newMailto.replaceAll("{doi}", (action.DOI ? action.DOI : "[No DOI found]"));
-                      newMailto = newMailto.replaceAll("{author_email_name}", (action.author_email_name ? action.author_email_name.replaceAll("\'", "’") : "[No author’s name found]"));
-                      newMailto = newMailto.replaceAll("{title}", (action.title ? action.title.replaceAll("\'", "’") : "[No title found]"));
+                      newMailto = newMailto.replaceAll("{doi}", decodeMailtoValue(action.DOI, "[No DOI found]"));
+                      newMailto = newMailto.replaceAll("{author_email_name}", decodeMailtoValue(action.author_email_name, "[No author’s name found]"));
+                      newMailto = newMailto.replaceAll("{title}", decodeMailtoValue(action.title, "[No title found]"));
 
                       // And add it to the action array
                       action["mailto"] = encodeURI(newMailto);
@@ -649,6 +657,12 @@ export function initInsightsAndActions(org) {
                         .replaceAll("<", "&lt;")
                         .replaceAll(">", "&gt;");
                     };
+
+                    if (typeof action.title === "string" && action.title.includes("&")) {
+                      const textarea = document.createElement("textarea");
+                      textarea.innerHTML = action.title;
+                      action.title = textarea.value;
+                    }
 
                     var tableRowLiteral = tableRow.replace(/\$\{action\.([^}]+)\}/g, function(match, key) {
                       return action[key] ?? "";
