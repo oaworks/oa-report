@@ -7,7 +7,7 @@ export const ACTION_LABELS = {
   email_author_deposit: "Self-archive articles",
   email_author_vor: "Deposit publisher PDFs",
   email_author_aam: "Deposit accepted manuscripts",
-  email_author_unpublished_openrxiv_preprint_not_ccby: "Email authors about non-CC BY preprints",
+  email_author_unpublished_openrxiv_preprint_not_ccby: "Update non-CC BY preprints",
   apc_followup: "Correct publisher errors",
   unanswered_requests: "Escalate unanswered requests"
 };
