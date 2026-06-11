@@ -135,6 +135,12 @@ export const INSIGHT_EXPLORE_MAPPINGS = {
     denominatorMetric: "doc_count",
     totalMetric: "doc_count"
   },
+  is_free_to_read_preprint: {
+    exploreFilter: "is_preprint",
+    numeratorMetric: "free_to_read",
+    denominatorMetric: "doc_count",
+    totalMetric: "doc_count"
+  },
   is_compliant: {
     exploreFilter: "is_paper",
     numeratorMetric: "compliant",
