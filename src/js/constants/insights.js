@@ -58,7 +58,7 @@ export const INSIGHTS_CARDS = [
   },
   {
     numerator: "is_compliant_article",
-    denominator: "is_paper",
+    denominator: "is_covered_by_policy",
     denominatorText: "articles covered by policy",
     definition_key: "compliant",
     info: resolveFieldDefinition("compliant", "insights", { subject: "journal articles" }).info
@@ -124,6 +124,7 @@ export const INSIGHTS_CARDS = [
  * }>}
  */
 export const INSIGHT_EXPLORE_MAPPINGS = {
+  // Journal articles
   is_paper: {
     exploreFilter: "is_paper",
     numeratorMetric: "doc_count",
@@ -135,9 +136,9 @@ export const INSIGHT_EXPLORE_MAPPINGS = {
     denominatorMetric: "doc_count",
     totalMetric: "doc_count"
   },
-  is_free_to_read_preprint: {
-    exploreFilter: "is_preprint",
-    numeratorMetric: "free_to_read",
+  is_oa: {
+    exploreFilter: "is_paper",
+    numeratorMetric: "open_access",
     denominatorMetric: "doc_count",
     totalMetric: "doc_count"
   },
@@ -147,16 +148,10 @@ export const INSIGHT_EXPLORE_MAPPINGS = {
     denominatorMetric: "covered_by_policy",
     totalMetric: "doc_count"
   },
-  is_compliant_article: {
+  is_compliant_article: { // Gates Foundation-only alias
     exploreFilter: "is_paper",
     numeratorMetric: "compliant",
-    denominatorMetric: "doc_count",
-    totalMetric: "doc_count"
-  },
-  is_oa: {
-    exploreFilter: "is_paper",
-    numeratorMetric: "open_access",
-    denominatorMetric: "doc_count",
+    denominatorMetric: "covered_by_policy",
     totalMetric: "doc_count"
   },
   has_data_availability_statement: {
@@ -192,9 +187,16 @@ export const INSIGHT_EXPLORE_MAPPINGS = {
     denominatorMetric: "with_code",
     totalMetric: "doc_count"
   },
+  // Preprints
   is_preprint: {
     exploreFilter: "is_preprint",
     numeratorMetric: "doc_count",
+    totalMetric: "doc_count"
+  },
+  is_free_to_read_preprint: {
+    exploreFilter: "is_preprint",
+    numeratorMetric: "free_to_read",
+    denominatorMetric: "doc_count",
     totalMetric: "doc_count"
   },
   is_compliant_preprint: {
@@ -212,6 +214,7 @@ export const INSIGHT_EXPLORE_MAPPINGS = {
     ],
     totalMetric: "doc_count"
   },
+  // Unique publications
   is_unique_publication: {
     exploreFilter: "is_unique_publication",
     numeratorMetric: "doc_count",
@@ -220,7 +223,7 @@ export const INSIGHT_EXPLORE_MAPPINGS = {
   is_compliant_publication: {
     exploreFilter: "is_unique_publication",
     numeratorMetric: "compliant",
-    denominatorMetric: "doc_count",
+    denominatorMetric: "covered_by_policy",
     totalMetric: "doc_count"
   }
 };

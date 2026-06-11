@@ -339,6 +339,7 @@ function renderActionTabs(strategy = {}) {
 export function initInsightsAndActions(org) {
   // Ensure counts are fetched fresh for the current date range
   countQueryCache.clear();
+  insightAggregateCache.clear();
 
   // Set paths for orgindex
   let queryPrefix = `${QUERY_BASE}q=${dateRange}`,
@@ -573,105 +574,6 @@ export function initInsightsAndActions(org) {
           changeOpacity(contentID);
           return;
         }
-
-        // Get numerator’s count query
-        let numPromise = fetchCountQuery(countQueryPrefix + buildEncodedQueryWithUrlFilter(analysisEntry.query));
-
-        // If we have a denominator param
-        if (numerator && denominator) {
-          // Get denominator’s count query
-          let denomPromise = fetchCountQuery(
-            countQueryPrefix + buildEncodedQueryWithUrlFilter(
-              orgData.hits.hits[0]._source.analysis[denominator].query
-            )
-          );
-
-          // Pick the correct "total" key for the bar chart (articles / preprints / publications)
-          const analysis = orgData.hits.hits[0]._source.analysis;
-
-          // Pick the appropriate total for the bar background
-          let totalKey = 'is_paper';
-          if (denominator === 'is_preprint' || /_preprint$/.test(numerator) || /_preprint$/.test(denominator)) {
-            totalKey = 'is_preprint';
-          } else if (/publication/.test(numerator) || /publication/.test(denominator)) {
-            totalKey = analysis.is_unique_publication
-              ? 'is_unique_publication'
-              : analysis.is_publication
-                ? 'is_publication'
-                : 'is_paper';
-          }
-
-          // Reuse the denominator request if it’s the same as the total
-          const totalArticlesPromise =
-            totalKey === denominator
-              ? denomPromise
-              : fetchCountQuery(
-                  countQueryPrefix + buildEncodedQueryWithUrlFilter(analysis[totalKey].query)
-                );
-
-          Promise.all([numPromise, denomPromise, totalArticlesPromise])
-            .then(function ([numResult, denomResult, totalArticlesResult]) {
-              const numeratorCount     = numResult,
-                    denominatorCount   = denomResult,
-                    totalArticlesCount = totalArticlesResult;
-
-              if (denominatorCount) {
-                // Show "X of Y" in #articles_... with some styling
-                figureDetails.innerHTML = `
-                  <span id="details_${numerator}" class="font-semibold text-carnation-600">${makeNumberReadable(numeratorCount)}</span>
-                  <span class="text-neutral-900">
-                    of <span id="denominator_${numerator}">${makeNumberReadable(denominatorCount)}</span> ${denominatorText}
-                  </span>
-                `;
-
-                // Show percentage in #percent_...
-                const pct = Math.round((numeratorCount / denominatorCount) * 100);
-                percentageContents.innerHTML = `
-                  <span class="font-extrabold">${pct}%</span>
-                `;
-
-                // Clear any existing bar chart and set up new bar chart visualisation
-                setBarChart(
-                  cardContents,
-                  numeratorCount,
-                  denominatorCount,
-                  denominator,
-                  totalArticlesCount
-                );
-              } else {
-                showUnavailableCard(cardContents);
-              }
-            })
-            .catch(function (error) {
-              console.log(`error: ${error}`);
-              showUnavailableCard(cardContents);
-            })
-            .finally(updateTooltipContent);
-
-        } else {
-          // NO DENOMINATOR => single total value
-          numPromise
-            .then(function (result) {
-              // Insert value in #percent_{numerator}
-              percentageContents.textContent = makeNumberReadable(result);
-
-              // Put smaller label "articles" (or denominatorText) in #articles_{numerator}
-              figureDetails.innerHTML = `
-                <span id="details_${numerator}" class="font-semibold text-carnation-600">${makeNumberReadable(result)}</span>
-                <span class="text-neutral-900">
-                  ${denominatorText} in total
-                </span>
-              `;
-            })
-            .catch(function (error) {
-              console.log(`${numerator} error: ${error}`);
-              showUnavailableCard(cardContents);
-            })
-            .finally(updateTooltipContent);
-        }
-
-        // Once data has loaded, display the card
-        changeOpacity(contentID);
 
       } else {
         displayNone(contentID);
