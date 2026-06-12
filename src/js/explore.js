@@ -9,15 +9,16 @@
 
 import DOMPurify from "dompurify";
 import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, escapeQueryValue, normaliseFieldId, makeNumberReadable, announce } from "./utils.js";
-import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, FILTER_PILL_CLASSES, SEGMENTED_PILL_CLASSES } from "./constants.js";
+import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, FILTER_PILL_CLASSES, SEGMENTED_PILL_CLASSES, resolveFieldDefinition } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { toggleLoadingIndicator } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
 import { renderActiveFiltersBanner } from './report-filter-manager.js';
 import { orgDataPromise, initInsightsAndActions } from './insights-and-actions.js';
-import { getAggregatedDataQuery } from './aggregated-data-query.js';
+import { AUTHOR_BREAKDOWN_TERM, getAggregatedDataQuery, getAuthorBreakdownKey } from './aggregated-data-query.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { createTooltip } from './tooltip-manager.js';
+import { buildDefinitionTooltipContent } from './tooltip-content.js';
 
 // =================================================
 // Global variables
@@ -42,13 +43,6 @@ onAuthChange(({ loggedIn: isLoggedIn, orgKey: key }) => {
   applyAuthVisibility({ hideWhenLoggedOut: ["report-filters"] });
   refreshFiltersBanner();
 });
-
-/**
- * Allows the EXPLORE_HEADER_TERMS_LABELS constant to be accessible via a browser.
- * @global
- * @type {Object}
- */
-window.EXPLORE_HEADER_TERMS_LABELS = EXPLORE_HEADER_TERMS_LABELS;
 
 /**
  * Flag indicating whether the data explore section has been initialised.
@@ -97,6 +91,15 @@ export let currentActiveDataDisplayToggle = true;
  * @type {Map<string, Object>}
  */
 let exploreItemDataById = new Map();
+
+function isOrcidUrl(value) {
+  try {
+    const host = new URL(value).hostname.toLowerCase();
+    return host === 'orcid.org' || host.endsWith('.orcid.org');
+  } catch {
+    return false;
+  }
+}
 
 const FILTER_TARGET_BUTTON_CLASS = 'js-filter-target cursor-pointer hover:underline text-left focus:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm';
 const EXTERNAL_LINK_PILL_CLASS = 'ml-2 bg-neutral-200 text-neutral-900 text-xs px-2 py-0.5 rounded-full whitespace-nowrap hover:bg-carnation-200 js-external-pill';
@@ -189,7 +192,6 @@ export async function initDataExplore(org) {
     // Check if explore data exists and is not empty
     if (orgData.hits.hits.length > 0 && orgData.hits.hits[0]._source.explore && orgData.hits.hits[0]._source.explore.length > 0) {
       addExploreButtonsToDOM(orgData.hits.hits[0]._source.explore);
-      refreshFiltersBanner(); // respects logged-in state
       addRecordsShownSelectToDOM();
       handleDataDisplayToggle();
       enableExploreRowHighlighting();
@@ -393,6 +395,7 @@ export async function processExploreDataTable(button, itemData) {
 
   // Fetch and display data based on the current state of the data display style toggle
   await fetchAndDisplayExploreData(itemData, currentActiveExploreItemQuery, currentActiveExploreItemSize, currentActiveDataDisplayToggle);
+  refreshFiltersBanner();
 
   toggleLoadingIndicator(false, 'explore_loading'); // Once data is loaded, hide loading indicator
 }
@@ -651,7 +654,8 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 }
 
 async function loadExploreRecords(itemData, query, size, pretty) {
-  const { type, term, sort, includes } = itemData;
+  const { type, sort, includes } = itemData;
+  const term = itemData?.id === "author" ? AUTHOR_BREAKDOWN_TERM : itemData?.term;
   const decodedQuery = andQueryStrings(
     decodeAndReplaceUrlEncodedChars(query),
     getDecodedUrlQuery()
@@ -697,13 +701,13 @@ async function fetchTermBasedData(suffix, query, term, sort, size) {
   const totalUniqueTerms = response?.aggregations?.values_total?.value ?? 0;
 
   if (response && response.aggregations && response.aggregations.values && response.aggregations.values.buckets) {
-    buckets = response.aggregations.values.buckets.map(bucket => formatBucket(bucket));
+    buckets = response.aggregations.values.buckets.map(bucket => formatBucket(bucket, term));
   }
 
   // Process 'all_values' and 'no_values' similarly using the helper function
   ['all_values', 'no_values'].forEach(aggregationKey => {
     if (response && response.aggregations && response.aggregations[aggregationKey]) {
-      const additionalBucket = {'key': aggregationKey, ...formatBucket(response.aggregations[aggregationKey])};
+      const additionalBucket = {'key': aggregationKey, ...formatBucket(response.aggregations[aggregationKey], term)};
       buckets.push(additionalBucket);
     }
   });
@@ -725,20 +729,31 @@ async function fetchTermBasedData(suffix, query, term, sort, size) {
  * Formats a single bucket or aggregation result for a term-based table.
  * 
  * @param {Object} bucket - The raw bucket data from the API response.
+ * @param {string} [term=""] - The field used for the current term breakdown.
  * @returns {Object} The formatted bucket data.
  */
-function formatBucket(bucket) {
+function formatBucket(bucket, term = "") {
   const formattedBucket = {};
   Object.keys(bucket).forEach(key => {
-      if (key.startsWith("median_")) {
-          formattedBucket[key] = bucket[key].values["50.0"];
-      } else if (bucket[key].doc_count !== undefined) {
-          formattedBucket[key] = bucket[key].doc_count;
-      } else if (bucket[key].value !== undefined) {
-          formattedBucket[key] = bucket[key].value;
-      } else {
-          formattedBucket[key] = bucket[key];
-      }
+    if (key.startsWith("median_")) {
+      formattedBucket[key] = bucket[key].values["50.0"];
+    } else if (key === "top_author_record") {
+      const hit = bucket[key]?.hits?.hits?.[0]?._source;
+      const authorships = Array.isArray(hit?.authorships) ? hit.authorships : [];
+      const matchingAuthorship = authorships.find((authorship) => {
+        return term === AUTHOR_BREAKDOWN_TERM
+          && getAuthorBreakdownKey(authorship?.author) === bucket.key;
+      });
+
+      formattedBucket.display_name = matchingAuthorship?.author?.display_name || null;
+      formattedBucket.orcid = matchingAuthorship?.author?.orcid || null;
+    } else if (bucket[key].doc_count !== undefined) {
+      formattedBucket[key] = bucket[key].doc_count;
+    } else if (bucket[key].value !== undefined) {
+      formattedBucket[key] = bucket[key].value;
+    } else {
+      formattedBucket[key] = bucket[key];
+    }
   });
   return formattedBucket;
 }
@@ -827,8 +842,8 @@ function getExploreSortLabel({ type, id, term, sort }) {
     return lowerCaseLabels.has(label) ? label.toLowerCase() : label;
   }
 
-  const label = EXPLORE_HEADER_TERMS_LABELS?.[sort]?.label
-    || (term ? EXPLORE_HEADER_TERMS_LABELS?.[term]?.label : null)
+  const label = resolveFieldDefinition(sort, 'explore')?.label
+    || (term ? resolveFieldDefinition(term, 'explore')?.label : null)
     || "Publication count";
   if (label === "Publication count") return "publication count";
   return lowerCaseLabels.has(label) ? label.toLowerCase() : label;
@@ -873,20 +888,23 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
   }
 
   const headerRow = document.createElement('tr');
-  Object.keys(records).forEach((rawKey, index) => {
-    const key = normaliseFieldId(rawKey);
-    const cssClass = getExploreColumnClass('header', dataType, index);
+  Object.keys(records)
+    // Hide author bucket metadata from the rendered table.
+    .filter((rawKey) => !(dataType === 'terms' && currentActiveExploreItemData?.id === 'author' && (rawKey === 'display_name' || rawKey === 'orcid')))
+    .forEach((rawKey, index) => {
+      const key = normaliseFieldId(rawKey);
+      const cssClass = getExploreColumnClass('header', dataType, index);
 
-    const headerCell = createTableCell('', cssClass, null, null, true); 
-    if (index > 1) {
-      headerCell.classList.add(
-        shouldRightAlignExploreColumn(rawKey, records[rawKey]) ? "text-right" : "text-left"
-      );
-    }
-    setupHeaderTooltip(headerCell, key, dataType);
+      const headerCell = createTableCell('', cssClass, null, null, true); 
+      if (index > 1) {
+        headerCell.classList.add(
+          shouldRightAlignExploreColumn(rawKey, records[rawKey]) ? "text-right" : "text-left"
+        );
+      }
+      setupHeaderTooltip(headerCell, key, dataType);
 
-    headerRow.appendChild(headerCell);
-  });
+      headerRow.appendChild(headerCell);
+    });
   tableHeader.appendChild(headerRow);
 }
 
@@ -926,33 +944,12 @@ function isNumericLikeValue(value) {
  * @returns {string} The generated HTML content for the tooltip.
  */
 function generateTooltipContent(labelData, additionalHelpText = null) {
-  // Org-specific fields to inject with text content
-  // Only run regex if fields are present in the HTML
-  const injectOrgFields = (html = '') => /org-(name|policy-(coverage|compliance|url))/.test(html) ? html
-    .replace(/<span class=['"]org-name['"]><\/span>/g, orgName ?? '')
-    .replace(/<span class=['"]org-policy-coverage['"]><\/span>/g, orgPolicyCoverage ?? '')
-    .replace(/<span class=['"]org-policy-compliance['"]><\/span>/g, orgPolicyCompliance ?? '')
-    .replace(/class=['"]org-policy-url['"][^>]*href=['"][^'"]*['"]/g, match => match.replace(/href=['"][^'"]*['"]/, `href='${orgPolicyUrl ?? '#'}'`))
-  : html;
-
-  // Reuse a single off-DOM element to avoid repeated creation
-  const textBuffer = generateTooltipContent.textBuffer || (generateTooltipContent.textBuffer = document.createElement('div'));
-
-  // Get plain text version of HTML content
-  const plainText = (html = '') => {
-    textBuffer.innerHTML = html;
-    return textBuffer.textContent.replace(/\s+/g, ' ').trim();
-  };
-  const infoHtml = injectOrgFields(labelData.info);
-  const helpHtml = additionalHelpText ? injectOrgFields(additionalHelpText) : '';
-  const detailsHtml = injectOrgFields(labelData.details);
-  const showHelp = helpHtml && !plainText(infoHtml).includes(plainText(helpHtml));
-  const hasDetails = !!labelData.details;
-  return `
-    <p class='${hasDetails ? "mb-2" : ""}'>${infoHtml}</p>
-    ${showHelp ? `<p class='mb-2'>${helpHtml}</p>` : ""}
-    ${hasDetails ? `<details><summary class='hover:cursor-pointer'>Methodology</summary><p class='mt-2'>${detailsHtml}</p></details>` : ""}
-  `;
+  return buildDefinitionTooltipContent(labelData, additionalHelpText, {
+    orgName,
+    orgPolicyCoverage,
+    orgPolicyCompliance,
+    orgPolicyUrl
+  });
 }
 
 /**
@@ -965,8 +962,9 @@ function generateTooltipContent(labelData, additionalHelpText = null) {
  * @param {string} dataType - Indicates the type of data ('terms' or 'articles'), which determines the labels configuration to use.
  */
 function setupHeaderTooltip(element, key, dataType) {
-  const labelsConfig = dataType === 'terms' ? EXPLORE_HEADER_TERMS_LABELS : EXPLORE_HEADER_ARTICLES_LABELS;
-  const labelData = labelsConfig[key];
+  const labelData = dataType === 'terms'
+    ? resolveFieldDefinition(key, 'explore')
+    : EXPLORE_HEADER_ARTICLES_LABELS[key];
   const label = labelData && labelData.label ? labelData.label : key;
   element.innerHTML = `<span>${label}</span>`;
 
@@ -1015,9 +1013,19 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
 
   function appendRow(target, record, section) {
     const row = document.createElement('tr');
+    const visibleEntries = Object.entries(record)
+      .filter(([key]) => !(dataType === 'terms' && exploreItemId === 'author' && (key === 'display_name' || key === 'orcid')));
 
-    Object.entries(record).forEach(([key, rawContent], columnIndex) => {
+    visibleEntries.forEach(([key, rawContent], columnIndex) => {
       let content = rawContent;
+      const displayName =
+        dataType === 'terms' && key === 'key' && exploreItemId === 'author'
+          ? record.display_name
+          : null;
+      const authorOrcid =
+        dataType === 'terms' && key === 'key' && exploreItemId === 'author'
+          ? record.orcid
+          : null;
 
       if (dataType === 'articles' && key === 'DOI') {
         content = convertTextToLinks(content, true, 'https://doi.org/');
@@ -1036,7 +1044,9 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
         getExploreColumnClass(section, dataType, columnIndex),
         exploreItemId,
         key,
-        false
+        false,
+        displayName,
+        authorOrcid
       );
 
       if (columnIndex > 1) {
@@ -1081,12 +1091,16 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
  * @param {string} [exploreItemId=null] - The ID of the selected explore item.
  * @param {string} [key=null] - The key of the selected explore item.
  * @param {boolean} [isHeader=false] - Indicates if the cell is a header cell (th) or a regular cell (td).
+ * @param {string|null} [displayName=null] - Optional display label for metadata-backed term keys.
+ * @param {string|null} [authorOrcid=null] - Optional ORCID URL associated with an author bucket.
  * @returns {HTMLElement} The created table cell element.
  */
-function createTableCell(content, cssClass, exploreItemId = null, key = null, isHeader = false) {
+function createTableCell(content, cssClass, exploreItemId = null, key = null, isHeader = false, displayName = null, authorOrcid = null) {
   const cell = document.createElement(isHeader ? 'th' : 'td');
   cell.className = cssClass;
-  const termBase = currentActiveExploreItemData?.term?.trim() || "";
+  const termBase = currentActiveExploreItemData?.id === "author"
+    ? AUTHOR_BREAKDOWN_TERM
+    : (currentActiveExploreItemData?.term?.trim() || "");
   const termField = termBase
     ? ((termBase === "published_year" && API_HOST_WORKS === "api")
       ? termBase.replace(/\.keyword$/i, "")
@@ -1101,6 +1115,9 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
    */
   function attachTermClickFilter(rawValue) {
     if (key !== 'key' || !termField) return;
+
+    cell.setAttribute("data-filter-field", termField);
+    cell.setAttribute("data-filter-value", String(rawValue));
 
     cell.onclick = (event) => {
       const target = /** @type {HTMLElement} */ (event.target);
@@ -1207,43 +1224,13 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
   }
 
   /**
-   * Renders an ORCID-backed label with async name resolution and a companion
-   * ORCID pill link. Used both for filterable key cells and plain value cells.
-   *
-   * @param {string} orcidUrl
-   * @param {HTMLElement} container
-   * @param {boolean} [asFilterTarget=false]
-   * @returns {HTMLElement}
-   */
-  function createAsyncOrcidLabel(orcidUrl, container, asFilterTarget = false) {
-    const orcidId = orcidUrl.split('/').pop();
-    const nameSpan = document.createElement('span');
-    nameSpan.textContent = 'Loading ORCID data...';
-
-    const label = asFilterTarget ? createFilterTargetButton() : document.createElement('span');
-    label.appendChild(nameSpan);
-    container.appendChild(label);
-    container.appendChild(createExternalPill(orcidUrl, 'ORCID ↗'));
-
-    getORCiDFullName(orcidId)
-      .then(fullName => {
-        nameSpan.textContent = fullName || 'Name not found';
-      })
-      .catch(() => {
-        nameSpan.textContent = orcidUrl;
-      });
-
-    return label;
-  }
-
-  /**
    * Renders the first-column term label cell for known Explore breakdowns that
    * need special formatting, while preserving click-to-filter behavior.
    *
    * @param {string|number} rawValue
    * @returns {HTMLElement}
    */
-  function renderSpecialKeyCell(rawValue) {
+  function renderSpecialKeyCell(rawValue, displayValue = rawValue) {
     let labelWrapper = null;
 
     switch (exploreItemId) {
@@ -1287,16 +1274,31 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
       case 'janelia_lab_head':
       case 'investigator':
       case 'freeman_hrabowski_scholar':
-      case 'author':
-        if (typeof rawValue === 'string' && rawValue.includes('orcid.org')) {
-          labelWrapper = createAsyncOrcidLabel(rawValue, cell, true);
+        if (typeof rawValue === 'string' && isOrcidUrl(rawValue)) {
+          labelWrapper = createFilterTargetButton(displayValue);
+          cell.appendChild(labelWrapper);
+          cell.appendChild(createExternalPill(rawValue, 'ORCID ↗'));
           break;
         }
-        labelWrapper = createFilterTargetButton(rawValue);
+        labelWrapper = createFilterTargetButton(displayValue);
+        break;
+
+      case 'author':
+        labelWrapper = createFilterTargetButton(displayValue);
+        if (typeof authorOrcid === 'string' && isOrcidUrl(authorOrcid)) {
+          cell.appendChild(labelWrapper);
+          cell.appendChild(createExternalPill(authorOrcid, 'ORCID ↗'));
+          break;
+        }
+        if (typeof rawValue === 'string' && isOrcidUrl(rawValue)) {
+          cell.appendChild(labelWrapper);
+          cell.appendChild(createExternalPill(rawValue, 'ORCID ↗'));
+          break;
+        }
         break;
 
       default:
-        labelWrapper = createFilterTargetButton(rawValue);
+        labelWrapper = createFilterTargetButton(displayValue);
     }
 
     if (!cell.contains(labelWrapper)) {
@@ -1350,14 +1352,17 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
 
   // Safely check and process content based on its type and the context
   if (key === 'key' && content) {
-    return renderSpecialKeyCell(content);
+    return renderSpecialKeyCell(content, displayName || content);
   }
 
   // Non-`key` cells, or cases outside terms tables
 
-  // Handle ORCID links (e.g. in non-key author cells) as: name + pill
-  if (exploreItemId === 'author' && typeof content === 'string' && content.includes('orcid.org')) {
-    createAsyncOrcidLabel(content, cell, false);
+  // Render author metadata directly from the API response when present.
+  if (exploreItemId === 'author' && typeof content === 'string' && isOrcidUrl(content)) {
+    const label = document.createElement('span');
+    label.textContent = displayName || authorOrcid || content;
+    cell.appendChild(label);
+    cell.appendChild(createExternalPill(content, 'ORCID ↗'));
     return cell;
   }
 
