@@ -10,10 +10,11 @@
 // =================================================
 
 import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText } from './utils.js';
-import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS } from './constants.js';
+import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS, resolveFieldDefinition } from './constants.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { initActionTabs } from './actions.js';
 import { createPopover } from './tooltip-manager.js';
+import { buildTooltipContent, buildDefinitionHelpHtml, injectOrgFields } from './tooltip-content.js';
 
 // Cache identical count queries so we only hit the API once per unique URL
 const countQueryCache = new Map();
@@ -23,6 +24,58 @@ const fetchCountQuery = (url) => {
   }
   return countQueryCache.get(url);
 };
+
+const INSIGHT_CARD_BY_NUMERATOR = new Map(INSIGHTS_CARDS.map((card) => [card.numerator, card]));
+const INSIGHT_TOOLTIP_HEADING = 'Definition';
+
+function buildInsightTooltipSection(contentHtml = '') {
+  if (!contentHtml) return '';
+
+  return `
+    <section class="space-y-2">
+      <h4 class="font-semibold text-neutral-900">${INSIGHT_TOOLTIP_HEADING}</h4>
+      ${contentHtml}
+    </section>
+  `;
+}
+
+function buildInsightDefinitionsHtml(numerator, insightInfo = '', helpTextByKey = {}, analysisHelpText = '') {
+  const matchingCard = INSIGHT_CARD_BY_NUMERATOR.get(numerator);
+  const definitionKey = matchingCard?.definition_key;
+  const orgMeta = {
+    orgName,
+    orgPolicyCoverage,
+    orgPolicyCompliance,
+    orgPolicyUrl
+  };
+  if (!definitionKey) {
+    const contentHtml = buildTooltipContent({
+      leadHtml: insightInfo,
+      helpHtml: injectOrgFields(analysisHelpText, orgMeta)
+    });
+    return buildInsightTooltipSection(contentHtml);
+  }
+
+  const fieldDefinition = resolveFieldDefinition(definitionKey, 'insights');
+  if (!fieldDefinition) {
+    return buildInsightTooltipSection(insightInfo);
+  }
+
+  const helpHtml = buildDefinitionHelpHtml({
+    help_text: fieldDefinition.help_text,
+    help_text_by_key: helpTextByKey,
+    org_meta: orgMeta,
+    help_text_style: fieldDefinition.help_text_style
+  });
+  const contentHtml = buildTooltipContent({
+    leadHtml: injectOrgFields(insightInfo, orgMeta),
+    helpHtml,
+    detailsHtml: injectOrgFields(fieldDefinition.details, orgMeta),
+    dedupeHelpTextAgainstLead: fieldDefinition.help_text_style !== 'bullets'
+  });
+
+  return buildInsightTooltipSection(contentHtml);
+}
 
 // =================================================
 // Org data
@@ -284,6 +337,7 @@ export function initInsightsAndActions(org) {
     /** Get Insights data and display it **/
     // Loop through each Insight card from constants.js and call getInsight
     const policyUrl = orgData?.hits?.hits?.[0]?._source?.policy?.url;
+    const helpTextByKey = orgData?.hits?.hits?.[0]?._source?.policy?.help_text || {};
     INSIGHTS_CARDS.forEach((cardConfig) => {
       if (!renderedInsightIds.has(cardConfig.numerator)) {
         return;
@@ -298,11 +352,12 @@ export function initInsightsAndActions(org) {
         card.numerator,
         card.denominator,
         card.denominatorText,
-        card.info
+        card.info,
+        helpTextByKey
       );
     });
 
-    function getInsight(numerator, denominator, denominatorText, insightInfo) {
+    function getInsight(numerator, denominator, denominatorText, insightInfo, helpTextByKey) {
       // Check if the data for this "numerator" (i.e. Insights data card) exists in orgData
       const analysisEntry = orgData.hits.hits[0]._source.analysis[numerator];
       if (!analysisEntry) return;
@@ -367,8 +422,13 @@ export function initInsightsAndActions(org) {
           const detailHtml = figureDetails
             ? `<div class="mb-2 font-semibold text-neutral-900">${figureDetails.innerHTML}</div>`
             : "";
-          const infoHtml = insightInfo ? `<div class="space-y-2">${insightInfo}</div>` : "";
-          instance.setContent(`${detailHtml}${infoHtml}`);
+          const definitionHtml = buildInsightDefinitionsHtml(
+            numerator,
+            insightInfo,
+            helpTextByKey,
+            analysisEntry.help_text || ''
+          );
+          instance.setContent(`${detailHtml}${definitionHtml}`);
         };
 
         // Accessibility / tooltip IDs
@@ -575,10 +635,18 @@ export function initInsightsAndActions(org) {
                     if ("mailto" in action) {
                       var mailto = orgData.hits.hits[0]._source.strategy[strategy].mailto;
 
+                      const decodeMailtoValue = function(value, fallback) {
+                        const textarea = document.createElement("textarea");
+                        const resolvedValue = typeof value === "string" && value.length > 0 ? value : fallback;
+
+                        textarea.innerHTML = resolvedValue.replaceAll("\'", "’");
+                        return textarea.value;
+                      };
+
                       var newMailto = mailto.replaceAll("\'", "’");
-                      newMailto = newMailto.replaceAll("{doi}", (action.DOI ? action.DOI : "[No DOI found]"));
-                      newMailto = newMailto.replaceAll("{author_email_name}", (action.author_email_name ? action.author_email_name.replaceAll("\'", "’") : "[No author’s name found]"));
-                      newMailto = newMailto.replaceAll("{title}", (action.title ? action.title.replaceAll("\'", "’") : "[No title found]"));
+                      newMailto = newMailto.replaceAll("{doi}", decodeMailtoValue(action.DOI, "[No DOI found]"));
+                      newMailto = newMailto.replaceAll("{author_email_name}", decodeMailtoValue(action.author_email_name, "[No author’s name found]"));
+                      newMailto = newMailto.replaceAll("{title}", decodeMailtoValue(action.title, "[No title found]"));
 
                       // And add it to the action array
                       action["mailto"] = encodeURI(newMailto);
@@ -589,6 +657,12 @@ export function initInsightsAndActions(org) {
                         .replaceAll("<", "&lt;")
                         .replaceAll(">", "&gt;");
                     };
+
+                    if (typeof action.title === "string" && action.title.includes("&")) {
+                      const textarea = document.createElement("textarea");
+                      textarea.innerHTML = action.title;
+                      action.title = textarea.value;
+                    }
 
                     var tableRowLiteral = tableRow.replace(/\$\{action\.([^}]+)\}/g, function(match, key) {
                       return action[key] ?? "";
