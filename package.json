@@ -21,7 +21,7 @@
     "concurrently": "^10.0.3",
     "dompurify": "3.4.9",
     "dotenv": "^17.4.2",
-    "esbuild": "^0.28.0",
+    "esbuild": "^0.28.1",
     "html-minifier-terser": "^7.2.0",
     "luxon": "^3.7.2",
     "markdown-it-attrs": "^5.0.0",
