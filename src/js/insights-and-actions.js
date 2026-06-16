@@ -249,12 +249,15 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
       const card = template.content.querySelector(`#${cardId}`);
       if (!card) return;
       const clonedCard = card.cloneNode(true);
-      // Show a placeholder when the API returns no data for a displayed card.
-      if (!analysisEntry) {
+      // Show a placeholder when the API returns no data or the date range is outside the card's available window.
+      const unavailable = !analysisEntry
+        || (analysisEntry.available_from && endYear < analysisEntry.available_from)
+        || (analysisEntry.available_until && startYear > analysisEntry.available_until);
+      if (unavailable) {
         showUnavailableCard(clonedCard);
       }
       container.appendChild(clonedCard);
-      if (analysisEntry) {
+      if (!unavailable) {
         renderedIds.add(cardId);
       }
     });
