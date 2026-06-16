@@ -737,6 +737,8 @@ function formatBucket(bucket, term = "") {
   Object.keys(bucket).forEach(key => {
     if (key.startsWith("median_")) {
       formattedBucket[key] = bucket[key].values["50.0"];
+    } else if (key === "meta") {
+      // Skip ES aggregation-level metadata; not a data field.
     } else if (key === "top_author_record") {
       const hit = bucket[key]?.hits?.hits?.[0]?._source;
       const authorships = Array.isArray(hit?.authorships) ? hit.authorships : [];
