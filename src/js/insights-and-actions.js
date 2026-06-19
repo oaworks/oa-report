@@ -15,7 +15,7 @@ import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { initActionTabs } from './actions.js';
 import { createPopover } from './tooltip-manager.js';
 import { buildTooltipContent, buildDefinitionHelpHtml, injectOrgFields } from './tooltip-content.js';
-import { getAggregatedDataQuery, formatAggregationBucket } from './aggregated-data-query.js';
+import { getInsightsAggregationQuery, formatAggregationBucket } from './aggregated-data-query.js';
 
 // Cache identical count queries so we only hit the API once per unique URL
 const countQueryCache = new Map();
@@ -68,21 +68,13 @@ function fetchExploreInsightMetrics(orgData, filterId) {
   });
 
   if (!insightAggregateCache.has(cacheKey)) {
-    const postData = getAggregatedDataQuery(
-      suffix,
-      decodedQuery,
-      'published_year',
-      startYear,
-      endYear,
-      1,
-      '_count'
-    );
+    const postData = getInsightsAggregationQuery(suffix, decodedQuery, startYear, endYear);
 
     insightAggregateCache.set(
       cacheKey,
       fetchPostData(postData).then((response) => {
         const allValues = response?.aggregations?.all_values;
-        return allValues ? formatAggregationBucket(allValues, 'published_year') : null;
+        return allValues ? formatAggregationBucket(allValues) : null;
       })
     );
   }

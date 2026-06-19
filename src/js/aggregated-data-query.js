@@ -752,7 +752,37 @@ function createAuthorBucketMetadataAggs(term) {
 // =================================================
 
 /**
- * Dynamically constructs the POST body for Elasticsearch queries 
+ * Constructs a minimal POST body for Elasticsearch queries used by Insights
+ * cards. Only requests the `all_values` aggregate.
+ *
+ * @param {string} suffix    - Organisation-specific suffix.
+ * @param {string} query     - Main query string.
+ * @param {number} startYear - Start year (inclusive) for `published_date`.
+ * @param {number} endYear   - End year (inclusive) for `published_date`.
+ * @returns {Object} POST body suitable for `/_search`.
+ */
+export function getInsightsAggregationQuery(suffix, query, startYear, endYear) {
+  return {
+    query: {
+      bool: {
+        must: [
+          { query_string: { query } },
+          { range: { published_date: { gte: startYear, lte: endYear } } },
+        ],
+      },
+    },
+    size: 0,
+    aggs: {
+      all_values: {
+        filter: { exists: { field: "published_year" } },
+        aggs: createAggregationTemplate(suffix),
+      },
+    },
+  };
+}
+
+/**
+ * Dynamically constructs the POST body for Elasticsearch queries
  * to handle complex term-based aggregations.
  * This includes sorting and filtering based on specified parameters.
  *
