@@ -406,10 +406,7 @@ export function reorderTermRecords(records, includes) {
   if (records.some(record => record.hasOwnProperty('doc_count'))) firstKeys.push('doc_count');
 
   const includeKeys = includes.split(',').filter(key => !firstKeys.includes(key) && key !== 'doc_count');
-  const metadataKeys = Array.from(new Set(
-    records.flatMap((record) => Object.keys(record))
-  )).filter((key) => !firstKeys.includes(key) && !includeKeys.includes(key) && key !== 'doc_count');
-  const keysOrder = firstKeys.concat(includeKeys, metadataKeys);
+  const keysOrder = firstKeys.concat(includeKeys);
 
   return records.map(record => {
     const reorderedRecord = {};
@@ -425,6 +422,10 @@ export function reorderTermRecords(records, includes) {
         reorderedRecord[key] = value;
       }
     });
+    // Preserve author metadata fields needed by row rendering but not shown as columns.
+    for (const key of ['display_name', 'orcid']) {
+      if (record[key] !== undefined) reorderedRecord[key] = record[key];
+    }
     return reorderedRecord;
   });
 }
