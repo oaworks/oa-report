@@ -16,6 +16,7 @@ import { initActionTabs } from './actions.js';
 import { createPopover } from './tooltip-manager.js';
 import { buildTooltipContent, buildDefinitionHelpHtml, injectOrgFields } from './tooltip-content.js';
 import { getInsightsAggregationQuery, formatAggregationBucket } from './aggregated-data-query.js';
+import { startLoading, stopLoading } from './components.js';
 
 // Cache identical count queries so we only hit the API once per unique URL
 const countQueryCache = new Map();
@@ -336,6 +337,8 @@ export function initInsightsAndActions(org) {
   countQueryCache.clear();
   insightAggregateCache.clear();
 
+  startLoading();
+
   // Set paths for orgindex
   let queryPrefix = `${QUERY_BASE}q=${dateRange}`,
       countQueryPrefix = `${COUNT_QUERY_BASE}q=${dateRange}`;
@@ -399,6 +402,7 @@ export function initInsightsAndActions(org) {
     // Loop through each Insight card from constants.js and call getInsight
     const policyUrl = orgData?.hits?.hits?.[0]?._source?.policy?.url;
     const helpTextByKey = orgData?.hits?.hits?.[0]?._source?.policy?.help_text || {};
+    const cardPromises = [];
     INSIGHTS_CARDS.forEach((cardConfig) => {
       if (!renderedInsightIds.has(cardConfig.numerator)) {
         return;
@@ -409,13 +413,14 @@ export function initInsightsAndActions(org) {
         card.info = card.info.replace("{policyUrl}", policyUrl);
       }
 
-      getInsight(
+      const cardPromise = getInsight(
         card.numerator,
         card.denominator,
         card.denominatorText,
         card.info,
         helpTextByKey
       );
+      if (cardPromise) cardPromises.push(cardPromise);
     });
 
     function getInsight(numerator, denominator, denominatorText, insightInfo, helpTextByKey) {
@@ -504,7 +509,7 @@ export function initInsightsAndActions(org) {
         // Mapped cards can read directly from Explore's all-values aggregate.
         if (exploreMapping) {
           // Reuse the same aggregate source as Explore Years for matching totals.
-          fetchExploreInsightMetrics(orgData, exploreMapping.exploreFilter)
+          const cardPromise = fetchExploreInsightMetrics(orgData, exploreMapping.exploreFilter)
             .then((metrics) => {
               const numeratorCount = metrics?.[exploreMapping.numeratorMetric];
               const denominatorCount = Array.isArray(exploreMapping.denominatorSumOf)
@@ -567,7 +572,7 @@ export function initInsightsAndActions(org) {
             .finally(updateTooltipContent);
 
           changeOpacity(contentID);
-          return;
+          return cardPromise;
         }
 
       } else {
@@ -600,7 +605,7 @@ export function initInsightsAndActions(org) {
             listQuery  = queryPrefix + encodedQuery + sort;
         
         // Get total action (article) count for this strategy
-        fetchCountQuery(countQuery)
+        const actionPromise = fetchCountQuery(countQuery)
           .then(function (countResponse) {
             var count = parseFloat(countResponse);
             
@@ -709,10 +714,11 @@ export function initInsightsAndActions(org) {
               )
             }
           })
-          .catch(function (error) { console.log(`${strategy} error: ${error}`); })
+          .catch(function (error) { console.log(`${strategy} error: ${error}`); });
 
         // Once data has loaded, display the card
         changeOpacity(tabID);
+        return actionPromise;
 
       } else {
         var tabItem = document.getElementById(tabID),
@@ -779,16 +785,20 @@ export function initInsightsAndActions(org) {
     //   </td>"
     // );
     
+    const actionPromises = [];
     if (loggedIn) {
       ACTION_TABLE_CONFIGS.forEach(({ id, keys, rowTemplate }) => {
-        displayStrategy(id, keys, rowTemplate);
+        const actionPromise = displayStrategy(id, keys, rowTemplate);
+        if (actionPromise) actionPromises.push(actionPromise);
       });
     }
-    
+
+    return Promise.allSettled([...cardPromises, ...actionPromises]);
+
   }).catch(error => {
     console.log(`Report ERROR: ${error}`);
     displayErrorHeader();
-  });
+  }).finally(stopLoading);
 };
 
 
