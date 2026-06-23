@@ -3,6 +3,8 @@
 // Insight card copy/config
 // =================================================
 
+import { resolveFieldDefinition } from './field-definitions.js';
+
 /**
  * Insight card configurations and copy.
  * @type {Array<Object>}
@@ -30,49 +32,57 @@ export const INSIGHTS_CARDS = [
     numerator: "is_free_to_read",
     denominator: "is_paper",
     denominatorText: "articles",
-    info: "<p>Journal articles that are free to read on the publisher website or any online repository, including temporarily accessible articles (“bronze Open Access”).</p>"
+    definition_key: "free_to_read",
+    info: resolveFieldDefinition("free_to_read", "insights", { subject: "Journal articles" }).info
   },
   {
     numerator: "is_free_to_read_preprint",
     denominator: "is_preprint",
     denominatorText: "preprints",
-    info: "<p>Preprints that are free to read on the publisher website or any online repository, including temporarily accessible articles (“bronze Open Access”).</p>"
+    definition_key: "free_to_read",
+    info: resolveFieldDefinition("free_to_read", "insights", { subject: "Preprints" }).info
   },
   {
     numerator: "is_compliant",
     denominator: "is_covered_by_policy",
     denominatorText: "articles covered by policy",
-    info: `<p>The percentage of journal articles covered by <a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
+    definition_key: "compliant",
+    info: resolveFieldDefinition("compliant", "insights", { subject: "journal articles" }).info
   },
   {
     numerator: "is_compliant_preprint",
     denominator: "is_covered_by_policy_preprint",
     denominatorText: "preprints covered by policy",
-    info: `<p>The percentage of preprints covered by <a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
+    definition_key: "compliant",
+    info: resolveFieldDefinition("compliant", "insights", { subject: "preprints" }).info
   },
   {
     numerator: "is_compliant_article",
-    denominator: "is_paper",
+    denominator: "is_covered_by_policy",
     denominatorText: "articles covered by policy",
-    info: `<p>The percentage of journal articles covered by <a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
+    definition_key: "compliant",
+    info: resolveFieldDefinition("compliant", "insights", { subject: "journal articles" }).info
   },
   {
     numerator: "is_oa",
     denominator: "is_paper",
     denominatorText: "articles",
-    info: "<p>The number of journal articles that are free and <a href='https://creativecommons.org/licenses/by/4.0/' class='underline underline-offset-2 decoration-1' target='_blank' rel='noopener'>CC BY</a> <strong class='bold'>or</strong> <a href='https://creativecommons.org/publicdomain/zero/1.0/' class='underline underline-offset-2 decoration-1' target='_blank' rel='noopener'>CC0</a> (in the public domain) on the publisher’s website, a repository or a preprint server.</p>"
+    definition_key: "open_access",
+    info: resolveFieldDefinition("open_access", "insights", { subject: "journal articles" }).info
   },
   {
     numerator: "has_data_availability_statement",
     denominator: "has_checked_data_availability_statement",
     denominatorText: "articles checked to date",
-    info: `<p>This number tells you how many journal articles that we’ve analyzed have a data availability statement.</p> <p>To check if a paper has a data availability statement, we use data from PubMed and review articles manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data).</p>`
+    definition_key: "data_availability_statement",
+    info: resolveFieldDefinition("data_availability_statement", "insights", { subject: "journal articles", review_subject: "articles" }).info
   },
   {
     numerator: "has_data_availability_statement_preprint",
     denominator: "has_checked_data_availability_statement_preprint",
     denominatorText: "preprints checked to date",
-    info: `<p>This number tells you how many preprints that we’ve analyzed have a data availability statement.</p> <p>To check if a paper has a data availability statement, we use data from PubMed and review preprints manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data).</p>`
+    definition_key: "data_availability_statement",
+    info: resolveFieldDefinition("data_availability_statement", "insights", { subject: "preprints", review_subject: "preprints" }).info
   },
   {
     numerator: "has_open_data",
@@ -90,6 +100,130 @@ export const INSIGHTS_CARDS = [
     numerator: "is_compliant_publication",
     denominator: "is_covered_by_policy",
     denominatorText: "unique publications covered by policy",
-    info: `<p>The percentage of unique publications covered by <a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a> that are compliant with the policy.</p>`
+    definition_key: "compliant",
+    info: resolveFieldDefinition("compliant", "insights", { subject: "unique publications" }).info
   }
 ];
+
+/**
+ * Metric mappings for Insight cards matching their corresponding
+ * Explore Years breakdown exactly.
+ *
+ * `numeratorMetric` and `denominatorMetric` refer to keys returned by the
+ * Explore aggregation's `all_values` row.
+ *
+ * `denominatorSumOf` supports derived denominators such as:
+ * with DAS + without DAS = checked for DAS
+ *
+ * @type {Object.<string, {
+ *   exploreFilter: string,
+ *   numeratorMetric: string,
+ *   denominatorMetric?: string,
+ *   denominatorSumOf?: string[],
+ *   totalMetric?: string
+ * }>}
+ */
+export const INSIGHT_EXPLORE_MAPPINGS = {
+  // Journal articles
+  is_paper: {
+    exploreFilter: "is_paper",
+    numeratorMetric: "doc_count",
+    totalMetric: "doc_count"
+  },
+  is_free_to_read: {
+    exploreFilter: "is_paper",
+    numeratorMetric: "free_to_read",
+    denominatorMetric: "doc_count",
+    totalMetric: "doc_count"
+  },
+  is_oa: {
+    exploreFilter: "is_paper",
+    numeratorMetric: "open_access",
+    denominatorMetric: "doc_count",
+    totalMetric: "doc_count"
+  },
+  is_compliant: {
+    exploreFilter: "is_paper",
+    numeratorMetric: "compliant",
+    denominatorMetric: "covered_by_policy",
+    totalMetric: "doc_count"
+  },
+  is_compliant_article: { // Gates Foundation-only alias
+    exploreFilter: "is_paper",
+    numeratorMetric: "compliant",
+    denominatorMetric: "covered_by_policy",
+    totalMetric: "doc_count"
+  },
+  has_data_availability_statement: {
+    exploreFilter: "is_paper",
+    numeratorMetric: "with_data_availability_statement",
+    denominatorSumOf: [
+      "with_data_availability_statement",
+      "without_data_availability_statement"
+    ],
+    totalMetric: "doc_count"
+  },
+  has_data: {
+    exploreFilter: "is_paper",
+    numeratorMetric: "with_data",
+    denominatorMetric: "doc_count",
+    totalMetric: "doc_count"
+  },
+  has_open_data: {
+    exploreFilter: "is_paper",
+    numeratorMetric: "with_open_data",
+    denominatorMetric: "with_data",
+    totalMetric: "doc_count"
+  },
+  has_code: {
+    exploreFilter: "is_paper",
+    numeratorMetric: "with_code",
+    denominatorMetric: "doc_count",
+    totalMetric: "doc_count"
+  },
+  has_open_code: {
+    exploreFilter: "is_paper",
+    numeratorMetric: "with_open_code",
+    denominatorMetric: "with_code",
+    totalMetric: "doc_count"
+  },
+  // Preprints
+  is_preprint: {
+    exploreFilter: "is_preprint",
+    numeratorMetric: "doc_count",
+    totalMetric: "doc_count"
+  },
+  is_free_to_read_preprint: {
+    exploreFilter: "is_preprint",
+    numeratorMetric: "free_to_read",
+    denominatorMetric: "doc_count",
+    totalMetric: "doc_count"
+  },
+  is_compliant_preprint: {
+    exploreFilter: "is_preprint",
+    numeratorMetric: "compliant",
+    denominatorMetric: "covered_by_policy",
+    totalMetric: "doc_count"
+  },
+  has_data_availability_statement_preprint: {
+    exploreFilter: "is_preprint",
+    numeratorMetric: "with_data_availability_statement",
+    denominatorSumOf: [
+      "with_data_availability_statement",
+      "without_data_availability_statement"
+    ],
+    totalMetric: "doc_count"
+  },
+  // Unique publications
+  is_unique_publication: {
+    exploreFilter: "is_unique_publication",
+    numeratorMetric: "doc_count",
+    totalMetric: "doc_count"
+  },
+  is_compliant_publication: {
+    exploreFilter: "is_unique_publication",
+    numeratorMetric: "compliant",
+    denominatorMetric: "covered_by_policy",
+    totalMetric: "doc_count"
+  }
+};

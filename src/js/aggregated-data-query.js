@@ -9,6 +9,66 @@
 // =================================================
 
 /**
+ * Field used to group author breakdowns.
+ *
+ * @type {string}
+ */
+export const AUTHOR_BREAKDOWN_TERM = "authorships.author.orcid";
+
+/**
+ * Returns the author value used as the author breakdown key.
+ *
+ * @param {Object} [author={}]
+ * @returns {string|null}
+ */
+export function getAuthorBreakdownKey(author = {}) {
+  if (AUTHOR_BREAKDOWN_TERM === "authorships.author.id") {
+    return author?.id || null;
+  }
+
+  if (AUTHOR_BREAKDOWN_TERM === "authorships.author.orcid") {
+    return author?.orcid || null;
+  }
+
+  return null;
+}
+
+/**
+ * Formats one aggregation bucket or summary object into plain values.
+ *
+ * @param {Object} bucket - Raw aggregation bucket or summary object.
+ * @param {string} [term=""] - Active term field for author metadata handling.
+ * @returns {Object} Flattened aggregation values.
+ */
+export function formatAggregationBucket(bucket, term = "") {
+  const formattedBucket = {};
+
+  Object.keys(bucket).forEach((key) => {
+    if (key.startsWith("median_")) {
+      formattedBucket[key] = bucket[key].values["50.0"];
+    } else if (key === "top_author_record") {
+      const hit = bucket[key]?.hits?.hits?.[0]?._source;
+      const authorships = Array.isArray(hit?.authorships) ? hit.authorships : [];
+      const matchingAuthorship = authorships.find((authorship) => {
+        return term === AUTHOR_BREAKDOWN_TERM
+          && getAuthorBreakdownKey(authorship?.author) === bucket.key;
+      });
+
+      formattedBucket.display_name = matchingAuthorship?.author?.display_name || null;
+      formattedBucket.orcid = matchingAuthorship?.author?.orcid || null;
+    } else if (bucket[key].doc_count !== undefined) {
+      formattedBucket[key] = bucket[key].doc_count;
+    } else if (bucket[key].value !== undefined) {
+      formattedBucket[key] = bucket[key].value;
+    } else {
+      formattedBucket[key] = bucket[key];
+    }
+  });
+
+  return formattedBucket;
+}
+
+/**
  * Generates the aggregation buckets template for Elasticsearch queries.
  * Returns the common aggregations used in the Data Explore breakdowns,
  * based on the provided suffix (identifier for an organisation).
@@ -660,12 +720,69 @@ function createAggregationTemplate(suffix) {
   };
 }
 
+/**
+ * Returns extra bucket metadata aggregations for author id breakdowns.
+ *
+ * @param {string} term - Field used for the current terms aggregation.
+ * @returns {Object} Extra aggregations to merge into each terms bucket.
+ */
+function createAuthorBucketMetadataAggs(term) {
+  if (term !== AUTHOR_BREAKDOWN_TERM) {
+    return {};
+  }
+
+  return {
+    top_author_record: {
+      top_hits: {
+        size: 1,
+        _source: {
+          includes: [
+            "authorships.author.id",
+            "authorships.author.display_name",
+            "authorships.author.orcid"
+          ]
+        }
+      }
+    }
+  };
+}
+
 // =================================================
 // Exports
 // =================================================
 
 /**
- * Dynamically constructs the POST body for Elasticsearch queries 
+ * Constructs a minimal POST body for Elasticsearch queries used by Insights
+ * cards. Only requests the `all_values` aggregate.
+ *
+ * @param {string} suffix    - Organisation-specific suffix.
+ * @param {string} query     - Main query string.
+ * @param {number} startYear - Start year (inclusive) for `published_date`.
+ * @param {number} endYear   - End year (inclusive) for `published_date`.
+ * @returns {Object} POST body suitable for `/_search`.
+ */
+export function getInsightsAggregationQuery(suffix, query, startYear, endYear) {
+  return {
+    query: {
+      bool: {
+        must: [
+          { query_string: { query } },
+          { range: { published_date: { gte: startYear, lte: endYear } } },
+        ],
+      },
+    },
+    size: 0,
+    aggs: {
+      all_values: {
+        filter: { exists: { field: "published_year" } },
+        aggs: createAggregationTemplate(suffix),
+      },
+    },
+  };
+}
+
+/**
+ * Dynamically constructs the POST body for Elasticsearch queries
  * to handle complex term-based aggregations.
  * This includes sorting and filtering based on specified parameters.
  *
@@ -694,6 +811,7 @@ export function getAggregatedDataQuery(
   }
 
   const aggs = createAggregationTemplate(suffix);
+  const bucketMetadataAggs = createAuthorBucketMetadataAggs(term);
 
   return {
     query: {
@@ -719,7 +837,10 @@ export function getAggregatedDataQuery(
       },
       values: {
         terms: { field: termField, size, order: { [sort]: "desc" } },
-        aggs,
+        aggs: {
+          ...aggs,
+          ...bucketMetadataAggs
+        },
       },
     },
   };

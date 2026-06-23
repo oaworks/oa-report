@@ -9,11 +9,14 @@
 // Imports
 // =================================================
 
-import { dateRange, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText } from './utils.js';
-import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS } from './constants.js';
+import { dateRange, startYear, endYear, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings } from './utils.js';
+import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, INSIGHT_EXPLORE_MAPPINGS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS, resolveFieldDefinition } from './constants.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { initActionTabs } from './actions.js';
 import { createPopover } from './tooltip-manager.js';
+import { buildTooltipContent, buildDefinitionHelpHtml, injectOrgFields } from './tooltip-content.js';
+import { getInsightsAggregationQuery, formatAggregationBucket } from './aggregated-data-query.js';
+import { startLoading, stopLoading } from './components.js';
 
 // Cache identical count queries so we only hit the API once per unique URL
 const countQueryCache = new Map();
@@ -23,6 +26,114 @@ const fetchCountQuery = (url) => {
   }
   return countQueryCache.get(url);
 };
+
+/**
+ * Cache of Explore-based aggregate requests keyed by org, filter, query, and
+ * active report date range.
+ *
+ * @type {Map<string, Promise<Object|null>>}
+ */
+const insightAggregateCache = new Map();
+
+/**
+ * Fetches the Explore-style aggregate metrics for one Insights filter using the
+ * current report date range and any active top-level filters.
+ *
+ * Returns the flattened `all_values` aggregate, which contains the raw counts
+ * used by the Explore Years breakdown's summary row.
+ *
+ * @param {Object} orgData - Organisation record from the org index response.
+ * @param {string} filterId - Analysis filter ID, such as `is_paper`.
+ * @returns {Promise<Object|null>} Flattened aggregate metrics, or null when the
+ * filter cannot be resolved.
+ */
+function fetchExploreInsightMetrics(orgData, filterId) {
+  const suffix = orgData?.hits?.hits?.[0]?._source?.key_suffix;
+  const analysis = orgData?.hits?.hits?.[0]?._source?.analysis || {};
+  const filterQuery = analysis?.[filterId]?.query;
+
+  if (!suffix || !filterQuery) {
+    return Promise.resolve(null);
+  }
+
+  const decodedQuery = andQueryStrings(
+    decodeAndReplaceUrlEncodedChars(filterQuery),
+    getDecodedUrlQuery()
+  );
+  const cacheKey = JSON.stringify({
+    suffix,
+    filterId,
+    query: decodedQuery,
+    startYear,
+    endYear
+  });
+
+  if (!insightAggregateCache.has(cacheKey)) {
+    const postData = getInsightsAggregationQuery(suffix, decodedQuery, startYear, endYear);
+
+    insightAggregateCache.set(
+      cacheKey,
+      fetchPostData(postData).then((response) => {
+        const allValues = response?.aggregations?.all_values;
+        return allValues ? formatAggregationBucket(allValues) : null;
+      })
+    );
+  }
+
+  return insightAggregateCache.get(cacheKey);
+}
+
+const INSIGHT_CARD_BY_NUMERATOR = new Map(INSIGHTS_CARDS.map((card) => [card.numerator, card]));
+const INSIGHT_TOOLTIP_HEADING = 'Definition';
+
+function buildInsightTooltipSection(contentHtml = '') {
+  if (!contentHtml) return '';
+
+  return `
+    <section class="space-y-2">
+      <h4 class="font-semibold text-neutral-900">${INSIGHT_TOOLTIP_HEADING}</h4>
+      ${contentHtml}
+    </section>
+  `;
+}
+
+function buildInsightDefinitionsHtml(numerator, insightInfo = '', helpTextByKey = {}, analysisHelpText = '') {
+  const matchingCard = INSIGHT_CARD_BY_NUMERATOR.get(numerator);
+  const definitionKey = matchingCard?.definition_key;
+  const orgMeta = {
+    orgName,
+    orgPolicyCoverage,
+    orgPolicyCompliance,
+    orgPolicyUrl
+  };
+  if (!definitionKey) {
+    const contentHtml = buildTooltipContent({
+      leadHtml: insightInfo,
+      helpHtml: injectOrgFields(analysisHelpText, orgMeta)
+    });
+    return buildInsightTooltipSection(contentHtml);
+  }
+
+  const fieldDefinition = resolveFieldDefinition(definitionKey, 'insights');
+  if (!fieldDefinition) {
+    return buildInsightTooltipSection(insightInfo);
+  }
+
+  const helpHtml = buildDefinitionHelpHtml({
+    help_text: fieldDefinition.help_text,
+    help_text_by_key: helpTextByKey,
+    org_meta: orgMeta,
+    help_text_style: fieldDefinition.help_text_style
+  });
+  const contentHtml = buildTooltipContent({
+    leadHtml: injectOrgFields(insightInfo, orgMeta),
+    helpHtml,
+    detailsHtml: injectOrgFields(fieldDefinition.details, orgMeta),
+    dedupeHelpTextAgainstLead: fieldDefinition.help_text_style !== 'bullets'
+  });
+
+  return buildInsightTooltipSection(contentHtml);
+}
 
 // =================================================
 // Org data
@@ -131,12 +242,15 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
       const card = template.content.querySelector(`#${cardId}`);
       if (!card) return;
       const clonedCard = card.cloneNode(true);
-      // Show a placeholder when the API returns no data for a displayed card.
-      if (!analysisEntry) {
+      // Show a placeholder when the API returns no data or the date range is outside the card's available window.
+      const unavailable = !analysisEntry
+        || (analysisEntry.available_from && endYear < analysisEntry.available_from)
+        || (analysisEntry.available_until && startYear > analysisEntry.available_until);
+      if (unavailable) {
         showUnavailableCard(clonedCard);
       }
       container.appendChild(clonedCard);
-      if (analysisEntry) {
+      if (!unavailable) {
         renderedIds.add(cardId);
       }
     });
@@ -221,6 +335,9 @@ function renderActionTabs(strategy = {}) {
 export function initInsightsAndActions(org) {
   // Ensure counts are fetched fresh for the current date range
   countQueryCache.clear();
+  insightAggregateCache.clear();
+
+  startLoading();
 
   // Set paths for orgindex
   let queryPrefix = `${QUERY_BASE}q=${dateRange}`,
@@ -284,6 +401,8 @@ export function initInsightsAndActions(org) {
     /** Get Insights data and display it **/
     // Loop through each Insight card from constants.js and call getInsight
     const policyUrl = orgData?.hits?.hits?.[0]?._source?.policy?.url;
+    const helpTextByKey = orgData?.hits?.hits?.[0]?._source?.policy?.help_text || {};
+    const cardPromises = [];
     INSIGHTS_CARDS.forEach((cardConfig) => {
       if (!renderedInsightIds.has(cardConfig.numerator)) {
         return;
@@ -294,15 +413,17 @@ export function initInsightsAndActions(org) {
         card.info = card.info.replace("{policyUrl}", policyUrl);
       }
 
-      getInsight(
+      const cardPromise = getInsight(
         card.numerator,
         card.denominator,
         card.denominatorText,
-        card.info
+        card.info,
+        helpTextByKey
       );
+      if (cardPromise) cardPromises.push(cardPromise);
     });
 
-    function getInsight(numerator, denominator, denominatorText, insightInfo) {
+    function getInsight(numerator, denominator, denominatorText, insightInfo, helpTextByKey) {
       // Check if the data for this "numerator" (i.e. Insights data card) exists in orgData
       const analysisEntry = orgData.hits.hits[0]._source.analysis[numerator];
       if (!analysisEntry) return;
@@ -367,8 +488,13 @@ export function initInsightsAndActions(org) {
           const detailHtml = figureDetails
             ? `<div class="mb-2 font-semibold text-neutral-900">${figureDetails.innerHTML}</div>`
             : "";
-          const infoHtml = insightInfo ? `<div class="space-y-2">${insightInfo}</div>` : "";
-          instance.setContent(`${detailHtml}${infoHtml}`);
+          const definitionHtml = buildInsightDefinitionsHtml(
+            numerator,
+            insightInfo,
+            helpTextByKey,
+            analysisEntry.help_text || ''
+          );
+          instance.setContent(`${detailHtml}${definitionHtml}`);
         };
 
         // Accessibility / tooltip IDs
@@ -378,104 +504,76 @@ export function initInsightsAndActions(org) {
         tooltipTarget.setAttribute('title', 'More information on this metric');
         tooltipTarget.setAttribute('aria-haspopup', 'dialog');
 
-        // Get numerator’s count query
-        let numPromise = fetchCountQuery(countQueryPrefix + buildEncodedQueryWithUrlFilter(analysisEntry.query));
+        const exploreMapping = INSIGHT_EXPLORE_MAPPINGS[numerator] || null;
 
-        // If we have a denominator param
-        if (numerator && denominator) {
-          // Get denominator’s count query
-          let denomPromise = fetchCountQuery(
-            countQueryPrefix + buildEncodedQueryWithUrlFilter(
-              orgData.hits.hits[0]._source.analysis[denominator].query
-            )
-          );
+        // Mapped cards can read directly from Explore's all-values aggregate.
+        if (exploreMapping) {
+          // Reuse the same aggregate source as Explore Years for matching totals.
+          const cardPromise = fetchExploreInsightMetrics(orgData, exploreMapping.exploreFilter)
+            .then((metrics) => {
+              const numeratorCount = metrics?.[exploreMapping.numeratorMetric];
+              const denominatorCount = Array.isArray(exploreMapping.denominatorSumOf)
+                ? exploreMapping.denominatorSumOf.reduce((sum, metricKey) => {
+                  const value = metrics?.[metricKey];
+                  return sum + (Number.isFinite(value) ? value : 0);
+                }, 0)
+                : (Number.isFinite(metrics?.[exploreMapping.denominatorMetric])
+                  ? metrics[exploreMapping.denominatorMetric]
+                  : 0);
+              const totalCount = Number.isFinite(metrics?.[exploreMapping.totalMetric])
+                ? metrics[exploreMapping.totalMetric]
+                : 0;
 
-          // Pick the correct "total" key for the bar chart (articles / preprints / publications)
-          const analysis = orgData.hits.hits[0]._source.analysis;
+              if (!Number.isFinite(numeratorCount)) {
+                showUnavailableCard(cardContents);
+                return;
+              }
 
-          // Pick the appropriate total for the bar background
-          let totalKey = 'is_paper';
-          if (denominator === 'is_preprint' || /_preprint$/.test(numerator) || /_preprint$/.test(denominator)) {
-            totalKey = 'is_preprint';
-          } else if (/publication/.test(numerator) || /publication/.test(denominator)) {
-            totalKey = analysis.is_unique_publication
-              ? 'is_unique_publication'
-              : analysis.is_publication
-                ? 'is_publication'
-                : 'is_paper';
-          }
-
-          // Reuse the denominator request if it’s the same as the total
-          const totalArticlesPromise =
-            totalKey === denominator
-              ? denomPromise
-              : fetchCountQuery(
-                  countQueryPrefix + buildEncodedQueryWithUrlFilter(analysis[totalKey].query)
-                );
-
-          Promise.all([numPromise, denomPromise, totalArticlesPromise])
-            .then(function ([numResult, denomResult, totalArticlesResult]) {
-              const numeratorCount     = numResult,
-                    denominatorCount   = denomResult,
-                    totalArticlesCount = totalArticlesResult;
-
-              if (denominatorCount) {
-                // Show "X of Y" in #articles_... with some styling
+              if (!denominator) {
+                percentageContents.textContent = makeNumberReadable(numeratorCount);
                 figureDetails.innerHTML = `
                   <span id="details_${numerator}" class="font-semibold text-carnation-600">${makeNumberReadable(numeratorCount)}</span>
                   <span class="text-neutral-900">
-                    of ${makeNumberReadable(denominatorCount)} ${denominatorText}
+                    ${denominatorText} in total
                   </span>
                 `;
-
-                // Show percentage in #percent_...
-                const pct = Math.round((numeratorCount / denominatorCount) * 100);
-                percentageContents.innerHTML = `
-                  <span class="font-extrabold">${pct}%</span>
-                `;
-
-                // Clear any existing bar chart and set up new bar chart visualisation
-                setBarChart(
-                  cardContents,
-                  numeratorCount,
-                  denominatorCount,
-                  denominator,
-                  totalArticlesCount
-                );
-              } else {
-                showUnavailableCard(cardContents);
+                return;
               }
-            })
-            .catch(function (error) {
-              console.log(`error: ${error}`);
-              showUnavailableCard(cardContents);
-            })
-            .finally(updateTooltipContent);
 
-        } else {
-          // NO DENOMINATOR => single total value
-          numPromise
-            .then(function (result) {
-              // Insert value in #percent_{numerator}
-              percentageContents.textContent = makeNumberReadable(result);
+              if (!denominatorCount) {
+                showUnavailableCard(cardContents);
+                return;
+              }
 
-              // Put smaller label "articles" (or denominatorText) in #articles_{numerator}
               figureDetails.innerHTML = `
-                <span class="font-semibold text-carnation-600">${makeNumberReadable(result)}</span>
+                <span id="details_${numerator}" class="font-semibold text-carnation-600">${makeNumberReadable(numeratorCount)}</span>
                 <span class="text-neutral-900">
-                  ${denominatorText} in total
+                  of <span id="denominator_${numerator}">${makeNumberReadable(denominatorCount)}</span> ${denominatorText}
                 </span>
               `;
+
+              const pct = Math.round((numeratorCount / denominatorCount) * 100);
+              percentageContents.innerHTML = `
+                <span class="font-extrabold">${pct}%</span>
+              `;
+
+              setBarChart(
+                cardContents,
+                numeratorCount,
+                denominatorCount,
+                exploreMapping.denominatorMetric || denominator,
+                totalCount
+              );
             })
             .catch(function (error) {
-              console.log(`${numerator} error: ${error}`);
+              console.log(`${numerator} aggregate error: ${error}`);
               showUnavailableCard(cardContents);
             })
             .finally(updateTooltipContent);
-        }
 
-        // Once data has loaded, display the card
-        changeOpacity(contentID);
+          changeOpacity(contentID);
+          return cardPromise;
+        }
 
       } else {
         displayNone(contentID);
@@ -507,7 +605,7 @@ export function initInsightsAndActions(org) {
             listQuery  = queryPrefix + encodedQuery + sort;
         
         // Get total action (article) count for this strategy
-        fetchCountQuery(countQuery)
+        const actionPromise = fetchCountQuery(countQuery)
           .then(function (countResponse) {
             var count = parseFloat(countResponse);
             
@@ -575,10 +673,18 @@ export function initInsightsAndActions(org) {
                     if ("mailto" in action) {
                       var mailto = orgData.hits.hits[0]._source.strategy[strategy].mailto;
 
+                      const decodeMailtoValue = function(value, fallback) {
+                        const textarea = document.createElement("textarea");
+                        const resolvedValue = typeof value === "string" && value.length > 0 ? value : fallback;
+
+                        textarea.innerHTML = resolvedValue.replaceAll("\'", "’");
+                        return textarea.value;
+                      };
+
                       var newMailto = mailto.replaceAll("\'", "’");
-                      newMailto = newMailto.replaceAll("{doi}", (action.DOI ? action.DOI : "[No DOI found]"));
-                      newMailto = newMailto.replaceAll("{author_email_name}", (action.author_email_name ? action.author_email_name.replaceAll("\'", "’") : "[No author’s name found]"));
-                      newMailto = newMailto.replaceAll("{title}", (action.title ? action.title.replaceAll("\'", "’") : "[No title found]"));
+                      newMailto = newMailto.replaceAll("{doi}", decodeMailtoValue(action.DOI, "[No DOI found]"));
+                      newMailto = newMailto.replaceAll("{author_email_name}", decodeMailtoValue(action.author_email_name, "[No author’s name found]"));
+                      newMailto = newMailto.replaceAll("{title}", decodeMailtoValue(action.title, "[No title found]"));
 
                       // And add it to the action array
                       action["mailto"] = encodeURI(newMailto);
@@ -589,6 +695,12 @@ export function initInsightsAndActions(org) {
                         .replaceAll("<", "&lt;")
                         .replaceAll(">", "&gt;");
                     };
+
+                    if (typeof action.title === "string" && action.title.includes("&")) {
+                      const textarea = document.createElement("textarea");
+                      textarea.innerHTML = action.title;
+                      action.title = textarea.value;
+                    }
 
                     var tableRowLiteral = tableRow.replace(/\$\{action\.([^}]+)\}/g, function(match, key) {
                       return action[key] ?? "";
@@ -602,10 +714,11 @@ export function initInsightsAndActions(org) {
               )
             }
           })
-          .catch(function (error) { console.log(`${strategy} error: ${error}`); })
+          .catch(function (error) { console.log(`${strategy} error: ${error}`); });
 
         // Once data has loaded, display the card
         changeOpacity(tabID);
+        return actionPromise;
 
       } else {
         var tabItem = document.getElementById(tabID),
@@ -672,16 +785,20 @@ export function initInsightsAndActions(org) {
     //   </td>"
     // );
     
+    const actionPromises = [];
     if (loggedIn) {
       ACTION_TABLE_CONFIGS.forEach(({ id, keys, rowTemplate }) => {
-        displayStrategy(id, keys, rowTemplate);
+        const actionPromise = displayStrategy(id, keys, rowTemplate);
+        if (actionPromise) actionPromises.push(actionPromise);
       });
     }
-    
+
+    return Promise.allSettled([...cardPromises, ...actionPromises]);
+
   }).catch(error => {
     console.log(`Report ERROR: ${error}`);
     displayErrorHeader();
-  });
+  }).finally(stopLoading);
 };
 
 

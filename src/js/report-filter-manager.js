@@ -23,8 +23,8 @@ import { ORGS_REPORT_API_BASE_URL } from "./constants/api.js";
 import {
   EXPLORE_ITEMS_LABELS,
   EXPLORE_FILTERS_LABELS,
-  EXPLORE_HEADER_TERMS_LABELS,
   EXPLORE_HEADER_ARTICLES_LABELS,
+  resolveFieldDefinition,
   COUNTRY_CODES,
   DATE_SELECTION_BUTTON_CLASSES
 } from "./constants.js";
@@ -71,6 +71,7 @@ const shouldAlphaSortSuggestions = (field = "") =>
 const ORCID_ID_RE = /\b\d{4}-\d{4}-\d{4}-\d{3}[\dX]\b/i;
 const OPENALEX_AUTHOR_ID_RE = /\bA\d{4,}\b/i;
 const OPENALEX_API_BASE = "https://api.openalex.org";
+const AUTHOR_ID_FIELD = "authorships.author.id.keyword";
 const AUTHOR_ORCID_FIELD = "authorships.author.orcid.keyword";
 const AUTHOR_NAME_FIELD = "authorships.author.display_name.keyword";
 const AUTHOR_UNIFIED_FIELD = "authorships.author.unified";
@@ -126,6 +127,26 @@ async function fetchOpenAlexAuthorsByOrcid(orcidNumber, signal) {
   }
 }
 
+function getRenderedFilterValueDisplay(field = "", value = "") {
+  const fieldKey = ensureKeywordField(field);
+  const targetValue = String(value || "").trim();
+  if (!fieldKey || !targetValue) return "";
+
+  const filterCell = Array.from(
+    document.querySelectorAll("#export_table [data-filter-field][data-filter-value]")
+  ).find((el) => (
+    el.getAttribute("data-filter-field") === fieldKey
+      && el.getAttribute("data-filter-value") === targetValue
+  ));
+
+  const labelEl = filterCell?.querySelector(".js-filter-target");
+  if (!labelEl) return "";
+
+  const labelClone = labelEl.cloneNode(true);
+  labelClone.querySelectorAll(".sr-only").forEach((el) => el.remove());
+  return labelClone.textContent?.trim() || "";
+}
+
 /**
  * Normalises one filter value for the given field.
  *
@@ -175,6 +196,10 @@ function normaliseValuesForField(field = "", values = []) {
 function formatFilterValueForDisplay(field = "", value = "") {
   const trimmed = String(value || "").trim();
   if (!trimmed) return "";
+
+  if (ensureKeywordField(field) === AUTHOR_ID_FIELD) {
+    return getRenderedFilterValueDisplay(field, trimmed) || trimmed;
+  }
 
   const base = normaliseSortField(field);
   if (/(\.author\.id|\.corresponding_author_ids)$/i.test(base) || base === AUTHOR_UNIFIED_FIELD) {
@@ -334,6 +359,9 @@ function labelFromFieldKey(rawKey) {
   if (!rawKey) return "";
 
   const baseKey = rawKey.replace(/\.keyword$/i, "");
+  if (baseKey === "authorships.author.id") {
+    return SEARCH_FILTER_FIELD_MAP.get("authorships.author.display_name")?.label || "Authors (Name)";
+  }
   const normalised = normaliseFieldId(baseKey);
   let label;
 
@@ -374,8 +402,8 @@ function labelFromFieldKey(rawKey) {
     EXPLORE_HEADER_ARTICLES_LABELS[normalised];
 
   const fromTerms =
-    EXPLORE_HEADER_TERMS_LABELS[lookupKey] ||
-    EXPLORE_HEADER_TERMS_LABELS[normalised];
+    resolveFieldDefinition(lookupKey, "explore") ||
+    resolveFieldDefinition(normalised, "explore");
 
   if (!label) {
     label =

@@ -152,17 +152,29 @@ export function changeDays(days, date) {
 
 /**
  * Formats a number into a human-readable string or a currency format using the user’s locale.
- * If `isCurrency` is true, the number is formatted in the currency style using US dollars. 
+ * If `isCurrency` is true, the number is formatted in the currency style using US dollars.
  *
  * @param {number} number - The number to be formatted.
  * @param {boolean} [isCurrency=false] - Flag indicating whether to format the number as currency.
+ * @param {number|null} [maximumFractionDigits=null] - Optional decimal places to display.
  * @returns {string} The formatted number as a string.
  */
-export function makeNumberReadable(number, isCurrency = false) {
+export function makeNumberReadable(number, isCurrency = false, maximumFractionDigits = null) {
+  const formatOptions = maximumFractionDigits === null
+    ? {}
+    : {
+      minimumFractionDigits: maximumFractionDigits,
+      maximumFractionDigits
+    };
+
   if (isCurrency) {
-    return new Intl.NumberFormat(USER_LOCALE, { style: 'currency', currency: 'USD' }).format(number);
+    return new Intl.NumberFormat(USER_LOCALE, {
+      style: 'currency',
+      currency: 'USD',
+      ...formatOptions
+    }).format(number);
   }
-  return number.toLocaleString(USER_LOCALE);
+  return number.toLocaleString(USER_LOCALE, formatOptions);
 }
 
 /**
@@ -393,7 +405,8 @@ export function reorderTermRecords(records, includes) {
   if (records.some(record => record.hasOwnProperty('key'))) firstKeys.push('key');
   if (records.some(record => record.hasOwnProperty('doc_count'))) firstKeys.push('doc_count');
 
-  const keysOrder = firstKeys.concat(includes.split(',').filter(key => !firstKeys.includes(key) && key !== 'doc_count'));
+  const includeKeys = includes.split(',').filter(key => !firstKeys.includes(key) && key !== 'doc_count');
+  const keysOrder = firstKeys.concat(includeKeys);
 
   return records.map(record => {
     const reorderedRecord = {};
@@ -409,6 +422,10 @@ export function reorderTermRecords(records, includes) {
         reorderedRecord[key] = value;
       }
     });
+    // Preserve author metadata fields needed by row rendering but not shown as columns.
+    for (const key of ['display_name', 'orcid']) {
+      if (record[key] !== undefined) reorderedRecord[key] = record[key];
+    }
     return reorderedRecord;
   });
 }
@@ -482,11 +499,24 @@ export function prettifyRecords(records, pretty = true) {
             formattedRecord[key] = Number.isFinite(numericValue)
               ? makeNumberReadable(numericValue, isCurrency)
               : "N/A";
+          } else if (!key.endsWith('_pct') && typeof record[key] !== 'number') {
+            formattedRecord[key] = record[key];
           }
         } else {
           // Include all fields except percentages in raw mode
           if (!key.endsWith('_pct')) {
-            formattedRecord[key] = record[key];
+            const numericValue = parseFloat(record[key]);
+            const shouldForceDecimalPlaces = key.startsWith('mean_') || key.startsWith('median_') || key.endsWith('_amount');
+
+            if (Number.isFinite(numericValue)) {
+              formattedRecord[key] = makeNumberReadable(
+                numericValue,
+                false,
+                shouldForceDecimalPlaces ? 2 : null
+              );
+            } else {
+              formattedRecord[key] = record[key];
+            }
           }
         }
       }
@@ -550,40 +580,6 @@ export function pluraliseNoun(noun) {
   } else {
       return firstLetter + restOfTheWord + "s";
   }
-}
-
-/**
- * Retrieves the full name of a researcher from ORCiD using their ORCiD URL or ID.
- * 
- * @param {string} orcidInput - The ORCiD URL or ID of the researcher.
- * @returns {Promise<string>} A promise that resolves to the full name of the researcher.
- * @throws {Error} Throws an error if the request fails or if the data is not available.
- */
-export function getORCiDFullName(orcidInput) {
-  return new Promise((resolve, reject) => {
-    // Extract the ORCiD ID from the input URL or use the ID directly
-    const orcidId = orcidInput.split('/').pop();
-    const url = `https://pub.orcid.org/v3.0/${orcidId}/person`;
-
-    fetchJson(url, {
-      headers: {
-        Accept: "application/json"
-      }
-    })
-    .then(data => {
-        try {
-            const givenName = data.name['given-names'].value;
-            const familyName = data.name['family-name'].value;
-            const fullName = `${givenName} ${familyName}`;
-            resolve(fullName);
-        } catch (error) {
-            reject(new Error('Failed to extract the full name from the response.'));
-        }
-    })
-    .catch(error => {
-        reject(new Error('Failed to retrieve data from ORCiD.'));
-    });
-  }); 
 }
 
 /**
