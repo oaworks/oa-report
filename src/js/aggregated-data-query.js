@@ -13,7 +13,7 @@
  *
  * @type {string}
  */
-export const AUTHOR_BREAKDOWN_TERM = "authorships.author.orcid";
+export const AUTHOR_BREAKDOWN_TERM = "authorships.author.id";
 
 /**
  * Returns the author value used as the author breakdown key.
