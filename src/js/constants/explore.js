@@ -203,7 +203,7 @@ export const EXPLORE_FILTERS_LABELS = {
     info: "<p>Publications that comply with the terms of <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>, but are not necessarily covered by it.</p><p><span class='org-policy-compliance'></span></p>"
   },
     "is_not_compliant": {
-    label: "Not compliant with <span class='uppercase'>OA</span> policy",
+    label: "Covered by & not compliant with <span class='uppercase'>OA</span> policy",
     info: "<p>Works that do not comply with the terms of <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p><p><span class='org-policy-compliance'></span></p>"
   },
   "is_original_research": {
