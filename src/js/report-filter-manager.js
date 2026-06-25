@@ -627,21 +627,32 @@ function addFilterRow(container) {
   helpIcon.textContent = "(?)";
   textLabel.appendChild(helpIcon);
 
-  const helpText = `
-    <div class=”p-2 md:p-3”>
-      <p class=”mb-2 text-sm font-semibold text-neutral-900 normal-case”>Filtering tips</p>
-      <ul class=”list-disc list-outside pl-5 text-xs text-neutral-800 space-y-1 normal-case font-normal”>
-        <li>Type to see suggestions, then <strong>click to add</strong> one.</li>
-        <li>Add <strong>multiple entries</strong> to match <strong>any</strong> of them (e.g., adding <code>INV-001</code> and <code>INV-002</code> returns publications under either grant).</li>
-        <li>Search is <strong>case-insensitive</strong>, but <strong>full words</strong> work best; abbreviations like <code>OUP</code> will not match <code>Oxford University Press</code>.</li>
-      </ul>
-    </div>
-  `;
+  const helpEl = document.createElement("div");
+  helpEl.className = "p-2 md:p-3";
 
-  createTooltip(helpIcon, helpText, {
+  const helpHeading = document.createElement("p");
+  helpHeading.className = "mb-2 text-sm font-semibold text-neutral-900";
+  helpHeading.textContent = "Filtering tips";
+  helpEl.appendChild(helpHeading);
+
+  const helpList = document.createElement("ul");
+  helpList.className = "list-disc list-outside pl-5 text-xs text-neutral-800 space-y-1";
+  [
+    'Type to see suggestions, then <strong>click to add</strong> one.',
+    'Add <strong>multiple entries</strong> to match <strong>any</strong> of them (e.g., adding <code>INV-001</code> and <code>INV-002</code> returns publications under either grant).',
+    'Search is <strong>case-insensitive</strong>, but <strong>full words</strong> work best; abbreviations like <code>OUP</code> will not match <code>Oxford University Press</code>.',
+  ].forEach((html) => {
+    const li = document.createElement("li");
+    li.innerHTML = html;
+    helpList.appendChild(li);
+  });
+  helpEl.appendChild(helpList);
+
+  createTooltip(helpIcon, "", {
     theme: "popover",
     maxWidth: 320,
     placement: "bottom",
+    contentElement: helpEl,
   });
 
   const inputId = `js-filter-input-${idSuffix}`;
@@ -864,7 +875,7 @@ function addFilterRow(container) {
     hint.setAttribute("aria-hidden", "true");
     hint.setAttribute("aria-disabled", "true");
     hint.className = "px-2 py-1 h-9 flex items-center text-xs md:text-sm bg-neutral-100 text-neutral-700 border-b border-neutral-200";
-    hint.textContent = message || (termRaw ? `Matching suggestions for “${termRaw}”` : "Start typing to see suggestions…");
+    hint.textContent = message || (termRaw ? `Matching suggestions for "${termRaw}"` : "Start typing to see suggestions…");
     listbox.appendChild(hint);
     activeIndex = -1;
     listbox.classList.remove("hidden");
