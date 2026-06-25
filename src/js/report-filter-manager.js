@@ -629,11 +629,11 @@ function addFilterRow(container) {
 
   const helpText = `
     <div class=”p-2 md:p-3”>
-      <p class=”mb-2 text-sm font-medium text-neutral-900 normal-case”>Add values for this field</p>
-      <ul class=”list-disc ml-4 text-xs text-neutral-800 space-y-1 normal-case font-normal”>
-        <li>Type to see suggestions, then click to add one.</li>
-        <li>Add multiple entries to match any of them (e.g., adding <code>INV-001</code> and <code>INV-002</code> returns publications under either grant).</li>
-        <li>Search is case-insensitive, but full words work best; abbreviations like <code>OUP</code> will not match <code>Oxford University Press</code>.</li>
+      <p class=”mb-2 text-sm font-semibold text-neutral-900 normal-case”>Filtering tips</p>
+      <ul class=”list-disc list-outside pl-5 text-xs text-neutral-800 space-y-1 normal-case font-normal”>
+        <li>Type to see suggestions, then <strong>click to add</strong> one.</li>
+        <li>Add <strong>multiple entries</strong> to match <strong>any</strong> of them (e.g., adding <code>INV-001</code> and <code>INV-002</code> returns publications under either grant).</li>
+        <li>Search is <strong>case-insensitive</strong>, but <strong>full words</strong> work best; abbreviations like <code>OUP</code> will not match <code>Oxford University Press</code>.</li>
       </ul>
     </div>
   `;
