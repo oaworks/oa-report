@@ -41,12 +41,9 @@ function initialise() {
     isDataExploreInitialised = true;
   }
 
-  if (paid) {
-    // Only paid reports display a date navigation
-    bindDynamicYearButtons(FIRST_YEAR, currentDate.getFullYear()); 
-    adjustNavOnScroll();
-    bindSmoothScrollLinks(); 
-  }
+  bindDynamicYearButtons(FIRST_YEAR, currentDate.getFullYear());
+  adjustNavOnScroll();
+  bindSmoothScrollLinks();
 
   initActionTabs();
 }
