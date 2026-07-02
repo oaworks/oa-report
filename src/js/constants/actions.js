@@ -187,7 +187,7 @@ export const ACTION_TABLE_CONFIGS = [
   },
   {
     id: "email_author_unpublished_openrxiv_preprint_not_ccby",
-    keys: ["published_date", "title", "journal", "author_email_name", "email", "DOI", "mailto", "publisher_license", "supplements.host_venue.display_name"],
+    keys: ["published_date", "title", "journal", "author_email_name", "email", "DOI", "mailto", "publisher_license"],
     rowTemplate: "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
         <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
         <div class='mb-1 text-neutral-600'>${action.journal}</div>\
