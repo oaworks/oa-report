@@ -48,6 +48,19 @@ export function toggleLoadingIndicator(show, id) {
   }
 }
 
+// Shared spinner gate — shows on the first startLoading(), hides only when every stopLoading() has been called.
+let _loadingRefCount = 0;
+
+export function startLoading() {
+  if (_loadingRefCount === 0) toggleLoadingIndicator(true, 'explore_loading');
+  _loadingRefCount++;
+}
+
+export function stopLoading() {
+  _loadingRefCount = Math.max(0, _loadingRefCount - 1);
+  if (_loadingRefCount === 0) toggleLoadingIndicator(false, 'explore_loading');
+}
+
 /**
  * Class representing a modal window.
  * This class handles opening and closing of a modal, as well as setting its title and content directly from HTML elements using data attributes.

@@ -3,13 +3,6 @@
 
 {% call sectionWrapper("insights", "Insights") %}
 
-  {# Loading spinning icon #}
-  <div class="relative">
-    <div class="hidden" id="insights_loading">
-      <div class="loader ease-linear rounded-full border-8 border-t-8 border-carnation-200 border-t-carnation-500 h-12 w-12 absolute mt-6 mx-auto inset-x-0 z-10 bg-opacity-50 justify-center items-center"></div>
-    </div>
-  </div>
-
   <div id="insights_sections" class="mt-6 grid grid-cols-1 gap-8 md:gap-10">
     {# ARTICLE INSIGHTS #}
     <article class="bg-neutral-800 border border-neutral-700 shadow-lg rounded-lg p-4 md:p-6 hidden js_insights_section" id="insights_articles">

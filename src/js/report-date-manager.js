@@ -43,6 +43,7 @@ export const DEFAULT_YEAR_FREE = 2023;
 export const FIRST_YEAR = 2015;
 const ALL_TIME_RANGE_PARAM = 'all';
 const CURRENT_YEAR_RANGE_PARAM = 'this-year';
+const TEN_YEARS_FROM_THREE_MONTHS_RANGE_PARAM = '10-years-from-3-months-ago';
 const ALL_TIME_START_DATE = createDate(1980, 0, 1);
 const OPEN_ENDED_RANGE_END_MODE = 'today';
 
@@ -117,6 +118,17 @@ function getSemanticRangeSelection(rangeParam) {
       startDate: createDate(currentDate.getFullYear(), 0, 1),
       endDate: getLiveRangeEndDate()
     };
+  case TEN_YEARS_FROM_THREE_MONTHS_RANGE_PARAM: {
+    const endDate = getLiveRangeEndDate();
+    endDate.setMonth(endDate.getMonth() - 3);
+    const startDate = new Date(endDate);
+    startDate.setFullYear(startDate.getFullYear() - 10);
+    return {
+      buttonId: "date_range_form",
+      startDate,
+      endDate
+    };
+  }
   default:
     return null;
   }

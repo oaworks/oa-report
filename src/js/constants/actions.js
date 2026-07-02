@@ -117,7 +117,7 @@ export const ACTION_TABLE_CONFIGS = [
       <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
         <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
       </td>\
-      <td class='hidden px-3 py-4 text-sm text-center text-neutral-600 align-top break-words sm:table-cell'>\
+      <td class='px-3 py-4 text-sm text-center text-neutral-600 align-top break-words'>\
         <button \
           class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
           aria-label='${action.draft_aria_label}'\
@@ -145,7 +145,7 @@ export const ACTION_TABLE_CONFIGS = [
       <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
         <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
       </td>\
-      <td class='hidden px-3 py-4 text-sm text-center text-neutral-600 align-top break-words sm:table-cell'>\
+      <td class='px-3 py-4 text-sm text-center text-neutral-600 align-top break-words'>\
         <button \
           class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
           aria-label='${action.draft_aria_label}'\
@@ -173,7 +173,7 @@ export const ACTION_TABLE_CONFIGS = [
       <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
         <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
       </td>\
-      <td class='hidden px-3 py-4 text-sm text-center text-neutral-600 align-top break-words sm:table-cell'>\
+      <td class='px-3 py-4 text-sm text-center text-neutral-600 align-top break-words'>\
         <button \
           class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
           aria-label='${action.draft_aria_label}'\

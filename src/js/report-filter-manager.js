@@ -627,21 +627,32 @@ function addFilterRow(container) {
   helpIcon.textContent = "(?)";
   textLabel.appendChild(helpIcon);
 
-  const helpText = `
-    <div class="p-2 md:p-3">
-      <p class="mb-2 text-sm font-medium text-neutral-900 normal-case">Add values for this field</p>
-      <ul class="list-disc ml-4 text-xs text-neutral-800 space-y-1 normal-case font-normal">
-        <li>Enter one or more values to match any of them; <strong>commas</strong> and <strong><code>OR</code></strong> both mean “any” (e.g., <code>INV-001, INV-002</code> or <code>INV-001 OR INV-002</code> both return publications under either grant).</li>
-        <li>Use <strong><code>AND</code></strong> when all values must be present (e.g., <code>Economic growth AND Artificial intelligence</code> returns publications about both Economic growth and Artificial intelligence).</li>
-        <li>Suggestions ignore case when searching and require whole word matches (e.g., typing <code>oxford</code> or <code>OXFORD UNIVERSITY PRESS</code> finds <code>Oxford University Press</code>, but abbreviations like <code>OUP</code> will not match).</li>
-      </ul>
-    </div>
-  `;
+  const helpEl = document.createElement("div");
+  helpEl.className = "p-2 md:p-3";
 
-  createTooltip(helpIcon, helpText, {
+  const helpHeading = document.createElement("p");
+  helpHeading.className = "mb-2 text-sm font-semibold text-neutral-900";
+  helpHeading.textContent = "Filtering tips";
+  helpEl.appendChild(helpHeading);
+
+  const helpList = document.createElement("ul");
+  helpList.className = "list-disc list-outside pl-5 text-xs text-neutral-800 space-y-1";
+  [
+    'Type to see suggestions, then <strong>click to add</strong> one.',
+    'Add <strong>multiple entries</strong> to match <strong>any</strong> of them (e.g., adding <code>INV-001</code> and <code>INV-002</code> returns publications under either grant).',
+    'Search is <strong>case-insensitive</strong>, but <strong>full words</strong> work best; abbreviations like <code>OUP</code> will not match <code>Oxford University Press</code>.',
+  ].forEach((html) => {
+    const li = document.createElement("li");
+    li.innerHTML = html;
+    helpList.appendChild(li);
+  });
+  helpEl.appendChild(helpList);
+
+  createTooltip(helpIcon, "", {
     theme: "popover",
     maxWidth: 320,
     placement: "bottom",
+    contentElement: helpEl,
   });
 
   const inputId = `js-filter-input-${idSuffix}`;
@@ -864,7 +875,7 @@ function addFilterRow(container) {
     hint.setAttribute("aria-hidden", "true");
     hint.setAttribute("aria-disabled", "true");
     hint.className = "px-2 py-1 h-9 flex items-center text-xs md:text-sm bg-neutral-100 text-neutral-700 border-b border-neutral-200";
-    hint.textContent = message || (termRaw ? `Matching suggestions for “${termRaw}”` : "Start typing to see suggestions…");
+    hint.textContent = message || (termRaw ? `Matching suggestions for "${termRaw}"` : "Start typing to see suggestions…");
     listbox.appendChild(hint);
     activeIndex = -1;
     listbox.classList.remove("hidden");

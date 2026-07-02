@@ -11,11 +11,11 @@ import DOMPurify from "dompurify";
 import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, escapeQueryValue, normaliseFieldId, makeNumberReadable, announce } from "./utils.js";
 import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, FILTER_PILL_CLASSES, SEGMENTED_PILL_CLASSES, resolveFieldDefinition } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
-import { toggleLoadingIndicator } from "./components.js";
+import { startLoading, stopLoading } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
 import { renderActiveFiltersBanner } from './report-filter-manager.js';
 import { orgDataPromise, initInsightsAndActions } from './insights-and-actions.js';
-import { AUTHOR_BREAKDOWN_TERM, getAggregatedDataQuery, getAuthorBreakdownKey } from './aggregated-data-query.js';
+import { AUTHOR_BREAKDOWN_TERM, getAggregatedDataQuery, formatAggregationBucket } from './aggregated-data-query.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { createTooltip } from './tooltip-manager.js';
 import { buildDefinitionTooltipContent } from './tooltip-content.js';
@@ -387,7 +387,7 @@ export async function processExploreDataTable(button, itemData) {
   currentActiveExploreItemButton = button; // Set the currently active explore item button
   currentActiveExploreItemData = itemData; // Set the currently active explore item data
 
-  toggleLoadingIndicator(true, 'explore_loading'); // Display loading indicator on button click
+  startLoading();
   updateButtonActiveStyles(button.id);
   updateExploreHeadingIcon(itemData.id);
   addExploreFiltersToDOM(itemData.query);
@@ -396,8 +396,6 @@ export async function processExploreDataTable(button, itemData) {
   // Fetch and display data based on the current state of the data display style toggle
   await fetchAndDisplayExploreData(itemData, currentActiveExploreItemQuery, currentActiveExploreItemSize, currentActiveDataDisplayToggle);
   refreshFiltersBanner();
-
-  toggleLoadingIndicator(false, 'explore_loading'); // Once data is loaded, hide loading indicator
 }
 
 /**
@@ -649,7 +647,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     showNoResultsRow(10, "export_table_body", "js_export_table");
   } finally {
     // Always hide loader once finished
-    toggleLoadingIndicator(false, 'explore_loading');
+    stopLoading();
   }
 }
 
@@ -701,13 +699,13 @@ async function fetchTermBasedData(suffix, query, term, sort, size) {
   const totalUniqueTerms = response?.aggregations?.values_total?.value ?? 0;
 
   if (response && response.aggregations && response.aggregations.values && response.aggregations.values.buckets) {
-    buckets = response.aggregations.values.buckets.map(bucket => formatBucket(bucket, term));
+    buckets = response.aggregations.values.buckets.map(bucket => formatAggregationBucket(bucket, term));
   }
 
   // Process 'all_values' and 'no_values' similarly using the helper function
   ['all_values', 'no_values'].forEach(aggregationKey => {
     if (response && response.aggregations && response.aggregations[aggregationKey]) {
-      const additionalBucket = {'key': aggregationKey, ...formatBucket(response.aggregations[aggregationKey], term)};
+      const additionalBucket = {'key': aggregationKey, ...formatAggregationBucket(response.aggregations[aggregationKey], term)};
       buckets.push(additionalBucket);
     }
   });
@@ -724,39 +722,6 @@ async function fetchTermBasedData(suffix, query, term, sort, size) {
   return { records: buckets, total: totalUniqueTerms };
 }
 
-
-/**
- * Formats a single bucket or aggregation result for a term-based table.
- * 
- * @param {Object} bucket - The raw bucket data from the API response.
- * @param {string} [term=""] - The field used for the current term breakdown.
- * @returns {Object} The formatted bucket data.
- */
-function formatBucket(bucket, term = "") {
-  const formattedBucket = {};
-  Object.keys(bucket).forEach(key => {
-    if (key.startsWith("median_")) {
-      formattedBucket[key] = bucket[key].values["50.0"];
-    } else if (key === "top_author_record") {
-      const hit = bucket[key]?.hits?.hits?.[0]?._source;
-      const authorships = Array.isArray(hit?.authorships) ? hit.authorships : [];
-      const matchingAuthorship = authorships.find((authorship) => {
-        return term === AUTHOR_BREAKDOWN_TERM
-          && getAuthorBreakdownKey(authorship?.author) === bucket.key;
-      });
-
-      formattedBucket.display_name = matchingAuthorship?.author?.display_name || null;
-      formattedBucket.orcid = matchingAuthorship?.author?.orcid || null;
-    } else if (bucket[key].doc_count !== undefined) {
-      formattedBucket[key] = bucket[key].doc_count;
-    } else if (bucket[key].value !== undefined) {
-      formattedBucket[key] = bucket[key].value;
-    } else {
-      formattedBucket[key] = bucket[key];
-    }
-  });
-  return formattedBucket;
-}
 
 /**
  * Fetches article-based data using provided parameters.
@@ -1621,7 +1586,7 @@ async function handleRecordsShownChange(event) {
     return;
   }
 
-  toggleLoadingIndicator(true, 'explore_loading');
+  startLoading();
   try {
     await fetchAndDisplayExploreData(
       currentActiveExploreItemData,
@@ -1633,7 +1598,6 @@ async function handleRecordsShownChange(event) {
   } catch (error) {
     console.error('Error updating records shown: ', error);
   }
-  toggleLoadingIndicator(false, 'explore_loading');
 }
 
 /**
@@ -1645,14 +1609,13 @@ async function handleRecordsShownChange(event) {
  * @param {string} filterId - The ID of the selected filter.
  */
 async function handleFilterChange(filterId) {
-  toggleLoadingIndicator(true, 'explore_loading'); // Display loading indicator on filter change
+  startLoading();
   updateURLParams({ 'explore_filter': filterId });
   await fetchAndDisplayExploreData(currentActiveExploreItemData, filterId);
   currentActiveExploreItemQuery = filterId;
   updateExploreFilterHeader(filterId);
   updateFilterPillStates(filterId);
   announce(`Explore filter: ${EXPLORE_FILTERS_LABELS[filterId] || filterId}.`);
-  toggleLoadingIndicator(false, 'explore_loading'); // Hide loading indicator once data is loaded
 }
 
 /**

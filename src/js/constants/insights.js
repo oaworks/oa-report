@@ -58,7 +58,7 @@ export const INSIGHTS_CARDS = [
   },
   {
     numerator: "is_compliant_article",
-    denominator: "is_paper",
+    denominator: "is_covered_by_policy",
     denominatorText: "articles covered by policy",
     definition_key: "compliant",
     info: resolveFieldDefinition("compliant", "insights", { subject: "journal articles" }).info
@@ -104,3 +104,126 @@ export const INSIGHTS_CARDS = [
     info: resolveFieldDefinition("compliant", "insights", { subject: "unique publications" }).info
   }
 ];
+
+/**
+ * Metric mappings for Insight cards matching their corresponding
+ * Explore Years breakdown exactly.
+ *
+ * `numeratorMetric` and `denominatorMetric` refer to keys returned by the
+ * Explore aggregation's `all_values` row.
+ *
+ * `denominatorSumOf` supports derived denominators such as:
+ * with DAS + without DAS = checked for DAS
+ *
+ * @type {Object.<string, {
+ *   exploreFilter: string,
+ *   numeratorMetric: string,
+ *   denominatorMetric?: string,
+ *   denominatorSumOf?: string[],
+ *   totalMetric?: string
+ * }>}
+ */
+export const INSIGHT_EXPLORE_MAPPINGS = {
+  // Journal articles
+  is_paper: {
+    exploreFilter: "is_paper",
+    numeratorMetric: "doc_count",
+    totalMetric: "doc_count"
+  },
+  is_free_to_read: {
+    exploreFilter: "is_paper",
+    numeratorMetric: "free_to_read",
+    denominatorMetric: "doc_count",
+    totalMetric: "doc_count"
+  },
+  is_oa: {
+    exploreFilter: "is_paper",
+    numeratorMetric: "open_access",
+    denominatorMetric: "doc_count",
+    totalMetric: "doc_count"
+  },
+  is_compliant: {
+    exploreFilter: "is_paper",
+    numeratorMetric: "compliant",
+    denominatorMetric: "covered_by_policy",
+    totalMetric: "doc_count"
+  },
+  is_compliant_article: { // Gates Foundation-only alias
+    exploreFilter: "is_paper",
+    numeratorMetric: "compliant",
+    denominatorMetric: "covered_by_policy",
+    totalMetric: "doc_count"
+  },
+  has_data_availability_statement: {
+    exploreFilter: "is_paper",
+    numeratorMetric: "with_data_availability_statement",
+    denominatorSumOf: [
+      "with_data_availability_statement",
+      "without_data_availability_statement"
+    ],
+    totalMetric: "doc_count"
+  },
+  has_data: {
+    exploreFilter: "is_paper",
+    numeratorMetric: "with_data",
+    denominatorMetric: "doc_count",
+    totalMetric: "doc_count"
+  },
+  has_open_data: {
+    exploreFilter: "is_paper",
+    numeratorMetric: "with_open_data",
+    denominatorMetric: "with_data",
+    totalMetric: "doc_count"
+  },
+  has_code: {
+    exploreFilter: "is_paper",
+    numeratorMetric: "with_code",
+    denominatorMetric: "doc_count",
+    totalMetric: "doc_count"
+  },
+  has_open_code: {
+    exploreFilter: "is_paper",
+    numeratorMetric: "with_open_code",
+    denominatorMetric: "with_code",
+    totalMetric: "doc_count"
+  },
+  // Preprints
+  is_preprint: {
+    exploreFilter: "is_preprint",
+    numeratorMetric: "doc_count",
+    totalMetric: "doc_count"
+  },
+  is_free_to_read_preprint: {
+    exploreFilter: "is_preprint",
+    numeratorMetric: "free_to_read",
+    denominatorMetric: "doc_count",
+    totalMetric: "doc_count"
+  },
+  is_compliant_preprint: {
+    exploreFilter: "is_preprint",
+    numeratorMetric: "compliant",
+    denominatorMetric: "covered_by_policy",
+    totalMetric: "doc_count"
+  },
+  has_data_availability_statement_preprint: {
+    exploreFilter: "is_preprint",
+    numeratorMetric: "with_data_availability_statement",
+    denominatorSumOf: [
+      "with_data_availability_statement",
+      "without_data_availability_statement"
+    ],
+    totalMetric: "doc_count"
+  },
+  // Unique publications
+  is_unique_publication: {
+    exploreFilter: "is_unique_publication",
+    numeratorMetric: "doc_count",
+    totalMetric: "doc_count"
+  },
+  is_compliant_publication: {
+    exploreFilter: "is_unique_publication",
+    numeratorMetric: "compliant",
+    denominatorMetric: "covered_by_policy",
+    totalMetric: "doc_count"
+  }
+};
