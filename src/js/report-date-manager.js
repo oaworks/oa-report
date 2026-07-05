@@ -24,17 +24,11 @@ import { createPopover } from './tooltip-manager.js';
  */
 export const currentDate = new Date();
 
-/** 
- * Default year for paid users.
+/**
+ * Default year for the report.
  * @constant {number}
  */
 export const DEFAULT_YEAR = 2025;
-
-/** 
- * Default year for free users (usually behind the paid default).
- * @constant {number}
- */
-export const DEFAULT_YEAR_FREE = 2023;
 
 /** 
  * First year with available data.
@@ -280,24 +274,16 @@ export function setDefaultYear() {
   // Otherwise, set default dates or years based on user type
   let defaultStartDate, defaultEndDate, defaultButtonYear;
 
-  if (paid) {
-    // For paid users, use the full year unless it's Q2 or later
-    if (isQuarterTwoOrLater()) {
-      // Switch to the current year for Q2 and beyond
-      defaultStartDate = createDate(currentDate.getFullYear(), 0, 1); // Jan 1 of the current year
-      defaultEndDate = getLiveRangeEndDate();
-      defaultButtonYear = currentDate.getFullYear();
-    } else {
-      // Default to the previous year
-      defaultStartDate = createDate(DEFAULT_YEAR, 0, 1); // January 1st
-      defaultEndDate = createDate(DEFAULT_YEAR, 11, 31); // December 31st
-      defaultButtonYear = DEFAULT_YEAR;
-    }
+  if (isQuarterTwoOrLater()) {
+    // Switch to the current year for Q2 and beyond
+    defaultStartDate = createDate(currentDate.getFullYear(), 0, 1); // Jan 1 of the current year
+    defaultEndDate = getLiveRangeEndDate();
+    defaultButtonYear = currentDate.getFullYear();
   } else {
-    // For non-paid users, restrict the date range from Jan 1 to Jun 30 of DEFAULT_YEAR_FREE
-    defaultStartDate = createDate(DEFAULT_YEAR_FREE, 0, 1); // January 1st
-    defaultEndDate = createDate(DEFAULT_YEAR_FREE, 5, 30); // June 30th
-    defaultButtonYear = DEFAULT_YEAR_FREE;
+    // Default to the previous year
+    defaultStartDate = createDate(DEFAULT_YEAR, 0, 1); // January 1st
+    defaultEndDate = createDate(DEFAULT_YEAR, 11, 31); // December 31st
+    defaultButtonYear = DEFAULT_YEAR;
   }
 
   replaceDateRange(defaultStartDate, defaultEndDate);
@@ -374,7 +360,7 @@ export function bindDynamicYearButtons(startYear, endYear, visibleYears = 3) {
     const buttonText = `${year}`;
 
     if (endYear - year < visibleYears) {
-      // Determine if the year button should be active or disabled based on free or paid reports
+      // Recent years shown as visible buttons; older years go into the dropdown below
       let element = createYearButton(buttonId, buttonText, startDate, endDate);
       yearsContainer.appendChild(element);
     } else {
@@ -393,12 +379,9 @@ export function bindDynamicYearButtons(startYear, endYear, visibleYears = 3) {
   let allTimeButton = createYearButton("all-time", "All time", ALL_TIME_START_DATE, renderedCurrentDate);
   yearsContainer.appendChild(allTimeButton);
 
-  // Create and append the date range form for paid users, initialise the dropdown menu
-  if (paid) {
-    const dateRangeForm = createDateRangeForm();
-    yearsContainer.appendChild(dateRangeForm); // Append the form to the container
-    initDropdown(".js_dropdown");
-  }
+  const dateRangeForm = createDateRangeForm();
+  yearsContainer.appendChild(dateRangeForm);
+  initDropdown(".js_dropdown");
 
   setDefaultYear();
 }
@@ -769,10 +752,7 @@ function handleYearButtonLogic(button, startDate, endDate) {
   // Check if the button is null or not
   const isDropdownItem = button && button.classList.contains('js_dropdown_item');
 
-  // Reset the dropdown if a visible year button is clicked and it's not a dropdown item
-  // We only need to do this for paid reports
-  // ...free ones don’t have the option to select other dates or years
-  if (!isDropdownItem && paid) {
+  if (!isDropdownItem) {
     resetDropdown();
   }
 
