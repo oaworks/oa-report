@@ -9,6 +9,7 @@
 // Imports
 // =================================================
 
+import DOMPurify from 'dompurify';
 import { dateRange, startYear, endYear, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings } from './utils.js';
 import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, INSIGHT_EXPLORE_MAPPINGS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS, resolveFieldDefinition } from './constants.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
@@ -673,11 +674,10 @@ export function initInsightsAndActions(org) {
                       var mailto = orgData.hits.hits[0]._source.strategy[strategy].mailto;
 
                       const decodeMailtoValue = function(value, fallback) {
-                        const textarea = document.createElement("textarea");
                         const resolvedValue = typeof value === "string" && value.length > 0 ? value : fallback;
-
-                        textarea.innerHTML = resolvedValue.replaceAll("\'", "’");
-                        return textarea.value;
+                        const div = document.createElement("div");
+                        div.innerHTML = DOMPurify.sanitize(resolvedValue.replaceAll("\’", "’"));
+                        return (div.textContent || "").replace(/\s+/g, " ").trim();
                       };
 
                       var newMailto = mailto.replaceAll("\’", "’");
