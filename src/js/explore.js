@@ -691,7 +691,7 @@ async function loadExploreRecords(itemData, query, size, pretty) {
  * @param {number} size - The number of records to fetch.
  * @returns {Promise<Object>} A promise that resolves to term-based records and total count.
  */
-async function fetchTermBasedData(suffix, query, term, sort, size) {
+export async function fetchTermBasedData(suffix, query, term, sort, size) {
   const postData = getAggregatedDataQuery(suffix, query, term, startYear, endYear, size, sort);
   const response = await fetchPostData(postData);
 

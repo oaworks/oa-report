@@ -9,6 +9,8 @@
 
 import {
   fetchJson,
+  startYear,
+  endYear,
   getDecodedUrlQuery,
   updateURLParams,
   removeURLParams,
@@ -19,6 +21,7 @@ import {
   createPopoverKeyboardFlow
 } from "./utils.js";
 import { ORGS_REPORT_API_BASE_URL } from "./constants/api.js";
+import { AUTHOR_BREAKDOWN_TERM } from "./aggregated-data-query.js";
 
 import {
   EXPLORE_ITEMS_LABELS,
@@ -32,7 +35,7 @@ import { SEARCH_FILTER_FIELD_MAP, iconForField } from "./constants/filter-fields
 
 import { orgDataPromise } from './insights-and-actions.js';
 
-import { handleFiltersChanged } from './explore.js';
+import { handleFiltersChanged, fetchTermBasedData } from './explore.js';
 import { createPopover, createTooltip } from './tooltip-manager.js';
 
 const SUGGESTIONS_API_URL = `${ORGS_REPORT_API_BASE_URL}suggestions`;
@@ -1107,6 +1110,21 @@ function renderFilterContextInHeading(pairs) {
   const displayValue = formatFilterValueForDisplay(field, values[0]);
   el.textContent = `${label}: ${displayValue}`;
   el.hidden = false;
+
+  if (normaliseSortField(field) === "authorships.author.orcid" && !orcidDisplayNames.has(values[0])) {
+    const suffix = orgData?.hits?.hits?.[0]?._source?.key_suffix;
+    if (suffix && startYear && endYear) {
+      const filterQuery = `${AUTHOR_ORCID_FIELD}:"${escapeQueryValue(values[0])}"`;
+      fetchTermBasedData(suffix, filterQuery, AUTHOR_BREAKDOWN_TERM, "_count", 1)
+        .then(({ records }) => {
+          const name = records?.[0]?.display_name;
+          if (!name || el.hidden) return;
+          orcidDisplayNames.set(values[0], name);
+          el.textContent = `${label}: ${name}`;
+        })
+        .catch(() => {});
+    }
+  }
 }
 
 /**
