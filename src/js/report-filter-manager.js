@@ -1118,9 +1118,9 @@ function renderFilterContextInHeading(pairs) {
       fetchTermBasedData(suffix, filterQuery, AUTHOR_BREAKDOWN_TERM, "_count", 1)
         .then(({ records }) => {
           const name = records?.[0]?.display_name;
-          if (!name || el.hidden) return;
+          if (!name) return;
           orcidDisplayNames.set(values[0], name);
-          el.textContent = `${label}: ${name}`;
+          renderActiveFiltersBanner();
         })
         .catch(() => {});
     }
