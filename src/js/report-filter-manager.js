@@ -1080,6 +1080,30 @@ function addFilterRow(container) {
 // =================================================
 
 /**
+ * Updates the #js-filter-context-heading span in the report <h1> to show the
+ * active filter when exactly one field with one value is set (e.g. "Grant: INV-123").
+ * Hides the element when there are zero or multiple active filter values.
+ *
+ * @param {{field:string,label:string,values:string[]}[]} pairs
+ */
+function renderFilterContextInHeading(pairs) {
+  const el = document.getElementById("js-filter-context-heading");
+  if (!el) return;
+
+  const isSingleValue = pairs.length === 1 && pairs[0].values.length === 1;
+  if (!isSingleValue) {
+    el.hidden = true;
+    el.textContent = "";
+    return;
+  }
+
+  const { field, label, values } = pairs[0];
+  const displayValue = formatFilterValueForDisplay(field, values[0]);
+  el.textContent = `${label}: ${displayValue}`;
+  el.hidden = false;
+}
+
+/**
  * Renders the Filters chip in the top nav and wires a Tippy popover
  * that shows:
  *  - Active filters summary (chips + Clear filters)
@@ -1098,6 +1122,7 @@ export function renderActiveFiltersBanner() {
 
   const q = getDecodedUrlQuery();
   const pairs = parseEsQueryToPairs(q);
+  renderFilterContextInHeading(pairs);
   const count = pairs.reduce((sum, p) => sum + (Array.isArray(p.values) ? p.values.length : 1), 0); // total values count across all fields, instead of just fields count
 
   wrapper.classList.remove("invisible", "opacity-0", "pointer-events-none");
