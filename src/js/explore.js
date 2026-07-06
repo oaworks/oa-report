@@ -13,7 +13,7 @@ import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITE
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { startLoading, stopLoading } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
-import { renderActiveFiltersBanner } from './report-filter-manager.js';
+import { renderActiveFiltersBanner, orcidDisplayNames } from './report-filter-manager.js';
 import { orgDataPromise, initInsightsAndActions } from './insights-and-actions.js';
 import { AUTHOR_BREAKDOWN_TERM, getAggregatedDataQuery, formatAggregationBucket } from './aggregated-data-query.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
@@ -978,6 +978,7 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
 
   function appendRow(target, record, section) {
     const row = document.createElement('tr');
+    if (dataType === 'terms' && exploreItemId === 'author' && record.display_name) orcidDisplayNames.set(record.key, record.display_name);
     const visibleEntries = Object.entries(record)
       .filter(([key]) => !(dataType === 'terms' && exploreItemId === 'author' && (key === 'display_name' || key === 'orcid')));
 

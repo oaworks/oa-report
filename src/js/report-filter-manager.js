@@ -73,6 +73,9 @@ const AUTHOR_ID_FIELD = "authorships.author.id.keyword";
 const AUTHOR_ORCID_FIELD = "authorships.author.orcid.keyword";
 const AUTHOR_NAME_FIELD = "authorships.author.display_name.keyword";
 
+/** ORCID URL → author display name; populated by explore.js whenever the Authors table renders. */
+export const orcidDisplayNames = new Map();
+
 function getRenderedFilterValueDisplay(field = "", value = "") {
   const fieldKey = ensureKeywordField(field);
   const targetValue = String(value || "").trim();
@@ -140,6 +143,9 @@ function formatFilterValueForDisplay(field = "", value = "") {
   }
 
   if (normaliseSortField(field) !== "authorships.author.orcid") return trimmed;
+
+  const name = orcidDisplayNames.get(trimmed) || getRenderedFilterValueDisplay(AUTHOR_ORCID_FIELD, trimmed);
+  if (name) return name;
 
   const match = trimmed.match(ORCID_ID_RE)?.[0];
   return match ? match.toUpperCase() : trimmed;
