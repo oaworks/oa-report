@@ -29,7 +29,6 @@ import {
   EXPLORE_FILTERS_LABELS,
   EXPLORE_HEADER_ARTICLES_LABELS,
   resolveFieldDefinition,
-  COUNTRY_CODES,
   DATE_SELECTION_BUTTON_CLASSES
 } from "./constants.js";
 import { SEARCH_FILTER_FIELD_MAP, iconForField } from "./constants/filter-fields.js";
@@ -318,23 +317,19 @@ function extractFilterValuesFromClause(field = "", rawValue = "") {
     (match) => unescapeQueryValue(match[1]).trim()
   ).filter(Boolean);
 
+  const codes = SEARCH_FILTER_FIELD_MAP.get(baseField)?.codes;
+  const decode = (v) => codes?.[v] || v;
+
   if (!values.length) {
     const fallbackValue = unescapeQueryValue(
       String(rawValue || "")
         .replace(/["()]/g, "")
         .trim()
     );
-    if (!fallbackValue) return [];
-    return /country(_code)?$/i.test(baseField) && COUNTRY_CODES[fallbackValue]
-      ? [COUNTRY_CODES[fallbackValue]]
-      : [fallbackValue];
+    return fallbackValue ? [decode(fallbackValue)] : [];
   }
 
-  return values.map((value) => (
-    /country(_code)?$/i.test(baseField) && COUNTRY_CODES[value]
-      ? COUNTRY_CODES[value]
-      : value
-  ));
+  return values.map(decode);
 }
 
 /**

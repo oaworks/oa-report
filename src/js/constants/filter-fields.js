@@ -3,6 +3,8 @@
 // Explore breakdown + filter field metadata
 // =================================================
 
+import { COUNTRY_CODES, LANGUAGE_CODES } from "../constants.js";
+
 export const SEARCH_FILTER_FIELDS = [
   { field: "authorships.author.display_name", label: "Authors (Name)", iconKey: "author", alphaSort: true },
   { field: "authorships.author.orcid", label: "Authors (ORCID)", iconKey: "author", alphaSort: false },
@@ -13,10 +15,10 @@ export const SEARCH_FILTER_FIELDS = [
   { field: "supplements.host_venue.display_name", label: "Preprint servers", iconKey: "preprint_server", alphaSort: true },
   { field: "supplements.grantid", label: "Grants", iconKey: "grant", alphaSort: false },
   { field: "supplements.program", label: "Programs", iconKey: "program", alphaSort: false },
-  { field: "openalx.language", label: "Languages", iconKey: "language", alphaSort: true },
+  { field: "openalx.language", label: "Languages", iconKey: "language", alphaSort: true, codes: LANGUAGE_CODES },
   { field: "supplements.publisher_license_best", label: "Publisher licenses", iconKey: "publisher_license", alphaSort: true },
   { field: "supplements.repository_license_best", label: "Repository licenses", iconKey: "repository_license", alphaSort: true },
-  { field: "authorships.institutions.country_code", label: "Countries", iconKey: "country", alphaSort: true },
+  { field: "authorships.institutions.country_code", label: "Countries", iconKey: "country", alphaSort: true, codes: COUNTRY_CODES },
   { field: "openalx.funders.display_name", label: "Funders", iconKey: "funder", alphaSort: true },
   { field: "openalx.open_access.oa_status", label: "Journal article OA types", iconKey: "article_oa_type", alphaSort: true }
 ];
