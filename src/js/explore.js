@@ -1068,7 +1068,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
     ? AUTHOR_BREAKDOWN_TERM
     : (currentActiveExploreItemData?.term?.trim() || "");
   const termField = termBase
-    ? ((termBase === "published_year" && API_HOST_WORKS === "api")
+    ? (termBase === "published_year"
       ? termBase.replace(/\.keyword$/i, "")
       : `${termBase.replace(/\.keyword$/i, "")}.keyword`)
     : "";
@@ -1098,7 +1098,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
       // If clause is not present, just add it via the existing helper
       if (!existingQuery || !existingQuery.includes(clause)) {
         updateURLParams({
-          q: buildEncodedQueryWithUrlFilter(clause)
+          q: andQueryStrings(clause, existingQuery)
         });
       } else {
         // Clause is present: remove ONLY this clause from the decoded ?q=
@@ -1114,10 +1114,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
           removeURLParams('q');
         } else {
           const newDecodedQuery = remaining.join(' AND ');
-          // Write the updated expression back (encoded) so helpers keep working
-          updateURLParams({
-            q: encodeURIComponent(newDecodedQuery)
-          });
+          updateURLParams({ q: newDecodedQuery });
         }
       }
 
