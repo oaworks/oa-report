@@ -4,15 +4,21 @@
 // =================================================
 
 export const SEARCH_FILTER_FIELDS = [
-  { field: "authorships.author.display_name", label: "Authors (Name)", alphaSort: true },
-  { field: "authorships.author.orcid", label: "Authors (ORCID)", alphaSort: false },
+  { field: "authorships.author.display_name", label: "Authors (Name)", iconKey: "author", alphaSort: true },
+  { field: "authorships.author.orcid", label: "Authors (ORCID)", iconKey: "author", alphaSort: false },
   { field: "concepts.display_name", label: "Subjects", iconKey: "subject", alphaSort: true },
   { field: "authorships.institutions.display_name", label: "Institutions", iconKey: "institution", alphaSort: true },
   { field: "journal", label: "Journals", iconKey: "journal", alphaSort: true },
   { field: "supplements.publisher_simple", label: "Publishers", iconKey: "publisher", alphaSort: true },
   { field: "supplements.host_venue.display_name", label: "Preprint servers", iconKey: "preprint_server", alphaSort: true },
   { field: "supplements.grantid", label: "Grants", iconKey: "grant", alphaSort: false },
-  { field: "supplements.program", label: "Programs", iconKey: "program", alphaSort: false }
+  { field: "supplements.program", label: "Programs", iconKey: "program", alphaSort: false },
+  { field: "openalx.language", label: "Languages", iconKey: "language", alphaSort: true },
+  { field: "supplements.publisher_license_best", label: "Publisher licenses", iconKey: "publisher_license", alphaSort: true },
+  { field: "supplements.repository_license_best", label: "Repository licenses", iconKey: "repository_license", alphaSort: true },
+  { field: "authorships.institutions.country_code", label: "Countries", iconKey: "country", alphaSort: true },
+  { field: "openalx.funders.display_name", label: "Funders", iconKey: "funder", alphaSort: true },
+  { field: "openalx.open_access.oa_status", label: "Journal article OA types", iconKey: "article_oa_type", alphaSort: true }
 ];
 
 export const SEARCH_FILTER_FIELD_MAP = new Map(
@@ -39,7 +45,9 @@ export const FILTER_FIELD_ICONS = {
   funder: "hand-coins",
   articles_with_apcs: "receipt",
   article_oa_type: "file-lock",
-  journal_oa_type: "folder-lock"
+  journal_oa_type: "folder-lock",
+  publisher_license: "certificate",
+  repository_license: "certificate"
 };
 
 const SEARCH_FILTER_ICON_KEYS = new Map(
