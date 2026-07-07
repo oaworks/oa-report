@@ -7,6 +7,7 @@
 // Imports & Constants
 // =================================================
 
+import DOMPurify from "dompurify";
 import {
   fetchJson,
   startYear,
@@ -1108,7 +1109,9 @@ function renderFilterContextInHeading(pairs) {
 
   const { field, label, values } = pairs[0];
   const displayValue = formatFilterValueForDisplay(field, values[0]);
-  el.textContent = `${label}: ${displayValue}`;
+  // label may contain markup (e.g. <span class='uppercase'>OA</span> to protect abbreviations
+  // from .toLowerCase() callers); displayValue is user/API data. Sanitize both.
+  el.innerHTML = DOMPurify.sanitize(`${label}: ${DOMPurify.sanitize(displayValue, { ALLOWED_TAGS: [] })}`);
   el.hidden = false;
 
   if (normaliseSortField(field) === "authorships.author.orcid" && !orcidDisplayNames.has(values[0])) {
@@ -1218,7 +1221,7 @@ export function renderActiveFiltersBanner() {
 
       const headingDiv = document.createElement("div");
       headingDiv.className = "text-[11px] md:text-xs font-semibold text-neutral-900";
-      headingDiv.textContent = label;
+      headingDiv.innerHTML = DOMPurify.sanitize(label);
       li.appendChild(headingDiv);
 
       const chipsRow = document.createElement("div");
@@ -1231,7 +1234,7 @@ export function renderActiveFiltersBanner() {
         chip.type = "button";
         chip.className = "inline-flex items-center rounded-full bg-carnation-100 text-neutral-900 px-2 py-0.5 text-[11px] md:text-xs";
         chip.setAttribute("role", "listitem");
-        chip.setAttribute("aria-label", `Remove ${label}: ${displayVal}`);
+        chip.setAttribute("aria-label", `Remove ${DOMPurify.sanitize(label, { ALLOWED_TAGS: [] })}: ${displayVal}`);
         chip.setAttribute("data-field", ensureKeywordField(field));
         const chipIconName = iconForField(field);
         if (chipIconName) {
