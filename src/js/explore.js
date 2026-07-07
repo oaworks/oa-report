@@ -1090,6 +1090,17 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
       // Do not trigger filtering when clicking the external profile pill
       if (target && target.closest('.js-external-pill')) return;
 
+      // For the year breakdown, activate the matching year nav button so the
+      // date range filter is applied and the chip highlights correctly.
+      // The date range is sufficient; no need to also write a published_year q param.
+      if (termField === "published_year") {
+        const yearButton = document.getElementById(`year-${rawValue}`);
+        if (yearButton) {
+          yearButton.click();
+          return;
+        }
+      }
+
       const value = escapeQueryValue(rawValue);
       const clause = `${termField}:"${value}"`;
 
