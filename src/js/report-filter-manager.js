@@ -275,7 +275,7 @@ function buildFilterFieldOptions(exploreData) {
         ? "supplements.program"
         : fieldKey;
     const fieldMeta = SEARCH_FILTER_FIELD_MAP.get(normalisedKey);
-    if (!fieldMeta || seen.has(normalisedKey)) return;
+    if (!fieldMeta || fieldMeta.filterListHidden || seen.has(normalisedKey)) return;
     seen.add(normalisedKey);
 
     const label =
@@ -287,9 +287,10 @@ function buildFilterFieldOptions(exploreData) {
   });
 
   // Fallback: include globally configured search fields even if the org's
-  // Explore config doesn't explicitly list them.
+  // Explore config doesn't explicitly list them. Fields marked filterListHidden
+  // are excluded here but can still be surfaced per-org via their explore config.
   for (const [fieldKey, fieldMeta] of SEARCH_FILTER_FIELD_MAP.entries()) {
-    if (seen.has(fieldKey)) continue;
+    if (seen.has(fieldKey) || fieldMeta?.filterListHidden) continue;
     seen.add(fieldKey);
     options.push({
       value: fieldKey,
