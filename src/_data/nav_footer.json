@@ -1,10 +1,5 @@
 [
   {
-    "label": "About",
-    "url": "https://about.oa.report/",
-    "ext": true
-  },
-  {
     "label": "Status",
     "url": "https://status.oa.report/",
     "ext": true
