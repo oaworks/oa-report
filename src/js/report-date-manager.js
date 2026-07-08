@@ -557,7 +557,7 @@ function createDateRangeForm() {
   form.setAttribute("aria-labelledby", "js-date-range-form-title");
 
   // Title for the form (for screen readers)
-  const formTitle = document.createElement("h2");
+  const formTitle = document.createElement("h3");
   formTitle.id = "js-date-range-form-title";
   formTitle.textContent = "Select custom date range";
   formTitle.className = "sr-only";

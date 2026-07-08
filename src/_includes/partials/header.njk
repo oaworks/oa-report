@@ -33,16 +33,12 @@
         {% set envPrefix = '[STG] ' if 'staging.oa.report' in env or 'stg.oa.report' in env else ('[DEV] ' if 'dev.oa.report' in env or 'localhost' in env or '127.0.0.1' in env else '') %}
         <span class="min-w-0 max-w-full break-words font-serif font-semibold text-base md:text-lg lg:text-xl sm:truncate" title="{{ org._source.name }}">{% if envPrefix %}{{ envPrefix }}{% endif %}{{ org._source.name }}</span>
         </span>
-        <span class="flex max-w-full flex-wrap items-center gap-x-1 gap-y-0 text-[11px] font-medium leading-tight md:text-xs lg:text-sm sm:whitespace-nowrap">
+        <span class="sr-only">
           <span class="report_readable_start_date"></span>
-          <span class="sr-only"> to </span><span aria-hidden="true">—</span>
+          to
           <span class="report_readable_end_date"></span>
         </span>
-        <span
-          id="js-filter-context-heading"
-          hidden
-          class="flex max-w-full flex-wrap items-center gap-x-1 gap-y-0 text-[11px] font-medium leading-tight md:text-xs lg:text-sm"
-        ></span>
+        <span id="js-filter-context-heading" class="sr-only" hidden></span>
       </h1>
     </div>
     {% else %}

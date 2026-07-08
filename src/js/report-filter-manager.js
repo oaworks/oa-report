@@ -1085,9 +1085,10 @@ function addFilterRow(container) {
 // =================================================
 
 /**
- * Updates the #js-filter-context-heading span in the report <h1> to show the
- * active filter when exactly one field with one value is set (e.g. "Grant: INV-123").
- * Hides the element when there are zero or multiple active filter values.
+ * Updates the sr-only #js-filter-context-heading span inside the report <h1>
+ * so screen readers announce the active filter as part of the page heading
+ * (e.g. when arriving via a shared filtered URL).
+ * Only fires for exactly one field with one value; clears otherwise.
  *
  * @param {{field:string,label:string,values:string[]}[]} pairs
  */
@@ -1095,33 +1096,40 @@ function renderFilterContextInHeading(pairs) {
   const el = document.getElementById("js-filter-context-heading");
   if (!el) return;
 
-  const isSingleValue = pairs.length === 1 && pairs[0].values.length === 1;
-  if (!isSingleValue) {
+  const totalValues = pairs.reduce((n, p) => n + p.values.length, 0);
+  if (!totalValues) {
     el.hidden = true;
     el.textContent = "";
     return;
   }
 
-  const { field, label, values } = pairs[0];
-  const displayValue = formatFilterValueForDisplay(field, values[0]);
-  // label may contain markup (e.g. <span class='uppercase'>OA</span> to protect abbreviations
-  // from .toLowerCase() callers); displayValue is user/API data. Sanitize both.
-  el.innerHTML = DOMPurify.sanitize(`${label}: ${DOMPurify.sanitize(displayValue, { ALLOWED_TAGS: [] })}`);
-  el.hidden = false;
+  // Single field + single value: name the filter explicitly so SR users hear e.g. ", filtered by Grants: INV-123"
+  if (pairs.length === 1 && pairs[0].values.length === 1) {
+    const { field, label, values } = pairs[0];
+    const displayValue = formatFilterValueForDisplay(field, values[0]);
+    const plainLabel = label.replace(/<[^>]+>/g, "");
+    el.textContent = `, filtered by ${plainLabel}: ${displayValue}`;
+    el.hidden = false;
 
-  if (normaliseSortField(field) === "authorships.author.orcid" && !orcidDisplayNames.has(values[0])) {
-    const suffix = orgData?.hits?.hits?.[0]?._source?.key_suffix;
-    if (suffix && startYear && endYear) {
-      const filterQuery = `${AUTHOR_ORCID_FIELD}:"${escapeQueryValue(values[0])}"`;
-      fetchTermBasedData(suffix, filterQuery, AUTHOR_BREAKDOWN_TERM, "_count", 1)
-        .then(({ records }) => {
-          const name = records?.[0]?.display_name;
-          if (!name) return;
-          orcidDisplayNames.set(values[0], name);
-          renderActiveFiltersBanner();
-        })
-        .catch(() => {});
+    // ORCID values arrive as bare IDs; fetch the author's display name so the heading
+    // reads as a name rather than a raw identifier, then re-render once resolved.
+    if (normaliseSortField(field) === "authorships.author.orcid" && !orcidDisplayNames.has(values[0])) {
+      const suffix = orgData?.hits?.hits?.[0]?._source?.key_suffix;
+      if (suffix && startYear && endYear) {
+        const filterQuery = `${AUTHOR_ORCID_FIELD}:"${escapeQueryValue(values[0])}"`;
+        fetchTermBasedData(suffix, filterQuery, AUTHOR_BREAKDOWN_TERM, "_count", 1)
+          .then(({ records }) => {
+            const name = records?.[0]?.display_name;
+            if (!name) return;
+            orcidDisplayNames.set(values[0], name);
+            renderActiveFiltersBanner();
+          })
+          .catch(() => {});
+      }
     }
+  } else {
+    el.textContent = `, with ${totalValues} active filter${totalValues === 1 ? "" : "s"}`;
+    el.hidden = false;
   }
 }
 
