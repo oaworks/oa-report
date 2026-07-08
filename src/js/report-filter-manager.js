@@ -1145,61 +1145,17 @@ export function renderActiveFiltersBanner() {
   const q = getDecodedUrlQuery();
   const pairs = parseEsQueryToPairs(q);
   renderFilterContextInHeading(pairs);
-  const count = pairs.reduce((sum, p) => sum + (Array.isArray(p.values) ? p.values.length : 1), 0); // total values count across all fields, instead of just fields count
+  const count = pairs.reduce((sum, p) => sum + (Array.isArray(p.values) ? p.values.length : 1), 0);
 
+  // Always reveal the wrapper — it holds at minimum the "+ Add filter" button
   wrapper.classList.remove("invisible", "opacity-0", "pointer-events-none");
   wrapper.setAttribute("aria-hidden", "false");
   if ("inert" in wrapper) wrapper.inert = false;
   mount.innerHTML = "";
 
-  // Trigger form styled like other date/year chips
-  const form = document.createElement("form");
-  form.id = "filters_form";
-  const isActive = count > 0;
-  const filterChipClasses = isActive ? DATE_SELECTION_BUTTON_CLASSES.active : DATE_SELECTION_BUTTON_CLASSES.enabled;
-  form.className = `${filterChipClasses} !mr-0 !md:mr-0 flex items-center whitespace-nowrap`;
-  form.setAttribute("aria-labelledby", "js-filters-form-title");
-
-  const formTitle = document.createElement("h2");
-  formTitle.id = "js-filters-form-title";
-  formTitle.textContent = "Manage filters";
-  formTitle.className = "sr-only";
-  form.appendChild(formTitle);
-
-  const triggerBtn = document.createElement("button");
-  triggerBtn.type = "button";
-  triggerBtn.id = "js-filters-trigger";
-  triggerBtn.innerHTML = `Filters (${count}) <span class="ml-1 text-xs">▼</span>`;
-  triggerBtn.setAttribute("aria-haspopup", "dialog");
-  triggerBtn.setAttribute("aria-expanded", "false");
-  triggerBtn.setAttribute("aria-pressed", isActive ? "true" : "false");
-  triggerBtn.style.color = "inherit";
-  form.appendChild(triggerBtn);
-
-  mount.appendChild(form);
-
-  // Popover content (wider than date range)
-  const pop = document.createElement("div");
-  pop.className = "js-filters-popover p-3 md:p-4 text-xs md:text-sm";
-  pop.setAttribute("role", "dialog");
-  pop.setAttribute("aria-labelledby", "js-filters-form-title");
-  pop.style.maxWidth = "90vw";
-  pop.style.minWidth = "320px";
-
-  const heading = document.createElement("h3");
-  heading.className = "mb-2 font-semibold text-neutral-900 text-xs md:text-sm";
-  heading.id = "js-active-filters-heading";
-  heading.textContent = count ? `Active filters (${count})` : "No active filters";
-  pop.appendChild(heading);
-
-  const chipsList = document.createElement("ul");
-  chipsList.className = "mb-2 space-y-2";
-  chipsList.setAttribute("role", "list");
-  chipsList.setAttribute("aria-live", "polite");
-  chipsList.setAttribute("aria-labelledby", heading.id);
-
+  // Render active filter chips inline
   if (pairs.length) {
-    const grouped = new Map(); // field -> {label, clauses:[...], values:[...]}
+    const grouped = new Map();
     pairs.forEach(({ field, label, values, clause }) => {
       if (!grouped.has(field)) {
         grouped.set(field, { label, field, clauses: [], values: [] });
@@ -1209,26 +1165,12 @@ export function renderActiveFiltersBanner() {
       (values || []).forEach((v) => entry.values.push(v));
     });
 
-    Array.from(grouped.values()).forEach(({ label, clauses, values, field }) => {
-      const li = document.createElement("li");
-      li.className = "mb-1";
-      li.setAttribute("role", "listitem");
-
-      const headingDiv = document.createElement("div");
-      headingDiv.className = "text-[11px] md:text-xs font-semibold text-neutral-900";
-      headingDiv.innerHTML = DOMPurify.sanitize(label);
-      li.appendChild(headingDiv);
-
-      const chipsRow = document.createElement("div");
-      chipsRow.className = "flex flex-wrap gap-1 mt-1";
-      chipsRow.setAttribute("role", "list");
-
+    Array.from(grouped.values()).forEach(({ label, values, field }) => {
       (values || []).forEach((val) => {
         const displayVal = formatFilterValueForDisplay(field, val);
         const chip = document.createElement("button");
         chip.type = "button";
         chip.className = "inline-flex items-center rounded-full bg-carnation-100 text-neutral-900 px-2 py-0.5 text-[11px] md:text-xs";
-        chip.setAttribute("role", "listitem");
         chip.setAttribute("aria-label", `Remove ${DOMPurify.sanitize(label, { ALLOWED_TAGS: [] })}: ${displayVal}`);
         chip.setAttribute("data-field", ensureKeywordField(field));
         const chipIconName = iconForField(field);
@@ -1249,8 +1191,6 @@ export function renderActiveFiltersBanner() {
           e.preventDefault();
           e.stopPropagation();
           const decodedQ = getDecodedUrlQuery();
-          // Prefer the actual parsed field for clearing from active filters
-          // Fall back to label-based mapping only when missing
           let chipField = chip.getAttribute("data-field");
           if (!chipField) {
             for (const [fieldKey, fieldConfig] of SEARCH_FILTER_FIELD_MAP.entries()) {
@@ -1267,39 +1207,51 @@ export function renderActiveFiltersBanner() {
             removeURLParams("q");
           }
           handleFiltersChanged();
-          tip.hide();
         });
-        chipsRow.appendChild(chip);
+        mount.appendChild(chip);
       });
-
-      li.appendChild(chipsRow);
-      chipsList.appendChild(li);
     });
-  } else {
-    const li = document.createElement("li");
-    li.className = "text-neutral-700";
-    li.setAttribute("role", "listitem");
-    li.innerHTML = `<p><strong>Filter across your entire OA.Report.</strong></p><p>None selected; use the form below to narrow your results.</p>`;
-    chipsList.appendChild(li);
   }
 
-  pop.appendChild(chipsList);
+  // "+ Add filter" button — always shown, triggers the popover
+  const triggerBtn = document.createElement("button");
+  triggerBtn.type = "button";
+  triggerBtn.id = "js-filters-trigger";
+  triggerBtn.className = "inline-flex items-center rounded-full border border-dashed border-neutral-400 text-neutral-600 hover:border-neutral-600 hover:text-neutral-900 px-2 py-0.5 text-[11px] md:text-xs transition-colors";
+  triggerBtn.innerHTML = `<span aria-hidden="true" class="mr-1 font-bold">+</span> Add filter`;
+  triggerBtn.setAttribute("aria-haspopup", "dialog");
+  triggerBtn.setAttribute("aria-expanded", "false");
+  mount.appendChild(triggerBtn);
+
+  // Popover content: clear-all (if active) + add-filter form
+  const pop = document.createElement("div");
+  pop.className = "js-filters-popover p-3 md:p-4 text-xs md:text-sm";
+  pop.setAttribute("role", "dialog");
+  pop.setAttribute("aria-labelledby", "js-filters-form-title");
+  pop.style.maxWidth = "90vw";
+  pop.style.minWidth = "320px";
 
   let clearBtn = null;
-
   if (pairs.length) {
     clearBtn = document.createElement("button");
     clearBtn.type = "button";
     clearBtn.id = "js-clear-q-popover";
-    clearBtn.className = "mt-1 mb-3 p-2 border border-neutral-400 text-neutral-900 rounded-sm w-full justify-center hover:bg-neutral-100";
-    clearBtn.textContent = "Clear all";
-    clearBtn.setAttribute("aria-describedby", heading.id);
+    clearBtn.className = "mb-3 p-2 border border-neutral-400 text-neutral-900 rounded-sm w-full justify-center hover:bg-neutral-100";
+    clearBtn.textContent = "Clear all filters";
     pop.appendChild(clearBtn);
   }
 
   // Container for dynamic filter rows
   const filterForm = document.createElement("form");
-  filterForm.className = "mt-3 pt-3 border-t border-neutral-200 space-y-3";
+  filterForm.id = "filters_form";
+  filterForm.className = "space-y-3";
+  filterForm.setAttribute("aria-labelledby", "js-filters-form-title");
+
+  const formTitle = document.createElement("h2");
+  formTitle.id = "js-filters-form-title";
+  formTitle.className = "sr-only";
+  formTitle.textContent = "Manage filters";
+  filterForm.appendChild(formTitle);
 
   const formHeading = document.createElement("h3");
   formHeading.className = "text-xs md:text-sm font-semibold text-neutral-900";
