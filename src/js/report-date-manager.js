@@ -396,7 +396,7 @@ function createDropdownContainer(id = null) {
   dropdown.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " relative inline-block js_dropdown";
 
   const dropdownButton = document.createElement("button");
-  dropdownButton.className = "h-full w-full rounded-t-sm js_dropdown_button focus:outline-none focus:ring-2 focus:ring-neutral-600";
+  dropdownButton.className = "h-full w-full rounded-t-sm js_dropdown_button focus:outline-none focus-visible:ring-2 focus-visible:ring-white";
   if (id) dropdownButton.id = id;
   dropdownButton.setAttribute("aria-haspopup", "true");
   dropdownButton.setAttribute("aria-expanded", "false");
@@ -416,7 +416,7 @@ function createDropdownContainer(id = null) {
     "rounded-sm",
     "shadow-lg",
     "border",
-    "border-neutral-600",
+    "border-neutral-400",
     "bg-neutral-800",
     "text-neutral-100",
     "focus:outline-none",
