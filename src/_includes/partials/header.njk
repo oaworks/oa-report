@@ -72,19 +72,16 @@
   {% if isReportPage %}
   <nav id="js-report-nav" class="pt-3" aria-labelledby="report-nav-heading">
     <h2 id="report-nav-heading" class="sr-only">Report navigation</h2>
-    <section class="flex flex-col gap-y-1.5 px-3 md:px-4">
+    <section class="flex flex-col gap-y-3 px-3 md:px-4 pb-2">
 
       {# Row 1: date / year controls + section tabs #}
-      <div class="flex items-center flex-wrap md:flex-nowrap justify-between gap-x-2 gap-y-1 md:gap-x-3 md:gap-y-0">
+      <div class="flex items-center flex-wrap md:flex-nowrap justify-between gap-2 md:gap-x-3">
         <h3 class="sr-only">View this report by year or by custom date range</h3>
-        <div
-          id="js-year-buttons"
-          class="flex flex-wrap md:flex-nowrap gap-2 text-xs md:text-sm"
-        ></div>
-        <div class="flex flex-wrap md:flex-nowrap gap-x-2 gap-y-1 text-sm">
-          <a id="section-tab-insights" class="border border-neutral-600 text-white bg-neutral-900/60 hover:bg-neutral-700 px-2 py-1 md:px-3 md:py-1.5 mt-1 md:mt-0 rounded-full font-medium transition duration-200 js_section_tab" href="#insights-anchor">Insights</a>
-          <a id="section-tab-explore" class="border border-neutral-600 text-white bg-neutral-900/60 hover:bg-neutral-700 px-2 py-1 md:px-3 md:py-1.5 mt-1 md:mt-0 rounded-full font-medium transition duration-200 js_section_tab" href="#explore-anchor">Explore</a>
-          <a id="section-tab-actions" class="border border-neutral-600 text-white bg-neutral-900/60 hover:bg-neutral-700 px-2 py-1 md:px-3 md:py-1.5 mt-1 md:mt-0 rounded-full font-medium transition duration-200 js_section_tab" href="#actions-anchor">Actions</a>
+        <div id="js-year-buttons" class="flex flex-wrap md:flex-nowrap gap-1.5"></div>
+        <div class="flex flex-wrap md:flex-nowrap gap-1.5">
+          <a id="section-tab-insights" class="inline-flex items-center border border-neutral-600 text-white bg-neutral-900/60 hover:bg-neutral-700 px-2.5 py-1 md:px-3 rounded-sm text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors js_section_tab" href="#insights-anchor">Insights</a>
+          <a id="section-tab-explore" class="inline-flex items-center border border-neutral-600 text-white bg-neutral-900/60 hover:bg-neutral-700 px-2.5 py-1 md:px-3 rounded-sm text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors js_section_tab" href="#explore-anchor">Explore</a>
+          <a id="section-tab-actions" class="inline-flex items-center border border-neutral-600 text-white bg-neutral-900/60 hover:bg-neutral-700 px-2.5 py-1 md:px-3 rounded-sm text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors js_section_tab" href="#actions-anchor">Actions</a>
         </div>
       </div>
 
@@ -100,7 +97,7 @@
           {# Live region so SR users hear updates when filters change #}
           <div
             id="js-active-filters"
-            class="flex flex-wrap items-center gap-1.5"
+            class="flex flex-wrap items-center gap-2"
             role="status"
             aria-live="polite"
             aria-atomic="true"

@@ -520,7 +520,7 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
   button.textContent = buttonText;
 
   // Add classes for styling
-  button.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " px-3";
+  button.className = DATE_SELECTION_BUTTON_CLASSES.enabled;
   button.setAttribute("aria-pressed", "false");
 
   // Add event listener

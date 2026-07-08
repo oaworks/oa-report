@@ -1170,7 +1170,7 @@ export function renderActiveFiltersBanner() {
         const displayVal = formatFilterValueForDisplay(field, val);
         const chip = document.createElement("button");
         chip.type = "button";
-        chip.className = "inline-flex items-center rounded-full bg-carnation-100 text-neutral-900 px-2 py-0.5 text-[11px] md:text-xs";
+        chip.className = "inline-flex items-center rounded-full bg-carnation-100 text-neutral-900 px-2.5 py-1 text-sm font-medium hover:bg-carnation-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors";
         chip.setAttribute("aria-label", `Remove ${DOMPurify.sanitize(label, { ALLOWED_TAGS: [] })}: ${displayVal}`);
         chip.setAttribute("data-field", ensureKeywordField(field));
         const chipIconName = iconForField(field);
@@ -1184,7 +1184,7 @@ export function renderActiveFiltersBanner() {
         chipLabel.textContent = displayVal;
         chip.appendChild(chipLabel);
         const removeLabel = document.createElement("span");
-        removeLabel.className = "ml-2 text-[10px]";
+        removeLabel.className = "ml-1.5 text-[11px]";
         removeLabel.textContent = "✕";
         chip.appendChild(removeLabel);
         chip.addEventListener("click", (e) => {
@@ -1217,7 +1217,7 @@ export function renderActiveFiltersBanner() {
   const triggerBtn = document.createElement("button");
   triggerBtn.type = "button";
   triggerBtn.id = "js-filters-trigger";
-  triggerBtn.className = "inline-flex items-center rounded-full border border-dashed border-neutral-400 text-neutral-600 hover:border-neutral-600 hover:text-neutral-900 px-2 py-0.5 text-[11px] md:text-xs transition-colors";
+  triggerBtn.className = "inline-flex items-center rounded-full border border-dashed border-neutral-400 text-neutral-300 px-2.5 py-1 text-sm font-medium hover:text-white hover:border-neutral-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors";
   triggerBtn.innerHTML = `<span aria-hidden="true" class="mr-1 font-bold">+</span> Add filter`;
   triggerBtn.setAttribute("aria-haspopup", "dialog");
   triggerBtn.setAttribute("aria-expanded", "false");
