@@ -9,7 +9,6 @@
 // Imports
 // =================================================
 
-import DOMPurify from 'dompurify';
 import { dateRange, startYear, endYear, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings } from './utils.js';
 import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, INSIGHT_EXPLORE_MAPPINGS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS, resolveFieldDefinition } from './constants.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
@@ -675,9 +674,12 @@ export function initInsightsAndActions(org) {
 
                       const decodeMailtoValue = function(value, fallback) {
                         const resolvedValue = typeof value === "string" && value.length > 0 ? value : fallback;
-                        const div = document.createElement("div");
-                        div.innerHTML = DOMPurify.sanitize(resolvedValue.replaceAll("\’", "’"));
-                        return (div.textContent || "").replace(/\s+/g, " ").trim();
+                        const textarea = document.createElement("textarea");
+                        textarea.innerHTML = resolvedValue.replaceAll("\’", "’");
+                        return textarea.value
+                          .replace(/<\/?[a-zA-Z][a-zA-Z0-9-]*(\s[^>]*)?\/?>/g, "")
+                          .replace(/\s+/g, " ")
+                          .trim();
                       };
 
                       var newMailto = mailto.replaceAll("\’", "’");
@@ -685,7 +687,7 @@ export function initInsightsAndActions(org) {
                       newMailto = newMailto.replaceAll("{author_email_name}", decodeMailtoValue(action.author_email_name, "[No author’s name found]"));
                       newMailto = newMailto.replaceAll("{title}", decodeMailtoValue(action.title, "[No title found]"));
                       for (var actionKey in action) {
-                        if (typeof action[actionKey] === "string") newMailto = newMailto.replaceAll("{" + actionKey + "}", decodeMailtoValue(action[actionKey], ""));
+                        if (actionKey !== "email" && typeof action[actionKey] === "string") newMailto = newMailto.replaceAll("{" + actionKey + "}", decodeMailtoValue(action[actionKey], ""));
                       }
 
                       // And add it to the action array
