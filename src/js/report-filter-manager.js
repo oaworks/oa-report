@@ -878,7 +878,6 @@ function addFilterRow(container) {
     const hint = document.createElement("li");
     hint.setAttribute("role", "presentation");
     hint.setAttribute("aria-hidden", "true");
-    hint.setAttribute("aria-disabled", "true");
     hint.className = "px-2 py-1 h-9 flex items-center text-xs md:text-sm bg-neutral-100 text-neutral-700 border-b border-neutral-200";
     hint.textContent = message || (termRaw ? `Matching suggestions for "${termRaw}"` : "Start typing to see suggestions…");
     listbox.appendChild(hint);

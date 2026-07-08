@@ -714,18 +714,8 @@ export function adjustNavOnScroll() {
       .reduce((sum, el) => sum + el.getBoundingClientRect().height, 0);
 
     if (rect.top <= topBannerHeight) {
-      // Nav is at the top of the viewport
-      yearButtons.forEach((button) => {
-        button.classList.remove("md:border-b-0");
-        button.classList.add("rounded-b-sm");
-      });
       nav.classList.add("shadow-lg");
     } else {
-      // Nav has scrolled away from the top
-      yearButtons.forEach((button) => {
-        button.classList.add("md:border-b-0");
-        button.classList.remove("rounded-b-sm");
-      });
       nav.classList.remove("shadow-lg");
     }
   }
