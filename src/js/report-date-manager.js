@@ -403,6 +403,11 @@ function createDropdownContainer(id = null) {
   dropdownButton.innerHTML = "More <span class='sr-only'>years</span> <span class='ml-1 text-xs' aria-hidden='true'>&#9660;</span>";
 
   const dropdownContent = document.createElement("div");
+  const contentId = id ? id + "_content" : null;
+  if (contentId) {
+    dropdownContent.id = contentId;
+    dropdownButton.setAttribute("aria-controls", contentId);
+  }
   dropdownContent.classList.add(
     "absolute",
     "left-0",
