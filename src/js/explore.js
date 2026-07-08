@@ -1067,10 +1067,10 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
   const termBase = currentActiveExploreItemData?.id === "author"
     ? AUTHOR_BREAKDOWN_TERM
     : (currentActiveExploreItemData?.term?.trim() || "");
+  const termFieldBase = termBase.replace(/\.keyword$/i, "");
+  const NO_KEYWORD_FIELDS = new Set(["published_year", AUTHOR_BREAKDOWN_TERM]);
   const termField = termBase
-    ? (termBase === "published_year"
-      ? termBase.replace(/\.keyword$/i, "")
-      : `${termBase.replace(/\.keyword$/i, "")}.keyword`)
+    ? (NO_KEYWORD_FIELDS.has(termFieldBase) ? termFieldBase : `${termFieldBase}.keyword`)
     : "";
 
   /**
