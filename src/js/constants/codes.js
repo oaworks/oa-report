@@ -505,5 +505,8 @@ export const LICENSE_CODES = {
   },
   'other-oa': {
     name: 'Other OA license'
+  },
+  'publisher-specific-oa': {
+    name: "Publisher-specific OA license"
   }
 }
