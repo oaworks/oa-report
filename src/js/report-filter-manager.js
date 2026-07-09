@@ -1186,6 +1186,17 @@ export function renderActiveFiltersBanner() {
     });
   }
 
+  // "Clear all filters" — only shown when filters are active, sits inline with chips
+  let clearBtn = null;
+  if (pairs.length) {
+    clearBtn = document.createElement("button");
+    clearBtn.type = "button";
+    clearBtn.id = "js-clear-q-filters";
+    clearBtn.className = "inline-flex items-center px-2.5 py-1 text-sm font-medium text-neutral-400 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors";
+    clearBtn.textContent = "Clear all";
+    mount.appendChild(clearBtn);
+  }
+
   // "+ Add filter" button — always shown, triggers the popover
   const triggerBtn = document.createElement("button");
   triggerBtn.type = "button";
@@ -1203,16 +1214,6 @@ export function renderActiveFiltersBanner() {
   pop.setAttribute("aria-labelledby", "js-filters-form-title");
   pop.style.maxWidth = "90vw";
   pop.style.minWidth = "320px";
-
-  let clearBtn = null;
-  if (pairs.length) {
-    clearBtn = document.createElement("button");
-    clearBtn.type = "button";
-    clearBtn.id = "js-clear-q-popover";
-    clearBtn.className = "mb-3 p-2 border border-neutral-400 text-neutral-900 rounded-sm w-full justify-center hover:bg-neutral-100";
-    clearBtn.textContent = "Clear all filters";
-    pop.appendChild(clearBtn);
-  }
 
   // Container for dynamic filter rows
   const filterForm = document.createElement("form");
@@ -1286,7 +1287,7 @@ export function renderActiveFiltersBanner() {
   const popoverFlow = createPopoverKeyboardFlow({
     popover: pop,
     trigger: triggerBtn,
-    firstSelector: "#js-clear-q-popover, .js-filter-field, #js-apply-filters",
+    firstSelector: ".js-filter-field, #js-apply-filters",
     lastSelector: "#js-apply-filters",
     onBackwardTab: () => {
       tip.hide();
