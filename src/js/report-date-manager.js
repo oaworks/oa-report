@@ -435,17 +435,6 @@ function createDropdownContainer(id = null) {
   );
   dropdownContent.setAttribute("hidden", true);
 
-  dropdownButton.addEventListener("click", () => {
-    const isHidden = dropdownContent.hasAttribute('hidden');
-    if (isHidden) {
-      dropdownContent.removeAttribute('hidden');
-      dropdownContent.classList.remove('hidden');
-    } else {
-      dropdownContent.setAttribute('hidden', 'true');
-      dropdownContent.classList.add('hidden');
-    }
-  });
-
   dropdown.appendChild(dropdownButton);
   dropdown.appendChild(dropdownContent);
 
