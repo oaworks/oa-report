@@ -492,7 +492,7 @@ export const LICENSE_CODES = {
     url: 'https://creativecommons.org/licenses/by-nc-nd/4.0/'
   },
   'cc0': {
-    name: 'Creative Commons CC0 1.0 Universal (CC0 1.0) Public Domain Dedication',
+    name: 'CC0',
     url: 'https://creativecommons.org/publicdomain/zero/1.0/'
   },
   'pd': {
