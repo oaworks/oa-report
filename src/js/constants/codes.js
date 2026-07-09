@@ -502,5 +502,8 @@ export const LICENSE_CODES = {
   'public-domain': {
     name: 'Public Domain',
     url: 'https://creativecommons.org/publicdomain/mark/1.0/'
+  },
+  'other-oa': {
+    name: 'Other OA license'
   }
 }
