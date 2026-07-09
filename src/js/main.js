@@ -12,6 +12,7 @@ import { FIRST_YEAR, currentDate, bindDynamicYearButtons, setDefaultYear, initDa
 import { initDataExplore } from './explore.js';
 import { initActionTabs } from './actions.js';
 import { initTooltipManager } from './tooltip-manager.js';
+import { renderActiveFiltersBanner } from './report-filter-manager.js';
 
 // Flag to check if initDataExplore has already been initialised
 let isDataExploreInitialised = false;
@@ -46,6 +47,14 @@ function initialise() {
   bindSmoothScrollLinks();
 
   initActionTabs();
+
+  // Re-sync UI when the browser Back/Forward buttons restore a previous URL
+  if (exploreElement) {
+    window.addEventListener('popstate', () => {
+      setDefaultYear();
+      renderActiveFiltersBanner();
+    });
+  }
 }
 
 // Initialise the report when the DOM is ready
