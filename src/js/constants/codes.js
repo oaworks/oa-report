@@ -468,27 +468,27 @@ export const LICENSE_CODES = {
     name: 'Non-standard License'
   },
   'cc-by': {
-    name: 'Creative Commons Attribution',
+    name: 'CC-BY',
     url: 'https://creativecommons.org/licenses/by/4.0/'
   },
   'cc-by-sa': {
-    name: 'Creative Commons Attribution-ShareAlike',
+    name: 'CC-BY-SA',
     url: 'https://creativecommons.org/licenses/by-sa/4.0/'
   },
   'cc-by-nd': {
-    name: 'Creative Commons Attribution-NoDerivs',
+    name: 'CC-BY-ND',
     url: 'https://creativecommons.org/licenses/by-nd/4.0/'
   },
   'cc-by-nc': {
-    name: 'Creative Commons Attribution-NonCommercial',
+    name: 'CC-BY-NC',
     url: 'https://creativecommons.org/licenses/by-nc/4.0/'
   },
   'cc-by-nc-sa': {
-    name: 'Creative Commons Attribution-NonCommercial-ShareAlike',
+    name: 'CC-BY-NC-SA',
     url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
   },
   'cc-by-nc-nd': {
-    name: 'Creative Commons Attribution-NonCommercial-NoDerivs',
+    name: 'CC-BY-NC-ND',
     url: 'https://creativecommons.org/licenses/by-nc-nd/4.0/'
   },
   'cc0': {

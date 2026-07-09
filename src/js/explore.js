@@ -102,7 +102,7 @@ function isOrcidUrl(value) {
 }
 
 const FILTER_TARGET_BUTTON_CLASS = 'js-filter-target cursor-pointer hover:underline text-left focus:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm';
-const EXTERNAL_LINK_PILL_CLASS = 'ml-2 bg-neutral-200 text-neutral-900 text-xs px-2 py-0.5 rounded-full whitespace-nowrap hover:bg-carnation-200 js-external-pill';
+const EXTERNAL_LINK_PILL_CLASS = 'ml-1 bg-neutral-200 text-neutral-900 text-[10px] px-2 py-0.5 rounded-full whitespace-nowrap hover:bg-carnation-200 align-super js-external-pill';
 
 /**
  * Tracks currently selected row keys for use in enableExploreRowHighlighting.
@@ -1221,25 +1221,14 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
       case 'license':
       case 'dataset_license': {
         const licenseInfo = LICENSE_CODES[rawValue];
-        const licenseName = licenseInfo?.name || "Unknown license";
+        const licenseName = licenseInfo?.name || rawValue.toUpperCase();
         const licenseUrl = licenseInfo?.url || null;
 
-        labelWrapper = createFilterTargetButton();
-
-        const codeEl = document.createElement('strong');
-        codeEl.className = 'uppercase';
-        codeEl.textContent = rawValue;
-
-        const nameEl = document.createElement('span');
-        nameEl.textContent = ` – ${licenseName}`;
-
-        labelWrapper.appendChild(codeEl);
-        labelWrapper.appendChild(document.createElement('br'));
-        labelWrapper.appendChild(nameEl);
-        cell.appendChild(labelWrapper);
+        labelWrapper = createFilterTargetButton(licenseName);
 
         if (licenseUrl) {
-          cell.appendChild(createExternalPill(licenseUrl, 'CC License ↗'));
+          cell.appendChild(labelWrapper);
+          cell.appendChild(createExternalPill(licenseUrl, 'License ↗'));
         }
         break;
       }
