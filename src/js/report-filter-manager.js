@@ -1186,17 +1186,6 @@ export function renderActiveFiltersBanner() {
     });
   }
 
-  // "Clear all filters" — only shown when filters are active, sits inline with chips
-  let clearBtn = null;
-  if (pairs.length) {
-    clearBtn = document.createElement("button");
-    clearBtn.type = "button";
-    clearBtn.id = "js-clear-q-filters";
-    clearBtn.className = "inline-flex items-center px-2.5 py-1 text-sm font-medium text-neutral-400 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors";
-    clearBtn.textContent = "Clear all";
-    mount.appendChild(clearBtn);
-  }
-
   // "+ Add filter" button — always shown, triggers the popover
   const triggerBtn = document.createElement("button");
   triggerBtn.type = "button";
@@ -1206,6 +1195,17 @@ export function renderActiveFiltersBanner() {
   triggerBtn.setAttribute("aria-haspopup", "dialog");
   triggerBtn.setAttribute("aria-expanded", "false");
   mount.appendChild(triggerBtn);
+
+  // "Clear all" — only shown when filters are active, sits after "Add filter"
+  let clearBtn = null;
+  if (pairs.length) {
+    clearBtn = document.createElement("button");
+    clearBtn.type = "button";
+    clearBtn.id = "js-clear-q-filters";
+    clearBtn.className = "inline-flex items-center px-2.5 py-1 text-sm font-medium text-neutral-400 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors";
+    clearBtn.textContent = "Clear all";
+    mount.appendChild(clearBtn);
+  }
 
   // Popover content: clear-all (if active) + add-filter form
   const pop = document.createElement("div");
