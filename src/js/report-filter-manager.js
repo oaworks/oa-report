@@ -626,41 +626,6 @@ function addFilterRow(container) {
   textLabel.className = "flex items-center text-neutral-800 text-[11px] md:text-xs font-medium uppercase tracking-wide";
   textLabel.textContent = "Values";
 
-  const helpIcon = document.createElement("button");
-  helpIcon.type = "button";
-  helpIcon.className = "ml-2 text-neutral-600 underline underline-offset-4 decoration-dotted text-[11px]";
-  helpIcon.setAttribute("aria-label", "How to format filter values");
-  helpIcon.textContent = "(?)";
-  textLabel.appendChild(helpIcon);
-
-  const helpEl = document.createElement("div");
-  helpEl.className = "p-2 md:p-3";
-
-  const helpHeading = document.createElement("p");
-  helpHeading.className = "mb-2 text-sm font-semibold text-neutral-900";
-  helpHeading.textContent = "Filtering tips";
-  helpEl.appendChild(helpHeading);
-
-  const helpList = document.createElement("ul");
-  helpList.className = "list-disc list-outside pl-5 text-xs text-neutral-800 space-y-1";
-  [
-    'Type to see suggestions, then <strong>click to add</strong> one.',
-    'Add <strong>multiple entries</strong> to match <strong>any</strong> of them (e.g., adding <code>INV-001</code> and <code>INV-002</code> returns publications under either grant).',
-    'Search is <strong>case-insensitive</strong>, but <strong>full words</strong> work best; abbreviations like <code>OUP</code> will not match <code>Oxford University Press</code>.',
-  ].forEach((html) => {
-    const li = document.createElement("li");
-    li.innerHTML = html;
-    helpList.appendChild(li);
-  });
-  helpEl.appendChild(helpList);
-
-  createTooltip(helpIcon, "", {
-    theme: "popover",
-    maxWidth: 320,
-    placement: "bottom",
-    contentElement: helpEl,
-  });
-
   const inputId = `js-filter-input-${idSuffix}`;
   const input = document.createElement("input");
   input.id = inputId;
@@ -1262,8 +1227,44 @@ export function renderActiveFiltersBanner() {
   filterForm.appendChild(formTitle);
 
   const formHeading = document.createElement("h3");
-  formHeading.className = "text-xs md:text-sm font-semibold text-neutral-900";
+  formHeading.className = "text-xs md:text-sm font-semibold text-neutral-900 flex items-center gap-2";
   formHeading.textContent = "Add a filter";
+
+  const helpIcon = document.createElement("button");
+  helpIcon.type = "button";
+  helpIcon.className = "text-neutral-600 underline underline-offset-4 decoration-dotted text-[11px]";
+  helpIcon.setAttribute("aria-label", "Filtering tips");
+  helpIcon.textContent = "(?)";
+  formHeading.appendChild(helpIcon);
+
+  const helpEl = document.createElement("div");
+  helpEl.className = "p-2 md:p-3";
+
+  const helpHeading = document.createElement("p");
+  helpHeading.className = "mb-2 text-sm font-semibold text-neutral-900";
+  helpHeading.textContent = "Filtering tips";
+  helpEl.appendChild(helpHeading);
+
+  const helpList = document.createElement("ul");
+  helpList.className = "list-disc list-outside pl-5 text-xs text-neutral-800 space-y-1";
+  [
+    'Type to see suggestions, then <strong>click to add</strong> one.',
+    'Add <strong>multiple entries</strong> to match <strong>any</strong> of them (e.g., adding <code>INV-001</code> and <code>INV-002</code> returns publications under either grant).',
+    'Search is <strong>case-insensitive</strong>, but <strong>full words</strong> work best; abbreviations like <code>OUP</code> will not match <code>Oxford University Press</code>.',
+  ].forEach((html) => {
+    const li = document.createElement("li");
+    li.innerHTML = html;
+    helpList.appendChild(li);
+  });
+  helpEl.appendChild(helpList);
+
+  createTooltip(helpIcon, "", {
+    theme: "popover",
+    maxWidth: 320,
+    placement: "bottom-start",
+    contentElement: helpEl,
+  });
+
   filterForm.appendChild(formHeading);
 
   const rowsContainer = document.createElement("div");
