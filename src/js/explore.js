@@ -1228,7 +1228,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
 
         if (licenseUrl) {
           cell.appendChild(labelWrapper);
-          cell.appendChild(createExternalPill(licenseUrl, 'License ↗'));
+          cell.appendChild(createExternalPill(licenseUrl, 'Info ↗'));
         }
         break;
       }
