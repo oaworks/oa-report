@@ -141,6 +141,10 @@ function formatFilterValueForDisplay(field = "", value = "") {
   const trimmed = String(value || "").trim();
   if (!trimmed) return "";
 
+  const baseField = ensureKeywordField(field).replace(/\.keyword$/i, "");
+  const codes = SEARCH_FILTER_FIELD_MAP.get(baseField)?.codes;
+  if (codes?.[trimmed]) return codes[trimmed];
+
   if (ensureKeywordField(field) === AUTHOR_ID_FIELD) {
     return getRenderedFilterValueDisplay(field, trimmed) || trimmed;
   }
@@ -310,16 +314,11 @@ function buildFilterFieldOptions(exploreData) {
  * @returns {string[]}
  */
 function extractFilterValuesFromClause(field = "", rawValue = "") {
-  const fieldKey = ensureKeywordField(field);
-  const baseField = fieldKey.replace(/\.keyword$/i, "");
   const quotedValuePattern = /"((?:\\.|[^"\\])*)"/g;
   const values = Array.from(
     String(rawValue || "").matchAll(quotedValuePattern),
     (match) => unescapeQueryValue(match[1]).trim()
   ).filter(Boolean);
-
-  const codes = SEARCH_FILTER_FIELD_MAP.get(baseField)?.codes;
-  const decode = (v) => codes?.[v] || v;
 
   if (!values.length) {
     const fallbackValue = unescapeQueryValue(
@@ -327,10 +326,10 @@ function extractFilterValuesFromClause(field = "", rawValue = "") {
         .replace(/["()]/g, "")
         .trim()
     );
-    return fallbackValue ? [decode(fallbackValue)] : [];
+    return fallbackValue ? [fallbackValue] : [];
   }
 
-  return values.map(decode);
+  return values;
 }
 
 /**
