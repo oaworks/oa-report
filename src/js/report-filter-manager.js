@@ -1140,10 +1140,12 @@ export function renderActiveFiltersBanner() {
     Array.from(grouped.values()).forEach(({ label, values, field }) => {
       (values || []).forEach((val) => {
         const displayVal = formatFilterValueForDisplay(field, val);
+        const fieldDef = SEARCH_FILTER_FIELD_MAP.get(normaliseSortField(field));
+        const chipText = fieldDef?.suffix ? `${displayVal} ${fieldDef.suffix}` : displayVal;
         const chip = document.createElement("button");
         chip.type = "button";
         chip.className = "inline-flex items-center rounded-full bg-carnation-100 text-neutral-900 px-2.5 py-1 text-sm font-medium hover:bg-carnation-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors";
-        chip.setAttribute("aria-label", `Remove ${DOMPurify.sanitize(label, { ALLOWED_TAGS: [] })}: ${displayVal}`);
+        chip.setAttribute("aria-label", `Remove ${DOMPurify.sanitize(label, { ALLOWED_TAGS: [] })}: ${chipText}`);
         chip.setAttribute("data-field", ensureKeywordField(field));
         const chipIconName = iconForField(field);
         if (chipIconName) {
@@ -1153,7 +1155,7 @@ export function renderActiveFiltersBanner() {
           chip.appendChild(icon);
         }
         const chipLabel = document.createElement("span");
-        chipLabel.textContent = displayVal;
+        chipLabel.textContent = chipText;
         chip.appendChild(chipLabel);
         const removeLabel = document.createElement("span");
         removeLabel.className = "ml-1.5 text-[11px]";
