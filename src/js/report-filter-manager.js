@@ -1074,7 +1074,7 @@ function renderFilterContextInHeading(pairs) {
     const { field, label, values } = pairs[0];
     const displayValue = formatFilterValueForDisplay(field, values[0]);
     const plainLabel = label.replace(/<[^>]+>/g, "");
-    el.textContent = `, filtered by ${plainLabel}: ${displayValue}`;
+    el.textContent = `filtered by ${plainLabel}: ${displayValue}`;
     el.hidden = false;
 
     // ORCID values arrive as bare IDs; fetch the author's display name so the heading
@@ -1094,7 +1094,7 @@ function renderFilterContextInHeading(pairs) {
       }
     }
   } else {
-    el.textContent = `, with ${totalValues} active filter${totalValues === 1 ? "" : "s"}`;
+    el.textContent = `with ${totalValues} active filter${totalValues === 1 ? "" : "s"}`;
     el.hidden = false;
   }
 }
@@ -1205,7 +1205,7 @@ export function renderActiveFiltersBanner() {
     clearBtn = document.createElement("button");
     clearBtn.type = "button";
     clearBtn.id = "js-clear-q-filters";
-    clearBtn.className = "inline-flex items-center px-2.5 py-1 text-sm font-medium text-neutral-400 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors";
+    clearBtn.className = "inline-flex items-center px-2.5 py-1 text-sm font-medium text-neutral-300 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors";
     clearBtn.textContent = "Clear all";
     mount.appendChild(clearBtn);
   }
