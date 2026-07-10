@@ -398,7 +398,6 @@ function createDropdownContainer(id = null) {
   const dropdownButton = document.createElement("button");
   dropdownButton.className = "h-full w-full rounded-t-sm js_dropdown_button focus:outline-none focus-visible:ring-2 focus-visible:ring-white";
   if (id) dropdownButton.id = id;
-  dropdownButton.setAttribute("aria-haspopup", "true");
   dropdownButton.setAttribute("aria-expanded", "false");
   dropdownButton.innerHTML = "More <span class='sr-only'>years</span> <span class='ml-1 text-xs' aria-hidden='true'>&#9660;</span>";
 

@@ -773,7 +773,7 @@ export function initDropdown(dropdownSelector) {
     return;
   }
 
-  const dropdownButton = dropdownContainer.querySelector('button[aria-haspopup="true"]');
+  const dropdownButton = dropdownContainer.querySelector('button.js_dropdown_button');
   const dropdownContent = dropdownContainer.querySelector('.js_dropdown_content');
   if (!dropdownButton || !dropdownContent) return;
 
