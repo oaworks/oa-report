@@ -7,6 +7,7 @@ export const ACTION_LABELS = {
   email_author_deposit: "Self-archive articles",
   email_author_vor: "Deposit publisher PDFs",
   email_author_aam: "Deposit accepted manuscripts",
+  email_author_unpublished_openrxiv_preprint_not_ccby: "Update non-CC BY preprints",
   apc_followup: "Correct publisher errors",
   unanswered_requests: "Escalate unanswered requests"
 };
@@ -15,6 +16,7 @@ export const ACTION_ORDER = [
   "email_author_deposit",
   "email_author_vor",
   "email_author_aam",
+  "email_author_unpublished_openrxiv_preprint_not_ccby",
   "apc_followup",
   "unanswered_requests"
 ];
@@ -172,6 +174,35 @@ export const ACTION_TABLE_CONFIGS = [
         <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
       </td>\
       <td class='px-3 py-4 text-sm text-center text-neutral-600 align-top break-words'>\
+        <button \
+          class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
+          aria-label='${action.draft_aria_label}'\
+          data-email='${action.email}'\
+          data-doi='${action.DOI}'\
+          data-mailto='${action.mailto}'\
+          onclick='handleDecryptEmailClick(this)'>\
+          <i class='ph ph-envelope inline-block text-[16px] leading-none duration-500' aria-hidden='true'></i>\
+        </button>\
+      </td>"
+  },
+  {
+    id: "email_author_unpublished_openrxiv_preprint_not_ccby",
+    keys: ["published_date", "title", "journal", "author_email_name", "email", "DOI", "mailto", "publisher_license", "supplements.host_venue.display_name"],
+    rowTemplate: "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
+        <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
+        <div class='mb-1 text-neutral-600'>${action.journal}</div>\
+        <div class='mb-1 text-neutral-900'>\
+          <span>${action.title}</span>\
+        </div>\
+        <div class='mb-1'>\
+          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article' aria-label='Open article: ${action.title}' class='" + ACTION_ARTICLE_LINK_CLASSES + " ml-0'>Open article <span aria-hidden='true'>&#8599;</span></a>\
+        </div>\
+        <div class='text-neutral-600'>License: <span class='font-medium uppercase'>${action.publisher_license}</span></div>\
+      </td>\
+      <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
+        <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
+      </td>\
+      <td class='hidden px-3 py-4 text-sm text-center text-neutral-600 align-top break-words sm:table-cell'>\
         <button \
           class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
           aria-label='${action.draft_aria_label}'\
