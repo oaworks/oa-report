@@ -12,7 +12,7 @@
   {% else %}
     {% set nav_styles = 'py-2 md:py-3' %}
   {% endif %}
-  <nav class="mx-auto flex max-w-10xl items-start sm:items-center justify-between gap-4 px-3 md:px-4 {{ nav_styles }}" aria-label="Primary navigation">
+  <nav class="mx-auto flex max-w-10xl items-start sm:items-center justify-between px-3 md:px-4 {{ nav_styles }}" aria-label="Primary navigation">
 
     {% if isMarketingHeader %}
     <div class="flex items-center gap-3 shrink-0">
@@ -45,6 +45,14 @@
     <div class="flex-1"></div>
     {% endif %}
 
+    {% if isReportPage %}
+    <nav class="hidden sm:flex items-center" aria-label="Report sections">
+      <a id="section-tab-insights" class="mr-4 inline-flex items-center gap-1 text-sm font-medium text-neutral-300 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-sm js_section_tab" href="#insights-anchor">Insights {% icon_small "arrow-down" %}</a>
+      <a id="section-tab-explore" class="mr-4 inline-flex items-center gap-1 text-sm font-medium text-neutral-300 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-sm js_section_tab" href="#explore-anchor">Explore {% icon_small "arrow-down" %}</a>
+      <a id="section-tab-actions" class="inline-flex items-center gap-1 text-sm font-medium text-neutral-300 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-sm js_section_tab" href="#actions-anchor">Actions {% icon_small "arrow-down" %}</a>
+    </nav>
+    {% endif %}
+
     <!-- Hamburger Button -->
     <button id="menu-toggle" aria-expanded="false" aria-controls="mobile-menu" class="sm:hidden {% if isReportPage %}hidden{% endif %} flex items-center justify-center p-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-carnation-500">
       {% icon_small "menu" %}
@@ -68,16 +76,16 @@
   {% if isReportPage %}
   <nav aria-labelledby="report-nav-heading">
     <h2 id="report-nav-heading" class="sr-only">Report navigation</h2>
-    <section class="grid grid-cols-1 md:grid-cols-[1fr_auto] md:items-start gap-y-3 md:gap-y-4 md:gap-x-3 px-3 md:px-4 py-2 md:py-3">
+    <section class="flex flex-col gap-y-3 md:gap-y-4 px-3 md:px-4 py-2 md:py-3">
 
-      {# Year buttons — desktop: col 1 row 1; mobile: row 1 #}
-      <div class="md:col-start-1 md:row-start-1">
+      {# Year buttons #}
+      <div>
         <h3 class="sr-only">View this report by year or by custom date range</h3>
         <div id="js-year-buttons" class="flex flex-wrap md:flex-nowrap gap-1.5"></div>
       </div>
 
-      {# Active filter chips — desktop: full-width row 2; mobile: row 2 (before section tabs) #}
-      <div id="report-filters" class="md:col-span-2 md:row-start-2">
+      {# Active filter chips #}
+      <div id="report-filters">
         <div
           class="js-active-filters-wrapper invisible opacity-0 pointer-events-none"
           id="js-active-filters-wrapper"
@@ -93,13 +101,6 @@
             aria-live="polite"
           ></div>
         </div>
-      </div>
-
-      {# Section tabs — desktop: col 2 row 1 (same line as year buttons); mobile: row 3 (after filters) #}
-      <div class="flex flex-wrap gap-1.5 md:flex-nowrap md:col-start-2 md:row-start-1">
-        <a id="section-tab-insights" class="inline-flex items-center border border-neutral-400 text-white bg-neutral-900/60 hover:bg-neutral-700 px-2.5 py-1 md:px-3 rounded-sm text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors js_section_tab" href="#insights-anchor">Insights</a>
-        <a id="section-tab-explore" class="inline-flex items-center border border-neutral-400 text-white bg-neutral-900/60 hover:bg-neutral-700 px-2.5 py-1 md:px-3 rounded-sm text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors js_section_tab" href="#explore-anchor">Explore</a>
-        <a id="section-tab-actions" class="inline-flex items-center border border-neutral-400 text-white bg-neutral-900/60 hover:bg-neutral-700 px-2.5 py-1 md:px-3 rounded-sm text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors js_section_tab" href="#actions-anchor">Actions</a>
       </div>
 
     </section>
