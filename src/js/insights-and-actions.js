@@ -9,6 +9,7 @@
 // Imports
 // =================================================
 
+import DOMPurify from 'dompurify';
 import { dateRange, startYear, endYear, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings } from './utils.js';
 import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, INSIGHT_EXPLORE_MAPPINGS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS, resolveFieldDefinition } from './constants.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
@@ -641,22 +642,21 @@ export function initInsightsAndActions(org) {
                     for (var key of keys) {
                       // If it’s from the supplements array, loop over supplements to access data without index number
                       if (key.startsWith('supplements.')) {
-                        key = key.replace('supplements.', ''); // Remove prefix 
-                        var suppKey = list[i]._source.supplements.find(
-                          function(i) {
-                            return (i[key]);
-                          }
-                        );
+                        var origKey = key;
+                        key = key.replace('supplements.', ''); // Remove prefix
+                        var pathParts = key.split('.');
+                        var suppKey = list[i]._source.supplements.find(function(s) { return s[pathParts[0]] != null; });
 
                         if (suppKey == null) {
                           action[key] = "N/A";
                         } else {
-                          var value = suppKey[key];
-                          action[key] = value;
+                          var value = pathParts.reduce(function(obj, part) { return obj != null ? obj[part] : null; }, suppKey);
+                          action[key] = value != null ? value : "N/A";
                         }
-                        
+
                         if (key.includes('invoice_date')) action[key] = makeDateReadable(new Date(action[key]));
                         if (key.includes('apc_cost')) action[key] = makeNumberReadable(action[key]);
+                        action[origKey] = action[key]; // mirror under full key for {supplements.*} mailto template substitution
                       } else { 
                         var value = list[i]._source[key];
                         action[key] = value;
@@ -674,17 +674,19 @@ export function initInsightsAndActions(org) {
                       var mailto = orgData.hits.hits[0]._source.strategy[strategy].mailto;
 
                       const decodeMailtoValue = function(value, fallback) {
-                        const textarea = document.createElement("textarea");
                         const resolvedValue = typeof value === "string" && value.length > 0 ? value : fallback;
-
-                        textarea.innerHTML = resolvedValue.replaceAll("\'", "’");
-                        return textarea.value;
+                        const div = document.createElement("div");
+                        div.innerHTML = DOMPurify.sanitize(resolvedValue.replaceAll("\’", "’"));
+                        return (div.textContent || "").replace(/\s+/g, " ").trim();
                       };
 
-                      var newMailto = mailto.replaceAll("\'", "’");
+                      var newMailto = mailto.replaceAll("\’", "’");
                       newMailto = newMailto.replaceAll("{doi}", decodeMailtoValue(action.DOI, "[No DOI found]"));
                       newMailto = newMailto.replaceAll("{author_email_name}", decodeMailtoValue(action.author_email_name, "[No author’s name found]"));
                       newMailto = newMailto.replaceAll("{title}", decodeMailtoValue(action.title, "[No title found]"));
+                      for (var actionKey in action) {
+                        if (typeof action[actionKey] === "string") newMailto = newMailto.replaceAll("{" + actionKey + "}", decodeMailtoValue(action[actionKey], ""));
+                      }
 
                       // And add it to the action array
                       action["mailto"] = encodeURI(newMailto);
