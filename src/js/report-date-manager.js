@@ -136,6 +136,28 @@ function getSemanticRangeSelection(rangeParam) {
  * resolved range selection to apply.
  * @returns {void}
  */
+/**
+ * Updates the custom date range trigger button to display the currently applied
+ * date range instead of the generic "Custom date range" label.
+ *
+ * @param {Date} startDate - The start of the applied date range.
+ * @param {Date} endDate   - The end of the applied date range.
+ */
+function setDateRangeTriggerLabel(startDate, endDate) {
+  const trigger = document.getElementById('js-date-range-trigger');
+  if (trigger) trigger.innerHTML = `${makeDateReadable(startDate)} – ${makeDateReadable(endDate)} <span class='ml-1 text-xs' aria-hidden='true'>&#9660;</span>`;
+}
+
+/**
+ * Resets the custom date range trigger button to its default "Custom date range" label.
+ * Called whenever a year, All time, or More dropdown chip is activated, so the trigger
+ * no longer shows a stale previously-applied range.
+ */
+function resetDateRangeTriggerLabel() {
+  const trigger = document.getElementById('js-date-range-trigger');
+  if (trigger) trigger.innerHTML = `Custom date range <span class='ml-1 text-xs' aria-hidden='true'>&#9660;</span>`;
+}
+
 function applyResolvedRange({ buttonId, startDate, endDate }) {
   syncHiddenDateInputs(startDate, endDate);
   const button = buttonId ? document.getElementById(buttonId) : null;
@@ -143,8 +165,14 @@ function applyResolvedRange({ buttonId, startDate, endDate }) {
   if (button) {
     handleYearButtonLogic(button, startDate, endDate);
     updateYearButtonStyling(button);
+    if (buttonId === 'date_range_form') {
+      setDateRangeTriggerLabel(startDate, endDate);
+    } else {
+      resetDateRangeTriggerLabel();
+    }
   } else {
     handleYearButtonLogic(null, startDate, endDate);
+    resetDateRangeTriggerLabel();
   }
 }
 
@@ -255,6 +283,7 @@ export function setDefaultYear() {
 
       // Trigger any additional logic needed to refresh the report and style the control
       handleYearButtonLogic(elementToUpdate, startDate, endDate);
+      if (!isWholeYear) setDateRangeTriggerLabel(startDate, endDate);
 
       // If this is a year that lives in the More dropdown, update the visible label
       if (isWholeYear && elementToUpdate && elementToUpdate.classList.contains("js_dropdown_item")) {
@@ -474,6 +503,7 @@ function createDropdownItem(buttonId, buttonText, startDate, endDate, dropdownBu
 
     // Apply the date range + refresh reports and style via the dropdown container
     handleYearButtonLogic(item, startDate, endDate);
+    resetDateRangeTriggerLabel();
 
     // Update visible label on the More chip
     dropdownButton.innerHTML = `${buttonText} <span class='ml-1 text-xs' aria-hidden='true'>&#9660;</span>`;
@@ -525,6 +555,7 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
 
     writeSelectionToURL(selection);
     handleYearButtonLogic(button, selection.startDate, selection.endDate);
+    resetDateRangeTriggerLabel();
   });
 
   return button;
@@ -567,6 +598,7 @@ function createDateRangeForm() {
   // Trigger button to open the popover
   const triggerBtn = document.createElement("button");
   triggerBtn.type = "button";
+  triggerBtn.id = "js-date-range-trigger";
   triggerBtn.innerHTML = "Custom date range <span class='ml-1 text-xs' aria-hidden='true'>&#9660;</span>";
   triggerBtn.setAttribute("aria-haspopup", "dialog");
   triggerBtn.setAttribute("aria-expanded", "false");
@@ -697,6 +729,7 @@ function createDateRangeForm() {
       endDate
     );
     updateYearButtonStyling(form);
+    setDateRangeTriggerLabel(startDate, endDate);
 
     // Close the popover
     if (tip) tip.hide();
