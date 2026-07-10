@@ -143,7 +143,9 @@ function formatFilterValueForDisplay(field = "", value = "") {
 
   const baseField = ensureKeywordField(field).replace(/\.keyword$/i, "");
   const codes = SEARCH_FILTER_FIELD_MAP.get(baseField)?.codes;
-  if (codes?.[trimmed]) return codes[trimmed];
+  // codes entries are either plain strings (country, language) or objects with a .name (license)
+  const coded = codes?.[trimmed];
+  if (coded) return coded.name ?? coded;
 
   if (ensureKeywordField(field) === AUTHOR_ID_FIELD) {
     return getRenderedFilterValueDisplay(field, trimmed) || trimmed;

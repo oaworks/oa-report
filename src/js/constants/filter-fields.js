@@ -3,7 +3,7 @@
 // Explore breakdown + filter field metadata
 // =================================================
 
-import { COUNTRY_CODES, LANGUAGE_CODES } from "../constants.js";
+import { COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES } from "../constants.js";
 
 export const SEARCH_FILTER_FIELDS = [
   { field: "authorships.author.display_name", label: "Authors (Name)", iconKey: "author", alphaSort: true },
@@ -16,8 +16,8 @@ export const SEARCH_FILTER_FIELDS = [
   { field: "supplements.grantid", label: "Grants", iconKey: "grant", alphaSort: false },
   { field: "supplements.program", label: "Programs", iconKey: "program", alphaSort: false },
   { field: "openalx.language", label: "Languages", iconKey: "language", alphaSort: true, codes: LANGUAGE_CODES, filterListHidden: true },
-  { field: "supplements.publisher_license_best", label: "Publisher licenses", iconKey: "publisher_license", alphaSort: true, filterListHidden: true, suffix: "(publisher)" },
-  { field: "supplements.repository_license_best", label: "Repository licenses", iconKey: "repository_license", alphaSort: true, filterListHidden: true, suffix: "(repository)" },
+  { field: "supplements.publisher_license_best", label: "Publisher licenses", iconKey: "publisher_license", alphaSort: true, filterListHidden: true, suffix: "(publisher)", codes: LICENSE_CODES },
+  { field: "supplements.repository_license_best", label: "Repository licenses", iconKey: "repository_license", alphaSort: true, filterListHidden: true, suffix: "(repository)", codes: LICENSE_CODES },
   { field: "authorships.institutions.country_code", label: "Countries", iconKey: "country", alphaSort: true, codes: COUNTRY_CODES, filterListHidden: true },
   { field: "openalx.funders.display_name", label: "Funders", iconKey: "funder", alphaSort: true, filterListHidden: true },
   { field: "openalx.open_access.oa_status", label: "Journal article OA types", iconKey: "article_oa_type", alphaSort: true, filterListHidden: true, suffix: "(article OA)" },
