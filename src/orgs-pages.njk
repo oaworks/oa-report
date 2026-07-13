@@ -12,13 +12,13 @@ permalink: "{{ org._source.objectID | slug }}/"
 
 <a
   href="#main-content"
-  class="fixed inset-x-0 top-0 z-[100] block -translate-y-full bg-carnation-700 px-4 py-3 text-center text-sm font-medium text-white shadow-lg transition-transform focus:translate-y-0 focus:outline-none"
+  class="fixed inset-x-0 top-0 z-[100] block -translate-y-full bg-carnation-700 px-4 py-3 text-center text-sm font-medium text-white shadow-lg transition-transform focus-visible:translate-y-0 focus-visible:outline-none"
 >
   Skip to main content
 </a>
 
 {% block header %}
-<div id="js-report-nav" class="bg-neutral-900 text-neutral-100 border-b border-neutral-700 lg:sticky top-0 z-50 pb-3 md:pb-6">
+<div id="js-report-nav" class="bg-neutral-900 text-neutral-100 border-b border-neutral-700 lg:sticky top-0 z-50">
   {% include 'partials/header.njk' %}
 </div>
 {% endblock %}

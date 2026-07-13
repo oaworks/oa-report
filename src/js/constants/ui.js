@@ -8,9 +8,9 @@
  * @type {{enabled:string,disabled:string,active:string}}
  */
 export const DATE_SELECTION_BUTTON_CLASSES = {
-  enabled: "block px-2 py-1 border rounded-t-sm mt-1 md:mt-0 md:border-b-0 md:px-3 md:py-1.5 text-sm font-medium bg-neutral-800 text-white hover:bg-neutral-700 border-neutral-600 focus:outline-none focus:ring-2 focus:ring-neutral-600 js-nav-chip",
-  disabled: "block px-2 py-1 border rounded-t-sm mt-1 md:mt-0 md:border-b-0 md:px-3 md:py-1.5 text-sm font-medium bg-neutral-800 text-neutral-500 opacity-60 cursor-not-allowed border-neutral-700 js-nav-chip",
-  active: "block px-2 py-1 border rounded-t-sm mt-1 md:mt-0 md:border-b-0 md:px-3 md:py-1.5 text-sm font-semibold bg-neutral-200 text-neutral-900 border-neutral-900 focus:outline-none focus:ring-2 focus:ring-neutral-600 js-nav-chip"
+  enabled: "inline-flex items-center px-2.5 py-1 md:px-3 border rounded-sm text-sm font-medium bg-neutral-800 text-white border-neutral-400 hover:bg-neutral-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors js-nav-chip",
+  disabled: "inline-flex items-center px-2.5 py-1 md:px-3 border rounded-sm text-sm font-medium bg-neutral-800 text-neutral-500 opacity-60 cursor-not-allowed border-neutral-700 js-nav-chip",
+  active: "inline-flex items-center px-2.5 py-1 md:px-3 border rounded-sm text-sm font-semibold bg-neutral-200 text-neutral-900 border-neutral-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-700 transition-colors js-nav-chip"
 };
 
 /**

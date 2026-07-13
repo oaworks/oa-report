@@ -136,6 +136,28 @@ function getSemanticRangeSelection(rangeParam) {
  * resolved range selection to apply.
  * @returns {void}
  */
+/**
+ * Updates the custom date range trigger button to display the currently applied
+ * date range instead of the generic "Custom date range" label.
+ *
+ * @param {Date} startDate - The start of the applied date range.
+ * @param {Date} endDate   - The end of the applied date range.
+ */
+function setDateRangeTriggerLabel(startDate, endDate) {
+  const trigger = document.getElementById('js-date-range-trigger');
+  if (trigger) trigger.innerHTML = `${makeDateReadable(startDate)} – ${makeDateReadable(endDate)} <span class='ml-1 text-xs' aria-hidden='true'>&#9660;</span>`;
+}
+
+/**
+ * Resets the custom date range trigger button to its default "Custom date range" label.
+ * Called whenever a year, All time, or More dropdown chip is activated, so the trigger
+ * no longer shows a stale previously-applied range.
+ */
+function resetDateRangeTriggerLabel() {
+  const trigger = document.getElementById('js-date-range-trigger');
+  if (trigger) trigger.innerHTML = `Custom date range <span class='ml-1 text-xs' aria-hidden='true'>&#9660;</span>`;
+}
+
 function applyResolvedRange({ buttonId, startDate, endDate }) {
   syncHiddenDateInputs(startDate, endDate);
   const button = buttonId ? document.getElementById(buttonId) : null;
@@ -143,8 +165,14 @@ function applyResolvedRange({ buttonId, startDate, endDate }) {
   if (button) {
     handleYearButtonLogic(button, startDate, endDate);
     updateYearButtonStyling(button);
+    if (buttonId === 'date_range_form') {
+      setDateRangeTriggerLabel(startDate, endDate);
+    } else {
+      resetDateRangeTriggerLabel();
+    }
   } else {
     handleYearButtonLogic(null, startDate, endDate);
+    resetDateRangeTriggerLabel();
   }
 }
 
@@ -255,6 +283,7 @@ export function setDefaultYear() {
 
       // Trigger any additional logic needed to refresh the report and style the control
       handleYearButtonLogic(elementToUpdate, startDate, endDate);
+      if (!isWholeYear) setDateRangeTriggerLabel(startDate, endDate);
 
       // If this is a year that lives in the More dropdown, update the visible label
       if (isWholeYear && elementToUpdate && elementToUpdate.classList.contains("js_dropdown_item")) {
@@ -396,13 +425,17 @@ function createDropdownContainer(id = null) {
   dropdown.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " relative inline-block js_dropdown";
 
   const dropdownButton = document.createElement("button");
-  dropdownButton.className = "h-full w-full rounded-t-sm js_dropdown_button focus:outline-none focus:ring-2 focus:ring-neutral-600";
+  dropdownButton.className = "h-full w-full rounded-t-sm js_dropdown_button focus:outline-none focus-visible:ring-2 focus-visible:ring-white";
   if (id) dropdownButton.id = id;
-  dropdownButton.setAttribute("aria-haspopup", "true");
   dropdownButton.setAttribute("aria-expanded", "false");
   dropdownButton.innerHTML = "More <span class='sr-only'>years</span> <span class='ml-1 text-xs' aria-hidden='true'>&#9660;</span>";
 
   const dropdownContent = document.createElement("div");
+  const contentId = id ? id + "_content" : null;
+  if (contentId) {
+    dropdownContent.id = contentId;
+    dropdownButton.setAttribute("aria-controls", contentId);
+  }
   dropdownContent.classList.add(
     "absolute",
     "left-0",
@@ -416,7 +449,7 @@ function createDropdownContainer(id = null) {
     "rounded-sm",
     "shadow-lg",
     "border",
-    "border-neutral-600",
+    "border-neutral-400",
     "bg-neutral-800",
     "text-neutral-100",
     "focus:outline-none",
@@ -429,17 +462,6 @@ function createDropdownContainer(id = null) {
     "js_dropdown_content"
   );
   dropdownContent.setAttribute("hidden", true);
-
-  dropdownButton.addEventListener("click", () => {
-    const isHidden = dropdownContent.hasAttribute('hidden');
-    if (isHidden) {
-      dropdownContent.removeAttribute('hidden');
-      dropdownContent.classList.remove('hidden');
-    } else {
-      dropdownContent.setAttribute('hidden', 'true');
-      dropdownContent.classList.add('hidden');
-    }
-  });
 
   dropdown.appendChild(dropdownButton);
   dropdown.appendChild(dropdownContent);
@@ -481,6 +503,7 @@ function createDropdownItem(buttonId, buttonText, startDate, endDate, dropdownBu
 
     // Apply the date range + refresh reports and style via the dropdown container
     handleYearButtonLogic(item, startDate, endDate);
+    resetDateRangeTriggerLabel();
 
     // Update visible label on the More chip
     dropdownButton.innerHTML = `${buttonText} <span class='ml-1 text-xs' aria-hidden='true'>&#9660;</span>`;
@@ -520,7 +543,7 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
   button.textContent = buttonText;
 
   // Add classes for styling
-  button.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " px-3";
+  button.className = DATE_SELECTION_BUTTON_CLASSES.enabled;
   button.setAttribute("aria-pressed", "false");
 
   // Add event listener
@@ -532,6 +555,7 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
 
     writeSelectionToURL(selection);
     handleYearButtonLogic(button, selection.startDate, selection.endDate);
+    resetDateRangeTriggerLabel();
   });
 
   return button;
@@ -552,7 +576,7 @@ function createDateRangeForm() {
   form.setAttribute("aria-labelledby", "js-date-range-form-title");
 
   // Title for the form (for screen readers)
-  const formTitle = document.createElement("h2");
+  const formTitle = document.createElement("h3");
   formTitle.id = "js-date-range-form-title";
   formTitle.textContent = "Select custom date range";
   formTitle.className = "sr-only";
@@ -574,6 +598,7 @@ function createDateRangeForm() {
   // Trigger button to open the popover
   const triggerBtn = document.createElement("button");
   triggerBtn.type = "button";
+  triggerBtn.id = "js-date-range-trigger";
   triggerBtn.innerHTML = "Custom date range <span class='ml-1 text-xs' aria-hidden='true'>&#9660;</span>";
   triggerBtn.setAttribute("aria-haspopup", "dialog");
   triggerBtn.setAttribute("aria-expanded", "false");
@@ -704,6 +729,7 @@ function createDateRangeForm() {
       endDate
     );
     updateYearButtonStyling(form);
+    setDateRangeTriggerLabel(startDate, endDate);
 
     // Close the popover
     if (tip) tip.hide();
