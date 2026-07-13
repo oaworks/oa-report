@@ -35,12 +35,9 @@ let orgData;
 const authState = initAuth(typeof org !== "undefined" ? org : undefined);
 loggedIn = authState.loggedIn;
 orgKey = authState.orgKey ? `&orgkey=${authState.orgKey}` : "";
-applyAuthVisibility({ hideWhenLoggedOut: ["report-filters"] });
-
 onAuthChange(({ loggedIn: isLoggedIn, orgKey: key }) => {
   loggedIn = isLoggedIn;
   orgKey = key ? `&orgkey=${key}` : "";
-  applyAuthVisibility({ hideWhenLoggedOut: ["report-filters"] });
   refreshFiltersBanner();
 });
 
@@ -152,14 +149,6 @@ async function _runHandleFiltersChanged() {
  */
 function refreshFiltersBanner() {
   if (!orgData) return;
-
-  // When logged out, hide the filters UI entirely
-  if (!loggedIn) {
-    displayNone("report-filters");
-    const mount = document.getElementById("js-active-filters");
-    if (mount) mount.innerHTML = "";
-    return;
-  }
 
   removeDisplayStyle("report-filters");
 
@@ -315,8 +304,11 @@ async function applyURLSelectionsOrDefault() {
   if (breakdown) {
     // Honour the user/bookmarked URL
     const preferredBtn = document.getElementById(`explore_${breakdown}_button`);
-    preferredBtn?.click();
-    return;
+    if (preferredBtn) {
+      preferredBtn.click();
+      return;
+    }
+    // Button not available (e.g. breakdown restricted for logged-out users); fall through to default.
   }
 
   // No breakdown in URL: render the first button's dataset WITHOUT changing the URL
