@@ -13,7 +13,7 @@ import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITE
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { startLoading, stopLoading } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
-import { renderActiveFiltersBanner } from './report-filter-manager.js';
+import { renderActiveFiltersBanner, orcidDisplayNames } from './report-filter-manager.js';
 import { orgDataPromise, initInsightsAndActions } from './insights-and-actions.js';
 import { AUTHOR_BREAKDOWN_TERM, getAggregatedDataQuery, formatAggregationBucket } from './aggregated-data-query.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
@@ -102,7 +102,7 @@ function isOrcidUrl(value) {
 }
 
 const FILTER_TARGET_BUTTON_CLASS = 'js-filter-target cursor-pointer hover:underline text-left focus:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm';
-const EXTERNAL_LINK_PILL_CLASS = 'ml-2 bg-neutral-200 text-neutral-900 text-xs px-2 py-0.5 rounded-full whitespace-nowrap hover:bg-carnation-200 js-external-pill';
+const EXTERNAL_LINK_PILL_CLASS = 'ml-1 bg-neutral-200 text-neutral-900 text-[10px] px-2 py-0.5 rounded-full whitespace-nowrap hover:bg-carnation-200 align-super js-external-pill';
 
 /**
  * Tracks currently selected row keys for use in enableExploreRowHighlighting.
@@ -691,7 +691,7 @@ async function loadExploreRecords(itemData, query, size, pretty) {
  * @param {number} size - The number of records to fetch.
  * @returns {Promise<Object>} A promise that resolves to term-based records and total count.
  */
-async function fetchTermBasedData(suffix, query, term, sort, size) {
+export async function fetchTermBasedData(suffix, query, term, sort, size) {
   const postData = getAggregatedDataQuery(suffix, query, term, startYear, endYear, size, sort);
   const response = await fetchPostData(postData);
 
@@ -978,6 +978,7 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
 
   function appendRow(target, record, section) {
     const row = document.createElement('tr');
+    if (dataType === 'terms' && exploreItemId === 'author' && record.display_name) orcidDisplayNames.set(record.key, record.display_name);
     const visibleEntries = Object.entries(record)
       .filter(([key]) => !(dataType === 'terms' && exploreItemId === 'author' && (key === 'display_name' || key === 'orcid')));
 
@@ -1066,10 +1067,10 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
   const termBase = currentActiveExploreItemData?.id === "author"
     ? AUTHOR_BREAKDOWN_TERM
     : (currentActiveExploreItemData?.term?.trim() || "");
+  const termFieldBase = termBase.replace(/\.keyword$/i, "");
+  const NO_KEYWORD_FIELDS = new Set(["published_year", AUTHOR_BREAKDOWN_TERM]);
   const termField = termBase
-    ? ((termBase === "published_year" && API_HOST_WORKS === "api")
-      ? termBase.replace(/\.keyword$/i, "")
-      : `${termBase.replace(/\.keyword$/i, "")}.keyword`)
+    ? (NO_KEYWORD_FIELDS.has(termFieldBase) ? termFieldBase : `${termFieldBase}.keyword`)
     : "";
 
   /**
@@ -1089,6 +1090,17 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
       // Do not trigger filtering when clicking the external profile pill
       if (target && target.closest('.js-external-pill')) return;
 
+      // For the year breakdown, activate the matching year nav button so the
+      // date range filter is applied and the chip highlights correctly.
+      // The date range is sufficient; no need to also write a published_year q param.
+      if (termField === "published_year") {
+        const yearButton = document.getElementById(`year-${rawValue}`);
+        if (yearButton) {
+          yearButton.click();
+          return;
+        }
+      }
+
       const value = escapeQueryValue(rawValue);
       const clause = `${termField}:"${value}"`;
 
@@ -1097,7 +1109,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
       // If clause is not present, just add it via the existing helper
       if (!existingQuery || !existingQuery.includes(clause)) {
         updateURLParams({
-          q: buildEncodedQueryWithUrlFilter(clause)
+          q: andQueryStrings(clause, existingQuery)
         });
       } else {
         // Clause is present: remove ONLY this clause from the decoded ?q=
@@ -1113,10 +1125,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
           removeURLParams('q');
         } else {
           const newDecodedQuery = remaining.join(' AND ');
-          // Write the updated expression back (encoded) so helpers keep working
-          updateURLParams({
-            q: encodeURIComponent(newDecodedQuery)
-          });
+          updateURLParams({ q: newDecodedQuery });
         }
       }
 
@@ -1212,25 +1221,14 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
       case 'license':
       case 'dataset_license': {
         const licenseInfo = LICENSE_CODES[rawValue];
-        const licenseName = licenseInfo?.name || "Unknown license";
+        const licenseName = licenseInfo?.name || rawValue.toUpperCase();
         const licenseUrl = licenseInfo?.url || null;
 
-        labelWrapper = createFilterTargetButton();
-
-        const codeEl = document.createElement('strong');
-        codeEl.className = 'uppercase';
-        codeEl.textContent = rawValue;
-
-        const nameEl = document.createElement('span');
-        nameEl.textContent = ` – ${licenseName}`;
-
-        labelWrapper.appendChild(codeEl);
-        labelWrapper.appendChild(document.createElement('br'));
-        labelWrapper.appendChild(nameEl);
-        cell.appendChild(labelWrapper);
+        labelWrapper = createFilterTargetButton(licenseName);
 
         if (licenseUrl) {
-          cell.appendChild(createExternalPill(licenseUrl, 'CC License ↗'));
+          cell.appendChild(labelWrapper);
+          cell.appendChild(createExternalPill(licenseUrl, 'Info ↗'));
         }
         break;
       }

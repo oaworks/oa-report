@@ -12,6 +12,14 @@
         <a href="{{ item.url }}" {% if item.ext %}target="_blank" rel="noopener"{% endif %} class="inline-flex min-h-[44px] items-center rounded-md px-0 py-0 text-base lg:text-lg transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-2">{{ item.label }}</a>
       </li>
       {% endfor %}
+      {% if org._source.name %}
+      <li>
+        <a href="?logout" data-auth="in" id="logout" class="inline-flex min-h-[44px] items-center rounded-md px-0 py-0 text-base lg:text-lg font-semibold transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-2">Log out <span aria-hidden="true" class="ml-1">&rarr;</span></a>
+      </li>
+      <li>
+        <button data-auth="out" data-modal-title="Log in to access this OA.Report" data-modal-content="<div class='text-center'><p class='mb-2'>If you work for <strong>{{ org._source.name }}</strong>, search your inbox for an email titled <br><span class='highlight font-normal'>&ldquo;OA.Report login link&rdquo;</span><br> to access your report.</p><p class='mb-4'>If you can't find it, please <a href='mailto:joe@oa.works?subject=I%20can't%20find%20my%20OA.Report%20login%20link' class='underline underline-offset-2 decoration-1'>contact our helpdesk</a>.</p><hr><p class='pt-4'><small class='text-xs font-normal'>Find out more about <a href='https://about.oa.report/docs/user-accounts' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>OA.Report user accounts</a>.</small></p></div>" id="login" class="inline-flex min-h-[44px] items-center rounded-md px-0 py-0 text-base lg:text-lg font-semibold transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-2">Log in <span aria-hidden="true" class="ml-1">&larr;</span></button>
+      </li>
+      {% endif %}
     </ul>
   </nav>
 </footer>

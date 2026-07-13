@@ -7,8 +7,11 @@
 // Imports & Constants
 // =================================================
 
+import DOMPurify from "dompurify";
 import {
   fetchJson,
+  startYear,
+  endYear,
   getDecodedUrlQuery,
   updateURLParams,
   removeURLParams,
@@ -19,20 +22,20 @@ import {
   createPopoverKeyboardFlow
 } from "./utils.js";
 import { ORGS_REPORT_API_BASE_URL } from "./constants/api.js";
+import { AUTHOR_BREAKDOWN_TERM } from "./aggregated-data-query.js";
 
 import {
   EXPLORE_ITEMS_LABELS,
   EXPLORE_FILTERS_LABELS,
   EXPLORE_HEADER_ARTICLES_LABELS,
   resolveFieldDefinition,
-  COUNTRY_CODES,
   DATE_SELECTION_BUTTON_CLASSES
 } from "./constants.js";
 import { SEARCH_FILTER_FIELD_MAP, iconForField } from "./constants/filter-fields.js";
 
 import { orgDataPromise } from './insights-and-actions.js';
 
-import { handleFiltersChanged } from './explore.js';
+import { handleFiltersChanged, fetchTermBasedData } from './explore.js';
 import { createPopover, createTooltip } from './tooltip-manager.js';
 
 const SUGGESTIONS_API_URL = `${ORGS_REPORT_API_BASE_URL}suggestions`;
@@ -72,6 +75,9 @@ const ORCID_ID_RE = /\b\d{4}-\d{4}-\d{4}-\d{3}[\dX]\b/i;
 const AUTHOR_ID_FIELD = "authorships.author.id.keyword";
 const AUTHOR_ORCID_FIELD = "authorships.author.orcid.keyword";
 const AUTHOR_NAME_FIELD = "authorships.author.display_name.keyword";
+
+/** ORCID URL → author display name; populated by explore.js whenever the Authors table renders. */
+export const orcidDisplayNames = new Map();
 
 function getRenderedFilterValueDisplay(field = "", value = "") {
   const fieldKey = ensureKeywordField(field);
@@ -135,11 +141,20 @@ function formatFilterValueForDisplay(field = "", value = "") {
   const trimmed = String(value || "").trim();
   if (!trimmed) return "";
 
+  const baseField = ensureKeywordField(field).replace(/\.keyword$/i, "");
+  const codes = SEARCH_FILTER_FIELD_MAP.get(baseField)?.codes;
+  // codes entries are either plain strings (country, language) or objects with a .name (license)
+  const coded = codes?.[trimmed];
+  if (coded) return coded.name ?? coded;
+
   if (ensureKeywordField(field) === AUTHOR_ID_FIELD) {
     return getRenderedFilterValueDisplay(field, trimmed) || trimmed;
   }
 
   if (normaliseSortField(field) !== "authorships.author.orcid") return trimmed;
+
+  const name = orcidDisplayNames.get(trimmed) || getRenderedFilterValueDisplay(AUTHOR_ORCID_FIELD, trimmed);
+  if (name) return name;
 
   const match = trimmed.match(ORCID_ID_RE)?.[0];
   return match ? match.toUpperCase() : trimmed;
@@ -266,7 +281,7 @@ function buildFilterFieldOptions(exploreData) {
         ? "supplements.program"
         : fieldKey;
     const fieldMeta = SEARCH_FILTER_FIELD_MAP.get(normalisedKey);
-    if (!fieldMeta || seen.has(normalisedKey)) return;
+    if (!fieldMeta || fieldMeta.filterListHidden || seen.has(normalisedKey)) return;
     seen.add(normalisedKey);
 
     const label =
@@ -278,9 +293,10 @@ function buildFilterFieldOptions(exploreData) {
   });
 
   // Fallback: include globally configured search fields even if the org's
-  // Explore config doesn't explicitly list them.
+  // Explore config doesn't explicitly list them. Fields marked filterListHidden
+  // are excluded here but can still be surfaced per-org via their explore config.
   for (const [fieldKey, fieldMeta] of SEARCH_FILTER_FIELD_MAP.entries()) {
-    if (seen.has(fieldKey)) continue;
+    if (seen.has(fieldKey) || fieldMeta?.filterListHidden) continue;
     seen.add(fieldKey);
     options.push({
       value: fieldKey,
@@ -300,8 +316,6 @@ function buildFilterFieldOptions(exploreData) {
  * @returns {string[]}
  */
 function extractFilterValuesFromClause(field = "", rawValue = "") {
-  const fieldKey = ensureKeywordField(field);
-  const baseField = fieldKey.replace(/\.keyword$/i, "");
   const quotedValuePattern = /"((?:\\.|[^"\\])*)"/g;
   const values = Array.from(
     String(rawValue || "").matchAll(quotedValuePattern),
@@ -314,17 +328,10 @@ function extractFilterValuesFromClause(field = "", rawValue = "") {
         .replace(/["()]/g, "")
         .trim()
     );
-    if (!fallbackValue) return [];
-    return /country(_code)?$/i.test(baseField) && COUNTRY_CODES[fallbackValue]
-      ? [COUNTRY_CODES[fallbackValue]]
-      : [fallbackValue];
+    return fallbackValue ? [fallbackValue] : [];
   }
 
-  return values.map((value) => (
-    /country(_code)?$/i.test(baseField) && COUNTRY_CODES[value]
-      ? COUNTRY_CODES[value]
-      : value
-  ));
+  return values;
 }
 
 /**
@@ -620,41 +627,6 @@ function addFilterRow(container) {
   textLabel.className = "flex items-center text-neutral-800 text-[11px] md:text-xs font-medium uppercase tracking-wide";
   textLabel.textContent = "Values";
 
-  const helpIcon = document.createElement("button");
-  helpIcon.type = "button";
-  helpIcon.className = "ml-2 text-neutral-600 underline underline-offset-4 decoration-dotted text-[11px]";
-  helpIcon.setAttribute("aria-label", "How to format filter values");
-  helpIcon.textContent = "(?)";
-  textLabel.appendChild(helpIcon);
-
-  const helpEl = document.createElement("div");
-  helpEl.className = "p-2 md:p-3";
-
-  const helpHeading = document.createElement("p");
-  helpHeading.className = "mb-2 text-sm font-semibold text-neutral-900";
-  helpHeading.textContent = "Filtering tips";
-  helpEl.appendChild(helpHeading);
-
-  const helpList = document.createElement("ul");
-  helpList.className = "list-disc list-outside pl-5 text-xs text-neutral-800 space-y-1";
-  [
-    'Type to see suggestions, then <strong>click to add</strong> one.',
-    'Add <strong>multiple entries</strong> to match <strong>any</strong> of them (e.g., adding <code>INV-001</code> and <code>INV-002</code> returns publications under either grant).',
-    'Search is <strong>case-insensitive</strong>, but <strong>full words</strong> work best; abbreviations like <code>OUP</code> will not match <code>Oxford University Press</code>.',
-  ].forEach((html) => {
-    const li = document.createElement("li");
-    li.innerHTML = html;
-    helpList.appendChild(li);
-  });
-  helpEl.appendChild(helpList);
-
-  createTooltip(helpIcon, "", {
-    theme: "popover",
-    maxWidth: 320,
-    placement: "bottom",
-    contentElement: helpEl,
-  });
-
   const inputId = `js-filter-input-${idSuffix}`;
   const input = document.createElement("input");
   input.id = inputId;
@@ -873,7 +845,6 @@ function addFilterRow(container) {
     const hint = document.createElement("li");
     hint.setAttribute("role", "presentation");
     hint.setAttribute("aria-hidden", "true");
-    hint.setAttribute("aria-disabled", "true");
     hint.className = "px-2 py-1 h-9 flex items-center text-xs md:text-sm bg-neutral-100 text-neutral-700 border-b border-neutral-200";
     hint.textContent = message || (termRaw ? `Matching suggestions for "${termRaw}"` : "Start typing to see suggestions…");
     listbox.appendChild(hint);
@@ -1080,6 +1051,55 @@ function addFilterRow(container) {
 // =================================================
 
 /**
+ * Updates the sr-only #js-filter-context-heading span inside the report <h1>
+ * so screen readers announce the active filter as part of the page heading
+ * (e.g. when arriving via a shared filtered URL).
+ * Only fires for exactly one field with one value; clears otherwise.
+ *
+ * @param {{field:string,label:string,values:string[]}[]} pairs
+ */
+function renderFilterContextInHeading(pairs) {
+  const el = document.getElementById("js-filter-context-heading");
+  if (!el) return;
+
+  const totalValues = pairs.reduce((n, p) => n + p.values.length, 0);
+  if (!totalValues) {
+    el.hidden = true;
+    el.textContent = "";
+    return;
+  }
+
+  // Single field + single value: name the filter explicitly so SR users hear e.g. ", filtered by Grants: INV-123"
+  if (pairs.length === 1 && pairs[0].values.length === 1) {
+    const { field, label, values } = pairs[0];
+    const displayValue = formatFilterValueForDisplay(field, values[0]);
+    const plainLabel = label.replace(/<[^>]+>/g, "");
+    el.textContent = `filtered by ${plainLabel}: ${displayValue}`;
+    el.hidden = false;
+
+    // ORCID values arrive as bare IDs; fetch the author's display name so the heading
+    // reads as a name rather than a raw identifier, then re-render once resolved.
+    if (normaliseSortField(field) === "authorships.author.orcid" && !orcidDisplayNames.has(values[0])) {
+      const suffix = orgData?.hits?.hits?.[0]?._source?.key_suffix;
+      if (suffix && startYear && endYear) {
+        const filterQuery = `${AUTHOR_ORCID_FIELD}:"${escapeQueryValue(values[0])}"`;
+        fetchTermBasedData(suffix, filterQuery, AUTHOR_BREAKDOWN_TERM, "_count", 1)
+          .then(({ records }) => {
+            const name = records?.[0]?.display_name;
+            if (!name) return;
+            orcidDisplayNames.set(values[0], name);
+            renderActiveFiltersBanner();
+          })
+          .catch(() => {});
+      }
+    }
+  } else {
+    el.textContent = `with ${totalValues} active filter${totalValues === 1 ? "" : "s"}`;
+    el.hidden = false;
+  }
+}
+
+/**
  * Renders the Filters chip in the top nav and wires a Tippy popover
  * that shows:
  *  - Active filters summary (chips + Clear filters)
@@ -1098,61 +1118,18 @@ export function renderActiveFiltersBanner() {
 
   const q = getDecodedUrlQuery();
   const pairs = parseEsQueryToPairs(q);
-  const count = pairs.reduce((sum, p) => sum + (Array.isArray(p.values) ? p.values.length : 1), 0); // total values count across all fields, instead of just fields count
+  renderFilterContextInHeading(pairs);
+  const count = pairs.reduce((sum, p) => sum + (Array.isArray(p.values) ? p.values.length : 1), 0);
 
+  // Always reveal the wrapper — it holds at minimum the "+ Add filter" button
   wrapper.classList.remove("invisible", "opacity-0", "pointer-events-none");
   wrapper.setAttribute("aria-hidden", "false");
   if ("inert" in wrapper) wrapper.inert = false;
   mount.innerHTML = "";
 
-  // Trigger form styled like other date/year chips
-  const form = document.createElement("form");
-  form.id = "filters_form";
-  const isActive = count > 0;
-  const filterChipClasses = isActive ? DATE_SELECTION_BUTTON_CLASSES.active : DATE_SELECTION_BUTTON_CLASSES.enabled;
-  form.className = `${filterChipClasses} !mr-0 !md:mr-0 flex items-center whitespace-nowrap`;
-  form.setAttribute("aria-labelledby", "js-filters-form-title");
-
-  const formTitle = document.createElement("h2");
-  formTitle.id = "js-filters-form-title";
-  formTitle.textContent = "Manage filters";
-  formTitle.className = "sr-only";
-  form.appendChild(formTitle);
-
-  const triggerBtn = document.createElement("button");
-  triggerBtn.type = "button";
-  triggerBtn.id = "js-filters-trigger";
-  triggerBtn.innerHTML = `Filters (${count}) <span class="ml-1 text-xs">▼</span>`;
-  triggerBtn.setAttribute("aria-haspopup", "dialog");
-  triggerBtn.setAttribute("aria-expanded", "false");
-  triggerBtn.setAttribute("aria-pressed", isActive ? "true" : "false");
-  triggerBtn.style.color = "inherit";
-  form.appendChild(triggerBtn);
-
-  mount.appendChild(form);
-
-  // Popover content (wider than date range)
-  const pop = document.createElement("div");
-  pop.className = "js-filters-popover p-3 md:p-4 text-xs md:text-sm";
-  pop.setAttribute("role", "dialog");
-  pop.setAttribute("aria-labelledby", "js-filters-form-title");
-  pop.style.maxWidth = "90vw";
-  pop.style.minWidth = "320px";
-
-  const heading = document.createElement("h3");
-  heading.className = "mb-2 font-semibold text-neutral-900 text-xs md:text-sm";
-  heading.id = "js-active-filters-heading";
-  heading.textContent = count ? `Active filters (${count})` : "No active filters";
-  pop.appendChild(heading);
-
-  const chipsList = document.createElement("ul");
-  chipsList.className = "mb-2 space-y-2";
-  chipsList.setAttribute("role", "list");
-  chipsList.setAttribute("aria-live", "polite");
-  chipsList.setAttribute("aria-labelledby", heading.id);
-
+  // Render active filter chips inline
   if (pairs.length) {
-    const grouped = new Map(); // field -> {label, clauses:[...], values:[...]}
+    const grouped = new Map();
     pairs.forEach(({ field, label, values, clause }) => {
       if (!grouped.has(field)) {
         grouped.set(field, { label, field, clauses: [], values: [] });
@@ -1162,27 +1139,15 @@ export function renderActiveFiltersBanner() {
       (values || []).forEach((v) => entry.values.push(v));
     });
 
-    Array.from(grouped.values()).forEach(({ label, clauses, values, field }) => {
-      const li = document.createElement("li");
-      li.className = "mb-1";
-      li.setAttribute("role", "listitem");
-
-      const headingDiv = document.createElement("div");
-      headingDiv.className = "text-[11px] md:text-xs font-semibold text-neutral-900";
-      headingDiv.textContent = label;
-      li.appendChild(headingDiv);
-
-      const chipsRow = document.createElement("div");
-      chipsRow.className = "flex flex-wrap gap-1 mt-1";
-      chipsRow.setAttribute("role", "list");
-
+    Array.from(grouped.values()).forEach(({ label, values, field }) => {
       (values || []).forEach((val) => {
         const displayVal = formatFilterValueForDisplay(field, val);
+        const fieldDef = SEARCH_FILTER_FIELD_MAP.get(normaliseSortField(field));
+        const chipText = fieldDef?.suffix ? `${displayVal} ${fieldDef.suffix}` : displayVal;
         const chip = document.createElement("button");
         chip.type = "button";
-        chip.className = "inline-flex items-center rounded-full bg-carnation-100 text-neutral-900 px-2 py-0.5 text-[11px] md:text-xs";
-        chip.setAttribute("role", "listitem");
-        chip.setAttribute("aria-label", `Remove ${label}: ${displayVal}`);
+        chip.className = "inline-flex items-center rounded-full bg-carnation-100 text-neutral-900 px-2.5 py-1 text-sm font-medium hover:bg-carnation-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors";
+        chip.setAttribute("aria-label", `Remove ${DOMPurify.sanitize(label, { ALLOWED_TAGS: [] })}: ${chipText}`);
         chip.setAttribute("data-field", ensureKeywordField(field));
         const chipIconName = iconForField(field);
         if (chipIconName) {
@@ -1192,18 +1157,16 @@ export function renderActiveFiltersBanner() {
           chip.appendChild(icon);
         }
         const chipLabel = document.createElement("span");
-        chipLabel.textContent = displayVal;
+        chipLabel.textContent = chipText;
         chip.appendChild(chipLabel);
         const removeLabel = document.createElement("span");
-        removeLabel.className = "ml-2 text-[10px]";
+        removeLabel.className = "ml-1.5 text-[11px]";
         removeLabel.textContent = "✕";
         chip.appendChild(removeLabel);
         chip.addEventListener("click", (e) => {
           e.preventDefault();
           e.stopPropagation();
           const decodedQ = getDecodedUrlQuery();
-          // Prefer the actual parsed field for clearing from active filters
-          // Fall back to label-based mapping only when missing
           let chipField = chip.getAttribute("data-field");
           if (!chipField) {
             for (const [fieldKey, fieldConfig] of SEARCH_FILTER_FIELD_MAP.entries()) {
@@ -1220,43 +1183,92 @@ export function renderActiveFiltersBanner() {
             removeURLParams("q");
           }
           handleFiltersChanged();
-          tip.hide();
         });
-        chipsRow.appendChild(chip);
+        mount.appendChild(chip);
       });
-
-      li.appendChild(chipsRow);
-      chipsList.appendChild(li);
     });
-  } else {
-    const li = document.createElement("li");
-    li.className = "text-neutral-700";
-    li.setAttribute("role", "listitem");
-    li.innerHTML = `<p><strong>Filter across your entire OA.Report.</strong></p><p>None selected; use the form below to narrow your results.</p>`;
-    chipsList.appendChild(li);
   }
 
-  pop.appendChild(chipsList);
+  // "+ Add filter" button — always shown, triggers the popover
+  const triggerBtn = document.createElement("button");
+  triggerBtn.type = "button";
+  triggerBtn.id = "js-filters-trigger";
+  triggerBtn.className = "inline-flex items-center rounded-full border border-dashed border-neutral-400 text-neutral-300 px-2.5 py-1 text-sm font-medium hover:text-white hover:border-neutral-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors";
+  triggerBtn.innerHTML = `<span aria-hidden="true" class="mr-1 font-bold">+</span> Add filter`;
+  triggerBtn.setAttribute("aria-haspopup", "dialog");
+  triggerBtn.setAttribute("aria-expanded", "false");
+  mount.appendChild(triggerBtn);
 
+  // "Clear all" — only shown when filters are active, sits after "Add filter"
   let clearBtn = null;
-
   if (pairs.length) {
     clearBtn = document.createElement("button");
     clearBtn.type = "button";
-    clearBtn.id = "js-clear-q-popover";
-    clearBtn.className = "mt-1 mb-3 p-2 border border-neutral-400 text-neutral-900 rounded-sm w-full justify-center hover:bg-neutral-100";
+    clearBtn.id = "js-clear-q-filters";
+    clearBtn.className = "inline-flex items-center px-2.5 py-1 text-sm font-medium text-neutral-300 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors";
     clearBtn.textContent = "Clear all";
-    clearBtn.setAttribute("aria-describedby", heading.id);
-    pop.appendChild(clearBtn);
+    mount.appendChild(clearBtn);
   }
+
+  // Popover content: clear-all (if active) + add-filter form
+  const pop = document.createElement("div");
+  pop.className = "js-filters-popover p-3 md:p-4 text-xs md:text-sm";
+  pop.setAttribute("role", "dialog");
+  pop.setAttribute("aria-labelledby", "js-filters-form-title");
+  pop.style.maxWidth = "90vw";
+  pop.style.minWidth = "320px";
 
   // Container for dynamic filter rows
   const filterForm = document.createElement("form");
-  filterForm.className = "mt-3 pt-3 border-t border-neutral-200 space-y-3";
+  filterForm.id = "filters_form";
+  filterForm.className = "space-y-3";
+  filterForm.setAttribute("aria-labelledby", "js-filters-form-title");
+
+  const formTitle = document.createElement("h2");
+  formTitle.id = "js-filters-form-title";
+  formTitle.className = "sr-only";
+  formTitle.textContent = "Manage filters";
+  filterForm.appendChild(formTitle);
 
   const formHeading = document.createElement("h3");
-  formHeading.className = "text-xs md:text-sm font-semibold text-neutral-900";
+  formHeading.className = "text-xs md:text-sm font-semibold text-neutral-900 flex items-center gap-2";
   formHeading.textContent = "Add a filter";
+
+  const helpIcon = document.createElement("button");
+  helpIcon.type = "button";
+  helpIcon.className = "text-neutral-600 underline underline-offset-4 decoration-dotted text-[11px]";
+  helpIcon.setAttribute("aria-label", "Filtering tips");
+  helpIcon.textContent = "(?)";
+  formHeading.appendChild(helpIcon);
+
+  const helpEl = document.createElement("div");
+  helpEl.className = "p-2 md:p-3";
+
+  const helpHeading = document.createElement("p");
+  helpHeading.className = "mb-2 text-sm font-semibold text-neutral-900";
+  helpHeading.textContent = "Filtering tips";
+  helpEl.appendChild(helpHeading);
+
+  const helpList = document.createElement("ul");
+  helpList.className = "list-disc list-outside pl-5 text-xs text-neutral-800 space-y-1";
+  [
+    'Type to see suggestions, then <strong>click to add</strong> one.',
+    'Add <strong>multiple entries</strong> to match <strong>any</strong> of them (e.g., adding <code>INV-001</code> and <code>INV-002</code> returns publications under either grant).',
+    'Search is <strong>case-insensitive</strong>, but <strong>full words</strong> work best; abbreviations like <code>OUP</code> will not match <code>Oxford University Press</code>.',
+  ].forEach((html) => {
+    const li = document.createElement("li");
+    li.innerHTML = html;
+    helpList.appendChild(li);
+  });
+  helpEl.appendChild(helpList);
+
+  createTooltip(helpIcon, "", {
+    theme: "popover",
+    maxWidth: 320,
+    placement: "bottom-start",
+    contentElement: helpEl,
+  });
+
   filterForm.appendChild(formHeading);
 
   const rowsContainer = document.createElement("div");
@@ -1278,7 +1290,7 @@ export function renderActiveFiltersBanner() {
   const popoverFlow = createPopoverKeyboardFlow({
     popover: pop,
     trigger: triggerBtn,
-    firstSelector: "#js-clear-q-popover, .js-filter-field, #js-apply-filters",
+    firstSelector: ".js-filter-field, #js-apply-filters",
     lastSelector: "#js-apply-filters",
     onBackwardTab: () => {
       tip.hide();
