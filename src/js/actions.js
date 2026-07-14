@@ -68,7 +68,7 @@ export function formatDoiEpmcListForClipboard(element) {
     .filter(Boolean)
     .forEach(cell => {
       const nextStep = cell.dataset.inEpmc === 'true'
-        ? `Update licence in Europe PMC to CC-BY (currently ${cell.dataset.epmcLicence})`
+        ? `Incorrect licence in Europe PMC to CC-BY (currently ${cell.dataset.epmcLicence}; should be CC-BY)`
         : 'Deposit to Europe PMC with CC-BY licence';
       if (!doisByNextStep.has(nextStep)) doisByNextStep.set(nextStep, []);
       doisByNextStep.get(nextStep).push(cell.dataset.doi);

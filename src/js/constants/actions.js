@@ -10,7 +10,7 @@ export const ACTION_LABELS = {
   email_author_unpublished_openrxiv_preprint_not_ccby: "Update non-CC BY preprints",
   apc_followup: "Correct publisher errors",
   unanswered_requests: "Escalate unanswered requests",
-  wellcome_point_of_award_check: "Fix Europe PMC compliance"
+  wellcome_point_of_award_check: "Perform point-of-award check"
 };
 
 export const ACTION_ORDER = [
