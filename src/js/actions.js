@@ -7,20 +7,56 @@
 // Imports
 // =================================================
 
-import { updateURLParams, getAllURLParams, announce } from './utils.js';
+import { updateURLParams, getAllURLParams, announce, getDecodedUrlQuery } from './utils.js';
 import { SEGMENTED_PILL_CLASSES } from './constants.js';
+
+// Matches a single authorships.author.display_name / .orcid filter clause (with
+// or without the .keyword suffix depending on how it was added) and captures its
+// value(s), so we can tell a single-author filter apart from a multi-author one.
+const AUTHOR_FILTER_FIELD_PATTERN = /authorships\.author\.(?:display_name|orcid)(?:\.keyword)?\s*:\s*(\([^)]*\)|"(?:\\.|[^"\\])*")/gi;
+
+/**
+ * The current URL filter's (`?q=`) single author value — via
+ * authorships.author.display_name or authorships.author.orcid — or null if
+ * there isn't exactly one. Backs both the "wellcome_point_of_award_check"
+ * action's tab visibility and its clipboard export's author heading.
+ * @returns {string|null}
+ */
+export function getSingleAuthorFilterName() {
+  const q = getDecodedUrlQuery();
+  if (!q) return null;
+
+  AUTHOR_FILTER_FIELD_PATTERN.lastIndex = 0;
+  let match;
+  while ((match = AUTHOR_FILTER_FIELD_PATTERN.exec(q)) !== null) {
+    const quotedValues = match[1].match(/"(?:\\.|[^"\\])*"/g) || [];
+    if (quotedValues.length === 1) return quotedValues[0].slice(1, -1);
+  }
+  return null;
+}
+
+/**
+ * True when the report is scoped to a single author (see getSingleAuthorFilterName).
+ * Gates the "wellcome_point_of_award_check" action, which is only meaningful
+ * when reviewing one author's articles at a time.
+ * @returns {boolean}
+ */
+export function isSingleAuthorFilterActive() {
+  return getSingleAuthorFilterName() !== null;
+}
 
 /**
  * Formats an Actions table's rows as a bullet list of next steps per DOI, read
  * from each row's `data-doi`/`data-in-epmc`/`data-epmc-licence` attributes (see
  * the "wellcome_point_of_award_check" action's rowTemplate). Articles missing
  * from Europe PMC need depositing under CC-BY; those already there just need
- * their licence updated to CC-BY.
+ * their licence updated to CC-BY. Prefixed with the filtered author's name/ORCID
+ * for context once pasted elsewhere.
  * @param {HTMLTableElement} element
  * @returns {string}
  */
 export function formatDoiEpmcListForClipboard(element) {
-  return Array.from(element.rows)
+  const lines = Array.from(element.rows)
     .map(row => row.querySelector('[data-doi]'))
     .filter(Boolean)
     .map(cell => {
@@ -28,8 +64,11 @@ export function formatDoiEpmcListForClipboard(element) {
         ? `Update licence in Europe PMC to CC-BY (currently ${cell.dataset.epmcLicence} licence)`
         : 'Deposit to Europe PMC with CC-BY licence';
       return `- https://doi.org/${cell.dataset.doi}: ${nextStep}`;
-    })
-    .join('\n');
+    });
+
+  const authorName = getSingleAuthorFilterName();
+  const heading = authorName ? `Articles authored by ${authorName}:\n` : '';
+  return `${heading}${lines.join('\n')}`;
 }
 
 /**

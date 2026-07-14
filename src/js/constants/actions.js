@@ -230,7 +230,10 @@ export const ACTION_TABLE_CONFIGS = [
         </div>\
       </td>\
       <td class='px-3 py-4 text-sm text-left text-neutral-900 align-top break-words'>\
-        <span class='font-medium'>${action.has_epmc_fulltext}</span>\
+        <span class='inline-flex items-center gap-1 font-medium'>\
+          <span>${action.epmc_status_label}</span>\
+          <i class='ph ${action.epmc_status_icon} text-[16px] leading-none ${action.epmc_status_color}' aria-hidden='true'></i>\
+        </span>\
       </td>\
       <td class='px-3 py-4 text-sm text-left text-neutral-900 align-top break-words'>\
         <span class='font-medium'>${action.epmc_licence}</span>\

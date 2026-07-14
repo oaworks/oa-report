@@ -12,7 +12,7 @@
 import { dateRange, startYear, endYear, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings, copyToClipboard } from './utils.js';
 import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, INSIGHT_EXPLORE_MAPPINGS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS, LICENSE_CODES, resolveFieldDefinition } from './constants.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
-import { initActionTabs, formatDoiEpmcListForClipboard } from './actions.js';
+import { initActionTabs, formatDoiEpmcListForClipboard, isSingleAuthorFilterActive } from './actions.js';
 import { createPopover } from './tooltip-manager.js';
 import { buildTooltipContent, buildDefinitionHelpHtml, injectOrgFields } from './tooltip-content.js';
 import { getInsightsAggregationQuery, formatAggregationBucket } from './aggregated-data-query.js';
@@ -285,31 +285,6 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
   });
 
   return renderedIds;
-}
-
-// Matches a single authorships.author.display_name / .orcid filter clause (with
-// or without the .keyword suffix depending on how it was added) and captures its
-// value(s), so we can tell a single-author filter apart from a multi-author one.
-const AUTHOR_FILTER_FIELD_PATTERN = /authorships\.author\.(?:display_name|orcid)(?:\.keyword)?\s*:\s*(\([^)]*\)|"(?:\\.|[^"\\])*")/gi;
-
-/**
- * True when the current URL filter (`?q=`) scopes the report to a single author
- * via authorships.author.display_name or authorships.author.orcid with exactly
- * one value. Gates the "wellcome_point_of_award_check" action, which is only
- * meaningful when reviewing one author's articles at a time.
- * @returns {boolean}
- */
-function isSingleAuthorFilterActive() {
-  const q = getDecodedUrlQuery();
-  if (!q) return false;
-
-  AUTHOR_FILTER_FIELD_PATTERN.lastIndex = 0;
-  let match;
-  while ((match = AUTHOR_FILTER_FIELD_PATTERN.exec(q)) !== null) {
-    const quotedValues = match[1].match(/"(?:\\.|[^"\\])*"/g) || [];
-    if (quotedValues.length === 1) return true;
-  }
-  return false;
 }
 
 function renderActionTabs(strategy = {}) {
@@ -736,6 +711,15 @@ export function initInsightsAndActions(org) {
                         .replaceAll("<", "&lt;")
                         .replaceAll(">", "&gt;");
                     };
+
+                    // If EPMC fulltext status is included, derive a human-readable label + icon for
+                    // display, without touching the raw value the data-in-epmc attribute relies on
+                    if ("has_epmc_fulltext" in action) {
+                      var inEpmc = action.has_epmc_fulltext === true;
+                      action.epmc_status_label = inEpmc ? "Yes" : "No";
+                      action.epmc_status_icon = inEpmc ? "ph-check" : "ph-x";
+                      action.epmc_status_color = inEpmc ? "text-neutral-900" : "text-carnation-500";
+                    }
 
                     if (typeof action.title === "string" && action.title.includes("&")) {
                       const textarea = document.createElement("textarea");
