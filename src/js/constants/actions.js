@@ -229,7 +229,7 @@ export const ACTION_TABLE_CONFIGS = [
           <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article' aria-label='Open article: ${action.title}' class='" + ACTION_ARTICLE_LINK_CLASSES + " ml-0'>Open article <span aria-hidden='true'>&#8599;</span></a>\
         </div>\
       </td>\
-      <td class='px-3 py-4 text-sm text-center text-neutral-900 align-top break-words'>\
+      <td class='px-3 py-4 text-sm text-left text-neutral-900 align-top break-words'>\
         <span class='font-medium'>${action.has_epmc_fulltext}</span>\
       </td>"
   }
