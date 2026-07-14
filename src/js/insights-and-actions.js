@@ -10,7 +10,7 @@
 // =================================================
 
 import { dateRange, startYear, endYear, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings, copyToClipboard } from './utils.js';
-import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, INSIGHT_EXPLORE_MAPPINGS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS, resolveFieldDefinition } from './constants.js';
+import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, INSIGHT_EXPLORE_MAPPINGS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS, LICENSE_CODES, resolveFieldDefinition } from './constants.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { initActionTabs, formatDoiEpmcListForClipboard } from './actions.js';
 import { createPopover } from './tooltip-manager.js';
@@ -697,6 +697,7 @@ export function initInsightsAndActions(org) {
                         action[key] = value;
 
                         if (key === 'published_date') action[key] = makeDateReadable(new Date(action[key]));
+                        if (key === 'epmc_licence' && action[key] != null) action[key] = LICENSE_CODES[action[key]]?.name || String(action[key]).toUpperCase();
                       }
 
                       if (action[key] == null) {
@@ -837,7 +838,8 @@ export function initInsightsAndActions(org) {
         copyToClipboard(
           "copy_clipboard_wellcome_point_of_award_check",
           "table_wellcome_point_of_award_check",
-          formatDoiEpmcListForClipboard
+          formatDoiEpmcListForClipboard,
+          "DOIs copied!"
         );
       }
     }

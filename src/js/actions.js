@@ -11,9 +11,11 @@ import { updateURLParams, getAllURLParams, announce } from './utils.js';
 import { SEGMENTED_PILL_CLASSES } from './constants.js';
 
 /**
- * Formats an Actions table's rows as a bullet list of DOI links annotated with
- * EPMC availability, read from each row's `data-doi`/`data-in-epmc` attributes
- * (see the "wellcome_point_of_award_check" action's rowTemplate).
+ * Formats an Actions table's rows as a bullet list of next steps per DOI, read
+ * from each row's `data-doi`/`data-in-epmc`/`data-epmc-licence` attributes (see
+ * the "wellcome_point_of_award_check" action's rowTemplate). Articles missing
+ * from Europe PMC need depositing under CC-BY; those already there just need
+ * their licence updated to CC-BY.
  * @param {HTMLTableElement} element
  * @returns {string}
  */
@@ -21,7 +23,12 @@ export function formatDoiEpmcListForClipboard(element) {
   return Array.from(element.rows)
     .map(row => row.querySelector('[data-doi]'))
     .filter(Boolean)
-    .map(cell => `- https://doi.org/${cell.dataset.doi} (In EPMC: ${cell.dataset.inEpmc})`)
+    .map(cell => {
+      const nextStep = cell.dataset.inEpmc === 'true'
+        ? `Update licence in Europe PMC to CC-BY (currently ${cell.dataset.epmcLicence} licence)`
+        : 'Deposit to Europe PMC with CC-BY licence';
+      return `- https://doi.org/${cell.dataset.doi}: ${nextStep}`;
+    })
     .join('\n');
 }
 

@@ -10,7 +10,7 @@ export const ACTION_LABELS = {
   email_author_unpublished_openrxiv_preprint_not_ccby: "Update non-CC BY preprints",
   apc_followup: "Correct publisher errors",
   unanswered_requests: "Escalate unanswered requests",
-  wellcome_point_of_award_check: "Sanction non-complying authors"
+  wellcome_point_of_award_check: "Fix Europe PMC compliance"
 };
 
 export const ACTION_ORDER = [
@@ -218,8 +218,8 @@ export const ACTION_TABLE_CONFIGS = [
   },
   {
     id: "wellcome_point_of_award_check",
-    keys: ["published_date", "title", "journal", "DOI", "has_epmc_fulltext"],
-    rowTemplate: "<td class='py-4 pl-4 pr-3 text-sm align-top break-words' data-doi='${action.DOI}' data-in-epmc='${action.has_epmc_fulltext}'>\
+    keys: ["published_date", "title", "journal", "DOI", "has_epmc_fulltext", "epmc_licence"],
+    rowTemplate: "<td class='py-4 pl-4 pr-3 text-sm align-top break-words' data-doi='${action.DOI}' data-in-epmc='${action.has_epmc_fulltext}' data-epmc-licence='${action.epmc_licence}'>\
         <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
         <div class='mb-1 text-neutral-600'>${action.journal}</div>\
         <div class='mb-1 text-neutral-900'>\
@@ -231,6 +231,9 @@ export const ACTION_TABLE_CONFIGS = [
       </td>\
       <td class='px-3 py-4 text-sm text-left text-neutral-900 align-top break-words'>\
         <span class='font-medium'>${action.has_epmc_fulltext}</span>\
+      </td>\
+      <td class='px-3 py-4 text-sm text-left text-neutral-900 align-top break-words'>\
+        <span class='font-medium'>${action.epmc_licence}</span>\
       </td>"
   }
 ];
