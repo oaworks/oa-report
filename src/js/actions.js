@@ -68,13 +68,18 @@ export function formatDoiEpmcListForClipboard(element) {
     .filter(Boolean)
     .forEach(cell => {
       const nextStep = cell.dataset.inEpmc === 'true'
-        ? `Incorrect licence in Europe PMC (currently ${cell.dataset.epmcLicence}; should be CC-BY)`
-        : 'Deposit to Europe PMC with CC-BY licence';
+        ? `No action needed: Published under ${cell.dataset.epmcLicence}; use CC-BY for future submissions`
+        : 'Action needed: Deposit to Europe PMC with CC-BY licence';
       if (!doisByNextStep.has(nextStep)) doisByNextStep.set(nextStep, []);
       doisByNextStep.get(nextStep).push(cell.dataset.doi);
     });
 
-  const groupsText = Array.from(doisByNextStep, ([nextStep, dois]) =>
+  // Action-needed groups first, so the reader sees what to do before what not to worry about
+  const orderedGroups = Array.from(doisByNextStep).sort(([a], [b]) =>
+    (a.startsWith('Action needed') ? 0 : 1) - (b.startsWith('Action needed') ? 0 : 1)
+  );
+
+  const groupsText = orderedGroups.map(([nextStep, dois]) =>
     `${nextStep}:\n${dois.map(doi => `- https://doi.org/${doi}`).join('\n')}`
   ).join('\n\n');
 
