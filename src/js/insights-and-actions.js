@@ -717,7 +717,7 @@ export function initInsightsAndActions(org) {
                     if ("has_epmc_fulltext" in action) {
                       var inEpmc = action.has_epmc_fulltext === true;
                       action.epmc_status_label = inEpmc ? "Yes" : "No";
-                      action.epmc_status_icon = inEpmc ? "ph-check" : "ph-x";
+                      action.epmc_status_icon = inEpmc ? "ph-check-circle" : "ph-x-circle";
                       action.epmc_status_color = inEpmc ? "text-neutral-900" : "text-carnation-500";
                     }
 
