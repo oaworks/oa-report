@@ -287,6 +287,31 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
   return renderedIds;
 }
 
+// Matches a single authorships.author.display_name / .orcid filter clause (with
+// or without the .keyword suffix depending on how it was added) and captures its
+// value(s), so we can tell a single-author filter apart from a multi-author one.
+const AUTHOR_FILTER_FIELD_PATTERN = /authorships\.author\.(?:display_name|orcid)(?:\.keyword)?\s*:\s*(\([^)]*\)|"(?:\\.|[^"\\])*")/gi;
+
+/**
+ * True when the current URL filter (`?q=`) scopes the report to a single author
+ * via authorships.author.display_name or authorships.author.orcid with exactly
+ * one value. Gates the "wellcome_point_of_award_check" action, which is only
+ * meaningful when reviewing one author's articles at a time.
+ * @returns {boolean}
+ */
+function isSingleAuthorFilterActive() {
+  const q = getDecodedUrlQuery();
+  if (!q) return false;
+
+  AUTHOR_FILTER_FIELD_PATTERN.lastIndex = 0;
+  let match;
+  while ((match = AUTHOR_FILTER_FIELD_PATTERN.exec(q)) !== null) {
+    const quotedValues = match[1].match(/"(?:\\.|[^"\\])*"/g) || [];
+    if (quotedValues.length === 1) return true;
+  }
+  return false;
+}
+
 function renderActionTabs(strategy = {}) {
   const tabsContainer = document.getElementById("actions_buttons");
   if (!tabsContainer) return;
@@ -298,6 +323,7 @@ function renderActionTabs(strategy = {}) {
     .filter(([, config]) => config?.show_on_web === true)
     .map(([id]) => id)
     .filter((id) => document.getElementById(id)) // Keep only actions with an existing panel for this pass.
+    .filter((id) => id !== "wellcome_point_of_award_check" || isSingleAuthorFilterActive())
     .sort((a, b) => {
       const aIndex = ACTION_ORDER.indexOf(a);
       const bIndex = ACTION_ORDER.indexOf(b);
@@ -583,6 +609,16 @@ export function initInsightsAndActions(org) {
     /* Get Strategy data and display it */
     function displayStrategy(strategy, keys, tableRow) {
       if (!loggedIn) {
+        return;
+      }
+
+      // POC: this action is only relevant when reviewing a single author's articles.
+      // Unlike show_on_web (fixed for the session), the author filter can toggle on
+      // and off as the user changes filters, so skip fetching without touching the
+      // panel/table DOM — removing it here would break re-population if the filter
+      // is reapplied later. renderActionTabs() already keeps its tab out of the nav
+      // while this is the case.
+      if (strategy === "wellcome_point_of_award_check" && !isSingleAuthorFilterActive()) {
         return;
       }
 
