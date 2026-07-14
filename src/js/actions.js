@@ -7,7 +7,7 @@
 // Imports
 // =================================================
 
-import { updateURLParams, getAllURLParams, announce, getDecodedUrlQuery } from './utils.js';
+import { updateURLParams, getAllURLParams, announce, getDecodedUrlQuery, orcidDisplayNames } from './utils.js';
 import { SEGMENTED_PILL_CLASSES } from './constants.js';
 
 // Matches a single authorships.author.display_name / .orcid filter clause (with
@@ -18,8 +18,8 @@ const AUTHOR_FILTER_FIELD_PATTERN = /authorships\.author\.(?:display_name|orcid)
 /**
  * The current URL filter's (`?q=`) single author value — via
  * authorships.author.display_name or authorships.author.orcid — or null if
- * there isn't exactly one. Backs both the "wellcome_point_of_award_check"
- * action's tab visibility and its clipboard export's author heading.
+ * there isn't exactly one. Resolves ORCIDs to a display name via
+ * orcidDisplayNames when cached, else falls back to the bare ORCID.
  * @returns {string|null}
  */
 export function getSingleAuthorFilterName() {
@@ -30,7 +30,10 @@ export function getSingleAuthorFilterName() {
   let match;
   while ((match = AUTHOR_FILTER_FIELD_PATTERN.exec(q)) !== null) {
     const quotedValues = match[1].match(/"(?:\\.|[^"\\])*"/g) || [];
-    if (quotedValues.length === 1) return quotedValues[0].slice(1, -1);
+    if (quotedValues.length === 1) {
+      const rawValue = quotedValues[0].slice(1, -1);
+      return orcidDisplayNames.get(rawValue) || rawValue;
+    }
   }
   return null;
 }
@@ -61,7 +64,7 @@ export function formatDoiEpmcListForClipboard(element) {
     .filter(Boolean)
     .map(cell => {
       const nextStep = cell.dataset.inEpmc === 'true'
-        ? `Update licence in Europe PMC to CC-BY (currently ${cell.dataset.epmcLicence} licence)`
+        ? `Update licence in Europe PMC to CC-BY (currently ${cell.dataset.epmcLicence})`
         : 'Deposit to Europe PMC with CC-BY licence';
       return `- https://doi.org/${cell.dataset.doi}: ${nextStep}`;
     });

@@ -19,7 +19,8 @@ import {
   unescapeQueryValue,
   normaliseFieldId,
   pluraliseNoun,
-  createPopoverKeyboardFlow
+  createPopoverKeyboardFlow,
+  orcidDisplayNames
 } from "./utils.js";
 import { ORGS_REPORT_API_BASE_URL } from "./constants/api.js";
 import { AUTHOR_BREAKDOWN_TERM } from "./aggregated-data-query.js";
@@ -75,9 +76,6 @@ const ORCID_ID_RE = /\b\d{4}-\d{4}-\d{4}-\d{3}[\dX]\b/i;
 const AUTHOR_ID_FIELD = "authorships.author.id.keyword";
 const AUTHOR_ORCID_FIELD = "authorships.author.orcid.keyword";
 const AUTHOR_NAME_FIELD = "authorships.author.display_name.keyword";
-
-/** ORCID URL → author display name; populated by explore.js whenever the Authors table renders. */
-export const orcidDisplayNames = new Map();
 
 function getRenderedFilterValueDisplay(field = "", value = "") {
   const fieldKey = ensureKeywordField(field);

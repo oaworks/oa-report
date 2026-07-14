@@ -6,6 +6,9 @@
 import DOMPurify from 'dompurify';
 import { WORKS_REPORT_BG_API_BASE_URL, READABLE_DATE_OPTIONS, USER_LOCALE, EXPLORE_FILTERS_LABELS } from './constants.js';
 
+/** ORCID → author display name; populated by explore.js whenever the Authors table renders. */
+export const orcidDisplayNames = new Map();
+
 // =================================================
 // Network and caching helpers
 // =================================================
