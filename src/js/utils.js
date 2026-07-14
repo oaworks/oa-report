@@ -912,10 +912,11 @@ export function parseCommaSeparatedQueries(csvString) {
  * @param {string} elementId - The ID of the element to copy from.
  * @param {(element: HTMLTableElement) => string} [formatRows] - Builds the clipboard text from
  * the table element. Defaults to the tab-separated, quoted cell format used by Explore.
+ * @param {string} [successMessage] - Text shown on the button after a successful copy.
  */
 export function copyToClipboard(buttonId, elementId, formatRows = (element) => Array.from(element.rows)
   .map(row => Array.from(row.cells).map(cell => `"${cell.innerText.trim()}"`).join('\t'))
-  .join('\n')
+  .join('\n'), successMessage = 'Table copied!'
 ) {
   const button = document.getElementById(buttonId);
   if (!button) {
@@ -934,7 +935,7 @@ export function copyToClipboard(buttonId, elementId, formatRows = (element) => A
     }
     navigator.clipboard.writeText(formatRows(element)).then(() => {
       const originalText = textSpan.innerText;
-      textSpan.innerText = 'Table copied!';
+      textSpan.innerText = successMessage;
       setTimeout(() => {
         textSpan.innerText = originalText; // Revert to original text after 2 seconds
       }, 2000);
