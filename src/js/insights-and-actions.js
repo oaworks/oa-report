@@ -9,10 +9,10 @@
 // Imports
 // =================================================
 
-import { dateRange, startYear, endYear, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings } from './utils.js';
+import { dateRange, startYear, endYear, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings, copyToClipboard } from './utils.js';
 import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, INSIGHT_EXPLORE_MAPPINGS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS, resolveFieldDefinition } from './constants.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
-import { initActionTabs } from './actions.js';
+import { initActionTabs, formatDoiEpmcListForClipboard } from './actions.js';
 import { createPopover } from './tooltip-manager.js';
 import { buildTooltipContent, buildDefinitionHelpHtml, injectOrgFields } from './tooltip-content.js';
 import { getInsightsAggregationQuery, formatAggregationBucket } from './aggregated-data-query.js';
@@ -795,6 +795,15 @@ export function initInsightsAndActions(org) {
         const actionPromise = displayStrategy(id, keys, rowTemplate);
         if (actionPromise) actionPromises.push(actionPromise);
       });
+
+      // POC: only Wellcome's org strategy currently defines this action
+      if (document.getElementById("copy_clipboard_wellcome_point_of_award_check")) {
+        copyToClipboard(
+          "copy_clipboard_wellcome_point_of_award_check",
+          "table_wellcome_point_of_award_check",
+          formatDoiEpmcListForClipboard
+        );
+      }
     }
 
     return Promise.allSettled([...cardPromises, ...actionPromises]);

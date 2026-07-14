@@ -11,6 +11,21 @@ import { updateURLParams, getAllURLParams, announce } from './utils.js';
 import { SEGMENTED_PILL_CLASSES } from './constants.js';
 
 /**
+ * Formats an Actions table's rows as a bullet list of DOI links annotated with
+ * EPMC availability, read from each row's `data-doi`/`data-in-epmc` attributes
+ * (see the "wellcome_point_of_award_check" action's rowTemplate).
+ * @param {HTMLTableElement} element
+ * @returns {string}
+ */
+export function formatDoiEpmcListForClipboard(element) {
+  return Array.from(element.rows)
+    .map(row => row.querySelector('[data-doi]'))
+    .filter(Boolean)
+    .map(cell => `- https://doi.org/${cell.dataset.doi} (In EPMC: ${cell.dataset.inEpmc})`)
+    .join('\n');
+}
+
+/**
  * Initialises event listeners for action tab buttons.
  */
 export function initActionTabs() {
