@@ -84,13 +84,18 @@ export function formatDoiEpmcListForClipboard(element) {
   ).join('\n\n');
 
   const authorName = getSingleAuthorFilterName();
-  const headingText = authorName ? `Articles authored by ${authorName}:\n\n` : '';
-  const headingHtml = authorName ? `<strong>Articles authored by ${escapeHtml(authorName)}:</strong><br><br>` : '';
+  const heading = authorName ? `Non-compliant articles authored by ${authorName}:` : '';
+  const text = authorName ? `${heading}\n\n${groupsText}` : groupsText;
 
-  return {
-    text: `${headingText}${groupsText}`,
-    html: `${headingHtml}${escapeHtml(groupsText).replace(/\n/g, '<br>')}`
-  };
+  // Bold just the author heading (if any) and the "Action needed"/"No action needed" labels
+  let html = escapeHtml(text);
+  if (authorName) html = html.replace(escapeHtml(heading), `<strong>${escapeHtml(heading)}</strong>`);
+  html = html
+    .replace(/No action needed:/g, '<strong>No action needed:</strong>')
+    .replace(/Action needed:/g, '<strong>Action needed:</strong>')
+    .replace(/\n/g, '<br>');
+
+  return { text, html };
 }
 
 /**
