@@ -913,8 +913,11 @@ export function parseCommaSeparatedQueries(csvString) {
  * is only bound once.
  * @param {string} buttonId - The ID of the button to attach the event to.
  * @param {string} elementId - The ID of the element to copy from.
- * @param {(element: HTMLTableElement) => string} [formatRows] - Builds the clipboard text from
- * the table element. Defaults to the tab-separated, quoted cell format used by Explore.
+ * @param {(element: HTMLTableElement) => (string|{text: string, html: string})} [formatRows] -
+ * Builds the clipboard content from the table element. Return a plain string for text-only
+ * clipboard content (the default, tab-separated quoted-cell format used by Explore), or
+ * `{text, html}` to also offer a rich-text version — apps that accept rich text (e.g. Gmail,
+ * Outlook web) render the HTML; plain-text-only targets fall back to `text`.
  * @param {string} [successMessage] - Text shown on the button after a successful copy.
  */
 export function copyToClipboard(buttonId, elementId, formatRows = (element) => Array.from(element.rows)
@@ -936,7 +939,17 @@ export function copyToClipboard(buttonId, elementId, formatRows = (element) => A
       console.error('Element to copy from was not found:', elementId);
       return;
     }
-    navigator.clipboard.writeText(formatRows(element)).then(() => {
+    const content = formatRows(element);
+    const writePromise = typeof content === 'string'
+      ? navigator.clipboard.writeText(content)
+      : navigator.clipboard.write([
+        new ClipboardItem({
+          'text/plain': new Blob([content.text], { type: 'text/plain' }),
+          'text/html': new Blob([content.html], { type: 'text/html' })
+        })
+      ]);
+
+    writePromise.then(() => {
       const originalText = textSpan.innerText;
       textSpan.innerText = successMessage;
       setTimeout(() => {

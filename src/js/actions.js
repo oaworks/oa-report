@@ -48,30 +48,44 @@ export function isSingleAuthorFilterActive() {
   return getSingleAuthorFilterName() !== null;
 }
 
+const escapeHtml = (str) => String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
 /**
- * Formats an Actions table's rows as a bullet list of next steps per DOI, read
- * from each row's `data-doi`/`data-in-epmc`/`data-epmc-licence` attributes (see
- * the "wellcome_point_of_award_check" action's rowTemplate). Articles missing
- * from Europe PMC need depositing under CC-BY; those already there just need
- * their licence updated to CC-BY. Prefixed with the filtered author's name/ORCID
- * for context once pasted elsewhere.
+ * Formats an Actions table's rows as DOIs grouped under their shared next step,
+ * read from each row's `data-doi`/`data-in-epmc`/`data-epmc-licence` attributes
+ * (see the "wellcome_point_of_award_check" action's rowTemplate). Articles
+ * missing from Europe PMC need depositing under CC-BY; those already there
+ * just need their licence updated to CC-BY. Prefixed with the filtered
+ * author's name/ORCID for context once pasted elsewhere, bolded in the
+ * rich-text version for apps that accept it (e.g. Gmail, Outlook web).
  * @param {HTMLTableElement} element
- * @returns {string}
+ * @returns {{text: string, html: string}}
  */
 export function formatDoiEpmcListForClipboard(element) {
-  const lines = Array.from(element.rows)
+  const doisByNextStep = new Map();
+  Array.from(element.rows)
     .map(row => row.querySelector('[data-doi]'))
     .filter(Boolean)
-    .map(cell => {
+    .forEach(cell => {
       const nextStep = cell.dataset.inEpmc === 'true'
         ? `Update licence in Europe PMC to CC-BY (currently ${cell.dataset.epmcLicence})`
         : 'Deposit to Europe PMC with CC-BY licence';
-      return `- https://doi.org/${cell.dataset.doi}: ${nextStep}`;
+      if (!doisByNextStep.has(nextStep)) doisByNextStep.set(nextStep, []);
+      doisByNextStep.get(nextStep).push(cell.dataset.doi);
     });
 
+  const groupsText = Array.from(doisByNextStep, ([nextStep, dois]) =>
+    `${nextStep}:\n${dois.map(doi => `- https://doi.org/${doi}`).join('\n')}`
+  ).join('\n\n');
+
   const authorName = getSingleAuthorFilterName();
-  const heading = authorName ? `Articles authored by ${authorName}:\n` : '';
-  return `${heading}${lines.join('\n')}`;
+  const headingText = authorName ? `Articles authored by ${authorName}:\n\n` : '';
+  const headingHtml = authorName ? `<strong>Articles authored by ${escapeHtml(authorName)}:</strong><br><br>` : '';
+
+  return {
+    text: `${headingText}${groupsText}`,
+    html: `${headingHtml}${escapeHtml(groupsText).replace(/\n/g, '<br>')}`
+  };
 }
 
 /**
