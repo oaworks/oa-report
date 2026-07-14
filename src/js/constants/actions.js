@@ -9,7 +9,8 @@ export const ACTION_LABELS = {
   email_author_aam: "Deposit accepted manuscripts",
   email_author_unpublished_openrxiv_preprint_not_ccby: "Update non-CC BY preprints",
   apc_followup: "Correct publisher errors",
-  unanswered_requests: "Escalate unanswered requests"
+  unanswered_requests: "Escalate unanswered requests",
+  wellcome_point_of_award_check: "Sanction non-complying authors"
 };
 
 export const ACTION_ORDER = [
@@ -18,7 +19,8 @@ export const ACTION_ORDER = [
   "email_author_aam",
   "email_author_unpublished_openrxiv_preprint_not_ccby",
   "apc_followup",
-  "unanswered_requests"
+  "unanswered_requests",
+  "wellcome_point_of_award_check"
 ];
 
 const ACTION_ARTICLE_LINK_CLASSES = "inline-flex items-center bg-neutral-200 text-neutral-900 text-xs px-2 py-0.5 rounded-full whitespace-nowrap outline outline-1 outline-transparent hover:bg-carnation-200";
@@ -212,6 +214,23 @@ export const ACTION_TABLE_CONFIGS = [
           onclick='handleDecryptEmailClick(this)'>\
           <i class='ph ph-envelope inline-block text-[16px] leading-none duration-500' aria-hidden='true'></i>\
         </button>\
+      </td>"
+  },
+  {
+    id: "wellcome_point_of_award_check",
+    keys: ["published_date", "title", "journal", "DOI", "has_epmc_fulltext"],
+    rowTemplate: "<td class='py-4 pl-4 pr-3 text-sm align-top break-words' data-doi='${action.DOI}' data-in-epmc='${action.has_epmc_fulltext}'>\
+        <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
+        <div class='mb-1 text-neutral-600'>${action.journal}</div>\
+        <div class='mb-1 text-neutral-900'>\
+          <span>${action.title}</span>\
+        </div>\
+        <div class='mb-1'>\
+          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article' aria-label='Open article: ${action.title}' class='" + ACTION_ARTICLE_LINK_CLASSES + " ml-0'>Open article <span aria-hidden='true'>&#8599;</span></a>\
+        </div>\
+      </td>\
+      <td class='px-3 py-4 text-sm text-center text-neutral-900 align-top break-words'>\
+        <span class='font-medium'>${action.has_epmc_fulltext}</span>\
       </td>"
   }
 ];
