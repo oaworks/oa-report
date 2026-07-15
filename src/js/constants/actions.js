@@ -222,9 +222,8 @@ export const ACTION_TABLE_CONFIGS = [
     rowTemplate: "<td class='py-4 pl-4 pr-3 text-sm align-top break-words' data-doi='${action.DOI}' data-in-epmc='${action.has_epmc_fulltext}' data-epmc-licence='${action.epmc_licence}'>\
         <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
         <div class='mb-1 text-neutral-600'>${action.journal}</div>\
-        <div class='mb-1 text-neutral-900'>\
-          <span>${action.title}</span>\
-        </div>\
+        <div class='mb-1 text-neutral-900'>${action.title}</div>\
+        <div class='mb-2 text-neutral-600'>${action.DOI}</div>\
         <div class='mb-1'>\
           <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article' aria-label='Open article: ${action.title}' class='" + ACTION_ARTICLE_LINK_CLASSES + " ml-0'>Open article <span aria-hidden='true'>&#8599;</span></a>\
         </div>\
