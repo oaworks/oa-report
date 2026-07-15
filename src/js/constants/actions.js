@@ -10,7 +10,7 @@ export const ACTION_LABELS = {
   email_author_unpublished_openrxiv_preprint_not_ccby: "Update non-CC BY preprints",
   apc_followup: "Correct publisher errors",
   unanswered_requests: "Escalate unanswered requests",
-  wellcome_point_of_award_check: "Perform point-of-award check"
+  point_of_award_check: "Perform point-of-award check"
 };
 
 export const ACTION_ORDER = [
@@ -20,7 +20,7 @@ export const ACTION_ORDER = [
   "email_author_unpublished_openrxiv_preprint_not_ccby",
   "apc_followup",
   "unanswered_requests",
-  "wellcome_point_of_award_check"
+  "point_of_award_check"
 ];
 
 const ACTION_ARTICLE_LINK_CLASSES = "inline-flex items-center bg-neutral-200 text-neutral-900 text-xs px-2 py-0.5 rounded-full whitespace-nowrap outline outline-1 outline-transparent hover:bg-carnation-200";
@@ -217,7 +217,7 @@ export const ACTION_TABLE_CONFIGS = [
       </td>"
   },
   {
-    id: "wellcome_point_of_award_check",
+    id: "point_of_award_check",
     keys: ["published_date", "title", "journal", "DOI", "has_epmc_fulltext", "epmc_licence"],
     rowTemplate: "<td class='py-4 pl-4 pr-3 text-sm align-top break-words' data-doi='${action.DOI}' data-in-epmc='${action.has_epmc_fulltext}' data-epmc-licence='${action.epmc_licence}'>\
         <div class='mb-1 text-neutral-600'>${action.published_date}</div>\

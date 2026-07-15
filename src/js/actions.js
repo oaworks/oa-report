@@ -40,7 +40,7 @@ export function getSingleAuthorFilterName() {
 
 /**
  * True when the report is scoped to a single author (see getSingleAuthorFilterName).
- * Gates the "wellcome_point_of_award_check" action, which is only meaningful
+ * Gates the "point_of_award_check" action, which is only meaningful
  * when reviewing one author's articles at a time.
  * @returns {boolean}
  */
@@ -53,7 +53,7 @@ const escapeHtml = (str) => String(str).replace(/&/g, '&amp;').replace(/</g, '&l
 /**
  * Formats an Actions table's rows as DOIs grouped under their shared next step,
  * read from each row's `data-doi`/`data-in-epmc`/`data-epmc-licence` attributes
- * (see the "wellcome_point_of_award_check" action's rowTemplate). Articles
+ * (see the "point_of_award_check" action's rowTemplate). Articles
  * missing from Europe PMC need depositing under CC-BY; those already there
  * just need their licence updated to CC-BY. Prefixed with the filtered
  * author's name/ORCID for context once pasted elsewhere, bolded in the

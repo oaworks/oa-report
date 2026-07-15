@@ -298,7 +298,7 @@ function renderActionTabs(strategy = {}) {
     .filter(([, config]) => config?.show_on_web === true)
     .map(([id]) => id)
     .filter((id) => document.getElementById(id)) // Keep only actions with an existing panel for this pass.
-    .filter((id) => id !== "wellcome_point_of_award_check" || isSingleAuthorFilterActive())
+    .filter((id) => id !== "point_of_award_check" || isSingleAuthorFilterActive())
     .sort((a, b) => {
       const aIndex = ACTION_ORDER.indexOf(a);
       const bIndex = ACTION_ORDER.indexOf(b);
@@ -593,7 +593,7 @@ export function initInsightsAndActions(org) {
       // panel/table DOM — removing it here would break re-population if the filter
       // is reapplied later. renderActionTabs() already keeps its tab out of the nav
       // while this is the case.
-      if (strategy === "wellcome_point_of_award_check" && !isSingleAuthorFilterActive()) {
+      if (strategy === "point_of_award_check" && !isSingleAuthorFilterActive()) {
         return;
       }
 
@@ -818,10 +818,10 @@ export function initInsightsAndActions(org) {
       });
 
       // POC: only Wellcome's org strategy currently defines this action
-      if (document.getElementById("copy_clipboard_wellcome_point_of_award_check")) {
+      if (document.getElementById("copy_clipboard_point_of_award_check")) {
         copyToClipboard(
-          "copy_clipboard_wellcome_point_of_award_check",
-          "table_wellcome_point_of_award_check",
+          "copy_clipboard_point_of_award_check",
+          "table_point_of_award_check",
           formatDoiEpmcListForClipboard,
           "DOIs copied!"
         );
