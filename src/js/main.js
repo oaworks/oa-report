@@ -35,8 +35,8 @@ function initialise() {
   initDateManager();
 
   // 2) Initialise Explore; it will wait for dateRange readiness when needed
-  const exploreElement = document.getElementById("explore");
-  // Check if id="explore" exists to trigger data explore initialisation
+  const exploreElement = document.getElementById("explore-section");
+  // Check if id="explore-section" exists to trigger data explore initialisation
   if (exploreElement && !isDataExploreInitialised) {
     initDataExplore(org);
     isDataExploreInitialised = true;

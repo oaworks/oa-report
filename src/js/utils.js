@@ -671,6 +671,8 @@ export function bindSmoothScrollLinks() {
         const targetPosition = targetElement.getBoundingClientRect().top; // Position of the target element
         const offsetPosition = targetPosition + window.pageYOffset - headerHeight - additionalSpacing; // Calculate position with offset and extra spacing
 
+        history.pushState(null, '', `#${targetId}`);
+
         window.scrollTo({
           top: offsetPosition,
           behavior: 'smooth'
@@ -994,7 +996,7 @@ export function updateURLParams(params) {
   const queryParams = new URLSearchParams(window.location.search);
   Object.entries(params).forEach(([key, value]) => queryParams.set(key, value));
   const newQuery = queryParams.toString();
-  const newUrl = newQuery ? `?${newQuery}` : window.location.pathname;
+  const newUrl = (newQuery ? `?${newQuery}` : window.location.pathname) + window.location.hash;
   history.pushState(null, '', newUrl);
   if (typeof window !== "undefined" && typeof window.sa_pageview === "function") {
     window.sa_pageview();
@@ -1012,7 +1014,7 @@ export function removeURLParams(keys) {
   const params = new URLSearchParams(window.location.search);
   (Array.isArray(keys) ? keys : [keys]).forEach(k => params.delete(k));
   const newQuery = params.toString();
-  const newUrl = newQuery ? `?${newQuery}` : window.location.pathname;
+  const newUrl = (newQuery ? `?${newQuery}` : window.location.pathname) + window.location.hash;
   history.replaceState(null, '', newUrl);
 }
 

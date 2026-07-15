@@ -156,11 +156,11 @@ const authState = initAuth(org);
 loggedIn = authState.loggedIn;
 orgKey = authState.orgKey ? `&orgkey=${authState.orgKey}` : "";
 applyAuthVisibility({
-  showWhenLoggedIn: ["logout", "section-tab-actions", "actions-anchor", "actions"],
+  showWhenLoggedIn: ["logout", "section-tab-actions", "actions", "actions-section"],
   hideWhenLoggedIn: ["login"]
 });
 if (!loggedIn) {
-  ["section-tab-actions", "actions-anchor", "actions"].forEach((id) => {
+  ["section-tab-actions", "actions", "actions-section"].forEach((id) => {
     document.getElementById(id)?.remove();
   });
 }
@@ -169,11 +169,11 @@ onAuthChange(({ loggedIn: isLoggedIn, orgKey: key }) => {
   loggedIn = isLoggedIn;
   orgKey = key ? `&orgkey=${key}` : "";
   applyAuthVisibility({
-    showWhenLoggedIn: ["logout", "section-tab-actions", "actions-anchor", "actions"],
+    showWhenLoggedIn: ["logout", "section-tab-actions", "actions", "actions-section"],
     hideWhenLoggedIn: ["login"]
   });
   if (!loggedIn) {
-    ["section-tab-actions", "actions-anchor", "actions"].forEach((id) => {
+    ["section-tab-actions", "actions", "actions-section"].forEach((id) => {
       document.getElementById(id)?.remove();
     });
   }
@@ -291,8 +291,8 @@ function renderActionTabs(strategy = {}) {
   const tabsContainer = document.getElementById("actions_buttons");
   if (!tabsContainer) return;
   const actionsTabLink = document.getElementById("section-tab-actions");
-  const actionsAnchor = document.getElementById("actions-anchor");
-  const actionsSection = document.getElementById("actions");
+  const actionsAnchor = document.getElementById("actions");
+  const actionsSection = document.getElementById("actions-section");
 
   const visibleActions = Object.entries(strategy)
     .filter(([, config]) => config?.show_on_web === true)

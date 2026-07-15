@@ -62,7 +62,7 @@ if (window.location.search.includes('orgkey=')) {
       const params = new URLSearchParams(window.location.search);
       params.delete('orgkey');
       const newQuery = params.toString();
-      const newUrl = newQuery ? `?${newQuery}` : window.location.pathname;
+      const newUrl = (newQuery ? `?${newQuery}` : window.location.pathname) + window.location.hash;
       history.replaceState(null, '', newUrl);
     } catch (e) {}
   }
@@ -100,7 +100,7 @@ if (window.location.search.includes('logout')) {
   try {
     const params = new URLSearchParams(window.location.search);
     params.delete('logout');
-    const newUrl = params.toString() ? `?${params}` : window.location.pathname;
+    const newUrl = (params.toString() ? `?${params}` : window.location.pathname) + window.location.hash;
     history.replaceState(null, '', newUrl);
   } catch (_) {}
 }
