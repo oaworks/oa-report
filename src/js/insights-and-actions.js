@@ -10,7 +10,7 @@
 // =================================================
 
 import { dateRange, startYear, endYear, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings, copyToClipboard } from './utils.js';
-import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, INSIGHT_EXPLORE_MAPPINGS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS, LICENSE_CODES, resolveFieldDefinition } from './constants.js';
+import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, INSIGHT_EXPLORE_MAPPINGS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS, DEFAULT_ACTION_EMPTY_STATE_MESSAGE, LICENSE_CODES, resolveFieldDefinition } from './constants.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { initActionTabs, formatDoiEpmcListForClipboard, isSingleAuthorFilterActive } from './actions.js';
 import { createPopover } from './tooltip-manager.js';
@@ -582,7 +582,7 @@ export function initInsightsAndActions(org) {
     };
 
     /* Get Strategy data and display it */
-    function displayStrategy(strategy, keys, tableRow) {
+    function displayStrategy(strategy, keys, tableRow, emptyStateMessage) {
       if (!loggedIn) {
         return;
       }
@@ -630,7 +630,7 @@ export function initInsightsAndActions(org) {
             // If no actions are available, show message
             if (count === 0) {
               tableCountContents.textContent = "No ";
-              tableBody.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
+              tableBody.innerHTML = `<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>${emptyStateMessage || DEFAULT_ACTION_EMPTY_STATE_MESSAGE}</td></tr>`;
             }
 
             // Otherwise, generate list of actions
@@ -812,8 +812,8 @@ export function initInsightsAndActions(org) {
     
     const actionPromises = [];
     if (loggedIn) {
-      ACTION_TABLE_CONFIGS.forEach(({ id, keys, rowTemplate }) => {
-        const actionPromise = displayStrategy(id, keys, rowTemplate);
+      ACTION_TABLE_CONFIGS.forEach(({ id, keys, rowTemplate, emptyStateMessage }) => {
+        const actionPromise = displayStrategy(id, keys, rowTemplate, emptyStateMessage);
         if (actionPromise) actionPromises.push(actionPromise);
       });
 

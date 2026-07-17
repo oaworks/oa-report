@@ -25,6 +25,8 @@ export const ACTION_ORDER = [
 
 const ACTION_ARTICLE_LINK_CLASSES = "inline-flex items-center bg-neutral-200 text-neutral-900 text-xs px-2 py-0.5 rounded-full whitespace-nowrap outline outline-1 outline-transparent hover:bg-carnation-200";
 
+export const DEFAULT_ACTION_EMPTY_STATE_MESSAGE = "We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.";
+
 // Config for rendering Actions tables
 export const ACTION_TABLE_CONFIGS = [
   {
@@ -219,6 +221,7 @@ export const ACTION_TABLE_CONFIGS = [
   {
     id: "point_of_award_check",
     keys: ["published_date", "title", "journal", "DOI", "has_epmc_fulltext", "epmc_licence"],
+    emptyStateMessage: "No non-compliant articles found for this author. <br>This author’s articles currently meet Wellcome’s point-of-award open access policy.",
     rowTemplate: "<td class='py-4 pl-4 pr-3 text-sm align-top break-words' data-doi='${action.DOI}' data-in-epmc='${action.has_epmc_fulltext}' data-epmc-licence='${action.epmc_licence}'>\
         <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
         <div class='mb-1 text-neutral-600'>${action.journal}</div>\
