@@ -33,7 +33,7 @@ export const ACTION_TABLE_CONFIGS = [
       "journal",
       "DOI",
       "publisher",
-      "publisher_license",
+      "supplements.publisher_license_best",
       "journal_oa_type",
       "oa_status",
       "supplements.apc_cost",
@@ -55,7 +55,7 @@ export const ACTION_TABLE_CONFIGS = [
           <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article' aria-label='Open article: ${action.title}' class='" + ACTION_ARTICLE_LINK_CLASSES + " ml-0'>Open article <span aria-hidden='true'>&#8599;</span></a>\
         </div>\
         <div class='text-neutral-600'>OA status: <span class='font-medium'>${action.oa_status}<span></div>\
-        <div class='text-neutral-600'>License: <span class='font-medium uppercase'>${action.publisher_license}</span></div>\
+        <div class='text-neutral-600'>License: <span class='font-medium uppercase'>${action.publisher_license_best}</span></div>\
       </td>\
       <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
         <div class='mb-3 text-neutral-600'>${action.invoice_date}</div>\
