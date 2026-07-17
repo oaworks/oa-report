@@ -671,8 +671,6 @@ export function bindSmoothScrollLinks() {
         const targetPosition = targetElement.getBoundingClientRect().top; // Position of the target element
         const offsetPosition = targetPosition + window.pageYOffset - headerHeight - additionalSpacing; // Calculate position with offset and extra spacing
 
-        history.pushState(null, '', `#${targetId}`);
-
         window.scrollTo({
           top: offsetPosition,
           behavior: 'smooth'
