@@ -15,37 +15,18 @@ import { SEGMENTED_PILL_CLASSES } from './constants.js';
 // value(s), so we can tell a single-author filter apart from a multi-author one.
 const AUTHOR_FILTER_FIELD_PATTERN = /authorships\.author\.(?:display_name|orcid)(?:\.keyword)?\s*:\s*(\([^)]*\)|"(?:\\.|[^"\\])*")/gi;
 
-/**
- * The current URL filter's (`?q=`) single author value — via
- * authorships.author.display_name or authorships.author.orcid — or null if
- * there isn't exactly one. Resolves ORCIDs to a display name via
- * orcidDisplayNames when cached, else falls back to the bare ORCID.
- * @returns {string|null}
- */
-export function getSingleAuthorFilterName() {
-  const q = getDecodedUrlQuery();
-  if (!q) return null;
-
-  AUTHOR_FILTER_FIELD_PATTERN.lastIndex = 0;
+// Count of authors named in the current ?q= filter, plus the resolved
+// display name (ORCIDs resolved via orcidDisplayNames) when there's exactly one.
+export function getAuthorFilterCount() {
+  const q = getDecodedUrlQuery() || "";
+  const values = [];
   let match;
+  AUTHOR_FILTER_FIELD_PATTERN.lastIndex = 0;
   while ((match = AUTHOR_FILTER_FIELD_PATTERN.exec(q)) !== null) {
-    const quotedValues = match[1].match(/"(?:\\.|[^"\\])*"/g) || [];
-    if (quotedValues.length === 1) {
-      const rawValue = quotedValues[0].slice(1, -1);
-      return orcidDisplayNames.get(rawValue) || rawValue;
-    }
+    values.push(...(match[1].match(/"(?:\\.|[^"\\])*"/g) || []).map((v) => v.slice(1, -1)));
   }
-  return null;
-}
-
-/**
- * True when the report is scoped to a single author (see getSingleAuthorFilterName).
- * Gates the "point_of_award_check" action, which is only meaningful
- * when reviewing one author's articles at a time.
- * @returns {boolean}
- */
-export function isSingleAuthorFilterActive() {
-  return getSingleAuthorFilterName() !== null;
+  const name = values.length === 1 ? (orcidDisplayNames.get(values[0]) || values[0]) : null;
+  return { count: values.length, name };
 }
 
 const escapeHtml = (str) => String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -83,7 +64,7 @@ export function formatDoiEpmcListForClipboard(element) {
     `${nextStep}:\n${dois.map(doi => `- https://doi.org/${doi}`).join('\n')}`
   ).join('\n\n');
 
-  const authorName = getSingleAuthorFilterName();
+  const { name: authorName } = getAuthorFilterCount();
   const heading = authorName ? `Non-compliant articles authored by ${authorName}:` : '';
   const text = authorName ? `${heading}\n\n${groupsText}` : groupsText;
 

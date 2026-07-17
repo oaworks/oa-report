@@ -10,9 +10,9 @@
 // =================================================
 
 import { dateRange, startYear, endYear, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings, copyToClipboard } from './utils.js';
-import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, INSIGHT_EXPLORE_MAPPINGS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS, DEFAULT_ACTION_EMPTY_STATE_MESSAGE, LICENSE_CODES, resolveFieldDefinition } from './constants.js';
+import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, INSIGHT_EXPLORE_MAPPINGS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS, DEFAULT_ACTION_EMPTY_STATE_MESSAGE, DEFAULT_NO_AUTHOR_FILTERED_MESSAGE, DEFAULT_MULTIPLE_AUTHORS_FILTERED_MESSAGE, LICENSE_CODES, resolveFieldDefinition } from './constants.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
-import { initActionTabs, formatDoiEpmcListForClipboard, isSingleAuthorFilterActive } from './actions.js';
+import { initActionTabs, formatDoiEpmcListForClipboard, getAuthorFilterCount } from './actions.js';
 import { createPopover } from './tooltip-manager.js';
 import { buildTooltipContent, buildDefinitionHelpHtml, injectOrgFields } from './tooltip-content.js';
 import { getInsightsAggregationQuery, formatAggregationBucket } from './aggregated-data-query.js';
@@ -298,7 +298,6 @@ function renderActionTabs(strategy = {}) {
     .filter(([, config]) => config?.show_on_web === true)
     .map(([id]) => id)
     .filter((id) => document.getElementById(id)) // Keep only actions with an existing panel for this pass.
-    .filter((id) => id !== "point_of_award_check" || isSingleAuthorFilterActive())
     .sort((a, b) => {
       const aIndex = ACTION_ORDER.indexOf(a);
       const bIndex = ACTION_ORDER.indexOf(b);
@@ -582,18 +581,8 @@ export function initInsightsAndActions(org) {
     };
 
     /* Get Strategy data and display it */
-    function displayStrategy(strategy, keys, tableRow, emptyStateMessage) {
+    function displayStrategy(strategy, keys, tableRow, emptyStateMessage, requiresSingleAuthor) {
       if (!loggedIn) {
-        return;
-      }
-
-      // POC: this action is only relevant when reviewing a single author's articles.
-      // Unlike show_on_web (fixed for the session), the author filter can toggle on
-      // and off as the user changes filters, so skip fetching without touching the
-      // panel/table DOM — removing it here would break re-population if the filter
-      // is reapplied later. renderActionTabs() already keeps its tab out of the nav
-      // while this is the case.
-      if (strategy === "point_of_award_check" && !isSingleAuthorFilterActive()) {
         return;
       }
 
@@ -606,7 +595,20 @@ export function initInsightsAndActions(org) {
         var tabCountContents   = document.getElementById(`count_${strategy}`),
             tableCountContents = document.getElementById(`total_${strategy}`),
             tableBody          = document.getElementById(`table_${strategy}`).getElementsByTagName('tbody')[0];
-        
+
+        // Some actions only make sense scoped to one author; show guidance
+        // instead of querying until exactly one is filtered.
+        if (requiresSingleAuthor) {
+          const { count } = getAuthorFilterCount();
+          if (count !== 1) {
+            tabCountContents.textContent = "0";
+            tableCountContents.textContent = "No ";
+            const message = count === 0 ? DEFAULT_NO_AUTHOR_FILTERED_MESSAGE : DEFAULT_MULTIPLE_AUTHORS_FILTERED_MESSAGE;
+            tableBody.innerHTML = `<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>${message}</td></tr>`;
+            return;
+          }
+        }
+
         // Store original query + build encoded query with URL filters, if any
         const strategyQuery = orgData.hits.hits[0]._source.strategy[strategy].query,
               encodedQuery = buildEncodedQueryWithUrlFilter(strategyQuery);
@@ -812,8 +814,8 @@ export function initInsightsAndActions(org) {
     
     const actionPromises = [];
     if (loggedIn) {
-      ACTION_TABLE_CONFIGS.forEach(({ id, keys, rowTemplate, emptyStateMessage }) => {
-        const actionPromise = displayStrategy(id, keys, rowTemplate, emptyStateMessage);
+      ACTION_TABLE_CONFIGS.forEach(({ id, keys, rowTemplate, emptyStateMessage, requiresSingleAuthor }) => {
+        const actionPromise = displayStrategy(id, keys, rowTemplate, emptyStateMessage, requiresSingleAuthor);
         if (actionPromise) actionPromises.push(actionPromise);
       });
 
