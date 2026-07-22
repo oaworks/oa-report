@@ -422,7 +422,7 @@ export function bindDynamicYearButtons(startYear, endYear, visibleYears = 3) {
   // Wellcome-only preset
   if (org === "wellcome") {
     const { startDate, endDate } = getSemanticRangeSelection(TEN_YEARS_FROM_THREE_MONTHS_RANGE_PARAM);
-    const tenYearRangeButton = createYearButton("ten-year-range", "10 years (–3mo)", startDate, endDate);
+    const tenYearRangeButton = createYearButton("ten-year-range", "10 yrs (–3mos)", startDate, endDate);
     yearsContainer.appendChild(tenYearRangeButton);
   }
 
