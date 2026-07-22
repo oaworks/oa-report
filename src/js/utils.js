@@ -6,6 +6,9 @@
 import DOMPurify from 'dompurify';
 import { WORKS_REPORT_BG_API_BASE_URL, READABLE_DATE_OPTIONS, USER_LOCALE, EXPLORE_FILTERS_LABELS } from './constants.js';
 
+/** ORCID → author display name; populated by explore.js whenever the Authors table renders. */
+export const orcidDisplayNames = new Map();
+
 // =================================================
 // Network and caching helpers
 // =================================================
@@ -906,40 +909,56 @@ export function parseCommaSeparatedQueries(csvString) {
 
 /**
  * Initialises the copy to clipboard functionality for any given button and element to copy from.
+ * Safe to call repeatedly for the same button (e.g. on every data refresh) — the click listener
+ * is only bound once.
  * @param {string} buttonId - The ID of the button to attach the event to.
  * @param {string} elementId - The ID of the element to copy from.
+ * @param {(element: HTMLTableElement) => (string|{text: string, html: string})} [formatRows] -
+ * Builds the clipboard content from the table element. Return a plain string for text-only
+ * clipboard content (the default, tab-separated quoted-cell format used by Explore), or
+ * `{text, html}` to also offer a rich-text version — apps that accept rich text (e.g. Gmail,
+ * Outlook web) render the HTML; plain-text-only targets fall back to `text`.
+ * @param {string} [successMessage] - Text shown on the button after a successful copy.
  */
-export function copyToClipboard(buttonId, elementId) {
+export function copyToClipboard(buttonId, elementId, formatRows = (element) => Array.from(element.rows)
+  .map(row => Array.from(row.cells).map(cell => `"${cell.innerText.trim()}"`).join('\t'))
+  .join('\n'), successMessage = 'Table copied!'
+) {
   const button = document.getElementById(buttonId);
-  if (button) {
-    const textSpan = button.querySelector('span'); // Select text content inside <span> in the button
-    button.addEventListener('click', () => {
-      const element = document.getElementById(elementId);
-      if (element) {
-        const rows = Array.from(element.rows);
-        const tableText = rows.map(row => {
-          const cells = Array.from(row.cells);
-          // Encapsulate each cell's content in quotes and join with tabs to ensure content remains intact
-          const cellTexts = cells.map(cell => `"${cell.innerText.trim()}"`).join('\t');
-          return cellTexts;
-        }).join('\n');
-        
-        navigator.clipboard.writeText(tableText).then(() => {
-          const originalText = textSpan.innerText;
-          textSpan.innerText = 'Table copied!';
-          setTimeout(() => {
-            textSpan.innerText = originalText; // Revert to original text after 2 seconds
-          }, 2000);
-        }).catch(err => {
-          console.error('Failed to copy text: ', err);
-        });
-      } else {
-        console.error('Element to copy from was not found:', elementId);
-      }
-    });
-  } else {
+  if (!button) {
     console.error('Button not found:', buttonId);
+    return;
   }
+  if (button.dataset.copyBound === 'true') return; // Already bound — avoid attaching duplicate listeners
+  button.dataset.copyBound = 'true';
+
+  const textSpan = button.querySelector('span'); // Select text content inside <span> in the button
+  button.addEventListener('click', () => {
+    const element = document.getElementById(elementId);
+    if (!element) {
+      console.error('Element to copy from was not found:', elementId);
+      return;
+    }
+    const content = formatRows(element);
+    const writePromise = typeof content === 'string'
+      ? navigator.clipboard.writeText(content)
+      : navigator.clipboard.write([
+        new ClipboardItem({
+          'text/plain': new Blob([content.text], { type: 'text/plain' }),
+          'text/html': new Blob([content.html], { type: 'text/html' })
+        })
+      ]);
+
+    writePromise.then(() => {
+      const originalText = textSpan.innerText;
+      textSpan.innerText = successMessage;
+      setTimeout(() => {
+        textSpan.innerText = originalText; // Revert to original text after 2 seconds
+      }, 2000);
+    }).catch(err => {
+      console.error('Failed to copy text: ', err);
+    });
+  });
 }
 
 // URL and query helpers
@@ -975,7 +994,7 @@ export function updateURLParams(params) {
   const queryParams = new URLSearchParams(window.location.search);
   Object.entries(params).forEach(([key, value]) => queryParams.set(key, value));
   const newQuery = queryParams.toString();
-  const newUrl = newQuery ? `?${newQuery}` : window.location.pathname;
+  const newUrl = (newQuery ? `?${newQuery}` : window.location.pathname) + window.location.hash;
   history.pushState(null, '', newUrl);
   if (typeof window !== "undefined" && typeof window.sa_pageview === "function") {
     window.sa_pageview();
@@ -993,7 +1012,7 @@ export function removeURLParams(keys) {
   const params = new URLSearchParams(window.location.search);
   (Array.isArray(keys) ? keys : [keys]).forEach(k => params.delete(k));
   const newQuery = params.toString();
-  const newUrl = newQuery ? `?${newQuery}` : window.location.pathname;
+  const newUrl = (newQuery ? `?${newQuery}` : window.location.pathname) + window.location.hash;
   history.replaceState(null, '', newUrl);
 }
 

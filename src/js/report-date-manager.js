@@ -118,7 +118,7 @@ function getSemanticRangeSelection(rangeParam) {
     const startDate = new Date(endDate);
     startDate.setFullYear(startDate.getFullYear() - 10);
     return {
-      buttonId: "date_range_form",
+      buttonId: "ten-year-range",
       startDate,
       endDate
     };
@@ -165,7 +165,7 @@ function applyResolvedRange({ buttonId, startDate, endDate }) {
   if (button) {
     handleYearButtonLogic(button, startDate, endDate);
     updateYearButtonStyling(button);
-    if (buttonId === 'date_range_form') {
+    if (buttonId === 'date_range_form' || buttonId === 'ten-year-range') {
       setDateRangeTriggerLabel(startDate, endDate);
     } else {
       resetDateRangeTriggerLabel();
@@ -202,6 +202,15 @@ function getButtonSelection(buttonId, startDate, endDate) {
       rangeParam: CURRENT_YEAR_RANGE_PARAM,
       startDate: createDate(currentDate.getFullYear(), 0, 1),
       endDate: getLiveRangeEndDate()
+    };
+  }
+
+  if (buttonId === "ten-year-range") {
+    const { startDate, endDate } = getSemanticRangeSelection(TEN_YEARS_FROM_THREE_MONTHS_RANGE_PARAM);
+    return {
+      rangeParam: TEN_YEARS_FROM_THREE_MONTHS_RANGE_PARAM,
+      startDate,
+      endDate
     };
   }
 
@@ -409,6 +418,14 @@ export function bindDynamicYearButtons(startYear, endYear, visibleYears = 3) {
   yearsContainer.appendChild(allTimeButton);
 
   const dateRangeForm = createDateRangeForm();
+
+  // Wellcome-only preset
+  if (org === "wellcome") {
+    const { startDate, endDate } = getSemanticRangeSelection(TEN_YEARS_FROM_THREE_MONTHS_RANGE_PARAM);
+    const tenYearRangeButton = createYearButton("ten-year-range", "10 yrs (–3mos)", startDate, endDate);
+    yearsContainer.appendChild(tenYearRangeButton);
+  }
+
   yearsContainer.appendChild(dateRangeForm);
   initDropdown(".js_dropdown");
 
@@ -555,7 +572,14 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
 
     writeSelectionToURL(selection);
     handleYearButtonLogic(button, selection.startDate, selection.endDate);
-    resetDateRangeTriggerLabel();
+
+    // This preset has a relative (rolling) range, so surface the resolved
+    // dates on the custom date range trigger rather than its generic label.
+    if (buttonId === "ten-year-range") {
+      setDateRangeTriggerLabel(selection.startDate, selection.endDate);
+    } else {
+      resetDateRangeTriggerLabel();
+    }
   });
 
   return button;

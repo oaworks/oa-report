@@ -7,8 +7,77 @@
 // Imports
 // =================================================
 
-import { updateURLParams, getAllURLParams, announce } from './utils.js';
+import { updateURLParams, getAllURLParams, announce, getDecodedUrlQuery, orcidDisplayNames } from './utils.js';
 import { SEGMENTED_PILL_CLASSES } from './constants.js';
+
+// Matches a single authorships.author.display_name / .orcid filter clause (with
+// or without the .keyword suffix depending on how it was added) and captures its
+// value(s), so we can tell a single-author filter apart from a multi-author one.
+const AUTHOR_FILTER_FIELD_PATTERN = /authorships\.author\.(?:display_name|orcid)(?:\.keyword)?\s*:\s*(\([^)]*\)|"(?:\\.|[^"\\])*")/gi;
+
+// Count of authors named in the current ?q= filter, plus the resolved
+// display name (ORCIDs resolved via orcidDisplayNames) when there's exactly one.
+export function getAuthorFilterCount() {
+  const q = getDecodedUrlQuery() || "";
+  const values = [];
+  let match;
+  AUTHOR_FILTER_FIELD_PATTERN.lastIndex = 0;
+  while ((match = AUTHOR_FILTER_FIELD_PATTERN.exec(q)) !== null) {
+    values.push(...(match[1].match(/"(?:\\.|[^"\\])*"/g) || []).map((v) => v.slice(1, -1)));
+  }
+  const name = values.length === 1 ? (orcidDisplayNames.get(values[0]) || values[0]) : null;
+  return { count: values.length, name };
+}
+
+const escapeHtml = (str) => String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+/**
+ * Formats an Actions table's rows as DOIs grouped under their shared next step,
+ * read from each row's `data-doi`/`data-in-epmc`/`data-epmc-licence` attributes
+ * (see the "point_of_award_check" action's rowTemplate). Articles
+ * missing from Europe PMC need depositing under CC-BY; those already there
+ * just need their licence updated to CC-BY. Prefixed with the filtered
+ * author's name/ORCID for context once pasted elsewhere, bolded in the
+ * rich-text version for apps that accept it (e.g. Gmail, Outlook web).
+ * @param {HTMLTableElement} element
+ * @returns {{text: string, html: string}}
+ */
+export function formatDoiEpmcListForClipboard(element) {
+  const doisByNextStep = new Map();
+  Array.from(element.rows)
+    .map(row => row.querySelector('[data-doi]'))
+    .filter(Boolean)
+    .forEach(cell => {
+      const nextStep = cell.dataset.inEpmc === 'true'
+        ? `No action needed: Published under ${cell.dataset.epmcLicence}; use CC-BY for future submissions`
+        : 'Action needed: Deposit to Europe PMC with CC-BY licence';
+      if (!doisByNextStep.has(nextStep)) doisByNextStep.set(nextStep, []);
+      doisByNextStep.get(nextStep).push(cell.dataset.doi);
+    });
+
+  // Action-needed groups first, so the reader sees what to do before what not to worry about
+  const orderedGroups = Array.from(doisByNextStep).sort(([a], [b]) =>
+    (a.startsWith('Action needed') ? 0 : 1) - (b.startsWith('Action needed') ? 0 : 1)
+  );
+
+  const groupsText = orderedGroups.map(([nextStep, dois]) =>
+    `${nextStep}:\n${dois.map(doi => `- https://doi.org/${doi}`).join('\n')}`
+  ).join('\n\n');
+
+  const { name: authorName } = getAuthorFilterCount();
+  const heading = authorName ? `Non-compliant articles authored by ${authorName}:` : '';
+  const text = authorName ? `${heading}\n\n${groupsText}` : groupsText;
+
+  // Bold just the author heading (if any) and the "Action needed"/"No action needed" labels
+  let html = escapeHtml(text);
+  if (authorName) html = html.replace(escapeHtml(heading), `<strong>${escapeHtml(heading)}</strong>`);
+  html = html
+    .replace(/No action needed:/g, '<strong>No action needed:</strong>')
+    .replace(/Action needed:/g, '<strong>Action needed:</strong>')
+    .replace(/\n/g, '<br>');
+
+  return { text, html };
+}
 
 /**
  * Initialises event listeners for action tab buttons.

@@ -36,6 +36,11 @@
         txt: "Escalate unanswered requests"
       }) }}
 
+      {{ component("action-pill", {
+        id: "point_of_award_check",
+        txt: "Perform point-of-award check"
+      }) }}
+
     </ul>
   </nav>
 
@@ -108,6 +113,19 @@
                             <th scope='col' class='px-3 py-3.5 text-left text-sm font-semibold w-7/12'>Author & article</th>",
             draft_btn: true,
             action_help_txt: false,
+            hidden: true
+          }) }}
+
+          {{ component("action-contents", {
+            id: "point_of_award_check",
+            heading: "Perform point-of-award check",
+            desc: "This author’s articles are non-compliant with Wellcome’s open access policy. Copy this list of articles and next steps to action outside of OA.Report.",
+            table_headings: "<th scope='col' class='py-3.5 pl-4 pr-3 text-left text-sm font-semibold w-8/12'>Article</th>\
+                            <th scope='col' class='px-3 py-3.5 text-left text-sm font-semibold w-2/12'>In EPMC</th>\
+                            <th scope='col' class='px-3 py-3.5 text-left text-sm font-semibold w-2/12'>EPMC licence</th>",
+            draft_btn: false,
+            action_help_txt: false,
+            copy_btn: true,
             hidden: true
           }) }}
 

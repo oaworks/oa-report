@@ -9,10 +9,10 @@
 // Imports
 // =================================================
 
-import { dateRange, startYear, endYear, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings } from './utils.js';
-import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, INSIGHT_EXPLORE_MAPPINGS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS, resolveFieldDefinition } from './constants.js';
+import { dateRange, startYear, endYear, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings, copyToClipboard } from './utils.js';
+import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, INSIGHT_EXPLORE_MAPPINGS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS, DEFAULT_ACTION_EMPTY_STATE_MESSAGE, DEFAULT_NO_AUTHOR_FILTERED_MESSAGE, DEFAULT_MULTIPLE_AUTHORS_FILTERED_MESSAGE, LICENSE_CODES, resolveFieldDefinition } from './constants.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
-import { initActionTabs } from './actions.js';
+import { initActionTabs, formatDoiEpmcListForClipboard, getAuthorFilterCount } from './actions.js';
 import { createPopover } from './tooltip-manager.js';
 import { buildTooltipContent, buildDefinitionHelpHtml, injectOrgFields } from './tooltip-content.js';
 import { getInsightsAggregationQuery, formatAggregationBucket } from './aggregated-data-query.js';
@@ -156,11 +156,11 @@ const authState = initAuth(org);
 loggedIn = authState.loggedIn;
 orgKey = authState.orgKey ? `&orgkey=${authState.orgKey}` : "";
 applyAuthVisibility({
-  showWhenLoggedIn: ["logout", "section-tab-actions", "actions-anchor", "actions"],
+  showWhenLoggedIn: ["logout", "section-tab-actions", "actions", "actions-section"],
   hideWhenLoggedIn: ["login"]
 });
 if (!loggedIn) {
-  ["section-tab-actions", "actions-anchor", "actions"].forEach((id) => {
+  ["section-tab-actions", "actions", "actions-section"].forEach((id) => {
     document.getElementById(id)?.remove();
   });
 }
@@ -169,11 +169,11 @@ onAuthChange(({ loggedIn: isLoggedIn, orgKey: key }) => {
   loggedIn = isLoggedIn;
   orgKey = key ? `&orgkey=${key}` : "";
   applyAuthVisibility({
-    showWhenLoggedIn: ["logout", "section-tab-actions", "actions-anchor", "actions"],
+    showWhenLoggedIn: ["logout", "section-tab-actions", "actions", "actions-section"],
     hideWhenLoggedIn: ["login"]
   });
   if (!loggedIn) {
-    ["section-tab-actions", "actions-anchor", "actions"].forEach((id) => {
+    ["section-tab-actions", "actions", "actions-section"].forEach((id) => {
       document.getElementById(id)?.remove();
     });
   }
@@ -291,8 +291,8 @@ function renderActionTabs(strategy = {}) {
   const tabsContainer = document.getElementById("actions_buttons");
   if (!tabsContainer) return;
   const actionsTabLink = document.getElementById("section-tab-actions");
-  const actionsAnchor = document.getElementById("actions-anchor");
-  const actionsSection = document.getElementById("actions");
+  const actionsAnchor = document.getElementById("actions");
+  const actionsSection = document.getElementById("actions-section");
 
   const visibleActions = Object.entries(strategy)
     .filter(([, config]) => config?.show_on_web === true)
@@ -581,7 +581,7 @@ export function initInsightsAndActions(org) {
     };
 
     /* Get Strategy data and display it */
-    function displayStrategy(strategy, keys, tableRow) {
+    function displayStrategy(strategy, keys, tableRow, emptyStateMessage, requiresSingleAuthor) {
       if (!loggedIn) {
         return;
       }
@@ -595,7 +595,20 @@ export function initInsightsAndActions(org) {
         var tabCountContents   = document.getElementById(`count_${strategy}`),
             tableCountContents = document.getElementById(`total_${strategy}`),
             tableBody          = document.getElementById(`table_${strategy}`).getElementsByTagName('tbody')[0];
-        
+
+        // Some actions only make sense scoped to one author; show guidance
+        // instead of querying until exactly one is filtered.
+        if (requiresSingleAuthor) {
+          const { count } = getAuthorFilterCount();
+          if (count !== 1) {
+            tabCountContents.textContent = "0";
+            tableCountContents.textContent = "No ";
+            const message = count === 0 ? DEFAULT_NO_AUTHOR_FILTERED_MESSAGE : DEFAULT_MULTIPLE_AUTHORS_FILTERED_MESSAGE;
+            tableBody.innerHTML = `<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>${message}</td></tr>`;
+            return;
+          }
+        }
+
         // Store original query + build encoded query with URL filters, if any
         const strategyQuery = orgData.hits.hits[0]._source.strategy[strategy].query,
               encodedQuery = buildEncodedQueryWithUrlFilter(strategyQuery);
@@ -619,7 +632,7 @@ export function initInsightsAndActions(org) {
             // If no actions are available, show message
             if (count === 0) {
               tableCountContents.textContent = "No ";
-              tableBody.innerHTML = "<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.</td></tr>";
+              tableBody.innerHTML = `<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>${emptyStateMessage || DEFAULT_ACTION_EMPTY_STATE_MESSAGE}</td></tr>`;
             }
 
             // Otherwise, generate list of actions
@@ -661,6 +674,7 @@ export function initInsightsAndActions(org) {
                         action[key] = value;
 
                         if (key === 'published_date') action[key] = makeDateReadable(new Date(action[key]));
+                        if (key === 'epmc_licence' && action[key] != null) action[key] = LICENSE_CODES[action[key]]?.name || String(action[key]).toUpperCase();
                       }
 
                       if (action[key] == null) {
@@ -699,6 +713,15 @@ export function initInsightsAndActions(org) {
                         .replaceAll("<", "&lt;")
                         .replaceAll(">", "&gt;");
                     };
+
+                    // If EPMC fulltext status is included, derive a human-readable label + icon for
+                    // display, without touching the raw value the data-in-epmc attribute relies on
+                    if ("has_epmc_fulltext" in action) {
+                      var inEpmc = action.has_epmc_fulltext === true;
+                      action.epmc_status_label = inEpmc ? "Yes" : "No";
+                      action.epmc_status_icon = inEpmc ? "ph-check-circle" : "ph-x-circle";
+                      action.epmc_status_color = inEpmc ? "text-neutral-900" : "text-carnation-500";
+                    }
 
                     if (typeof action.title === "string" && action.title.includes("&")) {
                       const textarea = document.createElement("textarea");
@@ -791,10 +814,20 @@ export function initInsightsAndActions(org) {
     
     const actionPromises = [];
     if (loggedIn) {
-      ACTION_TABLE_CONFIGS.forEach(({ id, keys, rowTemplate }) => {
-        const actionPromise = displayStrategy(id, keys, rowTemplate);
+      ACTION_TABLE_CONFIGS.forEach(({ id, keys, rowTemplate, emptyStateMessage, requiresSingleAuthor }) => {
+        const actionPromise = displayStrategy(id, keys, rowTemplate, emptyStateMessage, requiresSingleAuthor);
         if (actionPromise) actionPromises.push(actionPromise);
       });
+
+      // POC: only Wellcome's org strategy currently defines this action
+      if (document.getElementById("copy_clipboard_point_of_award_check")) {
+        copyToClipboard(
+          "copy_clipboard_point_of_award_check",
+          "table_point_of_award_check",
+          formatDoiEpmcListForClipboard,
+          "DOIs copied!"
+        );
+      }
     }
 
     return Promise.allSettled([...cardPromises, ...actionPromises]);

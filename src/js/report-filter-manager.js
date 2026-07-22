@@ -19,7 +19,8 @@ import {
   unescapeQueryValue,
   normaliseFieldId,
   pluraliseNoun,
-  createPopoverKeyboardFlow
+  createPopoverKeyboardFlow,
+  orcidDisplayNames
 } from "./utils.js";
 import { ORGS_REPORT_API_BASE_URL } from "./constants/api.js";
 import { AUTHOR_BREAKDOWN_TERM } from "./aggregated-data-query.js";
@@ -75,9 +76,6 @@ const ORCID_ID_RE = /\b\d{4}-\d{4}-\d{4}-\d{3}[\dX]\b/i;
 const AUTHOR_ID_FIELD = "authorships.author.id.keyword";
 const AUTHOR_ORCID_FIELD = "authorships.author.orcid.keyword";
 const AUTHOR_NAME_FIELD = "authorships.author.display_name.keyword";
-
-/** ORCID URL → author display name; populated by explore.js whenever the Authors table renders. */
-export const orcidDisplayNames = new Map();
 
 function getRenderedFilterValueDisplay(field = "", value = "") {
   const fieldKey = ensureKeywordField(field);
@@ -1076,27 +1074,32 @@ function renderFilterContextInHeading(pairs) {
     const plainLabel = label.replace(/<[^>]+>/g, "");
     el.textContent = `filtered by ${plainLabel}: ${displayValue}`;
     el.hidden = false;
-
-    // ORCID values arrive as bare IDs; fetch the author's display name so the heading
-    // reads as a name rather than a raw identifier, then re-render once resolved.
-    if (normaliseSortField(field) === "authorships.author.orcid" && !orcidDisplayNames.has(values[0])) {
-      const suffix = orgData?.hits?.hits?.[0]?._source?.key_suffix;
-      if (suffix && startYear && endYear) {
-        const filterQuery = `${AUTHOR_ORCID_FIELD}:"${escapeQueryValue(values[0])}"`;
-        fetchTermBasedData(suffix, filterQuery, AUTHOR_BREAKDOWN_TERM, "_count", 1)
-          .then(({ records }) => {
-            const name = records?.[0]?.display_name;
-            if (!name) return;
-            orcidDisplayNames.set(values[0], name);
-            renderActiveFiltersBanner();
-          })
-          .catch(() => {});
-      }
-    }
   } else {
     el.textContent = `with ${totalValues} active filter${totalValues === 1 ? "" : "s"}`;
     el.hidden = false;
   }
+}
+
+// ORCID values arrive as bare IDs; fetch each unresolved one's display name and re-render once resolved.
+function resolveUnknownAuthorOrcids(pairs) {
+  const suffix = orgData?.hits?.hits?.[0]?._source?.key_suffix;
+  if (!suffix || !startYear || !endYear) return;
+
+  pairs
+    .filter((p) => normaliseSortField(p.field) === "authorships.author.orcid")
+    .flatMap((p) => p.values)
+    .filter((value) => !orcidDisplayNames.has(value))
+    .forEach((value) => {
+      const filterQuery = `${AUTHOR_ORCID_FIELD}:"${escapeQueryValue(value)}"`;
+      fetchTermBasedData(suffix, filterQuery, AUTHOR_BREAKDOWN_TERM, "_count", 1)
+        .then(({ records }) => {
+          const name = records?.[0]?.display_name;
+          if (!name) return;
+          orcidDisplayNames.set(value, name);
+          renderActiveFiltersBanner();
+        })
+        .catch(() => {});
+    });
 }
 
 /**
@@ -1119,6 +1122,7 @@ export function renderActiveFiltersBanner() {
   const q = getDecodedUrlQuery();
   const pairs = parseEsQueryToPairs(q);
   renderFilterContextInHeading(pairs);
+  resolveUnknownAuthorOrcids(pairs);
   const count = pairs.reduce((sum, p) => sum + (Array.isArray(p.values) ? p.values.length : 1), 0);
 
   // Always reveal the wrapper — it holds at minimum the "+ Add filter" button
