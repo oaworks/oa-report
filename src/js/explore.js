@@ -605,8 +605,10 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 
     const { records, total: totalRecords } = await loadExploreRecords(itemData, query, size, pretty);
 
+    const sortAdjective = getExploreSortAdjective({ type, sort });
     replaceText("explore_sort", getExploreSortLabel({ type, id, term, sort }), { allowHTML: true });
-    replaceText("report_sort_adjective", getExploreSortAdjective({ type, sort }));
+    replaceText("report_sort_adjective", sortAdjective);
+    document.querySelectorAll(".report_sort_adjective").forEach(el => el.classList.toggle("hidden", !sortAdjective));
     setExploreModeUI(type);
 
     const shownCount = type === "terms"
@@ -807,12 +809,12 @@ function getExploreSortLabel({ type, id, term, sort }) {
 }
 
 /**
- * Determines the adjective used in the Explore heading (e.g. "Top", "Latest", "By").
+ * Determines the adjective used in the Explore heading (e.g. "Latest", "By").
  *
  * @param {Object} params
  * @param {string} params.type - The explore item type.
  * @param {string} params.sort - The sort key used by the API.
- * @returns {string} Heading adjective.
+ * @returns {string} Heading adjective, or an empty string if none applies.
  */
 function getExploreSortAdjective({ type, sort }) {
   if (type === "articles") {
@@ -822,9 +824,7 @@ function getExploreSortAdjective({ type, sort }) {
     return "Top";
   }
 
-  if (!sort) return "Top";
-  if (sort.includes("_key") || sort === "key") return "By";
-  return "Top";
+  return sort?.includes("_key") || sort === "key" ? "By" : "";
 }
 
 /**
