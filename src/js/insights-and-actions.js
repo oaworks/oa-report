@@ -586,6 +586,8 @@ export function initInsightsAndActions(org) {
         return;
       }
 
+      if (!orgData.hits.hits[0]._source.strategy[strategy]) return;
+
       var shown  = orgData.hits.hits[0]._source.strategy[strategy].show_on_web,
           sort   = `&sort=${orgData.hits.hits[0]._source.strategy[strategy].sort}`,
           tabID  = `strategy_${strategy}`;
