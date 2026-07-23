@@ -20,26 +20,11 @@
     {% if page.url != '/' %}
     <p id="js-alert" class="sticky top-0 z-[60] hidden p-4 bg-carnation-500 text-white font-medium text-center text-xs"></p>
     {% endif %}
-    {% set baseUrl = (site.base_url or '') | lower %}
-    {% if 'staging.oa.report' in baseUrl or 'stg.oa.report' in baseUrl %}
-      {% set envLabel = 'stg cf' %}
-    {% elif 'dev.oa.report' in baseUrl %}
-      {% set envLabel = 'dev cf' %}
-    {% elif 'localhost' in baseUrl or '127.0.0.1' in baseUrl %}
-      {% set envLabel = 'localhost' %}
-    {% else %}
-      {% set envLabel = '' %}
-    {% endif %}
-    {% if env.ELEVENTY_API_HOST_ORGS == env.ELEVENTY_API_HOST_WORKS %}
-      {% set apiLabel = ('<code>' + env.ELEVENTY_API_HOST_ORGS + '</code> endpoint') if env.ELEVENTY_API_HOST_ORGS else '' %}
-    {% else %}
-      {% set apiLabel = 'orgs <code>' + (env.ELEVENTY_API_HOST_ORGS or '?') + '</code> endpoint &middot; works <code>' + (env.ELEVENTY_API_HOST_WORKS or '?') + '</code> endpoint' %}
-    {% endif %}
-    {% if envLabel %}
+    {% if env_badge.label %}
       <div class="fixed left-0 bottom-6 z-[70]">
         <div class="flex flex-col gap-1 p-2 bg-carnation-700 text-white shadow-lg text-xs font-semibold">
-          <span>{{ envLabel | replace(' ', '<br>') | safe }}</span>
-          {% if apiLabel %}<span>{{ apiLabel | safe }}</span>{% endif %}
+          <span>{{ env_badge.label }}</span>
+          {% if env_badge.api %}<span>{{ env_badge.api | safe }}</span>{% endif %}
         </div>
       </div>
     {% endif %}
