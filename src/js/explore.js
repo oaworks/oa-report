@@ -648,14 +648,17 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 async function loadExploreRecords(itemData, query, size, pretty) {
   const { type, sort, includes } = itemData;
   const term = itemData?.id === "author" ? AUTHOR_BREAKDOWN_TERM : itemData?.term;
+  // Kept separate from the org's own base query, so exact-match restriction
+  // only ever reflects what the user has actively filtered by.
+  const activeFilterQuery = getDecodedUrlQuery();
   const decodedQuery = andQueryStrings(
     decodeAndReplaceUrlEncodedChars(query),
-    getDecodedUrlQuery()
+    activeFilterQuery
   );
 
   if (type === "terms") {
     const suffix = orgData.hits.hits[0]._source.key_suffix;
-    const { records: termRecords, total } = await fetchTermBasedData(suffix, decodedQuery, term, sort, size);
+    const { records: termRecords, total } = await fetchTermBasedData(suffix, decodedQuery, term, sort, size, activeFilterQuery);
 
     return {
       records: prettifyRecords(reorderTermRecords(termRecords, includes), pretty),
@@ -679,14 +682,16 @@ async function loadExploreRecords(itemData, query, size, pretty) {
  * Fetches term-based data using provided parameters.
  * 
  * @param {string} suffix - The suffix for the org, used in the POST request.
- * @param {string} query - The query string for fetching data. 
+ * @param {string} query - The query string for fetching data.
  * @param {string} term - The term (i.e. type of data breakdown) associated with the explore item.
  * @param {string} sort - The sorting order.
  * @param {number} size - The number of records to fetch.
+ * @param {string} [activeFilterQuery=query] - Just the user's active filter, excluding any base
+ * org query, so exact-match restriction never picks up unrelated baseline query clauses.
  * @returns {Promise<Object>} A promise that resolves to term-based records and total count.
  */
-export async function fetchTermBasedData(suffix, query, term, sort, size) {
-  const postData = getAggregatedDataQuery(suffix, query, term, startYear, endYear, size, sort);
+export async function fetchTermBasedData(suffix, query, term, sort, size, activeFilterQuery = query) {
+  const postData = getAggregatedDataQuery(suffix, query, term, startYear, endYear, size, sort, activeFilterQuery);
   const response = await fetchPostData(postData);
 
   let buckets = [];
