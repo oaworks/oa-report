@@ -15,7 +15,7 @@ import { startLoading, stopLoading } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
 import { renderActiveFiltersBanner } from './report-filter-manager.js';
 import { orgDataPromise, initInsightsAndActions } from './insights-and-actions.js';
-import { AUTHOR_BREAKDOWN_TERM, getAggregatedDataQuery, formatAggregationBucket } from './aggregated-data-query.js';
+import { AUTHOR_BREAKDOWN_TERM, getAggregatedDataQuery, formatAggregationBucket, getFieldFilterValues } from './aggregated-data-query.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { createTooltip } from './tooltip-manager.js';
 import { buildDefinitionTooltipContent } from './tooltip-content.js';
@@ -645,6 +645,28 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
   }
 }
 
+/**
+ * Resolves an author name filter to its ORCID(s), since the Authors table
+ * is always keyed by ORCID rather than name.
+ *
+ * @param {string} suffix - Org suffix, used for the lookup request.
+ * @param {string} decodedQuery - Full merged query (base + active filter).
+ * @param {string} activeFilterQuery - Just the user's active filter.
+ * @returns {Promise<string[]>} Matching ORCID(s), or an empty array if none.
+ */
+async function resolveAuthorNameToOrcids(suffix, decodedQuery, activeFilterQuery) {
+  if (getFieldFilterValues(activeFilterQuery, AUTHOR_BREAKDOWN_TERM).length) return [];
+
+  const nameValues = getFieldFilterValues(activeFilterQuery, "authorships.author.display_name");
+  if (!nameValues.length) return [];
+
+  const { records } = await fetchTermBasedData(suffix, decodedQuery, AUTHOR_BREAKDOWN_TERM, "_count", 10);
+  const targetNames = nameValues.map(v => v.trim().toLowerCase());
+  return records
+    .filter(r => targetNames.includes(String(r.display_name || "").trim().toLowerCase()))
+    .map(r => r.key);
+}
+
 async function loadExploreRecords(itemData, query, size, pretty) {
   const { type, sort, includes } = itemData;
   const term = itemData?.id === "author" ? AUTHOR_BREAKDOWN_TERM : itemData?.term;
@@ -658,7 +680,10 @@ async function loadExploreRecords(itemData, query, size, pretty) {
 
   if (type === "terms") {
     const suffix = orgData.hits.hits[0]._source.key_suffix;
-    const { records: termRecords, total } = await fetchTermBasedData(suffix, decodedQuery, term, sort, size, activeFilterQuery);
+    const includeValuesOverride = itemData?.id === "author"
+      ? await resolveAuthorNameToOrcids(suffix, decodedQuery, activeFilterQuery)
+      : [];
+    const { records: termRecords, total } = await fetchTermBasedData(suffix, decodedQuery, term, sort, size, activeFilterQuery, includeValuesOverride.length ? includeValuesOverride : undefined);
 
     return {
       records: prettifyRecords(reorderTermRecords(termRecords, includes), pretty),
@@ -688,10 +713,12 @@ async function loadExploreRecords(itemData, query, size, pretty) {
  * @param {number} size - The number of records to fetch.
  * @param {string} [activeFilterQuery=query] - Just the user's active filter, excluding any base
  * org query, so exact-match restriction never picks up unrelated baseline query clauses.
+ * @param {string[]} [includeValuesOverride] - Exact values to restrict buckets to, bypassing
+ * the automatic field-match detection (e.g. author ORCIDs resolved from a name filter).
  * @returns {Promise<Object>} A promise that resolves to term-based records and total count.
  */
-export async function fetchTermBasedData(suffix, query, term, sort, size, activeFilterQuery = query) {
-  const postData = getAggregatedDataQuery(suffix, query, term, startYear, endYear, size, sort, activeFilterQuery);
+export async function fetchTermBasedData(suffix, query, term, sort, size, activeFilterQuery = query, includeValuesOverride) {
+  const postData = getAggregatedDataQuery(suffix, query, term, startYear, endYear, size, sort, activeFilterQuery, includeValuesOverride);
   const response = await fetchPostData(postData);
 
   let buckets = [];

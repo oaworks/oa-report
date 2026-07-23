@@ -21,7 +21,7 @@ import { unescapeQueryValue } from "./utils.js";
  * @param {string} field - Field name as it appears in the query.
  * @returns {string[]} Matching values, or an empty array if none.
  */
-function getFieldFilterValues(query, field) {
+export function getFieldFilterValues(query, field) {
   if (!query || !field) return [];
   const baseField = field.replace(/\.keyword$/i, "");
   const escapedField = baseField.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -817,6 +817,8 @@ export function getInsightsAggregationQuery(suffix, query, startYear, endYear) {
  * @param {string}   [sort="_count"] - Sort field (`_count` or a metric name).
  * @param {string}   [activeFilterQuery=query] - Just the user's active filter, excluding any
  * base org query, so exact-match restriction never picks up unrelated baseline query clauses.
+ * @param {string[]} [includeValuesOverride] - Exact values to restrict buckets to, bypassing
+ * the automatic field-match detection (e.g. author ORCIDs resolved from a name filter).
  * @returns {Object} POST body suitable for `/_search`.
  */
 export function getAggregatedDataQuery(
@@ -828,6 +830,7 @@ export function getAggregatedDataQuery(
   size = 20,
   sort = "_count",
   activeFilterQuery = query,
+  includeValuesOverride,
 ) {
   // `published_year` is already keyword-type; append `.keyword` for other term fields.
   let termField = term;
@@ -841,7 +844,7 @@ export function getAggregatedDataQuery(
   // If the user's own filter (not the org's base query) already targets this same
   // field (e.g. one author), restrict buckets to exactly those values so
   // co-occurring values (e.g. co-authors) don't show.
-  const includeValues = getFieldFilterValues(activeFilterQuery, termField);
+  const includeValues = includeValuesOverride ?? getFieldFilterValues(activeFilterQuery, termField);
   const bucketSize = includeValues.length ? Math.max(size, includeValues.length) : size;
 
   return {
