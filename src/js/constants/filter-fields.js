@@ -21,6 +21,7 @@ export const SEARCH_FILTER_FIELDS = [
   { field: "authorships.institutions.country_code", label: "Countries", iconKey: "country", alphaSort: true, codes: COUNTRY_CODES, filterListHidden: true },
   { field: "openalx.funders.display_name", label: "Funders", iconKey: "funder", alphaSort: true, filterListHidden: true },
   { field: "openalx.open_access.oa_status", label: "Journal article OA types", iconKey: "article_oa_type", alphaSort: true, filterListHidden: true, suffix: "(article OA)" },
+  { field: "oa_status", label: "Journal article OA types", iconKey: "article_oa_type", alphaSort: true, filterListHidden: true, suffix: "(article OA)" },
   { field: "journal_oa_type", label: "Journal OA types", iconKey: "journal_oa_type", alphaSort: true, filterListHidden: true, suffix: "(journal OA)" }
 ];
 
