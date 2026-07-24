@@ -31,6 +31,17 @@ export function getFieldFilterValues(query, field) {
 }
 
 /**
+ * Converts a term into its aggregatable field. `published_year` is already
+ * keyword-type; every other term field needs a `.keyword` suffix.
+ *
+ * @param {string} term
+ * @returns {string}
+ */
+export function toTermField(term) {
+  return term === "published_year" ? term : `${term}.keyword`;
+}
+
+/**
  * Field used to group author breakdowns.
  *
  * @type {string}
@@ -832,11 +843,7 @@ export function getAggregatedDataQuery(
   activeFilterQuery = query,
   includeValuesOverride,
 ) {
-  // `published_year` is already keyword-type; append `.keyword` for other term fields.
-  let termField = term;
-  if (!(term === "published_year")) {
-    termField += ".keyword";
-  }
+  const termField = toTermField(term);
 
   const aggs = createAggregationTemplate(suffix);
   const bucketMetadataAggs = createAuthorBucketMetadataAggs(term);

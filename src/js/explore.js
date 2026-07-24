@@ -15,7 +15,7 @@ import { startLoading, stopLoading } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
 import { renderActiveFiltersBanner } from './report-filter-manager.js';
 import { orgDataPromise, initInsightsAndActions } from './insights-and-actions.js';
-import { AUTHOR_BREAKDOWN_TERM, getAggregatedDataQuery, formatAggregationBucket, getFieldFilterValues } from './aggregated-data-query.js';
+import { AUTHOR_BREAKDOWN_TERM, getAggregatedDataQuery, formatAggregationBucket, getFieldFilterValues, toTermField } from './aggregated-data-query.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { createTooltip } from './tooltip-manager.js';
 import { buildDefinitionTooltipContent } from './tooltip-content.js';
@@ -722,7 +722,11 @@ export async function fetchTermBasedData(suffix, query, term, sort, size, active
   const response = await fetchPostData(postData);
 
   let buckets = [];
-  const totalUniqueTerms = response?.aggregations?.values_total?.value ?? 0;
+  // Once restricted to exact filter value(s), "of Y" should mean "how many you
+  // filtered for" (however many actually have data), not ES's own unrestricted
+  // cardinality, which co-occurring values on shared articles would inflate.
+  const includeValues = includeValuesOverride ?? getFieldFilterValues(activeFilterQuery, toTermField(term));
+  const totalUniqueTerms = includeValues.length || (response?.aggregations?.values_total?.value ?? 0);
 
   if (response && response.aggregations && response.aggregations.values && response.aggregations.values.buckets) {
     buckets = response.aggregations.values.buckets.map(bucket => formatAggregationBucket(bucket, term));
