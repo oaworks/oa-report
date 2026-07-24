@@ -1158,36 +1158,6 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
   }
 
   /**
-   * Adds a visual selected indicator to a term label when its filter clause
-   * already exists in the current `?q=` expression.
-   *
-   * @param {HTMLElement} wrapper
-   * @param {string|number} rawValue
-   * @returns {void}
-   */
-  function addSelectedDotIfNeeded(wrapper, rawValue) {
-    if (key !== 'key' || !termField) return;
-
-    const value = escapeQueryValue(rawValue);
-    const clause = `${termField}:"${value}"`;
-    const q = getDecodedUrlQuery() || '';
-
-    if (!q.includes(clause)) return;
-
-    wrapper.classList.add('inline-flex', 'items-center');
-
-    const dot = document.createElement('span');
-    dot.className = 'inline-block w-1.5 h-1.5 mr-1 rounded-full bg-carnation-400';
-    dot.setAttribute('aria-hidden', 'true');
-    wrapper.insertBefore(dot, wrapper.firstChild);
-
-    const sr = document.createElement('span');
-    sr.className = 'sr-only';
-    sr.textContent = 'Selected filter';
-    wrapper.appendChild(sr);
-  }
-
-  /**
    * Creates the standard clickable label used for filterable term values.
    *
    * @param {string} [text='']
@@ -1292,7 +1262,6 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
       cell.appendChild(labelWrapper);
     }
 
-    addSelectedDotIfNeeded(labelWrapper, rawValue);
     attachTermClickFilter(rawValue);
     return cell;
   }
