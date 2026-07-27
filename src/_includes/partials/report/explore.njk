@@ -38,34 +38,17 @@
           </span>
         </h3>
         <p id="explore_count_summary" class="inline-block text-sm md:text-base text-white" aria-live="polite">
-          Showing 0 of 0 journal articles · Sorted by published date
+          Showing
+          {# Select or plain text, rebuilt only when its shape changes — see updateRecordsShownControl() #}
+          <span id="explore_records_shown" class="inline-flex items-baseline"></span>
+          of <span id="explore_count_total">0</span>
+          <span id="explore_count_label">journal articles</span>
+          · Sorted by <span id="explore_count_sort">published date</span>
         </p>
       </header>
       {# Data table controls #}
       <div class="my-4 gap-3 md:gap-12 flex justify-between">
         <div class="gap-3 md:gap-12 flex justify-between">
-          {# Records shown dropdown #}
-          <form class="w-auto">
-            <fieldset id="explore_records_shown_field">
-              <legend class="mb-4 text-xs font-semibold uppercase">
-                <span id="explore_articles_records_shown_help"
-                      class="tooltip"
-                      data-tooltip-theme="tooltip-pink"
-                      data-tooltip-placement="right"
-                      data-tooltip-content="You can view up to 500 records here. To see all of them, use the <em>Get this dataset in CSV</em> form below.">
-                  Records shown
-                </span>
-                <span id="explore_terms_records_shown_help"
-                      class="tooltip"
-                      data-tooltip-theme="tooltip-pink"
-                      data-tooltip-placement="right"
-                      data-tooltip-content="You can view up to 500 records here.">
-                  Records shown
-                </span>
-              </legend>
-              <div class="flex flex-wrap items-center" id="explore_records_shown"></div>
-            </fieldset>
-          </form>
           {# Filter by radio buttons styled as pills #}
           <form class="w-auto">
             <fieldset id="explore_filter_field">

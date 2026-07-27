@@ -26,6 +26,14 @@ import { buildDefinitionTooltipContent } from './tooltip-content.js';
 
 const exportSort = "&sort=published_date:desc";
 
+// Fixed page-size tiers offered by the Records-shown control, plus the
+// thresholds that decide whether a select is shown at all and when the top
+// tier becomes "All" rather than a fixed number — see getRecordsShownTiers().
+const RECORDS_SHOWN_TIERS = [5, 10, 20, 50, 100, 500];
+const RECORDS_SHOWN_DEFAULT = 20;
+const RECORDS_SHOWN_NO_SELECT_MAX = 20;
+const RECORDS_SHOWN_ALL_THRESHOLD = 1000;
+
 let orgKey = "";
 let loggedIn = false;
 
@@ -69,12 +77,12 @@ export let currentActiveExploreItemData = null;
  */
 export let currentActiveExploreItemQuery = null;
 
-/** 
+/**
  * Tracks currently active explore item SIZE for use in handleRecordsShownChange.
- * @global 
+ * @global
  * @type {number}
  */
-export let currentActiveExploreItemSize = 10;
+export let currentActiveExploreItemSize = RECORDS_SHOWN_DEFAULT;
 
 /** 
  * Tracks currently active explore item DATA DISPLAY STYLE for use in handleDataDisplayToggle.
@@ -180,8 +188,8 @@ export async function initDataExplore(org) {
 
     // Check if explore data exists and is not empty
     if (orgData.hits.hits.length > 0 && orgData.hits.hits[0]._source.explore && orgData.hits.hits[0]._source.explore.length > 0) {
+      applyRecordsShownUrlOverride();
       addExploreButtonsToDOM(orgData.hits.hits[0]._source.explore);
-      addRecordsShownSelectToDOM();
       handleDataDisplayToggle();
       enableExploreRowHighlighting();
       copyToClipboard('explore_copy_clipboard', 'explore_table');
@@ -518,56 +526,91 @@ function bindFilterPillClickHandler() {
 }
 
 /**
- * Adds a select menu for changing the number of records shown in the active table.
- * Inserts the menu into a div with the id "explore_records_shown".
+ * Applies a "records" URL override (if present and valid) to the active
+ * page-size state. Runs once, before the first Explore fetch, so that fetch
+ * already uses the right size instead of needing a follow-up re-fetch.
  */
-function addRecordsShownSelectToDOM() {
-  const exploreRecordsShownElement = document.getElementById("explore_records_shown");
-  exploreRecordsShownElement.innerHTML = ""; // Clear existing menu if any
+function applyRecordsShownUrlOverride() {
+  const records = Number(getAllURLParams().records);
+  if (Number.isFinite(records) && records > 0) {
+    currentActiveExploreItemSize = records;
+  }
+}
 
-  // Create the label element
+/**
+ * Works out the Records-shown control's shape for a given total (Y).
+ * Below RECORDS_SHOWN_NO_SELECT_MAX everything already fits on screen, so no
+ * choice is meaningful and no select is offered. Above that, the same fixed
+ * tiers are always offered; only the top tier differs, so it never surpasses
+ * Y — a dynamic "All" below RECORDS_SHOWN_ALL_THRESHOLD, or the fixed 1,000
+ * cap once Y itself is large enough that 1,000 can never exceed it.
+ *
+ * @param {number} total - Total matching records/values (Y).
+ * @returns {{ showSelect: boolean, options?: number[] }}
+ */
+function getRecordsShownTiers(total) {
+  if (!Number.isFinite(total) || total <= RECORDS_SHOWN_NO_SELECT_MAX) {
+    return { showSelect: false };
+  }
+  const topTier = total >= RECORDS_SHOWN_ALL_THRESHOLD ? RECORDS_SHOWN_ALL_THRESHOLD : total;
+  return { showSelect: true, options: [...RECORDS_SHOWN_TIERS, topTier] };
+}
+
+// Remembers the last rendered shape so a table refresh that stays within the
+// same tier bracket never rebuilds (and never defocuses) the select.
+let lastRecordsShownSignature = null;
+
+/**
+ * Renders the Records-shown control for the current total (Y) into the
+ * "explore_records_shown" element — either a page-size select, or (when
+ * everything already fits) plain text matching the total exactly.
+ *
+ * @param {number} total - Total matching records/values for the active table.
+ */
+function updateRecordsShownControl(total) {
+  const container = document.getElementById("explore_records_shown");
+  if (!container) return;
+
+  const { showSelect, options } = getRecordsShownTiers(total);
+  const signature = showSelect ? `select:${options.join(",")}` : "text";
+  if (signature === lastRecordsShownSignature) return;
+  lastRecordsShownSignature = signature;
+
+  container.innerHTML = "";
+
+  if (!showSelect) {
+    container.textContent = makeNumberReadable(total);
+    return;
+  }
+
+  const currentSize = Number(currentActiveExploreItemSize);
+  const selectedValue = options.includes(currentSize) ? currentSize : RECORDS_SHOWN_DEFAULT;
+  currentActiveExploreItemSize = selectedValue;
+
   const label = document.createElement("label");
   label.id = "records_shown_select_label";
   label.setAttribute("for", "records_shown_select");
-  label.className = "sr-only"; // Hide the label visually
-  label.textContent = "Records shown:"; 
+  label.className = "sr-only"; // Hide the label visually — context comes from the surrounding sentence
+  label.textContent = "Records shown:";
 
-  // Create the select element
   const selectMenu = document.createElement("select");
   selectMenu.id = "records_shown_select";
-  selectMenu.className = "appearance-none py-1 px-2 border border-neutral-500 bg-neutral-800 text-white text-xs md:text-base";
+  selectMenu.className = "appearance-none py-1 px-2 border border-neutral-500 bg-neutral-800 text-white text-xs md:text-base focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800";
   selectMenu.setAttribute("aria-labelledby", "records_shown_select_label");
   selectMenu.addEventListener("change", handleRecordsShownChange);
 
-  // Define options for the select menu
-  const options = [5, 10, 20, 50, 100, 500, 1000];
   options.forEach((optionValue) => {
     const option = document.createElement("option");
     option.value = optionValue;
-    option.textContent = `${optionValue}`;
-    if (optionValue === 10) { // Set default value
-      option.selected = true;
-    }
+    option.textContent = optionValue === total && total < RECORDS_SHOWN_ALL_THRESHOLD
+      ? "All"
+      : makeNumberReadable(optionValue);
+    option.selected = optionValue === selectedValue;
     selectMenu.appendChild(option);
   });
 
-  // Append the label and select menu to the exploreRecordsShownElement
-  exploreRecordsShownElement.appendChild(label);
-  exploreRecordsShownElement.appendChild(selectMenu);
-
-  // Handle records shown parameter
-  const params = getAllURLParams();
-  const records = params.records;
-
-  if (records) {
-    const selectElement = document.getElementById("records_shown_select");
-    const recordsShownOption = selectElement.querySelector(`option[value="${records}"]`);
-    if (recordsShownOption) {
-      selectElement.value = records;
-      const event = new Event('change', { bubbles: true });
-      selectElement.dispatchEvent(event);
-    }
-  }
+  container.appendChild(label);
+  container.appendChild(selectMenu);
 }
 
 /**
@@ -618,7 +661,8 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       ? shownCount
       : totalRecords;
 
-    updateExploreCountSummary({ type, id, total: totalCount, shown: shownCount });
+    updateExploreCountSummary({ id, total: totalCount });
+    updateRecordsShownControl(totalCount);
 
     if (records.length > 0) {
       // Populate table with data
@@ -781,32 +825,26 @@ async function fetchArticleBasedData(query, includes, sort, size) {
 // =================================================
 
 /**
- * Updates the table header summary with how many records are shown vs available.
+ * Updates the "of Y {label} · Sorted by {sort}" portion of the table header
+ * summary. The "X" portion (how many are shown) is handled separately by
+ * updateRecordsShownControl(), which sits inline between "Showing" and this.
+ *
  * @param {Object} params
- * @param {string} params.type - The explore item type.
  * @param {string} params.id - The explore item id (used for label).
- * @param {number} params.total - Total records returned by the API.
- * @param {number} params.shown - Number of records currently displayed.
+ * @param {number} params.total - Total records/values available (Y).
  */
-function updateExploreCountSummary({ type, id, total, shown }) {
-  const summaryElement = document.getElementById("explore_count_summary");
-  if (!summaryElement) return;
+function updateExploreCountSummary({ id, total }) {
+  const totalElement = document.getElementById("explore_count_total");
+  const labelElement = document.getElementById("explore_count_label");
+  const sortElement = document.getElementById("explore_count_sort");
+  if (!totalElement || !labelElement || !sortElement) return;
 
-  const formatCount = (n) => makeNumberReadable(Number.isFinite(n) ? n : 0);
   const label = EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id);
   const sortLabel = document.querySelector(".explore_sort")?.textContent?.trim() || "published date";
 
-  summaryElement.replaceChildren();
-
-  const countElement = document.createElement("span");
-  countElement.className = "font-semibold";
-  countElement.textContent = `${formatCount(shown)} of ${formatCount(total)}`;
-
-  const labelElement = document.createElement("span");
-  labelElement.className = "lowercase";
+  totalElement.textContent = makeNumberReadable(Number.isFinite(total) ? total : 0);
   labelElement.innerHTML = DOMPurify.sanitize(label);
-
-  summaryElement.append("Showing ", countElement, " ", labelElement, ` · Sorted by ${sortLabel}`);
+  sortElement.textContent = sortLabel;
 }
 
 /**
@@ -1471,21 +1509,11 @@ function getExploreColumnClass(section, dataType, columnIndex) {
 function setExploreModeUI(type) {
   const isArticles = type === "articles";
   const downloadCSVFormContainer = document.getElementById('download_csv_form_container');
-  const exploreArticlesTableHelp = document.getElementById('explore_articles_records_shown_help');
-  const exploreTermsTableHelp = document.getElementById('explore_terms_records_shown_help');
 
   if (isArticles) {
     addCSVExportLink();
   } else {
     removeCSVExportLink();
-  }
-
-  if (exploreArticlesTableHelp) {
-    exploreArticlesTableHelp.style.display = isArticles && loggedIn ? "block" : "none";
-  }
-
-  if (exploreTermsTableHelp) {
-    exploreTermsTableHelp.style.display = isArticles ? "none" : "block";
   }
 
   if (downloadCSVFormContainer) {
@@ -1574,6 +1602,7 @@ function updateButtonActiveStyles(buttonId) {
  */
 async function handleRecordsShownChange(event) {
   const newSize = event.target.value;
+  const selectedLabel = event.target.options[event.target.selectedIndex]?.textContent || newSize;
   currentActiveExploreItemSize = newSize;
 
   // No active Explore item yet? Defer gracefully.
@@ -1589,7 +1618,7 @@ async function handleRecordsShownChange(event) {
       currentActiveExploreItemSize
     );
     updateURLParams({ records: newSize });
-    announce(`Rows shown: ${newSize}.`);
+    announce(`Rows shown: ${selectedLabel}.`);
   } catch (error) {
     console.error('Error updating records shown: ', error);
   }
