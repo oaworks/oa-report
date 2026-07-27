@@ -604,7 +604,7 @@ function updateRecordsShownControl(total) {
 
   const selectMenu = document.createElement("select");
   selectMenu.id = "records_shown_select";
-  selectMenu.className = "appearance-none bg-transparent border-0 border-b border-neutral-300 text-white text-sm font-semibold text-center pr-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800";
+  selectMenu.className = "appearance-none bg-transparent border-0 border-b border-neutral-300 text-white font-semibold text-center pr-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800";
   selectMenu.setAttribute("aria-labelledby", "records_shown_select_label");
   selectMenu.addEventListener("change", handleRecordsShownChange);
 

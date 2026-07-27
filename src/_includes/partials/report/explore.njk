@@ -45,43 +45,45 @@
           <div class="flex flex-wrap items-center" id="explore_filters"></div>
         </fieldset>
       </form>
-      <div id="export_table_controls" class="mt-4 flex flex-wrap items-stretch divide-x divide-neutral-700 border border-neutral-700 bg-neutral-900 text-sm font-semibold uppercase text-white">
-        <p id="explore_count_summary" class="flex items-center gap-1 px-3 py-2" aria-live="polite">
-          <span id="explore_records_shown" class="inline-flex items-baseline"></span>
-          / <span id="explore_count_total">0</span>
-          <span id="explore_count_label">journal articles</span>
-        </p>
-        <p class="flex items-center gap-1 px-3 py-2">
-          By <span class="explore_sort">publication count</span>
-        </p>
-        <form id="explore_display_style_field">
-          <fieldset>
-            <legend id="legend-data-view" class="sr-only" for="toggler-data-view">
-              Data display style
-            </legend>
-            <div class="flex items-center gap-1 px-3 py-2">
-              <span id="toggle-label-percent" class="text-white">{% icon_small "percent" %} Percent</span>
-              <button
-                id="toggle-data-view"
-                type="button"
-                class="relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer items-center justify-center rounded-full mx-1 focus:outline-none focus:ring-2 focus:ring-carnation-500 focus:ring-offset-2"
-                role="switch"
-                aria-checked="true"
-                aria-labelledby="legend-data-view button-instructions">
-                <span aria-hidden="true" class="bg-carnation-500 pointer-events-none absolute mx-auto h-4 w-9 rounded-full transition-colors duration-200 ease-in-out"></span>
-                <span aria-hidden="true" class="translate-x-100 pointer-events-none absolute left-0 inline-block h-5 w-5 transform rounded-full border border-neutral-500 bg-neutral-800 shadow ring-0 transition-transform duration-200 ease-in-out"></span>
-              </button>
-              <span id="button-instructions" class="sr-only">Toggle between Percent and Count data display</span>
-              <span id="toggle-label-count" class="text-neutral-300">Count {% icon_small "hash" %}</span>
-            </div>
-          </fieldset>
-        </form>
+      <div id="export_table_controls" class="mt-4 flex flex-wrap items-stretch justify-between border border-neutral-700 bg-neutral-900 text-xs font-semibold uppercase text-white">
+        <div class="flex flex-wrap items-stretch divide-x divide-neutral-700">
+          <p id="explore_count_summary" class="flex items-center gap-1 px-3 py-2" aria-live="polite">
+            <span id="explore_records_shown" class="inline-flex items-baseline"></span>
+            / <span id="explore_count_total">0</span>
+            <span id="explore_count_label">journal articles</span>
+          </p>
+          <p class="flex items-center gap-1 px-3 py-2">
+            By <span class="explore_sort">publication count</span>
+          </p>
+          <form id="explore_display_style_field">
+            <fieldset>
+              <legend id="legend-data-view" class="sr-only" for="toggler-data-view">
+                Data display style
+              </legend>
+              <div class="flex items-center gap-1 px-3 py-2">
+                <span id="toggle-label-percent" class="inline-flex items-center gap-1 text-white [&>i]:text-[1em]">{% icon_small "percent" %} Percent</span>
+                <button
+                  id="toggle-data-view"
+                  type="button"
+                  class="relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer items-center justify-center rounded-full mx-1 focus:outline-none focus:ring-2 focus:ring-carnation-500 focus:ring-offset-2"
+                  role="switch"
+                  aria-checked="true"
+                  aria-labelledby="legend-data-view button-instructions">
+                  <span aria-hidden="true" class="bg-carnation-500 pointer-events-none absolute mx-auto h-4 w-9 rounded-full transition-colors duration-200 ease-in-out"></span>
+                  <span aria-hidden="true" class="translate-x-100 pointer-events-none absolute left-0 inline-block h-5 w-5 transform rounded-full border border-neutral-500 bg-neutral-800 shadow ring-0 transition-transform duration-200 ease-in-out"></span>
+                </button>
+                <span id="button-instructions" class="sr-only">Toggle between Percent and Count data display</span>
+                <span id="toggle-label-count" class="inline-flex items-center gap-1 text-neutral-300 [&>i]:text-[1em]">Count {% icon_small "hash" %}</span>
+              </div>
+            </fieldset>
+          </form>
+        </div>
         <button
           id="explore_copy_clipboard"
-          class="flex items-center gap-1 px-3 py-2 text-sm font-semibold uppercase text-white hover:text-carnation-400 focus:outline-none focus:ring-2 focus:ring-carnation-500"
+          class="flex items-center gap-1 px-3 py-2 border-l border-neutral-700 font-semibold uppercase text-white hover:text-carnation-400 focus:outline-none focus:ring-2 focus:ring-carnation-500"
         >
           {% icon_small "clipboard" %}
-          <span>Copy to clipboard</span>
+          <span>Copy table</span>
         </button>
       </div>
       <div class="relative">
