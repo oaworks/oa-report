@@ -30,7 +30,7 @@ const exportSort = "&sort=published_date:desc";
 // thresholds that decide whether a select is shown at all and when the top
 // tier becomes "All" rather than a fixed number — see getRecordsShownTiers().
 const RECORDS_SHOWN_TIERS = [5, 10, 20, 50, 100, 500];
-const RECORDS_SHOWN_DEFAULT = 20;
+const RECORDS_SHOWN_DEFAULT = 10;
 const RECORDS_SHOWN_NO_SELECT_MAX = 20;
 const RECORDS_SHOWN_ALL_THRESHOLD = 1000;
 
