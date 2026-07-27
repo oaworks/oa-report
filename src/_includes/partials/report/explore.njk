@@ -29,7 +29,7 @@
     </div>
 
     <div id="export_table">
-      <header class="mb-10 space-y-2">
+      <header class="mb-4">
         <h3 class="mb-3 text-base md:text-lg font-semibold uppercase tracking-wide text-neutral-100" aria-live="polite">
           <span class="inline-flex items-center gap-2">
             <i class="ph ph-note text-[18px] leading-none js-explore-heading-icon" aria-hidden="true"></i>
@@ -37,7 +37,17 @@
             <strong class="uppercase font-semibold explore_type">articles</strong>
           </span>
         </h3>
-        <p id="explore_count_summary" class="inline-block text-sm md:text-base text-white" aria-live="polite">
+      </header>
+      {# Filter by radio buttons styled as pills #}
+      <form class="w-full my-4">
+        <fieldset id="explore_filter_field">
+          <legend class="mb-4 text-sm font-semibold uppercase">Filter by</legend>
+          <div class="flex flex-wrap items-center" id="explore_filters"></div>
+        </fieldset>
+      </form>
+      {# Showing X of Y summary, level with the data display style toggle #}
+      <div class="mt-4 mb-4 gap-3 md:gap-12 flex flex-wrap items-end justify-between">
+        <p id="explore_count_summary" class="inline-block text-sm font-semibold uppercase text-white" aria-live="polite">
           Showing
           {# Select or plain text, rebuilt only when its shape changes — see updateRecordsShownControl() #}
           <span id="explore_records_shown" class="inline-flex items-baseline"></span>
@@ -45,22 +55,10 @@
           <span id="explore_count_label">journal articles</span>
           · Sorted by <span id="explore_count_sort">published date</span>
         </p>
-      </header>
-      {# Data table controls #}
-      <div class="my-4 gap-3 md:gap-12 flex justify-between">
-        <div class="gap-3 md:gap-12 flex justify-between">
-          {# Filter by radio buttons styled as pills #}
-          <form class="w-auto">
-            <fieldset id="explore_filter_field">
-              <legend class="mb-4 text-xs font-semibold uppercase">Filter by</legend>
-              <div class="flex flex-wrap items-center" id="explore_filters"></div>
-            </fieldset>
-          </form>
-        </div>
         {# Data display style (raw/pretty) toggle #}
         <form class="w-auto block" id="explore_display_style_field">
           <fieldset>
-            <legend id="legend-data-view" class="mb-4 text-xs font-semibold uppercase text-right" for="toggler-data-view">
+            <legend id="legend-data-view" class="mb-2 text-sm font-semibold uppercase text-right" for="toggler-data-view">
               Data display style
             </legend>
             <div class="flex items-center">

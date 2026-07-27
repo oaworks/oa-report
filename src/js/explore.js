@@ -593,9 +593,12 @@ function updateRecordsShownControl(total) {
   label.className = "sr-only"; // Hide the label visually — context comes from the surrounding sentence
   label.textContent = "Records shown:";
 
+  const wrapper = document.createElement("span");
+  wrapper.className = "relative inline-flex items-baseline";
+
   const selectMenu = document.createElement("select");
   selectMenu.id = "records_shown_select";
-  selectMenu.className = "appearance-none py-1 px-2 border border-neutral-500 bg-neutral-800 text-white text-xs md:text-base focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800";
+  selectMenu.className = "appearance-none bg-transparent border-0 border-b border-neutral-300 text-white text-sm font-semibold text-center pr-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800";
   selectMenu.setAttribute("aria-labelledby", "records_shown_select_label");
   selectMenu.addEventListener("change", handleRecordsShownChange);
 
@@ -609,8 +612,12 @@ function updateRecordsShownControl(total) {
     selectMenu.appendChild(option);
   });
 
-  container.appendChild(label);
-  container.appendChild(selectMenu);
+  const caret = document.createElement("i");
+  caret.className = "ph ph-caret-down absolute right-0 top-1/2 -translate-y-1/2 text-[10px] pointer-events-none";
+  caret.setAttribute("aria-hidden", "true");
+
+  wrapper.append(selectMenu, caret);
+  container.append(label, wrapper);
 }
 
 /**
