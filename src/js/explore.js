@@ -604,7 +604,7 @@ function updateRecordsShownControl(total) {
 
   const selectMenu = document.createElement("select");
   selectMenu.id = "records_shown_select";
-  selectMenu.className = "appearance-none bg-transparent border-0 border-b border-neutral-300 text-white font-semibold text-center pr-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800";
+  selectMenu.className = "appearance-none bg-transparent border-0 border-b border-neutral-300 text-white font-semibold text-center py-1 pr-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800";
   selectMenu.setAttribute("aria-labelledby", "records_shown_select_label");
   selectMenu.addEventListener("change", handleRecordsShownChange);
 
@@ -1670,14 +1670,14 @@ function handleDataDisplayToggle() {
 
   toggleButton.addEventListener('click', function() {
     const toggleBg = this.querySelector('span.pointer-events-none');
-    const toggleDot = this.querySelector('span.translate-x-100, span.translate-x-5');
+    const toggleDot = this.querySelector('span.translate-x-0, span.translate-x-5');
 
     // Check if the toggle is in the 'Percent' (active) state
     if (this.getAttribute('aria-checked') === 'true') {
         // Switch to 'Count' (inactive) state
         this.setAttribute('aria-checked', 'false');
         toggleBg.classList.replace('bg-carnation-500', 'bg-neutral-200');
-        toggleDot.classList.replace('translate-x-100', 'translate-x-5');
+        toggleDot.classList.replace('translate-x-0', 'translate-x-5');
         currentActiveDataDisplayToggle = false; // Update the global toggle state
         percentLabel.classList.replace('text-white', 'text-neutral-300');
         countLabel.classList.replace('text-neutral-300', 'text-white');
@@ -1685,7 +1685,7 @@ function handleDataDisplayToggle() {
         // Switch back to 'Percent' (active) state
         this.setAttribute('aria-checked', 'true');
         toggleBg.classList.replace('bg-neutral-200', 'bg-carnation-500');
-        toggleDot.classList.replace('translate-x-5', 'translate-x-100');
+        toggleDot.classList.replace('translate-x-5', 'translate-x-0');
         currentActiveDataDisplayToggle = true; // Update the global toggle state
         countLabel.classList.replace('text-white', 'text-neutral-300');
         percentLabel.classList.replace('text-neutral-300', 'text-white');
