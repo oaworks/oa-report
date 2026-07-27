@@ -701,7 +701,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     stopLoading();
     // Keep the placeholder height for the very first render only.
     if (hasRenderedExploreTableOnce) {
-      document.querySelector('.js_export_table_container')?.classList.remove('min-h-[20rem]', 'md:min-h-[24rem]', 'lg:min-h-[28rem]');
+      document.querySelector('.js_export_table_container')?.classList.remove('min-h-[6rem]', 'md:min-h-[8rem]', 'lg:min-h-[10rem]');
     }
     hasRenderedExploreTableOnce = true;
   }
