@@ -58,11 +58,11 @@
         {# Data display style (raw/pretty) toggle #}
         <form class="w-auto block" id="explore_display_style_field">
           <fieldset>
-            <legend id="legend-data-view" class="mb-2 text-sm font-semibold uppercase text-right" for="toggler-data-view">
+            <legend id="legend-data-view" class="sr-only" for="toggler-data-view">
               Data display style
             </legend>
             <div class="flex items-center">
-              <span class="mr-2 text-xs">{% icon_small "percent" %} Pretty</span>
+              <span class="mr-2 text-sm font-semibold uppercase">{% icon_small "percent" %} Percent</span>
               <button
                 id="toggle-data-view"
                 type="button"
@@ -73,8 +73,8 @@
                 <span aria-hidden="true" class="bg-carnation-500 pointer-events-none absolute mx-auto h-4 w-9 rounded-full transition-colors duration-200 ease-in-out"></span>
                 <span aria-hidden="true" class="translate-x-100 pointer-events-none absolute left-0 inline-block h-5 w-5 transform rounded-full border border-neutral-500 bg-neutral-800 shadow ring-0 transition-transform duration-200 ease-in-out"></span>
               </button>
-              <span id="button-instructions" class="sr-only">Toggle between Pretty and Raw data display</span>
-              <span class="ml-2 text-xs">Raw {% icon_small "hash" %}</span>
+              <span id="button-instructions" class="sr-only">Toggle between Percent and Count data display</span>
+              <span class="ml-2 text-sm font-semibold uppercase">Count {% icon_small "hash" %}</span>
             </div>
           </fieldset>
         </form>

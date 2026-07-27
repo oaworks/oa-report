@@ -1653,9 +1653,9 @@ async function handleFilterChange(filterId) {
 
 /**
  * Handle the toggling of the data display style in the table.
- * 
+ *
  * This function sets up an event listener on the toggle button. When the button is clicked,
- * it switches between two states - 'Pretty' and 'Raw'.
+ * it switches between two states - 'Percent' and 'Count'.
  */
 function handleDataDisplayToggle() {
   const toggleButton = document.getElementById('toggle-data-view');
@@ -1663,22 +1663,22 @@ function handleDataDisplayToggle() {
     const toggleBg = this.querySelector('span.pointer-events-none');
     const toggleDot = this.querySelector('span.translate-x-100, span.translate-x-5');
 
-    // Check if the toggle is in the 'Pretty' (active) state
+    // Check if the toggle is in the 'Percent' (active) state
     if (this.getAttribute('aria-checked') === 'true') {
-        // Switch to 'Raw' (inactive) state
+        // Switch to 'Count' (inactive) state
         this.setAttribute('aria-checked', 'false');
         toggleBg.classList.replace('bg-carnation-500', 'bg-neutral-200');
         toggleDot.classList.replace('translate-x-100', 'translate-x-5');
         currentActiveDataDisplayToggle = false; // Update the global toggle state
     } else {
-        // Switch back to 'Pretty' (active) state
+        // Switch back to 'Percent' (active) state
         this.setAttribute('aria-checked', 'true');
         toggleBg.classList.replace('bg-neutral-200', 'bg-carnation-500');
         toggleDot.classList.replace('translate-x-5', 'translate-x-100');
         currentActiveDataDisplayToggle = true; // Update the global toggle state
     }
-    announce(`Explore view: ${currentActiveDataDisplayToggle ? "Pretty table" : "Raw values"}.`);
-    // Fetch and display data with the updated pretty/raw format
+    announce(`Explore view: ${currentActiveDataDisplayToggle ? "Percent" : "Count"}.`);
+    // Fetch and display data with the updated percent/count format
     fetchAndDisplayExploreData(currentActiveExploreItemData, currentActiveExploreItemQuery, currentActiveExploreItemSize);
   });
 }
