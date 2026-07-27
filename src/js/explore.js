@@ -474,7 +474,8 @@ function createExploreFilterRadioButton(id, isChecked) {
         expanded: false
       },
       placement: 'bottom',
-      theme: 'tooltip-white'
+      theme: 'tooltip-white',
+      delay: [500, 0] // Don't pop up while the user is just hovering en route to a click.
     });
   }
 
@@ -1022,7 +1023,8 @@ function setupHeaderTooltip(element, key, dataType) {
     element.tabIndex = 0;
     createTooltip(element, generateTooltipContent(labelData, additionalHelpText), {
       placement: 'bottom',
-      theme: 'tooltip-white'
+      theme: 'tooltip-white',
+      delay: [500, 0] // Don't pop up while the mouse is just passing through the header row.
     });
 
     element.setAttribute('aria-controls', `${key}_info`);
