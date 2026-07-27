@@ -1686,6 +1686,7 @@ function handleDataDisplayToggle() {
     }
     announce(`Explore view: ${currentActiveDataDisplayToggle ? "Percent" : "Count"}.`);
     // Fetch and display data with the updated percent/count format
+    startLoading();
     fetchAndDisplayExploreData(currentActiveExploreItemData, currentActiveExploreItemQuery, currentActiveExploreItemSize);
   });
 }
