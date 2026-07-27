@@ -48,12 +48,12 @@ export const ACTION_TABLE_CONFIGS = [
       "supplements.invoice_number",
       "supplements.invoice_date"
     ],
-    rowTemplate: "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
+    rowTemplate: "<td class='px-3 py-2 text-sm align-top break-words'>\
         <div class='mb-1 font-medium text-neutral-900'>${action.publisher}</div>\
         <div class='mb-3 text-neutral-900'>${action.journal}</div>\
         <div class='text-neutral-600'>OA type: <span class='font-medium'>${action.journal_oa_type}</span></div>\
       </td>\
-      <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
+      <td class='px-3 py-2 text-sm align-top break-words'>\
         <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
         <div class='mb-1 text-neutral-600'>${action.DOI}</div>\
         <div class='mb-1 text-neutral-900'>\
@@ -65,7 +65,7 @@ export const ACTION_TABLE_CONFIGS = [
         <div class='text-neutral-600'>OA status: <span class='font-medium'>${action.oa_status}<span></div>\
         <div class='text-neutral-600'>License: <span class='font-medium uppercase'>${action.publisher_license_best}</span></div>\
       </td>\
-      <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
+      <td class='px-3 py-2 text-sm align-top break-words'>\
         <div class='mb-3 text-neutral-600'>${action.invoice_date}</div>\
         <div class='mb-3 text-neutral-900'>${action.invoice_number}</div>\
         <div class='text-neutral-600 uppercase'>US$${action.apc_cost}</div>\
@@ -83,11 +83,11 @@ export const ACTION_TABLE_CONFIGS = [
       "supplements.grantid__bmgf",
       "mailto"
     ],
-    rowTemplate: "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
+    rowTemplate: "<td class='px-3 py-2 text-sm align-top break-words'>\
         <div class='mb-1 font-medium text-neutral-900'>${action.program__bmgf}</div>\
         <div class='text-neutral-900'>${action.grantid__bmgf}</div>\
       </td>\
-      <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
+      <td class='px-3 py-2 text-sm align-top break-words'>\
         <div class='mb-1 font-medium text-neutral-900'>${action.author_email_name}</div>\
         <div class='mb-1 text-neutral-600'>${action.journal}</div>\
         <div class='mb-1 text-neutral-900'>\
@@ -97,7 +97,7 @@ export const ACTION_TABLE_CONFIGS = [
           <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article' aria-label='Open article: ${action.title}' class='" + ACTION_ARTICLE_LINK_CLASSES + " ml-0'>Open article <span aria-hidden='true'>&#8599;</span></a>\
         </div>\
       </td>\
-      <td class='whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium'>\
+      <td class='whitespace-nowrap px-3 py-2 text-center align-top text-sm font-medium'>\
         <button \
           class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
           aria-label='${action.draft_aria_label}'\
@@ -112,7 +112,7 @@ export const ACTION_TABLE_CONFIGS = [
   {
     id: "email_author_deposit",
     keys: ["published_date", "title", "journal", "author_email_name", "email", "DOI", "mailto"],
-    rowTemplate: "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
+    rowTemplate: "<td class='px-3 py-2 text-sm align-top break-words'>\
         <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
         <div class='mb-1 text-neutral-600'>${action.journal}</div>\
         <div class='mb-1 text-neutral-900'>\
@@ -122,10 +122,10 @@ export const ACTION_TABLE_CONFIGS = [
           <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article' aria-label='Open article: ${action.title}' class='" + ACTION_ARTICLE_LINK_CLASSES + " ml-0'>Open article <span aria-hidden='true'>&#8599;</span></a>\
         </div>\
       </td>\
-      <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
+      <td class='hidden px-3 py-2 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
         <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
       </td>\
-      <td class='px-3 py-4 text-sm text-center text-neutral-600 align-top break-words'>\
+      <td class='px-3 py-2 text-sm text-center text-neutral-600 align-top break-words'>\
         <button \
           class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
           aria-label='${action.draft_aria_label}'\
@@ -140,7 +140,7 @@ export const ACTION_TABLE_CONFIGS = [
   {
     id: "email_author_aam",
     keys: ["published_date", "title", "journal", "author_email_name", "email", "DOI", "mailto"],
-    rowTemplate: "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
+    rowTemplate: "<td class='px-3 py-2 text-sm align-top break-words'>\
         <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
         <div class='mb-1 text-neutral-600'>${action.journal}</div>\
         <div class='mb-1 text-neutral-900'>\
@@ -150,10 +150,10 @@ export const ACTION_TABLE_CONFIGS = [
           <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article' aria-label='Open article: ${action.title}' class='" + ACTION_ARTICLE_LINK_CLASSES + " ml-0'>Open article <span aria-hidden='true'>&#8599;</span></a>\
         </div>\
       </td>\
-      <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
+      <td class='hidden px-3 py-2 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
         <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
       </td>\
-      <td class='px-3 py-4 text-sm text-center text-neutral-600 align-top break-words'>\
+      <td class='px-3 py-2 text-sm text-center text-neutral-600 align-top break-words'>\
         <button \
           class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
           aria-label='${action.draft_aria_label}'\
@@ -168,7 +168,7 @@ export const ACTION_TABLE_CONFIGS = [
   {
     id: "email_author_vor",
     keys: ["published_date", "title", "journal", "author_email_name", "email", "DOI", "mailto"],
-    rowTemplate: "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
+    rowTemplate: "<td class='px-3 py-2 text-sm align-top break-words'>\
         <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
         <div class='mb-1 text-neutral-600'>${action.journal}</div>\
         <div class='mb-1 text-neutral-900'>\
@@ -178,10 +178,10 @@ export const ACTION_TABLE_CONFIGS = [
           <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article' aria-label='Open article: ${action.title}' class='" + ACTION_ARTICLE_LINK_CLASSES + " ml-0'>Open article <span aria-hidden='true'>&#8599;</span></a>\
         </div>\
       </td>\
-      <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
+      <td class='hidden px-3 py-2 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
         <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
       </td>\
-      <td class='px-3 py-4 text-sm text-center text-neutral-600 align-top break-words'>\
+      <td class='px-3 py-2 text-sm text-center text-neutral-600 align-top break-words'>\
         <button \
           class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
           aria-label='${action.draft_aria_label}'\
@@ -196,7 +196,7 @@ export const ACTION_TABLE_CONFIGS = [
   {
     id: "email_author_unpublished_openrxiv_preprint_not_ccby",
     keys: ["published_date", "title", "journal", "author_email_name", "email", "DOI", "mailto", "publisher_license", "supplements.host_venue.display_name"],
-    rowTemplate: "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
+    rowTemplate: "<td class='px-3 py-2 text-sm align-top break-words'>\
         <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
         <div class='mb-1 text-neutral-600'>${action.journal}</div>\
         <div class='mb-1 text-neutral-900'>\
@@ -207,10 +207,10 @@ export const ACTION_TABLE_CONFIGS = [
         </div>\
         <div class='text-neutral-600'>License: <span class='font-medium uppercase'>${action.publisher_license}</span></div>\
       </td>\
-      <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
+      <td class='hidden px-3 py-2 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
         <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
       </td>\
-      <td class='hidden px-3 py-4 text-sm text-center text-neutral-600 align-top break-words sm:table-cell'>\
+      <td class='hidden px-3 py-2 text-sm text-center text-neutral-600 align-top break-words sm:table-cell'>\
         <button \
           class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
           aria-label='${action.draft_aria_label}'\
@@ -227,7 +227,7 @@ export const ACTION_TABLE_CONFIGS = [
     keys: ["published_date", "title", "journal", "DOI", "has_epmc_fulltext", "epmc_licence"],
     emptyStateMessage: "No non-compliant articles found for this author. <br>This author’s articles currently meet Wellcome’s point-of-award open access policy.",
     requiresSingleAuthor: true,
-    rowTemplate: "<td class='py-4 pl-4 pr-3 text-sm align-top break-words' data-doi='${action.DOI}' data-in-epmc='${action.has_epmc_fulltext}' data-epmc-licence='${action.epmc_licence}'>\
+    rowTemplate: "<td class='px-3 py-2 text-sm align-top break-words' data-doi='${action.DOI}' data-in-epmc='${action.has_epmc_fulltext}' data-epmc-licence='${action.epmc_licence}'>\
         <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
         <div class='mb-1 text-neutral-600'>${action.journal}</div>\
         <div class='mb-1 text-neutral-900'>${action.title}</div>\
@@ -236,13 +236,13 @@ export const ACTION_TABLE_CONFIGS = [
           <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article' aria-label='Open article: ${action.title}' class='" + ACTION_ARTICLE_LINK_CLASSES + " ml-0'>Open article <span aria-hidden='true'>&#8599;</span></a>\
         </div>\
       </td>\
-      <td class='px-3 py-4 text-sm text-left text-neutral-900 align-top break-words'>\
+      <td class='px-3 py-2 text-sm text-left text-neutral-900 align-top break-words'>\
         <span class='inline-flex items-center gap-1 font-medium'>\
           <span>${action.epmc_status_label}</span>\
           <i class='ph ${action.epmc_status_icon} text-[16px] leading-none ${action.epmc_status_color}' aria-hidden='true'></i>\
         </span>\
       </td>\
-      <td class='px-3 py-4 text-sm text-left text-neutral-900 align-top break-words'>\
+      <td class='px-3 py-2 text-sm text-left text-neutral-900 align-top break-words'>\
         <span class='font-medium'>${action.epmc_licence}</span>\
       </td>"
   }

@@ -47,12 +47,12 @@
       </form>
       <div id="export_table_controls" class="mt-4 flex flex-wrap items-stretch justify-between border border-neutral-700 bg-neutral-900 text-xs font-semibold uppercase text-white">
         <div class="flex flex-wrap items-stretch divide-x divide-neutral-700">
-          <p id="explore_count_summary" class="flex items-center gap-1 px-3 py-2" aria-live="polite">
+          <p id="explore_count_summary" class="flex items-center gap-1 p-3" aria-live="polite">
             <span id="explore_records_shown" class="inline-flex items-baseline"></span>
             / <span id="explore_count_total">0</span>
             <span id="explore_count_label">journal articles</span>
           </p>
-          <p class="flex items-center gap-1 px-3 py-2">
+          <p class="flex items-center gap-1 p-3">
             By <span class="explore_sort">publication count</span>
           </p>
           <form id="explore_display_style_field">
@@ -60,7 +60,7 @@
               <legend id="legend-data-view" class="sr-only" for="toggler-data-view">
                 Data display style
               </legend>
-              <div class="flex items-center gap-1 px-3 py-2">
+              <div class="flex items-center gap-1 p-3">
                 <span id="toggle-label-percent" class="inline-flex items-center gap-1 text-white [&>i]:text-[1em]">{% icon_small "percent" %} Percent</span>
                 <button
                   id="toggle-data-view"
@@ -80,7 +80,7 @@
         </div>
         <button
           id="explore_copy_clipboard"
-          class="flex items-center gap-1 px-3 py-2 border-l border-neutral-700 font-semibold uppercase text-white hover:bg-carnation-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-carnation-500"
+          class="flex items-center gap-1 p-3 border-l border-neutral-700 font-semibold uppercase text-white hover:bg-carnation-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-carnation-500"
         >
           {% icon_small "clipboard" %}
           <span>Copy table</span>
