@@ -56,6 +56,10 @@ onAuthChange(({ loggedIn: isLoggedIn, orgKey: key }) => {
  */
 let isDataExploreInit = false;
 
+// Tracks whether the table has rendered at least once, to spare the very
+// first (non-input-driven) load from a CLS-triggering height change.
+let hasRenderedExploreTableOnce = false;
+
 /**
  * Tracks the currently active explore item BUTTON for use in processExploreDataTable().
  * @global
@@ -695,6 +699,11 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
   } finally {
     // Always hide loader once finished
     stopLoading();
+    // Keep the placeholder height for the very first render only.
+    if (hasRenderedExploreTableOnce) {
+      document.querySelector('.js_export_table_container')?.classList.remove('min-h-[20rem]', 'md:min-h-[24rem]', 'lg:min-h-[28rem]');
+    }
+    hasRenderedExploreTableOnce = true;
   }
 }
 
