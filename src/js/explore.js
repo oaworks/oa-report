@@ -600,7 +600,7 @@ function updateRecordsShownControl(total) {
   label.textContent = "Records shown:";
 
   const wrapper = document.createElement("span");
-  wrapper.className = "relative inline-flex items-baseline";
+  wrapper.className = "relative inline-flex";
 
   const selectMenu = document.createElement("select");
   selectMenu.id = "records_shown_select";
@@ -843,9 +843,9 @@ async function fetchArticleBasedData(query, includes, sort, size) {
 // =================================================
 
 /**
- * Updates the "of Y {label} · Sorted by {sort}" portion of the table header
- * summary. The "X" portion (how many are shown) is handled separately by
- * updateRecordsShownControl(), which sits inline between "Showing" and this.
+ * Updates the "/ Y {label}" portion of the table controls bar. The "X"
+ * portion (how many are shown) is handled separately by
+ * updateRecordsShownControl(), which sits inline before this.
  *
  * @param {Object} params
  * @param {string} params.id - The explore item id (used for label).
@@ -854,15 +854,12 @@ async function fetchArticleBasedData(query, includes, sort, size) {
 function updateExploreCountSummary({ id, total }) {
   const totalElement = document.getElementById("explore_count_total");
   const labelElement = document.getElementById("explore_count_label");
-  const sortElement = document.getElementById("explore_count_sort");
-  if (!totalElement || !labelElement || !sortElement) return;
+  if (!totalElement || !labelElement) return;
 
   const label = EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id);
-  const sortLabel = document.querySelector(".explore_sort")?.textContent?.trim() || "published date";
 
   totalElement.textContent = makeNumberReadable(Number.isFinite(total) ? total : 0);
   labelElement.innerHTML = DOMPurify.sanitize(label);
-  sortElement.textContent = sortLabel;
 }
 
 /**
