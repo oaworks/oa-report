@@ -18,14 +18,14 @@ export const DATE_SELECTION_BUTTON_CLASSES = {
  */
 export const DATA_TABLE_HEADER_CLASSES = {
   terms: {
-    firstHeaderCol: "border-b border-neutral-700 sticky left-0 bg-neutral-900 px-2 py-3 w-32 md:w-60 align-bottom text-white",
-    secondHeaderCol: "border-b border-neutral-700 sticky left-32 md:left-60 bg-neutral-900 px-2 py-3 w-24 md:w-32 align-bottom break-words text-white",
-    otherHeaderCols: "border-b border-neutral-700 px-2 py-3 w-32 align-bottom break-words text-white"
+    firstHeaderCol: "border-b border-r border-neutral-700 sticky left-0 bg-neutral-900 px-2 py-3 w-32 md:w-60 align-bottom text-white",
+    secondHeaderCol: "border-b border-r border-neutral-700 sticky left-32 md:left-60 bg-neutral-900 px-2 py-3 w-24 md:w-32 align-bottom break-words text-white",
+    otherHeaderCols: "border-b border-r border-neutral-700 px-2 py-3 w-32 align-bottom break-words text-white"
   },
   articles: {
-    firstHeaderCol: "border-b border-neutral-700 sticky left-0 bg-neutral-900 px-2 py-3 w-32 md:w-60 lg:w-80 align-bottom text-white",
-    secondHeaderCol: "border-b border-neutral-700 sticky left-32 md:left-60 lg:left-80 bg-neutral-900 px-2 py-3 w-24 md:w-32 align-bottom break-words text-white",
-    otherHeaderCols: "border-b border-r border-b-neutral-700 border-r-neutral-700 px-2 py-3 w-64 max-w-4xl align-bottom break-words text-white"
+    firstHeaderCol: "border-b border-r border-neutral-700 sticky left-0 bg-neutral-900 px-2 py-3 w-32 md:w-60 lg:w-80 align-bottom text-white",
+    secondHeaderCol: "border-b border-r border-neutral-700 sticky left-32 md:left-60 lg:left-80 bg-neutral-900 px-2 py-3 w-24 md:w-32 align-bottom break-words text-white",
+    otherHeaderCols: "border-b border-r border-neutral-700 px-2 py-3 w-64 max-w-4xl align-bottom break-words text-white"
   }
 };
 
