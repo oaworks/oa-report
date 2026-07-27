@@ -1659,6 +1659,9 @@ async function handleFilterChange(filterId) {
  */
 function handleDataDisplayToggle() {
   const toggleButton = document.getElementById('toggle-data-view');
+  const percentLabel = document.getElementById('toggle-label-percent');
+  const countLabel = document.getElementById('toggle-label-count');
+
   toggleButton.addEventListener('click', function() {
     const toggleBg = this.querySelector('span.pointer-events-none');
     const toggleDot = this.querySelector('span.translate-x-100, span.translate-x-5');
@@ -1670,12 +1673,16 @@ function handleDataDisplayToggle() {
         toggleBg.classList.replace('bg-carnation-500', 'bg-neutral-200');
         toggleDot.classList.replace('translate-x-100', 'translate-x-5');
         currentActiveDataDisplayToggle = false; // Update the global toggle state
+        percentLabel.classList.replace('text-white', 'text-neutral-300');
+        countLabel.classList.replace('text-neutral-300', 'text-white');
     } else {
         // Switch back to 'Percent' (active) state
         this.setAttribute('aria-checked', 'true');
         toggleBg.classList.replace('bg-neutral-200', 'bg-carnation-500');
         toggleDot.classList.replace('translate-x-5', 'translate-x-100');
         currentActiveDataDisplayToggle = true; // Update the global toggle state
+        countLabel.classList.replace('text-white', 'text-neutral-300');
+        percentLabel.classList.replace('text-neutral-300', 'text-white');
     }
     announce(`Explore view: ${currentActiveDataDisplayToggle ? "Percent" : "Count"}.`);
     // Fetch and display data with the updated percent/count format

@@ -46,7 +46,7 @@
         </fieldset>
       </form>
       {# Showing X of Y summary, level with the data display style toggle #}
-      <div class="mt-4 mb-4 gap-3 md:gap-12 flex flex-wrap items-end justify-between">
+      <div class="mt-8 mb-4 gap-3 md:gap-12 flex flex-wrap items-end justify-between">
         <p id="explore_count_summary" class="inline-block text-sm font-semibold uppercase text-white" aria-live="polite">
           Showing
           {# Select or plain text, rebuilt only when its shape changes — see updateRecordsShownControl() #}
@@ -62,7 +62,7 @@
               Data display style
             </legend>
             <div class="flex items-center">
-              <span class="mr-2 text-sm font-semibold uppercase">{% icon_small "percent" %} Percent</span>
+              <span id="toggle-label-percent" class="mr-2 text-sm font-semibold uppercase text-white">{% icon_small "percent" %} Percent</span>
               <button
                 id="toggle-data-view"
                 type="button"
@@ -74,7 +74,7 @@
                 <span aria-hidden="true" class="translate-x-100 pointer-events-none absolute left-0 inline-block h-5 w-5 transform rounded-full border border-neutral-500 bg-neutral-800 shadow ring-0 transition-transform duration-200 ease-in-out"></span>
               </button>
               <span id="button-instructions" class="sr-only">Toggle between Percent and Count data display</span>
-              <span class="ml-2 text-sm font-semibold uppercase">Count {% icon_small "hash" %}</span>
+              <span id="toggle-label-count" class="ml-2 text-sm font-semibold uppercase text-neutral-300">Count {% icon_small "hash" %}</span>
             </div>
           </fieldset>
         </form>
