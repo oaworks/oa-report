@@ -540,10 +540,11 @@ function applyRecordsShownUrlOverride() {
 /**
  * Works out the Records-shown control's shape for a given total (Y).
  * Below RECORDS_SHOWN_NO_SELECT_MAX everything already fits on screen, so no
- * choice is meaningful and no select is offered. Above that, the same fixed
- * tiers are always offered; only the top tier differs, so it never surpasses
- * Y — a dynamic "All" below RECORDS_SHOWN_ALL_THRESHOLD, or the fixed 1,000
- * cap once Y itself is large enough that 1,000 can never exceed it.
+ * choice is meaningful and no select is offered. Above that, only fixed
+ * tiers smaller than Y are offered — so no option ever displays a count
+ * above the real total — topped with a dynamic "All" below
+ * RECORDS_SHOWN_ALL_THRESHOLD, or the fixed 1,000 cap once Y itself is large
+ * enough that 1,000 can never exceed it.
  *
  * @param {number} total - Total matching records/values (Y).
  * @returns {{ showSelect: boolean, options?: number[] }}
@@ -552,8 +553,9 @@ function getRecordsShownTiers(total) {
   if (!Number.isFinite(total) || total <= RECORDS_SHOWN_NO_SELECT_MAX) {
     return { showSelect: false };
   }
+  const reachableTiers = RECORDS_SHOWN_TIERS.filter((tier) => tier < total);
   const topTier = total >= RECORDS_SHOWN_ALL_THRESHOLD ? RECORDS_SHOWN_ALL_THRESHOLD : total;
-  return { showSelect: true, options: [...RECORDS_SHOWN_TIERS, topTier] };
+  return { showSelect: true, options: [...reachableTiers, topTier] };
 }
 
 // Remembers the last rendered shape so a table refresh that stays within the
