@@ -579,7 +579,7 @@ function updateRecordsShownControl(total) {
   if (!container) return;
 
   const { showSelect, options } = getRecordsShownTiers(total);
-  const signature = showSelect ? `select:${options.join(",")}` : "text";
+  const signature = showSelect ? `select:${options.join(",")}` : `text:${total}`;
   if (signature === lastRecordsShownSignature) return;
   lastRecordsShownSignature = signature;
 
