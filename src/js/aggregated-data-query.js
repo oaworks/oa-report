@@ -825,11 +825,12 @@ export function getInsightsAggregationQuery(suffix, query, startYear, endYear) {
  * @param {number}   startYear  - Start year (inclusive) for `published_date`.
  * @param {number}   endYear    - End year (inclusive) for `published_date`.
  * @param {number}   [size=20]  - Max buckets to return.
- * @param {string}   [sort="_count"] - Sort field (`_count` or a metric name).
+ * @param {string}   [sort="_count"] - Sort field (`_count`, `_key`, or a metric name).
  * @param {string}   [activeFilterQuery=query] - Just the user's active filter, excluding any
  * base org query, so exact-match restriction never picks up unrelated baseline query clauses.
  * @param {string[]} [includeValuesOverride] - Exact values to restrict buckets to, bypassing
  * the automatic field-match detection (e.g. author ORCIDs resolved from a name filter).
+ * @param {string}   [sortDirection="desc"] - Sort direction for the selected sort field.
  * @returns {Object} POST body suitable for `/_search`.
  */
 export function getAggregatedDataQuery(
@@ -842,6 +843,7 @@ export function getAggregatedDataQuery(
   sort = "_count",
   activeFilterQuery = query,
   includeValuesOverride,
+  sortDirection = "desc",
 ) {
   const termField = toTermField(term);
 
@@ -880,7 +882,7 @@ export function getAggregatedDataQuery(
         terms: {
           field: termField,
           size: bucketSize,
-          order: { [sort]: "desc" },
+          order: { [sort]: sortDirection },
           ...(includeValues.length ? { include: includeValues } : {}),
         },
         aggs: {

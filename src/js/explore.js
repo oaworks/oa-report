@@ -95,6 +95,13 @@ export let currentActiveExploreItemSize = RECORDS_SHOWN_DEFAULT;
  */
 export let currentActiveDataDisplayToggle = true;
 
+/**
+ * Tracks the current Explore table sort field and direction so interactive
+ * header controls can re-fetch data without mutating the underlying config.
+ */
+let currentActiveExploreSortField = null;
+let currentActiveExploreSortDirection = null;
+
 /** 
  * Map of explore button id -> its data object, used to render without synthesising a click.
  * @type {Map<string, Object>}
@@ -388,8 +395,12 @@ const updateExploreHeadingIcon = (id) => {
  * @param {Object} itemData - The data object associated with the explore item.
  */
 export async function processExploreDataTable(button, itemData) {
+  const shouldPreserveSort = currentActiveExploreItemData?.id === itemData.id && currentActiveExploreItemData?.type === itemData.type;
   currentActiveExploreItemButton = button; // Set the currently active explore item button
   currentActiveExploreItemData = itemData; // Set the currently active explore item data
+  if (!shouldPreserveSort) {
+    initialiseActiveExploreSort(itemData);
+  }
 
   startLoading();
   updateButtonActiveStyles(button.id);
@@ -644,7 +655,8 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       return;
     }
 
-    const { type, id, term, sort } = itemData;
+    const { type, id } = itemData;
+    const { field: sortField, direction: sortDirection } = getActiveExploreSortState(itemData);
     document.getElementById("csv_email_msg").innerHTML = ""; // Clear any existing message in CSV download form
     const exportTable = document.getElementById('export_table');
     exportTable.classList.remove('hidden');
@@ -662,7 +674,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 
     const { records, total: totalRecords } = await loadExploreRecords(itemData, query, size, pretty);
 
-    const sortAdjective = getExploreSortAdjective({ type, sort });
+    const sortAdjective = getExploreSortAdjective({ type, sortField, sortDirection });
     replaceText("report_sort_adjective", sortAdjective);
     document.querySelectorAll(".report_sort_adjective").forEach(el => el.classList.toggle("hidden", !sortAdjective));
     setExploreModeUI(type);
@@ -730,7 +742,8 @@ async function resolveAuthorNameToOrcids(suffix, decodedQuery, activeFilterQuery
 }
 
 async function loadExploreRecords(itemData, query, size, pretty) {
-  const { type, sort, includes } = itemData;
+  const { type, includes } = itemData;
+  const { field: sortField, direction: sortDirection } = getActiveExploreSortState(itemData);
   const term = itemData?.id === "author" ? AUTHOR_BREAKDOWN_TERM : itemData?.term;
   // Kept separate from the org's own base query, so exact-match restriction
   // only ever reflects what the user has actively filtered by.
@@ -745,7 +758,16 @@ async function loadExploreRecords(itemData, query, size, pretty) {
     const includeValuesOverride = itemData?.id === "author"
       ? await resolveAuthorNameToOrcids(suffix, decodedQuery, activeFilterQuery)
       : [];
-    const { records: termRecords, total } = await fetchTermBasedData(suffix, decodedQuery, term, sort, size, activeFilterQuery, includeValuesOverride.length ? includeValuesOverride : undefined);
+    const { records: termRecords, total } = await fetchTermBasedData(
+      suffix,
+      decodedQuery,
+      term,
+      sortField,
+      size,
+      activeFilterQuery,
+      includeValuesOverride.length ? includeValuesOverride : undefined,
+      sortDirection
+    );
 
     return {
       records: prettifyRecords(reorderTermRecords(termRecords, includes), pretty),
@@ -754,7 +776,12 @@ async function loadExploreRecords(itemData, query, size, pretty) {
   }
 
   if (type === "articles") {
-    const { records: articleRecords, total } = await fetchArticleBasedData(decodedQuery, includes, sort, size);
+    const { records: articleRecords, total } = await fetchArticleBasedData(
+      decodedQuery,
+      includes,
+      `${sortField}:${sortDirection}`,
+      size
+    );
 
     return {
       records: reorderArticleRecords(articleRecords, includes),
@@ -771,16 +798,17 @@ async function loadExploreRecords(itemData, query, size, pretty) {
  * @param {string} suffix - The suffix for the org, used in the POST request.
  * @param {string} query - The query string for fetching data.
  * @param {string} term - The term (i.e. type of data breakdown) associated with the explore item.
- * @param {string} sort - The sorting order.
+ * @param {string} sort - The sorting field.
  * @param {number} size - The number of records to fetch.
  * @param {string} [activeFilterQuery=query] - Just the user's active filter, excluding any base
  * org query, so exact-match restriction never picks up unrelated baseline query clauses.
  * @param {string[]} [includeValuesOverride] - Exact values to restrict buckets to, bypassing
  * the automatic field-match detection (e.g. author ORCIDs resolved from a name filter).
+ * @param {string} [sortDirection="desc"] - Sort direction for the selected field.
  * @returns {Promise<Object>} A promise that resolves to term-based records and total count.
  */
-export async function fetchTermBasedData(suffix, query, term, sort, size, activeFilterQuery = query, includeValuesOverride) {
-  const postData = getAggregatedDataQuery(suffix, query, term, startYear, endYear, size, sort, activeFilterQuery, includeValuesOverride);
+export async function fetchTermBasedData(suffix, query, term, sort, size, activeFilterQuery = query, includeValuesOverride, sortDirection = "desc") {
+  const postData = getAggregatedDataQuery(suffix, query, term, startYear, endYear, size, sort, activeFilterQuery, includeValuesOverride, sortDirection);
   const response = await fetchPostData(postData);
 
   let buckets = [];
@@ -805,10 +833,11 @@ export async function fetchTermBasedData(suffix, query, term, sort, size, active
   // Filter out buckets with doc_count of 0
   buckets = buckets.filter(bucket => bucket.doc_count > 0);
 
-  // TODO: implement sorting in https://github.com/oaworks/discussion/issues/1917
-  // Sort all buckets based on 'doc_count'
-  if (sort.includes('_count')) {
-    buckets.sort((a, b) => b.doc_count - a.doc_count); // Sort in descending order as default for now
+  // Keep count-based ordering stable even when the API response comes back
+  // unordered or partially ordered.
+  if (sort === '_count') {
+    const multiplier = sortDirection === "asc" ? 1 : -1;
+    buckets.sort((a, b) => (a.doc_count - b.doc_count) * multiplier);
   }
 
   return { records: buckets, total: totalUniqueTerms };
@@ -867,18 +896,18 @@ function updateExploreCountSummary({ id, total }) {
  *
  * @param {Object} params
  * @param {string} params.type - The explore item type.
- * @param {string} params.sort - The sort key used by the API.
+ * @param {string} params.sortField - The active sort field.
+ * @param {string} params.sortDirection - The active sort direction.
  * @returns {string} Heading adjective, or an empty string if none applies.
  */
-function getExploreSortAdjective({ type, sort }) {
+function getExploreSortAdjective({ type, sortField, sortDirection }) {
   if (type === "articles") {
-    if (!sort) return "Latest";
-    const [field, direction] = sort.split(":");
-    if (field === "published_date") return direction === "asc" ? "Earliest" : "Latest";
+    if (!sortField) return "Latest";
+    if (sortField === "published_date") return sortDirection === "asc" ? "Earliest" : "Latest";
     return "Top";
   }
 
-  return sort?.includes("_key") || sort === "key" ? "By" : "";
+  return sortField === "_key" ? "By" : "";
 }
 
 /**
@@ -918,6 +947,49 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
   tableHeader.appendChild(headerRow);
 }
 
+function getExploreInitialSortState(itemData) {
+  if (!itemData) {
+    return { field: "_count", direction: "desc" };
+  }
+
+  if (itemData.type === "articles") {
+    const [rawField = "published_date", rawDirection = "desc"] = String(itemData.sort || "published_date:desc").split(":");
+    return {
+      field: rawField,
+      direction: rawDirection === "asc" ? "asc" : "desc"
+    };
+  }
+
+  const [rawField = "_count", rawDirection] = String(itemData.sort || "_count").split(":");
+  const field = rawField === "key"
+    ? "_key"
+    : rawField === "doc_count"
+      ? "_count"
+      : rawField;
+
+  return {
+    field,
+    direction: rawDirection === "asc" ? "asc" : "desc"
+  };
+}
+
+function initialiseActiveExploreSort(itemData) {
+  const { field, direction } = getExploreInitialSortState(itemData);
+  currentActiveExploreSortField = field;
+  currentActiveExploreSortDirection = direction;
+}
+
+function getActiveExploreSortState(itemData = currentActiveExploreItemData) {
+  if (!currentActiveExploreSortField || !currentActiveExploreSortDirection) {
+    initialiseActiveExploreSort(itemData);
+  }
+
+  return {
+    field: currentActiveExploreSortField,
+    direction: currentActiveExploreSortDirection
+  };
+}
+
 /**
  * Resolves which Explore column is currently sorted and in what direction, so
  * the table header can show a caret on that column.
@@ -926,36 +998,66 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
  * @returns {{ key: string, direction: "ascending" | "descending" } | null}
  */
 function getExploreSortIndicator(dataType) {
-  const sort = currentActiveExploreItemData?.sort;
+  const { field, direction } = getActiveExploreSortState();
+
+  if (!field) return null;
 
   if (dataType === "articles") {
-    const [field = "published_date", rawDirection = "desc"] = (sort || "published_date:desc").split(":");
     return {
       key: normaliseFieldId(field),
-      direction: rawDirection === "asc" ? "ascending" : "descending"
+      direction: direction === "asc" ? "ascending" : "descending"
     };
   }
 
-  if (!sort || sort.includes("_count")) {
+  if (field === "_count") {
     return {
       key: "doc_count",
-      direction: "descending"
+      direction: direction === "asc" ? "ascending" : "descending"
     };
   }
 
-  if (sort.includes("_key") || sort === "key") {
-    const [, rawDirection = "asc"] = sort.split(":");
+  if (field === "_key") {
     return {
       key: "key",
-      direction: rawDirection === "desc" ? "descending" : "ascending"
+      direction: direction === "asc" ? "ascending" : "descending"
     };
   }
 
-  const [field, rawDirection = "desc"] = sort.split(":");
   return {
     key: normaliseFieldId(field),
-    direction: rawDirection === "asc" ? "ascending" : "descending"
+    direction: direction === "asc" ? "ascending" : "descending"
   };
+}
+
+function getExploreSortButtonLabel(labelText, direction) {
+  const nextDirection = direction === "ascending" ? "descending" : "ascending";
+  return `${labelText}, currently sorted ${direction}. Activate to sort ${nextDirection}.`;
+}
+
+async function handleExploreSortToggle(sortKey, labelText) {
+  if (!currentActiveExploreItemData) return;
+
+  currentActiveExploreSortDirection = currentActiveExploreSortDirection === "asc" ? "desc" : "asc";
+
+  startLoading();
+
+  try {
+    await fetchAndDisplayExploreData(
+      currentActiveExploreItemData,
+      currentActiveExploreItemQuery,
+      currentActiveExploreItemSize
+    );
+    const directionText = currentActiveExploreSortDirection === "asc" ? "ascending" : "descending";
+    announce(`Sorted by ${labelText}, ${directionText}.`);
+  } catch (error) {
+    console.error("Error updating Explore sort:", error);
+  } finally {
+    const sortButtons = Array.from(document.querySelectorAll("[data-explore-sort-key]"));
+    const matchingButton = sortButtons.find((button) => button.getAttribute("data-explore-sort-key") === sortKey);
+    if (matchingButton instanceof HTMLButtonElement) {
+      matchingButton.focus();
+    }
+  }
 }
 
 /**
@@ -1019,19 +1121,43 @@ function setupHeaderTooltip(element, rawKey, dataType) {
   const label = labelData && labelData.label ? labelData.label : key;
   const sortIndicator = getExploreSortIndicator(dataType);
   const isSortedColumn = sortIndicator?.key === key;
+  const isInteractiveSort = Boolean(isSortedColumn && sortIndicator);
 
   element.innerHTML = "";
 
-  const content = document.createElement("span");
-  content.className = "inline-flex items-center gap-1";
+  const labelText = (() => {
+    const temp = document.createElement("span");
+    temp.innerHTML = label;
+    return temp.textContent?.trim() || key;
+  })();
+  const isRightAligned = element.classList.contains("text-right");
+  const contentClassName = `inline-flex w-full items-center gap-1.5 ${isRightAligned ? "justify-end" : "justify-start"}`;
+  const content = isInteractiveSort ? document.createElement("button") : document.createElement("span");
+  content.className = isInteractiveSort
+    ? `${contentClassName} group min-h-8 cursor-pointer rounded-sm py-1 text-inherit transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-900`
+    : contentClassName;
+
+  if (isInteractiveSort) {
+    content.type = "button";
+    content.dataset.exploreSortKey = key;
+    content.setAttribute("aria-label", getExploreSortButtonLabel(labelText, sortIndicator.direction));
+    content.addEventListener("click", () => {
+      handleExploreSortToggle(key, labelText);
+    });
+  }
 
   const labelSpan = document.createElement("span");
+  if (isInteractiveSort) {
+    labelSpan.className = "js-sort-label group-hover:underline group-focus-visible:underline underline-offset-2";
+  }
   labelSpan.innerHTML = label;
   content.appendChild(labelSpan);
 
   if (isSortedColumn) {
     const icon = document.createElement("i");
-    icon.className = sortIndicator.direction === "ascending" ? "ph ph-caret-up text-sm" : "ph ph-caret-down text-sm";
+    icon.className = sortIndicator.direction === "ascending"
+      ? "ph ph-caret-up rounded-sm border border-neutral-500 bg-neutral-900 px-1 py-0.5 text-[11px] leading-none transition-colors group-hover:border-neutral-200 group-hover:bg-neutral-700"
+      : "ph ph-caret-down rounded-sm border border-neutral-500 bg-neutral-900 px-1 py-0.5 text-[11px] leading-none transition-colors group-hover:border-neutral-200 group-hover:bg-neutral-700";
     icon.setAttribute("aria-hidden", "true");
     content.appendChild(icon);
 
@@ -1052,15 +1178,20 @@ function setupHeaderTooltip(element, rawKey, dataType) {
     // Get additional help text from orgData if available
     const additionalHelpText = orgData.hits.hits[0]?._source.policy?.help_text?.[key] ?? null;
 
-    element.tabIndex = 0;
-    createTooltip(element, generateTooltipContent(labelData, additionalHelpText), {
+    if (!isInteractiveSort) {
+      element.tabIndex = 0;
+    }
+
+    createTooltip(isInteractiveSort ? content : element, generateTooltipContent(labelData, additionalHelpText), {
       placement: 'bottom',
       theme: 'tooltip-white',
       delay: [500, 0] // Don't pop up while the mouse is just passing through the header row.
     });
 
-    element.setAttribute('aria-controls', `${key}_info`);
-    element.setAttribute('aria-labelledby', `${key}_info`);
+    if (!isInteractiveSort) {
+      element.setAttribute('aria-controls', `${key}_info`);
+      element.setAttribute('aria-labelledby', `${key}_info`);
+    }
   }
 }
 
@@ -1179,6 +1310,9 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
 function createTableCell(content, cssClass, exploreItemId = null, key = null, isHeader = false, displayName = null, authorOrcid = null) {
   const cell = document.createElement(isHeader ? 'th' : 'td');
   cell.className = cssClass;
+  if (isHeader) {
+    cell.scope = "col";
+  }
   const termBase = currentActiveExploreItemData?.id === "author"
     ? AUTHOR_BREAKDOWN_TERM
     : (currentActiveExploreItemData?.term?.trim() || "");
