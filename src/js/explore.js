@@ -399,7 +399,7 @@ export async function processExploreDataTable(button, itemData) {
   currentActiveExploreItemButton = button; // Set the currently active explore item button
   currentActiveExploreItemData = itemData; // Set the currently active explore item data
   if (!shouldPreserveSort) {
-    initialiseActiveExploreSort(itemData);
+    getActiveExploreSortState(itemData, { reset: true });
   }
 
   startLoading();
@@ -947,7 +947,13 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
   tableHeader.appendChild(headerRow);
 }
 
-function getExploreInitialSortState(itemData) {
+/**
+ * Derives the default sort state for an Explore item from its config.
+ *
+ * @param {Object|null|undefined} itemData
+ * @returns {{ field: string, direction: "asc"|"desc" }}
+ */
+function resolveExploreSortState(itemData) {
   if (!itemData) {
     return { field: "_count", direction: "desc" };
   }
@@ -973,15 +979,21 @@ function getExploreInitialSortState(itemData) {
   };
 }
 
-function initialiseActiveExploreSort(itemData) {
-  const { field, direction } = getExploreInitialSortState(itemData);
-  currentActiveExploreSortField = field;
-  currentActiveExploreSortDirection = direction;
-}
+/**
+ * Returns the current Explore sort state, optionally resetting it from the
+ * active item's config when switching to a new breakdown.
+ *
+ * @param {Object} [itemData=currentActiveExploreItemData]
+ * @param {{ reset?: boolean }} [options={}]
+ * @returns {{ field: string, direction: "asc"|"desc" }}
+ */
+function getActiveExploreSortState(itemData = currentActiveExploreItemData, options = {}) {
+  const { reset = false } = options;
 
-function getActiveExploreSortState(itemData = currentActiveExploreItemData) {
-  if (!currentActiveExploreSortField || !currentActiveExploreSortDirection) {
-    initialiseActiveExploreSort(itemData);
+  if (reset || !currentActiveExploreSortField || !currentActiveExploreSortDirection) {
+    const { field, direction } = resolveExploreSortState(itemData);
+    currentActiveExploreSortField = field;
+    currentActiveExploreSortDirection = direction;
   }
 
   return {
@@ -995,7 +1007,7 @@ function getActiveExploreSortState(itemData = currentActiveExploreItemData) {
  * the table header can show a caret on that column.
  *
  * @param {string} dataType - The current Explore table type.
- * @returns {{ key: string, direction: "ascending" | "descending" } | null}
+ * @returns {{ key: string, direction: "ascending"|"descending" } | null}
  */
 function getExploreSortIndicator(dataType) {
   const { field, direction } = getActiveExploreSortState();
@@ -1029,11 +1041,14 @@ function getExploreSortIndicator(dataType) {
   };
 }
 
-function getExploreSortButtonLabel(labelText, direction) {
-  const nextDirection = direction === "ascending" ? "descending" : "ascending";
-  return `${labelText}, currently sorted ${direction}. Activate to sort ${nextDirection}.`;
-}
-
+/**
+ * Toggles the current Explore header sort direction, re-renders the table, and
+ * restores focus to the same header control afterwards.
+ *
+ * @param {string} sortKey - Normalised header key used to restore focus.
+ * @param {string} labelText - Human-readable column label announced to users.
+ * @returns {Promise<void>}
+ */
 async function handleExploreSortToggle(sortKey, labelText) {
   if (!currentActiveExploreItemData) return;
 
@@ -1138,9 +1153,10 @@ function setupHeaderTooltip(element, rawKey, dataType) {
     : contentClassName;
 
   if (isInteractiveSort) {
+    const nextDirection = sortIndicator.direction === "ascending" ? "descending" : "ascending";
     content.type = "button";
     content.dataset.exploreSortKey = key;
-    content.setAttribute("aria-label", getExploreSortButtonLabel(labelText, sortIndicator.direction));
+    content.setAttribute("aria-label", `${labelText}, currently sorted ${sortIndicator.direction}. Activate to sort ${nextDirection}.`);
     content.addEventListener("click", () => {
       handleExploreSortToggle(key, labelText);
     });
