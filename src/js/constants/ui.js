@@ -19,6 +19,10 @@ export const CONTROL_SELECT_CLASSES = "appearance-none cursor-pointer rounded-sm
 export const SORT_TRIGGER_CLASSES = `group min-h-8 cursor-pointer rounded-sm py-1 text-inherit transition-colors ${CONTROL_FOCUS_RING_CLASSES}`;
 export const SORT_LABEL_CLASSES = "js-sort-label min-w-0 uppercase group-hover:underline group-focus-visible:underline underline-offset-2";
 export const SORT_CARET_CHIP_CLASSES = "shrink-0 rounded-sm border border-neutral-500 bg-neutral-800 px-1 py-0.5 text-[10px] leading-none text-neutral-100 shadow-sm transition-colors group-hover:border-neutral-300 group-hover:bg-neutral-700 group-focus-visible:border-neutral-300 group-focus-visible:bg-neutral-700";
+export const EXPLORE_SUMMARY_ROW_CLASSES = {
+  total: "border-t-2 border-neutral-400 !bg-neutral-200 font-semibold text-neutral-900",
+  missing: "!bg-neutral-50 text-neutral-700"
+};
 
 /**
  * Class names for table header columns in the data explore section.

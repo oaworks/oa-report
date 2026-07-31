@@ -9,7 +9,7 @@
 
 import DOMPurify from "dompurify";
 import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, escapeQueryValue, normaliseFieldId, makeNumberReadable, announce, orcidDisplayNames } from "./utils.js";
-import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, SEGMENTED_PILL_CLASSES, VIEW_TAB_CLASSES, CONTROL_FIELD_SHELL_CLASSES, CONTROL_FOCUS_RING_CLASSES, CONTROL_SELECT_CLASSES, SORT_TRIGGER_CLASSES, SORT_LABEL_CLASSES, SORT_CARET_CHIP_CLASSES, resolveFieldDefinition } from "./constants.js";
+import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, SEGMENTED_PILL_CLASSES, VIEW_TAB_CLASSES, CONTROL_FIELD_SHELL_CLASSES, CONTROL_FOCUS_RING_CLASSES, CONTROL_SELECT_CLASSES, SORT_TRIGGER_CLASSES, SORT_LABEL_CLASSES, SORT_CARET_CHIP_CLASSES, EXPLORE_SUMMARY_ROW_CLASSES, resolveFieldDefinition } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { startLoading, stopLoading } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
@@ -1265,15 +1265,19 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
   // Clear any highlighted rows if user has already interacted with the table
   clearRowHighlights();
 
-  // Separate the 'all_values' record from other records
+  // Separate the synthetic summary rows from the normal bucket rows.
   const allValuesRecord = data.find(record => record.key === 'all_values');
-  const otherRecords = data.filter(record => record.key !== 'all_values');
+  const noValuesRecord = data.find(record => record.key === 'no_values');
+  const otherRecords = data.filter(record => record.key !== 'all_values' && record.key !== 'no_values');
 
   // Limit the number of rows to the specified size
   otherRecords.length = Math.min(otherRecords.length, currentActiveExploreItemSize);
 
   function appendRow(target, record, section) {
     const row = document.createElement('tr');
+    const summaryRowType = section === 'foot'
+      ? (record.key === 'all_values' ? 'total' : record.key === 'no_values' ? 'missing' : null)
+      : null;
     if (dataType === 'terms' && exploreItemId === 'author' && record.display_name) orcidDisplayNames.set(record.key, record.display_name);
     const visibleEntries = Object.entries(record)
       .filter(([key]) => !(dataType === 'terms' && exploreItemId === 'author' && (key === 'display_name' || key === 'orcid')));
@@ -1314,6 +1318,9 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
       if (columnIndex > 1) {
         cell.classList.add(shouldRightAlignExploreColumn(key, rawContent) ? "text-right" : "text-left");
       }
+      if (summaryRowType) {
+        cell.classList.add(...EXPLORE_SUMMARY_ROW_CLASSES[summaryRowType].split(" "));
+      }
 
       row.appendChild(cell);
     });
@@ -1326,9 +1333,13 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
     appendRow(tableBody, record, 'body');
   });
 
-  // Add the 'all_values' record to the tfoot if it exists
+  // Add synthetic summary rows to the footer, keeping "No … recorded" below
+  // the total because it is not included in that total count.
   if (allValuesRecord) {
     appendRow(tableFooter, allValuesRecord, 'foot');
+  }
+  if (noValuesRecord) {
+    appendRow(tableFooter, noValuesRecord, 'foot');
   }
 
   // Highlight the selected rows if they exist in the new data
@@ -1573,11 +1584,12 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
     return cell;
   }
   
-  // Early handling for common 'all_values' and 'no_values' cases in terms-based data
-  // Display either 'All [explore item]]' or 'No [explore item]'
+  // Early handling for common synthetic summary rows in terms-based data.
   if (content === 'all_values' || content === 'no_values') {
-    cell.innerHTML = content === 'all_values' ? 'All ' : 'No ';
-    cell.innerHTML += (EXPLORE_ITEMS_LABELS[exploreItemId]?.plural || pluraliseNoun(exploreItemId)).toLowerCase();
+    const itemLabel = (EXPLORE_ITEMS_LABELS[exploreItemId]?.plural || pluraliseNoun(exploreItemId)).toLowerCase();
+    cell.innerHTML = content === 'all_values'
+      ? `All ${itemLabel}`
+      : `No ${itemLabel} recorded`;
     return cell;
   }
 
