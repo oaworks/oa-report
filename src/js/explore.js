@@ -1876,43 +1876,58 @@ async function handleFilterChange(filterId) {
 }
 
 /**
- * Handle the toggling of the data display style in the table.
+ * Activates a specific Explore display mode, refreshes the table if needed,
+ * and optionally announces the change.
  *
- * This function sets up an event listener on the toggle button. When the button is clicked,
- * it switches between two states - 'Percent' and 'Count'.
+ * @param {"percent"|"count"} mode
+ * @param {{ announceChange?: boolean }} [options={}]
+ * @returns {void}
+ */
+function setExploreDisplayMode(mode, options = {}) {
+  const { announceChange = true } = options;
+  const nextIsPercent = mode === 'percent';
+
+  if (currentActiveDataDisplayToggle === nextIsPercent) {
+    return;
+  }
+
+  currentActiveDataDisplayToggle = nextIsPercent;
+
+  if (announceChange) {
+    announce(`Explore view: ${currentActiveDataDisplayToggle ? "Percent" : "Count"}.`);
+  }
+
+  startLoading();
+  fetchAndDisplayExploreData(currentActiveExploreItemData, currentActiveExploreItemQuery, currentActiveExploreItemSize);
+}
+
+/**
+ * Handles the Explore display mode radio group.
+ *
+ * @returns {void}
  */
 function handleDataDisplayToggle() {
-  const toggleButton = document.getElementById('toggle-data-view');
-  const percentLabel = document.getElementById('toggle-label-percent');
-  const countLabel = document.getElementById('toggle-label-count');
+  const field = document.getElementById('explore_display_style_field');
+  if (!field || field.dataset.bound === 'true') {
+    return;
+  }
 
-  toggleButton.addEventListener('click', function() {
-    const toggleBg = this.querySelector('span.pointer-events-none');
-    const toggleDot = this.querySelector('span.translate-x-0, span.translate-x-5');
+  const percentInput = document.getElementById('display-style-percent');
+  const countInput = document.getElementById('display-style-count');
+  if (percentInput instanceof HTMLInputElement) {
+    percentInput.checked = currentActiveDataDisplayToggle;
+  }
+  if (countInput instanceof HTMLInputElement) {
+    countInput.checked = !currentActiveDataDisplayToggle;
+  }
 
-    // Check if the toggle is in the 'Percent' (active) state
-    if (this.getAttribute('aria-checked') === 'true') {
-        // Switch to 'Count' (inactive) state
-        this.setAttribute('aria-checked', 'false');
-        toggleBg.classList.replace('bg-carnation-500', 'bg-neutral-200');
-        toggleDot.classList.replace('translate-x-0', 'translate-x-5');
-        currentActiveDataDisplayToggle = false; // Update the global toggle state
-        percentLabel.classList.replace('text-white', 'text-neutral-300');
-        countLabel.classList.replace('text-neutral-300', 'text-white');
-    } else {
-        // Switch back to 'Percent' (active) state
-        this.setAttribute('aria-checked', 'true');
-        toggleBg.classList.replace('bg-neutral-200', 'bg-carnation-500');
-        toggleDot.classList.replace('translate-x-5', 'translate-x-0');
-        currentActiveDataDisplayToggle = true; // Update the global toggle state
-        countLabel.classList.replace('text-white', 'text-neutral-300');
-        percentLabel.classList.replace('text-neutral-300', 'text-white');
-    }
-    announce(`Explore view: ${currentActiveDataDisplayToggle ? "Percent" : "Count"}.`);
-    // Fetch and display data with the updated percent/count format
-    startLoading();
-    fetchAndDisplayExploreData(currentActiveExploreItemData, currentActiveExploreItemQuery, currentActiveExploreItemSize);
+  field.addEventListener('change', (event) => {
+    const input = event.target;
+    if (!(input instanceof HTMLInputElement) || input.name !== 'explore-display-style') return;
+    setExploreDisplayMode(input.value === 'count' ? 'count' : 'percent');
   });
+
+  field.dataset.bound = 'true';
 }
 
 /**
