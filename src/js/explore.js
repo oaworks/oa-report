@@ -1180,7 +1180,7 @@ function setupHeaderTooltip(element, rawKey, dataType) {
     return temp.textContent?.trim() || key;
   })();
   const isRightAligned = element.classList.contains("text-right");
-  const contentClassName = `inline-flex w-full items-center gap-1.5 ${isRightAligned ? "justify-end" : "justify-start"}`;
+  const contentClassName = `inline-flex w-full min-w-0 items-center gap-1 ${isRightAligned ? "justify-end" : "justify-start"}`;
   const content = isInteractiveSort ? document.createElement("button") : document.createElement("span");
   content.className = isInteractiveSort
     ? `${contentClassName} group min-h-8 cursor-pointer rounded-sm py-1 text-inherit transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-900`
@@ -1198,7 +1198,7 @@ function setupHeaderTooltip(element, rawKey, dataType) {
 
   const labelSpan = document.createElement("span");
   if (isInteractiveSort) {
-    labelSpan.className = "js-sort-label group-hover:underline group-focus-visible:underline underline-offset-2";
+    labelSpan.className = "js-sort-label min-w-0 uppercase group-hover:underline group-focus-visible:underline underline-offset-2";
   }
   labelSpan.innerHTML = label;
   content.appendChild(labelSpan);
@@ -1206,8 +1206,8 @@ function setupHeaderTooltip(element, rawKey, dataType) {
   if (isSortedColumn) {
     const icon = document.createElement("i");
     icon.className = sortIndicator.direction === "ascending"
-      ? "ph ph-caret-up inline-flex self-center rounded-sm border border-neutral-500 bg-neutral-800 px-1.5 py-1 text-[11px] leading-none text-neutral-100 shadow-sm transition-colors group-hover:border-neutral-300 group-hover:bg-neutral-700 group-focus-visible:border-neutral-300 group-focus-visible:bg-neutral-700"
-      : "ph ph-caret-down inline-flex self-center rounded-sm border border-neutral-500 bg-neutral-800 px-1.5 py-1 text-[11px] leading-none text-neutral-100 shadow-sm transition-colors group-hover:border-neutral-300 group-hover:bg-neutral-700 group-focus-visible:border-neutral-300 group-focus-visible:bg-neutral-700";
+      ? "ph ph-caret-up shrink-0 rounded-sm border border-neutral-500 bg-neutral-800 px-1 py-0.5 text-[10px] leading-none text-neutral-100 shadow-sm transition-colors group-hover:border-neutral-300 group-hover:bg-neutral-700 group-focus-visible:border-neutral-300 group-focus-visible:bg-neutral-700"
+      : "ph ph-caret-down shrink-0 rounded-sm border border-neutral-500 bg-neutral-800 px-1 py-0.5 text-[10px] leading-none text-neutral-100 shadow-sm transition-colors group-hover:border-neutral-300 group-hover:bg-neutral-700 group-focus-visible:border-neutral-300 group-focus-visible:bg-neutral-700";
     icon.setAttribute("aria-hidden", "true");
     content.appendChild(icon);
 
