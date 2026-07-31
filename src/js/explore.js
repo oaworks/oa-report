@@ -646,11 +646,11 @@ function updateRecordsShownControl(total) {
   label.textContent = "Records shown:";
 
   const wrapper = document.createElement("span");
-  wrapper.className = "relative inline-flex";
+  wrapper.className = "relative inline-flex rounded-sm border border-neutral-500 bg-neutral-800 p-0.5 shadow-sm transition-colors hover:border-neutral-300 focus-within:border-neutral-300";
 
   const selectMenu = document.createElement("select");
   selectMenu.id = "records_shown_select";
-  selectMenu.className = "appearance-none bg-transparent border-0 border-b border-neutral-300 text-white font-semibold text-center py-1 pr-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800";
+  selectMenu.className = "appearance-none cursor-pointer rounded-sm bg-transparent px-3 py-1.5 pr-8 text-xs font-semibold uppercase tracking-wide text-neutral-100 transition-colors hover:bg-neutral-700 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-900";
   selectMenu.setAttribute("aria-labelledby", "records_shown_select_label");
   selectMenu.addEventListener("change", handleRecordsShownChange);
 
@@ -665,7 +665,7 @@ function updateRecordsShownControl(total) {
   });
 
   const caret = document.createElement("i");
-  caret.className = "ph ph-caret-down absolute right-0 top-1/2 -translate-y-1/2 text-[10px] pointer-events-none";
+  caret.className = "ph ph-caret-down absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-neutral-100 pointer-events-none";
   caret.setAttribute("aria-hidden", "true");
 
   wrapper.append(selectMenu, caret);
@@ -1206,8 +1206,8 @@ function setupHeaderTooltip(element, rawKey, dataType) {
   if (isSortedColumn) {
     const icon = document.createElement("i");
     icon.className = sortIndicator.direction === "ascending"
-      ? "ph ph-caret-up rounded-sm border border-neutral-500 bg-neutral-900 px-1 py-0.5 text-[11px] leading-none transition-colors group-hover:border-neutral-200 group-hover:bg-neutral-700"
-      : "ph ph-caret-down rounded-sm border border-neutral-500 bg-neutral-900 px-1 py-0.5 text-[11px] leading-none transition-colors group-hover:border-neutral-200 group-hover:bg-neutral-700";
+      ? "ph ph-caret-up inline-flex self-center rounded-sm border border-neutral-500 bg-neutral-800 px-1.5 py-1 text-[11px] leading-none text-neutral-100 shadow-sm transition-colors group-hover:border-neutral-300 group-hover:bg-neutral-700 group-focus-visible:border-neutral-300 group-focus-visible:bg-neutral-700"
+      : "ph ph-caret-down inline-flex self-center rounded-sm border border-neutral-500 bg-neutral-800 px-1.5 py-1 text-[11px] leading-none text-neutral-100 shadow-sm transition-colors group-hover:border-neutral-300 group-hover:bg-neutral-700 group-focus-visible:border-neutral-300 group-focus-visible:bg-neutral-700";
     icon.setAttribute("aria-hidden", "true");
     content.appendChild(icon);
 

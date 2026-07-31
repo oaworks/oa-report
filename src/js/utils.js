@@ -932,7 +932,7 @@ export function copyToClipboard(buttonId, elementId, formatRows = (element) => A
   if (button.dataset.copyBound === 'true') return; // Already bound — avoid attaching duplicate listeners
   button.dataset.copyBound = 'true';
 
-  const textSpan = button.querySelector('span'); // Select text content inside <span> in the button
+  const labelElement = button.querySelector('[data-copy-label]') || button.querySelector('span');
   button.addEventListener('click', () => {
     const element = document.getElementById(elementId);
     if (!element) {
@@ -950,11 +950,15 @@ export function copyToClipboard(buttonId, elementId, formatRows = (element) => A
       ]);
 
     writePromise.then(() => {
-      const originalText = textSpan.innerText;
-      textSpan.innerText = successMessage;
+      const originalText = labelElement?.innerText;
+      if (labelElement) {
+        labelElement.innerText = successMessage;
+      }
       announce(successMessage);
       setTimeout(() => {
-        textSpan.innerText = originalText; // Revert to original text after 2 seconds
+        if (labelElement && typeof originalText === 'string') {
+          labelElement.innerText = originalText;
+        }
       }, 2000);
     }).catch(err => {
       console.error('Failed to copy text: ', err);

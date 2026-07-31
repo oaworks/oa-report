@@ -56,15 +56,15 @@
           class="flex flex-wrap items-stretch justify-between border border-neutral-700 bg-neutral-900 text-xs font-semibold uppercase text-white"
         >
         <div class="flex flex-wrap items-stretch divide-x divide-neutral-700">
-          <p id="explore_count_summary" class="flex items-center gap-1 p-3" aria-live="polite">
+          <p id="explore_count_summary" class="flex items-center gap-1.5 p-2.5" aria-live="polite">
             <span id="explore_records_shown" class="inline-flex items-baseline"></span>
             / <span id="explore_count_total">0</span>
             <span id="explore_count_label">journal articles</span>
           </p>
           <form id="explore_display_style_field">
-            <fieldset class="p-3">
+            <fieldset class="p-2.5">
               <legend class="sr-only">Display values as</legend>
-              <div class="inline-flex rounded-sm border border-neutral-700 bg-neutral-800/70 p-0.5">
+              <div class="inline-flex rounded-sm border border-neutral-500 bg-neutral-800 p-0.5 shadow-sm transition-colors hover:border-neutral-300 focus-within:border-neutral-300">
                 <input
                   id="display-style-percent"
                   type="radio"
@@ -75,9 +75,9 @@
                 >
                 <label
                   for="display-style-percent"
-                  class="inline-flex items-center gap-1 rounded-sm px-3 py-1 text-xs font-semibold uppercase tracking-wide text-neutral-300 transition-colors hover:bg-neutral-700 hover:text-white peer-checked/display-percent:bg-neutral-100 peer-checked/display-percent:text-neutral-900 peer-focus-visible/display-percent:ring-2 peer-focus-visible/display-percent:ring-carnation-400 peer-focus-visible/display-percent:ring-offset-1 peer-focus-visible/display-percent:ring-offset-neutral-900 [&>i]:text-[1em]"
+                  class="inline-flex cursor-pointer items-center gap-1.5 rounded-sm px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-100 transition-colors hover:bg-neutral-700 hover:text-white peer-checked/display-percent:bg-neutral-100 peer-checked/display-percent:text-neutral-900 peer-focus-visible/display-percent:ring-2 peer-focus-visible/display-percent:ring-carnation-400 peer-focus-visible/display-percent:ring-offset-1 peer-focus-visible/display-percent:ring-offset-neutral-900 [&>i]:text-[1em]"
                 >
-                  Percent <span aria-hidden="true">{% icon_small "percent" %}</span>
+                  Percent <span aria-hidden="true" class="inline-flex items-center self-center leading-none [&>i]:block [&>i]:text-[0.875em]">{% icon_small "percent" %}</span>
                 </label>
                 <input
                   id="display-style-count"
@@ -88,9 +88,9 @@
                 >
                 <label
                   for="display-style-count"
-                  class="inline-flex items-center gap-1 rounded-sm px-3 py-1 text-xs font-semibold uppercase tracking-wide text-neutral-300 transition-colors hover:bg-neutral-700 hover:text-white peer-checked/display-count:bg-neutral-100 peer-checked/display-count:text-neutral-900 peer-focus-visible/display-count:ring-2 peer-focus-visible/display-count:ring-carnation-400 peer-focus-visible/display-count:ring-offset-1 peer-focus-visible/display-count:ring-offset-neutral-900 [&>i]:text-[1em]"
+                  class="inline-flex cursor-pointer items-center gap-1.5 rounded-sm px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-100 transition-colors hover:bg-neutral-700 hover:text-white peer-checked/display-count:bg-neutral-100 peer-checked/display-count:text-neutral-900 peer-focus-visible/display-count:ring-2 peer-focus-visible/display-count:ring-carnation-400 peer-focus-visible/display-count:ring-offset-1 peer-focus-visible/display-count:ring-offset-neutral-900 [&>i]:text-[1em]"
                 >
-                  Count <span aria-hidden="true">{% icon_small "hash" %}</span>
+                  Count <span aria-hidden="true" class="inline-flex items-center self-center leading-none [&>i]:block [&>i]:text-[0.875em]">{% icon_small "hash" %}</span>
                 </label>
               </div>
             </fieldset>
@@ -98,10 +98,12 @@
         </div>
         <button
           id="explore_copy_clipboard"
-          class="flex items-center gap-1 p-3 border-l border-neutral-700 font-semibold uppercase text-white hover:bg-carnation-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-carnation-500"
+          class="group flex items-center border-l border-neutral-700 p-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-900"
         >
-          {% icon_small "clipboard" %}
-          <span>Copy table</span>
+          <span class="inline-flex items-center gap-1.5 rounded-sm border border-neutral-500 bg-neutral-800 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-100 shadow-sm transition-colors group-hover:border-neutral-300 group-hover:bg-neutral-700 group-hover:text-white group-focus-visible:border-neutral-300 group-focus-visible:bg-neutral-700 group-focus-visible:text-white [&>i]:shrink-0 [&>i]:text-[1em]">
+            <span aria-hidden="true">{% icon_small "clipboard" %}</span>
+            <span data-copy-label>Copy table</span>
+          </span>
         </button>
         </div>
       <div class="relative">
