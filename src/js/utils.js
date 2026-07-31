@@ -952,11 +952,13 @@ export function copyToClipboard(buttonId, elementId, formatRows = (element) => A
     writePromise.then(() => {
       const originalText = textSpan.innerText;
       textSpan.innerText = successMessage;
+      announce(successMessage);
       setTimeout(() => {
         textSpan.innerText = originalText; // Revert to original text after 2 seconds
       }, 2000);
     }).catch(err => {
       console.error('Failed to copy text: ', err);
+      announce('Copy failed.');
     });
   });
 }
