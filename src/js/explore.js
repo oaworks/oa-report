@@ -722,14 +722,12 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 
     updateExploreCountSummary({ id, total: totalCount });
     updateRecordsShownControl(totalCount);
+    replaceText("explore_type", EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id), { allowHTML: true });
 
     if (records.length > 0) {
       // Populate table with data
       populateTableHeader(records[0], 'export_table_head', type);
       populateTableBody(records, 'export_table_body', id, type);
-      
-      // Update any mentions of the explore data type with plural version of the ID
-      replaceText("explore_type", EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id), { allowHTML: true });
     
       // Add functionalities to the table
       enableExploreTableScroll();
@@ -1164,10 +1162,13 @@ function generateTooltipContent(labelData, additionalHelpText = null) {
  */
 function setupHeaderTooltip(element, rawKey, dataType) {
   const key = normaliseFieldId(rawKey);
+  const exploreTypeLabel = document.querySelector(".explore_type")?.textContent?.trim();
   const labelData = dataType === 'terms'
     ? resolveFieldDefinition(key, 'explore')
     : EXPLORE_HEADER_ARTICLES_LABELS[key];
-  const label = labelData && labelData.label ? labelData.label : key;
+  const label = key === "key" && dataType === "terms"
+    ? (exploreTypeLabel || key)
+    : (labelData && labelData.label ? labelData.label : key);
   const sortIndicator = getExploreSortIndicator(dataType);
   const isSortedColumn = sortIndicator?.key === key;
   const isInteractiveSort = Boolean(isSortedColumn && sortIndicator);
