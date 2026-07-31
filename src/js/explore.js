@@ -9,7 +9,7 @@
 
 import DOMPurify from "dompurify";
 import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, escapeQueryValue, normaliseFieldId, makeNumberReadable, announce, orcidDisplayNames } from "./utils.js";
-import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, SEGMENTED_PILL_CLASSES, VIEW_TAB_CLASSES, resolveFieldDefinition } from "./constants.js";
+import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, SEGMENTED_PILL_CLASSES, VIEW_TAB_CLASSES, CONTROL_FIELD_SHELL_CLASSES, CONTROL_FOCUS_RING_CLASSES, CONTROL_SELECT_CLASSES, SORT_TRIGGER_CLASSES, SORT_LABEL_CLASSES, SORT_CARET_CHIP_CLASSES, resolveFieldDefinition } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { startLoading, stopLoading } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
@@ -646,11 +646,11 @@ function updateRecordsShownControl(total) {
   label.textContent = "Records shown:";
 
   const wrapper = document.createElement("span");
-  wrapper.className = "relative inline-flex rounded-sm border border-neutral-500 bg-neutral-800 p-0.5 shadow-sm transition-colors hover:border-neutral-300 focus-within:border-neutral-300";
+  wrapper.className = `relative inline-flex ${CONTROL_FIELD_SHELL_CLASSES}`;
 
   const selectMenu = document.createElement("select");
   selectMenu.id = "records_shown_select";
-  selectMenu.className = "appearance-none cursor-pointer rounded-sm bg-transparent px-3 py-1.5 pr-8 text-xs font-semibold uppercase tracking-wide text-neutral-100 transition-colors hover:bg-neutral-700 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-900";
+  selectMenu.className = `${CONTROL_SELECT_CLASSES} ${CONTROL_FOCUS_RING_CLASSES}`;
   selectMenu.setAttribute("aria-labelledby", "records_shown_select_label");
   selectMenu.addEventListener("change", handleRecordsShownChange);
 
@@ -1183,7 +1183,7 @@ function setupHeaderTooltip(element, rawKey, dataType) {
   const contentClassName = `inline-flex w-full min-w-0 items-center gap-1 ${isRightAligned ? "justify-end" : "justify-start"}`;
   const content = isInteractiveSort ? document.createElement("button") : document.createElement("span");
   content.className = isInteractiveSort
-    ? `${contentClassName} group min-h-8 cursor-pointer rounded-sm py-1 text-inherit transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-900`
+    ? `${contentClassName} ${SORT_TRIGGER_CLASSES}`
     : contentClassName;
 
   if (isInteractiveSort) {
@@ -1198,7 +1198,7 @@ function setupHeaderTooltip(element, rawKey, dataType) {
 
   const labelSpan = document.createElement("span");
   if (isInteractiveSort) {
-    labelSpan.className = "js-sort-label min-w-0 uppercase group-hover:underline group-focus-visible:underline underline-offset-2";
+    labelSpan.className = SORT_LABEL_CLASSES;
   }
   labelSpan.innerHTML = label;
   content.appendChild(labelSpan);
@@ -1206,8 +1206,8 @@ function setupHeaderTooltip(element, rawKey, dataType) {
   if (isSortedColumn) {
     const icon = document.createElement("i");
     icon.className = sortIndicator.direction === "ascending"
-      ? "ph ph-caret-up shrink-0 rounded-sm border border-neutral-500 bg-neutral-800 px-1 py-0.5 text-[10px] leading-none text-neutral-100 shadow-sm transition-colors group-hover:border-neutral-300 group-hover:bg-neutral-700 group-focus-visible:border-neutral-300 group-focus-visible:bg-neutral-700"
-      : "ph ph-caret-down shrink-0 rounded-sm border border-neutral-500 bg-neutral-800 px-1 py-0.5 text-[10px] leading-none text-neutral-100 shadow-sm transition-colors group-hover:border-neutral-300 group-hover:bg-neutral-700 group-focus-visible:border-neutral-300 group-focus-visible:bg-neutral-700";
+      ? `ph ph-caret-up ${SORT_CARET_CHIP_CLASSES}`
+      : `ph ph-caret-down ${SORT_CARET_CHIP_CLASSES}`;
     icon.setAttribute("aria-hidden", "true");
     content.appendChild(icon);
 

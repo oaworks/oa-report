@@ -13,6 +13,13 @@ export const DATE_SELECTION_BUTTON_CLASSES = {
   active: "inline-flex items-center px-2.5 py-1 md:px-3 border rounded-sm text-sm font-semibold bg-neutral-200 text-neutral-900 border-neutral-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-700 transition-colors js-nav-chip"
 };
 
+export const CONTROL_FOCUS_RING_CLASSES = "focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-900";
+export const CONTROL_FIELD_SHELL_CLASSES = "rounded-sm border border-neutral-500 bg-neutral-800 p-0.5 shadow-sm transition-colors hover:border-neutral-300 focus-within:border-neutral-300";
+export const CONTROL_SELECT_CLASSES = "appearance-none cursor-pointer rounded-sm bg-transparent px-3 py-1.5 pr-8 text-xs font-semibold uppercase tracking-wide text-neutral-100 transition-colors hover:bg-neutral-700 hover:text-white";
+export const SORT_TRIGGER_CLASSES = `group min-h-8 cursor-pointer rounded-sm py-1 text-inherit transition-colors ${CONTROL_FOCUS_RING_CLASSES}`;
+export const SORT_LABEL_CLASSES = "js-sort-label min-w-0 uppercase group-hover:underline group-focus-visible:underline underline-offset-2";
+export const SORT_CARET_CHIP_CLASSES = "shrink-0 rounded-sm border border-neutral-500 bg-neutral-800 px-1 py-0.5 text-[10px] leading-none text-neutral-100 shadow-sm transition-colors group-hover:border-neutral-300 group-hover:bg-neutral-700 group-focus-visible:border-neutral-300 group-focus-visible:bg-neutral-700";
+
 /**
  * Class names for table header columns in the data explore section.
  */

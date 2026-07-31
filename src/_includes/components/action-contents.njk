@@ -48,12 +48,10 @@
         {% endif %}
       </p>
       {% if params.copy_btn %}
-      <button id="copy_clipboard_{{ params.id }}" class="group flex items-center border-l border-neutral-700 p-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-900">
-        <span class="inline-flex items-center gap-1.5 rounded-sm border border-neutral-500 bg-neutral-800 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-100 shadow-sm transition-colors group-hover:border-neutral-300 group-hover:bg-neutral-700 group-hover:text-white group-focus-visible:border-neutral-300 group-focus-visible:bg-neutral-700 group-focus-visible:text-white [&>i]:shrink-0 [&>i]:text-[1em]">
-          <span aria-hidden="true">{% icon_small "clipboard" %}</span>
-          <span data-copy-label>Copy article links</span>
-        </span>
-      </button>
+      {{ component("copy-btn", {
+        id: "copy_clipboard_" ~ params.id,
+        label: "Copy article links"
+      }) }}
       {% endif %}
     </div>
     <div class="overflow-x-auto border-l border-r border-b border-neutral-700">
