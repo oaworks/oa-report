@@ -663,7 +663,6 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     const { records, total: totalRecords } = await loadExploreRecords(itemData, query, size, pretty);
 
     const sortAdjective = getExploreSortAdjective({ type, sort });
-    replaceText("explore_sort", getExploreSortLabel({ type, id, term, sort }), { allowHTML: true });
     replaceText("report_sort_adjective", sortAdjective);
     document.querySelectorAll(".report_sort_adjective").forEach(el => el.classList.toggle("hidden", !sortAdjective));
     setExploreModeUI(type);
@@ -864,41 +863,6 @@ function updateExploreCountSummary({ id, total }) {
 }
 
 /**
- * Determines the label to use for the "Sorted by" UI based on explore metadata.
- *
- * @param {Object} params
- * @param {string} params.type - The explore item type.
- * @param {string} params.id - The explore item id.
- * @param {string} params.term - The term field used for terms-based breakdowns.
- * @param {string} params.sort - The sort key used by the API.
- * @returns {string} Human-friendly sort label.
- */
-function getExploreSortLabel({ type, id, term, sort }) {
-  const lowerCaseLabels = new Set(["Published date", "Published year", "Year"]);
-  if (type === "articles") {
-    if (!sort) return "Published date";
-    const sortField = sort.split(":")[0];
-    const label = EXPLORE_HEADER_ARTICLES_LABELS?.[sortField]?.label || "Published date";
-    return lowerCaseLabels.has(label) ? label.toLowerCase() : label;
-  }
-
-  if (!sort) return "publication count";
-
-  if (sort.includes("_count")) return "publication count";
-
-  if (sort.includes("_key") || sort === "key") {
-    const label = EXPLORE_ITEMS_LABELS[id]?.singular || EXPLORE_ITEMS_LABELS[id]?.plural || "Label";
-    return lowerCaseLabels.has(label) ? label.toLowerCase() : label;
-  }
-
-  const label = resolveFieldDefinition(sort, 'explore')?.label
-    || (term ? resolveFieldDefinition(term, 'explore')?.label : null)
-    || "Publication count";
-  if (label === "Publication count") return "publication count";
-  return lowerCaseLabels.has(label) ? label.toLowerCase() : label;
-}
-
-/**
  * Determines the adjective used in the Explore heading (e.g. "Latest", "By").
  *
  * @param {Object} params
@@ -939,7 +903,6 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
     // Hide author bucket metadata from the rendered table.
     .filter((rawKey) => !(dataType === 'terms' && currentActiveExploreItemData?.id === 'author' && (rawKey === 'display_name' || rawKey === 'orcid')))
     .forEach((rawKey, index) => {
-      const key = normaliseFieldId(rawKey);
       const cssClass = getExploreColumnClass('header', dataType, index);
 
       const headerCell = createTableCell('', cssClass, null, null, true); 
@@ -948,11 +911,51 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
           shouldRightAlignExploreColumn(rawKey, records[rawKey]) ? "text-right" : "text-left"
         );
       }
-      setupHeaderTooltip(headerCell, key, dataType);
+      setupHeaderTooltip(headerCell, rawKey, dataType);
 
       headerRow.appendChild(headerCell);
     });
   tableHeader.appendChild(headerRow);
+}
+
+/**
+ * Resolves which Explore column is currently sorted and in what direction, so
+ * the table header can show a caret on that column.
+ *
+ * @param {string} dataType - The current Explore table type.
+ * @returns {{ key: string, direction: "ascending" | "descending" } | null}
+ */
+function getExploreSortIndicator(dataType) {
+  const sort = currentActiveExploreItemData?.sort;
+
+  if (dataType === "articles") {
+    const [field = "published_date", rawDirection = "desc"] = (sort || "published_date:desc").split(":");
+    return {
+      key: normaliseFieldId(field),
+      direction: rawDirection === "asc" ? "ascending" : "descending"
+    };
+  }
+
+  if (!sort || sort.includes("_count")) {
+    return {
+      key: "doc_count",
+      direction: "descending"
+    };
+  }
+
+  if (sort.includes("_key") || sort === "key") {
+    const [, rawDirection = "asc"] = sort.split(":");
+    return {
+      key: "key",
+      direction: rawDirection === "desc" ? "descending" : "ascending"
+    };
+  }
+
+  const [field, rawDirection = "desc"] = sort.split(":");
+  return {
+    key: normaliseFieldId(field),
+    direction: rawDirection === "asc" ? "ascending" : "descending"
+  };
 }
 
 /**
@@ -1005,15 +1008,44 @@ function generateTooltipContent(labelData, additionalHelpText = null) {
  * Ensures a label is always displayed, falling back to the key itself if no label is defined.
  *
  * @param {HTMLElement} element - The element to attach the tooltip to.
- * @param {string} key - The key associated with the tooltip, used for fallback labeling and to generate IDs for accessibility.
+ * @param {string} rawKey - The raw data key associated with the header cell.
  * @param {string} dataType - Indicates the type of data ('terms' or 'articles'), which determines the labels configuration to use.
  */
-function setupHeaderTooltip(element, key, dataType) {
+function setupHeaderTooltip(element, rawKey, dataType) {
+  const key = normaliseFieldId(rawKey);
   const labelData = dataType === 'terms'
     ? resolveFieldDefinition(key, 'explore')
     : EXPLORE_HEADER_ARTICLES_LABELS[key];
   const label = labelData && labelData.label ? labelData.label : key;
-  element.innerHTML = `<span>${label}</span>`;
+  const sortIndicator = getExploreSortIndicator(dataType);
+  const isSortedColumn = sortIndicator?.key === key;
+
+  element.innerHTML = "";
+
+  const content = document.createElement("span");
+  content.className = "inline-flex items-center gap-1";
+
+  const labelSpan = document.createElement("span");
+  labelSpan.innerHTML = label;
+  content.appendChild(labelSpan);
+
+  if (isSortedColumn) {
+    const icon = document.createElement("i");
+    icon.className = sortIndicator.direction === "ascending" ? "ph ph-caret-up text-sm" : "ph ph-caret-down text-sm";
+    icon.setAttribute("aria-hidden", "true");
+    content.appendChild(icon);
+
+    const srText = document.createElement("span");
+    srText.className = "sr-only";
+    srText.textContent = `Sorted ${sortIndicator.direction}`;
+    content.appendChild(srText);
+
+    element.setAttribute("aria-sort", sortIndicator.direction);
+  } else {
+    element.removeAttribute("aria-sort");
+  }
+
+  element.appendChild(content);
 
   // Generate and set tooltip if info is present and non-empty
   if (labelData && labelData.info && labelData.info.trim()) {
