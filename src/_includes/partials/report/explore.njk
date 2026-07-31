@@ -38,14 +38,23 @@
           </span>
         </h3>
       </header>
-      {# Filter by radio buttons styled as pills #}
-      <form class="mt-4">
-        <fieldset id="explore_filter_field">
-          <legend class="mb-4 text-sm font-semibold uppercase">Filter by</legend>
-          <div class="flex flex-wrap items-center" id="explore_filters"></div>
-        </fieldset>
-      </form>
-      <div id="export_table_controls" class="mt-4 flex flex-wrap items-stretch justify-between border border-neutral-700 bg-neutral-900 text-xs font-semibold uppercase text-white">
+      {# Filter by buttons styled as tabs #}
+      <div id="explore_filter_field" class="mt-4">
+        <div
+          id="explore_filters"
+          role="tablist"
+          aria-label="Explore data views"
+          aria-orientation="horizontal"
+          class="flex flex-wrap items-end gap-x-2 gap-y-2 border-neutral-700"
+        ></div>
+      </div>
+      <div id="explore_view_panel" role="tabpanel" aria-labelledby="filter_is_paper">
+        <div
+          id="export_table_controls"
+          role="toolbar"
+          aria-label="Table controls"
+          class="flex flex-wrap items-stretch justify-between border border-neutral-700 bg-neutral-900 text-xs font-semibold uppercase text-white"
+        >
         <div class="flex flex-wrap items-stretch divide-x divide-neutral-700">
           <p id="explore_count_summary" class="flex items-center gap-1 p-3" aria-live="polite">
             <span id="explore_records_shown" class="inline-flex items-baseline"></span>
@@ -82,7 +91,7 @@
           {% icon_small "clipboard" %}
           <span>Copy table</span>
         </button>
-      </div>
+        </div>
       <div class="relative">
         {# Scroll table button #}
         <button
@@ -121,6 +130,7 @@
       {# Download CSV form #}
       <div id="download_csv_form_container" class="hidden">
         {% include 'partials/email-download-form.njk' %}
+      </div>
       </div>
     </div>
   </div>

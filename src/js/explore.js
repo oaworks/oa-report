@@ -9,7 +9,7 @@
 
 import DOMPurify from "dompurify";
 import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, escapeQueryValue, normaliseFieldId, makeNumberReadable, announce, orcidDisplayNames } from "./utils.js";
-import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, FILTER_PILL_CLASSES, SEGMENTED_PILL_CLASSES, resolveFieldDefinition } from "./constants.js";
+import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, SEGMENTED_PILL_CLASSES, VIEW_TAB_CLASSES, resolveFieldDefinition } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { startLoading, stopLoading } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
@@ -414,15 +414,15 @@ export async function processExploreDataTable(button, itemData) {
 }
 
 /**
- * Adds radio buttons for explore data filters to the DOM based on a given query string.
- * Adjusts visibility based on the number of filters available.
+ * Adds view tabs for Explore datasets to the DOM based on a given query string.
+ * Adjusts visibility based on the number of available views.
  *
  * @param {string} query - A comma-separated string of filters from the API response.
  */
 async function addExploreFiltersToDOM(query) {
   const exploreFiltersElement = document.getElementById("explore_filters");
   const exploreFilterField = document.getElementById("explore_filter_field");
-  exploreFiltersElement.innerHTML = ""; // Clear existing radio buttons
+  exploreFiltersElement.innerHTML = ""; // Clear existing view tabs
   const filters = parseCommaSeparatedQueries(query); // Parse the query string into an array of filters
   const visibleFilters = loggedIn ? filters : filters.slice(0, 1); // Logged-out users only see the default filter.
 
@@ -439,7 +439,7 @@ async function addExploreFiltersToDOM(query) {
     currentActiveExploreItemQuery = visibleFilters[0].id;
   }
   
- // Create radio buttons for each filter and append them to the DOM
+ // Create view tabs for each filter and append them to the DOM
   visibleFilters.forEach((filter) => {
     const radioButton = createExploreFilterRadioButton(filter.id, filter.id === currentActiveExploreItemQuery);
     exploreFiltersElement.appendChild(radioButton);
@@ -450,8 +450,7 @@ async function addExploreFiltersToDOM(query) {
 }
 
 /**
- * Creates a filter button for an explore item's table switcher. Configures it with a
- * specified ID, label, and CSS classes. Styles it like a pill.
+ * Creates a view tab for an Explore table dataset.
  * 
  * @param {string} id - The ID of the filter.
  * @param {boolean} isChecked - True if the filter should be active by default.
@@ -463,7 +462,7 @@ function createExploreFilterRadioButton(id, isChecked) {
 
   // Create div to contain the filter button
   const filterRadioButton = document.createElement('div');
-  filterRadioButton.className = 'mr-2 md:mr-4 mb-2';
+  filterRadioButton.className = 'flex';
   filterRadioButton.setAttribute('data-filter-id', id);
 
   const buttonElement = document.createElement('button');
@@ -471,11 +470,13 @@ function createExploreFilterRadioButton(id, isChecked) {
     id: `filter_${id}`,
     type: 'button',
     value: id,
-    className: FILTER_PILL_CLASSES.base,
+    className: VIEW_TAB_CLASSES.base,
     innerHTML: '<span>' + label + '</span>'
   });
-  buttonElement.setAttribute('aria-pressed', isChecked ? 'true' : 'false');
-  buttonElement.setAttribute('aria-label', label);
+  buttonElement.setAttribute('role', 'tab');
+  buttonElement.setAttribute('aria-selected', isChecked ? 'true' : 'false');
+  buttonElement.setAttribute('aria-controls', 'explore_view_panel');
+  buttonElement.setAttribute('tabindex', isChecked ? '0' : '-1');
   filterRadioButton.appendChild(buttonElement);
 
   if (labelData && labelData.info && labelData.info.trim()) {
@@ -496,30 +497,39 @@ function createExploreFilterRadioButton(id, isChecked) {
 }
 
 /**
- * Sets state-driven classes/attributes for a filter pill button.
+ * Sets state-driven classes/attributes for an Explore view tab.
  * Tailwind classes are applied from a single base string to keep this lean.
  * @param {HTMLButtonElement} buttonElement
  * @param {boolean} isActive
  */
 function setFilterPillState(buttonElement, isActive) {
-  buttonElement.className = `${FILTER_PILL_CLASSES.base} ${isActive ? FILTER_PILL_CLASSES.active : FILTER_PILL_CLASSES.inactive}`;
-  buttonElement.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+  buttonElement.className = `${VIEW_TAB_CLASSES.base} ${isActive ? VIEW_TAB_CLASSES.active : VIEW_TAB_CLASSES.inactive}`;
+  buttonElement.setAttribute('aria-selected', isActive ? 'true' : 'false');
+  buttonElement.setAttribute('tabindex', isActive ? '0' : '-1');
 }
 
 /**
- * Updates pill styles across all filter options.
+ * Updates tab styles across all Explore views and keeps the shared panel
+ * labelled by the active tab.
+ *
  * @param {string} activeId
  */
 function updateFilterPillStates(activeId) {
+  const panel = document.getElementById('explore_view_panel');
+
   document.querySelectorAll('#explore_filters [data-filter-id]').forEach((wrapper) => {
     const button = wrapper.querySelector('button');
     if (!(button instanceof HTMLButtonElement)) return;
-    setFilterPillState(button, wrapper.getAttribute('data-filter-id') === activeId);
+    const isActive = wrapper.getAttribute('data-filter-id') === activeId;
+    setFilterPillState(button, isActive);
+    if (isActive && panel) {
+      panel.setAttribute('aria-labelledby', button.id);
+    }
   });
 }
 
 /**
- * Binds a single delegated click handler for filter pills to avoid per-pill listeners.
+ * Binds delegated pointer and keyboard handling for the Explore view tabs.
  */
 function bindFilterPillClickHandler() {
   const container = document.getElementById('explore_filters');
@@ -536,6 +546,30 @@ function bindFilterPillClickHandler() {
     const filterId = wrapper.getAttribute('data-filter-id');
     if (filterId === currentActiveExploreItemQuery) return;
     debouncedHandleFilterChange(filterId);
+  });
+
+  container.addEventListener('keydown', (event) => {
+    const tabs = Array.from(container.querySelectorAll('[role="tab"]')).filter((tab) => tab instanceof HTMLButtonElement);
+    const currentIndex = tabs.indexOf(document.activeElement);
+
+    if (currentIndex === -1 || !tabs.length) return;
+
+    let nextIndex = currentIndex;
+    if (event.key === 'ArrowRight') nextIndex = (currentIndex + 1) % tabs.length;
+    if (event.key === 'ArrowLeft') nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+    if (event.key === 'Home') nextIndex = 0;
+    if (event.key === 'End') nextIndex = tabs.length - 1;
+
+    if (nextIndex !== currentIndex) {
+      event.preventDefault();
+      tabs[nextIndex].focus();
+      return;
+    }
+
+    if ((event.key === 'Enter' || event.key === ' ') && document.activeElement instanceof HTMLButtonElement) {
+      event.preventDefault();
+      document.activeElement.click();
+    }
   });
 
   container.dataset.bound = 'true';
@@ -1838,7 +1872,7 @@ async function handleFilterChange(filterId) {
   currentActiveExploreItemQuery = filterId;
   updateExploreFilterHeader(filterId);
   updateFilterPillStates(filterId);
-  announce(`Explore filter: ${EXPLORE_FILTERS_LABELS[filterId] || filterId}.`);
+  announce(`Explore view: ${EXPLORE_FILTERS_LABELS[filterId] || filterId}.`);
 }
 
 /**
