@@ -76,7 +76,7 @@ export let currentActiveExploreItemButton = null;
 export let currentActiveExploreItemData = null;
 
 /** 
- * Tracks currently active explore item QUERY for use in createExploreFilterRadioButton.
+ * Tracks currently active explore item QUERY for use in createExploreFilterTab.
  * @global 
  * @type {string|null}
  */
@@ -442,31 +442,30 @@ async function addExploreFiltersToDOM(query) {
   
  // Create view tabs for each filter and append them to the DOM
   visibleFilters.forEach((filter) => {
-    const radioButton = createExploreFilterRadioButton(filter.id, filter.id === currentActiveExploreItemQuery);
-    exploreFiltersElement.appendChild(radioButton);
+    const tab = createExploreFilterTab(filter.id, filter.id === currentActiveExploreItemQuery);
+    exploreFiltersElement.appendChild(tab);
   });
 
-  updateExploreFilterCounts(visibleFilters);
+  updateExploreFilterTabCounts(visibleFilters);
 
-  bindFilterPillClickHandler();
-  updateFilterPillStates(currentActiveExploreItemQuery);
+  bindExploreTabHandlers();
+  updateExploreTabStates(currentActiveExploreItemQuery);
 }
 
 /**
- * Creates a view tab for an Explore table dataset.
+ * Creates a view tab for an Explore dataset.
  * 
  * @param {string} id - The ID of the filter.
- * @param {boolean} isChecked - True if the filter should be active by default.
- * @returns {HTMLDivElement} The div element containing the configured filter button.
+ * @param {boolean} isActive - True if the filter should be active by default.
+ * @returns {HTMLDivElement} The wrapper containing the tab button.
  */
-function createExploreFilterRadioButton(id, isChecked) {
+function createExploreFilterTab(id, isActive) {
   const labelData = EXPLORE_FILTERS_LABELS[id];
   const label = labelData ? labelData.label || id : id; // Use label from filters or default to ID
 
-  // Create div to contain the filter button
-  const filterRadioButton = document.createElement('div');
-  filterRadioButton.className = 'flex';
-  filterRadioButton.setAttribute('data-filter-id', id);
+  const tabWrapper = document.createElement('div');
+  tabWrapper.className = 'flex';
+  tabWrapper.setAttribute('data-filter-id', id);
 
   const buttonElement = document.createElement('button');
   Object.assign(buttonElement, {
@@ -477,10 +476,8 @@ function createExploreFilterRadioButton(id, isChecked) {
     innerHTML: `<span>${label}</span><span id="count_${id}" class="${TAB_COUNT_BADGE_CLASSES}">0</span>`
   });
   buttonElement.setAttribute('role', 'tab');
-  buttonElement.setAttribute('aria-selected', isChecked ? 'true' : 'false');
   buttonElement.setAttribute('aria-controls', 'explore_view_panel');
-  buttonElement.setAttribute('tabindex', isChecked ? '0' : '-1');
-  filterRadioButton.appendChild(buttonElement);
+  tabWrapper.appendChild(buttonElement);
 
   if (labelData && labelData.info && labelData.info.trim()) {
     createTooltip(buttonElement, generateTooltipContent(labelData), {
@@ -494,17 +491,17 @@ function createExploreFilterRadioButton(id, isChecked) {
     });
   }
 
-  setFilterPillState(buttonElement, isChecked);
+  applyExploreTabState(buttonElement, isActive);
 
-  return filterRadioButton;
+  return tabWrapper;
 }
 
 /**
- * Updates the count badge shown on each Explore filter tab.
+ * Updates the count badge shown on each Explore tab.
  *
  * @param {Array<{id: string}>} filters
  */
-function updateExploreFilterCounts(filters) {
+function updateExploreFilterTabCounts(filters) {
   if (!orgData?.hits?.hits?.[0]?._source?.analysis || !currentActiveExploreItemData) {
     return;
   }
@@ -521,7 +518,22 @@ function updateExploreFilterCounts(filters) {
 
     badge.textContent = "0";
 
-    getExploreFilterTotal(currentActiveExploreItemData, filter.id, filterQuery)
+    const cacheKey = getExploreFilterTotalCacheKey(currentActiveExploreItemData, filter.id, filterQuery);
+
+    if (!exploreFilterTotalCache.has(cacheKey)) {
+      const requestSize = currentActiveExploreItemData?.type === "terms" ? 1 : 0;
+      exploreFilterTotalCache.set(
+        cacheKey,
+        loadExploreRecords(
+          currentActiveExploreItemData,
+          filterQuery,
+          requestSize,
+          currentActiveDataDisplayToggle
+        ).then(({ total }) => (Number.isFinite(total) ? total : 0))
+      );
+    }
+
+    exploreFilterTotalCache.get(cacheKey)
       .then((total) => {
         badge.textContent = makeTabCountReadable(Number.isFinite(total) ? total : 0);
       })
@@ -552,40 +564,12 @@ function getExploreFilterTotalCacheKey(itemData, filterId, filterQuery) {
 }
 
 /**
- * Returns the total for one Explore filter, using a small cache.
+ * Applies the active or inactive state to an Explore tab.
  *
- * @param {Object} itemData
- * @param {string} filterId
- * @param {string} filterQuery
- * @returns {Promise<number>}
- */
-function getExploreFilterTotal(itemData, filterId, filterQuery) {
-  const cacheKey = getExploreFilterTotalCacheKey(itemData, filterId, filterQuery);
-
-  if (!exploreFilterTotalCache.has(cacheKey)) {
-    // Article totals can be resolved with a 0-hit query, but term
-    // aggregations need at least one bucket requested for totals to resolve
-    // reliably through the existing Explore fetch path.
-    const requestSize = itemData?.type === "terms" ? 1 : 0;
-
-    exploreFilterTotalCache.set(
-      cacheKey,
-      loadExploreRecords(itemData, filterQuery, requestSize, currentActiveDataDisplayToggle).then(({ total }) => (
-        Number.isFinite(total) ? total : 0
-      ))
-    );
-  }
-
-  return exploreFilterTotalCache.get(cacheKey);
-}
-
-/**
- * Sets state-driven classes/attributes for an Explore view tab.
- * Tailwind classes are applied from a single base string to keep this lean.
  * @param {HTMLButtonElement} buttonElement
  * @param {boolean} isActive
  */
-function setFilterPillState(buttonElement, isActive) {
+function applyExploreTabState(buttonElement, isActive) {
   buttonElement.className = `${VIEW_TAB_CLASSES.base} ${isActive ? VIEW_TAB_CLASSES.active : VIEW_TAB_CLASSES.inactive}`;
   buttonElement.setAttribute('aria-selected', isActive ? 'true' : 'false');
   buttonElement.setAttribute('tabindex', isActive ? '0' : '-1');
@@ -597,14 +581,14 @@ function setFilterPillState(buttonElement, isActive) {
  *
  * @param {string} activeId
  */
-function updateFilterPillStates(activeId) {
+function updateExploreTabStates(activeId) {
   const panel = document.getElementById('explore_view_panel');
 
   document.querySelectorAll('#explore_filters [data-filter-id]').forEach((wrapper) => {
     const button = wrapper.querySelector('button');
     if (!(button instanceof HTMLButtonElement)) return;
     const isActive = wrapper.getAttribute('data-filter-id') === activeId;
-    setFilterPillState(button, isActive);
+    applyExploreTabState(button, isActive);
     if (isActive && panel) {
       panel.setAttribute('aria-labelledby', button.id);
     }
@@ -614,7 +598,7 @@ function updateFilterPillStates(activeId) {
 /**
  * Binds delegated pointer and keyboard handling for the Explore view tabs.
  */
-function bindFilterPillClickHandler() {
+function bindExploreTabHandlers() {
   const container = document.getElementById('explore_filters');
   if (!container || container.dataset.bound === 'true') return;
 
@@ -1959,7 +1943,7 @@ async function handleRecordsShownChange(event) {
 }
 
 /**
- * Handles the change in filters when a user clicks on a filter radio button. It displays a loading
+ * Handles the change in filters when a user clicks on a filter tab. It displays a loading
  * indicator, fetches, and displays the explore data based on the selected filter.
  * Also updates the header text via the updateExploreFilterHeader helper.
  * 
@@ -1972,7 +1956,7 @@ async function handleFilterChange(filterId) {
   await fetchAndDisplayExploreData(currentActiveExploreItemData, filterId);
   currentActiveExploreItemQuery = filterId;
   updateExploreFilterHeader(filterId);
-  updateFilterPillStates(filterId);
+  updateExploreTabStates(filterId);
   announce(`Explore view: ${EXPLORE_FILTERS_LABELS[filterId] || filterId}.`);
 }
 
