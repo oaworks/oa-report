@@ -9,7 +9,7 @@
 // Imports
 // =================================================
 
-import { dateRange, startYear, endYear, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings, copyToClipboard } from './utils.js';
+import { dateRange, startYear, endYear, displayNone, changeOpacity, makeNumberReadable, makeTabCountReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings, copyToClipboard } from './utils.js';
 import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, INSIGHT_EXPLORE_MAPPINGS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS, DEFAULT_ACTION_EMPTY_STATE_MESSAGE, DEFAULT_NO_AUTHOR_FILTERED_MESSAGE, DEFAULT_MULTIPLE_AUTHORS_FILTERED_MESSAGE, LICENSE_CODES, TAB_COUNT_BADGE_CLASSES, resolveFieldDefinition } from './constants.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { initActionTabs, formatDoiEpmcListForClipboard, getAuthorFilterCount } from './actions.js';
@@ -625,7 +625,7 @@ export function initInsightsAndActions(org) {
             var count = parseFloat(countResponse);
             
             // Show total number of actions in tab & above table
-            tabCountContents.textContent = makeNumberReadable(count);
+            tabCountContents.textContent = makeTabCountReadable(count);
             if (count > 100) {
               count = 100; // limit to 100
             }

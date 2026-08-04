@@ -181,6 +181,23 @@ export function makeNumberReadable(number, isCurrency = false, maximumFractionDi
 }
 
 /**
+ * Formats a tab-count badge into a compact `K+` style once it reaches 1,000.
+ *
+ * @param {number} number
+ * @returns {string}
+ */
+export function makeTabCountReadable(number) {
+  const safeNumber = Number.isFinite(number) ? number : 0;
+  if (safeNumber < 1000) return makeNumberReadable(safeNumber);
+
+  const thousands = safeNumber >= 10000
+    ? Math.floor(safeNumber / 1000)
+    : Math.floor(safeNumber / 500) / 2;
+
+  return `${Number.isInteger(thousands) ? thousands : thousands.toFixed(1)}K+`;
+}
+
+/**
  * Formats a Date object into an ISO 8601-formatted string representing the date portion only
  * The time portion is removed by splitting the ISO string at 'T' and taking the first part, 
  * which corresponds to the date. This format is often used in querying ElasticSearch.

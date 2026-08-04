@@ -8,7 +8,7 @@
 // =================================================
 
 import DOMPurify from "dompurify";
-import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, escapeQueryValue, normaliseFieldId, makeNumberReadable, announce, orcidDisplayNames } from "./utils.js";
+import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, escapeQueryValue, normaliseFieldId, makeNumberReadable, makeTabCountReadable, announce, orcidDisplayNames } from "./utils.js";
 import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, SEGMENTED_PILL_CLASSES, VIEW_TAB_CLASSES, CONTROL_FIELD_SHELL_CLASSES, CONTROL_FOCUS_RING_CLASSES, CONTROL_SELECT_CLASSES, SORT_TRIGGER_CLASSES, SORT_LABEL_CLASSES, SORT_CARET_CHIP_CLASSES, TAB_COUNT_BADGE_CLASSES, EXPLORE_SUMMARY_ROW_CLASSES, resolveFieldDefinition } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { startLoading, stopLoading } from "./components.js";
@@ -523,7 +523,7 @@ function updateExploreFilterCounts(filters) {
 
     getExploreFilterTotal(currentActiveExploreItemData, filter.id, filterQuery)
       .then((total) => {
-        badge.textContent = makeNumberReadable(Number.isFinite(total) ? total : 0);
+        badge.textContent = makeTabCountReadable(Number.isFinite(total) ? total : 0);
       })
       .catch((error) => {
         console.error(`Error fetching Explore filter count for ${filter.id}:`, error);
