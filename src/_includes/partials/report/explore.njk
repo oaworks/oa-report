@@ -39,13 +39,13 @@
         </h3>
       </header>
       {# Filter by buttons styled as tabs #}
-      <div id="explore_filter_field" class="mt-4">
+      <div id="explore_filter_field" class="mt-4 border-b border-neutral-700/80">
         <div
           id="explore_filters"
           role="tablist"
           aria-label="Explore data views"
           aria-orientation="horizontal"
-          class="flex flex-wrap items-end gap-x-2 gap-y-2 border-neutral-700"
+          class="flex flex-wrap items-end gap-x-6 gap-y-2"
         ></div>
       </div>
       <div id="explore_view_panel" role="tabpanel" aria-labelledby="filter_is_paper">
@@ -53,18 +53,18 @@
           id="export_table_controls"
           role="toolbar"
           aria-label="Table controls"
-          class="flex flex-wrap items-stretch justify-between border border-neutral-700 bg-neutral-900 text-xs font-semibold uppercase text-white"
+          class="mt-4 mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-neutral-700/80 pb-3 text-xs font-semibold uppercase text-white"
         >
-        <div class="flex flex-wrap items-stretch divide-x divide-neutral-700">
-          <p id="explore_count_summary" class="flex items-center gap-1.5 p-2.5" aria-live="polite">
+        <div class="flex flex-wrap items-center gap-3 md:gap-4">
+          <p id="explore_count_summary" class="flex items-center gap-1.5" aria-live="polite">
             <span id="explore_records_shown" class="inline-flex items-baseline"></span>
             / <span id="explore_count_total">0</span>
             <span id="explore_count_label">journal articles</span>
           </p>
           <form id="explore_display_style_field">
-            <fieldset class="p-2.5">
+            <fieldset>
               <legend class="sr-only">Display values as</legend>
-              <div class="inline-flex rounded-sm border border-neutral-500 bg-neutral-800 p-0.5 shadow-sm transition-colors hover:border-neutral-300 focus-within:border-neutral-300">
+              <div class="inline-flex rounded-sm border border-neutral-500 bg-transparent p-0.5 shadow-sm transition-colors hover:border-neutral-300 focus-within:border-neutral-300">
                 <input
                   id="display-style-percent"
                   type="radio"
@@ -96,10 +96,15 @@
             </fieldset>
           </form>
         </div>
-        {{ component("copy-btn", {
-          id: "explore_copy_clipboard",
-          label: "Copy table"
-        }) }}
+        <button
+          id="explore_copy_clipboard"
+          class="group inline-flex items-center self-start focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-800"
+        >
+          <span class="inline-flex items-center gap-1.5 rounded-sm border border-neutral-500 bg-transparent px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-100 shadow-sm transition-colors group-hover:border-neutral-300 group-hover:bg-neutral-700/70 group-hover:text-white group-focus-visible:border-neutral-300 group-focus-visible:bg-neutral-700/70 group-focus-visible:text-white [&>i]:shrink-0 [&>i]:text-[1em]">
+            <span aria-hidden="true">{% icon_small "clipboard" %}</span>
+            <span data-copy-label>Copy table</span>
+          </span>
+        </button>
         </div>
       <div class="relative">
         {# Scroll table button #}
@@ -113,7 +118,7 @@
 
         {# Data table #}
         <div class="mb-4">
-          <div class="overflow-x-auto pb-4 bg-neutral-800 js_export_table_container min-h-[6rem] md:min-h-[8rem] lg:min-h-[10rem] border-l border-r border-b border-neutral-700" aria-live="polite">
+          <div class="overflow-x-auto rounded-lg border border-neutral-700 bg-neutral-800 pb-4 js_export_table_container min-h-[6rem] md:min-h-[8rem] lg:min-h-[10rem]" aria-live="polite">
             <table class="border-separate border-spacing-0 w-full table-fixed bg-white js_export_table" id="explore_table">
               <thead class="border-b border-neutral-700 bg-neutral-900 text-left text-xs font-medium uppercase tracking-wider text-white" id="export_table_head"></thead>
               <tbody class="text-xs md:text-sm text-neutral-900" id="export_table_body"></tbody>

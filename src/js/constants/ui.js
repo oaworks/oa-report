@@ -14,8 +14,8 @@ export const DATE_SELECTION_BUTTON_CLASSES = {
 };
 
 export const CONTROL_FOCUS_RING_CLASSES = "focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-900";
-export const CONTROL_FIELD_SHELL_CLASSES = "rounded-sm border border-neutral-500 bg-neutral-800 p-0.5 shadow-sm transition-colors hover:border-neutral-300 focus-within:border-neutral-300";
-export const CONTROL_SELECT_CLASSES = "appearance-none cursor-pointer rounded-sm bg-transparent px-3 py-1.5 pr-8 text-xs font-semibold uppercase tracking-wide text-neutral-100 transition-colors hover:bg-neutral-700 hover:text-white";
+export const CONTROL_FIELD_SHELL_CLASSES = "rounded-sm border border-neutral-500 bg-transparent p-0.5 shadow-sm transition-colors hover:border-neutral-300 focus-within:border-neutral-300";
+export const CONTROL_SELECT_CLASSES = "appearance-none cursor-pointer rounded-sm bg-transparent px-3 py-1.5 pr-8 text-xs font-semibold uppercase tracking-wide text-neutral-100 transition-colors hover:bg-neutral-700/70 hover:text-white";
 export const SORT_TRIGGER_CLASSES = `group cursor-pointer rounded-sm text-inherit transition-colors ${CONTROL_FOCUS_RING_CLASSES}`;
 export const SORT_LABEL_CLASSES = "js-sort-label min-w-0 uppercase group-hover:underline group-focus-visible:underline underline-offset-2";
 export const SORT_CARET_CHIP_CLASSES = "shrink-0 rounded-sm border border-neutral-500 bg-neutral-800 px-1 py-0.5 text-[10px] leading-none text-neutral-100 shadow-sm transition-colors group-hover:border-neutral-300 group-hover:bg-neutral-700 group-focus-visible:border-neutral-300 group-focus-visible:bg-neutral-700";
@@ -93,7 +93,7 @@ export const SEGMENTED_PILL_CLASSES = {
  * Class names for Explore table view tabs.
  */
 export const VIEW_TAB_CLASSES = {
-  base: "inline-flex items-center rounded-t-sm border border-b-0 px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800",
-  active: "border-neutral-700 bg-neutral-900 text-white",
-  inactive: "border-transparent bg-neutral-800/40 text-neutral-300 hover:border-neutral-400 hover:bg-neutral-800 hover:text-white"
+  base: "inline-flex items-center border-b-2 border-transparent px-0 pb-3 pt-1 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-800",
+  active: "border-carnation-400 text-white",
+  inactive: "text-neutral-400 hover:border-neutral-500 hover:text-white"
 };
