@@ -14,6 +14,8 @@ import { SEGMENTED_PILL_CLASSES } from './constants.js';
 // or without the .keyword suffix depending on how it was added) and captures its
 // value(s), so we can tell a single-author filter apart from a multi-author one.
 const AUTHOR_FILTER_FIELD_PATTERN = /authorships\.author\.(?:display_name|orcid)(?:\.keyword)?\s*:\s*(\([^)]*\)|"(?:\\.|[^"\\])*")/gi;
+const ACTIVE_ACTION_BADGE_CLASSES = ["bg-neutral-900", "text-neutral-100"];
+const INACTIVE_ACTION_BADGE_CLASSES = ["bg-neutral-200", "text-neutral-900", "group-hover:bg-neutral-100"];
 
 // Count of authors named in the current ?q= filter, plus the resolved
 // display name (ORCIDs resolved via orcidDisplayNames) when there's exactly one.
@@ -147,8 +149,8 @@ function updateStrategyButtonStyling(event) {
     btn.classList.add("text-white", "hover:bg-neutral-700/70", "bg-neutral-900/60");
     const badge = btn.querySelector("[id^='count_']");
     if (badge) {
-      badge.classList.remove("bg-neutral-900", "text-neutral-200");
-      badge.classList.add("bg-neutral-700", "text-neutral-100");
+      badge.classList.remove(...ACTIVE_ACTION_BADGE_CLASSES);
+      badge.classList.add(...INACTIVE_ACTION_BADGE_CLASSES);
     }
     btn.setAttribute("aria-pressed", "false");
   });
@@ -157,8 +159,8 @@ function updateStrategyButtonStyling(event) {
   tabBtn.classList.remove("text-white", "hover:bg-neutral-700/70", "bg-neutral-900/60");
   const activeBadge = tabBtn.querySelector("[id^='count_']");
   if (activeBadge) {
-    activeBadge.classList.add("bg-neutral-900", "text-neutral-200");
-    activeBadge.classList.remove("bg-neutral-700", "text-neutral-100");
+    activeBadge.classList.remove(...INACTIVE_ACTION_BADGE_CLASSES);
+    activeBadge.classList.add(...ACTIVE_ACTION_BADGE_CLASSES);
   }
   tabBtn.setAttribute("aria-pressed", "true");
 
