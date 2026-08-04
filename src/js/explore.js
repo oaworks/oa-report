@@ -428,7 +428,7 @@ async function addExploreFiltersToDOM(query) {
 
   // Only display list of filters when logged in and there is more than one
   if (exploreFilterField) {
-    exploreFilterField.style.display = loggedIn && visibleFilters.length > 0 ? "" : "none";
+    exploreFilterField.style.display = visibleFilters.length > 1 ? "" : "none";
   }
 
   // Check if the currentActiveExploreItemQuery is in the new set of filters
