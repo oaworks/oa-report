@@ -325,10 +325,7 @@ function renderActionTabs(strategy = {}) {
     tabBtn.className = "js_strategy_btn group cursor-pointer px-4 py-1.5 text-sm font-medium rounded-md outline outline-1 outline-transparent outline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 transition-colors text-white bg-neutral-900/60";
     tabBtn.setAttribute("aria-controls", id);
     tabBtn.setAttribute("aria-pressed", index === 0 ? "true" : "false");
-    const badgeClasses = index === 0
-      ? "ml-3 rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors md:inline-block bg-neutral-900 text-neutral-100"
-      : TAB_COUNT_BADGE_CLASSES;
-    tabBtn.innerHTML = `<span>${label}</span><span id="count_${id}" class="${badgeClasses}">0</span>`;
+    tabBtn.innerHTML = `<span>${label}</span><span id="count_${id}" class="${TAB_COUNT_BADGE_CLASSES}">0</span>`;
     item.appendChild(tabBtn);
     tabsContainer.appendChild(item);
   });
