@@ -93,7 +93,7 @@ export const SEGMENTED_PILL_CLASSES = {
  * Class names for Explore table view tabs.
  */
 export const VIEW_TAB_CLASSES = {
-  base: "inline-flex items-center border-b-2 border-transparent px-0 pb-3 pt-1 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-800",
-  active: "border-carnation-400 text-white",
-  inactive: "text-neutral-400 hover:border-neutral-500 hover:text-white"
+  base: "inline-flex items-center border-b-4 px-0 pb-3 pt-1 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-800",
+  active: "border-carnation-300 text-white font-semibold",
+  inactive: "border-transparent text-neutral-200 hover:border-neutral-300 hover:text-white"
 };
