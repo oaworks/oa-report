@@ -22,7 +22,7 @@ export const SORT_CARET_CHIP_CLASSES = "shrink-0 rounded-sm border border-neutra
 export const TAB_COUNT_BADGE_CLASSES = "ml-3 rounded-full bg-neutral-200 px-2.5 py-0.5 text-xs font-medium text-neutral-900 transition-colors group-hover:bg-neutral-100 md:inline-block";
 export const EXPLORE_SUMMARY_ROW_CLASSES = {
   total: "border-t-2 border-neutral-400 !bg-neutral-200 font-semibold text-neutral-900",
-  missing: "!bg-neutral-50 text-neutral-700"
+  missing: "!bg-neutral-200 font-semibold text-neutral-900"
 };
 
 /**
