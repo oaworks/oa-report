@@ -1430,6 +1430,30 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
 }
 
 /**
+ * Builds visible and accessible labels for aggregated Explore summary rows.
+ *
+ * @param {string} exploreItemId
+ * @param {"all_values"|"no_values"} summaryKey
+ * @returns {{ visibleLabel: string, ariaLabel: string }}
+ */
+function formatExploreSummaryRowLabel(exploreItemId, summaryKey) {
+  const singularLabel = (EXPLORE_ITEMS_LABELS[exploreItemId]?.singular || exploreItemId || "value").replace(/<[^>]+>/g, "").trim();
+  const singularItemLabel = singularLabel.replace(/^[A-Z][a-z]/, (match) => match.toLowerCase());
+  const article = /^[aeiou]/i.test(singularLabel) ? "an" : "a";
+  const connectorText = summaryKey === "all_values" ? "with" : "without";
+  const visibleConnectorText = summaryKey === "all_values" ? "With" : "Without";
+  const connector = `<span class="font-bold text-neutral-950">${visibleConnectorText}</span>`;
+  const suffix = summaryKey === "all_values"
+    ? `${article} ${singularItemLabel}`
+    : `${article} recorded ${singularItemLabel}`;
+
+  return {
+    visibleLabel: DOMPurify.sanitize(`${connector} <span class="font-normal">${suffix}</span>`),
+    ariaLabel: `Publications ${connectorText} ${suffix}`
+  };
+}
+
+/**
  * Creates a table cell element (th or td) with specified content and CSS class.
  * 
  * @param {string|Object} content - The content to be placed inside the cell. If an object, its values are formatted as an unordered list.
@@ -1659,10 +1683,9 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
   
   // Early handling for common synthetic summary rows in terms-based data.
   if (content === 'all_values' || content === 'no_values') {
-    const itemLabel = (EXPLORE_ITEMS_LABELS[exploreItemId]?.plural || pluraliseNoun(exploreItemId)).toLowerCase();
-    cell.innerHTML = content === 'all_values'
-      ? `All ${itemLabel}`
-      : `No ${itemLabel} recorded`;
+    const { visibleLabel, ariaLabel } = formatExploreSummaryRowLabel(exploreItemId, content);
+    cell.innerHTML = visibleLabel;
+    cell.setAttribute("aria-label", ariaLabel);
     return cell;
   }
 
