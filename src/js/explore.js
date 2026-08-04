@@ -9,7 +9,7 @@
 
 import DOMPurify from "dompurify";
 import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, escapeQueryValue, normaliseFieldId, makeNumberReadable, announce, orcidDisplayNames } from "./utils.js";
-import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, SEGMENTED_PILL_CLASSES, VIEW_TAB_CLASSES, CONTROL_FIELD_SHELL_CLASSES, CONTROL_FOCUS_RING_CLASSES, CONTROL_SELECT_CLASSES, SORT_TRIGGER_CLASSES, SORT_LABEL_CLASSES, SORT_CARET_CHIP_CLASSES, EXPLORE_SUMMARY_ROW_CLASSES, resolveFieldDefinition } from "./constants.js";
+import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, SEGMENTED_PILL_CLASSES, VIEW_TAB_CLASSES, CONTROL_FIELD_SHELL_CLASSES, CONTROL_FOCUS_RING_CLASSES, CONTROL_SELECT_CLASSES, SORT_TRIGGER_CLASSES, SORT_LABEL_CLASSES, SORT_CARET_CHIP_CLASSES, TAB_COUNT_BADGE_CLASSES, EXPLORE_SUMMARY_ROW_CLASSES, resolveFieldDefinition } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { startLoading, stopLoading } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
@@ -33,6 +33,7 @@ const RECORDS_SHOWN_TIERS = [10, 20, 50, 100, 500];
 const RECORDS_SHOWN_DEFAULT = 10;
 const RECORDS_SHOWN_NO_SELECT_MAX = 20;
 const RECORDS_SHOWN_ALL_THRESHOLD = 1000;
+const exploreFilterTotalCache = new Map();
 
 let orgKey = "";
 let loggedIn = false;
@@ -445,6 +446,8 @@ async function addExploreFiltersToDOM(query) {
     exploreFiltersElement.appendChild(radioButton);
   });
 
+  updateExploreFilterCounts(visibleFilters);
+
   bindFilterPillClickHandler();
   updateFilterPillStates(currentActiveExploreItemQuery);
 }
@@ -471,7 +474,7 @@ function createExploreFilterRadioButton(id, isChecked) {
     type: 'button',
     value: id,
     className: VIEW_TAB_CLASSES.base,
-    innerHTML: '<span>' + label + '</span>'
+    innerHTML: `<span>${label}</span><span id="count_${id}" class="${TAB_COUNT_BADGE_CLASSES}">0</span>`
   });
   buttonElement.setAttribute('role', 'tab');
   buttonElement.setAttribute('aria-selected', isChecked ? 'true' : 'false');
@@ -494,6 +497,86 @@ function createExploreFilterRadioButton(id, isChecked) {
   setFilterPillState(buttonElement, isChecked);
 
   return filterRadioButton;
+}
+
+/**
+ * Updates the count badge shown on each Explore filter tab.
+ *
+ * @param {Array<{id: string}>} filters
+ */
+function updateExploreFilterCounts(filters) {
+  if (!orgData?.hits?.hits?.[0]?._source?.analysis || !currentActiveExploreItemData) {
+    return;
+  }
+
+  const analysis = orgData.hits.hits[0]._source.analysis;
+
+  filters.forEach((filter) => {
+    const badge = document.getElementById(`count_${filter.id}`);
+    const filterQuery = analysis?.[filter.id]?.query;
+
+    if (!badge || !filterQuery) {
+      return;
+    }
+
+    badge.textContent = "0";
+
+    getExploreFilterTotal(currentActiveExploreItemData, filter.id, filterQuery)
+      .then((total) => {
+        badge.textContent = makeNumberReadable(Number.isFinite(total) ? total : 0);
+      })
+      .catch((error) => {
+        console.error(`Error fetching Explore filter count for ${filter.id}:`, error);
+        badge.textContent = "0";
+      });
+  });
+}
+
+/**
+ * Builds the cache key for one Explore filter total.
+ *
+ * @param {Object} itemData
+ * @param {string} filterId
+ * @param {string} filterQuery
+ * @returns {string}
+ */
+function getExploreFilterTotalCacheKey(itemData, filterId, filterQuery) {
+  return JSON.stringify({
+    breakdown: itemData?.id,
+    filterId,
+    filterQuery,
+    topLevelQuery: getDecodedUrlQuery(),
+    startYear,
+    endYear
+  });
+}
+
+/**
+ * Returns the total for one Explore filter, using a small cache.
+ *
+ * @param {Object} itemData
+ * @param {string} filterId
+ * @param {string} filterQuery
+ * @returns {Promise<number>}
+ */
+function getExploreFilterTotal(itemData, filterId, filterQuery) {
+  const cacheKey = getExploreFilterTotalCacheKey(itemData, filterId, filterQuery);
+
+  if (!exploreFilterTotalCache.has(cacheKey)) {
+    // Article totals can be resolved with a 0-hit query, but term
+    // aggregations need at least one bucket requested for totals to resolve
+    // reliably through the existing Explore fetch path.
+    const requestSize = itemData?.type === "terms" ? 1 : 0;
+
+    exploreFilterTotalCache.set(
+      cacheKey,
+      loadExploreRecords(itemData, filterQuery, requestSize, currentActiveDataDisplayToggle).then(({ total }) => (
+        Number.isFinite(total) ? total : 0
+      ))
+    );
+  }
+
+  return exploreFilterTotalCache.get(cacheKey);
 }
 
 /**
@@ -719,6 +802,11 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     const totalCount = type === "terms" && (!Number.isFinite(totalRecords) || totalRecords === 0)
       ? shownCount
       : totalRecords;
+
+    if (filter && query) {
+      const cacheKey = getExploreFilterTotalCacheKey(itemData, filter, query);
+      exploreFilterTotalCache.set(cacheKey, Promise.resolve(totalCount));
+    }
 
     updateExploreCountSummary({ id, total: totalCount });
     updateRecordsShownControl(totalCount);
