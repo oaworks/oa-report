@@ -19,7 +19,7 @@ export const CONTROL_SELECT_CLASSES = "appearance-none cursor-pointer rounded-sm
 export const SORT_TRIGGER_CLASSES = `group cursor-pointer rounded-sm text-inherit transition-colors ${CONTROL_FOCUS_RING_CLASSES}`;
 export const SORT_LABEL_CLASSES = "js-sort-label min-w-0 uppercase group-hover:underline group-focus-visible:underline underline-offset-2";
 export const SORT_CARET_CHIP_CLASSES = "shrink-0 rounded-sm border border-neutral-500 bg-neutral-800 px-1 py-0.5 text-[10px] leading-none text-neutral-100 shadow-sm transition-colors group-hover:border-neutral-300 group-hover:bg-neutral-700 group-focus-visible:border-neutral-300 group-focus-visible:bg-neutral-700";
-export const TAB_COUNT_BADGE_CLASSES = "ml-3 rounded-full bg-neutral-200 px-2.5 py-0.5 text-xs font-medium text-neutral-900 transition-colors group-hover:bg-neutral-100 md:inline-block";
+export const TAB_COUNT_BADGE_CLASSES = "ml-3 rounded-full bg-neutral-700 px-2.5 py-0.5 text-xs font-medium text-neutral-100 transition-colors group-hover:bg-neutral-600 md:inline-block";
 export const EXPLORE_SUMMARY_ROW_CLASSES = {
   total: "border-t-2 border-neutral-500 !bg-neutral-700 font-semibold text-white",
   missing: "!bg-neutral-700 font-semibold text-white"

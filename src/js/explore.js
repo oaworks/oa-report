@@ -120,7 +120,7 @@ function isOrcidUrl(value) {
 }
 
 const FILTER_TARGET_BUTTON_CLASS = 'js-filter-target cursor-pointer hover:underline text-left focus:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm';
-const EXTERNAL_LINK_PILL_CLASS = 'ml-1 bg-neutral-200 text-neutral-900 text-[10px] px-2 py-0.5 rounded-full whitespace-nowrap hover:bg-carnation-200 align-super js-external-pill';
+const EXTERNAL_LINK_PILL_CLASS = 'ml-1 rounded-full bg-neutral-800 px-2 py-0.5 text-[10px] text-neutral-100 whitespace-nowrap align-super js-external-pill hover:bg-neutral-700';
 
 /**
  * Tracks currently selected row keys for use in enableExploreRowHighlighting.

@@ -91,7 +91,7 @@ function buildInsightTooltipSection(contentHtml = '') {
 
   return `
     <section class="space-y-2">
-      <h4 class="font-semibold text-neutral-900">${INSIGHT_TOOLTIP_HEADING}</h4>
+      <h4 class="font-semibold text-neutral-100">${INSIGHT_TOOLTIP_HEADING}</h4>
       ${contentHtml}
     </section>
   `;
@@ -326,7 +326,7 @@ function renderActionTabs(strategy = {}) {
     tabBtn.setAttribute("aria-controls", id);
     tabBtn.setAttribute("aria-pressed", index === 0 ? "true" : "false");
     const badgeClasses = index === 0
-      ? "ml-3 rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors md:inline-block bg-neutral-900 text-neutral-100"
+      ? "ml-3 rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors md:inline-block bg-neutral-800 text-neutral-100"
       : TAB_COUNT_BADGE_CLASSES;
     tabBtn.innerHTML = `<span>${label}</span><span id="count_${id}" class="${badgeClasses}">0</span>`;
     item.appendChild(tabBtn);
@@ -489,7 +489,7 @@ export function initInsightsAndActions(org) {
         }
         const updateTooltipContent = () => {
           const detailHtml = figureDetails
-            ? `<div class="mb-2 font-semibold text-neutral-900">${figureDetails.innerHTML}</div>`
+            ? `<div class="mb-2 font-semibold text-neutral-100">${figureDetails.innerHTML}</div>`
             : "";
           const definitionHtml = buildInsightDefinitionsHtml(
             numerator,
@@ -536,7 +536,7 @@ export function initInsightsAndActions(org) {
                 percentageContents.textContent = makeNumberReadable(numeratorCount);
                 figureDetails.innerHTML = `
                   <span id="details_${numerator}" class="font-semibold text-carnation-600">${makeNumberReadable(numeratorCount)}</span>
-                  <span class="text-neutral-900">
+                  <span class="text-neutral-200">
                     ${denominatorText} in total
                   </span>
                 `;
@@ -550,7 +550,7 @@ export function initInsightsAndActions(org) {
 
               figureDetails.innerHTML = `
                 <span id="details_${numerator}" class="font-semibold text-carnation-600">${makeNumberReadable(numeratorCount)}</span>
-                <span class="text-neutral-900">
+                <span class="text-neutral-200">
                   of <span id="denominator_${numerator}">${makeNumberReadable(denominatorCount)}</span> ${denominatorText}
                 </span>
               `;

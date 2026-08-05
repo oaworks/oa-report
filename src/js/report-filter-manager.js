@@ -1197,7 +1197,7 @@ export function renderActiveFiltersBanner() {
   const triggerBtn = document.createElement("button");
   triggerBtn.type = "button";
   triggerBtn.id = "js-filters-trigger";
-  triggerBtn.className = "inline-flex items-center rounded-full border border-dashed border-neutral-400 text-neutral-300 px-2.5 py-1 text-sm font-medium hover:text-white hover:border-neutral-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors";
+  triggerBtn.className = "inline-flex items-center rounded-full border border-neutral-600 bg-neutral-900 px-2.5 py-1 text-sm font-medium text-neutral-200 transition-colors hover:border-neutral-400 hover:bg-neutral-800 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-900";
   triggerBtn.innerHTML = `<span aria-hidden="true" class="mr-1 font-bold">+</span> Add filter`;
   triggerBtn.setAttribute("aria-haspopup", "dialog");
   triggerBtn.setAttribute("aria-expanded", "false");

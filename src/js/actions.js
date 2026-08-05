@@ -14,8 +14,8 @@ import { SEGMENTED_PILL_CLASSES } from './constants.js';
 // or without the .keyword suffix depending on how it was added) and captures its
 // value(s), so we can tell a single-author filter apart from a multi-author one.
 const AUTHOR_FILTER_FIELD_PATTERN = /authorships\.author\.(?:display_name|orcid)(?:\.keyword)?\s*:\s*(\([^)]*\)|"(?:\\.|[^"\\])*")/gi;
-const ACTIVE_ACTION_BADGE_CLASSES = ["bg-neutral-900", "text-neutral-100"];
-const INACTIVE_ACTION_BADGE_CLASSES = ["bg-neutral-200", "text-neutral-900", "group-hover:bg-neutral-100"];
+const ACTIVE_ACTION_BADGE_CLASSES = ["bg-neutral-800", "text-neutral-100"];
+const INACTIVE_ACTION_BADGE_CLASSES = ["bg-neutral-700", "text-neutral-100", "group-hover:bg-neutral-600"];
 
 // Count of authors named in the current ?q= filter, plus the resolved
 // display name (ORCIDs resolved via orcidDisplayNames) when there's exactly one.
