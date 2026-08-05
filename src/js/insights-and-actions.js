@@ -609,7 +609,7 @@ export function initInsightsAndActions(org) {
             tabCountContents.textContent = "0";
             tableCountContents.textContent = "No ";
             const message = count === 0 ? DEFAULT_NO_AUTHOR_FILTERED_MESSAGE : DEFAULT_MULTIPLE_AUTHORS_FILTERED_MESSAGE;
-            tableBody.innerHTML = `<tr><td class='px-3 py-2 text-sm text-center align-top break-words' colspan='3'>${message}</td></tr>`;
+            tableBody.innerHTML = `<tr><td class='px-3 py-2 text-sm text-center text-neutral-200 align-top break-words' colspan='3'>${message}</td></tr>`;
             return;
           }
         }
@@ -637,7 +637,7 @@ export function initInsightsAndActions(org) {
             // If no actions are available, show message
             if (count === 0) {
               tableCountContents.textContent = "No ";
-              tableBody.innerHTML = `<tr><td class='px-3 py-2 text-sm text-center align-top break-words' colspan='3'>${emptyStateMessage || DEFAULT_ACTION_EMPTY_STATE_MESSAGE}</td></tr>`;
+              tableBody.innerHTML = `<tr><td class='px-3 py-2 text-sm text-center text-neutral-200 align-top break-words' colspan='3'>${emptyStateMessage || DEFAULT_ACTION_EMPTY_STATE_MESSAGE}</td></tr>`;
             }
 
             // Otherwise, generate list of actions
@@ -725,7 +725,7 @@ export function initInsightsAndActions(org) {
                       var inEpmc = action.has_epmc_fulltext === true;
                       action.epmc_status_label = inEpmc ? "Yes" : "No";
                       action.epmc_status_icon = inEpmc ? "ph-check-circle" : "ph-x-circle";
-                      action.epmc_status_color = inEpmc ? "text-neutral-900" : "text-carnation-500";
+                      action.epmc_status_color = inEpmc ? "text-emerald-300" : "text-carnation-500";
                     }
 
                     if (typeof action.title === "string" && action.title.includes("&")) {
