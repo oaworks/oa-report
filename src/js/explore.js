@@ -504,7 +504,8 @@ function createExploreFilterTab(id, isActive, showCount) {
 }
 
 /**
- * Updates the count badge shown on each Explore tab.
+ * Updates the count badge shown on each Explore tab. Only called for
+ * article-based tables — term-based tables show their total in the heading instead.
  *
  * @param {Array<{id: string}>} filters
  */
@@ -528,13 +529,12 @@ function updateExploreFilterTabCounts(filters) {
     const cacheKey = getExploreFilterTotalCacheKey(currentActiveExploreItemData, filter.id, filterQuery);
 
     if (!exploreFilterTotalCache.has(cacheKey)) {
-      const requestSize = currentActiveExploreItemData?.type === "terms" ? 1 : 0;
       exploreFilterTotalCache.set(
         cacheKey,
         loadExploreRecords(
           currentActiveExploreItemData,
           filterQuery,
-          requestSize,
+          0,
           currentActiveDataDisplayToggle
         ).then(({ total }) => (Number.isFinite(total) ? total : 0))
       );
@@ -794,7 +794,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       ? shownCount
       : totalRecords;
 
-    if (filter && query) {
+    if (filter && query && type !== "terms") {
       const cacheKey = getExploreFilterTotalCacheKey(itemData, filter, query);
       exploreFilterTotalCache.set(cacheKey, Promise.resolve(totalCount));
     }
