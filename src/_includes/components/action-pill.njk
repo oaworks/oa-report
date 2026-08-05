@@ -12,10 +12,10 @@
     type="button"
     aria-pressed="{% if params.first %}true{% else %}false{% endif %}"
     aria-controls="{{ params.id }}"
-    class="js_strategy_btn group cursor-pointer px-4 py-1.5 text-sm font-medium rounded-md outline outline-1 outline-transparent outline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 transition-colors text-white bg-neutral-900 hover:bg-neutral-800 {{ params.class }}"
+    class="js_strategy_btn group cursor-pointer rounded-md px-4 py-1.5 text-sm font-medium shadow-md outline outline-1 outline-transparent outline-offset-4 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-white {% if params.first %}border border-neutral-900 bg-neutral-900 text-white hover:bg-neutral-800{% else %}border border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900{% endif %} {{ params.class }}"
     id="strategy_{{ params.id }}"
   >
     <span>{{ params.txt }}</span>
-    <span id="count_{{ params.id }}" class="ml-3 rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors md:inline-block {% if params.first %}bg-neutral-800 text-neutral-100{% else %}bg-neutral-700 text-neutral-100 group-hover:bg-neutral-600{% endif %}">0</span>
+    <span id="count_{{ params.id }}" class="ml-3 rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors md:inline-block {% if params.first %}bg-white text-neutral-900{% else %}border border-neutral-300 bg-neutral-100 text-neutral-700 group-hover:bg-neutral-200{% endif %}">0</span>
   </button>
 </li>

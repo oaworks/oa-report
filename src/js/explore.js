@@ -34,7 +34,7 @@ const RECORDS_SHOWN_DEFAULT = 10;
 const RECORDS_SHOWN_NO_SELECT_MAX = 20;
 const RECORDS_SHOWN_ALL_THRESHOLD = 1000;
 const exploreFilterTotalCache = new Map();
-const EXPLORE_SELECTED_ROW_CLASSES = ['!bg-neutral-300', 'hover:!bg-neutral-300', 'text-neutral-900'];
+const EXPLORE_SELECTED_ROW_CLASSES = ['!bg-carnation-100', 'hover:!bg-carnation-100', 'text-neutral-900'];
 
 let orgKey = "";
 let loggedIn = false;
@@ -120,7 +120,7 @@ function isOrcidUrl(value) {
 }
 
 const FILTER_TARGET_BUTTON_CLASS = 'js-filter-target cursor-pointer hover:underline text-left focus:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm';
-const EXTERNAL_LINK_PILL_CLASS = 'ml-1 rounded-full bg-neutral-800 px-2 py-0.5 text-[10px] text-neutral-100 whitespace-nowrap align-super js-external-pill hover:bg-neutral-700';
+const EXTERNAL_LINK_PILL_CLASS = 'ml-1 rounded-full border border-neutral-300 bg-neutral-100 px-2 py-0.5 text-[10px] text-neutral-700 whitespace-nowrap align-super js-external-pill hover:bg-neutral-200';
 
 /**
  * Tracks currently selected row keys for use in enableExploreRowHighlighting.
@@ -733,7 +733,7 @@ function updateRecordsShownControl(total) {
   });
 
   const caret = document.createElement("i");
-  caret.className = "ph ph-caret-down absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-neutral-100 pointer-events-none";
+  caret.className = "ph ph-caret-down pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-neutral-500";
   caret.setAttribute("aria-hidden", "true");
 
   wrapper.append(selectMenu, caret);
@@ -1442,7 +1442,7 @@ function formatExploreSummaryRowLabel(exploreItemId, summaryKey) {
   const article = /^[aeiou]/i.test(singularLabel) ? "an" : "a";
   const connectorText = summaryKey === "all_values" ? "with" : "without";
   const visibleConnectorText = summaryKey === "all_values" ? "With" : "Without";
-  const connector = `<span class="font-bold text-white">${visibleConnectorText}</span>`;
+  const connector = `<span class="font-bold text-neutral-900">${visibleConnectorText}</span>`;
   const suffix = summaryKey === "all_values"
     ? `${article} ${singularItemLabel}`
     : `a recorded ${singularItemLabel}`;

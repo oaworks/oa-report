@@ -466,15 +466,15 @@ function createDropdownContainer(id = null) {
     "rounded-sm",
     "shadow-lg",
     "border",
-    "border-neutral-400",
-    "bg-neutral-800",
-    "text-neutral-100",
+    "border-neutral-300",
+    "bg-white",
+    "text-neutral-700",
     "focus:outline-none",
     "focus:ring-2",
     "focus:ring-offset-2",
-    "focus:ring-neutral-300",
+    "focus:ring-carnation-200",
     "divide-y",
-    "divide-neutral-700",
+    "divide-neutral-200",
     "hidden",
     "js_dropdown_content"
   );
@@ -503,7 +503,7 @@ function createDropdownItem(buttonId, buttonText, startDate, endDate, dropdownBu
 
   item.className =
     "js_dropdown_item block w-full px-4 py-2 text-left text-xs " +
-    "bg-neutral-800 text-neutral-100 hover:bg-neutral-700 focus:outline-none focus:bg-neutral-600 active:bg-neutral-700";
+    "border-b border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 focus:outline-none focus:bg-neutral-100 active:bg-neutral-200";
 
   item.textContent = buttonText;
 
@@ -631,7 +631,7 @@ function createDateRangeForm() {
 
   // Custom date range popover content
   const pop = document.createElement("div");
-  pop.className = "w-56 p-2 text-xs text-neutral-200 md:p-3 md:text-sm";
+  pop.className = "w-56 p-2 text-xs text-neutral-700 md:p-3 md:text-sm";
   pop.setAttribute("role", "dialog");
   pop.setAttribute("aria-labelledby", "js-date-range-form-title");
 
@@ -647,7 +647,7 @@ function createDateRangeForm() {
   const applyBtn = document.createElement("button");
   applyBtn.type = "button";
   applyBtn.id = "js-date-range-apply-button";
-  applyBtn.className = "mt-1 inline-flex w-full items-center justify-center rounded-sm border border-neutral-100 bg-neutral-100 px-2 py-1 font-semibold text-neutral-900 transition-colors hover:bg-neutral-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 md:mt-0 md:px-3 md:py-1.5";
+  applyBtn.className = "mt-1 inline-flex w-full items-center justify-center rounded-sm border border-neutral-900 bg-neutral-900 px-2 py-1 font-semibold text-white shadow-sm transition-colors hover:bg-neutral-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white md:mt-0 md:px-3 md:py-1.5";
   applyBtn.textContent = "Apply";
   pop.appendChild(applyBtn);
 
@@ -774,13 +774,13 @@ function createDateInput(id, label) {
   const labelElement = document.createElement("label");
   labelElement.htmlFor = id;
   labelElement.textContent = label;
-  labelElement.className = "mb-1 block text-xs font-semibold uppercase text-neutral-300";
+  labelElement.className = "mb-1 block text-xs font-semibold uppercase text-neutral-600";
   wrapper.appendChild(labelElement);
 
   const input = document.createElement("input");
   input.type = "date";
   input.id = id;
-  input.className = "block w-full rounded-sm border border-neutral-600 bg-neutral-900/50 px-2 py-1 text-center text-xs text-neutral-100 shadow-sm transition-colors hover:border-neutral-400 focus:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-carnation-400 focus:ring-offset-1 focus:ring-offset-neutral-900 md:text-sm";
+  input.className = "block w-full rounded-sm border border-neutral-300 bg-white px-2 py-1 text-center text-xs text-neutral-900 transition-colors hover:border-neutral-400 focus:border-neutral-400 focus:outline-none focus:ring-2 focus:ring-carnation-400 focus:ring-offset-1 focus:ring-offset-white md:text-sm";
   input.setAttribute('aria-label', label);
   input.required = label === "From";
   wrapper.appendChild(input);
@@ -869,12 +869,12 @@ function updateYearButtonStyling(selectedElement, isDropdownItem = false) {
   if (selectedElement.tagName.toLowerCase() === "form") {
     const labels = selectedElement.querySelectorAll("label");
     labels.forEach((label) => {
-      label.classList.add("text-white");
+      label.classList.add("text-neutral-900");
     });
 
     const inputs = selectedElement.querySelectorAll("input");
     inputs.forEach((input) => {
-      input.classList.add("text-white", "bg-neutral-900", "border-neutral-900");
+      input.classList.add("text-neutral-900", "bg-white", "border-neutral-300");
     });
   }
 
@@ -905,13 +905,13 @@ function resetDropdown() {
   const dropdownItems = document.querySelectorAll('.js_dropdown_item');
   dropdownItems.forEach((item) => {
     item.classList.remove(
-      "bg-neutral-700",
-      "bg-neutral-600",
-      "text-neutral-100",
+      "bg-neutral-100",
+      "bg-neutral-200",
+      "text-neutral-700",
       "font-semibold",
       "border-neutral-900",
-      "border-neutral-700",
-      "border-neutral-600"
+      "border-neutral-300",
+      "border-neutral-200"
     );
   });
 
@@ -921,12 +921,12 @@ function resetDropdown() {
 
   const labels = dateRangeForm.querySelectorAll('label');
   labels.forEach((label) => {
-    label.classList.remove("text-white");
+    label.classList.remove("text-neutral-900");
   });
 
   const inputs = dateRangeForm.querySelectorAll('input');
   inputs.forEach((input) => {
-    input.classList.remove("text-white", "bg-neutral-900", "border-neutral-900");
+    input.classList.remove("text-neutral-900", "bg-white", "border-neutral-300");
   });
 }
 

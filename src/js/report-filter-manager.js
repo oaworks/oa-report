@@ -593,12 +593,12 @@ function addFilterRow(container) {
   const fieldLabel = document.createElement("label");
   const fieldId = `js-filter-field-${idSuffix}`;
   fieldLabel.setAttribute("for", fieldId);
-  fieldLabel.className = "flex items-center text-[11px] font-medium uppercase tracking-wide text-neutral-300 md:text-xs";
+  fieldLabel.className = "flex items-center text-[11px] font-medium uppercase tracking-wide text-neutral-600 md:text-xs";
   fieldLabel.textContent = "Field";
 
   const fieldSelect = document.createElement("select");
   fieldSelect.id = fieldId;
-  fieldSelect.className = `js-filter-field mt-1 block h-9 w-full rounded-sm border border-neutral-600 bg-neutral-900/50 px-2 text-xs leading-tight text-neutral-100 shadow-sm transition-colors hover:border-neutral-400 focus:border-neutral-300 ${CONTROL_FOCUS_RING_CLASSES} md:text-sm`;
+  fieldSelect.className = `js-filter-field mt-1 block h-9 w-full rounded-sm border border-neutral-300 bg-white px-2 text-xs leading-tight text-neutral-900 transition-colors hover:border-neutral-400 focus:border-neutral-400 ${CONTROL_FOCUS_RING_CLASSES} md:text-sm`;
   fieldSelect.required = true;
   fieldSelect.setAttribute("aria-required", "true");
 
@@ -623,14 +623,14 @@ function addFilterRow(container) {
 
   const textLabel = document.createElement("div");
   textLabel.id = `js-filter-values-label-${idSuffix}`;
-  textLabel.className = "flex items-center text-[11px] font-medium uppercase tracking-wide text-neutral-300 md:text-xs";
+  textLabel.className = "flex items-center text-[11px] font-medium uppercase tracking-wide text-neutral-600 md:text-xs";
   textLabel.textContent = "Values";
 
   const inputId = `js-filter-input-${idSuffix}`;
   const input = document.createElement("input");
   input.id = inputId;
   input.type = "text";
-  input.className = `js-filter-input mt-1 h-9 w-full rounded-sm border border-neutral-600 bg-neutral-900/50 p-2 text-xs leading-tight text-neutral-100 shadow-sm transition-colors placeholder-neutral-500 hover:border-neutral-400 focus:border-neutral-300 disabled:border-neutral-700 disabled:bg-neutral-800 disabled:text-neutral-500 disabled:placeholder-neutral-500 ${CONTROL_FOCUS_RING_CLASSES} md:text-sm`;
+  input.className = `js-filter-input mt-1 h-9 w-full rounded-sm border border-neutral-300 bg-white p-2 text-xs leading-tight text-neutral-900 transition-colors placeholder-neutral-500 hover:border-neutral-400 focus:border-neutral-400 disabled:border-neutral-200 disabled:bg-neutral-100 disabled:text-neutral-400 disabled:placeholder-neutral-400 ${CONTROL_FOCUS_RING_CLASSES} md:text-sm`;
   input.placeholder = "Start typing to see suggestions…";
   input.disabled = true;
   input.setAttribute("aria-disabled", "true");
@@ -648,7 +648,7 @@ function addFilterRow(container) {
 
   const listbox = document.createElement("ul");
   listbox.id = listboxId;
-  listbox.className = "js-filter-suggestions absolute z-10 mt-1 hidden max-h-48 w-full overflow-auto rounded-sm border border-neutral-600 bg-neutral-900 shadow-lg";
+  listbox.className = "js-filter-suggestions absolute z-10 mt-1 hidden max-h-48 w-full overflow-auto rounded-sm border border-neutral-200 bg-white shadow-lg";
   listbox.setAttribute("role", "listbox");
   listbox.setAttribute("aria-label", "Filter value suggestions");
 
@@ -724,12 +724,12 @@ function addFilterRow(container) {
       const selected = optionIndex === activeIndex;
       li.setAttribute("aria-selected", selected ? "true" : "false");
       li.classList.toggle("bg-neutral-100", selected);
-      li.classList.toggle("border-neutral-100", selected);
+      li.classList.toggle("border-neutral-200", selected);
       li.classList.toggle("font-semibold", selected);
       li.classList.toggle("text-neutral-900", selected);
-      li.classList.toggle("hover:bg-neutral-800", !selected);
-      li.classList.toggle("text-neutral-200", !selected);
-      li.classList.toggle("hover:text-white", !selected);
+      li.classList.toggle("hover:bg-neutral-100", !selected);
+      li.classList.toggle("text-neutral-700", !selected);
+      li.classList.toggle("hover:text-neutral-900", !selected);
     });
     const activeOption = options[activeIndex];
     if (activeOption && activeOption.id) {
@@ -822,7 +822,7 @@ function addFilterRow(container) {
       li.setAttribute("role", "option");
       li.setAttribute("aria-selected", "false");
       li.setAttribute("aria-disabled", "false");
-      li.className = "cursor-pointer border border-transparent px-2 py-1 text-xs text-neutral-200 transition-colors hover:bg-neutral-800 hover:text-white md:text-sm";
+      li.className = "cursor-pointer border border-transparent px-2 py-1 text-xs text-neutral-700 transition-colors hover:bg-neutral-100 hover:text-neutral-900 md:text-sm";
       li.id = `${listboxId}-option-${listbox.childElementCount}`;
       li.innerHTML = highlight(val);
       li.addEventListener("mousedown", (e) => {
@@ -843,7 +843,7 @@ function addFilterRow(container) {
     const hint = document.createElement("li");
     hint.setAttribute("role", "presentation");
     hint.setAttribute("aria-hidden", "true");
-    hint.className = "flex h-9 items-center border-b border-neutral-700 bg-neutral-800 px-2 py-1 text-xs text-neutral-300 md:text-sm";
+    hint.className = "flex h-9 items-center border-b border-neutral-200 bg-neutral-100 px-2 py-1 text-xs text-neutral-500 md:text-sm";
     hint.textContent = message || (termRaw ? `Matching suggestions for "${termRaw}"` : "Start typing to see suggestions…");
     listbox.appendChild(hint);
     activeIndex = -1;
@@ -871,7 +871,7 @@ function addFilterRow(container) {
       values.forEach((val) => {
       const displayVal = formatFilterValueForDisplay(fieldName, val);
       const chip = document.createElement("span");
-      chip.className = "inline-flex items-center rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] text-neutral-900 md:text-xs";
+      chip.className = "inline-flex items-center rounded-full border border-neutral-300 bg-white px-2 py-0.5 text-[11px] text-neutral-900 md:text-xs";
       chip.setAttribute("data-value", val);
       chip.setAttribute("data-field", fieldName);
       chip.setAttribute("role", "listitem");
@@ -1150,7 +1150,7 @@ export function renderActiveFiltersBanner() {
         const chipText = fieldDef?.suffix ? `${displayVal} ${fieldDef.suffix}` : displayVal;
         const chip = document.createElement("button");
         chip.type = "button";
-        chip.className = "inline-flex items-center rounded-full bg-neutral-100 px-2.5 py-1 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-900";
+        chip.className = "inline-flex items-center rounded-full border border-neutral-300 bg-white px-2.5 py-1 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-white";
         chip.setAttribute("aria-label", `Remove ${DOMPurify.sanitize(label, { ALLOWED_TAGS: [] })}: ${chipText}`);
         chip.setAttribute("data-field", ensureKeywordField(field));
         const chipIconName = iconForField(field);
@@ -1197,7 +1197,7 @@ export function renderActiveFiltersBanner() {
   const triggerBtn = document.createElement("button");
   triggerBtn.type = "button";
   triggerBtn.id = "js-filters-trigger";
-  triggerBtn.className = "inline-flex items-center rounded-full border border-neutral-600 bg-neutral-900 px-2.5 py-1 text-sm font-medium text-neutral-200 transition-colors hover:border-neutral-400 hover:bg-neutral-800 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-900";
+  triggerBtn.className = "inline-flex items-center rounded-full border border-neutral-300 bg-white px-2.5 py-1 text-sm font-medium text-neutral-700 transition-colors hover:border-neutral-400 hover:bg-neutral-100 hover:text-neutral-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-white";
   triggerBtn.innerHTML = `<span aria-hidden="true" class="mr-1 font-bold">+</span> Add filter`;
   triggerBtn.setAttribute("aria-haspopup", "dialog");
   triggerBtn.setAttribute("aria-expanded", "false");
@@ -1209,14 +1209,14 @@ export function renderActiveFiltersBanner() {
     clearBtn = document.createElement("button");
     clearBtn.type = "button";
     clearBtn.id = "js-clear-q-filters";
-    clearBtn.className = "inline-flex items-center px-2.5 py-1 text-sm font-medium text-neutral-300 transition-colors hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-900";
+    clearBtn.className = "inline-flex items-center px-2.5 py-1 text-sm font-medium text-neutral-600 transition-colors hover:text-neutral-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-white";
     clearBtn.textContent = "Clear all";
     mount.appendChild(clearBtn);
   }
 
   // Popover content: clear-all (if active) + add-filter form
   const pop = document.createElement("div");
-  pop.className = "js-filters-popover p-3 text-xs text-neutral-200 md:p-4 md:text-sm";
+  pop.className = "js-filters-popover p-3 text-xs text-neutral-700 md:p-4 md:text-sm";
   pop.setAttribute("role", "dialog");
   pop.setAttribute("aria-labelledby", "js-filters-form-title");
   pop.style.maxWidth = "90vw";
@@ -1235,26 +1235,26 @@ export function renderActiveFiltersBanner() {
   filterForm.appendChild(formTitle);
 
   const formHeading = document.createElement("h3");
-  formHeading.className = "flex items-center gap-2 text-xs font-semibold text-neutral-100 md:text-sm";
+  formHeading.className = "flex items-center gap-2 text-xs font-semibold text-neutral-900 md:text-sm";
   formHeading.textContent = "Add a filter";
 
   const helpIcon = document.createElement("button");
   helpIcon.type = "button";
-  helpIcon.className = "text-[11px] text-neutral-400 underline decoration-dotted underline-offset-4 transition-colors hover:text-white";
+  helpIcon.className = "text-[11px] text-neutral-500 underline decoration-dotted underline-offset-4 transition-colors hover:text-neutral-900";
   helpIcon.setAttribute("aria-label", "Filtering tips");
   helpIcon.textContent = "(?)";
   formHeading.appendChild(helpIcon);
 
   const helpEl = document.createElement("div");
-  helpEl.className = "p-2 text-neutral-200 md:p-3";
+  helpEl.className = "p-2 text-neutral-700 md:p-3";
 
   const helpHeading = document.createElement("p");
-  helpHeading.className = "mb-2 text-sm font-semibold text-neutral-100";
+  helpHeading.className = "mb-2 text-sm font-semibold text-neutral-900";
   helpHeading.textContent = "Filtering tips";
   helpEl.appendChild(helpHeading);
 
   const helpList = document.createElement("ul");
-  helpList.className = "list-disc list-outside space-y-1 pl-5 text-xs text-neutral-300";
+  helpList.className = "list-disc list-outside space-y-1 pl-5 text-xs text-neutral-600";
   [
     'Type to see suggestions, then <strong>click to add</strong> one.',
     'Add <strong>multiple entries</strong> to match <strong>any</strong> of them (e.g., adding <code>INV-001</code> and <code>INV-002</code> returns publications under either grant).',
@@ -1286,7 +1286,7 @@ export function renderActiveFiltersBanner() {
   const applyBtn = document.createElement("button");
   applyBtn.type = "submit";
   applyBtn.id = "js-apply-filters";
-  applyBtn.className = "mb-1 mt-1 inline-flex w-full items-center justify-center rounded-sm border border-neutral-100 bg-neutral-100 p-2 font-semibold text-neutral-900 transition-colors hover:bg-neutral-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900";
+  applyBtn.className = "mb-1 mt-1 inline-flex w-full items-center justify-center rounded-sm border border-neutral-900 bg-neutral-900 p-2 font-semibold text-white shadow-sm transition-colors hover:bg-neutral-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white";
   applyBtn.textContent = "Apply";
   filterForm.appendChild(applyBtn);
 
