@@ -3,18 +3,18 @@
 
 {% call sectionWrapper("explore", "Explore") %}
   {# Breakdown table options #}
-  <nav aria-label="Explore views" aria-labelledby="explore-nav-title" class="flex flex-wrap items-center gap-2 p-2 rounded-md bg-neutral-900/90 border border-neutral-700 shadow-lg">
+  <nav aria-label="Explore views" aria-labelledby="explore-nav-title" class="flex flex-wrap items-center gap-2 p-2 rounded-md bg-neutral-900/60 border border-neutral-600 shadow-lg">
     <h3 id="explore-nav-title" class="sr-only">Explore views</h3>
     <ul id="explore_buttons" class="flex flex-wrap items-center gap-4 m-0 p-0 list-none">
       <li id="explore_see_more_item" class="list-none">
-        <button class="inline-flex items-center px-4 py-1.5 rounded-md bg-neutral-700 text-white text-sm font-medium hover:bg-neutral-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 transition-colors">
+        <button class="inline-flex items-center px-4 py-1.5 rounded-md bg-neutral-800 text-neutral-100 text-sm font-medium hover:bg-neutral-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-900 transition-colors">
           <span>See more</span>
         </button>
       </li>
     </ul>
   </nav>
 
-  <div class="mt-2 md:mt-4 bg-neutral-900 border border-neutral-700 shadow-lg rounded-lg p-4 md:p-6">
+  <div class="mt-2 md:mt-4 bg-neutral-900/70 border border-neutral-600 shadow-lg rounded-lg p-4 md:p-6">
     {# Loading spinner #}
     <div
       class="fixed inset-0 z-50 flex justify-center items-center opacity-0 transition-opacity duration-300"
@@ -39,7 +39,7 @@
         </h3>
       </header>
       {# Filter by buttons styled as tabs #}
-      <div id="explore_filter_field" class="mt-4 border-b border-neutral-600">
+      <div id="explore_filter_field" class="mt-4 border-b border-neutral-500">
         <div
           id="explore_filters"
           role="tablist"
@@ -53,7 +53,7 @@
           id="export_table_controls"
           role="toolbar"
           aria-label="Table controls"
-          class="my-6 flex flex-wrap items-center justify-between gap-3 text-xs font-semibold uppercase text-white"
+          class="my-6 flex flex-wrap items-center justify-between gap-3 text-xs font-semibold uppercase text-neutral-200"
         >
         <div class="flex flex-wrap items-center gap-5 md:gap-7">
           <p id="explore_count_summary" class="flex items-center gap-1.5" aria-live="polite">
@@ -64,7 +64,7 @@
           <form id="explore_display_style_field">
             <fieldset>
               <legend class="sr-only">Display values as</legend>
-              <div class="inline-flex rounded-sm border border-neutral-500 bg-transparent p-0.5 shadow-sm transition-colors hover:border-neutral-300 focus-within:border-neutral-300">
+              <div class="inline-flex rounded-sm border border-neutral-600 bg-neutral-900/50 p-0.5 shadow-sm transition-colors hover:border-neutral-400 focus-within:border-neutral-300">
                 <input
                   id="display-style-percent"
                   type="radio"
@@ -75,7 +75,7 @@
                 >
                 <label
                   for="display-style-percent"
-                  class="inline-flex cursor-pointer items-center gap-1.5 rounded-sm px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-100 transition-colors hover:bg-neutral-700 hover:text-white peer-checked/display-percent:bg-neutral-100 peer-checked/display-percent:text-neutral-900 peer-focus-visible/display-percent:ring-2 peer-focus-visible/display-percent:ring-carnation-400 peer-focus-visible/display-percent:ring-offset-1 peer-focus-visible/display-percent:ring-offset-neutral-900 [&>i]:text-[1em]"
+                  class="inline-flex cursor-pointer items-center gap-1.5 rounded-sm px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-100 transition-colors hover:bg-neutral-800 hover:text-white peer-checked/display-percent:bg-neutral-100 peer-checked/display-percent:text-neutral-900 peer-focus-visible/display-percent:ring-2 peer-focus-visible/display-percent:ring-carnation-400 peer-focus-visible/display-percent:ring-offset-1 peer-focus-visible/display-percent:ring-offset-neutral-900 [&>i]:text-[1em]"
                 >
                   Percent <span aria-hidden="true" class="inline-flex items-center self-center leading-none [&>i]:block [&>i]:text-[0.875em]">{% icon_small "percent" %}</span>
                 </label>
@@ -88,7 +88,7 @@
                 >
                 <label
                   for="display-style-count"
-                  class="inline-flex cursor-pointer items-center gap-1.5 rounded-sm px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-100 transition-colors hover:bg-neutral-700 hover:text-white peer-checked/display-count:bg-neutral-100 peer-checked/display-count:text-neutral-900 peer-focus-visible/display-count:ring-2 peer-focus-visible/display-count:ring-carnation-400 peer-focus-visible/display-count:ring-offset-1 peer-focus-visible/display-count:ring-offset-neutral-900 [&>i]:text-[1em]"
+                  class="inline-flex cursor-pointer items-center gap-1.5 rounded-sm px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-100 transition-colors hover:bg-neutral-800 hover:text-white peer-checked/display-count:bg-neutral-100 peer-checked/display-count:text-neutral-900 peer-focus-visible/display-count:ring-2 peer-focus-visible/display-count:ring-carnation-400 peer-focus-visible/display-count:ring-offset-1 peer-focus-visible/display-count:ring-offset-neutral-900 [&>i]:text-[1em]"
                 >
                   Count <span aria-hidden="true" class="inline-flex items-center self-center leading-none [&>i]:block [&>i]:text-[0.875em]">{% icon_small "hash" %}</span>
                 </label>
@@ -100,7 +100,7 @@
           id="explore_copy_clipboard"
           class="group inline-flex items-center self-start focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-800"
         >
-          <span class="inline-flex items-center gap-1.5 rounded-sm border border-neutral-500 bg-transparent px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-100 shadow-sm transition-colors group-hover:border-neutral-300 group-hover:bg-neutral-700/70 group-hover:text-white group-focus-visible:border-neutral-300 group-focus-visible:bg-neutral-700/70 group-focus-visible:text-white [&>i]:shrink-0 [&>i]:text-[1em]">
+          <span class="inline-flex items-center gap-1.5 rounded-sm border border-neutral-600 bg-neutral-900/50 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-100 shadow-sm transition-colors group-hover:border-neutral-400 group-hover:bg-neutral-800 group-hover:text-white group-focus-visible:border-neutral-400 group-focus-visible:bg-neutral-800 group-focus-visible:text-white [&>i]:shrink-0 [&>i]:text-[1em]">
             <span aria-hidden="true">{% icon_small "clipboard" %}</span>
             <span data-copy-label>Copy table</span>
           </span>
