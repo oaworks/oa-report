@@ -124,6 +124,7 @@ function updateStrategyButtonStyling(event) {
   const tabBtn = event.target.closest(".js_strategy_btn");
   if (!tabBtn) return;
   const activeClasses = SEGMENTED_PILL_CLASSES.active.split(" ");
+  const inactiveClasses = SEGMENTED_PILL_CLASSES.inactive.split(" ");
 
   const selectedAction = tabBtn.getAttribute("aria-controls");
   const selectedTabContents = document.querySelector(`.js_actions #${selectedAction}`);
@@ -146,7 +147,7 @@ function updateStrategyButtonStyling(event) {
   // Update button styles
   document.querySelectorAll(".js_strategy_btn").forEach((btn) => {
     btn.classList.remove(...activeClasses);
-    btn.classList.add("text-white", "hover:bg-neutral-700/70", "bg-neutral-900/60");
+    btn.classList.add(...inactiveClasses);
     const badge = btn.querySelector("[id^='count_']");
     if (badge) {
       badge.classList.remove(...ACTIVE_ACTION_BADGE_CLASSES);
@@ -156,7 +157,7 @@ function updateStrategyButtonStyling(event) {
   });
 
   tabBtn.classList.add(...activeClasses);
-  tabBtn.classList.remove("text-white", "hover:bg-neutral-700/70", "bg-neutral-900/60");
+  tabBtn.classList.remove(...inactiveClasses);
   const activeBadge = tabBtn.querySelector("[id^='count_']");
   if (activeBadge) {
     activeBadge.classList.remove(...INACTIVE_ACTION_BADGE_CLASSES);
