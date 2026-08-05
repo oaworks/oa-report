@@ -1111,7 +1111,7 @@ export function resetBarChart(cardContents) {
   if (!cardContents) return;
 
   // Remove the temporary unavailable-state surface.
-  cardContents.classList.remove('bg-neutral-800', 'opacity-70');
+  cardContents.classList.remove('bg-neutral-800');
   cardContents.classList.add('bg-neutral-900');
 
   // Restore swapped icon and percent styling if it was changed
@@ -1156,7 +1156,7 @@ export function showUnavailableCard(cardContents) {
     if (!percentEl.dataset.oarDefaultUnavailable) {
       percentEl.dataset.oarDefaultUnavailable = percentEl.innerHTML;
     }
-    percentEl.innerHTML = `<span class="text-sm font-semibold text-neutral-300">Unavailable</span>`;
+    percentEl.innerHTML = `<span class="text-sm font-semibold text-neutral-200">Unavailable</span>`;
   }
 
   // Swap the corner icon for a slash, remembering the original
@@ -1165,13 +1165,13 @@ export function showUnavailableCard(cardContents) {
       iconEl.dataset.oarDefaultIcon = iconEl.innerHTML;
     }
     iconEl.innerHTML = `
-      <i class="ph ph-prohibit inline-block text-neutral-500" aria-hidden="true"></i>
+      <i class="ph ph-prohibit inline-block text-neutral-400" aria-hidden="true"></i>
     `;
   }
 
   // Muted card styling
   cardContents.classList.remove('bg-neutral-900');
-  cardContents.classList.add('bg-neutral-800', 'opacity-70');
+  cardContents.classList.add('bg-neutral-800');
 
   // Reset the bar track without rendering any value bar.
   const footerEl = cardContents.querySelector('footer.js_bar_chart');
