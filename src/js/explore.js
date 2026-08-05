@@ -1445,7 +1445,7 @@ function formatExploreSummaryRowLabel(exploreItemId, summaryKey) {
   const connector = `<span class="font-bold text-neutral-950">${visibleConnectorText}</span>`;
   const suffix = summaryKey === "all_values"
     ? `${article} ${singularItemLabel}`
-    : `${article} recorded ${singularItemLabel}`;
+    : `a recorded ${singularItemLabel}`;
 
   return {
     visibleLabel: DOMPurify.sanitize(`${connector} <span class="font-normal">${suffix}</span>`),
