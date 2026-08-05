@@ -1089,6 +1089,18 @@ export function updateExploreFilterHeader(filterId) {
 
 // Chart helpers
 
+const INSIGHT_BAR_TRACK_CLASSES = [
+  'js_bar_chart',
+  'flex',
+  'flex-col',
+  'justify-end',
+  'h-auto',
+  'w-2',
+  'bg-neutral-700',
+  'rounded-full',
+  'overflow-hidden'
+].join(' ');
+
 /**
  * Resets the <footer> js_bar_chart area of an Insights card back to its default state.
  * Undoes any "Data unavailable" content and styling applied by showUnavailableCard().
@@ -1098,29 +1110,18 @@ export function updateExploreFilterHeader(filterId) {
 export function resetBarChart(cardContents) {
   if (!cardContents) return;
 
-  // Restore the default white card styling
-  cardContents.classList.add('bg-white', 'proportional-card');
-
-  // Remove the "unavailable" card styling
-  cardContents.classList.remove(
-    'bg-carnation-100',
-    'bg-neutral-100',
-    'bg-neutral-50',
-    'opacity-70',
-    'flex',
-    'flex-col',
-    'justify-center'
-  );
+  // Remove the temporary unavailable-state surface.
+  cardContents.classList.remove('bg-neutral-800', 'opacity-70');
+  cardContents.classList.add('bg-neutral-900');
 
   // Restore swapped icon and percent styling if it was changed
-  const iconEl = cardContents.querySelector('.text-neutral-800');
+  const iconEl = cardContents.querySelector('.js_insight_icon');
   if (iconEl && iconEl.dataset.oarDefaultIcon) {
     iconEl.innerHTML = iconEl.dataset.oarDefaultIcon;
     delete iconEl.dataset.oarDefaultIcon;
   }
   const percentEl = cardContents.querySelector('[id^="percent_"]');
   if (percentEl) {
-    percentEl.classList.remove('text-sm', 'font-semibold', 'text-neutral-700', 'text-neutral-800');
     percentEl.innerHTML = percentEl.dataset.oarDefaultUnavailable || percentEl.innerHTML;
     delete percentEl.dataset.oarDefaultUnavailable;
   }
@@ -1132,32 +1133,18 @@ export function resetBarChart(cardContents) {
     footerEl.className = 'js_bar_chart';
     cardContents.appendChild(footerEl);
   }
-  // If it was in "unavailable" mode, restore for drawing bars
-  footerEl.removeAttribute('data-unavailable');
   footerEl.innerHTML = '';
-
-  // Default vertical bar container: tall, thicker, rounded
-  footerEl.className = [
-    'js_bar_chart',
-    'flex',
-    'flex-col',
-    'justify-end',
-    'h-auto',
-    'w-2',
-    'bg-carnation-800',
-    'rounded-full',
-    'overflow-hidden'
-  ].join(' ');
+  footerEl.className = INSIGHT_BAR_TRACK_CLASSES;
 }
 
 /**
- * Switches the default Insights card into greyed-out "Data unavailable" style.
+ * Switches the default Insights card into a muted "Data unavailable" style.
  */
 export function showUnavailableCard(cardContents) {
   // Locate the "articles" and "percent" elements
   const articlesEl = cardContents.querySelector('[id^="articles_"]');
   const percentEl  = cardContents.querySelector('[id^="percent_"]');
-  const iconEl     = cardContents.querySelector('.text-neutral-800');
+  const iconEl     = cardContents.querySelector('.js_insight_icon');
 
   // Clear the text for #articles_...
   if (articlesEl) {
@@ -1169,7 +1156,7 @@ export function showUnavailableCard(cardContents) {
     if (!percentEl.dataset.oarDefaultUnavailable) {
       percentEl.dataset.oarDefaultUnavailable = percentEl.innerHTML;
     }
-    percentEl.innerHTML = `<span class="text-sm font-semibold text-neutral-800">Unavailable</span>`;
+    percentEl.innerHTML = `<span class="text-sm font-semibold text-neutral-300">Unavailable</span>`;
   }
 
   // Swap the corner icon for a slash, remembering the original
@@ -1178,29 +1165,18 @@ export function showUnavailableCard(cardContents) {
       iconEl.dataset.oarDefaultIcon = iconEl.innerHTML;
     }
     iconEl.innerHTML = `
-      <i class="ph ph-prohibit inline-block text-neutral-700" aria-hidden="true"></i>
+      <i class="ph ph-prohibit inline-block text-neutral-500" aria-hidden="true"></i>
     `;
   }
 
   // Muted card styling
-  cardContents.classList.remove('bg-white', 'hover:shadow-md');
-  cardContents.classList.add('bg-neutral-100');
+  cardContents.classList.remove('bg-neutral-900');
+  cardContents.classList.add('bg-neutral-800', 'opacity-70');
 
-  // Clear or replace the bar chart area with "Unavailable"
+  // Reset the bar track without rendering any value bar.
   const footerEl = cardContents.querySelector('footer.js_bar_chart');
   if (footerEl) {
-    footerEl.className = [
-      'js_bar_chart',
-      'flex',
-      'flex-col',
-      'justify-end',
-      'h-auto',
-      'w-2',
-      'bg-neutral-300',
-      'rounded-full',
-      'overflow-hidden'
-    ].join(' ');
-    footerEl.setAttribute('data-unavailable', 'true');
+    footerEl.className = INSIGHT_BAR_TRACK_CLASSES;
     footerEl.innerHTML = '';
   }
 }
@@ -1241,7 +1217,7 @@ export function setBarChart(
     'justify-end',
     'h-20',
     'w-2',
-    'bg-carnation-800',
+    'bg-neutral-700',
     'rounded-full',
     'overflow-hidden'
   );
@@ -1271,11 +1247,11 @@ export function setBarChart(
 
     barContainer.innerHTML = `
       <div 
-        class="w-full bg-carnation-500 flex flex-col justify-end rounded-full"
+        class="w-full bg-carnation-700 flex flex-col justify-end rounded-full"
         style="height: ${fractionOuter}%"
       >
         <div 
-          class="w-full bg-carnation-300 rounded-full"
+          class="w-full bg-carnation-400 rounded-full"
           style="height: ${fractionInner}%"
         ></div>
       </div>
