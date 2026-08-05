@@ -36,8 +36,13 @@
     </div>
   </header>
   <div class="col-span-12 lg:col-span-8 border-t pt-3 sm:pt-0 sm:border-0">
-    <div id="action_table_controls_{{ params.id }}" class="mt-4 flex flex-wrap items-stretch justify-between border border-neutral-700 bg-neutral-900 text-xs font-semibold uppercase text-white">
-      <p class="flex items-center gap-1.5 p-2.5" aria-live="polite">
+    <div
+      id="action_table_controls_{{ params.id }}"
+      role="toolbar"
+      aria-label="Table controls"
+      class="my-6 flex flex-wrap items-center justify-between gap-3 text-xs font-semibold uppercase text-white"
+    >
+      <p class="flex items-center gap-1.5" aria-live="polite">
         <span id="total_{{ params.id }}">00</span>
         <span>actions shown</span>
         {% if params.action_help_txt %}
@@ -54,9 +59,9 @@
       }) }}
       {% endif %}
     </div>
-    <div class="overflow-x-auto border-l border-r border-b border-neutral-700">
+    <div class="overflow-x-auto rounded-lg border border-neutral-700 bg-neutral-800">
       <table class="border-separate border-spacing-0 table-fixed w-full bg-white" id="table_{{ params.id }}">
-        <thead class="border-b border-neutral-700 bg-neutral-900 text-left text-xs font-semibold uppercase text-white">
+        <thead class="border-b border-neutral-700 bg-neutral-800 text-left text-xs font-medium uppercase tracking-wider text-white">
           <tr class="divide-x divide-neutral-700">
             {{ params.table_headings|safe }}
             {% if params.draft_btn %}<th scope='col' class='p-3 w-2/12'>Open draft {{ component('tooltip', {    msg: 'This will open a preset message in your email client. If you make any changes to the email, it will not be saved here.'  }) }}</th>{% endif %}
