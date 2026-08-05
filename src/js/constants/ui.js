@@ -21,8 +21,8 @@ export const SORT_LABEL_CLASSES = "js-sort-label min-w-0 uppercase group-hover:u
 export const SORT_CARET_CHIP_CLASSES = "shrink-0 rounded-sm border border-neutral-500 bg-neutral-800 px-1 py-0.5 text-[10px] leading-none text-neutral-100 shadow-sm transition-colors group-hover:border-neutral-300 group-hover:bg-neutral-700 group-focus-visible:border-neutral-300 group-focus-visible:bg-neutral-700";
 export const TAB_COUNT_BADGE_CLASSES = "ml-3 rounded-full bg-neutral-200 px-2.5 py-0.5 text-xs font-medium text-neutral-900 transition-colors group-hover:bg-neutral-100 md:inline-block";
 export const EXPLORE_SUMMARY_ROW_CLASSES = {
-  total: "border-t-2 border-neutral-400 !bg-neutral-200 font-semibold text-neutral-900",
-  missing: "!bg-neutral-200 font-semibold text-neutral-900"
+  total: "border-t-2 border-neutral-500 !bg-neutral-700 font-semibold text-white",
+  missing: "!bg-neutral-700 font-semibold text-white"
 };
 
 /**
@@ -46,14 +46,14 @@ export const DATA_TABLE_HEADER_CLASSES = {
  */
 export const DATA_TABLE_BODY_CLASSES = {
   terms: {
-    firstCol: "border-b border-neutral-200 sticky left-0 bg-neutral-100 px-3 py-2 w-32 md:w-60 text-left text-neutral-900",
-    secondCol: "border-b border-neutral-200 sticky left-32 md:left-60 bg-neutral-50 px-3 py-2 w-28 md:w-36 whitespace-nowrap truncate text-neutral-900",
-    otherCols: "border-b border-neutral-200 px-3 py-2 whitespace-nowrap truncate text-neutral-900 hover:bg-neutral-50"
+    firstCol: "border-b border-neutral-700 sticky left-0 bg-neutral-900 px-3 py-2 w-32 md:w-60 text-left text-neutral-100",
+    secondCol: "border-b border-neutral-700 sticky left-32 md:left-60 bg-neutral-900 px-3 py-2 w-28 md:w-36 whitespace-nowrap truncate text-neutral-100",
+    otherCols: "border-b border-neutral-700 bg-neutral-800 px-3 py-2 whitespace-nowrap truncate text-neutral-100 hover:bg-neutral-700"
   },
   articles: {
-    firstCol: "border-b border-neutral-200 sticky left-0 bg-neutral-100 px-3 py-2 w-32 md:w-60 lg:w-80 text-left text-neutral-900",
-    secondCol: "border-b border-neutral-200 sticky left-32 md:left-60 lg:left-80 bg-neutral-50 px-3 py-2 w-28 md:w-36 whitespace-nowrap truncate text-neutral-900",
-    otherCols: "border-b border-neutral-200 px-3 py-2 w-64 max-w-4xl whitespace-nowrap truncate text-neutral-900 hover:bg-neutral-50"
+    firstCol: "border-b border-neutral-700 sticky left-0 bg-neutral-900 px-3 py-2 w-32 md:w-60 lg:w-80 text-left text-neutral-100",
+    secondCol: "border-b border-neutral-700 sticky left-32 md:left-60 lg:left-80 bg-neutral-900 px-3 py-2 w-28 md:w-36 whitespace-nowrap truncate text-neutral-100",
+    otherCols: "border-b border-neutral-700 bg-neutral-800 px-3 py-2 w-64 max-w-4xl whitespace-nowrap truncate text-neutral-100 hover:bg-neutral-700"
   }
 };
 
@@ -62,14 +62,14 @@ export const DATA_TABLE_BODY_CLASSES = {
  */
 export const DATA_TABLE_FOOT_CLASSES = {
   terms: {
-    firstCol: "border-b border-neutral-300 sticky left-0 bg-neutral-200 px-3 py-2 w-32 md:w-60 text-left text-neutral-900",
-    secondCol: "border-b border-neutral-300 sticky left-32 md:left-60 bg-neutral-200 px-3 py-2 w-28 md:w-36 whitespace-nowrap truncate text-neutral-900",
-    otherCols: "border-b border-neutral-300 px-3 py-2 whitespace-nowrap truncate text-neutral-900 hover:bg-neutral-100"
+    firstCol: "border-b border-neutral-600 sticky left-0 bg-neutral-900 px-3 py-2 w-32 md:w-60 text-left text-neutral-100",
+    secondCol: "border-b border-neutral-600 sticky left-32 md:left-60 bg-neutral-900 px-3 py-2 w-28 md:w-36 whitespace-nowrap truncate text-neutral-100",
+    otherCols: "border-b border-neutral-600 bg-neutral-800 px-3 py-2 whitespace-nowrap truncate text-neutral-100 hover:bg-neutral-700"
   },
   articles: {
-    firstCol: "border-b border-neutral-300 sticky left-0 bg-neutral-200 px-3 py-2 w-32 md:w-60 lg:w-80 text-left text-neutral-900",
-    secondCol: "border-b border-neutral-300 sticky left-32 md:left-60 lg:left-80 bg-neutral-100 px-3 py-2 w-28 md:w-36 whitespace-nowrap truncate text-neutral-900",
-    otherCols: "border-b border-neutral-300 px-3 py-2 w-64 max-w-4xl whitespace-nowrap truncate text-neutral-900 hover:bg-neutral-100"
+    firstCol: "border-b border-neutral-600 sticky left-0 bg-neutral-900 px-3 py-2 w-32 md:w-60 lg:w-80 text-left text-neutral-100",
+    secondCol: "border-b border-neutral-600 sticky left-32 md:left-60 lg:left-80 bg-neutral-900 px-3 py-2 w-28 md:w-36 whitespace-nowrap truncate text-neutral-100",
+    otherCols: "border-b border-neutral-600 bg-neutral-800 px-3 py-2 w-64 max-w-4xl whitespace-nowrap truncate text-neutral-100 hover:bg-neutral-700"
   }
 };
 

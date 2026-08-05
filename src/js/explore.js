@@ -34,6 +34,7 @@ const RECORDS_SHOWN_DEFAULT = 10;
 const RECORDS_SHOWN_NO_SELECT_MAX = 20;
 const RECORDS_SHOWN_ALL_THRESHOLD = 1000;
 const exploreFilterTotalCache = new Map();
+const EXPLORE_SELECTED_ROW_CLASSES = ['!bg-neutral-300', 'hover:!bg-neutral-300', 'text-neutral-900'];
 
 let orgKey = "";
 let loggedIn = false;
@@ -1422,8 +1423,7 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
         const row = tableBody.children[index]; // Get the corresponding row
         const secondCell = row.children[1]; // Get the second cell in the row
         const rowCells = row.querySelectorAll('td');
-        rowCells.forEach(cell => cell.classList.add('!bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900'));
-        secondCell.classList.remove('bg-neutral-600');
+        rowCells.forEach(cell => cell.classList.add(...EXPLORE_SELECTED_ROW_CLASSES));
       }
     });
   }
@@ -1442,7 +1442,7 @@ function formatExploreSummaryRowLabel(exploreItemId, summaryKey) {
   const article = /^[aeiou]/i.test(singularLabel) ? "an" : "a";
   const connectorText = summaryKey === "all_values" ? "with" : "without";
   const visibleConnectorText = summaryKey === "all_values" ? "With" : "Without";
-  const connector = `<span class="font-bold text-neutral-950">${visibleConnectorText}</span>`;
+  const connector = `<span class="font-bold text-white">${visibleConnectorText}</span>`;
   const suffix = summaryKey === "all_values"
     ? `${article} ${singularItemLabel}`
     : `a recorded ${singularItemLabel}`;
@@ -1748,16 +1748,13 @@ function enableExploreRowHighlighting() {
     if (event.target.tagName === 'TD') {
       const rowCells = event.target.parentElement.querySelectorAll('td');
       const firstCellContent = rowCells[0].textContent;
-      const secondCell = rowCells[1];
-      const isRowHighlighted = rowCells[0].classList.contains('!bg-neutral-200');
+      const isRowHighlighted = rowCells[0].classList.contains('!bg-neutral-300');
 
       if (isRowHighlighted) {
-        rowCells.forEach(cell => cell.classList.remove('!bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900'));
-        secondCell.classList.add('bg-white');
+        rowCells.forEach(cell => cell.classList.remove(...EXPLORE_SELECTED_ROW_CLASSES));
         selectedRowKeys = selectedRowKeys.filter(key => key !== firstCellContent); // Remove key from array for persistent active keys
       } else {
-        rowCells.forEach(cell => cell.classList.add('!bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900'));
-        secondCell.classList.remove('bg-white');
+        rowCells.forEach(cell => cell.classList.add(...EXPLORE_SELECTED_ROW_CLASSES));
         selectedRowKeys.push(firstCellContent); // Add key to array for persistent active keys 
       }
     }
@@ -1769,7 +1766,7 @@ function enableExploreRowHighlighting() {
  */
 function clearRowHighlights() {
   document.querySelectorAll('.js_export_table_container td').forEach(cell => {
-    cell.classList.remove('!bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900');
+    cell.classList.remove(...EXPLORE_SELECTED_ROW_CLASSES);
   });
 }
 
