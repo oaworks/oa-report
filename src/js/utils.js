@@ -1111,8 +1111,8 @@ export function resetBarChart(cardContents) {
   if (!cardContents) return;
 
   // Remove the temporary unavailable-state surface.
-  cardContents.classList.remove('bg-neutral-800');
-  cardContents.classList.add('bg-neutral-900');
+  cardContents.classList.remove('bg-neutral-900');
+  cardContents.classList.add('bg-neutral-800');
 
   // Restore swapped icon and percent styling if it was changed
   const iconEl = cardContents.querySelector('.js_insight_icon');
@@ -1170,8 +1170,8 @@ export function showUnavailableCard(cardContents) {
   }
 
   // Muted card styling
-  cardContents.classList.remove('bg-neutral-900');
-  cardContents.classList.add('bg-neutral-800');
+  cardContents.classList.remove('bg-neutral-800');
+  cardContents.classList.add('bg-neutral-900');
 
   // Reset the bar track without rendering any value bar.
   const footerEl = cardContents.querySelector('footer.js_bar_chart');

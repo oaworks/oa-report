@@ -18,12 +18,12 @@ permalink: "{{ org._source.objectID | slug }}/"
 </a>
 
 {% block header %}
-<div id="js-report-nav" class="bg-neutral-900 text-neutral-100 border-b border-neutral-700 lg:sticky top-0 z-50">
+<div id="js-report-nav" class="bg-neutral-950 text-neutral-100 border-b border-neutral-700 lg:sticky top-0 z-50">
   {% include 'partials/header.njk' %}
 </div>
 {% endblock %}
 
-<main id="main-content" tabindex="-1" class="bg-neutral-900 text-neutral-100">
+<main id="main-content" tabindex="-1" class="bg-neutral-950 text-neutral-100">
   {% include 'partials/report/insights.njk' %}
   {% include 'partials/report/explore.njk' %}
   {% include 'partials/report/actions.njk' %}
