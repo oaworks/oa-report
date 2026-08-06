@@ -535,7 +535,7 @@ export function initInsightsAndActions(org) {
               if (!denominator) {
                 percentageContents.textContent = makeNumberReadable(numeratorCount);
                 figureDetails.innerHTML = `
-                  <span id="details_${numerator}" class="font-semibold text-carnation-600">${makeNumberReadable(numeratorCount)}</span>
+                  <span id="details_${numerator}" class="font-semibold text-carnation-200">${makeNumberReadable(numeratorCount)}</span>
                   <span class="text-neutral-200">
                     ${denominatorText} in total
                   </span>
@@ -549,7 +549,7 @@ export function initInsightsAndActions(org) {
               }
 
               figureDetails.innerHTML = `
-                <span id="details_${numerator}" class="font-semibold text-carnation-600">${makeNumberReadable(numeratorCount)}</span>
+                <span id="details_${numerator}" class="font-semibold text-carnation-200">${makeNumberReadable(numeratorCount)}</span>
                 <span class="text-neutral-200">
                   of <span id="denominator_${numerator}">${makeNumberReadable(denominatorCount)}</span> ${denominatorText}
                 </span>
@@ -725,7 +725,7 @@ export function initInsightsAndActions(org) {
                       var inEpmc = action.has_epmc_fulltext === true;
                       action.epmc_status_label = inEpmc ? "Yes" : "No";
                       action.epmc_status_icon = inEpmc ? "ph-check-circle" : "ph-x-circle";
-                      action.epmc_status_color = inEpmc ? "text-emerald-300" : "text-carnation-500";
+                      action.epmc_status_color = inEpmc ? "text-green-light" : "text-carnation-300";
                     }
 
                     if (typeof action.title === "string" && action.title.includes("&")) {

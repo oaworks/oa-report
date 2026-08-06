@@ -1231,7 +1231,7 @@ export function setBarChart(
     const fraction = Math.round((numeratorCount / denominatorCount) * 100);
     barContainer.innerHTML = `
       <div
-        class="w-full bg-carnation-300 rounded-full"
+        class="w-full bg-carnation-200 rounded-full"
         style="height: ${fraction}%"
       ></div>
     `;
@@ -1246,12 +1246,12 @@ export function setBarChart(
     const fractionInner = Math.round((numeratorCount / denominatorCount) * 100);
 
     barContainer.innerHTML = `
-      <div 
-        class="w-full bg-carnation-700 flex flex-col justify-end rounded-full"
+      <div
+        class="w-full bg-carnation-200 flex flex-col justify-end rounded-full"
         style="height: ${fractionOuter}%"
       >
-        <div 
-          class="w-full bg-carnation-400 rounded-full"
+        <div
+          class="w-full bg-carnation-700 rounded-full"
           style="height: ${fractionInner}%"
         ></div>
       </div>

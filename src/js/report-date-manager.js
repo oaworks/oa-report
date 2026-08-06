@@ -503,7 +503,7 @@ function createDropdownItem(buttonId, buttonText, startDate, endDate, dropdownBu
 
   item.className =
     "js_dropdown_item block w-full px-4 py-2 text-left text-xs " +
-    "bg-neutral-800 text-neutral-100 hover:bg-neutral-700 focus:outline-none focus:bg-neutral-600 active:bg-neutral-700";
+    "bg-neutral-800 text-neutral-100 hover:bg-neutral-700 focus:outline-none focus:bg-neutral-700 active:bg-neutral-700";
 
   item.textContent = buttonText;
 
@@ -889,10 +889,8 @@ function updateYearButtonStyling(selectedElement, isDropdownItem = false) {
 }
 
 /**
- * Resets the dropdown to its default state - back to 'More years' and reverting the 
- * styling of any previously selected dropdown items to their original state.
- * It targets elements with specific class names: '.js_dropdown_button' for the dropdown button,
- * and '.js_dropdown_item' for the dropdown items.
+ * Resets the dropdown to its default state - back to 'More years'.
+ * It targets the '.js_dropdown_button' element.
  */
 function resetDropdown() {
   // Reset the dropdown button text to 'More years'
@@ -900,20 +898,6 @@ function resetDropdown() {
   if (dropdownButton) {
     dropdownButton.innerHTML = `More <span class='sr-only'>years</span> <span class='ml-1 text-xs' aria-hidden='true'>&#9660;</span>`;
   }
-
-  // Reset styling for all dropdown items to their original state
-  const dropdownItems = document.querySelectorAll('.js_dropdown_item');
-  dropdownItems.forEach((item) => {
-    item.classList.remove(
-      "bg-neutral-700",
-      "bg-neutral-600",
-      "text-neutral-100",
-      "font-semibold",
-      "border-neutral-900",
-      "border-neutral-700",
-      "border-neutral-600"
-    );
-  });
 
   // The date range form may not exist yet depending on init order
   const dateRangeForm = document.getElementById("date_range_form");
