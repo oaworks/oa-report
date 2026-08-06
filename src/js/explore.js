@@ -441,13 +441,17 @@ async function addExploreFiltersToDOM(query) {
     currentActiveExploreItemQuery = visibleFilters[0].id;
   }
   
- // Create view tabs for each filter and append them to the DOM
+  const showCount = currentActiveExploreItemData?.type !== "terms";
+
+  // Create view tabs for each filter and append them to the DOM
   visibleFilters.forEach((filter) => {
-    const tab = createExploreFilterTab(filter.id, filter.id === currentActiveExploreItemQuery);
+    const tab = createExploreFilterTab(filter.id, filter.id === currentActiveExploreItemQuery, showCount);
     exploreFiltersElement.appendChild(tab);
   });
 
-  updateExploreFilterTabCounts(visibleFilters);
+  if (showCount) {
+    updateExploreFilterTabCounts(visibleFilters);
+  }
 
   bindExploreTabHandlers();
   updateExploreTabStates(currentActiveExploreItemQuery);
@@ -455,12 +459,13 @@ async function addExploreFiltersToDOM(query) {
 
 /**
  * Creates a view tab for an Explore dataset.
- * 
+ *
  * @param {string} id - The ID of the filter.
  * @param {boolean} isActive - True if the filter should be active by default.
+ * @param {boolean} showCount - Whether to show the row-count badge (article-based tables only).
  * @returns {HTMLDivElement} The wrapper containing the tab button.
  */
-function createExploreFilterTab(id, isActive) {
+function createExploreFilterTab(id, isActive, showCount) {
   const labelData = EXPLORE_FILTERS_LABELS[id];
   const label = labelData ? labelData.label || id : id; // Use label from filters or default to ID
 
@@ -468,13 +473,15 @@ function createExploreFilterTab(id, isActive) {
   tabWrapper.className = 'flex';
   tabWrapper.setAttribute('data-filter-id', id);
 
+  const countBadge = showCount ? `<span id="count_${id}" class="${TAB_COUNT_BADGE_CLASSES}">0</span>` : '';
+
   const buttonElement = document.createElement('button');
   Object.assign(buttonElement, {
     id: `filter_${id}`,
     type: 'button',
     value: id,
     className: VIEW_TAB_CLASSES.base,
-    innerHTML: `<span>${label}</span><span id="count_${id}" class="${TAB_COUNT_BADGE_CLASSES}">0</span>`
+    innerHTML: `<span>${label}</span>${countBadge}`
   });
   buttonElement.setAttribute('role', 'tab');
   buttonElement.setAttribute('aria-controls', 'explore_view_panel');
@@ -498,7 +505,8 @@ function createExploreFilterTab(id, isActive) {
 }
 
 /**
- * Updates the count badge shown on each Explore tab.
+ * Updates the count badge shown on each Explore tab. Only called for
+ * article-based tables — term-based tables show their total in the heading instead.
  *
  * @param {Array<{id: string}>} filters
  */
@@ -522,13 +530,12 @@ function updateExploreFilterTabCounts(filters) {
     const cacheKey = getExploreFilterTotalCacheKey(currentActiveExploreItemData, filter.id, filterQuery);
 
     if (!exploreFilterTotalCache.has(cacheKey)) {
-      const requestSize = currentActiveExploreItemData?.type === "terms" ? 1 : 0;
       exploreFilterTotalCache.set(
         cacheKey,
         loadExploreRecords(
           currentActiveExploreItemData,
           filterQuery,
-          requestSize,
+          0,
           currentActiveDataDisplayToggle
         ).then(({ total }) => (Number.isFinite(total) ? total : 0))
       );
@@ -788,7 +795,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       ? shownCount
       : totalRecords;
 
-    if (filter && query) {
+    if (filter && query && type !== "terms") {
       const cacheKey = getExploreFilterTotalCacheKey(itemData, filter, query);
       exploreFilterTotalCache.set(cacheKey, Promise.resolve(totalCount));
     }
