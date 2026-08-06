@@ -801,11 +801,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 
     updateExploreCountSummary({ id, total: totalCount });
     updateRecordsShownControl(totalCount);
-    const typeLabel = EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id);
-    const headingLabel = type === "terms" && id !== "year"
-      ? `${makeNumberReadable(Number.isFinite(totalCount) ? totalCount : 0)} ${typeLabel}`
-      : typeLabel;
-    replaceText("explore_type", headingLabel, { allowHTML: true });
+    replaceText("explore_type", EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id), { allowHTML: true });
 
     if (records.length > 0) {
       // Populate table with data
