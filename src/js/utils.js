@@ -1089,17 +1089,9 @@ export function updateExploreFilterHeader(filterId) {
 
 // Chart helpers
 
-const INSIGHT_BAR_TRACK_CLASSES = [
-  'js_bar_chart',
-  'flex',
-  'flex-col',
-  'justify-end',
-  'h-auto',
-  'w-2',
-  'bg-neutral-700',
-  'rounded-full',
-  'overflow-hidden'
-].join(' ');
+// Keep in sync with the .js_bar_chart <footer> classes in card.njk.
+const INSIGHT_BAR_TRACK_BASE_CLASSES = "js_bar_chart flex flex-col justify-end w-2 bg-neutral-600 rounded-full overflow-hidden";
+const INSIGHT_BAR_TRACK_CLASSES = `${INSIGHT_BAR_TRACK_BASE_CLASSES} h-auto`;
 
 /**
  * Resets the <footer> js_bar_chart area of an Insights card back to its default state.
@@ -1209,18 +1201,10 @@ export function setBarChart(
   // If the denominator is missing or zero, skip
   if (!denominatorCount) return;
 
-  // Ensure the container is in the expected vertical state
-  barContainer.classList.remove('mt-4', 'w-full');
-  barContainer.classList.add(
-    'flex',
-    'flex-col',
-    'justify-end',
-    'h-20',
-    'w-2',
-    'bg-neutral-700',
-    'rounded-full',
-    'overflow-hidden'
-  );
+  // Ensure the container is in the expected vertical state (a fixed height is
+  // needed here, unlike the empty-state h-auto, so the bars' percentage
+  // heights below have something concrete to size against).
+  barContainer.className = `${INSIGHT_BAR_TRACK_BASE_CLASSES} h-20`;
 
   // ----- CASE 1: Denominator is the full set => Single bar -----
   if  (
