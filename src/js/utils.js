@@ -1102,9 +1102,9 @@ const INSIGHT_BAR_TRACK_CLASSES = `${INSIGHT_BAR_TRACK_BASE_CLASSES} h-auto`;
 export function resetBarChart(cardContents) {
   if (!cardContents) return;
 
-  // Remove the temporary unavailable-state surface.
+  // Remove the temporary unavailable-state surface, restoring the normal hover/jump affordance.
   cardContents.classList.remove('bg-neutral-900');
-  cardContents.classList.add('bg-neutral-800');
+  cardContents.classList.add('bg-neutral-800', 'hover:bg-neutral-750', 'hover:shadow-md', 'hover:-translate-y-0.5', 'focus-within:bg-neutral-750', 'focus-within:shadow-md', 'focus-within:-translate-y-0.5');
 
   // Restore swapped icon and percent styling if it was changed
   const iconEl = cardContents.querySelector('.js_insight_icon');
@@ -1161,8 +1161,8 @@ export function showUnavailableCard(cardContents) {
     `;
   }
 
-  // Muted card styling
-  cardContents.classList.remove('bg-neutral-800');
+  // Muted card styling — no hover/jump affordance, since there's nothing to act on.
+  cardContents.classList.remove('bg-neutral-800', 'hover:bg-neutral-750', 'hover:shadow-md', 'hover:-translate-y-0.5', 'focus-within:bg-neutral-750', 'focus-within:shadow-md', 'focus-within:-translate-y-0.5');
   cardContents.classList.add('bg-neutral-900');
 
   // Reset the bar track without rendering any value bar.
