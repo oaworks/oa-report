@@ -1,0 +1,13 @@
+{# Inline filters as radio buttons component
+{{ component("radio-filter", {
+  id: "",
+  txt: ""
+}) }}
+#}
+
+<div class="flex items-center mr-4 mb-3">
+  <input type="radio" id="filter_{{ params.id }}" class="mr-1" name="filter_by" value="{{ params.id }}" aria-hidden="true"{% if params.selected %} checked{% endif %}>
+  <label for="filter_{{ params.id }}" class="text-xs cursor-pointer flex items-center whitespace-nowrap">
+    {{ params.txt }}
+  </label>
+</div>

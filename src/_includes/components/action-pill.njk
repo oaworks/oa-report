@@ -12,10 +12,10 @@
     type="button"
     aria-pressed="{% if params.first %}true{% else %}false{% endif %}"
     aria-controls="{{ params.id }}"
-    class="js_strategy_btn group cursor-pointer px-4 py-1.5 text-sm font-medium rounded-md outline outline-1 outline-transparent outline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 transition duration-200 ease-in-out text-white bg-neutral-800 hover:bg-neutral-750 hover:shadow-md hover:-translate-y-0.5 {{ params.class }}"
+    class="js_strategy_btn group cursor-pointer px-4 py-1.5 text-sm font-medium rounded-md outline outline-1 outline-transparent outline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 transition-colors text-white bg-neutral-900/60 {{ params.class }}"
     id="strategy_{{ params.id }}"
   >
     <span>{{ params.txt }}</span>
-    <span id="count_{{ params.id }}" class="ml-3 rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors md:inline-block {% if params.first %}bg-neutral-800 text-neutral-100{% else %}bg-neutral-200 text-neutral-900 group-hover:bg-neutral-100{% endif %}">0</span>
+    <span id="count_{{ params.id }}" class="bg-neutral-900 text-neutral-100 ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block group-hover:bg-neutral-800">0</span>
   </button>
 </li>

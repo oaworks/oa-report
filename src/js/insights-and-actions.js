@@ -9,8 +9,8 @@
 // Imports
 // =================================================
 
-import { dateRange, startYear, endYear, displayNone, changeOpacity, makeNumberReadable, makeTabCountReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings, copyToClipboard } from './utils.js';
-import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, INSIGHT_EXPLORE_MAPPINGS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS, DEFAULT_ACTION_EMPTY_STATE_MESSAGE, DEFAULT_NO_AUTHOR_FILTERED_MESSAGE, DEFAULT_MULTIPLE_AUTHORS_FILTERED_MESSAGE, LICENSE_CODES, SEGMENTED_PILL_CLASSES, TAB_COUNT_BADGE_CLASSES, resolveFieldDefinition } from './constants.js';
+import { dateRange, startYear, endYear, displayNone, changeOpacity, makeNumberReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings, copyToClipboard } from './utils.js';
+import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, INSIGHT_EXPLORE_MAPPINGS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS, DEFAULT_ACTION_EMPTY_STATE_MESSAGE, DEFAULT_NO_AUTHOR_FILTERED_MESSAGE, DEFAULT_MULTIPLE_AUTHORS_FILTERED_MESSAGE, LICENSE_CODES, resolveFieldDefinition } from './constants.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { initActionTabs, formatDoiEpmcListForClipboard, getAuthorFilterCount } from './actions.js';
 import { createPopover } from './tooltip-manager.js';
@@ -91,7 +91,7 @@ function buildInsightTooltipSection(contentHtml = '') {
 
   return `
     <section class="space-y-2">
-      <h4 class="font-semibold text-white">${INSIGHT_TOOLTIP_HEADING}</h4>
+      <h4 class="font-semibold text-neutral-900">${INSIGHT_TOOLTIP_HEADING}</h4>
       ${contentHtml}
     </section>
   `;
@@ -322,13 +322,10 @@ function renderActionTabs(strategy = {}) {
     const tabBtn = document.createElement("button");
     tabBtn.type = "button";
     tabBtn.id = `strategy_${id}`;
-    tabBtn.className = `js_strategy_btn group cursor-pointer ${SEGMENTED_PILL_CLASSES.base} ${SEGMENTED_PILL_CLASSES.inactive}`;
+    tabBtn.className = "js_strategy_btn group cursor-pointer px-4 py-1.5 text-sm font-medium rounded-md outline outline-1 outline-transparent outline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 transition-colors text-white bg-neutral-900/60";
     tabBtn.setAttribute("aria-controls", id);
     tabBtn.setAttribute("aria-pressed", index === 0 ? "true" : "false");
-    const badgeClasses = index === 0
-      ? "ml-3 rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors md:inline-block bg-neutral-800 text-neutral-100"
-      : TAB_COUNT_BADGE_CLASSES;
-    tabBtn.innerHTML = `<span>${label}</span><span id="count_${id}" class="${badgeClasses}">0</span>`;
+    tabBtn.innerHTML = `<span>${label}</span><span id="count_${id}" class="bg-neutral-900 text-neutral-100 ml-3 py-0.5 px-2.5 rounded-full text-xs font-medium md:inline-block group-hover:bg-neutral-800">0</span>`;
     item.appendChild(tabBtn);
     tabsContainer.appendChild(item);
   });
@@ -465,7 +462,7 @@ export function initInsightsAndActions(org) {
         if (!instance) {
           instance = createPopover(tooltipTarget, '', {
             placement: 'right',
-            theme: 'tooltip-dark',
+            theme: 'tooltip-white',
             arrow: true,
             role: 'dialog',
             onShow() {
@@ -489,7 +486,7 @@ export function initInsightsAndActions(org) {
         }
         const updateTooltipContent = () => {
           const detailHtml = figureDetails
-            ? `<div class="mb-2 font-semibold text-white">${figureDetails.innerHTML}</div>`
+            ? `<div class="mb-2 font-semibold text-neutral-900">${figureDetails.innerHTML}</div>`
             : "";
           const definitionHtml = buildInsightDefinitionsHtml(
             numerator,
@@ -535,8 +532,8 @@ export function initInsightsAndActions(org) {
               if (!denominator) {
                 percentageContents.textContent = makeNumberReadable(numeratorCount);
                 figureDetails.innerHTML = `
-                  <span id="details_${numerator}" class="font-semibold text-carnation-200">${makeNumberReadable(numeratorCount)}</span>
-                  <span class="text-neutral-200">
+                  <span id="details_${numerator}" class="font-semibold text-carnation-600">${makeNumberReadable(numeratorCount)}</span>
+                  <span class="text-neutral-900">
                     ${denominatorText} in total
                   </span>
                 `;
@@ -549,8 +546,8 @@ export function initInsightsAndActions(org) {
               }
 
               figureDetails.innerHTML = `
-                <span id="details_${numerator}" class="font-semibold text-carnation-200">${makeNumberReadable(numeratorCount)}</span>
-                <span class="text-neutral-200">
+                <span id="details_${numerator}" class="font-semibold text-carnation-600">${makeNumberReadable(numeratorCount)}</span>
+                <span class="text-neutral-900">
                   of <span id="denominator_${numerator}">${makeNumberReadable(denominatorCount)}</span> ${denominatorText}
                 </span>
               `;
@@ -609,7 +606,7 @@ export function initInsightsAndActions(org) {
             tabCountContents.textContent = "0";
             tableCountContents.textContent = "No ";
             const message = count === 0 ? DEFAULT_NO_AUTHOR_FILTERED_MESSAGE : DEFAULT_MULTIPLE_AUTHORS_FILTERED_MESSAGE;
-            tableBody.innerHTML = `<tr><td class='px-3 py-2 text-sm text-center text-neutral-200 align-top break-words' colspan='3'>${message}</td></tr>`;
+            tableBody.innerHTML = `<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>${message}</td></tr>`;
             return;
           }
         }
@@ -628,7 +625,7 @@ export function initInsightsAndActions(org) {
             var count = parseFloat(countResponse);
             
             // Show total number of actions in tab & above table
-            tabCountContents.textContent = makeTabCountReadable(count);
+            tabCountContents.textContent = makeNumberReadable(count);
             if (count > 100) {
               count = 100; // limit to 100
             }
@@ -637,7 +634,7 @@ export function initInsightsAndActions(org) {
             // If no actions are available, show message
             if (count === 0) {
               tableCountContents.textContent = "No ";
-              tableBody.innerHTML = `<tr><td class='px-3 py-2 text-sm text-center text-neutral-200 align-top break-words' colspan='3'>${emptyStateMessage || DEFAULT_ACTION_EMPTY_STATE_MESSAGE}</td></tr>`;
+              tableBody.innerHTML = `<tr><td class='py-4 pl-4 pr-3 text-sm text-center align-top break-words' colspan='3'>${emptyStateMessage || DEFAULT_ACTION_EMPTY_STATE_MESSAGE}</td></tr>`;
             }
 
             // Otherwise, generate list of actions
@@ -725,7 +722,7 @@ export function initInsightsAndActions(org) {
                       var inEpmc = action.has_epmc_fulltext === true;
                       action.epmc_status_label = inEpmc ? "Yes" : "No";
                       action.epmc_status_icon = inEpmc ? "ph-check-circle" : "ph-x-circle";
-                      action.epmc_status_color = inEpmc ? "text-green-light" : "text-carnation-300";
+                      action.epmc_status_color = inEpmc ? "text-neutral-900" : "text-carnation-500";
                     }
 
                     if (typeof action.title === "string" && action.title.includes("&")) {

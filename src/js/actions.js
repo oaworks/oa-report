@@ -14,8 +14,6 @@ import { SEGMENTED_PILL_CLASSES } from './constants.js';
 // or without the .keyword suffix depending on how it was added) and captures its
 // value(s), so we can tell a single-author filter apart from a multi-author one.
 const AUTHOR_FILTER_FIELD_PATTERN = /authorships\.author\.(?:display_name|orcid)(?:\.keyword)?\s*:\s*(\([^)]*\)|"(?:\\.|[^"\\])*")/gi;
-const ACTIVE_ACTION_BADGE_CLASSES = ["bg-neutral-800", "text-neutral-100"];
-const INACTIVE_ACTION_BADGE_CLASSES = ["bg-neutral-200", "text-neutral-900", "group-hover:bg-neutral-100"];
 
 // Count of authors named in the current ?q= filter, plus the resolved
 // display name (ORCIDs resolved via orcidDisplayNames) when there's exactly one.
@@ -124,7 +122,6 @@ function updateStrategyButtonStyling(event) {
   const tabBtn = event.target.closest(".js_strategy_btn");
   if (!tabBtn) return;
   const activeClasses = SEGMENTED_PILL_CLASSES.active.split(" ");
-  const inactiveClasses = SEGMENTED_PILL_CLASSES.inactive.split(" ");
 
   const selectedAction = tabBtn.getAttribute("aria-controls");
   const selectedTabContents = document.querySelector(`.js_actions #${selectedAction}`);
@@ -147,21 +144,21 @@ function updateStrategyButtonStyling(event) {
   // Update button styles
   document.querySelectorAll(".js_strategy_btn").forEach((btn) => {
     btn.classList.remove(...activeClasses);
-    btn.classList.add(...inactiveClasses);
+    btn.classList.add("text-white", "hover:bg-neutral-700/70", "bg-neutral-900/60");
     const badge = btn.querySelector("[id^='count_']");
     if (badge) {
-      badge.classList.remove(...ACTIVE_ACTION_BADGE_CLASSES);
-      badge.classList.add(...INACTIVE_ACTION_BADGE_CLASSES);
+      badge.classList.remove("bg-neutral-900", "text-neutral-200");
+      badge.classList.add("bg-neutral-700", "text-neutral-100");
     }
     btn.setAttribute("aria-pressed", "false");
   });
 
   tabBtn.classList.add(...activeClasses);
-  tabBtn.classList.remove(...inactiveClasses);
+  tabBtn.classList.remove("text-white", "hover:bg-neutral-700/70", "bg-neutral-900/60");
   const activeBadge = tabBtn.querySelector("[id^='count_']");
   if (activeBadge) {
-    activeBadge.classList.remove(...INACTIVE_ACTION_BADGE_CLASSES);
-    activeBadge.classList.add(...ACTIVE_ACTION_BADGE_CLASSES);
+    activeBadge.classList.add("bg-neutral-900", "text-neutral-200");
+    activeBadge.classList.remove("bg-neutral-700", "text-neutral-100");
   }
   tabBtn.setAttribute("aria-pressed", "true");
 

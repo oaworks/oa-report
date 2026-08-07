@@ -9,22 +9,22 @@
 <article 
   id="{{ params.id }}"
   class="
-    rounded-md border border-neutral-700 bg-neutral-800 cursor-pointer shadow-sm
+    rounded-md bg-carnation-100 cursor-pointer
     proportional-card flex flex-col
     transition duration-200 ease-in-out
-    hover:border-neutral-500 hover:bg-neutral-750 hover:shadow-md hover:-translate-y-0.5
-    focus-within:border-neutral-500 focus-within:bg-neutral-750 focus-within:shadow-md focus-within:-translate-y-0.5
+    hover:bg-white hover:shadow-md hover:-translate-y-0.5
+    focus-within:bg-white focus-within:shadow-md focus-within:-translate-y-0.5
   "
 >
   <div class="block w-full h-full p-4 text-left">
   <div class="flex items-stretch h-full gap-4">
-    {# Vertical bar chart on the left. Keep in sync with INSIGHT_BAR_TRACK_BASE_CLASSES in utils.js. #}
+    {# Vertical bar chart on the left #}
     <footer
       class="
         js_bar_chart
         flex flex-col justify-end
         h-auto w-2
-        bg-neutral-600
+        bg-carnation-800
         rounded-full
         overflow-hidden
       "
@@ -34,13 +34,13 @@
     <div class="flex-1 min-w-0 flex flex-col">
       <div class="flex flex-col justify-between flex-1">
         {# Header: name of Insight and icon #}
-        <header class="mb-3 flex items-start justify-between text-neutral-200">
+        <header class="flex items-start justify-between text-neutral-700 mb-3">
           <h4 id="{{ params.id }}_title" class="text-sm font-medium inline-flex items-center cursor-text">
             <span class="inline-flex items-center">{{ params.title }}</span>
           </h4>
           <button
             type="button"
-            class="js_insight_trigger inline-flex h-5 w-5 shrink-0 items-center justify-center p-0 m-0 text-neutral-300 leading-none transition-colors hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800"
+            class="js_insight_trigger inline-flex h-5 w-5 shrink-0 items-center justify-center p-0 m-0 text-neutral-800 leading-none focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-white"
             aria-expanded="false"
             aria-label="More information about the {{ params.title }} metric"
             title="More information on this metric"
@@ -51,19 +51,19 @@
 
         {# Body and icon aligned to bottom #}
         <div class="flex items-end justify-between gap-3 flex-1">
-          <div class="self-end cursor-text text-white">
+          <div class="text-neutral-900 self-end cursor-text">
             <p class="text-xl font-bold leading-tight">
               <span id="percent_{{ params.id }}">
                 00%
               </span>
             </p>
-            <p class="sr-only mt-1 text-xs font-semibold text-neutral-400">
+            <p class="mt-1 text-xs font-semibold text-neutral-600 sr-only">
               <span id="articles_{{ params.id }}">
                 articles
               </span>
             </p>
           </div>
-          <div class="js_insight_icon inline-flex h-8 w-8 items-end justify-end self-end text-neutral-100">
+          <div class="inline-flex h-8 w-8 items-end justify-end text-neutral-800 self-end">
             {% icon params.icon %}
           </div>
         </div>

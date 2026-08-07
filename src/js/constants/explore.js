@@ -377,7 +377,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "can_archive": {
     label: "Archivable?",
-    info: "<p><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if the work can be self-archived in a repository.</p>"
+    info: "<p><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the work can be self-archived in a repository.</p>"
   },
   "cited_by_count": {
     label: "Cited by",
@@ -389,7 +389,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "crossref_is_oa": {
     label: "Crossref Open Access?",
-    info: "<p><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if Crossref data suggests the article is free to read.</p>"
+    info: "<p><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if Crossref data suggests the article is free to read.</p>"
   },
   "DOI": {
     label: "DOI",
@@ -411,12 +411,12 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
     label: "Open Access status",
     info: "<p class='mb-2'>Uses <a href='https://help.openalex.org/hc/en-us/articles/24347035046295-Open-Access-OA' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1'>OpenAlex’s definition of Open Access</a>. Values include:</p>\
       <ul class='mb-2'>\
-        <li><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>diamond</code>: Published in a fully OA journal—one that is indexed by the DOAJ or that we have determined to be OA—with no article processing charges (i.e., free for both readers and authors).</li> \
-        <li><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>gold</code>: Published in a fully OA journal.</li> \
-        <li><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>green</code>: Toll-access on the publisher landing page, but there is a free copy in an OA repository.</li> \
-        <li><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>hybrid</code>: Free under an open license in a toll-access journal.</li> \
-        <li><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>bronze</code>: Free to read on the publisher landing page, but without any identifiable license.</li> \
-        <li><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>closed</code>: All other articles.</li> \
+        <li><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>diamond</code>: Published in a fully OA journal—one that is indexed by the DOAJ or that we have determined to be OA—with no article processing charges (i.e., free for both readers and authors).</li> \
+        <li><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>gold</code>: Published in a fully OA journal.</li> \
+        <li><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>green</code>: Toll-access on the publisher landing page, but there is a free copy in an OA repository.</li> \
+        <li><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>hybrid</code>: Free under an open license in a toll-access journal.</li> \
+        <li><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>bronze</code>: Free to read on the publisher landing page, but without any identifiable license.</li> \
+        <li><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>closed</code>: All other articles.</li> \
       </ul>\
       "
   },
@@ -432,14 +432,14 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
     label: "Journal <span class='uppercase'>OA</span> type",
     info: "<p class='mb-2'>Values include:</p>\
       <ul class='mb-2'>\
-        <li><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>gold</code>: The journal’s entire output is published in Open Access.</li> \
-        <li><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>hybrid</code>: The journal allows some articles to be published in Open Access.</li> \
-        <li><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>transformative</code>: The journal allows some articles to be published in Open Access and is listed by Coalition S as a transformative journal.</li> \
-        <li><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>diamond</code>: The journal’s entire output is published in Open Access without APCs.</li> \
-        <li><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>closed</code>: The journal’s output is entirely behind a paywall, or bronze.</li> \
-        <li><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>not applicable</code>: The work is not in a journal (typically, a pre-print).</li> \
+        <li><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>gold</code>: The journal’s entire output is published in Open Access.</li> \
+        <li><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>hybrid</code>: The journal allows some articles to be published in Open Access.</li> \
+        <li><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>transformative</code>: The journal allows some articles to be published in Open Access and is listed by Coalition S as a transformative journal.</li> \
+        <li><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>diamond</code>: The journal’s entire output is published in Open Access without APCs.</li> \
+        <li><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>closed</code>: The journal’s output is entirely behind a paywall, or bronze.</li> \
+        <li><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>not applicable</code>: The work is not in a journal (typically, a pre-print).</li> \
       </ul>\
-    <p class='mb-2'>This is akin to <code class='p-1 rounded-md bg-neutral-700 text-white text-xs hover:bg-neutral-800'><a href='https://unpaywall.org/data-format#:~:text=oa_status' target='_blank'>oa_status</a></code> for a journal.</p>\
+    <p class='mb-2'>This is akin to <code class='p-1 rounded-md bg-neutral-500 text-white text-xs hover:bg-neutral-700'><a href='https://unpaywall.org/data-format#:~:text=oa_status' target='_blank'>oa_status</a></code> for a journal.</p>\
     "
   },
   "journal": {
@@ -508,15 +508,15 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "dev.code.has_made_code": {
     label: "Generated code?",
-    info: "<p><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if the article uses code the authors generated in the process of research.</p>"
+    info: "<p><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article uses code the authors generated in the process of research.</p>"
   },
   "dev.code.has_open_code": {
     label: "Open code?",
-    info: "<p><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if the authors shared their code and licensed it under a permissive open source licence (e.g MIT).</p>"
+    info: "<p><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the authors shared their code and licensed it under a permissive open source licence (e.g MIT).</p>"
   },
   "dev.code.has_shared_code": {
     label: "Shared code?",
-    info: "<p><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if the article shared the code in any location (e.g. in the supplements, the article itself, a code repository, their website).</p>"
+    info: "<p><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article shared the code in any location (e.g. in the supplements, the article itself, a code repository, their website).</p>"
   },
   "dev.code.licence": {
     label: "Code license",
@@ -544,11 +544,11 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "dev.data.has_open_data": {
     label: "Open data?",
-    info: "<p><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if the authors shared their data and licensed it CC-BY or CC-O.</p>"
+    info: "<p><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the authors shared their data and licensed it CC-BY or CC-O.</p>"
   },
   "dev.data.has_shared_data": {
     label: "Shared data?",
-    info: "<p><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if the article shared the data in any location (e.g. in the supplements, the article itself, a data repository, their website).</p>"
+    info: "<p><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article shared the data in any location (e.g. in the supplements, the article itself, a data repository, their website).</p>"
   },
   "dev.data.licence": {
     label: "Data license",
@@ -564,7 +564,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "financial_disclosures": {
     label: "Financial disclosures",
-    info: "<p><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if this work’s funding statement is a financial disclosure.</p>"
+    info: "<p><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if this work’s funding statement is a financial disclosure.</p>"
   },
   "fundingstatement": {
     label: "Funding statement",
@@ -576,39 +576,39 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "has_data_availability_statement": {
     label: "Data availability statement?",
-    info: "<p><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if the article has a data availability (or resource availability) statement.</p>"
+    info: "<p><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article has a data availability (or resource availability) statement.</p>"
   },
   "has_made_code": {
     label: "Generated code?",
-    info: "<p><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if the article uses code the authors generated in the process of research.</p>"
+    info: "<p><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article uses code the authors generated in the process of research.</p>"
   },
   "has_made_data": {
     label: "Generated data?",
-    info: "<p><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if the article uses data the authors generated in the process of research.</p>"
+    info: "<p><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article uses data the authors generated in the process of research.</p>"
   },
   "has_open_code": {
     label: "Open code?",
-    info: "<p><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if the authors shared their code and licensed it under a permissive open source licence (e.g MIT).</p>"
+    info: "<p><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the authors shared their code and licensed it under a permissive open source licence (e.g MIT).</p>"
   },
   "has_open_data": {
     label: "Open data?",
-    info: "<p><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if the authors shared their data and licensed it CC-BY or CC-O.</p>"
+    info: "<p><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the authors shared their data and licensed it CC-BY or CC-O.</p>"
   },
   "has_preprint_copy": {
     label: "Preprint copy?",
-    info: "<p><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if the article has a version on a preprint server.</p>"
+    info: "<p><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article has a version on a preprint server.</p>"
   },
   "has_shared_code": {
     label: "Shared code?",
-    info: "<p><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if the article shared the code in any location (e.g. in the supplements, the article itself, a code repository, their website).</p>"
+    info: "<p><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article shared the code in any location (e.g. in the supplements, the article itself, a code repository, their website).</p>"
   },
   "has_shared_data": {
     label: "Shared data?",
-    info: "<p><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if the article shared the data in any location (e.g. in the supplements, the article itself, a data repository, their website).</p>"
+    info: "<p><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article shared the data in any location (e.g. in the supplements, the article itself, a data repository, their website).</p>"
   },
   "has_reused_data": {
     label: "Reused data?",
-    info: "<p><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if the article uses data not created by the authors or provided by another source.</p>"
+    info: "<p><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article uses data not created by the authors or provided by another source.</p>"
   },
   "invoice_date": {
     label: "Invoice date",
@@ -624,15 +624,15 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "is_approved_repository": {
     label: "Approved repository?",
-    info: "<p><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if this work is deposited in an approved repository under the Open Access policy.</p>"
+    info: "<p><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if this work is deposited in an approved repository under the Open Access policy.</p>"
   },
   "is_compliant": {
     label: "Compliant?",
-    info: "<p><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if the work is compliant with the organization’s Open Access policy.</p>"
+    info: "<p><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the work is compliant with the organization’s Open Access policy.</p>"
   },
   "is_compliant_all_works": {
     label: "Compliant?",
-    info: "<p><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if the work is compliant with the organization’s Open Access policy.</p>"
+    info: "<p><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the work is compliant with the organization’s Open Access policy.</p>"
   },
   "is_compliant_with_current_policy": {
     label: "Compliant with current <span class='uppercase'>OA</span> policy",
@@ -652,11 +652,11 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "is_covered_by_policy": {
     label: "Covered by <span class='uppercase'>OA</span> policy",
-    info: "<p><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if the work is covered under the organization’s Open Access policy.</p>"
+    info: "<p><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the work is covered under the organization’s Open Access policy.</p>"
   },
   "is_new": {
     label: "New?",
-    info: "<p><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if the work has been added since the last time we sent the user a report.</p>"
+    info: "<p><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the work has been added since the last time we sent the user a report.</p>"
   },
   "is_original_research": {
     label: "Original research?",
@@ -678,7 +678,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "is_preprint": {
     label: "Preprint?",
-    info: "<p><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if the publication is a preprint.</p>"
+    info: "<p><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the publication is a preprint.</p>"
   },
   "oasupport.status": {
     label: "OA.Support status",
@@ -686,7 +686,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "pmc_has_data_availability_statement": {
     label: "PMC data availability statement?",
-    info: "<p><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if PMC reports the article as having a data availability statement.</p>"
+    info: "<p><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if PMC reports the article as having a data availability statement.</p>"
   },
   "preprint_doi": {
     label: "Preprint DOI",
@@ -710,7 +710,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "remove": {
     label: "Remove",
-    info: "<p><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if the work should be removed from an organization’s results for any reason.</p>"
+    info: "<p><code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the work should be removed from an organization’s results for any reason.</p>"
   },
   "repository_license_best": {
     label: "Repository license (best)",
@@ -742,7 +742,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "is_financial_disclosure": {
     label: "Financial disclosure",
-    info: "<code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if this work's funding statement is actually a financial disclosure"
+    info: "<code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if this work's funding statement is actually a financial disclosure"
   },
   "removed_from_report": {
     label: "Removed from OA.Report",
@@ -762,7 +762,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "has_epmc_fulltext": {
     label: "Europe PMC full text",
-    info: "<code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if the article has full text available in Europe PMC"
+    info: "<code class='p-1 rounded-md bg-neutral-500 text-white text-xs'>True</code> if the article has full text available in Europe PMC"
   },
   "epmc_licence": {
     label: "Europe PMC license",

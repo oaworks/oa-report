@@ -1,45 +1,12 @@
 // =================================================
 // aggregated-data-query.js
-// Builds Elasticsearch aggregation queries
+// Builds Elasticsearch aggregation queries 
 // for Explore views
 // =================================================
-
-import { unescapeQueryValue } from "./utils.js";
 
 // =================================================
 // Helpers
 // =================================================
-
-/**
- * Finds exact values filtered for one field in an ES query string, e.g.
- * `field:"value"` or `field:("value1" OR "value2")`. Lets an aggregation
- * on that field restrict itself to just the filtered value(s). Matches
- * with or without a `.keyword` suffix, since filter clauses aren't always
- * written with one (e.g. author filters use the bare field).
- *
- * @param {string} query - The query string to search.
- * @param {string} field - Field name as it appears in the query.
- * @returns {string[]} Matching values, or an empty array if none.
- */
-export function getFieldFilterValues(query, field) {
-  if (!query || !field) return [];
-  const baseField = field.replace(/\.keyword$/i, "");
-  const escapedField = baseField.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const match = query.match(new RegExp(`(?<![\\w.])${escapedField}(?:\\.keyword)?\\s*:\\s*(\\([^)]*\\)|"(?:\\\\.|[^"\\\\])*")`, "i"));
-  if (!match) return [];
-  return (match[1].match(/"(?:\\.|[^"\\])*"/g) || []).map(v => unescapeQueryValue(v.slice(1, -1)));
-}
-
-/**
- * Converts a term into its aggregatable field. `published_year` is already
- * keyword-type; every other term field needs a `.keyword` suffix.
- *
- * @param {string} term
- * @returns {string}
- */
-export function toTermField(term) {
-  return term === "published_year" ? term : `${term}.keyword`;
-}
 
 /**
  * Field used to group author breakdowns.
@@ -825,12 +792,7 @@ export function getInsightsAggregationQuery(suffix, query, startYear, endYear) {
  * @param {number}   startYear  - Start year (inclusive) for `published_date`.
  * @param {number}   endYear    - End year (inclusive) for `published_date`.
  * @param {number}   [size=20]  - Max buckets to return.
- * @param {string}   [sort="_count"] - Sort field (`_count`, `_key`, or a metric name).
- * @param {string}   [activeFilterQuery=query] - Just the user's active filter, excluding any
- * base org query, so exact-match restriction never picks up unrelated baseline query clauses.
- * @param {string[]} [includeValuesOverride] - Exact values to restrict buckets to, bypassing
- * the automatic field-match detection (e.g. author ORCIDs resolved from a name filter).
- * @param {string}   [sortDirection="desc"] - Sort direction for the selected sort field.
+ * @param {string}   [sort="_count"] - Sort field (`_count` or a metric name).
  * @returns {Object} POST body suitable for `/_search`.
  */
 export function getAggregatedDataQuery(
@@ -841,20 +803,15 @@ export function getAggregatedDataQuery(
   endYear,
   size = 20,
   sort = "_count",
-  activeFilterQuery = query,
-  includeValuesOverride,
-  sortDirection = "desc",
 ) {
-  const termField = toTermField(term);
+  // `published_year` is already keyword-type; append `.keyword` for other term fields.
+  let termField = term;
+  if (!(term === "published_year")) {
+    termField += ".keyword";
+  }
 
   const aggs = createAggregationTemplate(suffix);
   const bucketMetadataAggs = createAuthorBucketMetadataAggs(term);
-
-  // If the user's own filter (not the org's base query) already targets this same
-  // field (e.g. one author), restrict buckets to exactly those values so
-  // co-occurring values (e.g. co-authors) don't show.
-  const includeValues = includeValuesOverride ?? getFieldFilterValues(activeFilterQuery, termField);
-  const bucketSize = includeValues.length ? Math.max(size, includeValues.length) : size;
 
   return {
     query: {
@@ -879,12 +836,7 @@ export function getAggregatedDataQuery(
         cardinality: { field: termField },
       },
       values: {
-        terms: {
-          field: termField,
-          size: bucketSize,
-          order: { [sort]: sortDirection },
-          ...(includeValues.length ? { include: includeValues } : {}),
-        },
+        terms: { field: termField, size, order: { [sort]: "desc" } },
         aggs: {
           ...aggs,
           ...bucketMetadataAggs
