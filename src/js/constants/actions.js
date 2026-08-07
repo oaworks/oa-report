@@ -23,7 +23,7 @@ export const ACTION_ORDER = [
   "unanswered_requests"
 ];
 
-const ACTION_ARTICLE_LINK_CLASSES = "inline-flex items-center rounded-full my-1 bg-neutral-200 px-2 py-0.5 text-[10px] text-neutral-900 font-semibold whitespace-nowrap outline outline-1 outline-transparent transition-colors hover:bg-neutral-200";
+const ACTION_ARTICLE_LINK_CLASSES = "inline-flex items-center rounded-full my-1 bg-neutral-200 px-2 py-0.5 text-[10px] text-neutral-900 font-semibold whitespace-nowrap outline outline-1 outline-transparent transition-colors hover:bg-carnation-200";
 const ACTION_TABLE_CELL_CLASSES = "border-b border-neutral-700 bg-neutral-800 px-3 py-2 text-sm align-top break-words";
 const ACTION_TABLE_OPTIONAL_CELL_CLASSES = "hidden border-b border-neutral-700 bg-neutral-800 px-3 py-2 text-sm align-top break-words sm:table-cell";
 const ACTION_TABLE_CENTER_CELL_CLASSES = "border-b border-neutral-700 bg-neutral-800 px-3 py-2 text-sm text-center align-top break-words";
