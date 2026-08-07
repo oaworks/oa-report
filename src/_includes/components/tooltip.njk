@@ -13,7 +13,7 @@
   class="tooltip" 
   tabindex="0" 
   data-tooltip-content="{{ params.msg }}"
-  {% if params.theme %}data-tooltip-theme="{{ params.theme }}"{% endif %}
+  data-tooltip-theme="{{ params.theme or 'tooltip-dark' }}"
   {% if params.id %} id="{{ params.id }}"{% endif %} 
   aria-label="
     {% if params.label %}
@@ -34,7 +34,7 @@
   class="tooltip" 
   tabindex="0" 
   data-tooltip-content="{{ params.msg }}"
-  {% if params.theme %}data-tooltip-theme="{{ params.theme }}"{% endif %}
+  data-tooltip-theme="{{ params.theme or 'tooltip-dark' }}"
   {% if params.id %} id="{{ params.id }}"{% endif %} 
   aria-label="
     {% if params.label %}

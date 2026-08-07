@@ -291,7 +291,7 @@
   color: #ffaeac;
 }
 
-.tooltip-box[data-theme~='tooltip-white'] {
+.tooltip-box[data-theme~='tooltip-dark'] {
   background-color: #171717;
   border: 1px solid #525252;
   color: #f5f5f5;
@@ -300,7 +300,7 @@
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
-.tooltip-box[data-theme~='tooltip-white'] .tooltip-arrow {
+.tooltip-box[data-theme~='tooltip-dark'] .tooltip-arrow {
   color: #171717;
 }
 

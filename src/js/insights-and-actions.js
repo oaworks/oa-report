@@ -91,7 +91,7 @@ function buildInsightTooltipSection(contentHtml = '') {
 
   return `
     <section class="space-y-2">
-      <h4 class="font-semibold text-neutral-100">${INSIGHT_TOOLTIP_HEADING}</h4>
+      <h4 class="font-semibold text-white">${INSIGHT_TOOLTIP_HEADING}</h4>
       ${contentHtml}
     </section>
   `;
@@ -465,7 +465,7 @@ export function initInsightsAndActions(org) {
         if (!instance) {
           instance = createPopover(tooltipTarget, '', {
             placement: 'right',
-            theme: 'tooltip-white',
+            theme: 'tooltip-dark',
             arrow: true,
             role: 'dialog',
             onShow() {
@@ -489,7 +489,7 @@ export function initInsightsAndActions(org) {
         }
         const updateTooltipContent = () => {
           const detailHtml = figureDetails
-            ? `<div class="mb-2 font-semibold text-neutral-100">${figureDetails.innerHTML}</div>`
+            ? `<div class="mb-2 font-semibold text-white">${figureDetails.innerHTML}</div>`
             : "";
           const definitionHtml = buildInsightDefinitionsHtml(
             numerator,

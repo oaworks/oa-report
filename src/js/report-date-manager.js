@@ -780,7 +780,7 @@ function createDateInput(id, label) {
   const input = document.createElement("input");
   input.type = "date";
   input.id = id;
-  input.className = "block w-full rounded-sm border border-neutral-600 bg-neutral-900/50 px-2 py-1 text-center text-xs text-neutral-100 shadow-sm transition-colors hover:border-neutral-400 focus:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-carnation-400 focus:ring-offset-1 focus:ring-offset-neutral-900 md:text-sm";
+  input.className = "block w-full rounded-sm border border-neutral-600 bg-neutral-900/50 px-2 py-1 text-center text-xs text-white shadow-sm transition-colors hover:border-neutral-400 focus:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-carnation-400 focus:ring-offset-1 focus:ring-offset-neutral-900 md:text-sm";
   input.setAttribute('aria-label', label);
   input.required = label === "From";
   wrapper.appendChild(input);

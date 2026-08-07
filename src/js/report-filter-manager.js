@@ -598,7 +598,7 @@ function addFilterRow(container) {
 
   const fieldSelect = document.createElement("select");
   fieldSelect.id = fieldId;
-  fieldSelect.className = `js-filter-field mt-1 block h-9 w-full rounded-sm border border-neutral-600 bg-neutral-900/50 px-2 text-xs leading-tight text-neutral-100 shadow-sm transition-colors hover:border-neutral-400 focus:border-neutral-300 ${CONTROL_FOCUS_RING_CLASSES} md:text-sm`;
+  fieldSelect.className = `js-filter-field mt-1 block h-9 w-full rounded-sm border border-neutral-600 bg-neutral-900/50 px-2 text-xs leading-tight text-white shadow-sm transition-colors hover:border-neutral-400 focus:border-neutral-300 ${CONTROL_FOCUS_RING_CLASSES} md:text-sm`;
   fieldSelect.required = true;
   fieldSelect.setAttribute("aria-required", "true");
 
@@ -630,7 +630,7 @@ function addFilterRow(container) {
   const input = document.createElement("input");
   input.id = inputId;
   input.type = "text";
-  input.className = `js-filter-input mt-1 h-9 w-full rounded-sm border border-neutral-600 bg-neutral-900/50 p-2 text-xs leading-tight text-neutral-100 shadow-sm transition-colors placeholder-neutral-500 hover:border-neutral-400 focus:border-neutral-300 disabled:border-neutral-700 disabled:bg-neutral-800 disabled:text-neutral-500 disabled:placeholder-neutral-500 ${CONTROL_FOCUS_RING_CLASSES} md:text-sm`;
+  input.className = `js-filter-input mt-1 h-9 w-full rounded-sm border border-neutral-600 bg-neutral-900/50 p-2 text-xs leading-tight text-white shadow-sm transition-colors placeholder-neutral-500 hover:border-neutral-400 focus:border-neutral-300 disabled:border-neutral-700 disabled:bg-neutral-800 disabled:text-neutral-500 disabled:placeholder-neutral-500 ${CONTROL_FOCUS_RING_CLASSES} md:text-sm`;
   input.placeholder = "Start typing to see suggestions…";
   input.disabled = true;
   input.setAttribute("aria-disabled", "true");
@@ -1235,7 +1235,7 @@ export function renderActiveFiltersBanner() {
   filterForm.appendChild(formTitle);
 
   const formHeading = document.createElement("h3");
-  formHeading.className = "flex items-center gap-2 text-xs font-semibold text-neutral-100 md:text-sm";
+  formHeading.className = "flex items-center gap-2 text-xs font-semibold text-white md:text-sm";
   formHeading.textContent = "Add a filter";
 
   const helpIcon = document.createElement("button");
@@ -1249,7 +1249,7 @@ export function renderActiveFiltersBanner() {
   helpEl.className = "p-2 text-neutral-200 md:p-3";
 
   const helpHeading = document.createElement("p");
-  helpHeading.className = "mb-2 text-sm font-semibold text-neutral-100";
+  helpHeading.className = "mb-2 text-sm font-semibold text-white";
   helpHeading.textContent = "Filtering tips";
   helpEl.appendChild(helpHeading);
 
