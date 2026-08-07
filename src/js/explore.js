@@ -8,14 +8,14 @@
 // =================================================
 
 import DOMPurify from "dompurify";
-import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, getORCiDFullName, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, escapeQueryValue, normaliseFieldId, makeNumberReadable, announce, orcidDisplayNames } from "./utils.js";
-import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_TERMS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, FILTER_PILL_CLASSES, SEGMENTED_PILL_CLASSES, resolveFieldDefinition } from "./constants.js";
+import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, escapeQueryValue, normaliseFieldId, makeNumberReadable, makeTabCountReadable, announce, orcidDisplayNames } from "./utils.js";
+import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, SEGMENTED_PILL_CLASSES, VIEW_TAB_CLASSES, CONTROL_FIELD_SHELL_CLASSES, CONTROL_FOCUS_RING_CLASSES, CONTROL_SELECT_CLASSES, SORT_TRIGGER_CLASSES, SORT_LABEL_CLASSES, SORT_CARET_CHIP_CLASSES, TAB_COUNT_BADGE_CLASSES, EXPLORE_SUMMARY_ROW_CLASSES, resolveFieldDefinition } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { startLoading, stopLoading } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
 import { renderActiveFiltersBanner } from './report-filter-manager.js';
 import { orgDataPromise, initInsightsAndActions } from './insights-and-actions.js';
-import { AUTHOR_BREAKDOWN_TERM, getAggregatedDataQuery, formatAggregationBucket } from './aggregated-data-query.js';
+import { AUTHOR_BREAKDOWN_TERM, getAggregatedDataQuery, formatAggregationBucket, getFieldFilterValues, toTermField } from './aggregated-data-query.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { createTooltip } from './tooltip-manager.js';
 import { buildDefinitionTooltipContent } from './tooltip-content.js';
@@ -25,6 +25,16 @@ import { buildDefinitionTooltipContent } from './tooltip-content.js';
 // =================================================
 
 const exportSort = "&sort=published_date:desc";
+
+// Fixed page-size tiers offered by the Records-shown control, plus the
+// thresholds that decide whether a select is shown at all and when the top
+// tier becomes "All" rather than a fixed number — see getRecordsShownTiers().
+const RECORDS_SHOWN_TIERS = [10, 20, 50, 100, 500];
+const RECORDS_SHOWN_DEFAULT = 10;
+const RECORDS_SHOWN_NO_SELECT_MAX = 20;
+const RECORDS_SHOWN_ALL_THRESHOLD = 1000;
+const exploreFilterTotalCache = new Map();
+const EXPLORE_SELECTED_ROW_CLASSES = ['!bg-neutral-300', 'hover:!bg-neutral-300', 'text-neutral-900'];
 
 let orgKey = "";
 let loggedIn = false;
@@ -48,6 +58,10 @@ onAuthChange(({ loggedIn: isLoggedIn, orgKey: key }) => {
  */
 let isDataExploreInit = false;
 
+// Tracks whether the table has rendered at least once, to spare the very
+// first (non-input-driven) load from a CLS-triggering height change.
+let hasRenderedExploreTableOnce = false;
+
 /**
  * Tracks the currently active explore item BUTTON for use in processExploreDataTable().
  * @global
@@ -63,18 +77,18 @@ export let currentActiveExploreItemButton = null;
 export let currentActiveExploreItemData = null;
 
 /** 
- * Tracks currently active explore item QUERY for use in createExploreFilterRadioButton.
+ * Tracks currently active explore item QUERY for use in createExploreFilterTab.
  * @global 
  * @type {string|null}
  */
 export let currentActiveExploreItemQuery = null;
 
-/** 
+/**
  * Tracks currently active explore item SIZE for use in handleRecordsShownChange.
- * @global 
+ * @global
  * @type {number}
  */
-export let currentActiveExploreItemSize = 10;
+export let currentActiveExploreItemSize = RECORDS_SHOWN_DEFAULT;
 
 /** 
  * Tracks currently active explore item DATA DISPLAY STYLE for use in handleDataDisplayToggle.
@@ -82,6 +96,13 @@ export let currentActiveExploreItemSize = 10;
  * @type {boolean}
  */
 export let currentActiveDataDisplayToggle = true;
+
+/**
+ * Tracks the current Explore table sort field and direction so interactive
+ * header controls can re-fetch data without mutating the underlying config.
+ */
+let currentActiveExploreSortField = null;
+let currentActiveExploreSortDirection = null;
 
 /** 
  * Map of explore button id -> its data object, used to render without synthesising a click.
@@ -99,7 +120,7 @@ function isOrcidUrl(value) {
 }
 
 const FILTER_TARGET_BUTTON_CLASS = 'js-filter-target cursor-pointer hover:underline text-left focus:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm';
-const EXTERNAL_LINK_PILL_CLASS = 'ml-1 bg-neutral-200 text-neutral-900 text-[10px] px-2 py-0.5 rounded-full whitespace-nowrap hover:bg-carnation-200 align-super js-external-pill';
+const EXTERNAL_LINK_PILL_CLASS = 'ml-1 rounded-full bg-neutral-200 px-2 py-0.5 text-[10px] text-neutral-900 font-semibold whitespace-nowrap align-super transition-colors hover:bg-neutral-200 js-external-pill';
 
 /**
  * Tracks currently selected row keys for use in enableExploreRowHighlighting.
@@ -180,8 +201,8 @@ export async function initDataExplore(org) {
 
     // Check if explore data exists and is not empty
     if (orgData.hits.hits.length > 0 && orgData.hits.hits[0]._source.explore && orgData.hits.hits[0]._source.explore.length > 0) {
+      applyRecordsShownUrlOverride();
       addExploreButtonsToDOM(orgData.hits.hits[0]._source.explore);
-      addRecordsShownSelectToDOM();
       handleDataDisplayToggle();
       enableExploreRowHighlighting();
       copyToClipboard('explore_copy_clipboard', 'explore_table');
@@ -376,8 +397,12 @@ const updateExploreHeadingIcon = (id) => {
  * @param {Object} itemData - The data object associated with the explore item.
  */
 export async function processExploreDataTable(button, itemData) {
+  const shouldPreserveSort = currentActiveExploreItemData?.id === itemData.id && currentActiveExploreItemData?.type === itemData.type;
   currentActiveExploreItemButton = button; // Set the currently active explore item button
   currentActiveExploreItemData = itemData; // Set the currently active explore item data
+  if (!shouldPreserveSort) {
+    getActiveExploreSortState(itemData, { reset: true });
+  }
 
   startLoading();
   updateButtonActiveStyles(button.id);
@@ -391,21 +416,21 @@ export async function processExploreDataTable(button, itemData) {
 }
 
 /**
- * Adds radio buttons for explore data filters to the DOM based on a given query string.
- * Adjusts visibility based on the number of filters available.
+ * Adds view tabs for Explore datasets to the DOM based on a given query string.
+ * Adjusts visibility based on the number of available views.
  *
  * @param {string} query - A comma-separated string of filters from the API response.
  */
 async function addExploreFiltersToDOM(query) {
   const exploreFiltersElement = document.getElementById("explore_filters");
   const exploreFilterField = document.getElementById("explore_filter_field");
-  exploreFiltersElement.innerHTML = ""; // Clear existing radio buttons
+  exploreFiltersElement.innerHTML = ""; // Clear existing view tabs
   const filters = parseCommaSeparatedQueries(query); // Parse the query string into an array of filters
   const visibleFilters = loggedIn ? filters : filters.slice(0, 1); // Logged-out users only see the default filter.
 
   // Only display list of filters when logged in and there is more than one
   if (exploreFilterField) {
-    exploreFilterField.style.display = loggedIn && visibleFilters.length > 0 ? "" : "none";
+    exploreFilterField.style.display = visibleFilters.length > 1 ? "" : "none";
   }
 
   // Check if the currentActiveExploreItemQuery is in the new set of filters
@@ -416,44 +441,51 @@ async function addExploreFiltersToDOM(query) {
     currentActiveExploreItemQuery = visibleFilters[0].id;
   }
   
- // Create radio buttons for each filter and append them to the DOM
+  const showCount = currentActiveExploreItemData?.type !== "terms";
+
+  // Create view tabs for each filter and append them to the DOM
   visibleFilters.forEach((filter) => {
-    const radioButton = createExploreFilterRadioButton(filter.id, filter.id === currentActiveExploreItemQuery);
-    exploreFiltersElement.appendChild(radioButton);
+    const tab = createExploreFilterTab(filter.id, filter.id === currentActiveExploreItemQuery, showCount);
+    exploreFiltersElement.appendChild(tab);
   });
 
-  bindFilterPillClickHandler();
-  updateFilterPillStates(currentActiveExploreItemQuery);
+  if (showCount) {
+    updateExploreFilterTabCounts(visibleFilters);
+  }
+
+  bindExploreTabHandlers();
+  updateExploreTabStates(currentActiveExploreItemQuery);
 }
 
 /**
- * Creates a filter button for an explore item's table switcher. Configures it with a
- * specified ID, label, and CSS classes. Styles it like a pill.
- * 
+ * Creates a view tab for an Explore dataset.
+ *
  * @param {string} id - The ID of the filter.
- * @param {boolean} isChecked - True if the filter should be active by default.
- * @returns {HTMLDivElement} The div element containing the configured filter button.
+ * @param {boolean} isActive - True if the filter should be active by default.
+ * @param {boolean} showCount - Whether to show the row-count badge (article-based tables only).
+ * @returns {HTMLDivElement} The wrapper containing the tab button.
  */
-function createExploreFilterRadioButton(id, isChecked) {
+function createExploreFilterTab(id, isActive, showCount) {
   const labelData = EXPLORE_FILTERS_LABELS[id];
   const label = labelData ? labelData.label || id : id; // Use label from filters or default to ID
 
-  // Create div to contain the filter button
-  const filterRadioButton = document.createElement('div');
-  filterRadioButton.className = 'mr-2 md:mr-4 mb-2';
-  filterRadioButton.setAttribute('data-filter-id', id);
+  const tabWrapper = document.createElement('div');
+  tabWrapper.className = 'flex';
+  tabWrapper.setAttribute('data-filter-id', id);
+
+  const countBadge = showCount ? `<span id="count_${id}" class="${TAB_COUNT_BADGE_CLASSES}">0</span>` : '';
 
   const buttonElement = document.createElement('button');
   Object.assign(buttonElement, {
     id: `filter_${id}`,
     type: 'button',
     value: id,
-    className: FILTER_PILL_CLASSES.base,
-    innerHTML: '<span>' + label + '</span>'
+    className: VIEW_TAB_CLASSES.base,
+    innerHTML: `<span>${label}</span>${countBadge}`
   });
-  buttonElement.setAttribute('aria-pressed', isChecked ? 'true' : 'false');
-  buttonElement.setAttribute('aria-label', label);
-  filterRadioButton.appendChild(buttonElement);
+  buttonElement.setAttribute('role', 'tab');
+  buttonElement.setAttribute('aria-controls', 'explore_view_panel');
+  tabWrapper.appendChild(buttonElement);
 
   if (labelData && labelData.info && labelData.info.trim()) {
     createTooltip(buttonElement, generateTooltipContent(labelData), {
@@ -462,42 +494,119 @@ function createExploreFilterRadioButton(id, isChecked) {
         expanded: false
       },
       placement: 'bottom',
-      theme: 'tooltip-white'
+      theme: 'tooltip-dark',
+      delay: [500, 0] // Don't pop up while the user is just hovering en route to a click.
     });
   }
 
-  setFilterPillState(buttonElement, isChecked);
+  applyExploreTabState(buttonElement, isActive);
 
-  return filterRadioButton;
+  return tabWrapper;
 }
 
 /**
- * Sets state-driven classes/attributes for a filter pill button.
- * Tailwind classes are applied from a single base string to keep this lean.
- * @param {HTMLButtonElement} buttonElement
- * @param {boolean} isActive
+ * Updates the count badge shown on each Explore tab. Only called for
+ * article-based tables — term-based tables show their total in the heading instead.
+ *
+ * @param {Array<{id: string}>} filters
  */
-function setFilterPillState(buttonElement, isActive) {
-  buttonElement.className = `${FILTER_PILL_CLASSES.base} ${isActive ? FILTER_PILL_CLASSES.active : FILTER_PILL_CLASSES.inactive}`;
-  buttonElement.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-}
+function updateExploreFilterTabCounts(filters) {
+  if (!orgData?.hits?.hits?.[0]?._source?.analysis || !currentActiveExploreItemData) {
+    return;
+  }
 
-/**
- * Updates pill styles across all filter options.
- * @param {string} activeId
- */
-function updateFilterPillStates(activeId) {
-  document.querySelectorAll('#explore_filters [data-filter-id]').forEach((wrapper) => {
-    const button = wrapper.querySelector('button');
-    if (!(button instanceof HTMLButtonElement)) return;
-    setFilterPillState(button, wrapper.getAttribute('data-filter-id') === activeId);
+  const analysis = orgData.hits.hits[0]._source.analysis;
+
+  filters.forEach((filter) => {
+    const badge = document.getElementById(`count_${filter.id}`);
+    const filterQuery = analysis?.[filter.id]?.query;
+
+    if (!badge || !filterQuery) {
+      return;
+    }
+
+    badge.textContent = "0";
+
+    const cacheKey = getExploreFilterTotalCacheKey(currentActiveExploreItemData, filter.id, filterQuery);
+
+    if (!exploreFilterTotalCache.has(cacheKey)) {
+      exploreFilterTotalCache.set(
+        cacheKey,
+        loadExploreRecords(
+          currentActiveExploreItemData,
+          filterQuery,
+          0,
+          currentActiveDataDisplayToggle
+        ).then(({ total }) => (Number.isFinite(total) ? total : 0))
+      );
+    }
+
+    exploreFilterTotalCache.get(cacheKey)
+      .then((total) => {
+        badge.textContent = makeTabCountReadable(Number.isFinite(total) ? total : 0);
+      })
+      .catch((error) => {
+        console.error(`Error fetching Explore filter count for ${filter.id}:`, error);
+        badge.textContent = "0";
+      });
   });
 }
 
 /**
- * Binds a single delegated click handler for filter pills to avoid per-pill listeners.
+ * Builds the cache key for one Explore filter total.
+ *
+ * @param {Object} itemData
+ * @param {string} filterId
+ * @param {string} filterQuery
+ * @returns {string}
  */
-function bindFilterPillClickHandler() {
+function getExploreFilterTotalCacheKey(itemData, filterId, filterQuery) {
+  return JSON.stringify({
+    breakdown: itemData?.id,
+    filterId,
+    filterQuery,
+    topLevelQuery: getDecodedUrlQuery(),
+    startYear,
+    endYear
+  });
+}
+
+/**
+ * Applies the active or inactive state to an Explore tab.
+ *
+ * @param {HTMLButtonElement} buttonElement
+ * @param {boolean} isActive
+ */
+function applyExploreTabState(buttonElement, isActive) {
+  buttonElement.className = `${VIEW_TAB_CLASSES.base} ${isActive ? VIEW_TAB_CLASSES.active : VIEW_TAB_CLASSES.inactive}`;
+  buttonElement.setAttribute('aria-selected', isActive ? 'true' : 'false');
+  buttonElement.setAttribute('tabindex', isActive ? '0' : '-1');
+}
+
+/**
+ * Updates tab styles across all Explore views and keeps the shared panel
+ * labelled by the active tab.
+ *
+ * @param {string} activeId
+ */
+function updateExploreTabStates(activeId) {
+  const panel = document.getElementById('explore_view_panel');
+
+  document.querySelectorAll('#explore_filters [data-filter-id]').forEach((wrapper) => {
+    const button = wrapper.querySelector('button');
+    if (!(button instanceof HTMLButtonElement)) return;
+    const isActive = wrapper.getAttribute('data-filter-id') === activeId;
+    applyExploreTabState(button, isActive);
+    if (isActive && panel) {
+      panel.setAttribute('aria-labelledby', button.id);
+    }
+  });
+}
+
+/**
+ * Binds delegated pointer and keyboard handling for the Explore view tabs.
+ */
+function bindExploreTabHandlers() {
   const container = document.getElementById('explore_filters');
   if (!container || container.dataset.bound === 'true') return;
 
@@ -514,60 +623,128 @@ function bindFilterPillClickHandler() {
     debouncedHandleFilterChange(filterId);
   });
 
+  container.addEventListener('keydown', (event) => {
+    const tabs = Array.from(container.querySelectorAll('[role="tab"]')).filter((tab) => tab instanceof HTMLButtonElement);
+    const currentIndex = tabs.indexOf(document.activeElement);
+
+    if (currentIndex === -1 || !tabs.length) return;
+
+    let nextIndex = currentIndex;
+    if (event.key === 'ArrowRight') nextIndex = (currentIndex + 1) % tabs.length;
+    if (event.key === 'ArrowLeft') nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+    if (event.key === 'Home') nextIndex = 0;
+    if (event.key === 'End') nextIndex = tabs.length - 1;
+
+    if (nextIndex !== currentIndex) {
+      event.preventDefault();
+      tabs[nextIndex].focus();
+      return;
+    }
+
+    if ((event.key === 'Enter' || event.key === ' ') && document.activeElement instanceof HTMLButtonElement) {
+      event.preventDefault();
+      document.activeElement.click();
+    }
+  });
+
   container.dataset.bound = 'true';
 }
 
 /**
- * Adds a select menu for changing the number of records shown in the active table.
- * Inserts the menu into a div with the id "explore_records_shown".
+ * Applies a "records" URL override (if present and valid) to the active
+ * page-size state. Runs once, before the first Explore fetch, so that fetch
+ * already uses the right size instead of needing a follow-up re-fetch.
  */
-function addRecordsShownSelectToDOM() {
-  const exploreRecordsShownElement = document.getElementById("explore_records_shown");
-  exploreRecordsShownElement.innerHTML = ""; // Clear existing menu if any
+function applyRecordsShownUrlOverride() {
+  const records = Number(getAllURLParams().records);
+  if (Number.isFinite(records) && records > 0) {
+    currentActiveExploreItemSize = records;
+  }
+}
 
-  // Create the label element
+/**
+ * Works out the Records-shown control's shape for a given total (Y).
+ * Below RECORDS_SHOWN_NO_SELECT_MAX everything already fits on screen, so no
+ * choice is meaningful and no select is offered. Above that, only fixed
+ * tiers smaller than Y are offered — so no option ever displays a count
+ * above the real total — topped with a dynamic "All" below
+ * RECORDS_SHOWN_ALL_THRESHOLD, or the fixed 1,000 cap once Y itself is large
+ * enough that 1,000 can never exceed it.
+ *
+ * @param {number} total - Total matching records/values (Y).
+ * @returns {{ showSelect: boolean, options?: number[] }}
+ */
+function getRecordsShownTiers(total) {
+  if (!Number.isFinite(total) || total <= RECORDS_SHOWN_NO_SELECT_MAX) {
+    return { showSelect: false };
+  }
+  const reachableTiers = RECORDS_SHOWN_TIERS.filter((tier) => tier < total);
+  const topTier = total >= RECORDS_SHOWN_ALL_THRESHOLD ? RECORDS_SHOWN_ALL_THRESHOLD : total;
+  return { showSelect: true, options: [...reachableTiers, topTier] };
+}
+
+// Remembers the last rendered shape so a table refresh that stays within the
+// same tier bracket never rebuilds (and never defocuses) the select.
+let lastRecordsShownSignature = null;
+
+/**
+ * Renders the Records-shown control for the current total (Y) into the
+ * "explore_records_shown" element — either a page-size select, or (when
+ * everything already fits) plain text matching the total exactly.
+ *
+ * @param {number} total - Total matching records/values for the active table.
+ */
+function updateRecordsShownControl(total) {
+  const container = document.getElementById("explore_records_shown");
+  if (!container) return;
+
+  const { showSelect, options } = getRecordsShownTiers(total);
+  const signature = showSelect ? `select:${options.join(",")}` : `text:${total}`;
+  if (signature === lastRecordsShownSignature) return;
+  lastRecordsShownSignature = signature;
+
+  container.innerHTML = "";
+
+  if (!showSelect) {
+    container.textContent = makeNumberReadable(total);
+    return;
+  }
+
+  const currentSize = Number(currentActiveExploreItemSize);
+  const selectedValue = options.includes(currentSize) ? currentSize : RECORDS_SHOWN_DEFAULT;
+  currentActiveExploreItemSize = selectedValue;
+
   const label = document.createElement("label");
   label.id = "records_shown_select_label";
   label.setAttribute("for", "records_shown_select");
-  label.className = "sr-only"; // Hide the label visually
-  label.textContent = "Records shown:"; 
+  label.className = "sr-only"; // Hide the label visually — context comes from the surrounding sentence
+  label.textContent = "Records shown:";
 
-  // Create the select element
+  const wrapper = document.createElement("span");
+  wrapper.className = `relative inline-flex ${CONTROL_FIELD_SHELL_CLASSES}`;
+
   const selectMenu = document.createElement("select");
   selectMenu.id = "records_shown_select";
-  selectMenu.className = "appearance-none py-1 px-2 border border-neutral-500 bg-neutral-800 text-white text-xs md:text-base";
+  selectMenu.className = `${CONTROL_SELECT_CLASSES} ${CONTROL_FOCUS_RING_CLASSES}`;
   selectMenu.setAttribute("aria-labelledby", "records_shown_select_label");
   selectMenu.addEventListener("change", handleRecordsShownChange);
 
-  // Define options for the select menu
-  const options = [5, 10, 20, 50, 100, 500, 1000];
   options.forEach((optionValue) => {
     const option = document.createElement("option");
     option.value = optionValue;
-    option.textContent = `${optionValue}`;
-    if (optionValue === 10) { // Set default value
-      option.selected = true;
-    }
+    option.textContent = optionValue === total && total < RECORDS_SHOWN_ALL_THRESHOLD
+      ? "All"
+      : makeNumberReadable(optionValue);
+    option.selected = optionValue === selectedValue;
     selectMenu.appendChild(option);
   });
 
-  // Append the label and select menu to the exploreRecordsShownElement
-  exploreRecordsShownElement.appendChild(label);
-  exploreRecordsShownElement.appendChild(selectMenu);
+  const caret = document.createElement("i");
+  caret.className = "ph ph-caret-down absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-neutral-100 pointer-events-none";
+  caret.setAttribute("aria-hidden", "true");
 
-  // Handle records shown parameter
-  const params = getAllURLParams();
-  const records = params.records;
-
-  if (records) {
-    const selectElement = document.getElementById("records_shown_select");
-    const recordsShownOption = selectElement.querySelector(`option[value="${records}"]`);
-    if (recordsShownOption) {
-      selectElement.value = records;
-      const event = new Event('change', { bubbles: true });
-      selectElement.dispatchEvent(event);
-    }
-  }
+  wrapper.append(selectMenu, caret);
+  container.append(label, wrapper);
 }
 
 /**
@@ -587,7 +764,8 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       return;
     }
 
-    const { type, id, term, sort } = itemData;
+    const { type, id } = itemData;
+    const { field: sortField, direction: sortDirection } = getActiveExploreSortState(itemData);
     document.getElementById("csv_email_msg").innerHTML = ""; // Clear any existing message in CSV download form
     const exportTable = document.getElementById('export_table');
     exportTable.classList.remove('hidden');
@@ -605,8 +783,9 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 
     const { records, total: totalRecords } = await loadExploreRecords(itemData, query, size, pretty);
 
-    replaceText("explore_sort", getExploreSortLabel({ type, id, term, sort }), { allowHTML: true });
-    replaceText("report_sort_adjective", getExploreSortAdjective({ type, sort }));
+    const sortAdjective = getExploreSortAdjective({ type, sortField, sortDirection });
+    replaceText("report_sort_adjective", sortAdjective);
+    document.querySelectorAll(".report_sort_adjective").forEach(el => el.classList.toggle("hidden", !sortAdjective));
     setExploreModeUI(type);
 
     const shownCount = type === "terms"
@@ -616,15 +795,19 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       ? shownCount
       : totalRecords;
 
-    updateExploreCountSummary({ type, id, total: totalCount, shown: shownCount });
+    if (filter && query && type !== "terms") {
+      const cacheKey = getExploreFilterTotalCacheKey(itemData, filter, query);
+      exploreFilterTotalCache.set(cacheKey, Promise.resolve(totalCount));
+    }
+
+    updateExploreCountSummary({ id, total: totalCount });
+    updateRecordsShownControl(totalCount);
+    replaceText("explore_type", EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id), { allowHTML: true });
 
     if (records.length > 0) {
       // Populate table with data
       populateTableHeader(records[0], 'export_table_head', type);
       populateTableBody(records, 'export_table_body', id, type);
-      
-      // Update any mentions of the explore data type with plural version of the ID
-      replaceText("explore_type", EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id), { allowHTML: true });
     
       // Add functionalities to the table
       enableExploreTableScroll();
@@ -640,20 +823,63 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
   } finally {
     // Always hide loader once finished
     stopLoading();
+    // Keep the placeholder height for the very first render only.
+    if (hasRenderedExploreTableOnce) {
+      document.querySelector('.js_export_table_container')?.classList.remove('min-h-[6rem]', 'md:min-h-[8rem]', 'lg:min-h-[10rem]');
+    }
+    hasRenderedExploreTableOnce = true;
   }
 }
 
+/**
+ * Resolves an author name filter to its ORCID(s), since the Authors table
+ * is always keyed by ORCID rather than name.
+ *
+ * @param {string} suffix - Org suffix, used for the lookup request.
+ * @param {string} decodedQuery - Full merged query (base + active filter).
+ * @param {string} activeFilterQuery - Just the user's active filter.
+ * @returns {Promise<string[]>} Matching ORCID(s), or an empty array if none.
+ */
+async function resolveAuthorNameToOrcids(suffix, decodedQuery, activeFilterQuery) {
+  if (getFieldFilterValues(activeFilterQuery, AUTHOR_BREAKDOWN_TERM).length) return [];
+
+  const nameValues = getFieldFilterValues(activeFilterQuery, "authorships.author.display_name");
+  if (!nameValues.length) return [];
+
+  const { records } = await fetchTermBasedData(suffix, decodedQuery, AUTHOR_BREAKDOWN_TERM, "_count", 10);
+  const targetNames = nameValues.map(v => v.trim().toLowerCase());
+  return records
+    .filter(r => targetNames.includes(String(r.display_name || "").trim().toLowerCase()))
+    .map(r => r.key);
+}
+
 async function loadExploreRecords(itemData, query, size, pretty) {
-  const { type, sort, includes } = itemData;
+  const { type, includes } = itemData;
+  const { field: sortField, direction: sortDirection } = getActiveExploreSortState(itemData);
   const term = itemData?.id === "author" ? AUTHOR_BREAKDOWN_TERM : itemData?.term;
+  // Kept separate from the org's own base query, so exact-match restriction
+  // only ever reflects what the user has actively filtered by.
+  const activeFilterQuery = getDecodedUrlQuery();
   const decodedQuery = andQueryStrings(
     decodeAndReplaceUrlEncodedChars(query),
-    getDecodedUrlQuery()
+    activeFilterQuery
   );
 
   if (type === "terms") {
     const suffix = orgData.hits.hits[0]._source.key_suffix;
-    const { records: termRecords, total } = await fetchTermBasedData(suffix, decodedQuery, term, sort, size);
+    const includeValuesOverride = itemData?.id === "author"
+      ? await resolveAuthorNameToOrcids(suffix, decodedQuery, activeFilterQuery)
+      : [];
+    const { records: termRecords, total } = await fetchTermBasedData(
+      suffix,
+      decodedQuery,
+      term,
+      sortField,
+      size,
+      activeFilterQuery,
+      includeValuesOverride.length ? includeValuesOverride : undefined,
+      sortDirection
+    );
 
     return {
       records: prettifyRecords(reorderTermRecords(termRecords, includes), pretty),
@@ -662,7 +888,12 @@ async function loadExploreRecords(itemData, query, size, pretty) {
   }
 
   if (type === "articles") {
-    const { records: articleRecords, total } = await fetchArticleBasedData(decodedQuery, includes, sort, size);
+    const { records: articleRecords, total } = await fetchArticleBasedData(
+      decodedQuery,
+      includes,
+      `${sortField}:${sortDirection}`,
+      size
+    );
 
     return {
       records: reorderArticleRecords(articleRecords, includes),
@@ -677,18 +908,27 @@ async function loadExploreRecords(itemData, query, size, pretty) {
  * Fetches term-based data using provided parameters.
  * 
  * @param {string} suffix - The suffix for the org, used in the POST request.
- * @param {string} query - The query string for fetching data. 
+ * @param {string} query - The query string for fetching data.
  * @param {string} term - The term (i.e. type of data breakdown) associated with the explore item.
- * @param {string} sort - The sorting order.
+ * @param {string} sort - The sorting field.
  * @param {number} size - The number of records to fetch.
+ * @param {string} [activeFilterQuery=query] - Just the user's active filter, excluding any base
+ * org query, so exact-match restriction never picks up unrelated baseline query clauses.
+ * @param {string[]} [includeValuesOverride] - Exact values to restrict buckets to, bypassing
+ * the automatic field-match detection (e.g. author ORCIDs resolved from a name filter).
+ * @param {string} [sortDirection="desc"] - Sort direction for the selected field.
  * @returns {Promise<Object>} A promise that resolves to term-based records and total count.
  */
-export async function fetchTermBasedData(suffix, query, term, sort, size) {
-  const postData = getAggregatedDataQuery(suffix, query, term, startYear, endYear, size, sort);
+export async function fetchTermBasedData(suffix, query, term, sort, size, activeFilterQuery = query, includeValuesOverride, sortDirection = "desc") {
+  const postData = getAggregatedDataQuery(suffix, query, term, startYear, endYear, size, sort, activeFilterQuery, includeValuesOverride, sortDirection);
   const response = await fetchPostData(postData);
 
   let buckets = [];
-  const totalUniqueTerms = response?.aggregations?.values_total?.value ?? 0;
+  // Once restricted to exact filter value(s), "of Y" should mean "how many you
+  // filtered for" (however many actually have data), not ES's own unrestricted
+  // cardinality, which co-occurring values on shared articles would inflate.
+  const includeValues = includeValuesOverride ?? getFieldFilterValues(activeFilterQuery, toTermField(term));
+  const totalUniqueTerms = includeValues.length || (response?.aggregations?.values_total?.value ?? 0);
 
   if (response && response.aggregations && response.aggregations.values && response.aggregations.values.buckets) {
     buckets = response.aggregations.values.buckets.map(bucket => formatAggregationBucket(bucket, term));
@@ -705,10 +945,11 @@ export async function fetchTermBasedData(suffix, query, term, sort, size) {
   // Filter out buckets with doc_count of 0
   buckets = buckets.filter(bucket => bucket.doc_count > 0);
 
-  // TODO: implement sorting in https://github.com/oaworks/discussion/issues/1917
-  // Sort all buckets based on 'doc_count'
-  if (sort.includes('_count')) {
-    buckets.sort((a, b) => b.doc_count - a.doc_count); // Sort in descending order as default for now
+  // Keep count-based ordering stable even when the API response comes back
+  // unordered or partially ordered.
+  if (sort === '_count') {
+    const multiplier = sortDirection === "asc" ? 1 : -1;
+    buckets.sort((a, b) => (a.doc_count - b.doc_count) * multiplier);
   }
 
   return { records: buckets, total: totalUniqueTerms };
@@ -743,88 +984,42 @@ async function fetchArticleBasedData(query, includes, sort, size) {
 // =================================================
 
 /**
- * Updates the table header summary with how many records are shown vs available.
+ * Updates the "/ Y {label}" portion of the table controls bar. The "X"
+ * portion (how many are shown) is handled separately by
+ * updateRecordsShownControl(), which sits inline before this.
+ *
  * @param {Object} params
- * @param {string} params.type - The explore item type.
  * @param {string} params.id - The explore item id (used for label).
- * @param {number} params.total - Total records returned by the API.
- * @param {number} params.shown - Number of records currently displayed.
+ * @param {number} params.total - Total records/values available (Y).
  */
-function updateExploreCountSummary({ type, id, total, shown }) {
-  const summaryElement = document.getElementById("explore_count_summary");
-  if (!summaryElement) return;
+function updateExploreCountSummary({ id, total }) {
+  const totalElement = document.getElementById("explore_count_total");
+  const labelElement = document.getElementById("explore_count_label");
+  if (!totalElement || !labelElement) return;
 
-  const formatCount = (n) => makeNumberReadable(Number.isFinite(n) ? n : 0);
   const label = EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id);
-  const sortLabel = document.querySelector(".explore_sort")?.textContent?.trim() || "published date";
 
-  summaryElement.replaceChildren();
-
-  const countElement = document.createElement("span");
-  countElement.className = "font-semibold";
-  countElement.textContent = `${formatCount(shown)} of ${formatCount(total)}`;
-
-  const labelElement = document.createElement("span");
-  labelElement.className = "lowercase";
+  totalElement.textContent = makeNumberReadable(Number.isFinite(total) ? total : 0);
   labelElement.innerHTML = DOMPurify.sanitize(label);
-
-  summaryElement.append("Showing ", countElement, " ", labelElement, ` · Sorted by ${sortLabel}`);
 }
 
 /**
- * Determines the label to use for the "Sorted by" UI based on explore metadata.
+ * Determines the adjective used in the Explore heading (e.g. "Latest", "By").
  *
  * @param {Object} params
  * @param {string} params.type - The explore item type.
- * @param {string} params.id - The explore item id.
- * @param {string} params.term - The term field used for terms-based breakdowns.
- * @param {string} params.sort - The sort key used by the API.
- * @returns {string} Human-friendly sort label.
+ * @param {string} params.sortField - The active sort field.
+ * @param {string} params.sortDirection - The active sort direction.
+ * @returns {string} Heading adjective, or an empty string if none applies.
  */
-function getExploreSortLabel({ type, id, term, sort }) {
-  const lowerCaseLabels = new Set(["Published date", "Published year", "Year"]);
+function getExploreSortAdjective({ type, sortField, sortDirection }) {
   if (type === "articles") {
-    if (!sort) return "Published date";
-    const sortField = sort.split(":")[0];
-    const label = EXPLORE_HEADER_ARTICLES_LABELS?.[sortField]?.label || "Published date";
-    return lowerCaseLabels.has(label) ? label.toLowerCase() : label;
-  }
-
-  if (!sort) return "publication count";
-
-  if (sort.includes("_count")) return "publication count";
-
-  if (sort.includes("_key") || sort === "key") {
-    const label = EXPLORE_ITEMS_LABELS[id]?.singular || EXPLORE_ITEMS_LABELS[id]?.plural || "Label";
-    return lowerCaseLabels.has(label) ? label.toLowerCase() : label;
-  }
-
-  const label = resolveFieldDefinition(sort, 'explore')?.label
-    || (term ? resolveFieldDefinition(term, 'explore')?.label : null)
-    || "Publication count";
-  if (label === "Publication count") return "publication count";
-  return lowerCaseLabels.has(label) ? label.toLowerCase() : label;
-}
-
-/**
- * Determines the adjective used in the Explore heading (e.g. "Top", "Latest", "By").
- *
- * @param {Object} params
- * @param {string} params.type - The explore item type.
- * @param {string} params.sort - The sort key used by the API.
- * @returns {string} Heading adjective.
- */
-function getExploreSortAdjective({ type, sort }) {
-  if (type === "articles") {
-    if (!sort) return "Latest";
-    const [field, direction] = sort.split(":");
-    if (field === "published_date") return direction === "asc" ? "Earliest" : "Latest";
+    if (!sortField) return "Latest";
+    if (sortField === "published_date") return sortDirection === "asc" ? "Earliest" : "Latest";
     return "Top";
   }
 
-  if (!sort) return "Top";
-  if (sort.includes("_key") || sort === "key") return "By";
-  return "Top";
+  return sortField === "_key" ? "By" : "";
 }
 
 /**
@@ -849,7 +1044,6 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
     // Hide author bucket metadata from the rendered table.
     .filter((rawKey) => !(dataType === 'terms' && currentActiveExploreItemData?.id === 'author' && (rawKey === 'display_name' || rawKey === 'orcid')))
     .forEach((rawKey, index) => {
-      const key = normaliseFieldId(rawKey);
       const cssClass = getExploreColumnClass('header', dataType, index);
 
       const headerCell = createTableCell('', cssClass, null, null, true); 
@@ -858,11 +1052,139 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
           shouldRightAlignExploreColumn(rawKey, records[rawKey]) ? "text-right" : "text-left"
         );
       }
-      setupHeaderTooltip(headerCell, key, dataType);
+      setupHeaderTooltip(headerCell, rawKey, dataType);
 
       headerRow.appendChild(headerCell);
     });
   tableHeader.appendChild(headerRow);
+}
+
+/**
+ * Derives the default sort state for an Explore item from its config.
+ *
+ * @param {Object|null|undefined} itemData
+ * @returns {{ field: string, direction: "asc"|"desc" }}
+ */
+function resolveExploreSortState(itemData) {
+  if (!itemData) {
+    return { field: "_count", direction: "desc" };
+  }
+
+  if (itemData.type === "articles") {
+    const [rawField = "published_date", rawDirection = "desc"] = String(itemData.sort || "published_date:desc").split(":");
+    return {
+      field: rawField,
+      direction: rawDirection === "asc" ? "asc" : "desc"
+    };
+  }
+
+  const [rawField = "_count", rawDirection] = String(itemData.sort || "_count").split(":");
+  const field = rawField === "key"
+    ? "_key"
+    : rawField === "doc_count"
+      ? "_count"
+      : rawField;
+
+  return {
+    field,
+    direction: rawDirection === "asc" ? "asc" : "desc"
+  };
+}
+
+/**
+ * Returns the current Explore sort state, optionally resetting it from the
+ * active item's config when switching to a new breakdown.
+ *
+ * @param {Object} [itemData=currentActiveExploreItemData]
+ * @param {{ reset?: boolean }} [options={}]
+ * @returns {{ field: string, direction: "asc"|"desc" }}
+ */
+function getActiveExploreSortState(itemData = currentActiveExploreItemData, options = {}) {
+  const { reset = false } = options;
+
+  if (reset || !currentActiveExploreSortField || !currentActiveExploreSortDirection) {
+    const { field, direction } = resolveExploreSortState(itemData);
+    currentActiveExploreSortField = field;
+    currentActiveExploreSortDirection = direction;
+  }
+
+  return {
+    field: currentActiveExploreSortField,
+    direction: currentActiveExploreSortDirection
+  };
+}
+
+/**
+ * Resolves which Explore column is currently sorted and in what direction, so
+ * the table header can show a caret on that column.
+ *
+ * @param {string} dataType - The current Explore table type.
+ * @returns {{ key: string, direction: "ascending"|"descending" } | null}
+ */
+function getExploreSortIndicator(dataType) {
+  const { field, direction } = getActiveExploreSortState();
+
+  if (!field) return null;
+
+  if (dataType === "articles") {
+    return {
+      key: normaliseFieldId(field),
+      direction: direction === "asc" ? "ascending" : "descending"
+    };
+  }
+
+  if (field === "_count") {
+    return {
+      key: "doc_count",
+      direction: direction === "asc" ? "ascending" : "descending"
+    };
+  }
+
+  if (field === "_key") {
+    return {
+      key: "key",
+      direction: direction === "asc" ? "ascending" : "descending"
+    };
+  }
+
+  return {
+    key: normaliseFieldId(field),
+    direction: direction === "asc" ? "ascending" : "descending"
+  };
+}
+
+/**
+ * Toggles the current Explore header sort direction, re-renders the table, and
+ * restores focus to the same header control afterwards.
+ *
+ * @param {string} sortKey - Normalised header key used to restore focus.
+ * @param {string} labelText - Human-readable column label announced to users.
+ * @returns {Promise<void>}
+ */
+async function handleExploreSortToggle(sortKey, labelText) {
+  if (!currentActiveExploreItemData) return;
+
+  currentActiveExploreSortDirection = currentActiveExploreSortDirection === "asc" ? "desc" : "asc";
+
+  startLoading();
+
+  try {
+    await fetchAndDisplayExploreData(
+      currentActiveExploreItemData,
+      currentActiveExploreItemQuery,
+      currentActiveExploreItemSize
+    );
+    const directionText = currentActiveExploreSortDirection === "asc" ? "ascending" : "descending";
+    announce(`Sorted by ${labelText}, ${directionText}.`);
+  } catch (error) {
+    console.error("Error updating Explore sort:", error);
+  } finally {
+    const sortButtons = Array.from(document.querySelectorAll("[data-explore-sort-key]"));
+    const matchingButton = sortButtons.find((button) => button.getAttribute("data-explore-sort-key") === sortKey);
+    if (matchingButton instanceof HTMLButtonElement) {
+      matchingButton.focus();
+    }
+  }
 }
 
 /**
@@ -915,29 +1237,92 @@ function generateTooltipContent(labelData, additionalHelpText = null) {
  * Ensures a label is always displayed, falling back to the key itself if no label is defined.
  *
  * @param {HTMLElement} element - The element to attach the tooltip to.
- * @param {string} key - The key associated with the tooltip, used for fallback labeling and to generate IDs for accessibility.
+ * @param {string} rawKey - The raw data key associated with the header cell.
  * @param {string} dataType - Indicates the type of data ('terms' or 'articles'), which determines the labels configuration to use.
  */
-function setupHeaderTooltip(element, key, dataType) {
+function setupHeaderTooltip(element, rawKey, dataType) {
+  const key = normaliseFieldId(rawKey);
+  const exploreTypeLabel = document.querySelector(".explore_type")?.textContent?.trim();
   const labelData = dataType === 'terms'
     ? resolveFieldDefinition(key, 'explore')
     : EXPLORE_HEADER_ARTICLES_LABELS[key];
-  const label = labelData && labelData.label ? labelData.label : key;
-  element.innerHTML = `<span>${label}</span>`;
+  const label = key === "key" && dataType === "terms"
+    ? (exploreTypeLabel || key)
+    : (labelData && labelData.label ? labelData.label : key);
+  const sortIndicator = getExploreSortIndicator(dataType);
+  const isSortedColumn = sortIndicator?.key === key;
+  const isInteractiveSort = Boolean(isSortedColumn && sortIndicator);
+
+  element.innerHTML = "";
+
+  const labelText = (() => {
+    const temp = document.createElement("span");
+    temp.innerHTML = label;
+    return temp.textContent?.trim() || key;
+  })();
+  const isRightAligned = element.classList.contains("text-right");
+  const contentClassName = `inline-flex w-full min-w-0 items-center gap-1 ${isRightAligned ? "justify-end" : "justify-start"}`;
+  const content = isInteractiveSort ? document.createElement("button") : document.createElement("span");
+  content.className = isInteractiveSort
+    ? `${contentClassName} ${SORT_TRIGGER_CLASSES}`
+    : contentClassName;
+
+  if (isInteractiveSort) {
+    const nextDirection = sortIndicator.direction === "ascending" ? "descending" : "ascending";
+    content.type = "button";
+    content.dataset.exploreSortKey = key;
+    content.setAttribute("aria-label", `${labelText}, currently sorted ${sortIndicator.direction}. Activate to sort ${nextDirection}.`);
+    content.addEventListener("click", () => {
+      handleExploreSortToggle(key, labelText);
+    });
+  }
+
+  const labelSpan = document.createElement("span");
+  if (isInteractiveSort) {
+    labelSpan.className = SORT_LABEL_CLASSES;
+  }
+  labelSpan.innerHTML = label;
+  content.appendChild(labelSpan);
+
+  if (isSortedColumn) {
+    const icon = document.createElement("i");
+    icon.className = sortIndicator.direction === "ascending"
+      ? `ph ph-caret-up ${SORT_CARET_CHIP_CLASSES}`
+      : `ph ph-caret-down ${SORT_CARET_CHIP_CLASSES}`;
+    icon.setAttribute("aria-hidden", "true");
+    content.appendChild(icon);
+
+    const srText = document.createElement("span");
+    srText.className = "sr-only";
+    srText.textContent = `Sorted ${sortIndicator.direction}`;
+    content.appendChild(srText);
+
+    element.setAttribute("aria-sort", sortIndicator.direction);
+  } else {
+    element.removeAttribute("aria-sort");
+  }
+
+  element.appendChild(content);
 
   // Generate and set tooltip if info is present and non-empty
   if (labelData && labelData.info && labelData.info.trim()) {
     // Get additional help text from orgData if available
     const additionalHelpText = orgData.hits.hits[0]?._source.policy?.help_text?.[key] ?? null;
 
-    element.tabIndex = 0;
-    createTooltip(element, generateTooltipContent(labelData, additionalHelpText), {
+    if (!isInteractiveSort) {
+      element.tabIndex = 0;
+    }
+
+    createTooltip(isInteractiveSort ? content : element, generateTooltipContent(labelData, additionalHelpText), {
       placement: 'bottom',
-      theme: 'tooltip-white'
+      theme: 'tooltip-dark',
+      delay: [500, 0] // Don't pop up while the mouse is just passing through the header row.
     });
 
-    element.setAttribute('aria-controls', `${key}_info`);
-    element.setAttribute('aria-labelledby', `${key}_info`);
+    if (!isInteractiveSort) {
+      element.setAttribute('aria-controls', `${key}_info`);
+      element.setAttribute('aria-labelledby', `${key}_info`);
+    }
   }
 }
 
@@ -961,15 +1346,19 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
   // Clear any highlighted rows if user has already interacted with the table
   clearRowHighlights();
 
-  // Separate the 'all_values' record from other records
+  // Separate the synthetic summary rows from the normal bucket rows.
   const allValuesRecord = data.find(record => record.key === 'all_values');
-  const otherRecords = data.filter(record => record.key !== 'all_values');
+  const noValuesRecord = data.find(record => record.key === 'no_values');
+  const otherRecords = data.filter(record => record.key !== 'all_values' && record.key !== 'no_values');
 
   // Limit the number of rows to the specified size
   otherRecords.length = Math.min(otherRecords.length, currentActiveExploreItemSize);
 
   function appendRow(target, record, section) {
     const row = document.createElement('tr');
+    const summaryRowType = section === 'foot'
+      ? (record.key === 'all_values' ? 'total' : record.key === 'no_values' ? 'missing' : null)
+      : null;
     if (dataType === 'terms' && exploreItemId === 'author' && record.display_name) orcidDisplayNames.set(record.key, record.display_name);
     const visibleEntries = Object.entries(record)
       .filter(([key]) => !(dataType === 'terms' && exploreItemId === 'author' && (key === 'display_name' || key === 'orcid')));
@@ -1010,6 +1399,9 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
       if (columnIndex > 1) {
         cell.classList.add(shouldRightAlignExploreColumn(key, rawContent) ? "text-right" : "text-left");
       }
+      if (summaryRowType) {
+        cell.classList.add(...EXPLORE_SUMMARY_ROW_CLASSES[summaryRowType].split(" "));
+      }
 
       row.appendChild(cell);
     });
@@ -1022,9 +1414,13 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
     appendRow(tableBody, record, 'body');
   });
 
-  // Add the 'all_values' record to the tfoot if it exists
+  // Add synthetic summary rows to the footer, keeping "No … recorded" below
+  // the total because it is not included in that total count.
   if (allValuesRecord) {
     appendRow(tableFooter, allValuesRecord, 'foot');
+  }
+  if (noValuesRecord) {
+    appendRow(tableFooter, noValuesRecord, 'foot');
   }
 
   // Highlight the selected rows if they exist in the new data
@@ -1034,11 +1430,34 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
         const row = tableBody.children[index]; // Get the corresponding row
         const secondCell = row.children[1]; // Get the second cell in the row
         const rowCells = row.querySelectorAll('td');
-        rowCells.forEach(cell => cell.classList.add('!bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900'));
-        secondCell.classList.remove('bg-neutral-600');
+        rowCells.forEach(cell => cell.classList.add(...EXPLORE_SELECTED_ROW_CLASSES));
       }
     });
   }
+}
+
+/**
+ * Builds visible and accessible labels for aggregated Explore summary rows.
+ *
+ * @param {string} exploreItemId
+ * @param {"all_values"|"no_values"} summaryKey
+ * @returns {{ visibleLabel: string, ariaLabel: string }}
+ */
+function formatExploreSummaryRowLabel(exploreItemId, summaryKey) {
+  const singularLabel = (EXPLORE_ITEMS_LABELS[exploreItemId]?.singular || exploreItemId || "value").replace(/<[^>]+>/g, "").trim();
+  const singularItemLabel = singularLabel.replace(/^[A-Z][a-z]/, (match) => match.toLowerCase());
+  const article = /^[aeiou]/i.test(singularLabel) ? "an" : "a";
+  const connectorText = summaryKey === "all_values" ? "with" : "without";
+  const visibleConnectorText = summaryKey === "all_values" ? "With" : "Without";
+  const connector = `<span class="font-bold text-white">${visibleConnectorText}</span>`;
+  const suffix = summaryKey === "all_values"
+    ? `${article} ${singularItemLabel}`
+    : `a recorded ${singularItemLabel}`;
+
+  return {
+    visibleLabel: DOMPurify.sanitize(`${connector} <span class="font-normal">${suffix}</span>`),
+    ariaLabel: `Publications ${connectorText} ${suffix}`
+  };
 }
 
 /**
@@ -1056,6 +1475,9 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
 function createTableCell(content, cssClass, exploreItemId = null, key = null, isHeader = false, displayName = null, authorOrcid = null) {
   const cell = document.createElement(isHeader ? 'th' : 'td');
   cell.className = cssClass;
+  if (isHeader) {
+    cell.scope = "col";
+  }
   const termBase = currentActiveExploreItemData?.id === "author"
     ? AUTHOR_BREAKDOWN_TERM
     : (currentActiveExploreItemData?.term?.trim() || "");
@@ -1123,36 +1545,6 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
 
       handleFiltersChanged();
     };
-  }
-
-  /**
-   * Adds a visual selected indicator to a term label when its filter clause
-   * already exists in the current `?q=` expression.
-   *
-   * @param {HTMLElement} wrapper
-   * @param {string|number} rawValue
-   * @returns {void}
-   */
-  function addSelectedDotIfNeeded(wrapper, rawValue) {
-    if (key !== 'key' || !termField) return;
-
-    const value = escapeQueryValue(rawValue);
-    const clause = `${termField}:"${value}"`;
-    const q = getDecodedUrlQuery() || '';
-
-    if (!q.includes(clause)) return;
-
-    wrapper.classList.add('inline-flex', 'items-center');
-
-    const dot = document.createElement('span');
-    dot.className = 'inline-block w-1.5 h-1.5 mr-1 rounded-full bg-carnation-400';
-    dot.setAttribute('aria-hidden', 'true');
-    wrapper.insertBefore(dot, wrapper.firstChild);
-
-    const sr = document.createElement('span');
-    sr.className = 'sr-only';
-    sr.textContent = 'Selected filter';
-    wrapper.appendChild(sr);
   }
 
   /**
@@ -1260,7 +1652,6 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
       cell.appendChild(labelWrapper);
     }
 
-    addSelectedDotIfNeeded(labelWrapper, rawValue);
     attachTermClickFilter(rawValue);
     return cell;
   }
@@ -1297,11 +1688,11 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
     return cell;
   }
   
-  // Early handling for common 'all_values' and 'no_values' cases in terms-based data
-  // Display either 'All [explore item]]' or 'No [explore item]'
+  // Early handling for common synthetic summary rows in terms-based data.
   if (content === 'all_values' || content === 'no_values') {
-    cell.innerHTML = content === 'all_values' ? 'All ' : 'No ';
-    cell.innerHTML += (EXPLORE_ITEMS_LABELS[exploreItemId]?.plural || pluraliseNoun(exploreItemId)).toLowerCase();
+    const { visibleLabel, ariaLabel } = formatExploreSummaryRowLabel(exploreItemId, content);
+    cell.innerHTML = visibleLabel;
+    cell.setAttribute("aria-label", ariaLabel);
     return cell;
   }
 
@@ -1364,16 +1755,13 @@ function enableExploreRowHighlighting() {
     if (event.target.tagName === 'TD') {
       const rowCells = event.target.parentElement.querySelectorAll('td');
       const firstCellContent = rowCells[0].textContent;
-      const secondCell = rowCells[1];
-      const isRowHighlighted = rowCells[0].classList.contains('!bg-neutral-200');
+      const isRowHighlighted = rowCells[0].classList.contains('!bg-neutral-300');
 
       if (isRowHighlighted) {
-        rowCells.forEach(cell => cell.classList.remove('!bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900'));
-        secondCell.classList.add('bg-white');
+        rowCells.forEach(cell => cell.classList.remove(...EXPLORE_SELECTED_ROW_CLASSES));
         selectedRowKeys = selectedRowKeys.filter(key => key !== firstCellContent); // Remove key from array for persistent active keys
       } else {
-        rowCells.forEach(cell => cell.classList.add('!bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900'));
-        secondCell.classList.remove('bg-white');
+        rowCells.forEach(cell => cell.classList.add(...EXPLORE_SELECTED_ROW_CLASSES));
         selectedRowKeys.push(firstCellContent); // Add key to array for persistent active keys 
       }
     }
@@ -1385,7 +1773,7 @@ function enableExploreRowHighlighting() {
  */
 function clearRowHighlights() {
   document.querySelectorAll('.js_export_table_container td').forEach(cell => {
-    cell.classList.remove('!bg-neutral-200', 'hover:bg-neutral-100', 'text-neutral-900');
+    cell.classList.remove(...EXPLORE_SELECTED_ROW_CLASSES);
   });
 }
 
@@ -1466,21 +1854,11 @@ function getExploreColumnClass(section, dataType, columnIndex) {
 function setExploreModeUI(type) {
   const isArticles = type === "articles";
   const downloadCSVFormContainer = document.getElementById('download_csv_form_container');
-  const exploreArticlesTableHelp = document.getElementById('explore_articles_records_shown_help');
-  const exploreTermsTableHelp = document.getElementById('explore_terms_records_shown_help');
 
   if (isArticles) {
     addCSVExportLink();
   } else {
     removeCSVExportLink();
-  }
-
-  if (exploreArticlesTableHelp) {
-    exploreArticlesTableHelp.style.display = isArticles && loggedIn ? "block" : "none";
-  }
-
-  if (exploreTermsTableHelp) {
-    exploreTermsTableHelp.style.display = isArticles ? "none" : "block";
   }
 
   if (downloadCSVFormContainer) {
@@ -1529,7 +1907,7 @@ function enableTooltipsForTruncatedCells() {
           delay: [500, 0], // 500 ms delay before showing, 0 ms delay before hiding
           trigger: 'mouseenter focus', // Trigger on mouse enter and focus
           hideOnClick: false,
-          theme: 'tooltip-white', // Custom theme defined in 'src/styles/input.css'
+          theme: 'tooltip-dark', // Custom theme defined in 'src/styles/input.css'
           onShow(instance) {
               let cellText = cell.textContent;
               // Check if the cell's content is truncated
@@ -1569,6 +1947,7 @@ function updateButtonActiveStyles(buttonId) {
  */
 async function handleRecordsShownChange(event) {
   const newSize = event.target.value;
+  const selectedLabel = event.target.options[event.target.selectedIndex]?.textContent || newSize;
   currentActiveExploreItemSize = newSize;
 
   // No active Explore item yet? Defer gracefully.
@@ -1584,14 +1963,14 @@ async function handleRecordsShownChange(event) {
       currentActiveExploreItemSize
     );
     updateURLParams({ records: newSize });
-    announce(`Rows shown: ${newSize}.`);
+    announce(`Rows shown: ${selectedLabel}.`);
   } catch (error) {
     console.error('Error updating records shown: ', error);
   }
 }
 
 /**
- * Handles the change in filters when a user clicks on a filter radio button. It displays a loading
+ * Handles the change in filters when a user clicks on a filter tab. It displays a loading
  * indicator, fetches, and displays the explore data based on the selected filter.
  * Also updates the header text via the updateExploreFilterHeader helper.
  * 
@@ -1604,40 +1983,63 @@ async function handleFilterChange(filterId) {
   await fetchAndDisplayExploreData(currentActiveExploreItemData, filterId);
   currentActiveExploreItemQuery = filterId;
   updateExploreFilterHeader(filterId);
-  updateFilterPillStates(filterId);
-  announce(`Explore filter: ${EXPLORE_FILTERS_LABELS[filterId] || filterId}.`);
+  updateExploreTabStates(filterId);
+  announce(`Explore view: ${EXPLORE_FILTERS_LABELS[filterId] || filterId}.`);
 }
 
 /**
- * Handle the toggling of the data display style in the table.
- * 
- * This function sets up an event listener on the toggle button. When the button is clicked,
- * it switches between two states - 'Pretty' and 'Raw'.
+ * Activates a specific Explore display mode, refreshes the table if needed,
+ * and optionally announces the change.
+ *
+ * @param {"percent"|"count"} mode
+ * @param {{ announceChange?: boolean }} [options={}]
+ * @returns {void}
+ */
+function setExploreDisplayMode(mode, options = {}) {
+  const { announceChange = true } = options;
+  const nextIsPercent = mode === 'percent';
+
+  if (currentActiveDataDisplayToggle === nextIsPercent) {
+    return;
+  }
+
+  currentActiveDataDisplayToggle = nextIsPercent;
+
+  if (announceChange) {
+    announce(`Explore view: ${currentActiveDataDisplayToggle ? "Percent" : "Count"}.`);
+  }
+
+  startLoading();
+  fetchAndDisplayExploreData(currentActiveExploreItemData, currentActiveExploreItemQuery, currentActiveExploreItemSize);
+}
+
+/**
+ * Handles the Explore display mode radio group.
+ *
+ * @returns {void}
  */
 function handleDataDisplayToggle() {
-  const toggleButton = document.getElementById('toggle-data-view');
-  toggleButton.addEventListener('click', function() {
-    const toggleBg = this.querySelector('span.pointer-events-none');
-    const toggleDot = this.querySelector('span.translate-x-100, span.translate-x-5');
+  const field = document.getElementById('explore_display_style_field');
+  if (!field || field.dataset.bound === 'true') {
+    return;
+  }
 
-    // Check if the toggle is in the 'Pretty' (active) state
-    if (this.getAttribute('aria-checked') === 'true') {
-        // Switch to 'Raw' (inactive) state
-        this.setAttribute('aria-checked', 'false');
-        toggleBg.classList.replace('bg-carnation-500', 'bg-neutral-200');
-        toggleDot.classList.replace('translate-x-100', 'translate-x-5');
-        currentActiveDataDisplayToggle = false; // Update the global toggle state
-    } else {
-        // Switch back to 'Pretty' (active) state
-        this.setAttribute('aria-checked', 'true');
-        toggleBg.classList.replace('bg-neutral-200', 'bg-carnation-500');
-        toggleDot.classList.replace('translate-x-5', 'translate-x-100');
-        currentActiveDataDisplayToggle = true; // Update the global toggle state
-    }
-    announce(`Explore view: ${currentActiveDataDisplayToggle ? "Pretty table" : "Raw values"}.`);
-    // Fetch and display data with the updated pretty/raw format
-    fetchAndDisplayExploreData(currentActiveExploreItemData, currentActiveExploreItemQuery, currentActiveExploreItemSize);
+  const percentInput = document.getElementById('display-style-percent');
+  const countInput = document.getElementById('display-style-count');
+  if (percentInput instanceof HTMLInputElement) {
+    percentInput.checked = currentActiveDataDisplayToggle;
+  }
+  if (countInput instanceof HTMLInputElement) {
+    countInput.checked = !currentActiveDataDisplayToggle;
+  }
+
+  field.addEventListener('change', (event) => {
+    const input = event.target;
+    if (!(input instanceof HTMLInputElement) || input.name !== 'explore-display-style') return;
+    setExploreDisplayMode(input.value === 'count' ? 'count' : 'percent');
   });
+
+  field.dataset.bound = 'true';
 }
 
 /**

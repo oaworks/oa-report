@@ -503,7 +503,7 @@ function createDropdownItem(buttonId, buttonText, startDate, endDate, dropdownBu
 
   item.className =
     "js_dropdown_item block w-full px-4 py-2 text-left text-xs " +
-    "bg-neutral-800 text-neutral-100 hover:bg-neutral-700 focus:outline-none focus:bg-neutral-600 active:bg-neutral-700";
+    "bg-neutral-800 text-neutral-100 hover:bg-neutral-700 focus:outline-none focus:bg-neutral-700 active:bg-neutral-700";
 
   item.textContent = buttonText;
 
@@ -631,7 +631,7 @@ function createDateRangeForm() {
 
   // Custom date range popover content
   const pop = document.createElement("div");
-  pop.className = "w-56 p-2 md:p-3 text-xs md:text-sm";
+  pop.className = "w-56 p-2 text-xs text-neutral-200 md:p-3 md:text-sm";
   pop.setAttribute("role", "dialog");
   pop.setAttribute("aria-labelledby", "js-date-range-form-title");
 
@@ -647,14 +647,13 @@ function createDateRangeForm() {
   const applyBtn = document.createElement("button");
   applyBtn.type = "button";
   applyBtn.id = "js-date-range-apply-button";
-  applyBtn.className = "block px-2 py-1 border rounded-sm w-full mt-1 md:mt-0 md:px-3 md:py-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-900 hover:bg-carnation-100 js-nav-chip";
-  applyBtn.id = "js-date-range-apply-button";
+  applyBtn.className = "mt-1 inline-flex w-full items-center justify-center rounded-sm border border-neutral-100 bg-neutral-100 px-2 py-1 font-semibold text-neutral-900 transition-colors hover:bg-neutral-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 md:mt-0 md:px-3 md:py-1.5";
   applyBtn.textContent = "Apply";
   pop.appendChild(applyBtn);
 
   const validationHint = document.createElement("p");
   validationHint.id = "js-date-range-hint";
-  validationHint.className = "mt-3 text-carnation-800 text-xs leading-4";
+  validationHint.className = "mt-3 text-xs leading-4 text-carnation-300";
   validationHint.setAttribute("aria-live", "polite");
   validationHint.textContent = "";
   pop.appendChild(validationHint);
@@ -775,13 +774,13 @@ function createDateInput(id, label) {
   const labelElement = document.createElement("label");
   labelElement.htmlFor = id;
   labelElement.textContent = label;
-  labelElement.className = "mb-1 block font-semibold uppercase text-xs";
+  labelElement.className = "mb-1 block text-xs font-semibold uppercase text-neutral-300";
   wrapper.appendChild(labelElement);
 
   const input = document.createElement("input");
   input.type = "date";
   input.id = id;
-  input.className = "block w-full rounded-sm border border-neutral-300 bg-neutral-50 px-2 py-1 text-center text-xs text-neutral-900 md:text-sm";
+  input.className = "block w-full rounded-sm border border-neutral-600 bg-neutral-900/50 px-2 py-1 text-center text-xs text-white shadow-sm transition-colors hover:border-neutral-400 focus:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-carnation-400 focus:ring-offset-1 focus:ring-offset-neutral-900 md:text-sm";
   input.setAttribute('aria-label', label);
   input.required = label === "From";
   wrapper.appendChild(input);
@@ -890,10 +889,8 @@ function updateYearButtonStyling(selectedElement, isDropdownItem = false) {
 }
 
 /**
- * Resets the dropdown to its default state - back to 'More years' and reverting the 
- * styling of any previously selected dropdown items to their original state.
- * It targets elements with specific class names: '.js_dropdown_button' for the dropdown button,
- * and '.js_dropdown_item' for the dropdown items.
+ * Resets the dropdown to its default state - back to 'More years'.
+ * It targets the '.js_dropdown_button' element.
  */
 function resetDropdown() {
   // Reset the dropdown button text to 'More years'
@@ -901,20 +898,6 @@ function resetDropdown() {
   if (dropdownButton) {
     dropdownButton.innerHTML = `More <span class='sr-only'>years</span> <span class='ml-1 text-xs' aria-hidden='true'>&#9660;</span>`;
   }
-
-  // Reset styling for all dropdown items to their original state
-  const dropdownItems = document.querySelectorAll('.js_dropdown_item');
-  dropdownItems.forEach((item) => {
-    item.classList.remove(
-      "bg-neutral-700",
-      "bg-neutral-600",
-      "text-neutral-100",
-      "font-semibold",
-      "border-neutral-900",
-      "border-neutral-700",
-      "border-neutral-600"
-    );
-  });
 
   // The date range form may not exist yet depending on init order
   const dateRangeForm = document.getElementById("date_range_form");
