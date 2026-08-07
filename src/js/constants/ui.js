@@ -48,12 +48,12 @@ export const DATA_TABLE_BODY_CLASSES = {
   terms: {
     firstCol: "border-b border-neutral-700 sticky left-0 bg-neutral-900 px-3 py-2 w-32 md:w-60 text-left text-neutral-100",
     secondCol: "border-b border-neutral-700 sticky left-32 md:left-60 bg-neutral-900 px-3 py-2 w-28 md:w-36 whitespace-nowrap truncate text-neutral-100",
-    otherCols: "border-b border-neutral-700 bg-neutral-800 px-3 py-2 whitespace-nowrap truncate text-neutral-100 hover:bg-neutral-700"
+    otherCols: "border-b border-neutral-700 bg-neutral-800 px-3 py-2 truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-750"
   },
   articles: {
     firstCol: "border-b border-neutral-700 sticky left-0 bg-neutral-900 px-3 py-2 w-32 md:w-60 lg:w-80 text-left text-neutral-100",
     secondCol: "border-b border-neutral-700 sticky left-32 md:left-60 lg:left-80 bg-neutral-900 px-3 py-2 w-28 md:w-36 whitespace-nowrap truncate text-neutral-100",
-    otherCols: "border-b border-neutral-700 bg-neutral-800 px-3 py-2 w-64 max-w-4xl whitespace-nowrap truncate text-neutral-100 hover:bg-neutral-700"
+    otherCols: "border-b border-neutral-700 bg-neutral-800 px-3 py-2 w-64 max-w-4xl truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-750"
   }
 };
 
@@ -64,21 +64,21 @@ export const DATA_TABLE_FOOT_CLASSES = {
   terms: {
     firstCol: "border-b border-neutral-600 sticky left-0 bg-neutral-900 px-3 py-2 w-32 md:w-60 text-left text-neutral-100",
     secondCol: "border-b border-neutral-600 sticky left-32 md:left-60 bg-neutral-900 px-3 py-2 w-28 md:w-36 whitespace-nowrap truncate text-neutral-100",
-    otherCols: "border-b border-neutral-600 bg-neutral-800 px-3 py-2 whitespace-nowrap truncate text-neutral-100 hover:bg-neutral-700"
+    otherCols: "border-b border-neutral-600 bg-neutral-800 px-3 py-2 truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-750"
   },
   articles: {
     firstCol: "border-b border-neutral-600 sticky left-0 bg-neutral-900 px-3 py-2 w-32 md:w-60 lg:w-80 text-left text-neutral-100",
     secondCol: "border-b border-neutral-600 sticky left-32 md:left-60 lg:left-80 bg-neutral-900 px-3 py-2 w-28 md:w-36 whitespace-nowrap truncate text-neutral-100",
-    otherCols: "border-b border-neutral-600 bg-neutral-800 px-3 py-2 w-64 max-w-4xl whitespace-nowrap truncate text-neutral-100 hover:bg-neutral-700"
+    otherCols: "border-b border-neutral-600 bg-neutral-800 px-3 py-2 w-64 max-w-4xl truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-750"
   }
 };
 
 // Segmented pill styles for tab-like groups
 // TODO: Refactor Actions pills to consume these shared classes so Explore and Actions stay visually aligned from one source of truth.
 export const SEGMENTED_PILL_CLASSES = {
-  base: "px-4 py-1.5 text-sm font-medium rounded-md outline outline-1 outline-transparent outline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 transition-colors",
+  base: "px-4 py-1.5 text-sm font-medium rounded-md outline outline-1 outline-transparent outline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 transition duration-200 ease-in-out hover:shadow-md hover:-translate-y-0.5",
   active: "bg-neutral-100 text-neutral-900 shadow-inner border border-1 border-neutral-100",
-  inactive: "bg-neutral-800 text-white hover:bg-neutral-700"
+  inactive: "bg-neutral-800 text-white hover:bg-neutral-750"
 };
 
 /**
