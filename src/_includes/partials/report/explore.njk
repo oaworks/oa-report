@@ -3,18 +3,18 @@
 
 {% call sectionWrapper("explore", "Explore") %}
   {# Breakdown table options #}
-  <nav aria-label="Explore views" aria-labelledby="explore-nav-title" class="flex flex-wrap items-center gap-2 p-2 rounded-md bg-neutral-800/90 border border-neutral-700 shadow-lg">
+  <nav aria-label="Explore views" aria-labelledby="explore-nav-title" class="flex flex-wrap items-center rounded-lg bg-neutral-900/70 p-3 shadow-lg md:p-4">
     <h3 id="explore-nav-title" class="sr-only">Explore views</h3>
     <ul id="explore_buttons" class="flex flex-wrap items-center gap-4 m-0 p-0 list-none">
       <li id="explore_see_more_item" class="list-none">
-        <button class="inline-flex items-center px-4 py-1.5 rounded-md bg-neutral-700 text-white text-sm font-medium hover:bg-neutral-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 transition-colors">
+        <button class="inline-flex items-center rounded-md bg-neutral-800 px-4 py-1.5 text-sm font-medium text-neutral-100 transition duration-200 ease-in-out hover:bg-neutral-750 hover:shadow-md hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800">
           <span>See more</span>
         </button>
       </li>
     </ul>
   </nav>
 
-  <div class="mt-2 md:mt-4 bg-neutral-800 border border-neutral-700 shadow-lg rounded-lg p-4 md:p-6">
+  <div class="mt-2 rounded-lg bg-neutral-900/70 p-4 shadow-lg md:mt-4 md:p-6">
     {# Loading spinner #}
     <div
       class="fixed inset-0 z-50 flex justify-center items-center opacity-0 transition-opacity duration-300"
@@ -29,80 +29,88 @@
     </div>
 
     <div id="export_table">
-      <header class="mb-10 space-y-2">
-        <h3 class="mb-3 text-base md:text-lg font-semibold uppercase tracking-wide text-neutral-100" aria-live="polite">
+      <header class="mb-4">
+        <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-neutral-100" aria-live="polite">
           <span class="inline-flex items-center gap-2">
             <i class="ph ph-note text-[18px] leading-none js-explore-heading-icon" aria-hidden="true"></i>
             <span class="report_sort_adjective">Top</span>
             <strong class="uppercase font-semibold explore_type">articles</strong>
           </span>
         </h3>
-        <p id="explore_count_summary" class="inline-block text-sm md:text-base text-white" aria-live="polite">
-          Showing 0 of 0 journal articles · Sorted by published date
-        </p>
       </header>
-      {# Data table controls #}
-      <div class="my-4 gap-3 md:gap-12 flex justify-between">
-        <div class="gap-3 md:gap-12 flex justify-between">
-          {# Records shown dropdown #}
-          <form class="w-auto">
-            <fieldset id="explore_records_shown_field">
-              <legend class="mb-4 text-xs font-semibold uppercase">
-                <span id="explore_articles_records_shown_help"
-                      class="tooltip"
-                      data-tooltip-theme="tooltip-pink"
-                      data-tooltip-placement="right"
-                      data-tooltip-content="You can view up to 500 records here. To see all of them, use the <em>Get this dataset in CSV</em> form below.">
-                  Records shown
-                </span>
-                <span id="explore_terms_records_shown_help"
-                      class="tooltip"
-                      data-tooltip-theme="tooltip-pink"
-                      data-tooltip-placement="right"
-                      data-tooltip-content="You can view up to 500 records here.">
-                  Records shown
-                </span>
-              </legend>
-              <div class="flex flex-wrap items-center" id="explore_records_shown"></div>
-            </fieldset>
-          </form>
-          {# Filter by radio buttons styled as pills #}
-          <form class="w-auto">
-            <fieldset id="explore_filter_field">
-              <legend class="mb-4 text-xs font-semibold uppercase">Filter by</legend>
-              <div class="flex flex-wrap items-center" id="explore_filters"></div>
+      {# Filter by buttons styled as tabs #}
+      <div id="explore_filter_field" class="mt-4 border-b border-neutral-500">
+        <div
+          id="explore_filters"
+          role="tablist"
+          aria-label="Explore data views"
+          aria-orientation="horizontal"
+          class="flex flex-wrap items-end gap-x-8 gap-y-3"
+        ></div>
+      </div>
+      <div id="explore_view_panel" role="tabpanel" aria-labelledby="filter_is_paper">
+        <div
+          id="export_table_controls"
+          role="toolbar"
+          aria-label="Table controls"
+          class="my-6 flex flex-wrap items-center justify-between gap-3 text-xs font-semibold uppercase text-neutral-200"
+        >
+        <div class="flex flex-wrap items-center gap-5 md:gap-7">
+          <p id="explore_count_summary" class="flex items-center gap-1.5" aria-live="polite">
+            <span id="explore_records_shown" class="inline-flex items-baseline"></span>
+            / <span id="explore_count_total">0</span>
+            <span id="explore_count_label">journal articles</span>
+          </p>
+          <form id="explore_display_style_field">
+            <fieldset>
+              <legend class="sr-only">Display values as</legend>
+              <div class="inline-flex rounded-sm border border-neutral-600 bg-neutral-900/50 p-0.5 shadow-sm transition-colors hover:border-neutral-400 focus-within:border-neutral-300">
+                <input
+                  id="display-style-percent"
+                  type="radio"
+                  name="explore-display-style"
+                  value="percent"
+                  class="sr-only peer/display-percent"
+                  checked
+                >
+                <label
+                  for="display-style-percent"
+                  class="inline-flex cursor-pointer items-center gap-1.5 rounded-sm px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-100 transition-colors hover:bg-neutral-800 hover:text-white peer-checked/display-percent:bg-neutral-100 peer-checked/display-percent:text-neutral-900 peer-focus-visible/display-percent:ring-2 peer-focus-visible/display-percent:ring-carnation-400 peer-focus-visible/display-percent:ring-offset-1 peer-focus-visible/display-percent:ring-offset-neutral-900 [&>i]:text-[1em]"
+                >
+                  Percent <span aria-hidden="true" class="inline-flex items-center self-center leading-none [&>i]:block [&>i]:text-[0.875em]">{% icon_small "percent" %}</span>
+                </label>
+                <input
+                  id="display-style-count"
+                  type="radio"
+                  name="explore-display-style"
+                  value="count"
+                  class="sr-only peer/display-count"
+                >
+                <label
+                  for="display-style-count"
+                  class="inline-flex cursor-pointer items-center gap-1.5 rounded-sm px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-100 transition-colors hover:bg-neutral-800 hover:text-white peer-checked/display-count:bg-neutral-100 peer-checked/display-count:text-neutral-900 peer-focus-visible/display-count:ring-2 peer-focus-visible/display-count:ring-carnation-400 peer-focus-visible/display-count:ring-offset-1 peer-focus-visible/display-count:ring-offset-neutral-900 [&>i]:text-[1em]"
+                >
+                  Count <span aria-hidden="true" class="inline-flex items-center self-center leading-none [&>i]:block [&>i]:text-[0.875em]">{% icon_small "hash" %}</span>
+                </label>
+              </div>
             </fieldset>
           </form>
         </div>
-        {# Data display style (raw/pretty) toggle #}
-        <form class="w-auto block" id="explore_display_style_field">
-          <fieldset>
-            <legend id="legend-data-view" class="mb-4 text-xs font-semibold uppercase text-right" for="toggler-data-view">
-              Data display style
-            </legend>
-            <div class="flex items-center">
-              <span class="mr-2 text-xs">{% icon_small "percent" %} Pretty</span>
-              <button
-                id="toggle-data-view"
-                type="button"
-                class="relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-carnation-500 focus:ring-offset-2"
-                role="switch"
-                aria-checked="true"
-                aria-labelledby="legend-data-view button-instructions">
-                <span aria-hidden="true" class="bg-carnation-500 pointer-events-none absolute mx-auto h-4 w-9 rounded-full transition-colors duration-200 ease-in-out"></span>
-                <span aria-hidden="true" class="translate-x-100 pointer-events-none absolute left-0 inline-block h-5 w-5 transform rounded-full border border-neutral-500 bg-neutral-800 shadow ring-0 transition-transform duration-200 ease-in-out"></span>
-              </button>
-              <span id="button-instructions" class="sr-only">Toggle between Pretty and Raw data display</span>
-              <span class="ml-2 text-xs">Raw {% icon_small "hash" %}</span>
-            </div>
-          </fieldset>
-        </form>
-      </div>
+        <button
+          id="explore_copy_clipboard"
+          class="group inline-flex items-center self-start focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-800"
+        >
+          <span class="inline-flex items-center gap-1.5 rounded-sm border border-neutral-600 bg-neutral-900/50 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-100 shadow-sm transition-colors group-hover:border-neutral-400 group-hover:bg-neutral-800 group-hover:text-white group-focus-visible:border-neutral-400 group-focus-visible:bg-neutral-800 group-focus-visible:text-white [&>i]:shrink-0 [&>i]:text-[1em]">
+            <span aria-hidden="true">{% icon_small "clipboard" %}</span>
+            <span data-copy-label>Copy table</span>
+          </span>
+        </button>
+        </div>
       <div class="relative">
         {# Scroll table button #}
         <button
           id="js_scroll_table_btn"
-          class="p-2 bg-neutral-800 text-white text-2xl focus:outline-none focus:ring focus:ring-carnation-500 hover:bg-neutral-700 transition duration-300 ml-4 absolute right-3 top-1/2 transform -translate-y-1/2"
+          class="p-2 bg-neutral-200 text-neutral-900 text-2xl focus:outline-none focus:ring focus:ring-carnation-500 hover:bg-carnation-300 transition duration-300 ml-4 absolute right-3 top-1/2 transform -translate-y-1/2"
           aria-label="Scroll to see more of the table"
         >
           →
@@ -110,23 +118,13 @@
 
         {# Data table #}
         <div class="mb-4">
-          <div class="overflow-x-auto pb-4 bg-neutral-800 js_export_table_container min-h-[20rem] md:min-h-[24rem] lg:min-h-[28rem]" aria-live="polite">
-            <table class="border-collapse w-full table-fixed bg-white js_export_table" id="explore_table">
+          <div class="overflow-x-auto rounded-lg border border-neutral-700 bg-neutral-800 pb-4 js_export_table_container min-h-[6rem] md:min-h-[8rem] lg:min-h-[10rem]" aria-live="polite">
+            <table class="border-separate border-spacing-0 w-full table-fixed bg-transparent js_export_table" id="explore_table">
               <thead class="border-b border-neutral-700 bg-neutral-900 text-left text-xs font-medium uppercase tracking-wider text-white" id="export_table_head"></thead>
-              <tbody class="text-xs md:text-sm text-neutral-900" id="export_table_body"></tbody>
-              <tfoot class="text-xs md:text-sm bg-neutral-100 text-neutral-900" id="export_table_foot"></tfoot>
+              <tbody class="text-xs md:text-sm text-neutral-100" id="export_table_body"></tbody>
+              <tfoot class="text-xs md:text-sm bg-neutral-800 text-neutral-100" id="export_table_foot"></tfoot>
             </table>
           </div>
-        </div>
-
-        {# Copy to clipboard button #}
-        <div class="flex justify-end">
-          <button id="explore_copy_clipboard" class="inline-flex items-center justify-content-end space-x-1 px-4 py-2 text-sm font-medium border border-neutral-100 text-white hover:bg-carnation-500 hover:text-neutral-900 hover:border-carnation-500 focus:outline-none focus:ring-1 focus:ring-carnation-300 focus:border-carnation-500 duration-500 whitespace-nowrap">
-            <div class="flex items-center -ml-2">
-              {% icon_small "clipboard" %}
-            </div>
-            <span>Copy to clipboard</span>
-          </button>
         </div>
       </div>
       {# <div class="flex justify-between" id="explore_export_container"></div> #}
@@ -146,6 +144,7 @@
       {# Download CSV form #}
       <div id="download_csv_form_container" class="hidden">
         {% include 'partials/email-download-form.njk' %}
+      </div>
       </div>
     </div>
   </div>
