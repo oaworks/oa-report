@@ -9,7 +9,7 @@
 // Imports
 // =================================================
 
-import { dateRange, startYear, endYear, displayNone, changeOpacity, makeNumberReadable, makeTabCountReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings, copyToClipboard } from './utils.js';
+import { dateRange, startYear, endYear, displayNone, changeOpacity, makeNumberReadable, makeTabCountReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings, copyToClipboard, escapeHtmlEntities } from './utils.js';
 import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, INSIGHT_EXPLORE_MAPPINGS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS, DEFAULT_ACTION_EMPTY_STATE_MESSAGE, DEFAULT_NO_AUTHOR_FILTERED_MESSAGE, DEFAULT_MULTIPLE_AUTHORS_FILTERED_MESSAGE, LICENSE_CODES, SEGMENTED_PILL_CLASSES, TAB_COUNT_BADGE_CLASSES, resolveFieldDefinition } from './constants.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { initActionTabs, formatDoiEpmcListForClipboard, getAuthorFilterCount } from './actions.js';
@@ -710,13 +710,10 @@ export function initInsightsAndActions(org) {
                       }
 
                       // And add it to the action array
-                      action["mailto"] = encodeURI(newMailto);
-                      action["draft_aria_label"] = `Open draft for ${action.author_email_name || "unknown author"}, article: ${action.title || action.DOI || "unknown article"}`
-                        .replaceAll("&", "&amp;")
-                        .replaceAll("\"", "&quot;")
-                        .replaceAll("\'", "&#39;")
-                        .replaceAll("<", "&lt;")
-                        .replaceAll(">", "&gt;");
+                      action["mailto"] = escapeHtmlEntities(encodeURI(newMailto));
+                      action["draft_aria_label"] = escapeHtmlEntities(
+                        `Open draft for ${action.author_email_name || "unknown author"}, article: ${action.title || action.DOI || "unknown article"}`
+                      );
                     };
 
                     // If EPMC fulltext status is included, derive a human-readable label + icon for
@@ -732,6 +729,9 @@ export function initInsightsAndActions(org) {
                       const textarea = document.createElement("textarea");
                       textarea.innerHTML = action.title;
                       action.title = textarea.value;
+                    }
+                    if (typeof action.title === "string") {
+                      action.title = escapeHtmlEntities(action.title, { escapeTags: false });
                     }
 
                     var tableRowLiteral = tableRow.replace(/\$\{action\.([^}]+)\}/g, function(match, key) {

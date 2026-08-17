@@ -1288,6 +1288,27 @@ export function andQueryStrings(base, extra) {
 }
 
 /**
+ * Escapes HTML-significant characters so a string is safe to insert into HTML markup.
+ * Pass escapeTags: false to keep intentional inline tags (e.g. <i>) intact.
+ *
+ * @param {string} value - The raw string to escape.
+ * @param {{escapeTags?: boolean}} [options]
+ * @returns {string} The escaped string.
+ */
+export function escapeHtmlEntities(value, { escapeTags = true } = {}) {
+  let escaped = value
+    .replaceAll("&", "&amp;")
+    .replaceAll("\"", "&quot;")
+    .replaceAll("\'", "&#39;");
+
+  if (escapeTags) {
+    escaped = escaped.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+  }
+
+  return escaped;
+}
+
+/**
  * Escapes a value for safe use inside a quoted query string.
  *
  * @param {string|number} value
