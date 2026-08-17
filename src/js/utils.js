@@ -181,6 +181,23 @@ export function makeNumberReadable(number, isCurrency = false, maximumFractionDi
 }
 
 /**
+ * Formats a tab-count badge into a compact `K+` style once it reaches 1,000.
+ *
+ * @param {number} number
+ * @returns {string}
+ */
+export function makeTabCountReadable(number) {
+  const safeNumber = Number.isFinite(number) ? number : 0;
+  if (safeNumber < 1000) return makeNumberReadable(safeNumber);
+
+  const thousands = safeNumber >= 10000
+    ? Math.floor(safeNumber / 1000)
+    : Math.floor(safeNumber / 500) / 2;
+
+  return `${Number.isInteger(thousands) ? thousands : thousands.toFixed(1)}K+`;
+}
+
+/**
  * Formats a Date object into an ISO 8601-formatted string representing the date portion only
  * The time portion is removed by splitting the ISO string at 'T' and taking the first part, 
  * which corresponds to the date. This format is often used in querying ElasticSearch.
@@ -932,7 +949,7 @@ export function copyToClipboard(buttonId, elementId, formatRows = (element) => A
   if (button.dataset.copyBound === 'true') return; // Already bound — avoid attaching duplicate listeners
   button.dataset.copyBound = 'true';
 
-  const textSpan = button.querySelector('span'); // Select text content inside <span> in the button
+  const labelElement = button.querySelector('[data-copy-label]') || button.querySelector('span');
   button.addEventListener('click', () => {
     const element = document.getElementById(elementId);
     if (!element) {
@@ -950,13 +967,19 @@ export function copyToClipboard(buttonId, elementId, formatRows = (element) => A
       ]);
 
     writePromise.then(() => {
-      const originalText = textSpan.innerText;
-      textSpan.innerText = successMessage;
+      const originalText = labelElement?.innerText;
+      if (labelElement) {
+        labelElement.innerText = successMessage;
+      }
+      announce(successMessage);
       setTimeout(() => {
-        textSpan.innerText = originalText; // Revert to original text after 2 seconds
+        if (labelElement && typeof originalText === 'string') {
+          labelElement.innerText = originalText;
+        }
       }, 2000);
     }).catch(err => {
       console.error('Failed to copy text: ', err);
+      announce('Copy failed.');
     });
   });
 }
@@ -1066,6 +1089,10 @@ export function updateExploreFilterHeader(filterId) {
 
 // Chart helpers
 
+// Keep in sync with the .js_bar_chart <footer> classes in card.njk.
+const INSIGHT_BAR_TRACK_BASE_CLASSES = "js_bar_chart flex flex-col justify-end w-2 bg-neutral-600 rounded-full overflow-hidden";
+const INSIGHT_BAR_TRACK_CLASSES = `${INSIGHT_BAR_TRACK_BASE_CLASSES} h-auto`;
+
 /**
  * Resets the <footer> js_bar_chart area of an Insights card back to its default state.
  * Undoes any "Data unavailable" content and styling applied by showUnavailableCard().
@@ -1075,29 +1102,18 @@ export function updateExploreFilterHeader(filterId) {
 export function resetBarChart(cardContents) {
   if (!cardContents) return;
 
-  // Restore the default white card styling
-  cardContents.classList.add('bg-white', 'proportional-card');
-
-  // Remove the "unavailable" card styling
-  cardContents.classList.remove(
-    'bg-carnation-100',
-    'bg-neutral-100',
-    'bg-neutral-50',
-    'opacity-70',
-    'flex',
-    'flex-col',
-    'justify-center'
-  );
+  // Remove the temporary unavailable-state surface, restoring the normal hover/jump affordance.
+  cardContents.classList.remove('bg-neutral-900');
+  cardContents.classList.add('bg-neutral-800', 'hover:bg-neutral-750', 'hover:shadow-md', 'hover:-translate-y-0.5', 'focus-within:bg-neutral-750', 'focus-within:shadow-md', 'focus-within:-translate-y-0.5');
 
   // Restore swapped icon and percent styling if it was changed
-  const iconEl = cardContents.querySelector('.text-neutral-800');
+  const iconEl = cardContents.querySelector('.js_insight_icon');
   if (iconEl && iconEl.dataset.oarDefaultIcon) {
     iconEl.innerHTML = iconEl.dataset.oarDefaultIcon;
     delete iconEl.dataset.oarDefaultIcon;
   }
   const percentEl = cardContents.querySelector('[id^="percent_"]');
   if (percentEl) {
-    percentEl.classList.remove('text-sm', 'font-semibold', 'text-neutral-700', 'text-neutral-800');
     percentEl.innerHTML = percentEl.dataset.oarDefaultUnavailable || percentEl.innerHTML;
     delete percentEl.dataset.oarDefaultUnavailable;
   }
@@ -1109,32 +1125,18 @@ export function resetBarChart(cardContents) {
     footerEl.className = 'js_bar_chart';
     cardContents.appendChild(footerEl);
   }
-  // If it was in "unavailable" mode, restore for drawing bars
-  footerEl.removeAttribute('data-unavailable');
   footerEl.innerHTML = '';
-
-  // Default vertical bar container: tall, thicker, rounded
-  footerEl.className = [
-    'js_bar_chart',
-    'flex',
-    'flex-col',
-    'justify-end',
-    'h-auto',
-    'w-2',
-    'bg-carnation-800',
-    'rounded-full',
-    'overflow-hidden'
-  ].join(' ');
+  footerEl.className = INSIGHT_BAR_TRACK_CLASSES;
 }
 
 /**
- * Switches the default Insights card into greyed-out "Data unavailable" style.
+ * Switches the default Insights card into a muted "Data unavailable" style.
  */
 export function showUnavailableCard(cardContents) {
   // Locate the "articles" and "percent" elements
   const articlesEl = cardContents.querySelector('[id^="articles_"]');
   const percentEl  = cardContents.querySelector('[id^="percent_"]');
-  const iconEl     = cardContents.querySelector('.text-neutral-800');
+  const iconEl     = cardContents.querySelector('.js_insight_icon');
 
   // Clear the text for #articles_...
   if (articlesEl) {
@@ -1146,7 +1148,7 @@ export function showUnavailableCard(cardContents) {
     if (!percentEl.dataset.oarDefaultUnavailable) {
       percentEl.dataset.oarDefaultUnavailable = percentEl.innerHTML;
     }
-    percentEl.innerHTML = `<span class="text-sm font-semibold text-neutral-800">Unavailable</span>`;
+    percentEl.innerHTML = `<span class="text-sm font-semibold text-neutral-200">Unavailable</span>`;
   }
 
   // Swap the corner icon for a slash, remembering the original
@@ -1155,29 +1157,18 @@ export function showUnavailableCard(cardContents) {
       iconEl.dataset.oarDefaultIcon = iconEl.innerHTML;
     }
     iconEl.innerHTML = `
-      <i class="ph ph-prohibit inline-block text-neutral-700" aria-hidden="true"></i>
+      <i class="ph ph-prohibit inline-block text-neutral-400" aria-hidden="true"></i>
     `;
   }
 
-  // Muted card styling
-  cardContents.classList.remove('bg-white', 'hover:shadow-md');
-  cardContents.classList.add('bg-neutral-100');
+  // Muted card styling — no hover/jump affordance, since there's nothing to act on.
+  cardContents.classList.remove('bg-neutral-800', 'hover:bg-neutral-750', 'hover:shadow-md', 'hover:-translate-y-0.5', 'focus-within:bg-neutral-750', 'focus-within:shadow-md', 'focus-within:-translate-y-0.5');
+  cardContents.classList.add('bg-neutral-900');
 
-  // Clear or replace the bar chart area with "Unavailable"
+  // Reset the bar track without rendering any value bar.
   const footerEl = cardContents.querySelector('footer.js_bar_chart');
   if (footerEl) {
-    footerEl.className = [
-      'js_bar_chart',
-      'flex',
-      'flex-col',
-      'justify-end',
-      'h-auto',
-      'w-2',
-      'bg-neutral-300',
-      'rounded-full',
-      'overflow-hidden'
-    ].join(' ');
-    footerEl.setAttribute('data-unavailable', 'true');
+    footerEl.className = INSIGHT_BAR_TRACK_CLASSES;
     footerEl.innerHTML = '';
   }
 }
@@ -1210,18 +1201,10 @@ export function setBarChart(
   // If the denominator is missing or zero, skip
   if (!denominatorCount) return;
 
-  // Ensure the container is in the expected vertical state
-  barContainer.classList.remove('mt-4', 'w-full');
-  barContainer.classList.add(
-    'flex',
-    'flex-col',
-    'justify-end',
-    'h-20',
-    'w-2',
-    'bg-carnation-800',
-    'rounded-full',
-    'overflow-hidden'
-  );
+  // Ensure the container is in the expected vertical state (a fixed height is
+  // needed here, unlike the empty-state h-auto, so the bars' percentage
+  // heights below have something concrete to size against).
+  barContainer.className = `${INSIGHT_BAR_TRACK_BASE_CLASSES} h-20`;
 
   // ----- CASE 1: Denominator is the full set => Single bar -----
   if  (
@@ -1232,7 +1215,7 @@ export function setBarChart(
     const fraction = Math.round((numeratorCount / denominatorCount) * 100);
     barContainer.innerHTML = `
       <div
-        class="w-full bg-carnation-300 rounded-full"
+        class="w-full bg-carnation-200 rounded-full"
         style="height: ${fraction}%"
       ></div>
     `;
@@ -1247,12 +1230,12 @@ export function setBarChart(
     const fractionInner = Math.round((numeratorCount / denominatorCount) * 100);
 
     barContainer.innerHTML = `
-      <div 
-        class="w-full bg-carnation-500 flex flex-col justify-end rounded-full"
+      <div
+        class="w-full bg-carnation-200 flex flex-col justify-end rounded-full"
         style="height: ${fractionOuter}%"
       >
-        <div 
-          class="w-full bg-carnation-300 rounded-full"
+        <div
+          class="w-full bg-carnation-700 rounded-full"
           style="height: ${fractionInner}%"
         ></div>
       </div>
