@@ -23,7 +23,14 @@ export const ACTION_ORDER = [
   "unanswered_requests"
 ];
 
-const ACTION_ARTICLE_LINK_CLASSES = "inline-flex items-center bg-neutral-200 text-neutral-900 text-xs px-2 py-0.5 rounded-full whitespace-nowrap outline outline-1 outline-transparent hover:bg-carnation-200";
+const ACTION_ARTICLE_LINK_CLASSES = "inline-flex items-center rounded-full my-1 bg-neutral-200 px-2 py-0.5 text-[10px] text-neutral-900 font-semibold whitespace-nowrap outline outline-1 outline-transparent transition-colors hover:bg-carnation-200";
+const ACTION_TABLE_CELL_CLASSES = "border-b border-neutral-700 bg-neutral-800 px-3 py-2 text-sm align-top break-words";
+const ACTION_TABLE_OPTIONAL_CELL_CLASSES = "hidden border-b border-neutral-700 bg-neutral-800 px-3 py-2 text-sm align-top break-words sm:table-cell";
+const ACTION_TABLE_CENTER_CELL_CLASSES = "border-b border-neutral-700 bg-neutral-800 px-3 py-2 text-sm text-center align-top break-words";
+const ACTION_TABLE_OPTIONAL_CENTER_CELL_CLASSES = "hidden border-b border-neutral-700 bg-neutral-800 px-3 py-2 text-sm text-center align-top break-words sm:table-cell";
+const ACTION_TABLE_PRIMARY_TEXT_CLASSES = "text-neutral-100";
+const ACTION_TABLE_SECONDARY_TEXT_CLASSES = "text-neutral-300";
+const ACTION_TABLE_DRAFT_BUTTON_CLASSES = "inline-flex items-center rounded-full border border-transparent bg-carnation-500 p-2 text-white shadow-sm transition duration-200 hover:border-carnation-500 hover:bg-neutral-100 hover:text-carnation-500";
 
 export const DEFAULT_ACTION_EMPTY_STATE_MESSAGE = "We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.";
 
@@ -48,28 +55,28 @@ export const ACTION_TABLE_CONFIGS = [
       "supplements.invoice_number",
       "supplements.invoice_date"
     ],
-    rowTemplate: "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 font-medium text-neutral-900'>${action.publisher}</div>\
-        <div class='mb-3 text-neutral-900'>${action.journal}</div>\
-        <div class='text-neutral-600'>OA type: <span class='font-medium'>${action.journal_oa_type}</span></div>\
+    rowTemplate: `<td class='${ACTION_TABLE_CELL_CLASSES}'>\
+        <div class='mb-1 font-medium ${ACTION_TABLE_PRIMARY_TEXT_CLASSES}'>\${action.publisher}</div>\
+        <div class='mb-3 ${ACTION_TABLE_PRIMARY_TEXT_CLASSES}'>\${action.journal}</div>\
+        <div class='${ACTION_TABLE_SECONDARY_TEXT_CLASSES}'>OA type: <span class='font-medium'>\${action.journal_oa_type}</span></div>\
       </td>\
-      <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
-        <div class='mb-1 text-neutral-600'>${action.DOI}</div>\
-        <div class='mb-1 text-neutral-900'>\
-          <span>${action.title}</span>\
+      <td class='${ACTION_TABLE_CELL_CLASSES}'>\
+        <div class='mb-1 ${ACTION_TABLE_SECONDARY_TEXT_CLASSES}'>\${action.published_date}</div>\
+        <div class='mb-1 ${ACTION_TABLE_SECONDARY_TEXT_CLASSES}'>\${action.DOI}</div>\
+        <div class='mb-1 ${ACTION_TABLE_PRIMARY_TEXT_CLASSES}'>\
+          <span>\${action.title}</span>\
         </div>\
         <div class='mb-3'>\
-          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article' aria-label='Open article: ${action.title}' class='" + ACTION_ARTICLE_LINK_CLASSES + " ml-0'>Open article <span aria-hidden='true'>&#8599;</span></a>\
+          <a href='https://doi.org/\${action.DOI}' target='_blank' rel='noopener' title='Open article' aria-label='Open article: \${action.title}' class='${ACTION_ARTICLE_LINK_CLASSES} ml-0'>Open article <span aria-hidden='true'>&#8599;</span></a>\
         </div>\
-        <div class='text-neutral-600'>OA status: <span class='font-medium'>${action.oa_status}<span></div>\
-        <div class='text-neutral-600'>License: <span class='font-medium uppercase'>${action.publisher_license_best}</span></div>\
+        <div class='${ACTION_TABLE_SECONDARY_TEXT_CLASSES}'>OA status: <span class='font-medium'>\${action.oa_status}<span></div>\
+        <div class='${ACTION_TABLE_SECONDARY_TEXT_CLASSES}'>License: <span class='font-medium uppercase'>\${action.publisher_license_best}</span></div>\
       </td>\
-      <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-3 text-neutral-600'>${action.invoice_date}</div>\
-        <div class='mb-3 text-neutral-900'>${action.invoice_number}</div>\
-        <div class='text-neutral-600 uppercase'>US$${action.apc_cost}</div>\
-      </td>"
+      <td class='${ACTION_TABLE_CELL_CLASSES}'>\
+        <div class='mb-3 ${ACTION_TABLE_SECONDARY_TEXT_CLASSES}'>\${action.invoice_date}</div>\
+        <div class='mb-3 ${ACTION_TABLE_PRIMARY_TEXT_CLASSES}'>\${action.invoice_number}</div>\
+        <div class='${ACTION_TABLE_SECONDARY_TEXT_CLASSES} uppercase'>US$\${action.apc_cost}</div>\
+      </td>`
   },
   {
     id: "unanswered_requests",
@@ -83,167 +90,167 @@ export const ACTION_TABLE_CONFIGS = [
       "supplements.grantid__bmgf",
       "mailto"
     ],
-    rowTemplate: "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 font-medium text-neutral-900'>${action.program__bmgf}</div>\
-        <div class='text-neutral-900'>${action.grantid__bmgf}</div>\
+    rowTemplate: `<td class='${ACTION_TABLE_CELL_CLASSES}'>\
+        <div class='mb-1 font-medium ${ACTION_TABLE_PRIMARY_TEXT_CLASSES}'>\${action.program__bmgf}</div>\
+        <div class='${ACTION_TABLE_PRIMARY_TEXT_CLASSES}'>\${action.grantid__bmgf}</div>\
       </td>\
-      <td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 font-medium text-neutral-900'>${action.author_email_name}</div>\
-        <div class='mb-1 text-neutral-600'>${action.journal}</div>\
-        <div class='mb-1 text-neutral-900'>\
-          <span>${action.title}</span>\
+      <td class='${ACTION_TABLE_CELL_CLASSES}'>\
+        <div class='mb-1 font-medium ${ACTION_TABLE_PRIMARY_TEXT_CLASSES}'>\${action.author_email_name}</div>\
+        <div class='mb-1 ${ACTION_TABLE_SECONDARY_TEXT_CLASSES}'>\${action.journal}</div>\
+        <div class='mb-1 ${ACTION_TABLE_PRIMARY_TEXT_CLASSES}'>\
+          <span>\${action.title}</span>\
         </div>\
         <div class='mb-1'>\
-          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article' aria-label='Open article: ${action.title}' class='" + ACTION_ARTICLE_LINK_CLASSES + " ml-0'>Open article <span aria-hidden='true'>&#8599;</span></a>\
+          <a href='https://doi.org/\${action.DOI}' target='_blank' rel='noopener' title='Open article' aria-label='Open article: \${action.title}' class='${ACTION_ARTICLE_LINK_CLASSES} ml-0'>Open article <span aria-hidden='true'>&#8599;</span></a>\
         </div>\
       </td>\
-      <td class='whitespace-nowrap py-4 pl-3 pr-4 text-center align-top text-sm font-medium'>\
+      <td class='whitespace-nowrap ${ACTION_TABLE_CENTER_CELL_CLASSES} font-medium'>\
         <button \
-          class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
-          aria-label='${action.draft_aria_label}'\
-          data-email='${action.email}'\
-          data-doi='${action.DOI}'\
-          data-mailto='${action.mailto}'\
+          class='${ACTION_TABLE_DRAFT_BUTTON_CLASSES}'\
+          aria-label='\${action.draft_aria_label}'\
+          data-email='\${action.email}'\
+          data-doi='\${action.DOI}'\
+          data-mailto='\${action.mailto}'\
           onclick='handleDecryptEmailClick(this)'>\
           <i class='ph ph-envelope inline-block text-[16px] leading-none duration-500' aria-hidden='true'></i>\
         </button>\
-      </td>"
+      </td>`
   },
   {
     id: "email_author_deposit",
     keys: ["published_date", "title", "journal", "author_email_name", "email", "DOI", "mailto"],
-    rowTemplate: "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
-        <div class='mb-1 text-neutral-600'>${action.journal}</div>\
-        <div class='mb-1 text-neutral-900'>\
-          <span>${action.title}</span>\
+    rowTemplate: `<td class='${ACTION_TABLE_CELL_CLASSES}'>\
+        <div class='mb-1 ${ACTION_TABLE_SECONDARY_TEXT_CLASSES}'>\${action.published_date}</div>\
+        <div class='mb-1 ${ACTION_TABLE_SECONDARY_TEXT_CLASSES}'>\${action.journal}</div>\
+        <div class='mb-1 ${ACTION_TABLE_PRIMARY_TEXT_CLASSES}'>\
+          <span>\${action.title}</span>\
         </div>\
         <div class='mb-1'>\
-          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article' aria-label='Open article: ${action.title}' class='" + ACTION_ARTICLE_LINK_CLASSES + " ml-0'>Open article <span aria-hidden='true'>&#8599;</span></a>\
+          <a href='https://doi.org/\${action.DOI}' target='_blank' rel='noopener' title='Open article' aria-label='Open article: \${action.title}' class='${ACTION_ARTICLE_LINK_CLASSES} ml-0'>Open article <span aria-hidden='true'>&#8599;</span></a>\
         </div>\
       </td>\
-      <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
-        <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
+      <td class='${ACTION_TABLE_OPTIONAL_CELL_CLASSES} ${ACTION_TABLE_SECONDARY_TEXT_CLASSES}'>\
+        <div class='mb-1 ${ACTION_TABLE_PRIMARY_TEXT_CLASSES}'>\${action.author_email_name}</div>\
       </td>\
-      <td class='px-3 py-4 text-sm text-center text-neutral-600 align-top break-words'>\
+      <td class='${ACTION_TABLE_CENTER_CELL_CLASSES} ${ACTION_TABLE_SECONDARY_TEXT_CLASSES}'>\
         <button \
-          class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
-          aria-label='${action.draft_aria_label}'\
-          data-email='${action.email}'\
-          data-doi='${action.DOI}'\
-          data-mailto='${action.mailto}'\
+          class='${ACTION_TABLE_DRAFT_BUTTON_CLASSES}'\
+          aria-label='\${action.draft_aria_label}'\
+          data-email='\${action.email}'\
+          data-doi='\${action.DOI}'\
+          data-mailto='\${action.mailto}'\
           onclick='handleDecryptEmailClick(this)'>\
           <i class='ph ph-envelope inline-block text-[16px] leading-none duration-500' aria-hidden='true'></i>\
         </button>\
-      </td>"
+      </td>`
   },
   {
     id: "email_author_aam",
     keys: ["published_date", "title", "journal", "author_email_name", "email", "DOI", "mailto"],
-    rowTemplate: "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
-        <div class='mb-1 text-neutral-600'>${action.journal}</div>\
-        <div class='mb-1 text-neutral-900'>\
-          <span>${action.title}</span>\
+    rowTemplate: `<td class='${ACTION_TABLE_CELL_CLASSES}'>\
+        <div class='mb-1 ${ACTION_TABLE_SECONDARY_TEXT_CLASSES}'>\${action.published_date}</div>\
+        <div class='mb-1 ${ACTION_TABLE_SECONDARY_TEXT_CLASSES}'>\${action.journal}</div>\
+        <div class='mb-1 ${ACTION_TABLE_PRIMARY_TEXT_CLASSES}'>\
+          <span>\${action.title}</span>\
         </div>\
         <div class='mb-1'>\
-          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article' aria-label='Open article: ${action.title}' class='" + ACTION_ARTICLE_LINK_CLASSES + " ml-0'>Open article <span aria-hidden='true'>&#8599;</span></a>\
+          <a href='https://doi.org/\${action.DOI}' target='_blank' rel='noopener' title='Open article' aria-label='Open article: \${action.title}' class='${ACTION_ARTICLE_LINK_CLASSES} ml-0'>Open article <span aria-hidden='true'>&#8599;</span></a>\
         </div>\
       </td>\
-      <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
-        <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
+      <td class='${ACTION_TABLE_OPTIONAL_CELL_CLASSES} ${ACTION_TABLE_SECONDARY_TEXT_CLASSES}'>\
+        <div class='mb-1 ${ACTION_TABLE_PRIMARY_TEXT_CLASSES}'>\${action.author_email_name}</div>\
       </td>\
-      <td class='px-3 py-4 text-sm text-center text-neutral-600 align-top break-words'>\
+      <td class='${ACTION_TABLE_CENTER_CELL_CLASSES} ${ACTION_TABLE_SECONDARY_TEXT_CLASSES}'>\
         <button \
-          class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
-          aria-label='${action.draft_aria_label}'\
-          data-email='${action.email}'\
-          data-doi='${action.DOI}'\
-          data-mailto='${action.mailto}'\
+          class='${ACTION_TABLE_DRAFT_BUTTON_CLASSES}'\
+          aria-label='\${action.draft_aria_label}'\
+          data-email='\${action.email}'\
+          data-doi='\${action.DOI}'\
+          data-mailto='\${action.mailto}'\
           onclick='handleDecryptEmailClick(this)'>\
           <i class='ph ph-envelope inline-block text-[16px] leading-none duration-500' aria-hidden='true'></i>\
         </button>\
-      </td>"
+      </td>`
   },
   {
     id: "email_author_vor",
     keys: ["published_date", "title", "journal", "author_email_name", "email", "DOI", "mailto"],
-    rowTemplate: "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
-        <div class='mb-1 text-neutral-600'>${action.journal}</div>\
-        <div class='mb-1 text-neutral-900'>\
-          <span>${action.title}</span>\
+    rowTemplate: `<td class='${ACTION_TABLE_CELL_CLASSES}'>\
+        <div class='mb-1 ${ACTION_TABLE_SECONDARY_TEXT_CLASSES}'>\${action.published_date}</div>\
+        <div class='mb-1 ${ACTION_TABLE_SECONDARY_TEXT_CLASSES}'>\${action.journal}</div>\
+        <div class='mb-1 ${ACTION_TABLE_PRIMARY_TEXT_CLASSES}'>\
+          <span>\${action.title}</span>\
         </div>\
         <div class='mb-1'>\
-          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article' aria-label='Open article: ${action.title}' class='" + ACTION_ARTICLE_LINK_CLASSES + " ml-0'>Open article <span aria-hidden='true'>&#8599;</span></a>\
+          <a href='https://doi.org/\${action.DOI}' target='_blank' rel='noopener' title='Open article' aria-label='Open article: \${action.title}' class='${ACTION_ARTICLE_LINK_CLASSES} ml-0'>Open article <span aria-hidden='true'>&#8599;</span></a>\
         </div>\
       </td>\
-      <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
-        <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
+      <td class='${ACTION_TABLE_OPTIONAL_CELL_CLASSES} ${ACTION_TABLE_SECONDARY_TEXT_CLASSES}'>\
+        <div class='mb-1 ${ACTION_TABLE_PRIMARY_TEXT_CLASSES}'>\${action.author_email_name}</div>\
       </td>\
-      <td class='px-3 py-4 text-sm text-center text-neutral-600 align-top break-words'>\
+      <td class='${ACTION_TABLE_CENTER_CELL_CLASSES} ${ACTION_TABLE_SECONDARY_TEXT_CLASSES}'>\
         <button \
-          class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
-          aria-label='${action.draft_aria_label}'\
-          data-email='${action.email}'\
-          data-doi='${action.DOI}'\
-          data-mailto='${action.mailto}'\
+          class='${ACTION_TABLE_DRAFT_BUTTON_CLASSES}'\
+          aria-label='\${action.draft_aria_label}'\
+          data-email='\${action.email}'\
+          data-doi='\${action.DOI}'\
+          data-mailto='\${action.mailto}'\
           onclick='handleDecryptEmailClick(this)'>\
           <i class='ph ph-envelope inline-block text-[16px] leading-none duration-500' aria-hidden='true'></i>\
         </button>\
-      </td>"
+      </td>`
   },
   {
     id: "email_author_unpublished_openrxiv_preprint_not_ccby",
     keys: ["published_date", "title", "journal", "author_email_name", "email", "DOI", "mailto", "publisher_license", "supplements.host_venue.display_name"],
-    rowTemplate: "<td class='py-4 pl-4 pr-3 text-sm align-top break-words'>\
-        <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
-        <div class='mb-1 text-neutral-600'>${action.journal}</div>\
-        <div class='mb-1 text-neutral-900'>\
-          <span>${action.title}</span>\
+    rowTemplate: `<td class='${ACTION_TABLE_CELL_CLASSES}'>\
+        <div class='mb-1 ${ACTION_TABLE_SECONDARY_TEXT_CLASSES}'>\${action.published_date}</div>\
+        <div class='mb-1 ${ACTION_TABLE_SECONDARY_TEXT_CLASSES}'>\${action.journal}</div>\
+        <div class='mb-1 ${ACTION_TABLE_PRIMARY_TEXT_CLASSES}'>\
+          <span>\${action.title}</span>\
         </div>\
         <div class='mb-1'>\
-          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article' aria-label='Open article: ${action.title}' class='" + ACTION_ARTICLE_LINK_CLASSES + " ml-0'>Open article <span aria-hidden='true'>&#8599;</span></a>\
+          <a href='https://doi.org/\${action.DOI}' target='_blank' rel='noopener' title='Open article' aria-label='Open article: \${action.title}' class='${ACTION_ARTICLE_LINK_CLASSES} ml-0'>Open article <span aria-hidden='true'>&#8599;</span></a>\
         </div>\
-        <div class='text-neutral-600'>License: <span class='font-medium uppercase'>${action.publisher_license}</span></div>\
+        <div class='${ACTION_TABLE_SECONDARY_TEXT_CLASSES}'>License: <span class='font-medium uppercase'>\${action.publisher_license}</span></div>\
       </td>\
-      <td class='hidden px-3 py-4 text-sm text-neutral-600 align-top break-words sm:table-cell'>\
-        <div class='mb-1 text-neutral-900'>${action.author_email_name}</div>\
+      <td class='${ACTION_TABLE_OPTIONAL_CELL_CLASSES} ${ACTION_TABLE_SECONDARY_TEXT_CLASSES}'>\
+        <div class='mb-1 ${ACTION_TABLE_PRIMARY_TEXT_CLASSES}'>\${action.author_email_name}</div>\
       </td>\
-      <td class='hidden px-3 py-4 text-sm text-center text-neutral-600 align-top break-words sm:table-cell'>\
+      <td class='${ACTION_TABLE_OPTIONAL_CENTER_CELL_CLASSES} ${ACTION_TABLE_SECONDARY_TEXT_CLASSES}'>\
         <button \
-          class='inline-flex items-center p-2 border border-transparent bg-carnation-500 text-white rounded-full shadow-sm hover:bg-white hover:text-carnation-500 hover:border-carnation-500 transition duration-200'\
-          aria-label='${action.draft_aria_label}'\
-          data-email='${action.email}'\
-          data-doi='${action.DOI}'\
-          data-mailto='${action.mailto}'\
+          class='${ACTION_TABLE_DRAFT_BUTTON_CLASSES}'\
+          aria-label='\${action.draft_aria_label}'\
+          data-email='\${action.email}'\
+          data-doi='\${action.DOI}'\
+          data-mailto='\${action.mailto}'\
           onclick='handleDecryptEmailClick(this)'>\
           <i class='ph ph-envelope inline-block text-[16px] leading-none duration-500' aria-hidden='true'></i>\
         </button>\
-      </td>"
+      </td>`
   },
   {
     id: "point_of_award_check",
     keys: ["published_date", "title", "journal", "DOI", "has_epmc_fulltext", "epmc_licence"],
     emptyStateMessage: "No non-compliant articles found for this author. <br>This author’s articles currently meet Wellcome’s point-of-award open access policy.",
     requiresSingleAuthor: true,
-    rowTemplate: "<td class='py-4 pl-4 pr-3 text-sm align-top break-words' data-doi='${action.DOI}' data-in-epmc='${action.has_epmc_fulltext}' data-epmc-licence='${action.epmc_licence}'>\
-        <div class='mb-1 text-neutral-600'>${action.published_date}</div>\
-        <div class='mb-1 text-neutral-600'>${action.journal}</div>\
-        <div class='mb-1 text-neutral-900'>${action.title}</div>\
-        <div class='mb-2 text-neutral-600'>${action.DOI}</div>\
+    rowTemplate: `<td class='${ACTION_TABLE_CELL_CLASSES}' data-doi='\${action.DOI}' data-in-epmc='\${action.has_epmc_fulltext}' data-epmc-licence='\${action.epmc_licence}'>\
+        <div class='mb-1 ${ACTION_TABLE_SECONDARY_TEXT_CLASSES}'>\${action.published_date}</div>\
+        <div class='mb-1 ${ACTION_TABLE_SECONDARY_TEXT_CLASSES}'>\${action.journal}</div>\
+        <div class='mb-1 ${ACTION_TABLE_PRIMARY_TEXT_CLASSES}'>\${action.title}</div>\
+        <div class='mb-2 ${ACTION_TABLE_SECONDARY_TEXT_CLASSES}'>\${action.DOI}</div>\
         <div class='mb-1'>\
-          <a href='https://doi.org/${action.DOI}' target='_blank' rel='noopener' title='Open article' aria-label='Open article: ${action.title}' class='" + ACTION_ARTICLE_LINK_CLASSES + " ml-0'>Open article <span aria-hidden='true'>&#8599;</span></a>\
+          <a href='https://doi.org/\${action.DOI}' target='_blank' rel='noopener' title='Open article' aria-label='Open article: \${action.title}' class='${ACTION_ARTICLE_LINK_CLASSES} ml-0'>Open article <span aria-hidden='true'>&#8599;</span></a>\
         </div>\
       </td>\
-      <td class='px-3 py-4 text-sm text-left text-neutral-900 align-top break-words'>\
+      <td class='${ACTION_TABLE_CELL_CLASSES} text-left ${ACTION_TABLE_PRIMARY_TEXT_CLASSES}'>\
         <span class='inline-flex items-center gap-1 font-medium'>\
-          <span>${action.epmc_status_label}</span>\
-          <i class='ph ${action.epmc_status_icon} text-[16px] leading-none ${action.epmc_status_color}' aria-hidden='true'></i>\
+          <span>\${action.epmc_status_label}</span>\
+          <i class='ph \${action.epmc_status_icon} text-[16px] leading-none \${action.epmc_status_color}' aria-hidden='true'></i>\
         </span>\
       </td>\
-      <td class='px-3 py-4 text-sm text-left text-neutral-900 align-top break-words'>\
-        <span class='font-medium'>${action.epmc_licence}</span>\
-      </td>"
+      <td class='${ACTION_TABLE_CELL_CLASSES} text-left ${ACTION_TABLE_PRIMARY_TEXT_CLASSES}'>\
+        <span class='font-medium'>\${action.epmc_licence}</span>\
+      </td>`
   }
 ];
