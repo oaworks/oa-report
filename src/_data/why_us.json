@@ -5,7 +5,7 @@
     "description": "Every day, we ingest fresh data from best-in-class sources like OpenAlex and Crossref, ensuring your insights are built on the most reliable and comprehensive Open Data available."
   },
   {
-    "icon": "layers",
+    "icon": "stack",
     "heading": "Built on <span class='italic'>your data</span>",
     "description": "We take what you already know—from messy spreadsheets, grant reports, and personal notes—and clean, integrate, and enrich it, turning your data into actionable insights."
   },
@@ -15,7 +15,7 @@
     "description": "We collect and curate missing data like Open Code, Grant IDs, and Data Availability Statements (DAS), filling in the gaps to give you unrivaled clarity and a full view of your research outputs."
   },
   {
-    "icon": "tool",
+    "icon": "wrench",
     "heading": "Setup by experts",
     "description": "With over a decade of expertise in research transparency, we manage your entire report setup and keep your data current, delivering the latest publication insights effortlessly. "
   },
