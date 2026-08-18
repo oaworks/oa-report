@@ -57,7 +57,9 @@ orgDataPromise.then((data) => { orgData = data; });
 
 const ensureKeywordField = (field = "") => {
   if (!field) return "";
-  return /\.keyword$/i.test(field) ? field : `${field}.keyword`;
+  if (/\.keyword$/i.test(field)) return field;
+  if (getSearchFilterField(field)?.rawField) return field;
+  return `${field}.keyword`;
 };
 
 const needsSuffix = (field = "") => field === "supplements.grantid" || field === "supplements.program";
@@ -72,6 +74,9 @@ const getSearchFilterField = (field = "") =>
 
 const shouldAlphaSortSuggestions = (field = "") =>
   Boolean(getSearchFilterField(field)?.alphaSort);
+
+const shouldSkipSuggestions = (field = "") =>
+  Boolean(getSearchFilterField(field)?.noSuggestions);
 
 const ORCID_ID_RE = /\b\d{4}-\d{4}-\d{4}-\d{3}[\dX]\b/i;
 const AUTHOR_ID_FIELD = "authorships.author.id.keyword";
@@ -911,7 +916,7 @@ function addFilterRow(container) {
       const fieldVal = fieldSelect.value;
       const raw = input.value || "";
       const q = raw.replace(/\s+/g, " ").trim();
-      if (!fieldVal || q.length < 2) {
+      if (!fieldVal || q.length < 2 || shouldSkipSuggestions(fieldVal)) {
         hideSuggestions();
         return;
       }
@@ -1016,6 +1021,9 @@ function addFilterRow(container) {
     }
     input.disabled = false;
     input.setAttribute("aria-disabled", "false");
+    input.placeholder = shouldSkipSuggestions(nextFieldVal)
+      ? "Type one or more values, separated by commas…"
+      : "Start typing to see suggestions…";
     textWrapper.classList.remove("hidden");
     textWrapper.classList.remove("max-h-0", "opacity-0", "pointer-events-none");
     textWrapper.classList.add("max-h-48", "opacity-100", "pointer-events-auto");
