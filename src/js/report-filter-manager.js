@@ -36,6 +36,7 @@ import {
 import { SEARCH_FILTER_FIELD_MAP, iconForField } from "./constants/filter-fields.js";
 
 import { orgDataPromise } from './insights-and-actions.js';
+import { activateAllTimeRange } from './report-date-manager.js';
 
 import { handleFiltersChanged, fetchTermBasedData } from './explore.js';
 import { createPopover, createTooltip } from './tooltip-manager.js';
@@ -1190,6 +1191,10 @@ export function renderActiveFiltersBanner() {
           }
           const nextQ = removeValueFromField(decodedQ, chipField, val);
           if (nextQ) {
+            const remainingPairs = parseEsQueryToPairs(nextQ);
+            if (remainingPairs.length === 1 && getSearchFilterField(remainingPairs[0].field)?.forceAllTime) {
+              activateAllTimeRange();
+            }
             updateURLParams({ q: nextQ });
           } else {
             removeURLParams("q");
@@ -1458,6 +1463,11 @@ export function renderActiveFiltersBanner() {
     if (!nextQ) {
       tip.hide();
       return;
+    }
+
+    if (fieldExpressions.size === 1) {
+      const [soleField] = fieldExpressions.keys();
+      if (getSearchFilterField(soleField)?.forceAllTime) activateAllTimeRange();
     }
 
     updateURLParams({

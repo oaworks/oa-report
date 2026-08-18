@@ -23,7 +23,7 @@ export const SEARCH_FILTER_FIELDS = [
   { field: "openalx.open_access.oa_status", label: "Journal article OA types", iconKey: "article_oa_type", alphaSort: true, filterListHidden: true, suffix: "(article OA)" },
   { field: "oa_status", label: "Journal article OA types", iconKey: "article_oa_type", alphaSort: true, filterListHidden: true, suffix: "(article OA)" },
   { field: "journal_oa_type", label: "Journal OA types", iconKey: "journal_oa_type", alphaSort: true, filterListHidden: true, suffix: "(journal OA)" },
-  { field: "DOI", label: "DOI", iconKey: "doi", alphaSort: false, rawField: true, noSuggestions: true }
+  { field: "DOI", label: "DOI", iconKey: "doi", alphaSort: false, rawField: true, noSuggestions: true, forceAllTime: true }
 ];
 
 export const SEARCH_FILTER_FIELD_MAP = new Map(
