@@ -202,14 +202,16 @@ export async function initDataExplore(org) {
     // Check if explore data exists and is not empty
     if (orgData.hits.hits.length > 0 && orgData.hits.hits[0]._source.explore && orgData.hits.hits[0]._source.explore.length > 0) {
       applyRecordsShownUrlOverride();
-      addExploreButtonsToDOM(orgData.hits.hits[0]._source.explore);
+      const initialRenderPromise = addExploreButtonsToDOM(orgData.hits.hits[0]._source.explore);
       handleDataDisplayToggle();
       enableExploreRowHighlighting();
       copyToClipboard('explore_copy_clipboard', 'explore_table');
+      isDataExploreInit = true; // Set the flag after successful initialisation
+      await initialRenderPromise; // let callers await the actual render, not just its kickoff
     } else {
       displayNone("explore"); // Hide the explore section if no data is available
+      isDataExploreInit = true;
     }
-    isDataExploreInit = true; // Set the flag after successful initialisation
 
   } catch (error) {
     console.error('Error initialising data explore: ', error);
