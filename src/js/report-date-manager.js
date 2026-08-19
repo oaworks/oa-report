@@ -956,14 +956,25 @@ function isDateRangeReady() {
  * @param {number} [timeoutMs=1500] - Maximum time to wait before rejecting.
  * @returns {Promise<string>} The final dateRange string.
  */
+let __diagCallCounter = 0; // TEMP diagnostic
+window.addEventListener('oar:dateRangeReady', (e) => { // TEMP diagnostic — independent of any awaitDateRange listener
+  console.warn(`[diag] oar:dateRangeReady event fired at ${Math.round(performance.now())}ms, detail.dateRange=${JSON.stringify(e?.detail?.dateRange)}`);
+});
+
 export function awaitDateRange(timeoutMs = 3000) {
+  const __id = ++__diagCallCounter; // TEMP diagnostic
+  console.warn(`[diag#${__id}] awaitDateRange called at ${Math.round(performance.now())}ms, dateRange=${JSON.stringify(dateRange)}`);
   return new Promise((resolve, reject) => {
-    if (isDateRangeReady()) return resolve(dateRange);
+    if (isDateRangeReady()) {
+      console.warn(`[diag#${__id}] resolved immediately (synchronous check) at ${Math.round(performance.now())}ms`);
+      return resolve(dateRange);
+    }
 
     let settled = false;
     const onReady = (e) => {
       if (settled) return;
       settled = true;
+      console.warn(`[diag#${__id}] resolved via oar:dateRangeReady event at ${Math.round(performance.now())}ms`);
       window.removeEventListener('oar:dateRangeReady', onReady);
       resolve(e?.detail?.dateRange ?? dateRange);
     };
@@ -972,14 +983,21 @@ export function awaitDateRange(timeoutMs = 3000) {
 
     // Safety net: light polling in case we missed the event.
     const start = performance.now();
+    let __tickCount = 0; // TEMP diagnostic
     (function tick() {
       if (settled) return;
+      __tickCount++;
+      if (__tickCount <= 5 || __tickCount % 10 === 0) { // TEMP diagnostic — first 5 ticks, then every 10th, to avoid log spam
+        console.warn(`[diag#${__id}] tick ${__tickCount} at ${Math.round(performance.now())}ms, dateRange=${JSON.stringify(dateRange)}, isDateRangeReady()=${isDateRangeReady()}`);
+      }
       if (isDateRangeReady()) {
         settled = true;
+        console.warn(`[diag#${__id}] resolved via polling at ${Math.round(performance.now())}ms, tick ${__tickCount}`);
         window.removeEventListener('oar:dateRangeReady', onReady);
         return resolve(dateRange);
       }
       if (performance.now() - start >= timeoutMs) {
+        console.warn(`[diag#${__id}] timing out at ${Math.round(performance.now())}ms after ${__tickCount} ticks, dateRange=${JSON.stringify(dateRange)}, typeof=${typeof dateRange}`);
         window.removeEventListener('oar:dateRangeReady', onReady);
         return reject(new Error('awaitDateRange: timed out'));
       }
