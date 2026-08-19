@@ -1122,10 +1122,12 @@ export function renderActiveFiltersBanner() {
   const mount = document.getElementById("js-active-filters");
   if (!wrapper || !mount) return;
 
-  // Clean up any previous Tippy instance on the trigger
-  const oldTrigger = document.getElementById("js-filters-trigger");
-  if (oldTrigger && oldTrigger._tooltip) {
-    oldTrigger._tooltip.destroy();
+  // Trigger button is static markup, reused across renders — only its Tippy
+  // instance and popover content get rebuilt each time.
+  const triggerBtn = document.getElementById("js-filters-trigger");
+  if (!triggerBtn) return;
+  if (triggerBtn._tooltip) {
+    triggerBtn._tooltip.destroy();
   }
 
   const q = getDecodedUrlQuery();
@@ -1134,11 +1136,8 @@ export function renderActiveFiltersBanner() {
   resolveUnknownAuthorOrcids(pairs);
   const count = pairs.reduce((sum, p) => sum + (Array.isArray(p.values) ? p.values.length : 1), 0);
 
-  // Always reveal the wrapper — it holds at minimum the "+ Add filter" button
-  wrapper.classList.remove("invisible", "opacity-0", "pointer-events-none");
-  wrapper.setAttribute("aria-hidden", "false");
-  if ("inert" in wrapper) wrapper.inert = false;
-  mount.innerHTML = "";
+  // Clear only the previous chips and "Clear all" button, keeping the trigger in place.
+  mount.querySelectorAll(".js-filter-chip, #js-clear-q-filters").forEach((el) => el.remove());
 
   // Render active filter chips inline
   if (pairs.length) {
@@ -1159,7 +1158,7 @@ export function renderActiveFiltersBanner() {
         const chipText = fieldDef?.suffix ? `${displayVal} ${fieldDef.suffix}` : displayVal;
         const chip = document.createElement("button");
         chip.type = "button";
-        chip.className = "inline-flex items-center rounded-full bg-neutral-100 px-2.5 py-1 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-900";
+        chip.className = "js-filter-chip inline-flex items-center rounded-full bg-neutral-100 px-2.5 py-1 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-900";
         chip.setAttribute("aria-label", `Remove ${DOMPurify.sanitize(label, { ALLOWED_TAGS: [] })}: ${chipText}`);
         chip.setAttribute("data-field", ensureKeywordField(field));
         const chipIconName = iconForField(field);
@@ -1201,20 +1200,13 @@ export function renderActiveFiltersBanner() {
           }
           handleFiltersChanged();
         });
-        mount.appendChild(chip);
+        mount.insertBefore(chip, triggerBtn);
       });
     });
   }
 
-  // "+ Add filter" button — always shown, triggers the popover
-  const triggerBtn = document.createElement("button");
-  triggerBtn.type = "button";
-  triggerBtn.id = "js-filters-trigger";
-  triggerBtn.className = "inline-flex items-center rounded-full border border-neutral-600 bg-neutral-900 px-2.5 py-1 text-sm font-medium text-neutral-200 transition-colors hover:border-neutral-400 hover:bg-neutral-800 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-900";
-  triggerBtn.innerHTML = `<span aria-hidden="true" class="mr-1 font-bold">+</span> Add filter`;
-  triggerBtn.setAttribute("aria-haspopup", "dialog");
+  // Trigger button is static (see header.njk); just reset its state each render.
   triggerBtn.setAttribute("aria-expanded", "false");
-  mount.appendChild(triggerBtn);
 
   // "Clear all" — only shown when filters are active, sits after "Add filter"
   let clearBtn = null;
@@ -1325,6 +1317,8 @@ export function renderActiveFiltersBanner() {
       });
     }
   });
+
+  triggerBtn.removeAttribute("aria-disabled"); // popover is wired up below — button is now functional
 
   tip = createPopover(triggerBtn, pop, {
     placement: "bottom-start",
