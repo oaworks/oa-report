@@ -520,61 +520,51 @@ function createExploreFilterTab(id, isActive, showCount) {
 }
 
 /**
- * Fetches (or reuses a cached) total count for one Explore filter tab and
- * updates its badge once resolved.
+ * Updates the count badge shown on each Explore tab. Only called for
+ * article-based tables — term-based tables show their total in the heading instead.
  *
- * @param {string} filterId
+ * @param {Array<{id: string}>} filters
  */
-function updateExploreFilterTabCount(filterId) {
+function updateExploreFilterTabCounts(filters) {
   if (!orgData?.hits?.hits?.[0]?._source?.analysis || !currentActiveExploreItemData) {
     return;
   }
 
   const analysis = orgData.hits.hits[0]._source.analysis;
-  const badge = document.getElementById(`count_${filterId}`);
-  const filterQuery = analysis?.[filterId]?.query;
 
-  if (!badge || !filterQuery) {
-    return;
-  }
+  filters.forEach((filter) => {
+    const badge = document.getElementById(`count_${filter.id}`);
+    const filterQuery = analysis?.[filter.id]?.query;
 
-  badge.textContent = "0";
+    if (!badge || !filterQuery) {
+      return;
+    }
 
-  const cacheKey = getExploreFilterTotalCacheKey(currentActiveExploreItemData, filterId, filterQuery);
+    badge.textContent = "0";
 
-  if (!exploreFilterTotalCache.has(cacheKey)) {
-    exploreFilterTotalCache.set(
-      cacheKey,
-      loadExploreRecords(
-        currentActiveExploreItemData,
-        filterQuery,
-        0,
-        currentActiveDataDisplayToggle
-      ).then(({ total }) => (Number.isFinite(total) ? total : 0))
-    );
-  }
+    const cacheKey = getExploreFilterTotalCacheKey(currentActiveExploreItemData, filter.id, filterQuery);
 
-  exploreFilterTotalCache.get(cacheKey)
-    .then((total) => {
-      badge.textContent = makeTabCountReadable(Number.isFinite(total) ? total : 0);
-    })
-    .catch((error) => {
-      console.error(`Error fetching Explore filter count for ${filterId}:`, error);
-      badge.textContent = "0";
-    });
-}
+    if (!exploreFilterTotalCache.has(cacheKey)) {
+      exploreFilterTotalCache.set(
+        cacheKey,
+        loadExploreRecords(
+          currentActiveExploreItemData,
+          filterQuery,
+          0,
+          currentActiveDataDisplayToggle
+        ).then(({ total }) => (Number.isFinite(total) ? total : 0))
+      );
+    }
 
-/**
- * Updates the count badge for the active Explore tab only. Only called for
- * article-based tables — term-based tables show their total in the heading instead.
- * Inactive tabs' badges start at "0" and are fetched lazily in handleFilterChange()
- * when the user actually switches to them, instead of all being fetched upfront.
- *
- * @param {Array<{id: string}>} filters
- */
-function updateExploreFilterTabCounts(filters) {
-  const activeFilter = filters.find((filter) => filter.id === currentActiveExploreItemQuery);
-  if (activeFilter) updateExploreFilterTabCount(activeFilter.id);
+    exploreFilterTotalCache.get(cacheKey)
+      .then((total) => {
+        badge.textContent = makeTabCountReadable(Number.isFinite(total) ? total : 0);
+      })
+      .catch((error) => {
+        console.error(`Error fetching Explore filter count for ${filter.id}:`, error);
+        badge.textContent = "0";
+      });
+  });
 }
 
 /**
@@ -2009,7 +1999,6 @@ async function handleFilterChange(filterId) {
   currentActiveExploreItemQuery = filterId;
   updateExploreFilterHeader(filterId);
   updateExploreTabStates(filterId);
-  updateExploreFilterTabCount(filterId); // was deferred until now, if not already cached
   announce(`Explore view: ${EXPLORE_FILTERS_LABELS[filterId] || filterId}.`);
 }
 
