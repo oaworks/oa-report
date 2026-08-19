@@ -465,8 +465,7 @@ async function addExploreFiltersToDOM(query) {
   });
 
   if (showCount) {
-    // Only the active tab; others are fetched lazily in handleFilterChange() on switch.
-    updateExploreFilterTabCount(currentActiveExploreItemQuery);
+    updateExploreFilterTabCounts(visibleFilters);
   }
 
   bindExploreTabHandlers();
@@ -563,6 +562,19 @@ function updateExploreFilterTabCount(filterId) {
       console.error(`Error fetching Explore filter count for ${filterId}:`, error);
       badge.textContent = "0";
     });
+}
+
+/**
+ * Updates the count badge for the active Explore tab only. Only called for
+ * article-based tables — term-based tables show their total in the heading instead.
+ * Inactive tabs' badges start at "0" and are fetched lazily in handleFilterChange()
+ * when the user actually switches to them, instead of all being fetched upfront.
+ *
+ * @param {Array<{id: string}>} filters
+ */
+function updateExploreFilterTabCounts(filters) {
+  const activeFilter = filters.find((filter) => filter.id === currentActiveExploreItemQuery);
+  if (activeFilter) updateExploreFilterTabCount(activeFilter.id);
 }
 
 /**
