@@ -221,6 +221,7 @@ export function formatDateToISO(date) {
  * @returns {string} The ElasticSearch date-range fragment.
  */
 export function replaceDateRange(newStart, newEnd) {
+  console.warn(`replaceDateRange called at ${Math.round(performance.now())}ms`); // TEMP diagnostic
   // Update the year range in a readable format
   replaceText("report_readable_start_date", makeDateReadable(newStart));
   replaceText("report_readable_end_date",   makeDateReadable(newEnd));
