@@ -310,12 +310,10 @@ async function addExploreButtonsToDOM(exploreData) {
  * Only explicit user clicks should update the URL.
  */
 async function applyURLSelectionsOrDefault() {
-  const __start = performance.now(); // TEMP diagnostic
   try {
     await awaitDateRange(3000);
-    console.warn(`awaitDateRange resolved after ${Math.round(performance.now() - __start)}ms`);
-  } catch (error) {
-    console.warn(`awaitDateRange FAILED after ${Math.round(performance.now() - __start)}ms:`, error);
+  } catch (_) {
+    // Continue; still render something
   }
 
   const params = getAllURLParams();
