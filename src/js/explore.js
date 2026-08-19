@@ -34,10 +34,6 @@ const RECORDS_SHOWN_DEFAULT = 10;
 const RECORDS_SHOWN_NO_SELECT_MAX = 20;
 const RECORDS_SHOWN_ALL_THRESHOLD = 1000;
 const exploreFilterTotalCache = new Map();
-
-// Bumped per fetch cycle so a superseded, slower fetch can detect it and no-op.
-let exploreDataGeneration = 0;
-let exploreFilterCountsGeneration = 0;
 const EXPLORE_SELECTED_ROW_CLASSES = ['!bg-neutral-300', 'hover:!bg-neutral-300', 'text-neutral-900'];
 
 let orgKey = "";
@@ -426,7 +422,6 @@ export async function processExploreDataTable(button, itemData) {
  * @param {string} query - A comma-separated string of filters from the API response.
  */
 async function addExploreFiltersToDOM(query) {
-  exploreFilterCountsGeneration++;
   const exploreFiltersElement = document.getElementById("explore_filters");
   const exploreFilterField = document.getElementById("explore_filter_field");
   exploreFiltersElement.innerHTML = ""; // Clear existing view tabs
@@ -520,7 +515,6 @@ function updateExploreFilterTabCounts(filters) {
     return;
   }
 
-  const startGeneration = exploreFilterCountsGeneration;
   const analysis = orgData.hits.hits[0]._source.analysis;
 
   filters.forEach((filter) => {
@@ -549,11 +543,9 @@ function updateExploreFilterTabCounts(filters) {
 
     exploreFilterTotalCache.get(cacheKey)
       .then((total) => {
-        if (startGeneration !== exploreFilterCountsGeneration) return; // superseded by a newer tab set
         badge.textContent = makeTabCountReadable(Number.isFinite(total) ? total : 0);
       })
       .catch((error) => {
-        if (startGeneration !== exploreFilterCountsGeneration) return; // stale failure — don't surface it
         console.error(`Error fetching Explore filter count for ${filter.id}:`, error);
         badge.textContent = "0";
       });
@@ -766,7 +758,6 @@ function updateRecordsShownControl(total) {
  * @param {boolean} [pretty=true] - Whether to prettify the table output.
  */
 async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 10, pretty = true) {
-  const startGeneration = ++exploreDataGeneration;
   try {
     if (!itemData) {
       showNoResultsRow(10, "export_table_body", "js_export_table");
@@ -791,7 +782,6 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     }
 
     const { records, total: totalRecords } = await loadExploreRecords(itemData, query, size, pretty);
-    if (startGeneration !== exploreDataGeneration) return; // a newer fetch has since started — discard this stale result
 
     const sortAdjective = getExploreSortAdjective({ type, sortField, sortDirection });
     replaceText("report_sort_adjective", sortAdjective);
@@ -828,19 +818,16 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     }
 
   } catch (error) {
-    if (startGeneration !== exploreDataGeneration) return; // stale failure from a superseded fetch — not worth surfacing
     console.error('Error fetching and displaying explore data:', error);
     showNoResultsRow(10, "export_table_body", "js_export_table");
   } finally {
-    if (startGeneration === exploreDataGeneration) {
-      // Always hide loader once finished
-      stopLoading();
-      // Keep the placeholder height for the very first render only.
-      if (hasRenderedExploreTableOnce) {
-        document.querySelector('.js_export_table_container')?.classList.remove('min-h-[6rem]', 'md:min-h-[8rem]', 'lg:min-h-[10rem]');
-      }
-      hasRenderedExploreTableOnce = true;
+    // Always hide loader once finished
+    stopLoading();
+    // Keep the placeholder height for the very first render only.
+    if (hasRenderedExploreTableOnce) {
+      document.querySelector('.js_export_table_container')?.classList.remove('min-h-[6rem]', 'md:min-h-[8rem]', 'lg:min-h-[10rem]');
     }
+    hasRenderedExploreTableOnce = true;
   }
 }
 

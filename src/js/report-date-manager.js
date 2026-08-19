@@ -9,7 +9,7 @@
 // =================================================
 
 import { DATE_SELECTION_BUTTON_CLASSES } from './constants.js';
-import { createDate, replaceDateRange, initDropdown, getAllURLParams, updateURLParams, removeURLParams, getURLParam, createPopoverKeyboardFlow, makeDateReadable, announce, debounce } from './utils.js';
+import { createDate, replaceDateRange, initDropdown, getAllURLParams, updateURLParams, removeURLParams, getURLParam, createPopoverKeyboardFlow, makeDateReadable, announce } from './utils.js';
 import { initInsightsAndActions } from './insights-and-actions.js';
 import { currentActiveExploreItemButton, currentActiveExploreItemData, processExploreDataTable } from './explore.js';
 import { createPopover } from './tooltip-manager.js';
@@ -531,7 +531,7 @@ function createDropdownItem(buttonId, buttonText, startDate, endDate, dropdownBu
 
   item.textContent = buttonText;
 
-  item.addEventListener("click", debounce((event) => {
+  item.addEventListener("click", (event) => {
     event.preventDefault();
 
     removeURLParams('range');
@@ -557,7 +557,7 @@ function createDropdownItem(buttonId, buttonText, startDate, endDate, dropdownBu
       dropdownContent.setAttribute("hidden", "true");
     }
     dropdownButton.setAttribute("aria-expanded", "false");
-  }, 500));
+  });
 
 
   return item;
@@ -588,7 +588,7 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
   button.setAttribute("aria-pressed", "false");
 
   // Add event listener
-  button.addEventListener("click", debounce(function() {
+  button.addEventListener("click", function() {
     const selection = getButtonSelection(buttonId, startDate, endDate);
 
     // Reset the date range form when a year button is clicked
@@ -604,7 +604,7 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
     } else {
       resetDateRangeTriggerLabel();
     }
-  }, 500));
+  });
 
   return button;
 }
