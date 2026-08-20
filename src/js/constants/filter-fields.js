@@ -22,7 +22,8 @@ export const SEARCH_FILTER_FIELDS = [
   { field: "openalx.funders.display_name", label: "Funders", iconKey: "funder", alphaSort: true, filterListHidden: true },
   { field: "openalx.open_access.oa_status", label: "Journal article OA types", iconKey: "article_oa_type", alphaSort: true, filterListHidden: true, suffix: "(article OA)" },
   { field: "oa_status", label: "Journal article OA types", iconKey: "article_oa_type", alphaSort: true, filterListHidden: true, suffix: "(article OA)" },
-  { field: "journal_oa_type", label: "Journal OA types", iconKey: "journal_oa_type", alphaSort: true, filterListHidden: true, suffix: "(journal OA)" }
+  { field: "journal_oa_type", label: "Journal OA types", iconKey: "journal_oa_type", alphaSort: true, filterListHidden: true, suffix: "(journal OA)" },
+  { field: "DOI", label: "DOI", iconKey: "doi", alphaSort: false, rawField: true, noSuggestions: true, forceAllTime: true }
 ];
 
 export const SEARCH_FILTER_FIELD_MAP = new Map(
@@ -51,7 +52,8 @@ export const FILTER_FIELD_ICONS = {
   article_oa_type: "lock",
   journal_oa_type: "folder-lock",
   publisher_license: "certificate",
-  repository_license: "certificate"
+  repository_license: "certificate",
+  doi: "hash"
 };
 
 const SEARCH_FILTER_ICON_KEYS = new Map(

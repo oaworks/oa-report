@@ -38,7 +38,7 @@ export const FIRST_YEAR = 2015;
 const ALL_TIME_RANGE_PARAM = 'all';
 const CURRENT_YEAR_RANGE_PARAM = 'this-year';
 const TEN_YEARS_FROM_THREE_MONTHS_RANGE_PARAM = '10-years-from-3-months-ago';
-const ALL_TIME_START_DATE = createDate(1980, 0, 1);
+export const ALL_TIME_START_DATE = createDate(1980, 0, 1);
 const OPEN_ENDED_RANGE_END_MODE = 'today';
 
 // =================================================
@@ -68,6 +68,30 @@ function getLiveRangeEndDate() {
   case 'today':
   default:
     return new Date();
+  }
+}
+
+/**
+ * Switches the active date range to all time — mirrors clicking the "All
+ * time" chip, minus the data refetch (callers refetch right after anyway).
+ * No-ops if the range is already all time.
+ *
+ * @returns {void}
+ */
+export function activateAllTimeRange() {
+  if (getURLParam('range') === ALL_TIME_RANGE_PARAM) return;
+
+  const startDate = ALL_TIME_START_DATE;
+  const endDate = getLiveRangeEndDate();
+
+  writeSelectionToURL({ rangeParam: ALL_TIME_RANGE_PARAM, startDate, endDate });
+  replaceDateRange(startDate, endDate);
+
+  const allTimeButton = document.getElementById('all-time');
+  if (allTimeButton) {
+    document.getElementById('date_range_form')?.reset();
+    updateYearButtonStyling(allTimeButton);
+    resetDateRangeTriggerLabel();
   }
 }
 

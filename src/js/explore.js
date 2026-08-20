@@ -202,14 +202,16 @@ export async function initDataExplore(org) {
     // Check if explore data exists and is not empty
     if (orgData.hits.hits.length > 0 && orgData.hits.hits[0]._source.explore && orgData.hits.hits[0]._source.explore.length > 0) {
       applyRecordsShownUrlOverride();
-      addExploreButtonsToDOM(orgData.hits.hits[0]._source.explore);
+      const initialRenderPromise = addExploreButtonsToDOM(orgData.hits.hits[0]._source.explore);
       handleDataDisplayToggle();
       enableExploreRowHighlighting();
       copyToClipboard('explore_copy_clipboard', 'explore_table');
+      isDataExploreInit = true; // Set the flag after successful initialisation
+      await initialRenderPromise; // let callers await the actual render, not just its kickoff
     } else {
       displayNone("explore"); // Hide the explore section if no data is available
+      isDataExploreInit = true;
     }
-    isDataExploreInit = true; // Set the flag after successful initialisation
 
   } catch (error) {
     console.error('Error initialising data explore: ', error);
@@ -325,8 +327,13 @@ async function applyURLSelectionsOrDefault() {
   if (breakdown) {
     // Honour the user/bookmarked URL
     const preferredBtn = document.getElementById(`explore_${breakdown}_button`);
+    const preferredData = preferredBtn && exploreItemDataById.get(preferredBtn.id);
+    if (preferredBtn && preferredData) {
+      await activateExploreItem(preferredBtn, preferredData);
+      return;
+    }
     if (preferredBtn) {
-      preferredBtn.click();
+      preferredBtn.click(); // last-resort, registry not populated
       return;
     }
     // Button not available (e.g. breakdown restricted for logged-out users); fall through to default.
@@ -353,10 +360,25 @@ async function applyURLSelectionsOrDefault() {
  * @param {Object} exploreDataItem - The explore data object to create a button for.
  * @returns {HTMLButtonElement} - The created and configured button element.
  */
+/**
+ * Activates one Explore breakdown button. Also called directly (not via a
+ * click) from applyURLSelectionsOrDefault(), so it can be awaited there.
+ */
+async function activateExploreItem(button, exploreDataItem) {
+  // Keep an existing filter if the new breakdown supports it; otherwise fall back to that breakdown’s default.
+  const availableFilters = parseCommaSeparatedQueries(exploreDataItem.query).map(({ id }) => id);
+  const activeFilter = getAllURLParams().explore_filter || currentActiveExploreItemQuery;
+  currentActiveExploreItemQuery = availableFilters.includes(activeFilter) ? activeFilter : (availableFilters[0] || null);
+  if (activeFilter && activeFilter !== currentActiveExploreItemQuery) removeURLParams('explore_filter');
+
+  updateURLParams({ 'breakdown': exploreDataItem.id });
+  await processExploreDataTable(button, exploreDataItem);
+}
+
 function createExploreButton(exploreDataItem) {
   const button = document.createElement("button");
-  const id = exploreDataItem.id; 
-  button.id = `explore_${id}_button`; 
+  const id = exploreDataItem.id;
+  button.id = `explore_${id}_button`;
   const label = EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id);
   const iconName = iconForFilterId(id);
   const iconMarkup = iconName ? `<i class="ph ph-${iconName} mr-1 text-[14px] leading-none" aria-hidden="true"></i>` : "";
@@ -364,19 +386,12 @@ function createExploreButton(exploreDataItem) {
   button.className = `js_explore_btn ${SEGMENTED_PILL_CLASSES.base} ${SEGMENTED_PILL_CLASSES.inactive}`;
   button.setAttribute("aria-pressed", "false");
 
-  button.addEventListener("click", debounce(async function() {
-    // Keep an existing filter if the new breakdown supports it; otherwise fall back to that breakdown’s default.
-    const availableFilters = parseCommaSeparatedQueries(exploreDataItem.query).map(({ id }) => id);
-    const activeFilter = getAllURLParams().explore_filter || currentActiveExploreItemQuery;
-    currentActiveExploreItemQuery = availableFilters.includes(activeFilter) ? activeFilter : (availableFilters[0] || null);
-    if (activeFilter && activeFilter !== currentActiveExploreItemQuery) removeURLParams('explore_filter');
-
-    updateURLParams({ 'breakdown': exploreDataItem.id });
-    processExploreDataTable(button, exploreDataItem);
+  button.addEventListener("click", debounce(function() {
+    return activateExploreItem(button, exploreDataItem);
   }, 500));
 
   // Register each button’s data when created
-  exploreItemDataById.set(button.id, exploreDataItem); 
+  exploreItemDataById.set(button.id, exploreDataItem);
 
   return button;
 }
