@@ -9,7 +9,7 @@
 // =================================================
 
 import { DATE_SELECTION_BUTTON_CLASSES } from './constants.js';
-import { createDate, replaceDateRange, initDropdown, getAllURLParams, updateURLParams, removeURLParams, getURLParam, createPopoverKeyboardFlow, makeDateReadable, announce } from './utils.js';
+import { createDate, replaceDateRange, initDropdown, getAllURLParams, updateURLParams, removeURLParams, dateRange, getURLParam, createPopoverKeyboardFlow, makeDateReadable, announce } from './utils.js';
 import { initInsightsAndActions } from './insights-and-actions.js';
 import { currentActiveExploreItemButton, currentActiveExploreItemData, processExploreDataTable } from './explore.js';
 import { createPopover } from './tooltip-manager.js';

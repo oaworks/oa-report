@@ -13,6 +13,7 @@ import { initDataExplore } from './explore.js';
 import { initActionTabs } from './actions.js';
 import { initTooltipManager } from './tooltip-manager.js';
 import { renderActiveFiltersBanner } from './report-filter-manager.js';
+import { startLoading, stopLoading } from './components.js';
 
 // Flag to check if initDataExplore has already been initialised
 let isDataExploreInitialised = false;
@@ -38,7 +39,10 @@ function initialise() {
   const exploreElement = document.getElementById("explore-section");
   // Check if id="explore-section" exists to trigger data explore initialisation
   if (exploreElement && !isDataExploreInitialised) {
-    initDataExplore(org);
+    // Own start/stop pair, kept open until Explore's initial render settles —
+    // so the spinner doesn't drop to zero between Insights and Explore.
+    startLoading();
+    initDataExplore(org).finally(stopLoading);
     isDataExploreInitialised = true;
   }
 
