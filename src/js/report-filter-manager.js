@@ -1080,7 +1080,7 @@ function renderFilterContextInHeading(pairs) {
   if (pairs.length === 1 && pairs[0].values.length === 1) {
     const { field, label, values } = pairs[0];
     const displayValue = formatFilterValueForDisplay(field, values[0]);
-    const plainLabel = label.replace(/<[^>]+>/g, "");
+    const plainLabel = DOMPurify.sanitize(label, { ALLOWED_TAGS: [] });
     el.textContent = `filtered by ${plainLabel}: ${displayValue}`;
     el.hidden = false;
   } else {
