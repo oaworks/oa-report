@@ -694,14 +694,19 @@ export function initInsightsAndActions(org) {
                       const decodeMailtoValue = function(value, fallback) {
                         const resolvedValue = typeof value === "string" && value.length > 0 ? value : fallback;
                         const textarea = document.createElement("textarea");
-                        textarea.innerHTML = resolvedValue.replaceAll("\’", "’");
-                        return textarea.value
-                          .replace(/<\/?[a-zA-Z][a-zA-Z0-9-]*(\s[^>]*)?\/?>/g, "")
+                        textarea.innerHTML = resolvedValue.replaceAll("\'", "’");
+                        let plainText = textarea.value;
+                        let previousText;
+                        do {
+                          previousText = plainText;
+                          plainText = plainText.replace(/<\/?[a-zA-Z][a-zA-Z0-9-]*(\s[^>]*)?\/?>/g, "");
+                        } while (plainText !== previousText);
+                        return plainText
                           .replace(/\s+/g, " ")
                           .trim();
                       };
 
-                      var newMailto = mailto.replaceAll("\’", "’");
+                      var newMailto = mailto.replaceAll("\'", "’");
                       newMailto = newMailto.replaceAll("{doi}", decodeMailtoValue(action.DOI, "[No DOI found]"));
                       newMailto = newMailto.replaceAll("{author_email_name}", decodeMailtoValue(action.author_email_name, "[No author’s name found]"));
                       newMailto = newMailto.replaceAll("{title}", decodeMailtoValue(action.title, "[No title found]"));

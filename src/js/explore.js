@@ -1272,7 +1272,7 @@ function setupHeaderTooltip(element, rawKey, dataType) {
 
   const labelText = (() => {
     const temp = document.createElement("span");
-    temp.innerHTML = label;
+    temp.innerHTML = DOMPurify.sanitize(label, { ALLOWED_TAGS: [] });
     return temp.textContent?.trim() || key;
   })();
   const isRightAligned = element.classList.contains("text-right");
@@ -1296,7 +1296,7 @@ function setupHeaderTooltip(element, rawKey, dataType) {
   if (isInteractiveSort) {
     labelSpan.className = SORT_LABEL_CLASSES;
   }
-  labelSpan.innerHTML = label;
+  labelSpan.innerHTML = DOMPurify.sanitize(label);
   content.appendChild(labelSpan);
 
   if (isSortedColumn) {
@@ -1459,7 +1459,7 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
  * @returns {{ visibleLabel: string, ariaLabel: string }}
  */
 function formatExploreSummaryRowLabel(exploreItemId, summaryKey) {
-  const singularLabel = (EXPLORE_ITEMS_LABELS[exploreItemId]?.singular || exploreItemId || "value").replace(/<[^>]+>/g, "").trim();
+  const singularLabel = DOMPurify.sanitize(EXPLORE_ITEMS_LABELS[exploreItemId]?.singular || exploreItemId || "value", { ALLOWED_TAGS: [] }).trim();
   const singularItemLabel = singularLabel.replace(/^[A-Z][a-z]/, (match) => match.toLowerCase());
   const article = /^[aeiou]/i.test(singularLabel) ? "an" : "a";
   const connectorText = summaryKey === "all_values" ? "with" : "without";

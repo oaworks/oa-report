@@ -18,7 +18,7 @@
     "@floating-ui/dom": "^1.8.0",
     "@phosphor-icons/web": "^2.1.1",
     "@tryghost/content-api": "^1.12.10",
-    "concurrently": "^10.0.4",
+    "concurrently": "^10.0.5",
     "dompurify": "3.4.13",
     "dotenv": "^17.4.2",
     "esbuild": "^0.28.2",
