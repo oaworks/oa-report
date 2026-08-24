@@ -1272,7 +1272,7 @@ function setupHeaderTooltip(element, rawKey, dataType) {
 
   const labelText = (() => {
     const temp = document.createElement("span");
-    temp.innerHTML = label;
+    temp.innerHTML = DOMPurify.sanitize(label, { ALLOWED_TAGS: [] });
     return temp.textContent?.trim() || key;
   })();
   const isRightAligned = element.classList.contains("text-right");
@@ -1296,7 +1296,7 @@ function setupHeaderTooltip(element, rawKey, dataType) {
   if (isInteractiveSort) {
     labelSpan.className = SORT_LABEL_CLASSES;
   }
-  labelSpan.innerHTML = label;
+  labelSpan.innerHTML = DOMPurify.sanitize(label);
   content.appendChild(labelSpan);
 
   if (isSortedColumn) {
