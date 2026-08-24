@@ -1459,7 +1459,7 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
  * @returns {{ visibleLabel: string, ariaLabel: string }}
  */
 function formatExploreSummaryRowLabel(exploreItemId, summaryKey) {
-  const singularLabel = (EXPLORE_ITEMS_LABELS[exploreItemId]?.singular || exploreItemId || "value").replace(/<[^>]+>/g, "").trim();
+  const singularLabel = DOMPurify.sanitize(EXPLORE_ITEMS_LABELS[exploreItemId]?.singular || exploreItemId || "value", { ALLOWED_TAGS: [] }).trim();
   const singularItemLabel = singularLabel.replace(/^[A-Z][a-z]/, (match) => match.toLowerCase());
   const article = /^[aeiou]/i.test(singularLabel) ? "an" : "a";
   const connectorText = summaryKey === "all_values" ? "with" : "without";
