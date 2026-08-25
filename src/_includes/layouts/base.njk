@@ -15,7 +15,14 @@
         aria-busy="true"
       >
         <div class="absolute inset-0 bg-neutral-900"></div>
-        <div class="loader ease-linear rounded-full border-8 border-t-8 border-carnation-200 border-t-carnation-500 h-12 w-12 z-10"></div>
+        <div class="loading-logo relative z-10 w-80 md:w-96" aria-hidden="true">
+          <div class="relative z-10 text-neutral-100">
+            {% include 'svg/logo.svg' %}
+          </div>
+          <span class="loading-logo-pulse absolute left-[31.43%] top-[65.03%] z-0 -translate-x-1/2 -translate-y-1/2">
+            <span class="loading-logo-pulse__dot"></span>
+          </span>
+        </div>
         <div class="sr-only" id="loading_message">Loading, please wait.</div>
       </div>
     {% endif %}

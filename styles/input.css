@@ -102,11 +102,36 @@
   }
 }
 
-/* Spinner/loader */
-@layer utilities {
-  .loader {
-    @apply animate-spin;
+@keyframes loadingLogoPulse {
+  from {
+    transform: scale(1);
   }
+
+  to {
+    transform: scale(2.4);
+  }
+}
+
+.loading-logo-pulse {
+  height: 1.25rem;
+  width: 1.25rem;
+}
+
+.loading-logo-pulse__dot {
+  background-color: theme('colors.carnation.500');
+  border-radius: 9999px;
+  inset: 0;
+  position: absolute;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .loading-logo-pulse__dot {
+    animation: loadingLogoPulse .5s ease-in-out infinite alternate;
+  }
+}
+
+.loading-logo .logo-dot {
+  visibility: hidden;
 }
 
 @layer components {
