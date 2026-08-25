@@ -1127,6 +1127,7 @@ export function resetBarChart(cardContents) {
   }
   footerEl.innerHTML = '';
   footerEl.className = INSIGHT_BAR_TRACK_CLASSES;
+  footerEl.style.height = '';
 }
 
 /**
@@ -1170,25 +1171,25 @@ export function showUnavailableCard(cardContents) {
   if (footerEl) {
     footerEl.className = INSIGHT_BAR_TRACK_CLASSES;
     footerEl.innerHTML = '';
+    footerEl.style.height = '';
   }
 }
 
 /**
- * Render a bar (or two stacked bars) in the .js_bar_chart footer,
- * depending on whether the denominator is the full set of publications
- * or just a subset.
+ * Render a two-tone bar in the .js_bar_chart footer: a pale outer bar sized
+ * to how much of the full population the denominator covers (100% when the
+ * denominator IS the full population, e.g. total articles), containing a
+ * darker inner bar sized to the numerator's share of that denominator.
  *
  * @param {HTMLElement} cardEl         The <article> element for this insight
  * @param {number} numeratorCount      e.g. 2652
  * @param {number} denominatorCount    e.g. 3431
- * @param {string} denominatorID       e.g. "is_paper" or something else
  * @param {number} totalArticlesCount  e.g. 3821 (the full set of articles)
  */
 export function setBarChart(
   cardEl,
   numeratorCount,
   denominatorCount,
-  denominatorID,
   totalArticlesCount
 ) {
   if (!cardEl) return;
@@ -1201,46 +1202,28 @@ export function setBarChart(
   // If the denominator is missing or zero, skip
   if (!denominatorCount) return;
 
-  // Ensure the container is in the expected vertical state (a fixed height is
-  // needed here, unlike the empty-state h-auto, so the bars' percentage
-  // heights below have something concrete to size against).
-  barContainer.className = `${INSIGHT_BAR_TRACK_BASE_CLASSES} h-20`;
+  // The track needs a concrete pixel height for the fills’ percentage
+  // heights below to size against
+  barContainer.className = INSIGHT_BAR_TRACK_CLASSES;
+  const trackHeightPx = barContainer.getBoundingClientRect().height;
+  barContainer.style.height = `${trackHeightPx}px`;
 
-  // ----- CASE 1: Denominator is the full set => Single bar -----
-  if  (
-    denominatorID === 'is_paper' ||
-    denominatorID === 'is_preprint' ||
-    (denominatorCount && totalArticlesCount && denominatorCount === totalArticlesCount)
-  ) {
-    const fraction = Math.round((numeratorCount / denominatorCount) * 100);
-    barContainer.innerHTML = `
+  const fractionOuter = totalArticlesCount
+    ? Math.round((denominatorCount / totalArticlesCount) * 100)
+    : 100;
+  const fractionInner = Math.round((numeratorCount / denominatorCount) * 100);
+
+  barContainer.innerHTML = `
+    <div
+      class="w-full bg-carnation-200 flex flex-col justify-end rounded-full"
+      style="height: ${fractionOuter}%"
+    >
       <div
-        class="w-full bg-carnation-200 rounded-full"
-        style="height: ${fraction}%"
+        class="w-full bg-carnation-700 rounded-full"
+        style="height: ${fractionInner}%"
       ></div>
-    `;
-  } 
-
-  // ----- CASE 2: Denominator is a subset => Two stacked bars -----
-  else {
-    let fractionOuter = 0;
-    if (totalArticlesCount) {
-      fractionOuter = Math.round((denominatorCount / totalArticlesCount) * 100);
-    }
-    const fractionInner = Math.round((numeratorCount / denominatorCount) * 100);
-
-    barContainer.innerHTML = `
-      <div
-        class="w-full bg-carnation-200 flex flex-col justify-end rounded-full"
-        style="height: ${fractionOuter}%"
-      >
-        <div
-          class="w-full bg-carnation-700 rounded-full"
-          style="height: ${fractionInner}%"
-        ></div>
-      </div>
-    `;
-  }
+    </div>
+  `;
 };
 
 // Query builders

@@ -453,7 +453,7 @@ export function initInsightsAndActions(org) {
           : null;
 
         if (articlesWrapper) {
-          articlesWrapper.classList.add('sr-only');
+          articlesWrapper.classList.remove('sr-only');
         }
 
         // On-click tooltip to contain Insight info + figure details
@@ -533,11 +533,12 @@ export function initInsightsAndActions(org) {
               }
 
               if (!denominator) {
+                // Total-type cards have no ratio, so leave the bar in its
+                // default (grey, unfilled) state from resetBarChart above.
                 percentageContents.textContent = makeNumberReadable(numeratorCount);
                 figureDetails.innerHTML = `
-                  <span id="details_${numerator}" class="font-semibold text-carnation-200">${makeNumberReadable(numeratorCount)}</span>
                   <span class="text-neutral-200">
-                    ${denominatorText} in total
+                    ${denominatorText}
                   </span>
                 `;
                 return;
@@ -564,7 +565,6 @@ export function initInsightsAndActions(org) {
                 cardContents,
                 numeratorCount,
                 denominatorCount,
-                exploreMapping.denominatorMetric || denominator,
                 totalCount
               );
             })
