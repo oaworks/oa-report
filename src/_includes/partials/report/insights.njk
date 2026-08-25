@@ -1,36 +1,58 @@
 {# Insights section #}
 {% from "partials/report/section-wrapper.njk" import sectionWrapper %}
 
+{# Section total and pub type #}
+{% macro headingTotal(id, label) %}
+  <span id="{{ id }}" class="contents">
+    <span>
+      <span id="percent_{{ id }}" class="font-extrabold">0</span> <span>{{ label }}</span>
+    </span>
+    <p class="sr-only"><span id="articles_{{ id }}">{{ label }}</span></p>
+    <button
+      type="button"
+      class="js_insight_trigger align-middle inline-flex h-4 w-4 shrink-0 items-center justify-center p-0 text-white leading-none transition-colors hover:text-carnation-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-900"
+      aria-expanded="false"
+      aria-label="More information about the total metric"
+      title="More information on this metric"
+    >
+      {% icon_small "info" %}
+    </button>
+    <div class="hidden">
+      <footer class="js_bar_chart" aria-hidden="true"></footer>
+    </div>
+  </span>
+{% endmacro %}
+
 {% call sectionWrapper("insights", "Insights") %}
 
   <div id="insights_sections" class="mt-4 grid grid-cols-1 gap-8 md:gap-10">
     {# ARTICLE INSIGHTS #}
     <article class="hidden rounded-lg bg-neutral-900/70 p-4 shadow-lg js_insights_section md:p-6" id="insights_articles">
-      <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-neutral-100">Journal articles</h3>
+      <h3 class="mb-3 flex items-center justify-between text-sm font-semibold uppercase tracking-wide leading-none text-neutral-100">
+        {{ headingTotal("is_paper", "journal articles") }}
+      </h3>
       <div class="js_insights_card_grid" id="insights_articles_cards"></div>
     </article>
 
     {# PREPRINT INSIGHTS — SEPARATED FOR GATES ONLY #}
     <article class="hidden rounded-lg bg-neutral-900/70 p-4 shadow-lg js_insights_section md:p-6" id="insights_preprints">
-      <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-neutral-100">Preprints</h3>
+      <h3 class="mb-3 flex items-center justify-between text-sm font-semibold uppercase tracking-wide leading-none text-neutral-100">
+        {{ headingTotal("is_preprint", "preprints") }}
+      </h3>
       <div class="js_insights_card_grid" id="insights_preprints_cards"></div>
     </article>
 
     {# UNIQUE PUBLICATIONS INSIGHTS #}
     <article class="hidden rounded-lg bg-neutral-900/70 p-4 shadow-lg js_insights_section md:p-6" id="insights_unique_publications">
-      <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-neutral-100">Unique publications</h3>
+      <h3 class="mb-3 flex items-center justify-between text-sm font-semibold uppercase tracking-wide leading-none text-neutral-100">
+        {{ headingTotal("is_unique_publication", "unique publications") }}
+      </h3>
       <div class="js_insights_card_grid" id="insights_unique_publications_cards"></div>
     </article>
   </div>
 
   <template id="insights_cards_template">
     {# Articles #}
-    {{ component("card", {
-      id: "is_paper",
-      title: "Total",
-      icon: "note"
-    }) }}
-
     {{ component("card", {
       id: "is_preprint",
       title: "Total",
@@ -93,12 +115,6 @@
     }) }}
 
     {# Unique publications #}
-    {{ component("card", {
-      id: "is_unique_publication",
-      title: "Total",
-      icon: "note-blank"
-    }) }}
-
     {{ component("card", {
       id: "is_compliant_publication",
       title: "OA policy-compliant",
