@@ -9,12 +9,12 @@
     {% if org and org._source and org._source.name %}
       {# Start opaque to prevent report content flashing before JavaScript initialises. #}
       <div
-        class="fixed inset-0 z-[80] flex justify-center items-center opacity-100"
+        class="loading-overlay fixed inset-0 z-[80] flex justify-center items-center opacity-100 transition-opacity duration-300"
         id="explore_loading"
         aria-live="polite"
         aria-busy="true"
       >
-        <div class="absolute inset-0 bg-neutral-900"></div>
+        <div class="loading-overlay__background absolute inset-0 bg-neutral-900"></div>
         <div class="loading-logo relative z-10 w-80 md:w-96" aria-hidden="true">
           <div class="relative z-10 text-neutral-100">
             {% include 'svg/logo.svg' %}
@@ -23,6 +23,7 @@
             <span class="loading-logo-pulse__dot"></span>
           </span>
         </div>
+        <span class="loading-overlay__compact-indicator relative z-10 h-6 w-6 rounded-full bg-carnation-500" aria-hidden="true"></span>
         <div class="sr-only" id="loading_message">Loading, please wait.</div>
       </div>
     {% endif %}

@@ -22,16 +22,19 @@ export function toggleLoadingIndicator(show, id) {
 
   if (show) {
     loader.dataset.showTime = now; // Store the current time
-    loader.className = 'fixed inset-0 z-[80] flex justify-center items-center opacity-100 transition-opacity duration-300';
+    loader.classList.remove('hidden', 'opacity-0');
+    loader.classList.add('opacity-100');
+    loader.classList.toggle('loading-overlay--compact', hasCompletedInitialLoad);
     loader.setAttribute('aria-busy', 'true'); // Indicate that the area is busy
     loadingMessage.textContent = 'Loading, please wait...'; // Set screen reader text
   } else {
     const timeShown = now - parseInt(loader.dataset.showTime || '0'); // How long the loader has been shown
     const hideLoader = () => {
-      loader.className = 'fixed inset-0 z-[80] flex justify-center items-center opacity-0 transition-opacity duration-300';
+      loader.classList.remove('opacity-100');
+      loader.classList.add('opacity-0');
       setTimeout(() => {
-        if (loader.className.includes('opacity-0')) { // Check if it's still hidden (user hasn't triggered it to show again)
-          loader.className = 'hidden';
+        if (loader.classList.contains('opacity-0')) { // Check if it's still hidden (user hasn't triggered it to show again)
+          loader.classList.add('hidden');
           loader.setAttribute('aria-busy', 'false'); // Indicate that the area is no longer busy
           loadingMessage.textContent = ''; // Clear screen reader text
         }
@@ -50,6 +53,7 @@ export function toggleLoadingIndicator(show, id) {
 
 // Shared spinner gate — shows on the first startLoading(), hides only when every stopLoading() has been called.
 let _loadingRefCount = 0;
+let hasCompletedInitialLoad = false;
 
 export function startLoading() {
   if (_loadingRefCount === 0) toggleLoadingIndicator(true, 'explore_loading');
@@ -61,6 +65,7 @@ export function stopLoading() {
   if (_loadingRefCount === 0) {
     document.querySelector('[data-initial-loading-content]')?.classList.remove('invisible');
     toggleLoadingIndicator(false, 'explore_loading');
+    hasCompletedInitialLoad = true;
   }
 }
 
