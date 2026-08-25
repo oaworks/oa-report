@@ -1103,8 +1103,16 @@ export function resetBarChart(cardContents) {
   if (!cardContents) return;
 
   // Remove the temporary unavailable-state surface, restoring the normal hover/jump affordance.
-  cardContents.classList.remove('bg-neutral-900');
-  cardContents.classList.add('bg-neutral-800', 'hover:bg-neutral-750', 'hover:shadow-md', 'hover:-translate-y-0.5', 'focus-within:bg-neutral-750', 'focus-within:shadow-md', 'focus-within:-translate-y-0.5');
+  // "Projected" cards (see card.njk) get their dashed border/background back too.
+  const isProjected = !!cardContents.querySelector('.js_projected_marker');
+  cardContents.classList.remove('bg-neutral-900', 'border-neutral-600');
+  if (isProjected) {
+    cardContents.classList.add('border-dashed', 'border-neutral-500', 'bg-neutral-850');
+    cardContents.querySelector('.js_projected_marker').classList.remove('hidden');
+  } else {
+    cardContents.classList.add('border-neutral-700', 'bg-neutral-800');
+  }
+  cardContents.classList.add('hover:bg-neutral-750', 'hover:shadow-md', 'hover:-translate-y-0.5', 'focus-within:bg-neutral-750', 'focus-within:shadow-md', 'focus-within:-translate-y-0.5');
 
   // Restore swapped icon and percent styling if it was changed
   const iconEl = cardContents.querySelector('.js_insight_icon');
@@ -1162,8 +1170,18 @@ export function showUnavailableCard(cardContents) {
   }
 
   // Muted card styling — no hover/jump affordance, since there's nothing to act on.
-  cardContents.classList.remove('bg-neutral-800', 'hover:bg-neutral-750', 'hover:shadow-md', 'hover:-translate-y-0.5', 'focus-within:bg-neutral-750', 'focus-within:shadow-md', 'focus-within:-translate-y-0.5');
-  cardContents.classList.add('bg-neutral-900');
+  // Drop the "projected" dashed border/background too, and hide its "(proj.)" marker:
+  // there's nothing to project from when the card itself is unavailable.
+  cardContents.classList.remove(
+    'bg-neutral-800', 'bg-neutral-850', 'border-neutral-700', 'border-dashed', 'border-neutral-500',
+    'hover:bg-neutral-750', 'hover:shadow-md', 'hover:-translate-y-0.5', 'focus-within:bg-neutral-750', 'focus-within:shadow-md', 'focus-within:-translate-y-0.5'
+  );
+  cardContents.classList.add('bg-neutral-900', 'border-neutral-600');
+
+  const projectedMarker = cardContents.querySelector('.js_projected_marker');
+  if (projectedMarker) {
+    projectedMarker.classList.add('hidden');
+  }
 
   // Reset the bar track without rendering any value bar.
   const footerEl = cardContents.querySelector('footer.js_bar_chart');
