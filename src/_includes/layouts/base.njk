@@ -5,6 +5,28 @@
     class="flex flex-col min-h-screen justify-between antialiased text-neutral-900 tracking-wide leading-relaxed text-xs md:text-sm lg:text-lg"
     data-api-host-orgs="{{ env.ELEVENTY_API_HOST_ORGS }}"
     data-api-host-works="{{ env.ELEVENTY_API_HOST_WORKS }}">
+    {# Loading spinner #}
+    {% if org and org._source and org._source.name %}
+      {# Start opaque to prevent report content flashing before JavaScript initialises. #}
+      <div
+        class="loading-overlay fixed inset-0 z-[80] flex justify-center items-center opacity-100 transition-opacity duration-300"
+        id="explore_loading"
+        aria-live="polite"
+        aria-busy="true"
+      >
+        <div class="loading-overlay__background absolute inset-0 bg-neutral-900"></div>
+        <div class="loading-logo relative z-10 w-80 md:w-96" aria-hidden="true">
+          <div class="relative z-10 text-neutral-100">
+            {% include 'svg/logo.svg' %}
+          </div>
+          <span class="loading-logo-pulse absolute left-[31.43%] top-[65.03%] z-0 -translate-x-1/2 -translate-y-1/2">
+            <span class="loading-logo-pulse__dot"></span>
+          </span>
+        </div>
+        <span class="loading-overlay__compact-indicator relative z-10 h-6 w-6 rounded-full bg-carnation-500" aria-hidden="true"></span>
+        <div class="sr-only" id="loading_message">Loading, please wait.</div>
+      </div>
+    {% endif %}
     {# General alert, managed via /_data/site.js #}
     {% if site.banner and page.url != '/' %}
     <section class="js-top-banner p-4 bg-carnation-700 text-white font-medium text-center text-xs [&_a]:underline [&_a]:underline-offset-2 [&_a]:decoration-white [&_a]:font-semibold">
