@@ -5,6 +5,20 @@
     class="flex flex-col min-h-screen justify-between antialiased text-neutral-900 tracking-wide leading-relaxed text-xs md:text-sm lg:text-lg"
     data-api-host-orgs="{{ env.ELEVENTY_API_HOST_ORGS }}"
     data-api-host-works="{{ env.ELEVENTY_API_HOST_WORKS }}">
+    {# Loading spinner #}
+    {% if org and org._source and org._source.name %}
+      {# Start opaque to prevent report content flashing before JavaScript initialises. #}
+      <div
+        class="fixed inset-0 z-[80] flex justify-center items-center opacity-100"
+        id="explore_loading"
+        aria-live="polite"
+        aria-busy="true"
+      >
+        <div class="absolute inset-0 bg-neutral-900"></div>
+        <div class="loader ease-linear rounded-full border-8 border-t-8 border-carnation-200 border-t-carnation-500 h-12 w-12 z-10"></div>
+        <div class="sr-only" id="loading_message">Loading, please wait.</div>
+      </div>
+    {% endif %}
     {# General alert, managed via /_data/site.js #}
     {% if site.banner and page.url != '/' %}
     <section class="js-top-banner p-4 bg-carnation-700 text-white font-medium text-center text-xs [&_a]:underline [&_a]:underline-offset-2 [&_a]:decoration-white [&_a]:font-semibold">

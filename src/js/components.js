@@ -22,13 +22,13 @@ export function toggleLoadingIndicator(show, id) {
 
   if (show) {
     loader.dataset.showTime = now; // Store the current time
-    loader.className = 'fixed inset-0 z-50 flex justify-center items-center opacity-100 transition-opacity duration-300';
+    loader.className = 'fixed inset-0 z-[80] flex justify-center items-center opacity-100 transition-opacity duration-300';
     loader.setAttribute('aria-busy', 'true'); // Indicate that the area is busy
     loadingMessage.textContent = 'Loading, please wait...'; // Set screen reader text
   } else {
     const timeShown = now - parseInt(loader.dataset.showTime || '0'); // How long the loader has been shown
     const hideLoader = () => {
-      loader.className = 'fixed inset-0 z-50 flex justify-center items-center opacity-0 transition-opacity duration-300';
+      loader.className = 'fixed inset-0 z-[80] flex justify-center items-center opacity-0 transition-opacity duration-300';
       setTimeout(() => {
         if (loader.className.includes('opacity-0')) { // Check if it's still hidden (user hasn't triggered it to show again)
           loader.className = 'hidden';
