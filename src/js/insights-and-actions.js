@@ -191,8 +191,6 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
   }
 
   const articleCardIds = [
-    "is_paper",
-    ...(showPreprints ? [] : ["is_preprint"]),
     ...(isGates ? ["is_compliant_article"] : []),
     "is_free_to_read",
     "is_compliant",
@@ -201,6 +199,20 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
     "has_open_data",
     "has_open_code"
   ];
+
+  const isOutsideAvailabilityWindow = (analysisEntry) =>
+    !analysisEntry
+    || (analysisEntry.available_from && endYear < analysisEntry.available_from)
+    || (analysisEntry.available_until && startYear > analysisEntry.available_until);
+
+  // Total-type figures render inline in their section heading (see insights.njk)
+  // instead of as a grid card, but still go through getInsight() for the
+  // same tooltip/data wiring.
+  const sectionHeadingTotalIds = {
+    insights_articles: "is_paper",
+    insights_preprints: "is_preprint",
+    insights_unique_publications: "is_unique_publication"
+  };
 
   // Build the sections list so we only render cards that are relevant for this org.
   const sections = [
@@ -213,14 +225,14 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
       sectionId: "insights_preprints",
       containerId: "insights_preprints_cards",
       cardIds: showPreprints
-        ? ["is_preprint", "is_compliant_preprint", "has_data_availability_statement_preprint"]
+        ? ["is_compliant_preprint", "has_data_availability_statement_preprint"]
         : []
     },
     {
       sectionId: "insights_unique_publications",
       containerId: "insights_unique_publications_cards",
       cardIds: showUnique
-        ? ["is_unique_publication", "is_compliant_publication"]
+        ? ["is_compliant_publication"]
         : []
     }
   ];
@@ -243,9 +255,7 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
       if (!card) return;
       const clonedCard = card.cloneNode(true);
       // Show a placeholder when the API returns no data or the date range is outside the card's available window.
-      const unavailable = !analysisEntry
-        || (analysisEntry.available_from && endYear < analysisEntry.available_from)
-        || (analysisEntry.available_until && startYear > analysisEntry.available_until);
+      const unavailable = isOutsideAvailabilityWindow(analysisEntry);
       if (unavailable) {
         showUnavailableCard(clonedCard);
       }
@@ -255,7 +265,27 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
       }
     });
 
-    if (container.children.length > 0) {
+    let headingTotalPresent = false;
+    const headingTotalId = sectionHeadingTotalIds[section.sectionId];
+    if (headingTotalId) {
+      const headingTotalEl = document.getElementById(headingTotalId);
+      const analysisEntry = analysis?.[headingTotalId];
+      if (headingTotalEl) {
+        if (analysisEntry && analysisEntry.show_on_web !== true) {
+          headingTotalEl.classList.add("hidden");
+        } else {
+          headingTotalEl.classList.remove("hidden");
+          headingTotalPresent = true;
+          if (isOutsideAvailabilityWindow(analysisEntry)) {
+            showUnavailableCard(headingTotalEl);
+          } else {
+            renderedIds.add(headingTotalId);
+          }
+        }
+      }
+    }
+
+    if (container.children.length > 0 || headingTotalPresent) {
       sectionEl.classList.remove("hidden");
       visibleSections.push(sectionEl);
     } else {
