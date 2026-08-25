@@ -32,11 +32,11 @@ jobs:
           - branch: dev
             urls: |
               https://dev.oa.report/
-              https://dev.oa.report/gates-foundation
+              https://dev.oa.report/gates-foundation/
           - branch: staging
             urls: |
               https://staging.oa.report/
-              https://staging.oa.report/gates-foundation
+              https://staging.oa.report/gates-foundation/
           - branch: main
             urls: |
               https://oa.report/
