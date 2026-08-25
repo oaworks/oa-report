@@ -58,7 +58,10 @@ export function startLoading() {
 
 export function stopLoading() {
   _loadingRefCount = Math.max(0, _loadingRefCount - 1);
-  if (_loadingRefCount === 0) toggleLoadingIndicator(false, 'explore_loading');
+  if (_loadingRefCount === 0) {
+    document.querySelector('[data-initial-loading-content]')?.classList.remove('invisible');
+    toggleLoadingIndicator(false, 'explore_loading');
+  }
 }
 
 /**

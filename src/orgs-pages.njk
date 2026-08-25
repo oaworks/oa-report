@@ -23,10 +23,12 @@ permalink: "{{ org._source.objectID | slug }}/"
 </div>
 {% endblock %}
 
-<main id="main-content" tabindex="-1" class="bg-neutral-950 text-neutral-100">
+<main id="main-content" data-initial-loading-content tabindex="-1" class="invisible bg-neutral-950 text-neutral-100">
   {% include 'partials/report/insights.njk' %}
   {% include 'partials/report/explore.njk' %}
-  {% include 'partials/report/actions.njk' %}
+  <div data-auth="in">
+    {% include 'partials/report/actions.njk' %}
+  </div>
 
   {# Dynamic modal #}
   <div id="dynamic-modal" class="fixed inset-0 flex items-center justify-center p-4 bg-neutral-900 bg-opacity-50 hidden z-50" aria-hidden="true" tabindex="-1" role="dialog" aria-modal="true">

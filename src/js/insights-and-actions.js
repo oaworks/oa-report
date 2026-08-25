@@ -159,11 +159,6 @@ applyAuthVisibility({
   showWhenLoggedIn: ["logout", "section-tab-actions", "actions", "actions-section"],
   hideWhenLoggedIn: ["login"]
 });
-if (!loggedIn) {
-  ["section-tab-actions", "actions", "actions-section"].forEach((id) => {
-    document.getElementById(id)?.remove();
-  });
-}
 
 onAuthChange(({ loggedIn: isLoggedIn, orgKey: key }) => {
   loggedIn = isLoggedIn;
@@ -172,11 +167,6 @@ onAuthChange(({ loggedIn: isLoggedIn, orgKey: key }) => {
     showWhenLoggedIn: ["logout", "section-tab-actions", "actions", "actions-section"],
     hideWhenLoggedIn: ["login"]
   });
-  if (!loggedIn) {
-    ["section-tab-actions", "actions", "actions-section"].forEach((id) => {
-      document.getElementById(id)?.remove();
-    });
-  }
 });
 
 // =================================================
