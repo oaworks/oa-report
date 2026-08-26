@@ -540,7 +540,7 @@ function initDeclarativeTooltips() {
 
     createTooltip(element, content, {
       placement: element.getAttribute("data-tooltip-placement") || "top",
-      theme: element.getAttribute("data-tooltip-theme") || "tooltip-dark",
+      theme: element.getAttribute("data-tooltip-theme") || "tooltip-light",
     });
 
     element.setAttribute("role", "tooltip");
@@ -603,7 +603,7 @@ export function createTooltip(trigger, content, options = {}) {
     interactive: true,
     placement: "top",
     trigger: "mouseenter focus",
-    theme: "tooltip-dark",
+    theme: "tooltip-light",
     arrow: true,
     ...options,
   });

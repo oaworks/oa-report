@@ -334,27 +334,14 @@
 }
 
 /* Custom tooltip styling */
-.tooltip-box[data-theme~='tooltip-dark'] {
-  background-color: #171717;
-  border: 1px solid #525252;
-  color: #f5f5f5;
-  text-transform: none;
-  --tw-drop-shadow: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
-  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
-}
-
-.tooltip-box[data-theme~='tooltip-dark'] .tooltip-arrow {
-  color: #171717;
-}
-
 [data-tooltip-content], sup > svg {
   cursor: pointer;
 }
 
 .tooltip-box[data-theme~='popover'] {
-  background-color: #171717;
-  border: 1px solid #525252;
-  color: #f5f5f5;
+  background-color: rgb(67, 68, 70);
+  border: 1px solid rgb(171, 173, 176);
+  color: rgb(247, 247, 248);
   max-width: min(36rem, calc(100vw - 1rem));
   --tw-drop-shadow: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
@@ -362,6 +349,19 @@
 
 .tooltip-box[data-theme~='popover'] .tooltip-arrow {
   color: #171717;
+}
+
+/* Light bubble variant: reads clearly without a border. */
+.tooltip-box[data-theme~='tooltip-light'] {
+  background-color: rgb(247, 247, 248);
+  color: rgb(46, 46, 47);
+  text-transform: none;
+  --tw-drop-shadow: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+
+.tooltip-box[data-theme~='tooltip-light'] .tooltip-arrow {
+  color: rgb(247, 247, 248);
 }
 
 .tooltip-box[data-theme~='popover'] .tooltip-content {

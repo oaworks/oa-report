@@ -91,7 +91,7 @@ function buildInsightTooltipSection(contentHtml = '', showHeading = true) {
 
   return `
     <section class="space-y-2">
-      ${showHeading ? `<h4 class="font-semibold text-white">${INSIGHT_TOOLTIP_HEADING}</h4>` : ''}
+      ${showHeading ? `<h4 class="font-semibold">${INSIGHT_TOOLTIP_HEADING}</h4>` : ''}
       ${contentHtml}
     </section>
   `;
@@ -488,7 +488,7 @@ export function initInsightsAndActions(org) {
         if (!instance) {
           instance = createPopover(tooltipTarget, '', {
             placement: 'right',
-            theme: 'tooltip-dark',
+            theme: 'tooltip-light',
             arrow: true,
             role: denominator ? 'dialog' : 'tooltip',
             trigger: denominator ? 'click' : 'mouseenter focus',
@@ -514,7 +514,7 @@ export function initInsightsAndActions(org) {
         }
         const updateTooltipContent = () => {
           const detailHtml = (denominator && figureDetails)
-            ? `<div class="mb-2 font-semibold text-white">${figureDetails.innerHTML}</div>`
+            ? `<div class="mb-2 font-semibold">${figureDetails.innerHTML}</div>`
             : "";
           const definitionHtml = buildInsightDefinitionsHtml(
             numerator,
@@ -562,8 +562,8 @@ export function initInsightsAndActions(org) {
               if (!denominator) {
                 percentageContents.textContent = makeNumberReadable(numeratorCount);
                 figureDetails.innerHTML = `
-                  <span id="details_${numerator}" class="font-semibold text-carnation-200">${makeNumberReadable(numeratorCount)}</span>
-                  <span class="text-neutral-200">
+                  <span id="details_${numerator}" class="font-semibold text-carnation-700">${makeNumberReadable(numeratorCount)}</span>
+                  <span>
                     ${denominatorText} in total
                   </span>
                 `;
@@ -576,8 +576,8 @@ export function initInsightsAndActions(org) {
               }
 
               figureDetails.innerHTML = `
-                <span id="details_${numerator}" class="font-semibold text-carnation-200">${makeNumberReadable(numeratorCount)}</span>
-                <span class="text-neutral-200">
+                <span id="details_${numerator}" class="font-semibold text-carnation-700">${makeNumberReadable(numeratorCount)}</span>
+                <span>
                   of <span id="denominator_${numerator}">${makeNumberReadable(denominatorCount)}</span> ${denominatorText}
                 </span>
               `;
