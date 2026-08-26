@@ -509,7 +509,7 @@ function createExploreFilterTab(id, isActive, showCount) {
         expanded: false
       },
       placement: 'bottom',
-      theme: 'tooltip-dark',
+      theme: 'tooltip-light',
       delay: [500, 0] // Don't pop up while the user is just hovering en route to a click.
     });
   }
@@ -1330,7 +1330,7 @@ function setupHeaderTooltip(element, rawKey, dataType) {
 
     createTooltip(isInteractiveSort ? content : element, generateTooltipContent(labelData, additionalHelpText), {
       placement: 'bottom',
-      theme: 'tooltip-dark',
+      theme: 'tooltip-light',
       delay: [500, 0] // Don't pop up while the mouse is just passing through the header row.
     });
 
@@ -1922,7 +1922,7 @@ function enableTooltipsForTruncatedCells() {
           delay: [500, 0], // 500 ms delay before showing, 0 ms delay before hiding
           trigger: 'mouseenter focus', // Trigger on mouse enter and focus
           hideOnClick: false,
-          theme: 'tooltip-dark', // Custom theme defined in 'src/styles/input.css'
+          theme: 'tooltip-light', // Custom theme defined in 'src/styles/input.css'
           onShow(instance) {
               let cellText = cell.textContent;
               // Check if the cell's content is truncated
