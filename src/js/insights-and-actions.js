@@ -86,12 +86,12 @@ function fetchExploreInsightMetrics(orgData, filterId) {
 const INSIGHT_CARD_BY_NUMERATOR = new Map(INSIGHTS_CARDS.map((card) => [card.numerator, card]));
 const INSIGHT_TOOLTIP_HEADING = 'Definition';
 
-function buildInsightTooltipSection(contentHtml = '') {
+function buildInsightTooltipSection(contentHtml = '', showHeading = true) {
   if (!contentHtml) return '';
 
   return `
     <section class="space-y-2">
-      <h4 class="font-semibold text-white">${INSIGHT_TOOLTIP_HEADING}</h4>
+      ${showHeading ? `<h4 class="font-semibold text-white">${INSIGHT_TOOLTIP_HEADING}</h4>` : ''}
       ${contentHtml}
     </section>
   `;
@@ -100,6 +100,7 @@ function buildInsightTooltipSection(contentHtml = '') {
 function buildInsightDefinitionsHtml(numerator, insightInfo = '', helpTextByKey = {}, analysisHelpText = '') {
   const matchingCard = INSIGHT_CARD_BY_NUMERATOR.get(numerator);
   const definitionKey = matchingCard?.definition_key;
+  const showHeading = Boolean(matchingCard?.denominator);
   const orgMeta = {
     orgName,
     orgPolicyCoverage,
@@ -111,12 +112,12 @@ function buildInsightDefinitionsHtml(numerator, insightInfo = '', helpTextByKey 
       leadHtml: insightInfo,
       helpHtml: injectOrgFields(analysisHelpText, orgMeta)
     });
-    return buildInsightTooltipSection(contentHtml);
+    return buildInsightTooltipSection(contentHtml, showHeading);
   }
 
   const fieldDefinition = resolveFieldDefinition(definitionKey, 'insights');
   if (!fieldDefinition) {
-    return buildInsightTooltipSection(insightInfo);
+    return buildInsightTooltipSection(insightInfo, showHeading);
   }
 
   const helpHtml = buildDefinitionHelpHtml({
@@ -132,7 +133,7 @@ function buildInsightDefinitionsHtml(numerator, insightInfo = '', helpTextByKey 
     dedupeHelpTextAgainstLead: fieldDefinition.help_text_style !== 'bullets'
   });
 
-  return buildInsightTooltipSection(contentHtml);
+  return buildInsightTooltipSection(contentHtml, showHeading);
 }
 
 // =================================================
@@ -476,7 +477,9 @@ export function initInsightsAndActions(org) {
           articlesWrapper.classList.add('sr-only');
         }
 
-        // On-click tooltip to contain Insight info + figure details
+        // Tooltip to contain Insight info + figure details.
+        // Heading totals (no denominator) open on hover since there's only one per section;
+        // card tooltips stay click-triggered as there are many densely packed together.
         const tooltipTarget = cardContents.querySelector('.js_insight_trigger');
         if (!(tooltipTarget instanceof HTMLButtonElement)) return;
         const tooltipTargetId = tooltipTarget.id || `${numerator}-card-trigger`;
@@ -488,6 +491,7 @@ export function initInsightsAndActions(org) {
             theme: 'tooltip-dark',
             arrow: true,
             role: 'dialog',
+            trigger: denominator ? 'click' : 'mouseenter focus',
             onShow() {
               tooltipTarget.setAttribute('aria-expanded', 'true');
             },
@@ -508,7 +512,7 @@ export function initInsightsAndActions(org) {
           cardContents._insightTooltipEventsBound = true;
         }
         const updateTooltipContent = () => {
-          const detailHtml = figureDetails
+          const detailHtml = (denominator && figureDetails)
             ? `<div class="mb-2 font-semibold text-white">${figureDetails.innerHTML}</div>`
             : "";
           const definitionHtml = buildInsightDefinitionsHtml(

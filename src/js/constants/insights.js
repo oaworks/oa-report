@@ -26,7 +26,7 @@ export const INSIGHTS_CARDS = [
     numerator: "is_unique_publication",
     denominator: null,
     denominatorText: "unique publications",
-    info: "<p>The total number of unique publications, i.e., journal articles and preprints without an associated journal article.</p>"
+    info: "<p>The total of journal articles <strong>and</strong> preprints without an associated journal article published by grantees or authors at your organization.</p>"
   },
   {
     numerator: "is_free_to_read",
