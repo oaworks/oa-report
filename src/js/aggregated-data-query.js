@@ -785,19 +785,6 @@ function createAuthorBucketMetadataAggs(term) {
 // =================================================
 
 /**
- * Builds a `published_date` range filter that includes the whole of `endYear`,
- * not just up to its midnight. A plain `lte: endYear` treats the date as
- * 00:00:00, excluding any document timestamped later that same day.
- *
- * @param {string} startYear - Start date (inclusive), e.g. "2021-01-01".
- * @param {string} endYear   - End date (inclusive), e.g. "2022-12-31".
- * @returns {Object} An ES `range` query clause for `published_date`.
- */
-function publishedDateRangeFilter(startYear, endYear) {
-  return { range: { published_date: { gte: startYear, lt: `${endYear}||+1d/d` } } };
-}
-
-/**
  * Constructs a minimal POST body for Elasticsearch queries used by Insights
  * cards. Only requests the `all_values` aggregate.
  *
@@ -813,7 +800,7 @@ export function getInsightsAggregationQuery(suffix, query, startYear, endYear) {
       bool: {
         must: [
           { query_string: { query } },
-          publishedDateRangeFilter(startYear, endYear),
+          { range: { published_date: { gte: startYear, lte: endYear } } },
         ],
       },
     },
@@ -874,7 +861,7 @@ export function getAggregatedDataQuery(
       bool: {
         must: [
           { query_string: { query } },
-          publishedDateRangeFilter(startYear, endYear),
+          { range: { published_date: { gte: startYear, lte: endYear } } },
         ],
       },
     },
