@@ -490,8 +490,9 @@ export function initInsightsAndActions(org) {
             placement: 'right',
             theme: 'tooltip-dark',
             arrow: true,
-            role: 'dialog',
+            role: denominator ? 'dialog' : 'tooltip',
             trigger: denominator ? 'click' : 'mouseenter focus',
+            delay: denominator ? 0 : [500, 0], // 500ms hover delay avoids opening on incidental mouse-through
             onShow() {
               tooltipTarget.setAttribute('aria-expanded', 'true');
             },
@@ -527,9 +528,11 @@ export function initInsightsAndActions(org) {
         // Accessibility / tooltip IDs
         const tooltipID = instance.popper.id;
         tooltipTarget.setAttribute('aria-controls', tooltipID);
-        tooltipTarget.setAttribute('aria-description', 'Press Enter to show more information for this metric.');
         tooltipTarget.setAttribute('title', 'More information on this metric');
-        tooltipTarget.setAttribute('aria-haspopup', 'dialog');
+        if (denominator) {
+          tooltipTarget.setAttribute('aria-description', 'Press Enter to show more information for this metric.');
+          tooltipTarget.setAttribute('aria-haspopup', 'dialog');
+        }
 
         const exploreMapping = INSIGHT_EXPLORE_MAPPINGS[numerator] || null;
 
