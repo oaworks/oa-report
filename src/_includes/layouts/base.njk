@@ -42,11 +42,12 @@
     {% if page.url != '/' %}
     <p id="js-alert" class="sticky top-0 z-[60] hidden p-4 bg-carnation-700 text-white font-medium text-center text-xs"></p>
     {% endif %}
+    {# Badge indicating current env #}
     {% if env_badge.label %}
       <div class="fixed left-0 bottom-6 z-[70]">
         <div class="flex flex-col gap-1 p-2 bg-carnation-700 text-white shadow-lg text-xs font-semibold">
-          <span>{{ env_badge.label }}</span>
-          {% if env_badge.api %}<span>{{ env_badge.api | safe }}</span>{% endif %}
+          <span>{{ env_badge.label }}{% if env_badge.api %} / {{ env_badge.api | safe }}</span>{% endif %}
+          <span><a href="/report-list" class="underline">report list</a></span>
         </div>
       </div>
     {% endif %}
