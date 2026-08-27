@@ -35,7 +35,8 @@
 
   {# Load homepage-specific CSS and JS for Sal.js #}
   {% if page.url == '/' %}
-  <link rel="stylesheet" href="/sal.css">
+  <link rel="preload" href="/sal.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="/sal.css"></noscript>
   {% endif %}
 
   {# Favicons #}

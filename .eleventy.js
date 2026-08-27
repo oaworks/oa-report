@@ -95,15 +95,16 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy("./_redirects");
 
   /* ─── WebP helper shortcode ────────────────────────────── */
-  eleventyConfig.addShortcode("webpImg", function (filename, altText, width, height, classes = '', loading = false) {
+  eleventyConfig.addShortcode("webpImg", function (filename, altText, width, height, classes = '', loading = false, fetchPriority = false) {
     const webpFilename = filename.replace(/\.[^.]+$/, ".webp");
 
     const imgClasses  = classes ? `class="${classes}"` : '';
     const loadingAttr = loading ? 'loading="lazy"' : '';
+    const fetchPriorityAttr = fetchPriority ? 'fetchpriority="high"' : '';
 
     return `<picture>
               <source srcset="${webpFilename}" type="image/webp">
-              <img src="${filename}" alt="${altText}" width="${width}" height="${height}" ${imgClasses} ${loadingAttr}>
+              <img src="${filename}" alt="${altText}" width="${width}" height="${height}" ${imgClasses} ${loadingAttr} ${fetchPriorityAttr}>
             </picture>`;
   });
 
