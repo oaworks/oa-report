@@ -1092,6 +1092,8 @@ export function updateExploreFilterHeader(filterId) {
 // Keep in sync with the .js_bar_chart <footer> classes in card.njk.
 const INSIGHT_BAR_TRACK_BASE_CLASSES = "js_bar_chart flex flex-col justify-end w-2 bg-neutral-600 rounded-full overflow-hidden";
 const INSIGHT_BAR_TRACK_CLASSES = `${INSIGHT_BAR_TRACK_BASE_CLASSES} h-auto`;
+// Darker track shown only when the card itself is in the "unavailable" state.
+const INSIGHT_BAR_TRACK_UNAVAILABLE_CLASSES = INSIGHT_BAR_TRACK_CLASSES.replace('bg-neutral-600', 'bg-neutral-950');
 
 /**
  * Resets the <footer> js_bar_chart area of an Insights card back to its default state.
@@ -1114,12 +1116,7 @@ export function resetBarChart(cardContents) {
   }
   cardContents.classList.add('hover:bg-neutral-750', 'hover:shadow-md', 'hover:-translate-y-0.5', 'focus-within:bg-neutral-750', 'focus-within:shadow-md', 'focus-within:-translate-y-0.5');
 
-  // Restore swapped icon and percent styling if it was changed
-  const iconEl = cardContents.querySelector('.js_insight_icon');
-  if (iconEl && iconEl.dataset.oarDefaultIcon) {
-    iconEl.innerHTML = iconEl.dataset.oarDefaultIcon;
-    delete iconEl.dataset.oarDefaultIcon;
-  }
+  // Restore percent styling if it was changed
   const percentEl = cardContents.querySelector('[id^="percent_"]');
   if (percentEl) {
     percentEl.innerHTML = percentEl.dataset.oarDefaultUnavailable || percentEl.innerHTML;
@@ -1144,28 +1141,22 @@ export function showUnavailableCard(cardContents) {
   // Locate the "articles" and "percent" elements
   const articlesEl = cardContents.querySelector('[id^="articles_"]');
   const percentEl  = cardContents.querySelector('[id^="percent_"]');
-  const iconEl     = cardContents.querySelector('.js_insight_icon');
 
   // Clear the text for #articles_...
   if (articlesEl) {
     articlesEl.textContent = '';
   }
 
-  // Replace the text in #percent_... with a compact label
+  // Replace the text in #percent_... with a "prohibited" icon and a compact label
   if (percentEl) {
     if (!percentEl.dataset.oarDefaultUnavailable) {
       percentEl.dataset.oarDefaultUnavailable = percentEl.innerHTML;
     }
-    percentEl.innerHTML = `<span class="text-sm font-semibold text-neutral-200">Unavailable</span>`;
-  }
-
-  // Swap the corner icon for a slash, remembering the original
-  if (iconEl) {
-    if (!iconEl.dataset.oarDefaultIcon) {
-      iconEl.dataset.oarDefaultIcon = iconEl.innerHTML;
-    }
-    iconEl.innerHTML = `
-      <i class="ph ph-prohibit inline-block text-neutral-400" aria-hidden="true"></i>
+    percentEl.innerHTML = `
+      <span class="inline-flex items-center gap-1 text-sm font-semibold text-neutral-200">
+        <i class="ph ph-prohibit text-neutral-400" aria-hidden="true"></i>
+        Unavailable
+      </span>
     `;
   }
 
@@ -1186,7 +1177,7 @@ export function showUnavailableCard(cardContents) {
   // Reset the bar track without rendering any value bar.
   const footerEl = cardContents.querySelector('footer.js_bar_chart');
   if (footerEl) {
-    footerEl.className = INSIGHT_BAR_TRACK_CLASSES;
+    footerEl.className = INSIGHT_BAR_TRACK_UNAVAILABLE_CLASSES;
     footerEl.innerHTML = '';
   }
 }
@@ -1218,11 +1209,6 @@ export function setBarChart(
 
   // If the denominator is missing or zero, skip
   if (!denominatorCount) return;
-
-  // Ensure the container is in the expected vertical state (a fixed height is
-  // needed here, unlike the empty-state h-auto, so the bars' percentage
-  // heights below have something concrete to size against).
-  barContainer.className = `${INSIGHT_BAR_TRACK_BASE_CLASSES} h-20`;
 
   // ----- CASE 1: Denominator is the full set => Single bar -----
   if  (
