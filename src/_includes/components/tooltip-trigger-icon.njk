@@ -1,0 +1,5 @@
+{# Shared trigger-icon classes (tooltip.njk, card.njk, insights.njk).
+   Keep in sync with TOOLTIP_TRIGGER_ICON_CLASSES in constants/ui.js. #}
+{% macro triggerIconClasses() -%}
+inline-flex h-5 w-5 items-center justify-center text-neutral-400 transition-colors hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400
+{%- endmacro %}

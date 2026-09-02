@@ -481,7 +481,7 @@ function createDropdownContainer(id = null) {
     "absolute",
     "left-0",
     "top-full",
-    "mt-3",
+    "mt-2",
     "w-full",
     "z-20",
     "max-h-[min(20rem,calc(100vh-6rem))]",
@@ -617,10 +617,14 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
  *
  */
 function createDateRangeForm() {
-  // Form container
+  // Form container — layout only. The visible "chip" styling (and the
+  // .js-nav-chip identity used by updateYearButtonStyling) lives on triggerBtn
+  // below, since that's the element Floating UI actually anchors the popover
+  // to; keeping it on the form instead left the popover visually misaligned
+  // with the chip everyone sees.
   const form = document.createElement("form");
   form.id = "date_range_form";
-  form.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " flex items-center whitespace-nowrap";
+  form.className = "inline-flex items-center whitespace-nowrap";
   form.setAttribute("aria-labelledby", "js-date-range-form-title");
 
   // Title for the form (for screen readers)
@@ -647,8 +651,8 @@ function createDateRangeForm() {
   const triggerBtn = document.createElement("button");
   triggerBtn.type = "button";
   triggerBtn.id = "js-date-range-trigger";
+  triggerBtn.className = DATE_SELECTION_BUTTON_CLASSES.enabled;
   triggerBtn.innerHTML = "Custom date range <span class='ml-1 text-xs' aria-hidden='true'>&#9660;</span>";
-  triggerBtn.style.color = "inherit";
   form.appendChild(triggerBtn);
 
   // Custom date range popover content
@@ -704,6 +708,8 @@ function createDateRangeForm() {
   });
 
   tip = createPopover(triggerBtn, pop, {
+    placement: "bottom-start",
+    offset: 0,
     onShow() {
       validationHint.textContent = "";
       // Prefill popover inputs from hidden values (if any)
@@ -715,7 +721,8 @@ function createDateRangeForm() {
       if (e && ePop) ePop.value = e.value || "";
       // Keep values in sync before mount/shown hooks move focus.
     },
-    onMount() {
+    onMount(instance) {
+      instance?.popper?.querySelector(".tooltip-box")?.classList.add("mt-2");
       requestAnimationFrame(() => popoverFlow.focusFirst());
     },
     onShown() {
@@ -875,13 +882,20 @@ function updateYearButtonStyling(selectedElement, isDropdownItem = false) {
 
   if (!selectedElement) return;
 
-  // For normal chips (not the inner dropdown toggle button, not dropdown items), apply active styles
-  if (!selectedElement.classList.contains("js_dropdown_button") && !isDropdownItem) {
-    selectedElement.classList.remove(...enabledOnlyClasses, "opacity-50");
-    selectedElement.classList.add(...activeOnlyClasses);
+  // The date-range "chip" is visually the inner trigger button, not the <form>
+  // wrapper (see createDateRangeForm) — that's what actually carries the
+  // enabled/active chip classes, so redirect styling there.
+  const chipElement = selectedElement.tagName.toLowerCase() === "form"
+    ? selectedElement.querySelector("#js-date-range-trigger") || selectedElement
+    : selectedElement;
 
-    if (selectedElement.tagName.toLowerCase() === "button") {
-      selectedElement.setAttribute("aria-pressed", "true");
+  // For normal chips (not the inner dropdown toggle button, not dropdown items), apply active styles
+  if (!chipElement.classList.contains("js_dropdown_button") && !isDropdownItem) {
+    chipElement.classList.remove(...enabledOnlyClasses, "opacity-50");
+    chipElement.classList.add(...activeOnlyClasses);
+
+    if (chipElement.tagName.toLowerCase() === "button") {
+      chipElement.setAttribute("aria-pressed", "true");
     }
   }
 
