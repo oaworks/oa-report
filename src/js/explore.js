@@ -504,10 +504,6 @@ function createExploreFilterTab(id, isActive, showCount) {
 
   if (labelData && labelData.info && labelData.info.trim()) {
     createTooltip(buttonElement, generateTooltipContent(labelData), {
-      aria: {
-        content: null,
-        expanded: false
-      },
       placement: 'bottom',
       theme: 'tooltip-light',
       delay: [500, 0] // Don't pop up while the user is just hovering en route to a click.
@@ -1248,7 +1244,6 @@ function generateTooltipContent(labelData, additionalHelpText = null) {
 
 /**
  * Attaches a tooltip to an HTML element if tooltip content is provided.
- * Uses the Tippy.js library for tooltip functionality, applying a11y attributes.
  * Ensures a label is always displayed, falling back to the key itself if no label is defined.
  *
  * @param {HTMLElement} element - The element to attach the tooltip to.
@@ -1907,16 +1902,13 @@ function syncExploreTableScrollButton(tableContainer, scrollRightButton) {
 }
 
 /**
- * Initialises tooltips for table cells with truncated content using Tippy.js.
+ * Initialises tooltips for table cells with truncated content.
  * Each tooltip will display the full text content of the cell when hovered over.
  * The tooltip is only shown if the cell's content is actually truncated and the user hovers over it with intent.
  */
 function enableTooltipsForTruncatedCells() {
   document.querySelectorAll('#export_table .truncate').forEach(cell => {
       createTooltip(cell, cell.textContent, {
-          aria: {
-            expanded: false
-          },
           interactive: false,
           placement: 'bottom',
           delay: [500, 0], // 500 ms delay before showing, 0 ms delay before hiding

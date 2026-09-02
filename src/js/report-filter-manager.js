@@ -1112,7 +1112,7 @@ function resolveUnknownAuthorOrcids(pairs) {
 }
 
 /**
- * Renders the Filters chip in the top nav and wires a Tippy popover
+ * Renders the Filters chip in the top nav and wires a popover
  * that shows:
  *  - Active filters summary (chips + Clear filters)
  *  - A wider multi-filter form (Filter field + textarea rows)
@@ -1122,8 +1122,8 @@ export function renderActiveFiltersBanner() {
   const mount = document.getElementById("js-active-filters");
   if (!wrapper || !mount) return;
 
-  // Trigger button is static markup, reused across renders — only its Tippy
-  // instance and popover content get rebuilt each time.
+  // Trigger button is static markup, reused across renders — only its popover
+  // instance and content get rebuilt each time.
   const triggerBtn = document.getElementById("js-filters-trigger");
   if (!triggerBtn) return;
   if (triggerBtn._tooltip) {
