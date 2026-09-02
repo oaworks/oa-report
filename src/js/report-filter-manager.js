@@ -31,7 +31,8 @@ import {
   EXPLORE_HEADER_ARTICLES_LABELS,
   resolveFieldDefinition,
   DATE_SELECTION_BUTTON_CLASSES,
-  CONTROL_FOCUS_RING_CLASSES
+  CONTROL_FOCUS_RING_CLASSES,
+  TOOLTIP_TRIGGER_ICON_CLASSES
 } from "./constants.js";
 import { SEARCH_FILTER_FIELD_MAP, iconForField } from "./constants/filter-fields.js";
 
@@ -1221,7 +1222,7 @@ export function renderActiveFiltersBanner() {
 
   // Popover content: clear-all (if active) + add-filter form
   const pop = document.createElement("div");
-  pop.className = "js-filters-popover p-3 text-xs text-neutral-200 md:p-4 md:text-sm";
+  pop.className = "js-filters-popover text-xs text-neutral-200 md:p-4 md:text-sm";
   pop.setAttribute("role", "dialog");
   pop.setAttribute("aria-labelledby", "js-filters-form-title");
   pop.style.maxWidth = "90vw";
@@ -1249,8 +1250,7 @@ export function renderActiveFiltersBanner() {
   // filter's own icon, Actions shown, Open draft).
   const helpIcon = document.createElement("button");
   helpIcon.type = "button";
-  // "More information" trigger icon spec — keep in sync with tooltip.njk/card.njk/insights.njk.
-  helpIcon.className = "tooltip inline-flex h-5 w-5 items-center justify-center text-neutral-400 transition-colors hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm";
+  helpIcon.className = `tooltip ${TOOLTIP_TRIGGER_ICON_CLASSES} rounded-sm`;
   helpIcon.setAttribute("aria-label", "Filtering tips");
   helpIcon.setAttribute("data-tooltip-trigger", "click");
   helpIcon.setAttribute("data-tooltip-theme", "popover");
@@ -1312,8 +1312,9 @@ export function renderActiveFiltersBanner() {
 
   tip = createPopover(triggerBtn, pop, {
     placement: "bottom-start",
+    offset: 0,
     onMount(instance) {
-      instance?.popper?.querySelector(".tooltip-box")?.classList.add("filters-popover-box");
+      instance?.popper?.querySelector(".tooltip-box")?.classList.add("filters-popover-box", "mt-2");
       // The Filtering-tips icon only enters the live document once this panel
       // mounts, so it can't be wired up until now (safe to call repeatedly).
       initDeclarativeTooltips();

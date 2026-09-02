@@ -386,7 +386,7 @@ function createFloating(trigger, initialContent, overrides = {}) {
   }
   const appendTarget = resolveAppendTarget(options.appendTo, trigger);
   const middleware = [
-    offset(options.arrow === false ? 8 : 7),
+    offset(typeof options.offset === "number" ? options.offset : (options.arrow === false ? 8 : 7)),
     flip({
       padding: 8,
       fallbackPlacements: getFallbackPlacements(options.placement),
