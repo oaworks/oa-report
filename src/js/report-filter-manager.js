@@ -1238,7 +1238,6 @@ export function renderActiveFiltersBanner() {
   formTitle.id = "js-filters-form-title";
   formTitle.className = "sr-only";
   formTitle.textContent = "Manage filters";
-  filterForm.appendChild(formTitle);
 
   const formHeading = document.createElement("h3");
   formHeading.className = "flex items-center gap-2 text-xs font-semibold text-white md:text-sm";
@@ -1253,13 +1252,12 @@ export function renderActiveFiltersBanner() {
   helpIcon.className = `tooltip ${TOOLTIP_TRIGGER_ICON_CLASSES} rounded-sm`;
   helpIcon.setAttribute("aria-label", "Filtering tips");
   helpIcon.setAttribute("data-tooltip-trigger", "click");
-  helpIcon.setAttribute("data-tooltip-theme", "popover");
   helpIcon.setAttribute("data-tooltip-placement", "bottom-start");
   helpIcon.setAttribute("data-tooltip-max-width", "320");
   helpIcon.setAttribute("data-tooltip-labelledby", "filtering-tips-heading");
   helpIcon.setAttribute("data-tooltip-content", `
-    <p id="filtering-tips-heading" class="mb-2 text-sm font-semibold text-white">Filtering tips</p>
-    <ul class="list-disc list-outside space-y-1 pl-5 text-xs text-neutral-300">
+    <p id="filtering-tips-heading" class="mb-2 text-sm font-semibold">Filtering tips</p>
+    <ul class="list-disc list-outside space-y-1 pl-5 text-xs">
       <li>Type to see suggestions, then <strong>click to add</strong> one.</li>
       <li>Add <strong>multiple entries</strong> to match <strong>any</strong> of them (e.g., adding <code>INV-001</code> and <code>INV-002</code> returns publications under either grant).</li>
       <li>Search is <strong>case-insensitive</strong>, but <strong>full words</strong> work best; abbreviations like <code>OUP</code> will not match <code>Oxford University Press</code>.</li>
@@ -1273,6 +1271,7 @@ export function renderActiveFiltersBanner() {
   const rowsContainer = document.createElement("div");
   rowsContainer.className = "js-filter-rows space-y-3";
   filterForm.appendChild(rowsContainer);
+  pop.appendChild(formTitle);
   pop.appendChild(filterForm);
 
   // Start with one row
