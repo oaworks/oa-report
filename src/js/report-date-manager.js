@@ -89,10 +89,22 @@ export function activateAllTimeRange() {
 
   const allTimeButton = document.getElementById('all-time');
   if (allTimeButton) {
-    document.getElementById('date_range_form')?.reset();
+    clearHiddenDateInputs();
     updateYearButtonStyling(allTimeButton);
     resetDateRangeTriggerLabel();
   }
+}
+
+/**
+ * Clears the hidden start/end date inputs — used when a preset range (year,
+ * all time) replaces whatever was in the custom date-range popover.
+ * @returns {void}
+ */
+function clearHiddenDateInputs() {
+  const startDateInput = document.getElementById('start-date');
+  const endDateInput = document.getElementById('end-date');
+  if (startDateInput) startDateInput.value = '';
+  if (endDateInput) endDateInput.value = '';
 }
 
 /**
@@ -592,7 +604,7 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
     const selection = getButtonSelection(buttonId, startDate, endDate);
 
     // Reset the date range form when a year button is clicked
-    document.getElementById('date_range_form').reset();
+    clearHiddenDateInputs();
 
     writeSelectionToURL(selection);
     handleYearButtonLogic(button, selection.startDate, selection.endDate);
@@ -617,22 +629,12 @@ function createYearButton(buttonId, buttonText, startDate, endDate) {
  *
  */
 function createDateRangeForm() {
-  // Form container — layout only. The visible "chip" styling (and the
-  // .js-nav-chip identity used by updateYearButtonStyling) lives on triggerBtn
-  // below, since that's the element Floating UI actually anchors the popover
-  // to; keeping it on the form instead left the popover visually misaligned
-  // with the chip everyone sees.
-  const form = document.createElement("form");
+  // Just a layout wrapper — no real form fields live here, so it's a <div>,
+  // not a <form> (the actual <form> is the popover content below, which is
+  // where the real fields and the Apply submit button are).
+  const form = document.createElement("div");
   form.id = "date_range_form";
   form.className = "inline-flex items-center whitespace-nowrap";
-  form.setAttribute("aria-labelledby", "js-date-range-form-title");
-
-  // Title for the form (for screen readers)
-  const formTitle = document.createElement("h3");
-  formTitle.id = "js-date-range-form-title";
-  formTitle.textContent = "Select custom date range";
-  formTitle.className = "sr-only";
-  form.appendChild(formTitle);
 
   // Hidden inputs kept for compatibility
   const hiddenStart = document.createElement("input");
@@ -661,28 +663,41 @@ function createDateRangeForm() {
   pop.setAttribute("role", "dialog");
   pop.setAttribute("aria-labelledby", "js-date-range-form-title");
 
+  // Title for the popover dialog and the form below (for screen readers)
+  const formTitle = document.createElement("h3");
+  formTitle.id = "js-date-range-form-title";
+  formTitle.textContent = "Select custom date range";
+  formTitle.className = "sr-only";
+  pop.appendChild(formTitle);
+
+  // The real <form>: this is what makes Enter submit the fields and the
+  // "From" field's `required` attribute actually validate on submit.
+  const dateForm = document.createElement("form");
+  dateForm.setAttribute("aria-labelledby", "js-date-range-form-title");
+  pop.appendChild(dateForm);
+
   // Create labelled inputs, but give them distinct IDs
   const startField = createDateInput("start-date-pop", "From");
   const endField = createDateInput("end-date-pop", "To");
   startField.className = "mb-3";
   endField.className = "mb-3";
-  pop.appendChild(startField);
-  pop.appendChild(endField);
+  dateForm.appendChild(startField);
+  dateForm.appendChild(endField);
 
   // Apply button inside the popover
   const applyBtn = document.createElement("button");
-  applyBtn.type = "button";
+  applyBtn.type = "submit";
   applyBtn.id = "js-date-range-apply-button";
   applyBtn.className = "mt-1 inline-flex w-full items-center justify-center rounded-sm border border-neutral-100 bg-neutral-100 px-2 py-1 font-semibold text-neutral-900 transition-colors hover:bg-neutral-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 md:mt-0 md:px-3 md:py-1.5";
   applyBtn.textContent = "Apply";
-  pop.appendChild(applyBtn);
+  dateForm.appendChild(applyBtn);
 
   const validationHint = document.createElement("p");
   validationHint.id = "js-date-range-hint";
   validationHint.className = "mt-3 text-xs leading-4 text-carnation-300";
   validationHint.setAttribute("aria-live", "polite");
   validationHint.textContent = "";
-  pop.appendChild(validationHint);
+  dateForm.appendChild(validationHint);
 
   let tip;
   const popoverFlow = createPopoverKeyboardFlow({
@@ -731,7 +746,8 @@ function createDateRangeForm() {
   });
 
   // Handle Apply: validate, update URL, sync hidden inputs, call existing handlers, close
-  applyBtn.addEventListener("click", () => {
+  dateForm.addEventListener("submit", (event) => {
+    event.preventDefault();
     const sPop = /** @type {HTMLInputElement|null} */ (document.getElementById("start-date-pop"));
     const ePop = /** @type {HTMLInputElement|null} */ (document.getElementById("end-date-pop"));
     if (!sPop || !ePop) return;
@@ -848,7 +864,7 @@ function handleYearButtonLogic(button, startDate, endDate) {
 /**
  * Updates the styling of year selection buttons and resets styles for all other year buttons and dropdown items.
  *
- * @param {HTMLElement} selectedElement - The element (can be a button, div, or form) that was selected.
+ * @param {HTMLElement} selectedElement - The element (can be a button or div) that was selected.
  * @param {boolean} isDropdownItem - Indicates whether the selected button is a dropdown item.
  */
 function updateYearButtonStyling(selectedElement, isDropdownItem = false) {
@@ -882,10 +898,10 @@ function updateYearButtonStyling(selectedElement, isDropdownItem = false) {
 
   if (!selectedElement) return;
 
-  // The date-range "chip" is visually the inner trigger button, not the <form>
-  // wrapper (see createDateRangeForm) — that's what actually carries the
+  // The date-range "chip" is visually the inner trigger button, not its
+  // wrapper div (see createDateRangeForm) — that's what actually carries the
   // enabled/active chip classes, so redirect styling there.
-  const chipElement = selectedElement.tagName.toLowerCase() === "form"
+  const chipElement = selectedElement.id === "date_range_form"
     ? selectedElement.querySelector("#js-date-range-trigger") || selectedElement
     : selectedElement;
 
@@ -897,19 +913,6 @@ function updateYearButtonStyling(selectedElement, isDropdownItem = false) {
     if (chipElement.tagName.toLowerCase() === "button") {
       chipElement.setAttribute("aria-pressed", "true");
     }
-  }
-
-  // If the selected "chip" is actually the date range form, style its internals
-  if (selectedElement.tagName.toLowerCase() === "form") {
-    const labels = selectedElement.querySelectorAll("label");
-    labels.forEach((label) => {
-      label.classList.add("text-white");
-    });
-
-    const inputs = selectedElement.querySelectorAll("input");
-    inputs.forEach((input) => {
-      input.classList.add("text-white", "bg-neutral-900", "border-neutral-900");
-    });
   }
 
   // If the selected element came from the dropdown list, style the visible dropdown container instead
@@ -933,19 +936,6 @@ function resetDropdown() {
     dropdownButton.innerHTML = `More <span class='sr-only'>years</span> <span class='ml-1 text-xs' aria-hidden='true'>&#9660;</span>`;
   }
 
-  // The date range form may not exist yet depending on init order
-  const dateRangeForm = document.getElementById("date_range_form");
-  if (!dateRangeForm) return;
-
-  const labels = dateRangeForm.querySelectorAll('label');
-  labels.forEach((label) => {
-    label.classList.remove("text-white");
-  });
-
-  const inputs = dateRangeForm.querySelectorAll('input');
-  inputs.forEach((input) => {
-    input.classList.remove("text-white", "bg-neutral-900", "border-neutral-900");
-  });
 }
 
 /**
