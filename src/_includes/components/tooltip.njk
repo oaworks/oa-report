@@ -4,16 +4,21 @@
   msg: "",
   id: "",
   label: "",
-  text: ""
+  text: "",
+  trigger: "click"
 }) }}
+Click-triggered (a dialog) by default; pass trigger: "hover" for a true hover/focus tooltip.
 #}
 
+{% set triggerClasses = "tooltip inline-flex items-center text-neutral-400 transition-colors hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm" %}
+
 {% if params.sup %}
-<sup 
-  class="tooltip" 
-  tabindex="0" 
+<sup
+  class="{{ triggerClasses }}"
+  tabindex="0"
   data-tooltip-content="{{ params.msg }}"
   data-tooltip-theme="{{ params.theme or 'tooltip-light' }}"
+  {% if params.trigger != "hover" %} data-tooltip-trigger="click" aria-haspopup="dialog" aria-expanded="false"{% endif %}
   {% if params.id %} id="{{ params.id }}"{% endif %}
   aria-label="
     {% if params.label %}
@@ -26,15 +31,16 @@
   {% if params.text %}
     <span class="border border-neutral-500 px-1 py-0.5 text-xs font-semibold uppercase transition duration-300 ease-in-out hover:bg-neutral-100 hover:text-neutral-900">{{ params.text }}</span>
   {% else %}
-    <span class="rounded-full border border-neutral-500 px-1 py-0.5 text-xs font-semibold uppercase transition duration-300 ease-in-out hover:bg-neutral-100 hover:text-neutral-900">?</span>
+    {% icon_small "info" %}
   {% endif %}
 </sup>
 {% else %}
-<span 
-  class="tooltip" 
-  tabindex="0" 
+<span
+  class="{{ triggerClasses }}"
+  tabindex="0"
   data-tooltip-content="{{ params.msg }}"
   data-tooltip-theme="{{ params.theme or 'tooltip-light' }}"
+  {% if params.trigger != "hover" %} data-tooltip-trigger="click" aria-haspopup="dialog" aria-expanded="false"{% endif %}
   {% if params.id %} id="{{ params.id }}"{% endif %}
   aria-label="
     {% if params.label %}
@@ -44,6 +50,10 @@
     {% endif %}
   "
 >
-  {{ params.text | safe }}
+  {% if params.text %}
+    {{ params.text | safe }}
+  {% else %}
+    {% icon_small "info" %}
+  {% endif %}
 </span>
 {% endif %}

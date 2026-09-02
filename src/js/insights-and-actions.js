@@ -487,9 +487,7 @@ export function initInsightsAndActions(org) {
           articlesWrapper.classList.add('sr-only');
         }
 
-        // Tooltip to contain Insight info + figure details.
-        // Heading totals (no denominator) open on hover since there's only one per section;
-        // card tooltips stay click-triggered as there are many densely packed together.
+        // Tooltip to contain Insight info + figure details. Always click-triggered, not hover
         const tooltipTarget = cardContents.querySelector('.js_insight_trigger');
         if (!(tooltipTarget instanceof HTMLButtonElement)) return;
         const tooltipTargetId = tooltipTarget.id || `${numerator}-card-trigger`;
@@ -500,9 +498,7 @@ export function initInsightsAndActions(org) {
             placement: 'right',
             theme: 'tooltip-light',
             arrow: true,
-            role: denominator ? 'dialog' : 'tooltip',
-            trigger: denominator ? 'click' : 'mouseenter focus',
-            delay: denominator ? 0 : [500, 0], // 500ms hover delay avoids opening on incidental mouse-through
+            role: 'dialog',
             onShow() {
               tooltipTarget.setAttribute('aria-expanded', 'true');
             },
@@ -539,10 +535,8 @@ export function initInsightsAndActions(org) {
         const tooltipID = instance.popper.id;
         tooltipTarget.setAttribute('aria-controls', tooltipID);
         tooltipTarget.setAttribute('title', 'More information on this metric');
-        if (denominator) {
-          tooltipTarget.setAttribute('aria-description', 'Press Enter to show more information for this metric.');
-          tooltipTarget.setAttribute('aria-haspopup', 'dialog');
-        }
+        tooltipTarget.setAttribute('aria-description', 'Press Enter to show more information for this metric.');
+        tooltipTarget.setAttribute('aria-haspopup', 'dialog');
 
         const exploreMapping = INSIGHT_EXPLORE_MAPPINGS[numerator] || null;
 
