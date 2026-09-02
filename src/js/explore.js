@@ -505,8 +505,7 @@ function createExploreFilterTab(id, isActive, showCount) {
   if (labelData && labelData.info && labelData.info.trim()) {
     createTooltip(buttonElement, generateTooltipContent(labelData), {
       placement: 'bottom',
-      theme: 'tooltip-light',
-      delay: [500, 0] // Don't pop up while the user is just hovering en route to a click.
+      theme: 'tooltip-light'
     });
   }
 
@@ -1325,8 +1324,7 @@ function setupHeaderTooltip(element, rawKey, dataType) {
 
     createTooltip(isInteractiveSort ? content : element, generateTooltipContent(labelData, additionalHelpText), {
       placement: 'bottom',
-      theme: 'tooltip-light',
-      delay: [500, 0] // Don't pop up while the mouse is just passing through the header row.
+      theme: 'tooltip-light'
     });
   }
 }
@@ -1906,7 +1904,6 @@ function enableTooltipsForTruncatedCells() {
       createTooltip(cell, cell.textContent, {
           interactive: false,
           placement: 'bottom',
-          delay: [500, 0], // 500 ms delay before showing, 0 ms delay before hiding
           trigger: 'mouseenter focus', // Trigger on mouse enter and focus
           hideOnClick: false,
           theme: 'tooltip-light', // Custom theme defined in 'src/styles/input.css'

@@ -372,11 +372,18 @@ function createFloating(trigger, initialContent, overrides = {}) {
   const contentElement = options.contentElement instanceof HTMLElement ? options.contentElement : null;
   const { popper, box, content, arrowEl } = createElements(options);
   const [showDelay, hideDelay] = parseDelay(options.delay);
-  // True tooltips (as opposed to click-triggered dialogs/popovers) describe their
-  // trigger, per the WAI-ARIA tooltip pattern — wire that relationship up here once,
-  // rather than requiring every call site to do it by hand.
-  const describesTrigger = options.role === "tooltip";
+  const isClickTrigger = String(options.trigger).split(" ").includes("click");
+  // True tooltips (hover/focus-only, never click) describe their trigger per the
+  // WAI-ARIA tooltip pattern; click-triggered disclosures expose their state via
+  // aria-haspopup/aria-expanded instead. Wire both up here once, rather than
+  // requiring every call site to do it by hand.
+  const describesTrigger = options.role === "tooltip" && !isClickTrigger;
   if (describesTrigger) trigger.setAttribute("aria-describedby", box.id);
+  const isDisclosure = isClickTrigger;
+  if (isDisclosure) {
+    trigger.setAttribute("aria-haspopup", "dialog");
+    trigger.setAttribute("aria-expanded", "false");
+  }
   const appendTarget = resolveAppendTarget(options.appendTo, trigger);
   const middleware = [
     offset(options.arrow === false ? 8 : 7),
@@ -467,6 +474,7 @@ function createFloating(trigger, initialContent, overrides = {}) {
 
     clearTimers();
     visible = true;
+    if (isDisclosure) trigger.setAttribute("aria-expanded", "true");
     mount();
     options.onMount?.(instance);
     requestAnimationFrame(() => {
@@ -480,6 +488,7 @@ function createFloating(trigger, initialContent, overrides = {}) {
 
     clearTimers();
     visible = false;
+    if (isDisclosure) trigger.setAttribute("aria-expanded", "false");
     unmount();
   }
 
@@ -493,6 +502,10 @@ function createFloating(trigger, initialContent, overrides = {}) {
     if (trigger._tooltip === instance) delete trigger._tooltip;
     if (popper._tooltip === instance) delete popper._tooltip;
     if (describesTrigger) trigger.removeAttribute("aria-describedby");
+    if (isDisclosure) {
+      trigger.removeAttribute("aria-haspopup");
+      trigger.removeAttribute("aria-expanded");
+    }
     options.onDestroy?.(instance);
   }
 
@@ -552,14 +565,7 @@ function initDeclarativeTooltips() {
     const instance = createTooltip(element, content, {
       placement: element.getAttribute("data-tooltip-placement") || "top",
       theme: element.getAttribute("data-tooltip-theme") || "tooltip-light",
-      ...(isClickTriggered
-        ? {
-          trigger: "click",
-          role: "dialog",
-          onShow() { element.setAttribute("aria-expanded", "true"); },
-          onHide() { element.setAttribute("aria-expanded", "false"); },
-        }
-        : {}),
+      ...(isClickTriggered ? { trigger: "click", role: "dialog" } : {}),
     });
 
     if (isClickTriggered) {
@@ -633,6 +639,7 @@ export function createTooltip(trigger, content, options = {}) {
     trigger: "mouseenter focus",
     theme: "tooltip-light",
     arrow: true,
+    delay: [700, 0], // Avoid popping up while the pointer is just passing through.
     ...options,
   });
 }
