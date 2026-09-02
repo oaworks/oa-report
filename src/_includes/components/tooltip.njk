@@ -10,7 +10,9 @@
 Click-triggered (a dialog) by default; pass trigger: "hover" for a true hover/focus tooltip.
 #}
 
-{% set triggerClasses = "tooltip inline-flex items-center text-neutral-400 transition-colors hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm" %}
+{# "More information" trigger icon spec — keep in sync with card.njk's .js_insight_trigger
+   button and the headingTotal macro in insights.njk: h-5 w-5, neutral-400, hover:white. #}
+{% set triggerClasses = "tooltip inline-flex h-5 w-5 items-center justify-center text-neutral-400 transition-colors hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm" %}
 
 {% if params.sup %}
 <sup

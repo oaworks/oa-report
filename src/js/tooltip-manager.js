@@ -548,10 +548,13 @@ function createFloating(trigger, initialContent, overrides = {}) {
 
 /**
  * Initialises tooltip elements configured with `data-tooltip-*` attributes.
+ * Safe to call more than once — already-wired elements are skipped, so
+ * callers that build `.tooltip` elements dynamically (rather than relying on
+ * the page's initial `load` pass) can simply call this again afterwards.
  *
  * @returns {void}
  */
-function initDeclarativeTooltips() {
+export function initDeclarativeTooltips() {
   document.querySelectorAll(".tooltip").forEach((element) => {
     if (element._tooltip) return;
 
@@ -561,11 +564,22 @@ function initDeclarativeTooltips() {
     // A click-triggered panel is a dialog, not a tooltip (role="tooltip" is
     // reserved for hover/focus-only content per the WAI-ARIA tooltip pattern).
     const isClickTriggered = element.getAttribute("data-tooltip-trigger") === "click";
+    const labelledBy = element.getAttribute("data-tooltip-labelledby");
+    const maxWidth = element.getAttribute("data-tooltip-max-width");
 
     const instance = createTooltip(element, content, {
       placement: element.getAttribute("data-tooltip-placement") || "top",
       theme: element.getAttribute("data-tooltip-theme") || "tooltip-light",
-      ...(isClickTriggered ? { trigger: "click", role: "dialog" } : {}),
+      ...(maxWidth ? { maxWidth: Number(maxWidth) } : {}),
+      ...(isClickTriggered
+        ? {
+          trigger: "click",
+          role: "dialog",
+          ...(labelledBy
+            ? { onMount(inst) { inst.popper.querySelector(".tooltip-box")?.setAttribute("aria-labelledby", labelledBy); } }
+            : {}),
+        }
+        : {}),
     });
 
     if (isClickTriggered) {

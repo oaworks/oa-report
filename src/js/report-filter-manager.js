@@ -39,7 +39,7 @@ import { orgDataPromise } from './insights-and-actions.js';
 import { activateAllTimeRange } from './report-date-manager.js';
 
 import { handleFiltersChanged, fetchTermBasedData } from './explore.js';
-import { createPopover, createTooltip } from './tooltip-manager.js';
+import { createPopover, initDeclarativeTooltips } from './tooltip-manager.js';
 
 const SUGGESTIONS_API_URL = `${ORGS_REPORT_API_BASE_URL}suggestions`;
 
@@ -1243,46 +1243,30 @@ export function renderActiveFiltersBanner() {
   formHeading.className = "flex items-center gap-2 text-xs font-semibold text-white md:text-sm";
   formHeading.textContent = "Add a filter";
 
+  // Built via the shared declarative tooltip system (see tooltip.njk /
+  // initDeclarativeTooltips) rather than a bespoke createTooltip() call, so it
+  // stays in sync with the other tooltip-group triggers (Insight cards, Add a
+  // filter's own icon, Actions shown, Open draft).
   const helpIcon = document.createElement("button");
   helpIcon.type = "button";
-  helpIcon.className = "inline-flex items-center text-neutral-400 transition-colors hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm";
+  // "More information" trigger icon spec — keep in sync with tooltip.njk/card.njk/insights.njk.
+  helpIcon.className = "tooltip inline-flex h-5 w-5 items-center justify-center text-neutral-400 transition-colors hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm";
   helpIcon.setAttribute("aria-label", "Filtering tips");
+  helpIcon.setAttribute("data-tooltip-trigger", "click");
+  helpIcon.setAttribute("data-tooltip-theme", "popover");
+  helpIcon.setAttribute("data-tooltip-placement", "bottom-start");
+  helpIcon.setAttribute("data-tooltip-max-width", "320");
+  helpIcon.setAttribute("data-tooltip-labelledby", "filtering-tips-heading");
+  helpIcon.setAttribute("data-tooltip-content", `
+    <p id="filtering-tips-heading" class="mb-2 text-sm font-semibold text-white">Filtering tips</p>
+    <ul class="list-disc list-outside space-y-1 pl-5 text-xs text-neutral-300">
+      <li>Type to see suggestions, then <strong>click to add</strong> one.</li>
+      <li>Add <strong>multiple entries</strong> to match <strong>any</strong> of them (e.g., adding <code>INV-001</code> and <code>INV-002</code> returns publications under either grant).</li>
+      <li>Search is <strong>case-insensitive</strong>, but <strong>full words</strong> work best; abbreviations like <code>OUP</code> will not match <code>Oxford University Press</code>.</li>
+    </ul>
+  `);
   helpIcon.innerHTML = '<i class="ph ph-info inline-block text-[16px] leading-none" aria-hidden="true"></i>';
   formHeading.appendChild(helpIcon);
-
-  const helpEl = document.createElement("div");
-  helpEl.className = "p-2 text-neutral-200 md:p-3";
-
-  const helpHeading = document.createElement("p");
-  helpHeading.id = "filtering-tips-heading";
-  helpHeading.className = "mb-2 text-sm font-semibold text-white";
-  helpHeading.textContent = "Filtering tips";
-  helpEl.appendChild(helpHeading);
-
-  const helpList = document.createElement("ul");
-  helpList.className = "list-disc list-outside space-y-1 pl-5 text-xs text-neutral-300";
-  [
-    'Type to see suggestions, then <strong>click to add</strong> one.',
-    'Add <strong>multiple entries</strong> to match <strong>any</strong> of them (e.g., adding <code>INV-001</code> and <code>INV-002</code> returns publications under either grant).',
-    'Search is <strong>case-insensitive</strong>, but <strong>full words</strong> work best; abbreviations like <code>OUP</code> will not match <code>Oxford University Press</code>.',
-  ].forEach((html) => {
-    const li = document.createElement("li");
-    li.innerHTML = html;
-    helpList.appendChild(li);
-  });
-  helpEl.appendChild(helpList);
-
-  createTooltip(helpIcon, "", {
-    theme: "popover",
-    maxWidth: 320,
-    placement: "bottom-start",
-    trigger: "click",
-    role: "dialog",
-    contentElement: helpEl,
-    onMount(instance) {
-      instance?.popper?.querySelector(".tooltip-box")?.setAttribute("aria-labelledby", "filtering-tips-heading");
-    }
-  });
 
   filterForm.appendChild(formHeading);
 
@@ -1330,6 +1314,9 @@ export function renderActiveFiltersBanner() {
     placement: "bottom-start",
     onMount(instance) {
       instance?.popper?.querySelector(".tooltip-box")?.classList.add("filters-popover-box");
+      // The Filtering-tips icon only enters the live document once this panel
+      // mounts, so it can't be wired up until now (safe to call repeatedly).
+      initDeclarativeTooltips();
       requestAnimationFrame(() => popoverFlow.focusFirst());
     },
     onShown() {

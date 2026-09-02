@@ -37,9 +37,10 @@
           <h4 id="{{ params.id }}_title" class="text-sm font-medium inline-flex items-center cursor-text">
             <span class="inline-flex items-center">{{ params.title }}</span>
           </h4>
+          {# "More information" trigger icon spec — keep in sync with tooltip.njk and insights.njk's headingTotal macro. #}
           <button
             type="button"
-            class="js_insight_trigger inline-flex h-5 w-5 shrink-0 items-center justify-center p-0 m-0 ml-1 text-neutral-300 leading-none transition-colors hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 cursor-pointer"
+            class="js_insight_trigger inline-flex h-5 w-5 shrink-0 items-center justify-center p-0 m-0 ml-1 text-neutral-400 leading-none transition-colors hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 cursor-pointer"
             aria-expanded="false"
             aria-label="More information about the {{ params.title }} metric"
             title="More information on this metric"
