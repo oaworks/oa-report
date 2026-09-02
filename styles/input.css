@@ -358,6 +358,9 @@
   cursor: pointer;
 }
 
+/* Matches Tailwind's neutral-800/neutral-400/neutral-100 (see tailwind.config.js) —
+   the same palette the date-range "more years" dropdown (report-date-manager.js)
+   uses directly via utility classes. Keep these two in sync if the palette changes. */
 .tooltip-box[data-theme~='popover'] {
   background-color: rgb(67, 68, 70);
   border: 1px solid rgb(171, 173, 176);
