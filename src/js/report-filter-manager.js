@@ -1247,8 +1247,6 @@ export function renderActiveFiltersBanner() {
   helpIcon.type = "button";
   helpIcon.className = "inline-flex items-center text-neutral-400 transition-colors hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm";
   helpIcon.setAttribute("aria-label", "Filtering tips");
-  helpIcon.setAttribute("aria-haspopup", "dialog");
-  helpIcon.setAttribute("aria-expanded", "false");
   helpIcon.innerHTML = '<i class="ph ph-info inline-block text-[16px] leading-none" aria-hidden="true"></i>';
   formHeading.appendChild(helpIcon);
 
@@ -1281,14 +1279,8 @@ export function renderActiveFiltersBanner() {
     trigger: "click",
     role: "dialog",
     contentElement: helpEl,
-    onShow() {
-      helpIcon.setAttribute("aria-expanded", "true");
-    },
     onMount(instance) {
       instance?.popper?.querySelector(".tooltip-box")?.setAttribute("aria-labelledby", "filtering-tips-heading");
-    },
-    onHide() {
-      helpIcon.setAttribute("aria-expanded", "false");
     }
   });
 
@@ -1336,18 +1328,12 @@ export function renderActiveFiltersBanner() {
 
   tip = createPopover(triggerBtn, pop, {
     placement: "bottom-start",
-    onShow() {
-      triggerBtn.setAttribute("aria-expanded", "true");
-    },
     onMount(instance) {
       instance?.popper?.querySelector(".tooltip-box")?.classList.add("filters-popover-box");
       requestAnimationFrame(() => popoverFlow.focusFirst());
     },
     onShown() {
       popoverFlow.focusFirst();
-    },
-    onHide() {
-      triggerBtn.setAttribute("aria-expanded", "false");
     },
   });
 

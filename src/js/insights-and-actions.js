@@ -498,13 +498,7 @@ export function initInsightsAndActions(org) {
             placement: 'right',
             theme: 'tooltip-light',
             arrow: true,
-            role: 'dialog',
-            onShow() {
-              tooltipTarget.setAttribute('aria-expanded', 'true');
-            },
-            onHide() {
-              tooltipTarget.setAttribute('aria-expanded', 'false');
-            }
+            role: 'dialog'
           });
           cardContents._insightTooltip = instance;
         }
@@ -536,7 +530,6 @@ export function initInsightsAndActions(org) {
         tooltipTarget.setAttribute('aria-controls', tooltipID);
         tooltipTarget.setAttribute('title', 'More information on this metric');
         tooltipTarget.setAttribute('aria-description', 'Press Enter to show more information for this metric.');
-        tooltipTarget.setAttribute('aria-haspopup', 'dialog');
 
         const exploreMapping = INSIGHT_EXPLORE_MAPPINGS[numerator] || null;
 

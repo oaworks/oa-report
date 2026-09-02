@@ -648,8 +648,6 @@ function createDateRangeForm() {
   triggerBtn.type = "button";
   triggerBtn.id = "js-date-range-trigger";
   triggerBtn.innerHTML = "Custom date range <span class='ml-1 text-xs' aria-hidden='true'>&#9660;</span>";
-  triggerBtn.setAttribute("aria-haspopup", "dialog");
-  triggerBtn.setAttribute("aria-expanded", "false");
   triggerBtn.style.color = "inherit";
   form.appendChild(triggerBtn);
 
@@ -707,7 +705,6 @@ function createDateRangeForm() {
 
   tip = createPopover(triggerBtn, pop, {
     onShow() {
-      triggerBtn.setAttribute("aria-expanded", "true");
       validationHint.textContent = "";
       // Prefill popover inputs from hidden values (if any)
       const s = /** @type {HTMLInputElement|null} */ (document.getElementById("start-date"));
@@ -723,8 +720,7 @@ function createDateRangeForm() {
     },
     onShown() {
       popoverFlow.focusFirst();
-    },
-    onHide() { triggerBtn.setAttribute("aria-expanded", "false"); }
+    }
   });
 
   // Handle Apply: validate, update URL, sync hidden inputs, call existing handlers, close
