@@ -96,6 +96,7 @@ function createElements(options) {
 
   const box = document.createElement("div");
   box.className = "tooltip-box";
+  box.id = uid();
   box.tabIndex = -1;
   box.dataset.state = "hidden";
   if (options.theme) box.dataset.theme = options.theme;
@@ -371,6 +372,11 @@ function createFloating(trigger, initialContent, overrides = {}) {
   const contentElement = options.contentElement instanceof HTMLElement ? options.contentElement : null;
   const { popper, box, content, arrowEl } = createElements(options);
   const [showDelay, hideDelay] = parseDelay(options.delay);
+  // True tooltips (as opposed to click-triggered dialogs/popovers) describe their
+  // trigger, per the WAI-ARIA tooltip pattern — wire that relationship up here once,
+  // rather than requiring every call site to do it by hand.
+  const describesTrigger = options.role === "tooltip";
+  if (describesTrigger) trigger.setAttribute("aria-describedby", box.id);
   const appendTarget = resolveAppendTarget(options.appendTo, trigger);
   const middleware = [
     offset(options.arrow === false ? 8 : 7),
@@ -486,6 +492,7 @@ function createFloating(trigger, initialContent, overrides = {}) {
     instances.delete(instance);
     if (trigger._tooltip === instance) delete trigger._tooltip;
     if (popper._tooltip === instance) delete popper._tooltip;
+    if (describesTrigger) trigger.removeAttribute("aria-describedby");
     options.onDestroy?.(instance);
   }
 
@@ -538,12 +545,33 @@ function initDeclarativeTooltips() {
     const content = element.getAttribute("data-tooltip-content");
     if (!content) return;
 
-    createTooltip(element, content, {
+    // A click-triggered panel is a dialog, not a tooltip (role="tooltip" is
+    // reserved for hover/focus-only content per the WAI-ARIA tooltip pattern).
+    const isClickTriggered = element.getAttribute("data-tooltip-trigger") === "click";
+
+    const instance = createTooltip(element, content, {
       placement: element.getAttribute("data-tooltip-placement") || "top",
       theme: element.getAttribute("data-tooltip-theme") || "tooltip-light",
+      ...(isClickTriggered
+        ? {
+          trigger: "click",
+          role: "dialog",
+          onShow() { element.setAttribute("aria-expanded", "true"); },
+          onHide() { element.setAttribute("aria-expanded", "false"); },
+        }
+        : {}),
     });
 
-    element.setAttribute("role", "tooltip");
+    if (isClickTriggered) {
+      // Not a native <button>, so Enter/Space need wiring up by hand.
+      element.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        instance.show();
+      });
+    } else {
+      element.setAttribute("role", "tooltip");
+    }
   });
 }
 

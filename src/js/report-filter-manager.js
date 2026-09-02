@@ -1245,15 +1245,18 @@ export function renderActiveFiltersBanner() {
 
   const helpIcon = document.createElement("button");
   helpIcon.type = "button";
-  helpIcon.className = "text-[11px] text-neutral-400 underline decoration-dotted underline-offset-4 transition-colors hover:text-white";
+  helpIcon.className = "inline-flex items-center text-neutral-400 transition-colors hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 rounded-sm";
   helpIcon.setAttribute("aria-label", "Filtering tips");
-  helpIcon.textContent = "(?)";
+  helpIcon.setAttribute("aria-haspopup", "dialog");
+  helpIcon.setAttribute("aria-expanded", "false");
+  helpIcon.innerHTML = '<i class="ph ph-info inline-block text-[16px] leading-none" aria-hidden="true"></i>';
   formHeading.appendChild(helpIcon);
 
   const helpEl = document.createElement("div");
   helpEl.className = "p-2 text-neutral-200 md:p-3";
 
   const helpHeading = document.createElement("p");
+  helpHeading.id = "filtering-tips-heading";
   helpHeading.className = "mb-2 text-sm font-semibold text-white";
   helpHeading.textContent = "Filtering tips";
   helpEl.appendChild(helpHeading);
@@ -1275,7 +1278,18 @@ export function renderActiveFiltersBanner() {
     theme: "popover",
     maxWidth: 320,
     placement: "bottom-start",
+    trigger: "click",
+    role: "dialog",
     contentElement: helpEl,
+    onShow() {
+      helpIcon.setAttribute("aria-expanded", "true");
+    },
+    onMount(instance) {
+      instance?.popper?.querySelector(".tooltip-box")?.setAttribute("aria-labelledby", "filtering-tips-heading");
+    },
+    onHide() {
+      helpIcon.setAttribute("aria-expanded", "false");
+    }
   });
 
   filterForm.appendChild(formHeading);

@@ -1328,11 +1328,6 @@ function setupHeaderTooltip(element, rawKey, dataType) {
       theme: 'tooltip-light',
       delay: [500, 0] // Don't pop up while the mouse is just passing through the header row.
     });
-
-    if (!isInteractiveSort) {
-      element.setAttribute('aria-controls', `${key}_info`);
-      element.setAttribute('aria-labelledby', `${key}_info`);
-    }
   }
 }
 
