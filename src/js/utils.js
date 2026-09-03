@@ -210,6 +210,21 @@ export function formatDateToISO(date) {
 }
 
 /**
+ * Clips an ISO end date to six months ago when it's more recent than that,
+ * to account for OA.Report's manual DAS-checking lag.
+ *
+ * @param {string} endDateISO - The selected end date, as YYYY-MM-DD.
+ * @param {Date} [today=new Date()] - Injectable for testing.
+ * @returns {string} The original end date, or six-months-ago if it was more recent.
+ */
+export function clipEndDateToSixMonthsAgo(endDateISO, today = new Date()) {
+  const cutoff = new Date(today);
+  cutoff.setMonth(cutoff.getMonth() - 6);
+  const cutoffISO = formatDateToISO(cutoff);
+  return endDateISO > cutoffISO ? cutoffISO : endDateISO;
+}
+
+/**
  * Updates the global date range used in queries, refreshes readable dates in the UI,
  * and emits an event signalling the range is ready.
  *

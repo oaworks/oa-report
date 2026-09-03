@@ -9,7 +9,7 @@
 // Imports
 // =================================================
 
-import { dateRange, startYear, endYear, displayNone, changeOpacity, makeNumberReadable, makeTabCountReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings, copyToClipboard, escapeHtmlEntities } from './utils.js';
+import { dateRange, startYear, endYear, displayNone, changeOpacity, makeNumberReadable, makeTabCountReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings, copyToClipboard, escapeHtmlEntities, clipEndDateToSixMonthsAgo } from './utils.js';
 import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, INSIGHT_EXPLORE_MAPPINGS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS, DEFAULT_ACTION_EMPTY_STATE_MESSAGE, DEFAULT_NO_AUTHOR_FILTERED_MESSAGE, DEFAULT_MULTIPLE_AUTHORS_FILTERED_MESSAGE, LICENSE_CODES, SEGMENTED_PILL_CLASSES, TAB_COUNT_BADGE_CLASSES, resolveFieldDefinition } from './constants.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { initActionTabs, formatDoiEpmcListForClipboard, getAuthorFilterCount } from './actions.js';
@@ -44,10 +44,13 @@ const insightAggregateCache = new Map();
  *
  * @param {Object} orgData - Organisation record from the org index response.
  * @param {string} filterId - Analysis filter ID, such as `is_paper`.
+ * @param {boolean} [applySixMonthOffset=false] - Clip the end date to six
+ * months ago when it's more recent than that, for fields with a manual
+ * checking lag (currently DAS only — see INSIGHTS_CARDS' sixMonthLagOffset).
  * @returns {Promise<Object|null>} Flattened aggregate metrics, or null when the
  * filter cannot be resolved.
  */
-function fetchExploreInsightMetrics(orgData, filterId) {
+function fetchExploreInsightMetrics(orgData, filterId, applySixMonthOffset = false) {
   const suffix = orgData?.hits?.hits?.[0]?._source?.key_suffix;
   const analysis = orgData?.hits?.hits?.[0]?._source?.analysis || {};
   const filterQuery = analysis?.[filterId]?.query;
@@ -60,16 +63,17 @@ function fetchExploreInsightMetrics(orgData, filterId) {
     decodeAndReplaceUrlEncodedChars(filterQuery),
     getDecodedUrlQuery()
   );
+  const effectiveEndYear = applySixMonthOffset ? clipEndDateToSixMonthsAgo(endYear) : endYear;
   const cacheKey = JSON.stringify({
     suffix,
     filterId,
     query: decodedQuery,
     startYear,
-    endYear
+    endYear: effectiveEndYear
   });
 
   if (!insightAggregateCache.has(cacheKey)) {
-    const postData = getInsightsAggregationQuery(suffix, decodedQuery, startYear, endYear);
+    const postData = getInsightsAggregationQuery(suffix, decodedQuery, startYear, effectiveEndYear);
 
     insightAggregateCache.set(
       cacheKey,
