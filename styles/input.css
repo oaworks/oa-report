@@ -371,7 +371,7 @@
 }
 
 .tooltip-box[data-theme~='popover'] .tooltip-arrow {
-  color: #171717;
+  color: rgb(67, 68, 70);
 }
 
 /* Light bubble variant: reads clearly without a border. */

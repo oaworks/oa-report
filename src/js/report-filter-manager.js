@@ -1223,8 +1223,6 @@ export function renderActiveFiltersBanner() {
   // Popover content: clear-all (if active) + add-filter form
   const pop = document.createElement("div");
   pop.className = "js-filters-popover text-xs text-neutral-200 md:p-4 md:text-sm";
-  pop.setAttribute("role", "dialog");
-  pop.setAttribute("aria-labelledby", "js-filters-form-title");
   pop.style.maxWidth = "90vw";
   pop.style.minWidth = "320px";
 
@@ -1313,7 +1311,9 @@ export function renderActiveFiltersBanner() {
     placement: "bottom-start",
     offset: 0,
     onMount(instance) {
-      instance?.popper?.querySelector(".tooltip-box")?.classList.add("filters-popover-box", "mt-2");
+      const box = instance?.popper?.querySelector(".tooltip-box");
+      box?.classList.add("filters-popover-box", "mt-2");
+      box?.setAttribute("aria-labelledby", "js-filters-form-title");
       // The Filtering-tips icon only enters the live document once this panel
       // mounts, so it can't be wired up until now (safe to call repeatedly).
       initDeclarativeTooltips();
