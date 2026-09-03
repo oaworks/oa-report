@@ -1205,8 +1205,8 @@ export function showUnavailableCard(cardContents) {
   }
 
   // Muted card styling — no hover/jump affordance, since there's nothing to act on.
-  // Drop the "projected" dashed border/background too, and hide its "(proj.)" marker:
-  // there's nothing to project from when the card itself is unavailable.
+  // Drop the "Projected" dashed border/background too, and hide its badges:
+  // there's nothing to project from, or qualify, when the card is unavailable.
   cardContents.classList.remove(
     'bg-neutral-800', 'bg-neutral-850', 'border-neutral-700', 'border-dashed', 'border-neutral-500',
     'hover:bg-neutral-750', 'hover:shadow-md', 'hover:-translate-y-0.5', 'focus-within:bg-neutral-750', 'focus-within:shadow-md', 'focus-within:-translate-y-0.5'
@@ -1216,6 +1216,10 @@ export function showUnavailableCard(cardContents) {
   const projectedMarker = cardContents.querySelector('.js_projected_marker');
   if (projectedMarker) {
     projectedMarker.classList.add('hidden');
+  }
+  const denominatorBasisMarker = cardContents.querySelector('.js_denominator_basis_marker');
+  if (denominatorBasisMarker) {
+    denominatorBasisMarker.classList.add('hidden');
   }
 
   // Reset the bar track without rendering any value bar.
@@ -1227,7 +1231,7 @@ export function showUnavailableCard(cardContents) {
 }
 
 /**
- * Overrides an Insights card's static "(proj.)" styling (see card.njk) once
+ * Overrides an Insights card's static "Projected" styling (see card.njk) once
  * the actual completeness of its data is known — used for DAS cards, whose
  * template always renders as projected regardless of the selected date range.
  *
@@ -1244,6 +1248,23 @@ export function setCardProjected(cardContents, isProjected) {
   cardContents.classList.toggle('bg-neutral-850', isProjected);
   cardContents.classList.toggle('border-neutral-700', !isProjected);
   cardContents.classList.toggle('bg-neutral-800', !isProjected);
+}
+
+/**
+ * Sets an Insights card's secondary "denominator basis" label (e.g. "Of
+ * covered") or hides it, for cards whose percentage is of a subset rather
+ * than the section total.
+ *
+ * @param {HTMLElement} cardContents - The <article> element representing the insight card.
+ * @param {string} [text] - The label to show, or omit/empty to hide it.
+ */
+export function setDenominatorBasisLabel(cardContents, text) {
+  if (!cardContents) return;
+
+  const marker = cardContents.querySelector('.js_denominator_basis_marker');
+  if (!marker) return;
+  marker.textContent = text || '';
+  marker.classList.toggle('hidden', !text);
 }
 
 /**

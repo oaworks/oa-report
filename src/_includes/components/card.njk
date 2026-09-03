@@ -5,6 +5,7 @@
 }) }}
 #}
 {% from "components/info-trigger-icon.njk" import triggerIconClasses %}
+{% set badgeBaseClasses = "items-center rounded-full px-1.5 py-px text-[9px] font-semibold uppercase tracking-wide" %}
 
 <article
   id="{{ params.id }}"
@@ -52,13 +53,16 @@
         {# Body aligned to bottom #}
         <div class="flex items-end flex-1">
           <div class="self-end cursor-text text-white">
-            <p class="text-xl font-bold leading-none" aria-live="polite">
+            <p class="flex flex-wrap items-baseline gap-1 text-xl font-bold leading-none" aria-live="polite">
               <span id="percent_{{ params.id }}">
                 00%
               </span>
               {% if params.projected %}
-                <sup class="js_projected_marker align-middle text-xs font-semibold normal-case text-neutral-300">(proj.)</sup>
+                <span class="js_projected_marker inline-flex {{ badgeBaseClasses }} bg-state-projected text-neutral-100">Projected</span>
               {% endif %}
+              {# Flags a percentage as being of a subset, not the section total (e.g.
+                 "Of covered"). Mutually exclusive with Projected — set by getInsight(). #}
+              <span class="js_denominator_basis_marker hidden text-[9px] font-semibold uppercase tracking-wide text-neutral-100"></span>
             </p>
             <p class="sr-only mt-1 text-xs font-semibold text-neutral-400" aria-live="polite">
               <span id="articles_{{ params.id }}">
