@@ -9,7 +9,7 @@
 // Imports
 // =================================================
 
-import { dateRange, startYear, endYear, displayNone, changeOpacity, makeNumberReadable, makeTabCountReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings, copyToClipboard, escapeHtmlEntities, clipEndDateToSixMonthsAgo } from './utils.js';
+import { dateRange, startYear, endYear, displayNone, changeOpacity, makeNumberReadable, makeTabCountReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setCardProjected, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings, copyToClipboard, escapeHtmlEntities, clipEndDateToSixMonthsAgo, getDasCompletenessStatus } from './utils.js';
 import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, INSIGHT_EXPLORE_MAPPINGS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS, DEFAULT_ACTION_EMPTY_STATE_MESSAGE, DEFAULT_NO_AUTHOR_FILTERED_MESSAGE, DEFAULT_MULTIPLE_AUTHORS_FILTERED_MESSAGE, LICENSE_CODES, SEGMENTED_PILL_CLASSES, TAB_COUNT_BADGE_CLASSES, resolveFieldDefinition } from './constants.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { initActionTabs, formatDoiEpmcListForClipboard, getAuthorFilterCount } from './actions.js';
@@ -260,10 +260,12 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
     "has_open_code"
   ];
 
-  const isOutsideAvailabilityWindow = (analysisEntry) =>
+  const isOutsideAvailabilityWindow = (analysisEntry, cardId) =>
     !analysisEntry
     || (analysisEntry.available_from && endYear < analysisEntry.available_from)
-    || (analysisEntry.available_until && startYear > analysisEntry.available_until);
+    || (analysisEntry.available_until && startYear > analysisEntry.available_until)
+    || (INSIGHT_CARD_BY_NUMERATOR.get(cardId)?.sixMonthLagOffset
+      && getDasCompletenessStatus(startYear, endYear) === 'unavailable');
 
   // Total-type figures render inline in their section heading (see insights.njk)
   // instead of as a grid card, but still go through getInsight() for the
@@ -315,7 +317,7 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
       if (!card) return;
       const clonedCard = card.cloneNode(true);
       // Show a placeholder when the API returns no data or the date range is outside the card's available window.
-      const unavailable = isOutsideAvailabilityWindow(analysisEntry);
+      const unavailable = isOutsideAvailabilityWindow(analysisEntry, cardId);
       if (unavailable) {
         showUnavailableCard(clonedCard);
       }
@@ -336,7 +338,7 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
         } else {
           headingTotalEl.classList.remove("hidden");
           headingTotalPresent = true;
-          if (isOutsideAvailabilityWindow(analysisEntry)) {
+          if (isOutsideAvailabilityWindow(analysisEntry, headingTotalId)) {
             showUnavailableCard(headingTotalEl);
           } else {
             renderedIds.add(headingTotalId);
@@ -534,6 +536,12 @@ export function initInsightsAndActions(org) {
         // Ensure card is reset from any prior "unavailable" state before fetching fresh data
         resetBarChart(cardContents);
 
+        // DAS cards' "(proj.)" styling reflects whether the range still falls
+        // within the six-month manual-review lag, rather than always showing.
+        if (INSIGHT_CARD_BY_NUMERATOR.get(numerator)?.sixMonthLagOffset) {
+          setCardProjected(cardContents, getDasCompletenessStatus(startYear, endYear) === 'projected');
+        }
+
         // Locate placeholders
         const percentageContents = document.getElementById(`percent_${numerator}`);
         const figureDetails      = document.getElementById(`articles_${numerator}`);
@@ -575,7 +583,7 @@ export function initInsightsAndActions(org) {
         // Mapped cards can read directly from Explore's all-values aggregate.
         if (exploreMapping) {
           // Reuse the same aggregate source as Explore Years for matching totals.
-          const cardPromise = fetchExploreInsightMetrics(orgData, exploreMapping.exploreFilter)
+          const cardPromise = fetchExploreInsightMetrics(orgData, exploreMapping.exploreFilter, INSIGHT_CARD_BY_NUMERATOR.get(numerator)?.sixMonthLagOffset)
             .then((metrics) => {
               const numeratorCount = metrics?.[exploreMapping.numeratorMetric];
               const denominatorCount = Array.isArray(exploreMapping.denominatorSumOf)

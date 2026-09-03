@@ -210,6 +210,19 @@ export function formatDateToISO(date) {
 }
 
 /**
+ * The ISO date six months before today, to account for OA.Report's manual
+ * DAS-checking lag.
+ *
+ * @param {Date} [today=new Date()] - Injectable for testing.
+ * @returns {string} YYYY-MM-DD.
+ */
+export function getSixMonthsAgoISO(today = new Date()) {
+  const cutoff = new Date(today);
+  cutoff.setMonth(cutoff.getMonth() - 6);
+  return formatDateToISO(cutoff);
+}
+
+/**
  * Clips an ISO end date to six months ago when it's more recent than that,
  * to account for OA.Report's manual DAS-checking lag.
  *
@@ -218,10 +231,26 @@ export function formatDateToISO(date) {
  * @returns {string} The original end date, or six-months-ago if it was more recent.
  */
 export function clipEndDateToSixMonthsAgo(endDateISO, today = new Date()) {
-  const cutoff = new Date(today);
-  cutoff.setMonth(cutoff.getMonth() - 6);
-  const cutoffISO = formatDateToISO(cutoff);
+  const cutoffISO = getSixMonthsAgoISO(today);
   return endDateISO > cutoffISO ? cutoffISO : endDateISO;
+}
+
+/**
+ * Classifies a DAS-lagged field's selected date range against the six-month
+ * manual-review lag: a range fully within the last six months has no
+ * reliable data yet, a range partly within it can only show a projection,
+ * and a fully historical range is complete.
+ *
+ * @param {string} startDateISO - YYYY-MM-DD.
+ * @param {string} endDateISO - YYYY-MM-DD.
+ * @param {Date} [today=new Date()] - Injectable for testing.
+ * @returns {'unavailable'|'projected'|'complete'}
+ */
+export function getDasCompletenessStatus(startDateISO, endDateISO, today = new Date()) {
+  const cutoffISO = getSixMonthsAgoISO(today);
+  if (startDateISO > cutoffISO) return 'unavailable';
+  if (endDateISO > cutoffISO) return 'projected';
+  return 'complete';
 }
 
 /**
@@ -1195,6 +1224,26 @@ export function showUnavailableCard(cardContents) {
     footerEl.className = INSIGHT_BAR_TRACK_UNAVAILABLE_CLASSES;
     footerEl.innerHTML = '';
   }
+}
+
+/**
+ * Overrides an Insights card's static "(proj.)" styling (see card.njk) once
+ * the actual completeness of its data is known — used for DAS cards, whose
+ * template always renders as projected regardless of the selected date range.
+ *
+ * @param {HTMLElement} cardContents - The <article> element representing the insight card.
+ * @param {boolean} isProjected
+ */
+export function setCardProjected(cardContents, isProjected) {
+  if (!cardContents) return;
+
+  const marker = cardContents.querySelector('.js_projected_marker');
+  if (marker) marker.classList.toggle('hidden', !isProjected);
+  cardContents.classList.toggle('border-dashed', isProjected);
+  cardContents.classList.toggle('border-neutral-500', isProjected);
+  cardContents.classList.toggle('bg-neutral-850', isProjected);
+  cardContents.classList.toggle('border-neutral-700', !isProjected);
+  cardContents.classList.toggle('bg-neutral-800', !isProjected);
 }
 
 /**
