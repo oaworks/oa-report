@@ -136,6 +136,48 @@ function buildInsightDefinitionsHtml(numerator, insightInfo = '', helpTextByKey 
   return buildInsightTooltipSection(contentHtml, showHeading);
 }
 
+/**
+ * Wires a definition-only tooltip onto unavailable cards' info triggers.
+ * These never go through getInsight() (no numerator/denominator to show), so
+ * without this their trigger button looks clickable but silently does nothing.
+ *
+ * @param {Set<string>} renderedInsightIds - Numerators already wired by getInsight().
+ * @param {Object} analysis - The org's analysis object (for each numerator's help_text).
+ * @param {Object} helpTextByKey - Org-specific help text, keyed by field id.
+ * @returns {void}
+ */
+function wireUnavailableInsightTooltips(renderedInsightIds, analysis, helpTextByKey) {
+  INSIGHTS_CARDS.forEach(({ numerator, info }) => {
+    if (renderedInsightIds.has(numerator)) return;
+
+    const cardContents = document.getElementById(numerator);
+    const tooltipTarget = cardContents?.querySelector('.js_insight_trigger');
+    if (!(tooltipTarget instanceof HTMLButtonElement) || tooltipTarget._tooltip) return;
+
+    const definitionHtml = buildInsightDefinitionsHtml(numerator, info, helpTextByKey, analysis?.[numerator]?.help_text || '');
+    const unavailableNoteHtml = '<div class="mb-2 font-semibold text-carnation-800">Unavailable for the selected date range.</div>';
+
+    const instance = createPopover(tooltipTarget, `${unavailableNoteHtml}${definitionHtml}`, {
+      placement: 'right',
+      theme: 'tooltip-light',
+      arrow: true,
+      role: 'dialog'
+    });
+
+    tooltipTarget.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        instance.show();
+      }
+    });
+
+    tooltipTarget.id = tooltipTarget.id || `${numerator}-card-trigger`;
+    tooltipTarget.setAttribute('aria-controls', instance.popper.id);
+    tooltipTarget.setAttribute('title', 'More information on this metric');
+    tooltipTarget.setAttribute('aria-description', 'Press Enter to show more information for this metric.');
+  });
+}
+
 // =================================================
 // Org data
 // =================================================
@@ -436,6 +478,7 @@ export function initInsightsAndActions(org) {
     // Loop through each Insight card from constants.js and call getInsight
     const policyUrl = orgData?.hits?.hits?.[0]?._source?.policy?.url;
     const helpTextByKey = orgData?.hits?.hits?.[0]?._source?.policy?.help_text || {};
+    wireUnavailableInsightTooltips(renderedInsightIds, analysis, helpTextByKey);
     const cardPromises = [];
     INSIGHTS_CARDS.forEach((cardConfig) => {
       if (!renderedInsightIds.has(cardConfig.numerator)) {
@@ -513,9 +556,11 @@ export function initInsightsAndActions(org) {
           cardContents._insightTooltipEventsBound = true;
         }
         const updateTooltipContent = () => {
-          const detailHtml = (denominator && figureDetails)
-            ? `<div class="mb-2 font-semibold">${figureDetails.innerHTML}</div>`
-            : "";
+          const detailHtml = !denominator
+            ? ""
+            : figureDetails?.innerHTML
+              ? `<div class="mb-2 font-semibold">${figureDetails.innerHTML}</div>`
+              : '<div class="mb-2 font-semibold text-carnation-800">Unavailable for the selected date range.</div>';
           const definitionHtml = buildInsightDefinitionsHtml(
             numerator,
             insightInfo,
