@@ -137,6 +137,36 @@ function buildInsightDefinitionsHtml(numerator, insightInfo = '', helpTextByKey 
 }
 
 /**
+ * Wires an Insight info trigger to a click popover: creates the instance,
+ * Enter/Space keyboard handling, and the shared aria attributes.
+ *
+ * @param {HTMLButtonElement} tooltipTarget
+ * @param {string} numerator
+ * @param {string} content - Initial popover content (may be set later via instance.setContent()).
+ * @returns {ReturnType<typeof createPopover>}
+ */
+function wireInsightTooltipTrigger(tooltipTarget, numerator, content) {
+  const instance = createPopover(tooltipTarget, content, {
+    placement: 'right',
+    theme: 'tooltip-light'
+  });
+
+  tooltipTarget.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      instance.show();
+    }
+  });
+
+  tooltipTarget.id = tooltipTarget.id || `${numerator}-card-trigger`;
+  tooltipTarget.setAttribute('aria-controls', instance.popper.id);
+  tooltipTarget.setAttribute('title', 'More information on this metric');
+  tooltipTarget.setAttribute('aria-description', 'Press Enter to show more information for this metric.');
+
+  return instance;
+}
+
+/**
  * Wires a definition-only tooltip onto unavailable cards' info triggers.
  * These never go through getInsight() (no numerator/denominator to show), so
  * without this their trigger button looks clickable but silently does nothing.
@@ -157,24 +187,7 @@ function wireUnavailableInsightTooltips(renderedInsightIds, analysis, helpTextBy
     const definitionHtml = buildInsightDefinitionsHtml(numerator, info, helpTextByKey, analysis?.[numerator]?.help_text || '');
     const unavailableNoteHtml = '<div class="mb-2 font-semibold text-carnation-800">Unavailable for the selected date range.</div>';
 
-    const instance = createPopover(tooltipTarget, `${unavailableNoteHtml}${definitionHtml}`, {
-      placement: 'right',
-      theme: 'tooltip-light',
-      arrow: true,
-      role: 'dialog'
-    });
-
-    tooltipTarget.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        instance.show();
-      }
-    });
-
-    tooltipTarget.id = tooltipTarget.id || `${numerator}-card-trigger`;
-    tooltipTarget.setAttribute('aria-controls', instance.popper.id);
-    tooltipTarget.setAttribute('title', 'More information on this metric');
-    tooltipTarget.setAttribute('aria-description', 'Press Enter to show more information for this metric.');
+    wireInsightTooltipTrigger(tooltipTarget, numerator, `${unavailableNoteHtml}${definitionHtml}`);
   });
 }
 
@@ -533,27 +546,10 @@ export function initInsightsAndActions(org) {
         // Tooltip to contain Insight info + figure details. Always click-triggered, not hover
         const tooltipTarget = cardContents.querySelector('.js_insight_trigger');
         if (!(tooltipTarget instanceof HTMLButtonElement)) return;
-        const tooltipTargetId = tooltipTarget.id || `${numerator}-card-trigger`;
-        tooltipTarget.id = tooltipTargetId;
         let instance = cardContents._insightTooltip;
         if (!instance) {
-          instance = createPopover(tooltipTarget, '', {
-            placement: 'right',
-            theme: 'tooltip-light',
-            arrow: true,
-            role: 'dialog'
-          });
+          instance = wireInsightTooltipTrigger(tooltipTarget, numerator, '');
           cardContents._insightTooltip = instance;
-        }
-        if (!cardContents._insightTooltipEventsBound) {
-          tooltipTarget.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              instance.show();
-            }
-          });
-
-          cardContents._insightTooltipEventsBound = true;
         }
         const updateTooltipContent = () => {
           const detailHtml = !denominator
@@ -569,12 +565,6 @@ export function initInsightsAndActions(org) {
           );
           instance.setContent(`${detailHtml}${definitionHtml}`);
         };
-
-        // Accessibility / tooltip IDs
-        const tooltipID = instance.popper.id;
-        tooltipTarget.setAttribute('aria-controls', tooltipID);
-        tooltipTarget.setAttribute('title', 'More information on this metric');
-        tooltipTarget.setAttribute('aria-description', 'Press Enter to show more information for this metric.');
 
         const exploreMapping = INSIGHT_EXPLORE_MAPPINGS[numerator] || null;
 

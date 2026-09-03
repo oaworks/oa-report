@@ -660,8 +660,6 @@ function createDateRangeForm() {
   // Custom date range popover content
   const pop = document.createElement("div");
   pop.className = "w-56 p-2 text-xs text-neutral-200 md:p-3 md:text-sm";
-  pop.setAttribute("role", "dialog");
-  pop.setAttribute("aria-labelledby", "js-date-range-form-title");
 
   // Title for the popover dialog and the form below (for screen readers)
   const formTitle = document.createElement("h3");
@@ -737,7 +735,9 @@ function createDateRangeForm() {
       // Keep values in sync before mount/shown hooks move focus.
     },
     onMount(instance) {
-      instance?.popper?.querySelector(".tooltip-box")?.classList.add("mt-2");
+      const box = instance?.popper?.querySelector(".tooltip-box");
+      box?.classList.add("mt-2");
+      box?.setAttribute("aria-labelledby", "js-date-range-form-title");
       requestAnimationFrame(() => popoverFlow.focusFirst());
     },
     onShown() {

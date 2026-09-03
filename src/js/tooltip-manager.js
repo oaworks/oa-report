@@ -627,7 +627,7 @@ export function createPopover(trigger, content, options = {}) {
     placement: "bottom",
     trigger: "click",
     theme: "popover",
-    arrow: false,
+    role: "dialog",
     ...options,
   };
 
