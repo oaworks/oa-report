@@ -1281,13 +1281,18 @@ function setupHeaderTooltip(element, rawKey, dataType) {
 
   if (isSortedColumn) {
     const nextDirection = sortIndicator.direction === "ascending" ? "descending" : "ascending";
+    const sortDescription = `${labelText}, currently sorted ${sortIndicator.direction}. Click to sort ${nextDirection}.`;
     const sortToggle = document.createElement("button");
     sortToggle.type = "button";
     sortToggle.className = `inline-flex items-center ${SORT_TRIGGER_CLASSES}`;
     sortToggle.dataset.exploreSortKey = key;
-    sortToggle.setAttribute("aria-label", `${labelText}, currently sorted ${sortIndicator.direction}. Activate to sort ${nextDirection}.`);
+    sortToggle.setAttribute("aria-label", sortDescription);
     sortToggle.addEventListener("click", () => {
       handleExploreSortToggle(key, labelText);
+    });
+    createTooltip(sortToggle, sortDescription, {
+      placement: 'bottom',
+      theme: 'tooltip-light'
     });
 
     const icon = document.createElement("i");
