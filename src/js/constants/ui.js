@@ -15,7 +15,7 @@ export const DATE_SELECTION_BUTTON_CLASSES = {
 
 export const CONTROL_FOCUS_RING_CLASSES = "focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-900";
 
-export const TOOLTIP_TRIGGER_ICON_CLASSES = "inline-flex h-5 w-5 items-center justify-center text-neutral-400 transition-colors hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400";
+export const TOOLTIP_TRIGGER_ICON_CLASSES = "inline-flex h-6 w-6 items-center justify-center text-neutral-100 transition-colors hover:text-carnation-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400";
 export const CONTROL_FIELD_SHELL_CLASSES = "rounded-sm border border-neutral-600 bg-neutral-900/50 p-0.5 shadow-sm transition-colors hover:border-neutral-400 focus-within:border-neutral-300";
 export const CONTROL_SELECT_CLASSES = "appearance-none cursor-pointer rounded-sm bg-transparent px-3 py-1.5 pr-8 text-xs font-semibold uppercase tracking-wide text-neutral-100 transition-colors hover:bg-neutral-800 hover:text-white";
 export const SORT_TRIGGER_CLASSES = `group cursor-pointer rounded-sm text-inherit transition-colors ${CONTROL_FOCUS_RING_CLASSES}`;
