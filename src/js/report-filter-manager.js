@@ -32,7 +32,8 @@ import {
   resolveFieldDefinition,
   DATE_SELECTION_BUTTON_CLASSES,
   CONTROL_FOCUS_RING_CLASSES,
-  TOOLTIP_TRIGGER_ICON_CLASSES
+  INFO_TRIGGER_ICON_CLASSES,
+  INFO_TRIGGER_ICON_HTML
 } from "./constants.js";
 import { SEARCH_FILTER_FIELD_MAP, iconForField } from "./constants/filter-fields.js";
 
@@ -1247,7 +1248,7 @@ export function renderActiveFiltersBanner() {
   // filter's own icon, Actions shown, Open draft).
   const helpIcon = document.createElement("button");
   helpIcon.type = "button";
-  helpIcon.className = `tooltip ${TOOLTIP_TRIGGER_ICON_CLASSES} rounded-sm`;
+  helpIcon.className = `tooltip ${INFO_TRIGGER_ICON_CLASSES} rounded-sm`;
   helpIcon.setAttribute("aria-label", "Filtering tips");
   helpIcon.setAttribute("data-tooltip-trigger", "click");
   helpIcon.setAttribute("data-tooltip-placement", "bottom-start");
@@ -1261,7 +1262,7 @@ export function renderActiveFiltersBanner() {
       <li>Search is <strong>case-insensitive</strong>, but <strong>full words</strong> work best; abbreviations like <code>OUP</code> will not match <code>Oxford University Press</code>.</li>
     </ul>
   `);
-  helpIcon.innerHTML = '<i class="ph ph-info inline-block text-[16px] leading-none" aria-hidden="true"></i>';
+  helpIcon.innerHTML = INFO_TRIGGER_ICON_HTML;
   formHeading.appendChild(helpIcon);
 
   filterForm.appendChild(formHeading);

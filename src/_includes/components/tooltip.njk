@@ -10,7 +10,7 @@
 Click-triggered (a dialog) by default; pass trigger: "hover" for a true hover/focus tooltip.
 #}
 
-{% from "components/tooltip-trigger-icon.njk" import triggerIconClasses %}
+{% from "components/info-trigger-icon.njk" import triggerIconClasses %}
 {% set triggerClasses = "tooltip " + triggerIconClasses() + " rounded-sm" %}
 
 {% if params.sup %}

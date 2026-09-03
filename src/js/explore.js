@@ -9,7 +9,7 @@
 
 import DOMPurify from "dompurify";
 import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, escapeQueryValue, normaliseFieldId, makeNumberReadable, makeTabCountReadable, announce, orcidDisplayNames } from "./utils.js";
-import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, SEGMENTED_PILL_CLASSES, VIEW_TAB_CLASSES, CONTROL_FIELD_SHELL_CLASSES, CONTROL_FOCUS_RING_CLASSES, CONTROL_SELECT_CLASSES, SORT_TRIGGER_CLASSES, SORT_LABEL_CLASSES, SORT_CARET_CHIP_CLASSES, TAB_COUNT_BADGE_CLASSES, EXPLORE_SUMMARY_ROW_CLASSES, resolveFieldDefinition } from "./constants.js";
+import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, SEGMENTED_PILL_CLASSES, VIEW_TAB_CLASSES, CONTROL_FIELD_SHELL_CLASSES, CONTROL_FOCUS_RING_CLASSES, CONTROL_SELECT_CLASSES, SORT_TRIGGER_CLASSES, SORT_CARET_CHIP_CLASSES, TAB_COUNT_BADGE_CLASSES, EXPLORE_SUMMARY_ROW_CLASSES, INFO_TRIGGER_ICON_CLASSES, INFO_TRIGGER_ICON_HTML, resolveFieldDefinition } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { startLoading, stopLoading } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
@@ -17,7 +17,7 @@ import { renderActiveFiltersBanner } from './report-filter-manager.js';
 import { orgDataPromise, initInsightsAndActions } from './insights-and-actions.js';
 import { AUTHOR_BREAKDOWN_TERM, getAggregatedDataQuery, formatAggregationBucket, getFieldFilterValues, toTermField } from './aggregated-data-query.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
-import { createTooltip } from './tooltip-manager.js';
+import { createTooltip, createPopover } from './tooltip-manager.js';
 import { buildDefinitionTooltipContent } from './tooltip-content.js';
 
 // =================================================
@@ -1260,7 +1260,6 @@ function setupHeaderTooltip(element, rawKey, dataType) {
     : (labelData && labelData.label ? labelData.label : key);
   const sortIndicator = getExploreSortIndicator(dataType);
   const isSortedColumn = sortIndicator?.key === key;
-  const isInteractiveSort = Boolean(isSortedColumn && sortIndicator);
 
   element.innerHTML = "";
 
@@ -1271,41 +1270,39 @@ function setupHeaderTooltip(element, rawKey, dataType) {
   })();
   const isRightAligned = element.classList.contains("text-right");
   const contentClassName = `inline-flex w-full min-w-0 items-center gap-1 ${isRightAligned ? "justify-end" : "justify-start"}`;
-  const content = isInteractiveSort ? document.createElement("button") : document.createElement("span");
-  content.className = isInteractiveSort
-    ? `${contentClassName} ${SORT_TRIGGER_CLASSES}`
-    : contentClassName;
-
-  if (isInteractiveSort) {
-    const nextDirection = sortIndicator.direction === "ascending" ? "descending" : "ascending";
-    content.type = "button";
-    content.dataset.exploreSortKey = key;
-    content.setAttribute("aria-label", `${labelText}, currently sorted ${sortIndicator.direction}. Activate to sort ${nextDirection}.`);
-    content.addEventListener("click", () => {
-      handleExploreSortToggle(key, labelText);
-    });
-  }
+  // Plain wrapper — the sort toggle and info triggers are separate buttons
+  // within it, since a button can't be nested inside another button.
+  const content = document.createElement("span");
+  content.className = contentClassName;
 
   const labelSpan = document.createElement("span");
-  if (isInteractiveSort) {
-    labelSpan.className = SORT_LABEL_CLASSES;
-  }
   labelSpan.innerHTML = DOMPurify.sanitize(label);
   content.appendChild(labelSpan);
 
   if (isSortedColumn) {
+    const nextDirection = sortIndicator.direction === "ascending" ? "descending" : "ascending";
+    const sortToggle = document.createElement("button");
+    sortToggle.type = "button";
+    sortToggle.className = `inline-flex items-center ${SORT_TRIGGER_CLASSES}`;
+    sortToggle.dataset.exploreSortKey = key;
+    sortToggle.setAttribute("aria-label", `${labelText}, currently sorted ${sortIndicator.direction}. Activate to sort ${nextDirection}.`);
+    sortToggle.addEventListener("click", () => {
+      handleExploreSortToggle(key, labelText);
+    });
+
     const icon = document.createElement("i");
     icon.className = sortIndicator.direction === "ascending"
       ? `ph ph-caret-up ${SORT_CARET_CHIP_CLASSES}`
       : `ph ph-caret-down ${SORT_CARET_CHIP_CLASSES}`;
     icon.setAttribute("aria-hidden", "true");
-    content.appendChild(icon);
+    sortToggle.appendChild(icon);
 
     const srText = document.createElement("span");
     srText.className = "sr-only";
     srText.textContent = `Sorted ${sortIndicator.direction}`;
-    content.appendChild(srText);
+    sortToggle.appendChild(srText);
 
+    content.appendChild(sortToggle);
     element.setAttribute("aria-sort", sortIndicator.direction);
   } else {
     element.removeAttribute("aria-sort");
@@ -1318,11 +1315,14 @@ function setupHeaderTooltip(element, rawKey, dataType) {
     // Get additional help text from orgData if available
     const additionalHelpText = orgData.hits.hits[0]?._source.policy?.help_text?.[key] ?? null;
 
-    if (!isInteractiveSort) {
-      element.tabIndex = 0;
-    }
+    const infoButton = document.createElement("button");
+    infoButton.type = "button";
+    infoButton.className = INFO_TRIGGER_ICON_CLASSES;
+    infoButton.setAttribute("aria-label", `More information about ${labelText}`);
+    infoButton.innerHTML = INFO_TRIGGER_ICON_HTML;
+    content.appendChild(infoButton);
 
-    createTooltip(isInteractiveSort ? content : element, generateTooltipContent(labelData, additionalHelpText), {
+    createPopover(infoButton, generateTooltipContent(labelData, additionalHelpText), {
       placement: 'bottom',
       theme: 'tooltip-light'
     });
