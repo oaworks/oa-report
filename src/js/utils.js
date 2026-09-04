@@ -1273,17 +1273,19 @@ export function setDenominatorBasisLabel(cardContents, text) {
  * depending on whether the denominator is the full set of publications
  * or just a subset.
  *
- * @param {HTMLElement} cardEl         The <article> element for this insight
- * @param {number} numeratorCount      e.g. 2652
- * @param {number} denominatorCount    e.g. 3431
- * @param {string} denominatorID       e.g. "is_paper" or something else
- * @param {number} totalArticlesCount  e.g. 3821 (the full set of articles)
+ * @param {HTMLElement} cardEl           The <article> element for this insight
+ * @param {number} numeratorCount        e.g. 2652
+ * @param {number} denominatorCount      e.g. 3431
+ * @param {boolean} denominatorIsTotal   Whether the denominator IS the total (not just numerically
+ *   equal to it for this render) — e.g. true for is_free_to_read, false for coverage-style cards
+ *   like DAS or Policy-compliant, even on a date range where every article happens to be checked.
+ * @param {number} totalArticlesCount    e.g. 3821 (the full set of articles)
  */
 export function setBarChart(
   cardEl,
   numeratorCount,
   denominatorCount,
-  denominatorID,
+  denominatorIsTotal,
   totalArticlesCount
 ) {
   if (!cardEl) return;
@@ -1297,11 +1299,7 @@ export function setBarChart(
   if (!denominatorCount) return;
 
   // ----- CASE 1: Denominator is the full set => Single bar -----
-  if  (
-    denominatorID === 'is_paper' ||
-    denominatorID === 'is_preprint' ||
-    (denominatorCount && totalArticlesCount && denominatorCount === totalArticlesCount)
-  ) {
+  if (denominatorIsTotal) {
     const fraction = Math.round((numeratorCount / denominatorCount) * 100);
     barContainer.innerHTML = `
       <div
