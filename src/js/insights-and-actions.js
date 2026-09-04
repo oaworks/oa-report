@@ -623,7 +623,7 @@ export function initInsightsAndActions(org) {
                 cardContents,
                 numeratorCount,
                 denominatorCount,
-                exploreMapping.denominatorMetric || denominator,
+                exploreMapping.denominatorMetric === exploreMapping.totalMetric,
                 totalCount
               );
             })
