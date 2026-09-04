@@ -1149,7 +1149,8 @@ export function resetBarChart(cardContents) {
   if (!cardContents) return;
 
   // Remove the temporary unavailable-state surface, restoring the normal hover/jump affordance.
-  // "Projected" cards (see card.njk) get their dashed border/background back too.
+  // "Projected" cards (see card.njk) get their dashed border/background back too,
+  // and the pill re-reads "Of reviewed".
   const isProjected = !!cardContents.querySelector('.js_projected_marker');
   cardContents.classList.remove('bg-neutral-900', 'border-neutral-600');
   if (isProjected) {
@@ -1205,7 +1206,7 @@ export function showUnavailableCard(cardContents) {
   }
 
   // Muted card styling — no hover/jump affordance, since there's nothing to act on.
-  // Drop the "Projected" dashed border/background too, and hide its badges:
+  // Drop the "Projected" dashed border/background too, and hide its "Of reviewed" pill:
   // there's nothing to project from, or qualify, when the card is unavailable.
   cardContents.classList.remove(
     'bg-neutral-800', 'bg-neutral-850', 'border-neutral-700', 'border-dashed', 'border-neutral-500',
@@ -1231,7 +1232,7 @@ export function showUnavailableCard(cardContents) {
 }
 
 /**
- * Overrides an Insights card's static "Projected" styling (see card.njk) once
+ * Overrides an Insights card's static "Of reviewed" pill styling (see card.njk) once
  * the actual completeness of its data is known — used for DAS cards, whose
  * template always renders as projected regardless of the selected date range.
  *
