@@ -244,12 +244,12 @@ export function clipEndDateToSixMonthsAgo(endDateISO, today = new Date()) {
  * @param {string} startDateISO - YYYY-MM-DD.
  * @param {string} endDateISO - YYYY-MM-DD.
  * @param {Date} [today=new Date()] - Injectable for testing.
- * @returns {'unavailable'|'projected'|'complete'}
+ * @returns {'unavailable'|'reviewed'|'complete'}
  */
 export function getDasCompletenessStatus(startDateISO, endDateISO, today = new Date()) {
   const cutoffISO = getSixMonthsAgoISO(today);
   if (startDateISO > cutoffISO) return 'unavailable';
-  if (endDateISO > cutoffISO) return 'projected';
+  if (endDateISO > cutoffISO) return 'reviewed';
   return 'complete';
 }
 
@@ -1149,13 +1149,13 @@ export function resetBarChart(cardContents) {
   if (!cardContents) return;
 
   // Remove the temporary unavailable-state surface, restoring the normal hover/jump affordance.
-  // "Projected" cards (see card.njk) get their dashed border/background back too,
+  // "Reviewed" cards (see card.njk) get their dashed border/background back too,
   // and the pill re-reads "Of reviewed".
-  const isProjected = !!cardContents.querySelector('.js_projected_marker');
+  const isReviewed = !!cardContents.querySelector('.js_reviewed_marker');
   cardContents.classList.remove('bg-neutral-900', 'border-neutral-600');
-  if (isProjected) {
+  if (isReviewed) {
     cardContents.classList.add('border-dashed', 'border-neutral-500', 'bg-neutral-850');
-    cardContents.querySelector('.js_projected_marker').classList.remove('hidden');
+    cardContents.querySelector('.js_reviewed_marker').classList.remove('hidden');
   } else {
     cardContents.classList.add('border-neutral-700', 'bg-neutral-800');
   }
@@ -1206,7 +1206,7 @@ export function showUnavailableCard(cardContents) {
   }
 
   // Muted card styling — no hover/jump affordance, since there's nothing to act on.
-  // Drop the "Projected" dashed border/background too, and hide its "Of reviewed" pill:
+  // Drop the "Reviewed" dashed border/background too, and hide its "Of reviewed" pill:
   // there's nothing to project from, or qualify, when the card is unavailable.
   cardContents.classList.remove(
     'bg-neutral-800', 'bg-neutral-850', 'border-neutral-700', 'border-dashed', 'border-neutral-500',
@@ -1214,9 +1214,9 @@ export function showUnavailableCard(cardContents) {
   );
   cardContents.classList.add('bg-neutral-900', 'border-neutral-600');
 
-  const projectedMarker = cardContents.querySelector('.js_projected_marker');
-  if (projectedMarker) {
-    projectedMarker.classList.add('hidden');
+  const reviewedMarker = cardContents.querySelector('.js_reviewed_marker');
+  if (reviewedMarker) {
+    reviewedMarker.classList.add('hidden');
   }
   const denominatorBasisMarker = cardContents.querySelector('.js_denominator_basis_marker');
   if (denominatorBasisMarker) {
@@ -1234,21 +1234,21 @@ export function showUnavailableCard(cardContents) {
 /**
  * Overrides an Insights card's static "Of reviewed" pill styling (see card.njk) once
  * the actual completeness of its data is known — used for DAS cards, whose
- * template always renders as projected regardless of the selected date range.
+ * template always renders as reviewed regardless of the selected date range.
  *
  * @param {HTMLElement} cardContents - The <article> element representing the insight card.
- * @param {boolean} isProjected
+ * @param {boolean} isReviewed
  */
-export function setCardProjected(cardContents, isProjected) {
+export function setCardReviewed(cardContents, isReviewed) {
   if (!cardContents) return;
 
-  const marker = cardContents.querySelector('.js_projected_marker');
-  if (marker) marker.classList.toggle('hidden', !isProjected);
-  cardContents.classList.toggle('border-dashed', isProjected);
-  cardContents.classList.toggle('border-neutral-500', isProjected);
-  cardContents.classList.toggle('bg-neutral-850', isProjected);
-  cardContents.classList.toggle('border-neutral-700', !isProjected);
-  cardContents.classList.toggle('bg-neutral-800', !isProjected);
+  const marker = cardContents.querySelector('.js_reviewed_marker');
+  if (marker) marker.classList.toggle('hidden', !isReviewed);
+  cardContents.classList.toggle('border-dashed', isReviewed);
+  cardContents.classList.toggle('border-neutral-500', isReviewed);
+  cardContents.classList.toggle('bg-neutral-850', isReviewed);
+  cardContents.classList.toggle('border-neutral-700', !isReviewed);
+  cardContents.classList.toggle('bg-neutral-800', !isReviewed);
 }
 
 /**

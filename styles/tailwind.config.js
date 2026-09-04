@@ -76,12 +76,12 @@ module.exports = {
         900: 'rgb(46, 46, 47)',
         950: 'rgb(32, 32, 33)',
       },
-      // Card state badges (e.g. "Projected") — each is an existing accent hue
+      // Card state badges (e.g. "Reviewed") — each is an existing accent hue
       // blended at low opacity so it sits into whichever card surface it's on,
-      // rather than a flat colour. Only `projected` is in use so far.
+      // rather than a flat colour. Only `reviewed` is in use so far.
       'state': {
         unavailable: 'rgba(230, 78, 78, 0.22)', // carnation-500 blend
-        projected: 'rgba(255, 199, 44, 0.22)', // yellow accent blend
+        reviewed: 'rgba(255, 199, 44, 0.22)', // yellow accent blend
         complete: 'rgba(44, 165, 141, 0.22)', // green accent blend
       },
     },

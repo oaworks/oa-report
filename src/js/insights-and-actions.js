@@ -9,7 +9,7 @@
 // Imports
 // =================================================
 
-import { dateRange, startYear, endYear, displayNone, changeOpacity, makeNumberReadable, makeTabCountReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setCardProjected, setDenominatorBasisLabel, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings, copyToClipboard, escapeHtmlEntities, clipEndDateToSixMonthsAgo, getDasCompletenessStatus } from './utils.js';
+import { dateRange, startYear, endYear, displayNone, changeOpacity, makeNumberReadable, makeTabCountReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setCardReviewed, setDenominatorBasisLabel, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings, copyToClipboard, escapeHtmlEntities, clipEndDateToSixMonthsAgo, getDasCompletenessStatus } from './utils.js';
 import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, INSIGHT_EXPLORE_MAPPINGS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS, DEFAULT_ACTION_EMPTY_STATE_MESSAGE, DEFAULT_NO_AUTHOR_FILTERED_MESSAGE, DEFAULT_MULTIPLE_AUTHORS_FILTERED_MESSAGE, LICENSE_CODES, SEGMENTED_PILL_CLASSES, TAB_COUNT_BADGE_CLASSES, resolveFieldDefinition } from './constants.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { initActionTabs, formatDoiEpmcListForClipboard, getAuthorFilterCount } from './actions.js';
@@ -536,18 +536,18 @@ export function initInsightsAndActions(org) {
         // Ensure card is reset from any prior "unavailable" state before fetching fresh data
         resetBarChart(cardContents);
 
-        // DAS cards' "Projected" styling reflects whether the range still falls
+        // DAS cards' "Reviewed" styling reflects whether the range still falls
         // within the six-month manual-review lag, rather than always showing.
         const matchingCard = INSIGHT_CARD_BY_NUMERATOR.get(numerator);
-        const isProjected = Boolean(matchingCard?.sixMonthLagOffset)
-          && getDasCompletenessStatus(startYear, endYear) === 'projected';
+        const isReviewed = Boolean(matchingCard?.sixMonthLagOffset)
+          && getDasCompletenessStatus(startYear, endYear) === 'reviewed';
         if (matchingCard?.sixMonthLagOffset) {
-          setCardProjected(cardContents, isProjected);
+          setCardReviewed(cardContents, isReviewed);
         }
 
         // Flags that this card's percentage is of a subset, not the section
-        // total — never shown alongside Projected, to avoid crowding the card.
-        setDenominatorBasisLabel(cardContents, isProjected ? '' : matchingCard?.denominatorBasisLabel);
+        // total — never shown alongside the Reviewed badge, to avoid crowding the card.
+        setDenominatorBasisLabel(cardContents, isReviewed ? '' : matchingCard?.denominatorBasisLabel);
 
         // Locate placeholders
         const percentageContents = document.getElementById(`percent_${numerator}`);
@@ -628,8 +628,8 @@ export function initInsightsAndActions(org) {
 
               // A date-complete DAS range can still be under-reviewed in practice —
               // only treat it as genuinely complete once 95% of the total is checked.
-              if (matchingCard?.sixMonthLagOffset && !isProjected && totalCount > 0 && (denominatorCount / totalCount) < 0.95) {
-                setCardProjected(cardContents, true);
+              if (matchingCard?.sixMonthLagOffset && !isReviewed && totalCount > 0 && (denominatorCount / totalCount) < 0.95) {
+                setCardReviewed(cardContents, true);
                 setDenominatorBasisLabel(cardContents, '');
               }
 
