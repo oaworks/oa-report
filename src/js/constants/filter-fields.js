@@ -6,8 +6,8 @@
 import { COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES } from "../constants.js";
 
 export const SEARCH_FILTER_FIELDS = [
-  { field: "authorships.author.display_name", label: "Authors (Name)", iconKey: "author", alphaSort: true },
-  { field: "authorships.author.orcid", label: "Authors (ORCID)", iconKey: "author", alphaSort: false },
+  { field: "authorships.author.display_name", label: "Authors (Name)", iconKey: "author", alphaSort: true, alwaysAvailable: true },
+  { field: "authorships.author.orcid", label: "Authors (ORCID)", iconKey: "author", alphaSort: false, alwaysAvailable: true },
   { field: "concepts.display_name", label: "Subjects", iconKey: "subject", alphaSort: true },
   { field: "authorships.institutions.display_name", label: "Institutions", iconKey: "institution", alphaSort: true },
   { field: "journal", label: "Journals", iconKey: "journal", alphaSort: true },
@@ -23,7 +23,7 @@ export const SEARCH_FILTER_FIELDS = [
   { field: "openalx.open_access.oa_status", label: "Journal article OA types", iconKey: "article_oa_type", alphaSort: true, filterListHidden: true, suffix: "(article OA)" },
   { field: "oa_status", label: "Journal article OA types", iconKey: "article_oa_type", alphaSort: true, filterListHidden: true, suffix: "(article OA)" },
   { field: "journal_oa_type", label: "Journal OA types", iconKey: "journal_oa_type", alphaSort: true, filterListHidden: true, suffix: "(journal OA)" },
-  { field: "DOI", label: "DOI", iconKey: "doi", alphaSort: false, rawField: true, noSuggestions: true, forceAllTime: true }
+  { field: "DOI", label: "DOI", iconKey: "doi", alphaSort: false, rawField: true, noSuggestions: true, forceAllTime: true, alwaysAvailable: true }
 ];
 
 export const SEARCH_FILTER_FIELD_MAP = new Map(
