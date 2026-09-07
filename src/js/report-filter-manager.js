@@ -299,11 +299,13 @@ function buildFilterFieldOptions(exploreData) {
     options.push({ value: normalisedKey, label });
   });
 
-  // Fallback: include globally configured search fields even if the org's
-  // Explore config doesn't explicitly list them. Fields marked filterListHidden
-  // are excluded here but can still be surfaced per-org via their explore config.
+  // Fallback: only include fields with no per-org breakdown to match against
+  // (author search, which is available for every org; DOI, a raw ID lookup
+  // with no breakdown equivalent). Everything else must appear in the org's
+  // own Explore config to show up as a filter option.
   for (const [fieldKey, fieldMeta] of SEARCH_FILTER_FIELD_MAP.entries()) {
     if (seen.has(fieldKey) || fieldMeta?.filterListHidden) continue;
+    if (!fieldMeta?.alwaysAvailable) continue;
     seen.add(fieldKey);
     options.push({
       value: fieldKey,
