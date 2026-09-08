@@ -626,13 +626,6 @@ export function initInsightsAndActions(org) {
                 return;
               }
 
-              // A date-complete DAS range can still be under-reviewed in practice —
-              // only treat it as genuinely complete once 95% of the total is checked.
-              if (matchingCard?.sixMonthLagOffset && !isReviewed && totalCount > 0 && (denominatorCount / totalCount) < 0.95) {
-                setCardReviewed(cardContents, true);
-                setDenominatorBasisLabel(cardContents, '');
-              }
-
               figureDetails.innerHTML = `
                 <span id="details_${numerator}" class="font-semibold text-carnation-700">${makeNumberReadable(numeratorCount)}</span>
                 <span>
