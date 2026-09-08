@@ -79,8 +79,7 @@ export const INSIGHTS_CARDS = [
     denominatorText: "articles checked to date",
     definition_key: "data_availability_statement",
     info: resolveFieldDefinition("data_availability_statement", "insights", { subject: "journal articles", review_subject: "articles" }).info,
-    sixMonthLagOffset: true,
-    denominatorBasisLabel: "Of reviewed"
+    reviewedBadge: true
   },
   {
     numerator: "has_data_availability_statement_preprint",
@@ -88,8 +87,7 @@ export const INSIGHTS_CARDS = [
     denominatorText: "preprints checked to date",
     definition_key: "data_availability_statement",
     info: resolveFieldDefinition("data_availability_statement", "insights", { subject: "preprints", review_subject: "preprints" }).info,
-    sixMonthLagOffset: true,
-    denominatorBasisLabel: "Of reviewed"
+    reviewedBadge: true
   },
   {
     numerator: "has_open_data",

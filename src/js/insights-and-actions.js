@@ -9,7 +9,7 @@
 // Imports
 // =================================================
 
-import { dateRange, startYear, endYear, displayNone, changeOpacity, makeNumberReadable, makeTabCountReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setCardReviewed, setDenominatorBasisLabel, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings, copyToClipboard, escapeHtmlEntities, clipEndDateToSixMonthsAgo, getDasCompletenessStatus } from './utils.js';
+import { dateRange, startYear, endYear, displayNone, changeOpacity, makeNumberReadable, makeTabCountReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setCardReviewed, setDenominatorBasisLabel, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings, copyToClipboard, escapeHtmlEntities } from './utils.js';
 import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, INSIGHT_EXPLORE_MAPPINGS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS, DEFAULT_ACTION_EMPTY_STATE_MESSAGE, DEFAULT_NO_AUTHOR_FILTERED_MESSAGE, DEFAULT_MULTIPLE_AUTHORS_FILTERED_MESSAGE, LICENSE_CODES, SEGMENTED_PILL_CLASSES, TAB_COUNT_BADGE_CLASSES, resolveFieldDefinition } from './constants.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { initActionTabs, formatDoiEpmcListForClipboard, getAuthorFilterCount } from './actions.js';
@@ -44,13 +44,10 @@ const insightAggregateCache = new Map();
  *
  * @param {Object} orgData - Organisation record from the org index response.
  * @param {string} filterId - Analysis filter ID, such as `is_paper`.
- * @param {boolean} [applySixMonthOffset=false] - Clip the end date to six
- * months ago when it's more recent than that, for fields with a manual
- * checking lag (currently DAS only — see INSIGHTS_CARDS' sixMonthLagOffset).
  * @returns {Promise<Object|null>} Flattened aggregate metrics, or null when the
  * filter cannot be resolved.
  */
-function fetchExploreInsightMetrics(orgData, filterId, applySixMonthOffset = false) {
+function fetchExploreInsightMetrics(orgData, filterId) {
   const suffix = orgData?.hits?.hits?.[0]?._source?.key_suffix;
   const analysis = orgData?.hits?.hits?.[0]?._source?.analysis || {};
   const filterQuery = analysis?.[filterId]?.query;
@@ -63,17 +60,16 @@ function fetchExploreInsightMetrics(orgData, filterId, applySixMonthOffset = fal
     decodeAndReplaceUrlEncodedChars(filterQuery),
     getDecodedUrlQuery()
   );
-  const effectiveEndYear = applySixMonthOffset ? clipEndDateToSixMonthsAgo(endYear) : endYear;
   const cacheKey = JSON.stringify({
     suffix,
     filterId,
     query: decodedQuery,
     startYear,
-    endYear: effectiveEndYear
+    endYear
   });
 
   if (!insightAggregateCache.has(cacheKey)) {
-    const postData = getInsightsAggregationQuery(suffix, decodedQuery, startYear, effectiveEndYear);
+    const postData = getInsightsAggregationQuery(suffix, decodedQuery, startYear, endYear);
 
     insightAggregateCache.set(
       cacheKey,
@@ -260,12 +256,10 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
     "has_open_code"
   ];
 
-  const isOutsideAvailabilityWindow = (analysisEntry, cardId) =>
+  const isOutsideAvailabilityWindow = (analysisEntry) =>
     !analysisEntry
     || (analysisEntry.available_from && endYear < analysisEntry.available_from)
-    || (analysisEntry.available_until && startYear > analysisEntry.available_until)
-    || (INSIGHT_CARD_BY_NUMERATOR.get(cardId)?.sixMonthLagOffset
-      && getDasCompletenessStatus(startYear, endYear) === 'unavailable');
+    || (analysisEntry.available_until && startYear > analysisEntry.available_until);
 
   // Total-type figures render inline in their section heading (see insights.njk)
   // instead of as a grid card, but still go through getInsight() for the
@@ -317,7 +311,7 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
       if (!card) return;
       const clonedCard = card.cloneNode(true);
       // Show a placeholder when the API returns no data or the date range is outside the card's available window.
-      const unavailable = isOutsideAvailabilityWindow(analysisEntry, cardId);
+      const unavailable = isOutsideAvailabilityWindow(analysisEntry);
       if (unavailable) {
         showUnavailableCard(clonedCard);
       }
@@ -338,7 +332,7 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
         } else {
           headingTotalEl.classList.remove("hidden");
           headingTotalPresent = true;
-          if (isOutsideAvailabilityWindow(analysisEntry, headingTotalId)) {
+          if (isOutsideAvailabilityWindow(analysisEntry)) {
             showUnavailableCard(headingTotalEl);
           } else {
             renderedIds.add(headingTotalId);
@@ -536,18 +530,13 @@ export function initInsightsAndActions(org) {
         // Ensure card is reset from any prior "unavailable" state before fetching fresh data
         resetBarChart(cardContents);
 
-        // DAS cards' "Reviewed" styling reflects whether the range still falls
-        // within the six-month manual-review lag, rather than always showing.
+        // Flags that this card's percentage is of a subset, not the section total
+        // (e.g. "Of covered"). DAS cards use the "Of reviewed" badge instead,
+        // set once the real checked/total ratio comes back — see below.
         const matchingCard = INSIGHT_CARD_BY_NUMERATOR.get(numerator);
-        const isReviewed = Boolean(matchingCard?.sixMonthLagOffset)
-          && getDasCompletenessStatus(startYear, endYear) === 'reviewed';
-        if (matchingCard?.sixMonthLagOffset) {
-          setCardReviewed(cardContents, isReviewed);
+        if (!matchingCard?.reviewedBadge) {
+          setDenominatorBasisLabel(cardContents, matchingCard?.denominatorBasisLabel);
         }
-
-        // Flags that this card's percentage is of a subset, not the section
-        // total — never shown alongside the Reviewed badge, to avoid crowding the card.
-        setDenominatorBasisLabel(cardContents, isReviewed ? '' : matchingCard?.denominatorBasisLabel);
 
         // Locate placeholders
         const percentageContents = document.getElementById(`percent_${numerator}`);
@@ -590,7 +579,7 @@ export function initInsightsAndActions(org) {
         // Mapped cards can read directly from Explore's all-values aggregate.
         if (exploreMapping) {
           // Reuse the same aggregate source as Explore Years for matching totals.
-          const cardPromise = fetchExploreInsightMetrics(orgData, exploreMapping.exploreFilter, INSIGHT_CARD_BY_NUMERATOR.get(numerator)?.sixMonthLagOffset)
+          const cardPromise = fetchExploreInsightMetrics(orgData, exploreMapping.exploreFilter)
             .then((metrics) => {
               const numeratorCount = metrics?.[exploreMapping.numeratorMetric];
               const denominatorCount = Array.isArray(exploreMapping.denominatorSumOf)
@@ -626,11 +615,10 @@ export function initInsightsAndActions(org) {
                 return;
               }
 
-              // A date-complete DAS range can still be under-reviewed in practice —
-              // only treat it as genuinely complete once 95% of the total is checked.
-              if (matchingCard?.sixMonthLagOffset && !isReviewed && totalCount > 0 && (denominatorCount / totalCount) < 0.95) {
-                setCardReviewed(cardContents, true);
-                setDenominatorBasisLabel(cardContents, '');
+              // DAS cards only count as fully reviewed once checking has
+              // actually caught up with 95% of the real total — not before.
+              if (matchingCard?.reviewedBadge) {
+                setCardReviewed(cardContents, totalCount > 0 && (denominatorCount / totalCount) < 0.95);
               }
 
               figureDetails.innerHTML = `

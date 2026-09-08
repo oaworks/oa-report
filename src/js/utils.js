@@ -210,50 +210,6 @@ export function formatDateToISO(date) {
 }
 
 /**
- * The ISO date six months before today, to account for OA.Report's manual
- * DAS-checking lag.
- *
- * @param {Date} [today=new Date()] - Injectable for testing.
- * @returns {string} YYYY-MM-DD.
- */
-export function getSixMonthsAgoISO(today = new Date()) {
-  const cutoff = new Date(today);
-  cutoff.setMonth(cutoff.getMonth() - 6);
-  return formatDateToISO(cutoff);
-}
-
-/**
- * Clips an ISO end date to six months ago when it's more recent than that,
- * to account for OA.Report's manual DAS-checking lag.
- *
- * @param {string} endDateISO - The selected end date, as YYYY-MM-DD.
- * @param {Date} [today=new Date()] - Injectable for testing.
- * @returns {string} The original end date, or six-months-ago if it was more recent.
- */
-export function clipEndDateToSixMonthsAgo(endDateISO, today = new Date()) {
-  const cutoffISO = getSixMonthsAgoISO(today);
-  return endDateISO > cutoffISO ? cutoffISO : endDateISO;
-}
-
-/**
- * Classifies a DAS-lagged field's selected date range against the six-month
- * manual-review lag: a range fully within the last six months has no
- * reliable data yet, a range partly within it can only show a projection,
- * and a fully historical range is complete.
- *
- * @param {string} startDateISO - YYYY-MM-DD.
- * @param {string} endDateISO - YYYY-MM-DD.
- * @param {Date} [today=new Date()] - Injectable for testing.
- * @returns {'unavailable'|'reviewed'|'complete'}
- */
-export function getDasCompletenessStatus(startDateISO, endDateISO, today = new Date()) {
-  const cutoffISO = getSixMonthsAgoISO(today);
-  if (startDateISO > cutoffISO) return 'unavailable';
-  if (endDateISO > cutoffISO) return 'reviewed';
-  return 'complete';
-}
-
-/**
  * Updates the global date range used in queries, refreshes readable dates in the UI,
  * and emits an event signalling the range is ready.
  *
@@ -1234,7 +1190,7 @@ export function showUnavailableCard(cardContents) {
 /**
  * Overrides an Insights card's static "Of reviewed" pill styling (see card.njk) once
  * the actual completeness of its data is known — used for DAS cards, whose
- * template always renders as reviewed regardless of the selected date range.
+ * template always renders as reviewed until the real checked/total ratio comes back.
  *
  * @param {HTMLElement} cardContents - The <article> element representing the insight card.
  * @param {boolean} isReviewed
