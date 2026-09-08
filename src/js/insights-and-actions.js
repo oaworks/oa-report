@@ -620,7 +620,7 @@ export function initInsightsAndActions(org) {
               // 90–99% is shown but flagged in-progress; 99%+ reads as settled.
               if (matchingCard?.reviewedBadge) {
                 const checkedRatio = totalCount > 0 ? denominatorCount / totalCount : 0;
-                if (checkedRatio < 0.90) {
+                if (checkedRatio < 0.75) {
                   showUnavailableCard(cardContents);
                   return;
                 }
