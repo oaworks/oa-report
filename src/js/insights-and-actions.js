@@ -590,8 +590,18 @@ export function initInsightsAndActions(org) {
         // Mapped cards can read directly from Explore's all-values aggregate.
         if (exploreMapping) {
           // Reuse the same aggregate source as Explore Years for matching totals.
-          const cardPromise = fetchExploreInsightMetrics(orgData, exploreMapping.exploreFilter, INSIGHT_CARD_BY_NUMERATOR.get(numerator)?.sixMonthLagOffset)
-            .then((metrics) => {
+          const metricsPromise = fetchExploreInsightMetrics(orgData, exploreMapping.exploreFilter, matchingCard?.sixMonthLagOffset);
+
+          // A date-complete DAS range can still be under-reviewed in practice —
+          // fetch the true, unclipped total (same one the section heading uses)
+          // separately, so "has checking actually caught up?" is judged against
+          // the real population, not the six-month-clipped query's own total.
+          const trueTotalPromise = matchingCard?.sixMonthLagOffset
+            ? fetchExploreInsightMetrics(orgData, exploreMapping.exploreFilter)
+            : null;
+
+          const cardPromise = Promise.all([metricsPromise, trueTotalPromise])
+            .then(([metrics, trueTotalMetrics]) => {
               const numeratorCount = metrics?.[exploreMapping.numeratorMetric];
               const denominatorCount = Array.isArray(exploreMapping.denominatorSumOf)
                 ? exploreMapping.denominatorSumOf.reduce((sum, metricKey) => {
@@ -604,6 +614,9 @@ export function initInsightsAndActions(org) {
               const totalCount = Number.isFinite(metrics?.[exploreMapping.totalMetric])
                 ? metrics[exploreMapping.totalMetric]
                 : 0;
+              const trueTotalCount = trueTotalMetrics
+                ? (Number.isFinite(trueTotalMetrics[exploreMapping.totalMetric]) ? trueTotalMetrics[exploreMapping.totalMetric] : 0)
+                : totalCount;
 
               if (!Number.isFinite(numeratorCount)) {
                 showUnavailableCard(cardContents);
@@ -626,6 +639,13 @@ export function initInsightsAndActions(org) {
                 return;
               }
 
+              // A date-complete range only counts as genuinely settled once
+              // checking has actually caught up with 95% of the real total.
+              if (matchingCard?.sixMonthLagOffset && !isReviewed && trueTotalCount > 0 && (denominatorCount / trueTotalCount) < 0.95) {
+                setCardReviewed(cardContents, true);
+                setDenominatorBasisLabel(cardContents, '');
+              }
+
               figureDetails.innerHTML = `
                 <span id="details_${numerator}" class="font-semibold text-carnation-700">${makeNumberReadable(numeratorCount)}</span>
                 <span>
@@ -643,7 +663,7 @@ export function initInsightsAndActions(org) {
                 numeratorCount,
                 denominatorCount,
                 exploreMapping.denominatorMetric === exploreMapping.totalMetric,
-                totalCount
+                trueTotalCount
               );
             })
             .catch(function (error) {
