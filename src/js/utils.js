@@ -1156,12 +1156,35 @@ export function showUnavailableCard(cardContents) {
   cardContents.classList.remove('bg-neutral-800', 'hover:bg-neutral-750', 'hover:shadow-md', 'hover:-translate-y-0.5', 'focus-within:bg-neutral-750', 'focus-within:shadow-md', 'focus-within:-translate-y-0.5');
   cardContents.classList.add('bg-neutral-900');
 
+  // Nothing to qualify a percentage against when there's no percentage shown.
+  const denominatorBasisMarker = cardContents.querySelector('.js_denominator_basis_marker');
+  if (denominatorBasisMarker) {
+    denominatorBasisMarker.classList.add('hidden');
+  }
+
   // Reset the bar track without rendering any value bar.
   const footerEl = cardContents.querySelector('footer.js_bar_chart');
   if (footerEl) {
     footerEl.className = INSIGHT_BAR_TRACK_UNAVAILABLE_CLASSES;
     footerEl.innerHTML = '';
   }
+}
+
+/**
+ * Sets an Insights card's "denominator basis" label (e.g. "Of covered") or
+ * hides it, for cards whose percentage is of a subset rather than the
+ * section total.
+ *
+ * @param {HTMLElement} cardContents - The <article> element representing the insight card.
+ * @param {string} [text] - The label to show, or omit/empty to hide it.
+ */
+export function setDenominatorBasisLabel(cardContents, text) {
+  if (!cardContents) return;
+
+  const marker = cardContents.querySelector('.js_denominator_basis_marker');
+  if (!marker) return;
+  marker.textContent = text || '';
+  marker.classList.toggle('hidden', !text);
 }
 
 /**
