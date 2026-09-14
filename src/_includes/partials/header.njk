@@ -45,14 +45,6 @@
     <div class="flex-1"></div>
     {% endif %}
 
-    {% if isReportPage %}
-    <nav class="hidden sm:flex items-center" aria-label="Report sections">
-      <a id="section-tab-insights" class="mr-4 inline-flex items-center gap-1 text-sm font-medium text-neutral-300 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-sm js_section_tab" href="#insights">Insights {% icon_small "arrow-down" %}</a>
-      <a id="section-tab-explore" class="mr-4 inline-flex items-center gap-1 text-sm font-medium text-neutral-300 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-sm js_section_tab" href="#explore">Explore {% icon_small "arrow-down" %}</a>
-      <a id="section-tab-actions" data-auth="in" class="inline-flex items-center gap-1 text-sm font-medium text-neutral-300 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-sm js_section_tab" href="#actions">Actions {% icon_small "arrow-down" %}</a>
-    </nav>
-    {% endif %}
-
     <!-- Hamburger Button -->
     <button id="menu-toggle" aria-expanded="false" aria-controls="mobile-menu" class="sm:hidden {% if isReportPage %}hidden{% endif %} flex items-center justify-center p-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-carnation-500">
       {% icon_small "menu" %}
@@ -85,33 +77,42 @@
       </div>
 
       {# Active filter chips #}
-      <div id="report-filters">
-        <div
-          class="js-active-filters-wrapper"
-          id="js-active-filters-wrapper"
-          aria-labelledby="js-active-filters-title"
-        >
-          <h3 id="js-active-filters-title" class="sr-only">Active filters</h3>
-          {# Live region so SR users hear updates when filters change #}
+      <div class="flex justify-between">
+        <div id="report-filters">
           <div
-            id="js-active-filters"
-            class="flex flex-wrap items-center gap-2"
-            role="status"
-            aria-live="polite"
+            class="js-active-filters-wrapper"
+            id="js-active-filters-wrapper"
+            aria-labelledby="js-active-filters-title"
           >
-            {# "+ Add filter" trigger — static so it's present from first paint; renderActiveFiltersBanner() reuses this node rather than recreating it, and clears aria-disabled once its popover is wired up. #}
-            <button
-              type="button"
-              id="js-filters-trigger"
-              class="inline-flex items-center rounded-full border border-neutral-600 bg-neutral-900 px-2.5 py-1 text-sm font-medium text-neutral-200 transition-colors hover:border-neutral-400 hover:bg-neutral-800 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-900"
-              aria-haspopup="dialog"
-              aria-expanded="false"
-              aria-disabled="true"
-            ><span aria-hidden="true" class="mr-1 font-bold">+</span> Add filter</button>
+            <h3 id="js-active-filters-title" class="sr-only">Active filters</h3>
+            {# Live region so SR users hear updates when filters change #}
+            <div
+              id="js-active-filters"
+              class="flex flex-wrap items-center gap-2"
+              role="status"
+              aria-live="polite"
+            >
+              {# "+ Add filter" trigger — static so it's present from first paint; renderActiveFiltersBanner() reuses this node rather than recreating it, and clears aria-disabled once its popover is wired up. #}
+              <button
+                type="button"
+                id="js-filters-trigger"
+                class="inline-flex items-center rounded-full border border-neutral-600 bg-neutral-900 px-2.5 py-1 text-sm font-medium text-neutral-200 transition-colors hover:border-neutral-400 hover:bg-neutral-800 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-900"
+                aria-haspopup="dialog"
+                aria-expanded="false"
+                aria-disabled="true"
+              ><span aria-hidden="true" class="mr-1 font-bold">+</span> Add filter</button>
+            </div>
           </div>
         </div>
-      </div>
 
+        {% if isReportPage %}
+        <nav class="hidden sm:flex items-center" aria-label="Report sections">
+          <a id="section-tab-insights" class="mr-4 inline-flex items-center gap-1 text-sm font-medium text-neutral-300 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-sm js_section_tab" href="#insights">Insights {% icon_small "arrow-down" %}</a>
+          <a id="section-tab-explore" class="mr-4 inline-flex items-center gap-1 text-sm font-medium text-neutral-300 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-sm js_section_tab" href="#explore">Explore {% icon_small "arrow-down" %}</a>
+          <a id="section-tab-actions" data-auth="in" class="inline-flex items-center gap-1 text-sm font-medium text-neutral-300 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-sm js_section_tab" href="#actions">Actions {% icon_small "arrow-down" %}</a>
+        </nav>
+        {% endif %}
+      </div>
     </section>
   </nav>
   {% endif %}
