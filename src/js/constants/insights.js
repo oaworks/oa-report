@@ -33,14 +33,14 @@ export const INSIGHTS_CARDS = [
     denominator: "is_paper",
     denominatorText: "articles",
     definition_key: "free_to_read",
-    info: resolveFieldDefinition("free_to_read", "insights", { subject: "Journal articles" }).info
+    info: resolveFieldDefinition("free_to_read", "insights", { subject: "journal articles" }).info
   },
   {
     numerator: "is_free_to_read_preprint",
     denominator: "is_preprint",
     denominatorText: "preprints",
     definition_key: "free_to_read",
-    info: resolveFieldDefinition("free_to_read", "insights", { subject: "Preprints" }).info
+    info: resolveFieldDefinition("free_to_read", "insights", { subject: "preprints" }).info
   },
   {
     numerator: "is_compliant",
