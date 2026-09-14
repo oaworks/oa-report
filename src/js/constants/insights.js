@@ -13,7 +13,7 @@ export const INSIGHTS_CARDS = [
   {
     numerator: "is_paper",
     denominator: null,
-    denominatorText: "articles",
+    denominatorText: "journal articles",
     info: "<p>The total number of journal articles published by grantees or authors at your organization.</p>"
   },
   {
@@ -31,7 +31,7 @@ export const INSIGHTS_CARDS = [
   {
     numerator: "is_free_to_read",
     denominator: "is_paper",
-    denominatorText: "articles",
+    denominatorText: "journal articles",
     definition_key: "free_to_read",
     info: resolveFieldDefinition("free_to_read", "insights", { subject: "journal articles" }).info
   },
@@ -45,7 +45,7 @@ export const INSIGHTS_CARDS = [
   {
     numerator: "is_compliant",
     denominator: "is_covered_by_policy",
-    denominatorText: "articles covered by policy",
+    denominatorText: "journal articles covered by policy",
     definition_key: "compliant",
     info: resolveFieldDefinition("compliant", "insights", { subject: "journal articles" }).info,
     denominatorBasisLabel: "Of covered"
@@ -61,7 +61,7 @@ export const INSIGHTS_CARDS = [
   {
     numerator: "is_compliant_article",
     denominator: "is_covered_by_policy",
-    denominatorText: "articles covered by policy",
+    denominatorText: "journal articles covered by policy",
     definition_key: "compliant",
     info: resolveFieldDefinition("compliant", "insights", { subject: "journal articles" }).info,
     denominatorBasisLabel: "Of covered"
@@ -69,14 +69,14 @@ export const INSIGHTS_CARDS = [
   {
     numerator: "is_oa",
     denominator: "is_paper",
-    denominatorText: "articles",
+    denominatorText: "journal articles",
     definition_key: "open_access",
     info: resolveFieldDefinition("open_access", "insights", { subject: "journal articles" }).info
   },
   {
     numerator: "has_data_availability_statement",
     denominator: "has_checked_data_availability_statement",
-    denominatorText: "articles checked to date",
+    denominatorText: "journal articles checked to date",
     definition_key: "data_availability_statement",
     subject: "journal articles",
     info: resolveFieldDefinition("data_availability_statement", "insights", { subject: "journal articles" }).info,
