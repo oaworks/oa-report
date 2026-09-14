@@ -1268,8 +1268,7 @@ function setupHeaderTooltip(element, rawKey, dataType) {
     temp.innerHTML = DOMPurify.sanitize(label, { ALLOWED_TAGS: [] });
     return temp.textContent?.trim() || key;
   })();
-  const isRightAligned = element.classList.contains("text-right");
-  const contentClassName = `inline-flex w-full min-w-0 items-end gap-1 ${isRightAligned ? "justify-end" : "justify-start"}`;
+  const contentClassName = "inline-flex w-full min-w-0 items-end gap-1 justify-between";
   // Plain wrapper — the sort toggle and info triggers are separate buttons
   // within it, since a button can't be nested inside another button.
   const content = document.createElement("span");
