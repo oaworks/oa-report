@@ -1056,12 +1056,9 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
     .forEach((rawKey, index) => {
       const cssClass = getExploreColumnClass('header', dataType, index);
 
-      const headerCell = createTableCell('', cssClass, null, null, true); 
-      if (index > 1) {
-        headerCell.classList.add(
-          shouldRightAlignExploreColumn(rawKey, records[rawKey]) ? "text-right" : "text-left"
-        );
-      }
+      // Headers always stay left-aligned (via Tailwind's th reset); only body
+      // cells right-align numeric columns for easier value comparison.
+      const headerCell = createTableCell('', cssClass, null, null, true);
       setupHeaderTooltip(headerCell, rawKey, dataType);
 
       headerRow.appendChild(headerCell);
