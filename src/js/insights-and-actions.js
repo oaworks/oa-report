@@ -115,7 +115,7 @@ function buildInsightDefinitionsHtml(numerator, insightInfo = '', helpTextByKey 
     return buildInsightTooltipSection(contentHtml, showHeading);
   }
 
-  const fieldDefinition = resolveFieldDefinition(definitionKey, 'insights');
+  const fieldDefinition = resolveFieldDefinition(definitionKey, 'insights', { subject: matchingCard?.subject });
   if (!fieldDefinition) {
     return buildInsightTooltipSection(insightInfo, showHeading);
   }

@@ -68,12 +68,12 @@ export const FIELD_DEFINITIONS = {
   },
   data_availability_statement: {
     label: "With data availability statement",
-    details: "To confirm that a paper has a data availability statement, we first use PubMed’s data availability filter and then review articles manually.",
+    details: "To confirm that {subject} have a data availability statement, we first use PubMed’s data availability filter and then review them manually.",
     explore: {
       info: "Publications that include a data availability statement. These statements (also called ‘data access’, ‘resource availability’ or ‘code availability’ statements) tell readers where the underlying data or code can be found and how to access it. This figure doesn’t specify the kind of statement provided (e.g., whether the data are openly available or not)"
     },
     insights: {
-      info: "<p>This number tells you how many {subject} that we’ve analyzed have a data availability statement.</p> <p>To check if a paper has a data availability statement, we use data from PubMed and review {review_subject} manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data).</p>"
+      info: "<p>The percentage of {subject} that we’ve analyzed that have a data availability statement.</p>"
     }
   },
   in_repository: {
@@ -235,7 +235,7 @@ export function resolveFieldDefinition(key, section, context = {}) {
   return {
     label: definition.label,
     info: interpolateDefinitionTokens(sectionDefinition.info, context),
-    details: definition.details,
+    details: interpolateDefinitionTokens(definition.details, context),
     help_text: sectionDefinition.help_text || [],
     help_text_style: sectionDefinition.help_text_style || 'paragraph'
   };
