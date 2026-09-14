@@ -53,7 +53,7 @@ export const FIELD_DEFINITIONS = {
       info: "Publications that are free to read on the publisher’s website or any online repository, including temporarily accessible articles (“bronze Open Access”)."
     },
     insights: {
-      info: "<p>{subject} that are free to read on the publisher website or any online repository, including temporarily accessible articles (“bronze Open Access”).</p>"
+      info: "<p>The percentage of {subject} that are free to read on the publisher’s website or any online repository, including temporarily accessible articles (“bronze Open Access”).</p>"
     }
   },
   open_access: {
@@ -63,7 +63,7 @@ export const FIELD_DEFINITIONS = {
       info: "Publications that are free and CC BY or CC0 (in the public domain) on the publisher’s website, a repository or a preprint server."
     },
     insights: {
-      info: "<p>The number of {subject} that are free and <a href='https://creativecommons.org/licenses/by/4.0/' class='underline underline-offset-2 decoration-1' target='_blank' rel='noopener'>CC BY</a> <strong class='bold'>or</strong> <a href='https://creativecommons.org/publicdomain/zero/1.0/' class='underline underline-offset-2 decoration-1' target='_blank' rel='noopener'>CC0</a> (in the public domain) on the publisher’s website, a repository or a preprint server.</p>"
+      info: "<p>The percentage of {subject} that are free and <a href='https://creativecommons.org/licenses/by/4.0/' class='underline underline-offset-2 decoration-1' target='_blank' rel='noopener'>CC BY</a> <strong class='bold'>or</strong> <a href='https://creativecommons.org/publicdomain/zero/1.0/' class='underline underline-offset-2 decoration-1' target='_blank' rel='noopener'>CC0</a> (in the public domain) on the publisher’s website, a repository, or a preprint server.</p>"
     }
   },
   data_availability_statement: {
