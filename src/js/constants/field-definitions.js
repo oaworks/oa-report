@@ -19,7 +19,7 @@ export const FIELD_DEFINITIONS = {
   },
   compliant: {
     label: "Compliant",
-    details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex.",
+    details: "<p class='mb-2'>We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex.</p>",
     explore: {
       info: `Publications covered by ${POLICY_LINK_EXPLORE} that are compliant with the policy. <span class='org-policy-compliance'></span>`,
       help_text: ["compliant"],
@@ -27,7 +27,7 @@ export const FIELD_DEFINITIONS = {
     },
     insights: {
       info: `<p>The percentage of {subject} covered by ${POLICY_LINK_INSIGHTS} that are compliant with the policy.</p>`,
-      help_text: ["compliant", "covered_by_policy"],
+      help_text: ["covered_by_policy", "compliant"],
       help_text_style: "bullets"
     }
   },
@@ -41,14 +41,14 @@ export const FIELD_DEFINITIONS = {
   },
   compliant_and_covered_by_policy: {
     label: "Compliant (all)",
-    details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex.",
+    details: "<p class='mb-2'>We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex.</p>",
     explore: {
       info: "All publications that comply with the requirements of the Open Access policy, even if they are not covered by said policy. <p><span class='org-policy-compliance'></span></p>"
     }
   },
   free_to_read: {
     label: "Free-to-read",
-    details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex.",
+    details: "<p>We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex.</p>",
     explore: {
       info: "Publications that are free to read on the publisher’s website or any online repository, including temporarily accessible articles (“bronze Open Access”)."
     },
@@ -68,7 +68,7 @@ export const FIELD_DEFINITIONS = {
   },
   data_availability_statement: {
     label: "With data availability statement",
-    details: "To confirm that {subject} have a data availability statement, we first use PubMed’s data availability filter and then review them manually.",
+    details: "<p>To confirm that {subject} have a data availability statement, we first use PubMed’s data availability filter and then review them manually.</p>",
     explore: {
       info: "Publications that include a data availability statement. These statements (also called ‘data access’, ‘resource availability’ or ‘code availability’ statements) tell readers where the underlying data or code can be found and how to access it. This figure doesn’t specify the kind of statement provided (e.g., whether the data are openly available or not)"
     },
@@ -78,7 +78,7 @@ export const FIELD_DEFINITIONS = {
   },
   in_repository: {
     label: "In repository",
-    details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex.",
+    details: "<p>We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex.</p>",
     explore: {
       info: "Publications that have a copy of the work freely available and discoverable in any repository."
     }
@@ -91,7 +91,7 @@ export const FIELD_DEFINITIONS = {
   },
   mean_citations: {
     label: "Mean citations",
-    details: "We used data from OpenAlex's <code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>cited_by_count</code>.",
+    details: "<p>We used data from OpenAlex's <code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>cited_by_count</code>.</p>",
     explore: {
       info: "The mean (i.e. average) number of citations of these publications."
     }

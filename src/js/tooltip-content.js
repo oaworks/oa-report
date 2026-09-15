@@ -91,12 +91,46 @@ export function buildDefinitionTooltipContent(labelData, additionalHelpText = nu
   });
 }
 
+// Section headings shown above bullets grouped by help-text key.
+const HELP_TEXT_SECTION_HEADINGS = {
+  covered_by_policy: 'Coverage',
+  compliant: 'Compliance'
+};
+
+/**
+ * Escapes HTML-significant characters so plain text can be safely inserted as markup.
+ *
+ * @param {string} [text=''] - Plain text to escape.
+ * @returns {string} Escaped text.
+ */
+function escapeHtml(text = '') {
+  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+/**
+ * Converts plain text (one requirement per line) into escaped `<li>` items,
+ * so org contacts can list bullets in a Sheet cell without writing HTML.
+ *
+ * @param {string} [text=''] - Plain text, one bullet per line.
+ * @returns {string} Concatenated `<li>` items.
+ */
+function buildBulletItemsFromPlainText(text = '') {
+  return text
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => `<li>${escapeHtml(line)}</li>`)
+    .join('');
+}
+
 /**
  * Builds supplementary help HTML from one or more org help-text keys.
  *
  * @param {Object} options - Help content options.
  * @param {string[]} [options.help_text=[]] - Ordered help-text keys to resolve.
- * @param {Object.<string, string>} [options.help_text_by_key={}] - Org-specific help text keyed by field id, as trusted HTML.
+ * @param {Object.<string, string>} [options.help_text_by_key={}] - Org-specific help text keyed by field id.
+ * For "bullets" style, plain text with one requirement per line — each line is escaped and rendered as its own `<li>`.
+ * For "paragraph" style, trusted HTML.
  * @param {Object} [options.org_meta={}] - Org-specific values for placeholder injection.
  * @param {string} [options.help_text_style='paragraph'] - Output style, e.g. "paragraph" or "bullets".
  * @returns {string} Rendered help HTML.
@@ -107,15 +141,20 @@ export function buildDefinitionHelpHtml({
   org_meta = {},
   help_text_style = 'paragraph'
 } = {}) {
-  const helpItems = help_text
-    .map((key) => help_text_by_key[key]?.trim())
-    .filter(Boolean)
-    .map((html) => injectOrgFields(html, org_meta));
+  const helpEntries = help_text
+    .map((key) => ({ key, html: help_text_by_key[key]?.trim() }))
+    .filter((entry) => entry.html)
+    .map((entry) => ({ ...entry, html: injectOrgFields(entry.html, org_meta) }));
 
-  if (!helpItems.length) return '';
+  if (!helpEntries.length) return '';
   if (help_text_style === 'bullets') {
-    return `<ul class="list-disc list-outside pl-5 space-y-1">${helpItems.map((item) => `<li>${item}</li>`).join('')}</ul>`;
+    const groups = helpEntries.map(({ key, html }) => {
+      const heading = HELP_TEXT_SECTION_HEADINGS[key];
+      const headingHtml = heading ? `<div class="font-semibold uppercase mt-2 mb-1">${heading}:</div>` : '';
+      return `<div>${headingHtml}<ul class="list-disc list-outside pl-5">${buildBulletItemsFromPlainText(html)}</ul></div>`;
+    });
+    return `<div class="space-y-2">${groups.join('')}</div>`;
   }
 
-  return helpItems.join(' ');
+  return helpEntries.map(({ html }) => html).join(' ');
 }
