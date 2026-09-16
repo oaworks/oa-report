@@ -19,7 +19,7 @@ export const FIELD_DEFINITIONS = {
   },
   compliant: {
     label: "Compliant",
-    details: "<p class='mb-2'>We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex.</p>",
+    details: "<p class='mb-2'>We use data from Crossref and OpenAlex..</p>",
     explore: {
       info: `Publications covered by ${POLICY_LINK_EXPLORE} that are compliant with the policy. <span class='org-policy-compliance'></span>`,
       help_text: ["compliant"],
@@ -41,14 +41,14 @@ export const FIELD_DEFINITIONS = {
   },
   compliant_and_covered_by_policy: {
     label: "Compliant (all)",
-    details: "<p class='mb-2'>We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex.</p>",
+    details: "<p class='mb-2'>We use data from Crossref and OpenAlex..</p>",
     explore: {
       info: "All publications that comply with the requirements of the Open Access policy, even if they are not covered by said policy. <p><span class='org-policy-compliance'></span></p>"
     }
   },
   free_to_read: {
     label: "Free-to-read",
-    details: "<p>We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex.</p>",
+    details: "<p>We use data from Crossref and OpenAlex..</p>",
     explore: {
       info: "Publications that are free to read on the publisher’s website or any online repository, including temporarily accessible articles (“bronze Open Access”)."
     },
@@ -78,7 +78,7 @@ export const FIELD_DEFINITIONS = {
   },
   in_repository: {
     label: "In repository",
-    details: "<p>We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex.</p>",
+    details: "<p>We use data from Crossref and OpenAlex..</p>",
     explore: {
       info: "Publications that have a copy of the work freely available and discoverable in any repository."
     }
