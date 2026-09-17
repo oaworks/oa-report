@@ -18,7 +18,7 @@ import { orgDataPromise, initInsightsAndActions } from './insights-and-actions.j
 import { AUTHOR_BREAKDOWN_TERM, getAggregatedDataQuery, formatAggregationBucket, getFieldFilterValues, toTermField } from './aggregated-data-query.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { createTooltip, createPopover } from './tooltip-manager.js';
-import { buildDefinitionTooltipContent } from './tooltip-content.js';
+import { buildDefinitionTooltipContent, buildTooltipContent, buildDefinitionHelpHtml, injectOrgFields } from './tooltip-content.js';
 
 // =================================================
 // Global variables
@@ -1226,15 +1226,31 @@ function isNumericLikeValue(value) {
 /**
  * Generates the HTML content for a tooltip, including information and optional methodology details.
  *
- * @param {Object} labelData - The object containing the label, info, and optionally details for the tooltip.
+ * Field definitions with a `help_text` list (e.g. compliant/covered_by_policy columns) get their
+ * org-specific policy text rendered as a bulleted list behind the Methodology section, matching Insights.
+ *
+ * @param {Object} labelData - The object containing the label, info, and optionally details/help_text for the tooltip.
+ * @param {Object|null} [helpTextByKey=null] - Org-specific help text keyed by field id.
  * @returns {string} The generated HTML content for the tooltip.
  */
-function generateTooltipContent(labelData, additionalHelpText = null) {
-  return buildDefinitionTooltipContent(labelData, additionalHelpText, {
-    orgName,
-    orgPolicyCoverage,
-    orgPolicyCompliance,
-    orgPolicyUrl
+function generateTooltipContent(labelData, helpTextByKey = null) {
+  const orgMeta = { orgName, orgPolicyCoverage, orgPolicyCompliance, orgPolicyUrl };
+
+  if (!labelData?.help_text?.length) {
+    return buildDefinitionTooltipContent(labelData, null, orgMeta);
+  }
+
+  const helpHtml = buildDefinitionHelpHtml({
+    help_text: labelData.help_text,
+    help_text_by_key: helpTextByKey || {},
+    org_meta: orgMeta,
+    help_text_style: labelData.help_text_style
+  });
+  const detailsParts = [injectOrgFields(labelData.details, orgMeta), helpHtml].filter(Boolean);
+
+  return buildTooltipContent({
+    leadHtml: injectOrgFields(labelData.info, orgMeta),
+    detailsHtml: detailsParts.length > 1 ? `<div class="space-y-2">${detailsParts.join('')}</div>` : detailsParts.join('')
   });
 }
 
@@ -1313,8 +1329,8 @@ function setupHeaderTooltip(element, rawKey, dataType) {
 
   // Generate and set tooltip if info is present and non-empty
   if (labelData && labelData.info && labelData.info.trim()) {
-    // Get additional help text from orgData if available
-    const additionalHelpText = orgData.hits.hits[0]?._source.policy?.help_text?.[key] ?? null;
+    // Org-specific help text (e.g. compliant/covered_by_policy criteria), keyed by field id
+    const helpTextByKey = orgData.hits.hits[0]?._source.policy?.help_text ?? null;
 
     const infoButton = document.createElement("button");
     infoButton.type = "button";
@@ -1323,7 +1339,7 @@ function setupHeaderTooltip(element, rawKey, dataType) {
     infoButton.innerHTML = INFO_TRIGGER_ICON_HTML;
     content.appendChild(infoButton);
 
-    createPopover(infoButton, generateTooltipContent(labelData, additionalHelpText), {
+    createPopover(infoButton, generateTooltipContent(labelData, helpTextByKey), {
       placement: 'bottom',
       theme: 'tooltip-light'
     });

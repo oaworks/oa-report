@@ -54,9 +54,9 @@ export function buildTooltipContent({
   const hasHelp = !!resolvedHelpHtml;
 
   return `
-    ${hasLead ? `<div class='${hasDetails ? "mb-2" : ""}'>${leadHtml}</div>` : ""}
-    ${hasHelp ? `<div class='${hasDetails ? "mb-2" : ""}'>${resolvedHelpHtml}</div>` : ""}
-    ${hasDetails ? `<details><summary class='hover:cursor-pointer'>${detailsLabel}</summary><div class='mt-2'>${detailsHtml}</div></details>` : ""}
+    ${hasLead ? `<div class='space-y-2 ${hasDetails ? "mb-2" : ""}'>${leadHtml}</div>` : ""}
+    ${hasHelp ? `<div class='space-y-2 ${hasDetails ? "mb-2" : ""}'>${resolvedHelpHtml}</div>` : ""}
+    ${hasDetails ? `<details><summary class='hover:cursor-pointer'>${detailsLabel}</summary><div class='mt-2 space-y-2'>${detailsHtml}</div></details>` : ""}
   `;
 }
 

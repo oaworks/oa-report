@@ -19,11 +19,11 @@ export const FIELD_DEFINITIONS = {
   },
   compliant: {
     label: "Compliant",
-    details: "<p class='mb-2'>We use data from Crossref and OpenAlex..</p>",
+    details: "<p>We use data from Crossref and OpenAlex.</p>",
     explore: {
-      info: `Publications covered by ${POLICY_LINK_EXPLORE} that are compliant with the policy. <span class='org-policy-compliance'></span>`,
+      info: `Publications covered by ${POLICY_LINK_EXPLORE} that are compliant with the policy.`,
       help_text: ["compliant"],
-      help_text_style: "paragraph"
+      help_text_style: "bullets"
     },
     insights: {
       info: `<p>The percentage of {subject} covered by ${POLICY_LINK_INSIGHTS} that are compliant with the policy.</p>`,
@@ -34,21 +34,23 @@ export const FIELD_DEFINITIONS = {
   covered_by_policy: {
     label: "Covered by policy",
     explore: {
-      info: `Publications covered by ${POLICY_LINK_EXPLORE}. <span class='org-policy-coverage'></span>`,
+      info: `Publications covered by ${POLICY_LINK_EXPLORE}.`,
       help_text: ["covered_by_policy"],
-      help_text_style: "paragraph"
+      help_text_style: "bullets"
     }
   },
   compliant_and_covered_by_policy: {
     label: "Compliant (all)",
-    details: "<p class='mb-2'>We use data from Crossref and OpenAlex..</p>",
+    details: "<p>We use data from Crossref and OpenAlex.</p>",
     explore: {
-      info: "All publications that comply with the requirements of the Open Access policy, even if they are not covered by said policy. <p><span class='org-policy-compliance'></span></p>"
+      info: "All publications that comply with the requirements of the Open Access policy, even if they are not covered by said policy.",
+      help_text: ["compliant"],
+      help_text_style: "bullets"
     }
   },
   free_to_read: {
     label: "Free-to-read",
-    details: "<p>We use data from Crossref and OpenAlex..</p>",
+    details: "<p>We use data from Crossref and OpenAlex.</p>",
     explore: {
       info: "Publications that are free to read on the publisher’s website or any online repository, including temporarily accessible articles (“bronze Open Access”)."
     },
