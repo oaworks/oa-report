@@ -19,6 +19,11 @@ export const EXPLORE_ITEMS_LABELS = {
     plural: "Publications",
     tooltip: "Explore unique publications, i.e., journal articles and preprints without an associated journal article"
   },
+  "preprint": {
+    singular: "Preprint",
+    plural: "Preprints",
+    tooltip: "Explore various preprints"
+  },
   "grant": {
     singular: "Grant",
     plural: "Grants",
@@ -782,6 +787,11 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
  * `licenseKeys` resolves those fields' raw codes to their display name via
  * LICENSE_CODES (e.g. "cc-by" → "CC-BY").
  *
+ * Explore tabs (e.g. articles vs preprint) each return a different field
+ * set; getArticleColumnLayout() keeps only the keys each tab's own query
+ * actually returns, so unavailable fields (and columns left with none)
+ * drop out per tab rather than showing blank.
+ *
  * See https://github.com/oaworks/discussion/issues/3975
  */
 export const EXPLORE_ARTICLE_COLUMN_LAYOUT_BY_ORG = {
@@ -790,6 +800,7 @@ export const EXPLORE_ARTICLE_COLUMN_LAYOUT_BY_ORG = {
     { keys: ["published_date"] },
     { keys: ["grantid", "program"] },
     { keys: ["journal", "publisher"] },
+    { keys: ["host_venue.display_name"] },
     { keys: ["PMCID"] },
     {
       keys: ["publisher_license_best", "repository_license_best"],

@@ -1074,14 +1074,38 @@ function isExploreColumnVisible(rawKey, dataType) {
 }
 
 /**
- * Returns the article column layout for the active org, or null when it has
- * none (columns then come from whatever fields the query returns).
+ * Returns the article column layout for the active org and Explore tab, or
+ * null when the org has none. Each column's keys are filtered down to
+ * whichever ones the active tab's own query actually returns (different
+ * tabs, e.g. articles vs preprint, return different field sets); a column
+ * left with no available keys is dropped entirely.
  *
  * @returns {{keys: string[], equalWeight?: boolean}[]|null}
  */
 function getArticleColumnLayout() {
   const orgSlug = orgData?.hits?.hits?.[0]?._source?.objectID;
-  return EXPLORE_ARTICLE_COLUMN_LAYOUT_BY_ORG[orgSlug] || null;
+  const layout = EXPLORE_ARTICLE_COLUMN_LAYOUT_BY_ORG[orgSlug];
+  if (!layout) return null;
+
+  const availableFields = new Set(
+    String(currentActiveExploreItemData?.includes || '')
+      .split(',')
+      .map((token) => normaliseFieldId(token.trim()))
+      .filter(Boolean)
+  );
+
+  return layout
+    .map((column) => {
+      const keys = column.keys.filter((key) => availableFields.has(key));
+      if (keys.length === 0) return null;
+      return {
+        ...column,
+        keys,
+        lineLabels: column.lineLabels?.filter((_, i) => availableFields.has(column.keys[i])),
+        licenseKeys: column.licenseKeys?.filter((key) => keys.includes(key))
+      };
+    })
+    .filter(Boolean);
 }
 
 /**
@@ -1142,6 +1166,21 @@ function formatExploreCellContent(dataType, rawKey, rawContent) {
 }
 
 /**
+ * Label for an article field, e.g. "Grant ID". "title" is special-cased to
+ * name the active tab's publication type, e.g. "Preprint title".
+ *
+ * @param {string} fieldKey
+ * @returns {string}
+ */
+function resolveArticleFieldLabel(fieldKey) {
+  if (fieldKey === 'title') {
+    const itemLabel = EXPLORE_ITEMS_LABELS[currentActiveExploreItemData?.id]?.singular || 'Publication';
+    return `${itemLabel} title`;
+  }
+  return EXPLORE_HEADER_ARTICLES_LABELS[fieldKey]?.label || fieldKey;
+}
+
+/**
  * Resolves the header columns for an Explore table: from the article layout
  * when one applies, otherwise one column per visible record key, as before.
  * A multi-key column's label mirrors its body cell: first field normal,
@@ -1157,17 +1196,17 @@ function resolveExploreHeaderColumns(records, dataType) {
     return {
       isLayoutDriven: true,
       columns: layout.map(({ keys, equalWeight, shortHeaderLabel }) => {
-        if (keys.length === 1) return { rawKey: keys[0], labelOverride: null, labelHTML: null };
+        if (keys.length === 1) return { rawKey: keys[0], labelOverride: resolveArticleFieldLabel(keys[0]), labelHTML: null };
         if (shortHeaderLabel) return { rawKey: keys[0], labelOverride: shortHeaderLabel, labelHTML: null };
 
-        const fieldLabels = keys.map((fieldKey) => EXPLORE_HEADER_ARTICLES_LABELS[fieldKey]?.label || fieldKey);
+        const fieldLabels = keys.map((fieldKey) => resolveArticleFieldLabel(fieldKey));
         return {
           rawKey: keys[0],
           labelOverride: fieldLabels.join(' / '),
           labelHTML: fieldLabels
             .map((text, i) => (i === 0 || equalWeight
               ? `<span class="block truncate">${text}</span>`
-              : `<span class="block truncate text-neutral-300">${text}</span>`))
+              : `<span class="block truncate text-neutral-400">${text}</span>`))
             .join('')
         };
       })
@@ -1577,11 +1616,11 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
           .map((fieldKey, lineIndex) => {
             const label = lineLabels?.[lineIndex];
             const valueHTML = label
-              ? `<span class="text-[10px] uppercase text-neutral-300">${label}:</span> ${values[lineIndex]}`
+              ? `<span class="text-[10px] uppercase text-neutral-400">${label}:</span> ${values[lineIndex]}`
               : values[lineIndex];
             return (lineIndex === 0 || equalWeight)
               ? `<span class="block truncate">${valueHTML}</span>`
-              : `<span class="block truncate text-neutral-300">${valueHTML}</span>`;
+              : `<span class="block truncate text-neutral-400">${valueHTML}</span>`;
           })
           .join('');
 
