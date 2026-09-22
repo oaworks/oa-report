@@ -9,7 +9,7 @@
 
 import DOMPurify from "dompurify";
 import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, escapeQueryValue, normaliseFieldId, makeNumberReadable, makeTabCountReadable, announce, orcidDisplayNames, resolveLicenseDisplay } from "./utils.js";
-import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, EXPLORE_ARTICLE_COLUMN_LAYOUT_BY_ORG, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, EXPLORE_ARTICLE_LAYOUT_OTHER_COL_CLASSES, EXPLORE_ARTICLE_LAYOUT_FIRST_COL_CLASSES, EXPLORE_ARTICLE_LAYOUT_SECOND_COL_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, SEGMENTED_PILL_CLASSES, VIEW_TAB_CLASSES, CONTROL_FIELD_SHELL_CLASSES, CONTROL_FOCUS_RING_CLASSES, CONTROL_SELECT_CLASSES, SORT_TRIGGER_CLASSES, SORT_CARET_CHIP_CLASSES, TAB_COUNT_BADGE_CLASSES, EXPLORE_SUMMARY_ROW_CLASSES, INFO_TRIGGER_ICON_CLASSES, INFO_TRIGGER_ICON_HTML, resolveFieldDefinition } from "./constants.js";
+import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, EXPLORE_ARTICLE_COLUMN_LAYOUT_BY_ORG, EXPLORE_SORTABLE_ARTICLE_FIELDS_BY_ORG, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, EXPLORE_ARTICLE_LAYOUT_OTHER_COL_CLASSES, EXPLORE_ARTICLE_LAYOUT_FIRST_COL_CLASSES, EXPLORE_ARTICLE_LAYOUT_SECOND_COL_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, SEGMENTED_PILL_CLASSES, VIEW_TAB_CLASSES, CONTROL_FIELD_SHELL_CLASSES, CONTROL_FOCUS_RING_CLASSES, CONTROL_SELECT_CLASSES, SORT_TRIGGER_CLASSES, SORT_CARET_CHIP_CLASSES, SORT_CARET_CHIP_ACTIVE_CLASSES, TAB_COUNT_BADGE_CLASSES, EXPLORE_SUMMARY_ROW_CLASSES, INFO_TRIGGER_ICON_CLASSES, INFO_TRIGGER_ICON_HTML, resolveFieldDefinition } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { startLoading, stopLoading } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
@@ -1109,6 +1109,20 @@ function getArticleColumnLayout() {
 }
 
 /**
+ * Whether a normalised article field should get a sort button, per
+ * EXPLORE_SORTABLE_ARTICLE_FIELDS_BY_ORG for the active org and tab.
+ *
+ * @param {string} normalisedKey
+ * @returns {boolean}
+ */
+function isExploreColumnSortable(normalisedKey) {
+  const orgSlug = orgData?.hits?.hits?.[0]?._source?.objectID;
+  const itemId = currentActiveExploreItemData?.id;
+  return Boolean(EXPLORE_SORTABLE_ARTICLE_FIELDS_BY_ORG[orgSlug]?.[itemId]?.includes(normalisedKey));
+}
+
+
+/**
  * Maps a record's fields to their values by normalised name, so a layout's
  * clean field names (e.g. "grantid") can find them regardless of an "__org"
  * suffix. "supplements" comes back as a nested array of small objects (e.g.
@@ -1349,8 +1363,9 @@ function getExploreSortIndicator(dataType) {
 }
 
 /**
- * Toggles the current Explore header sort direction, re-renders the table, and
- * restores focus to the same header control afterwards.
+ * Sorts by sortKey (defaulting to ascending), or toggles direction if it's
+ * already the active sort field. Re-renders the table and restores focus to
+ * the same header control afterwards.
  *
  * @param {string} sortKey - Normalised header key used to restore focus.
  * @param {string} labelText - Human-readable column label announced to users.
@@ -1359,7 +1374,10 @@ function getExploreSortIndicator(dataType) {
 async function handleExploreSortToggle(sortKey, labelText) {
   if (!currentActiveExploreItemData) return;
 
-  currentActiveExploreSortDirection = currentActiveExploreSortDirection === "asc" ? "desc" : "asc";
+  currentActiveExploreSortDirection = sortKey === currentActiveExploreSortField
+    ? (currentActiveExploreSortDirection === "asc" ? "desc" : "asc")
+    : "asc";
+  currentActiveExploreSortField = sortKey;
 
   startLoading();
 
@@ -1447,6 +1465,7 @@ function setupHeaderTooltip(element, rawKey, dataType, labelOverride = null, lab
     : (labelData && labelData.label ? labelData.label : key));
   const sortIndicator = getExploreSortIndicator(dataType);
   const isSortedColumn = sortIndicator?.key === key;
+  const isSortable = isSortedColumn || (dataType === 'articles' && isExploreColumnSortable(key));
 
   element.innerHTML = "";
 
@@ -1455,19 +1474,50 @@ function setupHeaderTooltip(element, rawKey, dataType, labelOverride = null, lab
     temp.innerHTML = DOMPurify.sanitize(label, { ALLOWED_TAGS: [] });
     return temp.textContent?.trim() || key;
   })();
-  const contentClassName = "inline-flex w-full min-w-0 items-end gap-1 justify-between";
-  // Plain wrapper — the sort toggle and info triggers are separate buttons
-  // within it, since a button can't be nested inside another button.
-  const content = document.createElement("span");
-  content.className = contentClassName;
+  const container = document.createElement("div");
+  container.className = "flex h-full items-stretch justify-between gap-2";
 
+  // (1) Label, bottom-aligned, takes the remaining width.
+  const labelContainer = document.createElement("span");
+  labelContainer.className = "flex min-w-0 flex-1 items-end";
   const labelSpan = document.createElement("span");
   labelSpan.innerHTML = DOMPurify.sanitize(labelHTML || label);
-  content.appendChild(labelSpan);
+  labelContainer.appendChild(labelSpan);
+  container.appendChild(labelContainer);
 
-  if (isSortedColumn) {
-    const nextDirection = sortIndicator.direction === "ascending" ? "descending" : "ascending";
-    const sortDescription = `${labelText}, currently sorted ${sortIndicator.direction}. Click to sort ${nextDirection}.`;
+  // (2) Sort caret and info icon share one narrow column, stacked
+  // top (info) and bottom (caret) so both stay vertically aligned.
+  const iconStack = document.createElement("span");
+  iconStack.className = "flex shrink-0 flex-col items-center justify-between gap-2";
+
+  const infoSlot = document.createElement("span");
+  infoSlot.className = "flex min-h-6 items-center";
+  iconStack.appendChild(infoSlot);
+
+  if (labelData && labelData.info && labelData.info.trim()) {
+    const additionalHelpText = orgData.hits.hits[0]?._source.policy?.help_text?.[key] ?? null;
+
+    const infoButton = document.createElement("button");
+    infoButton.type = "button";
+    infoButton.className = INFO_TRIGGER_ICON_CLASSES;
+    infoButton.setAttribute("aria-label", `More information about ${labelText}`);
+    infoButton.innerHTML = INFO_TRIGGER_ICON_HTML;
+    infoSlot.appendChild(infoButton);
+
+    createPopover(infoButton, generateTooltipContent(labelData, additionalHelpText), {
+      placement: 'bottom',
+      theme: 'tooltip-light'
+    });
+  }
+
+  const sortSlot = document.createElement("span");
+  sortSlot.className = "flex min-h-6 items-center";
+  iconStack.appendChild(sortSlot);
+
+  if (isSortable) {
+    const sortDescription = isSortedColumn
+      ? `${labelText}, currently sorted ${sortIndicator.direction}. Click to sort ${sortIndicator.direction === "ascending" ? "descending" : "ascending"}.`
+      : `Sort by ${labelText}.`;
     const sortToggle = document.createElement("button");
     sortToggle.type = "button";
     sortToggle.className = `inline-flex items-center ${SORT_TRIGGER_CLASSES}`;
@@ -1476,48 +1526,28 @@ function setupHeaderTooltip(element, rawKey, dataType, labelOverride = null, lab
     sortToggle.addEventListener("click", () => {
       handleExploreSortToggle(key, labelText);
     });
-    createTooltip(sortToggle, sortDescription, {
-      placement: 'bottom',
-      theme: 'tooltip-light'
-    });
 
     const icon = document.createElement("i");
-    icon.className = sortIndicator.direction === "ascending"
-      ? `ph ph-caret-up ${SORT_CARET_CHIP_CLASSES}`
-      : `ph ph-caret-down ${SORT_CARET_CHIP_CLASSES}`;
+    icon.className = isSortedColumn
+      ? (sortIndicator.direction === "ascending" ? `ph ph-caret-up ${SORT_CARET_CHIP_ACTIVE_CLASSES}` : `ph ph-caret-down ${SORT_CARET_CHIP_ACTIVE_CLASSES}`)
+      : `ph ph-caret-up-down ${SORT_CARET_CHIP_CLASSES}`;
     icon.setAttribute("aria-hidden", "true");
     sortToggle.appendChild(icon);
 
     const srText = document.createElement("span");
     srText.className = "sr-only";
-    srText.textContent = `Sorted ${sortIndicator.direction}`;
+    srText.textContent = isSortedColumn ? `Sorted ${sortIndicator.direction}` : "Not sorted";
     sortToggle.appendChild(srText);
 
-    content.appendChild(sortToggle);
-    element.setAttribute("aria-sort", sortIndicator.direction);
+    sortSlot.appendChild(sortToggle);
+    if (isSortedColumn) element.setAttribute("aria-sort", sortIndicator.direction);
+    else element.removeAttribute("aria-sort");
   } else {
     element.removeAttribute("aria-sort");
   }
 
-  element.appendChild(content);
-
-  // Generate and set tooltip if info is present and non-empty
-  if (labelData && labelData.info && labelData.info.trim()) {
-    // Get additional help text from orgData if available
-    const additionalHelpText = orgData.hits.hits[0]?._source.policy?.help_text?.[key] ?? null;
-
-    const infoButton = document.createElement("button");
-    infoButton.type = "button";
-    infoButton.className = INFO_TRIGGER_ICON_CLASSES;
-    infoButton.setAttribute("aria-label", `More information about ${labelText}`);
-    infoButton.innerHTML = INFO_TRIGGER_ICON_HTML;
-    content.appendChild(infoButton);
-
-    createPopover(infoButton, generateTooltipContent(labelData, additionalHelpText), {
-      placement: 'bottom',
-      theme: 'tooltip-light'
-    });
-  }
+  container.appendChild(iconStack);
+  element.appendChild(container);
 }
 
 /**

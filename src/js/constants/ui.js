@@ -14,12 +14,13 @@ export const DATE_SELECTION_BUTTON_CLASSES = {
 };
 
 export const CONTROL_FOCUS_RING_CLASSES = "focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-900";
-export const INFO_TRIGGER_ICON_CLASSES = "inline-flex h-auto w-6 items-center justify-center text-neutral-100 transition-colors hover:text-carnation-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400";
+export const INFO_TRIGGER_ICON_CLASSES = "flex h-auto w-auto items-center justify-center text-neutral-100 transition-colors hover:text-carnation-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400";
 export const INFO_TRIGGER_ICON_HTML = '<i class="ph ph-info inline-block text-[16px] leading-none" aria-hidden="true"></i>';
 export const CONTROL_FIELD_SHELL_CLASSES = "rounded-sm border border-neutral-600 bg-neutral-900/50 p-0.5 shadow-sm transition-colors hover:border-neutral-400 focus-within:border-neutral-300";
 export const CONTROL_SELECT_CLASSES = "appearance-none cursor-pointer rounded-sm bg-transparent px-3 py-1.5 pr-8 text-xs font-semibold uppercase tracking-wide text-neutral-100 transition-colors hover:bg-neutral-800 hover:text-white";
 export const SORT_TRIGGER_CLASSES = `group cursor-pointer rounded-sm text-inherit transition-colors ${CONTROL_FOCUS_RING_CLASSES}`;
-export const SORT_CARET_CHIP_CLASSES = "shrink-0 rounded-sm border border-neutral-500 bg-neutral-800 px-1 py-0.5 text-[10px] leading-none text-neutral-100 shadow-sm transition-colors group-hover:border-neutral-300 group-hover:bg-neutral-700 group-focus-visible:border-neutral-300 group-focus-visible:bg-neutral-700";
+export const SORT_CARET_CHIP_CLASSES = "shrink-0 rounded-sm border border-neutral-500 bg-neutral-800 px-1 py-0.5 text-[10px] font-bold leading-none text-neutral-100 shadow-sm transition-colors group-hover:border-neutral-300 group-hover:bg-neutral-700 group-focus-visible:border-neutral-300 group-focus-visible:bg-neutral-700";
+export const SORT_CARET_CHIP_ACTIVE_CLASSES = "shrink-0 rounded-sm border border-neutral-400 bg-neutral-200 px-1 py-0.5 text-[10px] font-bold leading-none text-neutral-900 shadow-sm transition-colors group-hover:border-neutral-500 group-hover:bg-neutral-100 group-focus-visible:border-neutral-500 group-focus-visible:bg-neutral-100";
 export const TAB_COUNT_BADGE_CLASSES = "ml-3 rounded-full bg-neutral-200 px-2.5 py-0.5 text-xs font-medium text-neutral-900 transition-colors group-hover:bg-neutral-100 md:inline-block";
 export const EXPLORE_SUMMARY_ROW_CLASSES = {
   total: "border-t border-neutral-500 !bg-neutral-700 font-semibold text-white",
@@ -31,14 +32,14 @@ export const EXPLORE_SUMMARY_ROW_CLASSES = {
  */
 export const DATA_TABLE_HEADER_CLASSES = {
   terms: {
-    firstHeaderCol: "border-b border-r border-neutral-700 sticky left-0 bg-neutral-900 p-3 w-32 md:w-60 align-bottom",
-    secondHeaderCol: "border-b border-r border-neutral-700 sticky left-32 md:left-60 bg-neutral-900 p-3 w-28 md:w-36 align-bottom break-words",
-    otherHeaderCols: "border-b border-r border-neutral-700 p-3 w-32 align-bottom break-words"
+    firstHeaderCol: "border-b border-r border-neutral-700 sticky left-0 bg-neutral-900 p-2 w-32 md:w-60 align-bottom",
+    secondHeaderCol: "border-b border-r border-neutral-700 sticky left-32 md:left-60 bg-neutral-900 p-2 w-28 md:w-36 align-bottom break-words",
+    otherHeaderCols: "border-b border-r border-neutral-700 p-2 w-32 align-bottom break-words"
   },
   articles: {
-    firstHeaderCol: "border-b border-r border-neutral-700 sticky left-0 bg-neutral-900 p-3 w-32 md:w-60 lg:w-80 align-bottom",
-    secondHeaderCol: "border-b border-r border-neutral-700 sticky left-32 md:left-60 lg:left-80 bg-neutral-900 p-3 w-28 md:w-36 align-bottom break-words",
-    otherHeaderCols: "border-b border-r border-neutral-700 p-3 w-64 align-bottom break-words"
+    firstHeaderCol: "border-b border-r border-neutral-700 sticky left-0 bg-neutral-900 p-2 w-32 md:w-60 lg:w-80 align-bottom",
+    secondHeaderCol: "border-b border-r border-neutral-700 sticky left-32 md:left-60 lg:left-80 bg-neutral-900 p-2 w-28 md:w-36 align-bottom break-words",
+    otherHeaderCols: "border-b border-r border-neutral-700 p-2 w-64 align-bottom break-words"
   }
 };
 
@@ -54,9 +55,9 @@ const STICKY_HEADER_ROW_CLASSES = "lg:sticky lg:top-[var(--report-nav-height,0px
  * affect orgs without a layout.
  */
 export const EXPLORE_ARTICLE_LAYOUT_OTHER_COL_CLASSES = {
-  header: `border-b border-r border-neutral-700 ${STICKY_HEADER_ROW_CLASSES} bg-neutral-900 p-3 min-w-40 align-bottom break-words`,
-  body: "border-b border-neutral-700 bg-neutral-850 px-3 py-2 min-w-40 align-top truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-800",
-  foot: "border-b border-neutral-600 bg-neutral-900 px-3 py-2 min-w-40 align-top truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-800"
+  header: `border-b border-r border-neutral-700 ${STICKY_HEADER_ROW_CLASSES} bg-neutral-900 p-2 min-w-40 align-bottom break-words`,
+  body: "border-b border-neutral-700 bg-neutral-850 p-2 min-w-40 align-top truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-800",
+  foot: "border-b border-neutral-600 bg-neutral-900 p-2 min-w-40 align-top truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-800"
 };
 
 /**
@@ -66,15 +67,15 @@ export const EXPLORE_ARTICLE_LAYOUT_OTHER_COL_CLASSES = {
  * orgs without a layout.
  */
 export const EXPLORE_ARTICLE_LAYOUT_FIRST_COL_CLASSES = {
-  header: `border-b border-r border-neutral-700 sticky left-0 ${STICKY_HEADER_ROW_CLASSES} bg-neutral-900 p-3 w-28 md:w-48 lg:w-64 align-bottom`,
-  body: "border-b border-neutral-700 sticky left-0 bg-neutral-850 px-3 py-2 w-28 md:w-48 lg:w-64 align-top text-left text-neutral-100 transition-colors duration-200 hover:bg-neutral-800",
-  foot: "border-b border-neutral-600 sticky left-0 bg-neutral-900 px-3 py-2 w-28 md:w-48 lg:w-64 align-top text-left text-neutral-100 transition-colors duration-200 hover:bg-neutral-800"
+  header: `border-b border-r border-neutral-700 sticky left-0 ${STICKY_HEADER_ROW_CLASSES} bg-neutral-900 p-2 w-28 md:w-48 lg:w-64 align-bottom`,
+  body: "border-b border-neutral-700 sticky left-0 bg-neutral-850 p-2 w-28 md:w-48 lg:w-64 align-top text-left text-neutral-100 transition-colors duration-200 hover:bg-neutral-800",
+  foot: "border-b border-neutral-600 sticky left-0 bg-neutral-900 p-2 w-28 md:w-48 lg:w-64 align-top text-left text-neutral-100 transition-colors duration-200 hover:bg-neutral-800"
 };
 
 export const EXPLORE_ARTICLE_LAYOUT_SECOND_COL_CLASSES = {
-  header: `border-b border-r border-neutral-700 sticky left-28 md:left-48 lg:left-64 ${STICKY_HEADER_ROW_CLASSES} bg-neutral-900 p-3 w-28 md:w-36 align-bottom break-words`,
-  body: "border-b border-neutral-700 sticky left-28 md:left-48 lg:left-64 bg-neutral-850 px-3 py-2 w-28 md:w-36 align-top whitespace-nowrap truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-800",
-  foot: "border-b border-neutral-600 sticky left-28 md:left-48 lg:left-64 bg-neutral-900 px-3 py-2 w-28 md:w-36 align-top whitespace-nowrap truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-800"
+  header: `border-b border-r border-neutral-700 sticky left-28 md:left-48 lg:left-64 ${STICKY_HEADER_ROW_CLASSES} bg-neutral-900 p-2 w-28 md:w-36 align-bottom break-words`,
+  body: "border-b border-neutral-700 sticky left-28 md:left-48 lg:left-64 bg-neutral-850 p-2 w-28 md:w-36 align-top whitespace-nowrap truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-800",
+  foot: "border-b border-neutral-600 sticky left-28 md:left-48 lg:left-64 bg-neutral-900 p-2 w-28 md:w-36 align-top whitespace-nowrap truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-800"
 };
 
 /**
@@ -82,14 +83,14 @@ export const EXPLORE_ARTICLE_LAYOUT_SECOND_COL_CLASSES = {
  */
 export const DATA_TABLE_BODY_CLASSES = {
   terms: {
-    firstCol: "border-b border-neutral-700 sticky left-0 bg-neutral-900 px-3 py-2 w-32 md:w-60 align-top text-left text-neutral-100",
-    secondCol: "border-b border-neutral-700 sticky left-32 md:left-60 bg-neutral-900 px-3 py-2 w-28 md:w-36 align-top whitespace-nowrap truncate text-neutral-100",
-    otherCols: "border-b border-neutral-700 bg-neutral-800 px-3 py-2 align-top truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-750"
+    firstCol: "border-b border-neutral-700 sticky left-0 bg-neutral-900 p-2 w-32 md:w-60 align-top text-left text-neutral-100",
+    secondCol: "border-b border-neutral-700 sticky left-32 md:left-60 bg-neutral-900 p-2 w-28 md:w-36 align-top whitespace-nowrap truncate text-neutral-100",
+    otherCols: "border-b border-neutral-700 bg-neutral-800 p-2 align-top truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-750"
   },
   articles: {
-    firstCol: "border-b border-neutral-700 sticky left-0 bg-neutral-900 px-3 py-2 w-32 md:w-60 lg:w-80 align-top text-left text-neutral-100",
-    secondCol: "border-b border-neutral-700 sticky left-32 md:left-60 lg:left-80 bg-neutral-900 px-3 py-2 w-28 md:w-36 align-top whitespace-nowrap truncate text-neutral-100",
-    otherCols: "border-b border-neutral-700 bg-neutral-800 px-3 py-2 w-64 align-top truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-750"
+    firstCol: "border-b border-neutral-700 sticky left-0 bg-neutral-900 p-2 w-32 md:w-60 lg:w-80 align-top text-left text-neutral-100",
+    secondCol: "border-b border-neutral-700 sticky left-32 md:left-60 lg:left-80 bg-neutral-900 p-2 w-28 md:w-36 align-top whitespace-nowrap truncate text-neutral-100",
+    otherCols: "border-b border-neutral-700 bg-neutral-800 p-2 w-64 align-top truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-750"
   }
 };
 
@@ -98,14 +99,14 @@ export const DATA_TABLE_BODY_CLASSES = {
  */
 export const DATA_TABLE_FOOT_CLASSES = {
   terms: {
-    firstCol: "border-b border-neutral-600 sticky left-0 bg-neutral-900 px-3 py-2 w-32 md:w-60 align-top text-left text-neutral-100",
-    secondCol: "border-b border-neutral-600 sticky left-32 md:left-60 bg-neutral-900 px-3 py-2 w-28 md:w-36 align-top whitespace-nowrap truncate text-neutral-100",
-    otherCols: "border-b border-neutral-600 bg-neutral-800 px-3 py-2 align-top truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-750"
+    firstCol: "border-b border-neutral-600 sticky left-0 bg-neutral-900 p-2 w-32 md:w-60 align-top text-left text-neutral-100",
+    secondCol: "border-b border-neutral-600 sticky left-32 md:left-60 bg-neutral-900 p-2 w-28 md:w-36 align-top whitespace-nowrap truncate text-neutral-100",
+    otherCols: "border-b border-neutral-600 bg-neutral-800 p-2 align-top truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-750"
   },
   articles: {
-    firstCol: "border-b border-neutral-600 sticky left-0 bg-neutral-900 px-3 py-2 w-32 md:w-60 lg:w-80 align-top text-left text-neutral-100",
-    secondCol: "border-b border-neutral-600 sticky left-32 md:left-60 lg:left-80 bg-neutral-900 px-3 py-2 w-28 md:w-36 align-top whitespace-nowrap truncate text-neutral-100",
-    otherCols: "border-b border-neutral-600 bg-neutral-800 px-3 py-2 w-64 align-top truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-750"
+    firstCol: "border-b border-neutral-600 sticky left-0 bg-neutral-900 p-2 w-32 md:w-60 lg:w-80 align-top text-left text-neutral-100",
+    secondCol: "border-b border-neutral-600 sticky left-32 md:left-60 lg:left-80 bg-neutral-900 p-2 w-28 md:w-36 align-top whitespace-nowrap truncate text-neutral-100",
+    otherCols: "border-b border-neutral-600 bg-neutral-800 p-2 w-64 align-top truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-750"
   }
 };
 

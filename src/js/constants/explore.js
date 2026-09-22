@@ -819,3 +819,17 @@ export const EXPLORE_ARTICLE_COLUMN_LAYOUT_BY_ORG = {
     { keys: ["has_data_availability_statement"] }
   ]
 };
+
+/**
+ * Article fields that get a sort button on their column header, per org and
+ * Explore tab. published_date must be listed even though it's the default
+ * sort, or its button vanishes once another column becomes active. Only
+ * fields confirmed to actually sort (not empty the table) are listed here.
+ */
+export const EXPLORE_SORTABLE_ARTICLE_FIELDS_BY_ORG = {
+  "gates-foundation": {
+    articles: ["published_date", "has_data_availability_statement"],
+    preprint: ["published_date", "has_data_availability_statement"],
+    unique_publication: ["published_date", "has_data_availability_statement"]
+  }
+};
