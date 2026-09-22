@@ -838,6 +838,11 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       document.querySelector('.js_export_table_container')?.classList.remove('min-h-[6rem]', 'md:min-h-[8rem]', 'lg:min-h-[10rem]');
     }
     hasRenderedExploreTableOnce = true;
+
+    // No horizontal scroll for article layouts, so skip the scroll padding/bg.
+    const hasArticleLayout = type === 'articles' && Boolean(getArticleColumnLayout());
+    document.querySelector('.js_export_table_container')?.classList.toggle('bg-neutral-800', !hasArticleLayout);
+    document.querySelector('.js_export_table_container')?.classList.toggle('pb-4', !hasArticleLayout);
   }
 }
 
@@ -1095,9 +1100,11 @@ function formatExploreCellContent(dataType, rawKey, rawContent) {
 
   let content = rawContent;
 
-  // preprint_doi arrives prefixed (e.g. "supplements.preprint_doi").
+  // preprint_doi arrives prefixed (e.g. "supplements.preprint_doi"), and can
+  // be array-valued; convertTextToLinks needs a plain string or it silently
+  // returns "N/A".
   if (dataType === 'articles' && (rawKey === 'DOI' || normaliseFieldId(rawKey) === 'preprint_doi')) {
-    content = convertTextToLinks(content, true, 'https://doi.org/');
+    content = convertTextToLinks(Array.isArray(content) ? content[0] : content, true, 'https://doi.org/');
   }
 
   if (dataType === 'articles' && rawKey === 'published_date') {
