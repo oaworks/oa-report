@@ -1147,10 +1147,11 @@ function formatExploreCellContent(dataType, rawKey, rawContent) {
 
   let content = rawContent;
 
-  // preprint_doi arrives prefixed (e.g. "supplements.preprint_doi"), and can
-  // be array-valued; convertTextToLinks needs a plain string or it silently
-  // returns "N/A".
-  if (dataType === 'articles' && (rawKey === 'DOI' || normaliseFieldId(rawKey) === 'preprint_doi')) {
+  // DOI-valued fields can arrive prefixed and/or array-valued (e.g.
+  // "supplements.preprint_doi"); convertTextToLinks needs a plain string or
+  // it silently returns "N/A".
+  const DOI_FIELD_NAMES = ['DOI', 'preprint_doi', 'is_preprint_of'];
+  if (dataType === 'articles' && DOI_FIELD_NAMES.includes(normaliseFieldId(rawKey))) {
     content = convertTextToLinks(Array.isArray(content) ? content[0] : content, true, 'https://doi.org/');
   }
 
@@ -1586,6 +1587,14 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
     const row = document.createElement('tr');
     const normalisedKeyMap = buildNormalisedKeyMap(record);
 
+    // Whether this record is known to be a preprint, so a missing DOI can
+    // read as "no DOI captured" rather than "no preprint" — different tabs
+    // carry this on different fields (has_preprint_copy vs is_preprint).
+    const isKnownPreprint = ['has_preprint_copy', 'is_preprint'].some((key) => {
+      const value = normalisedKeyMap.get(key);
+      return (Array.isArray(value) ? value[0] : value) === true;
+    });
+
     articleLayout.forEach(({ keys, equalWeight, lineLabels, licenseKeys }, columnIndex) => {
       const [primaryKey] = keys;
       const values = keys.map((fieldKey) => {
@@ -1594,13 +1603,8 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
           : '';
         const formatted = formatArticleLayoutCellValue(value);
 
-        // A preprint copy can exist without a captured DOI — say so instead
-        // of a bare "N/A", which would otherwise read as "no preprint".
-        // has_preprint_copy can itself be array-valued (see buildNormalisedKeyMap).
-        const hasPreprintCopyValue = normalisedKeyMap.get('has_preprint_copy');
-        const hasPreprintCopy = Array.isArray(hasPreprintCopyValue) ? hasPreprintCopyValue[0] : hasPreprintCopyValue;
-        if (fieldKey === 'preprint_doi' && formatted === 'N/A' && hasPreprintCopy === true) {
-          return 'Preprint copy, no DOI on file';
+        if (fieldKey === 'preprint_doi' && formatted === 'N/A' && isKnownPreprint) {
+          return '<em>Has preprint copy; no DOI found</em>';
         }
 
         if (licenseKeys?.includes(fieldKey) && typeof formatted === 'string' && formatted !== 'N/A') {

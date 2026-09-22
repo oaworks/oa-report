@@ -815,6 +815,7 @@ export const EXPLORE_ARTICLE_COLUMN_LAYOUT_BY_ORG = {
       lineLabels: ["DOI", "License"],
       licenseKeys: ["preprint_license"]
     },
+    { keys: ["is_preprint_of"] },
     { keys: ["has_data_availability_statement"] }
   ]
 };
