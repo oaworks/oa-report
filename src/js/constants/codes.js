@@ -452,8 +452,6 @@ export const LANGUAGE_CODES = {
 /**
  * Maps custom and Creative Commons license names to their human-readable labels. 
  */
-
-
 export const LICENSE_CODES = {
   'publisher-specific, author manuscript': {
     name: 'Publisher-specific Open Access'

@@ -779,7 +779,8 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
  * stacked lines the same instead of muting everything after the first.
  * `shortHeaderLabel` + `lineLabels` replace the (long) per-field labels with
  * a short column name and a short prefix on each stacked line instead.
- * `uppercaseKeys` renders those fields' values in caps (e.g. license codes).
+ * `licenseKeys` resolves those fields' raw codes to their display name via
+ * LICENSE_CODES (e.g. "cc-by" → "CC-BY").
  *
  * See https://github.com/oaworks/discussion/issues/3975
  */
@@ -795,13 +796,13 @@ export const EXPLORE_ARTICLE_COLUMN_LAYOUT_BY_ORG = {
       equalWeight: true,
       shortHeaderLabel: "Licenses",
       lineLabels: ["Pub", "Repo"],
-      uppercaseKeys: ["publisher_license_best", "repository_license_best"]
+      licenseKeys: ["publisher_license_best", "repository_license_best"]
     },
     {
       keys: ["preprint_doi", "preprint_license"],
       shortHeaderLabel: "Preprint",
       lineLabels: ["DOI", "License"],
-      uppercaseKeys: ["preprint_license"]
+      licenseKeys: ["preprint_license"]
     },
     { keys: ["has_data_availability_statement"] }
   ]

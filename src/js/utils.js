@@ -4,10 +4,22 @@
 // ========================
 
 import DOMPurify from 'dompurify';
-import { WORKS_REPORT_BG_API_BASE_URL, READABLE_DATE_OPTIONS, USER_LOCALE, EXPLORE_FILTERS_LABELS } from './constants.js';
+import { WORKS_REPORT_BG_API_BASE_URL, READABLE_DATE_OPTIONS, USER_LOCALE, EXPLORE_FILTERS_LABELS, LICENSE_CODES } from './constants.js';
 
 /** ORCID → author display name; populated by explore.js whenever the Authors table renders. */
 export const orcidDisplayNames = new Map();
+
+/**
+ * Looks up a license code's display name and URL in LICENSE_CODES, falling
+ * back to the raw code (uppercased) with no URL when it isn't listed.
+ *
+ * @param {string} code
+ * @returns {{name: string, url: string|null}}
+ */
+export function resolveLicenseDisplay(code) {
+  const licenseInfo = LICENSE_CODES[code];
+  return { name: licenseInfo?.name || code.toUpperCase(), url: licenseInfo?.url || null };
+}
 
 // =================================================
 // Network and caching helpers

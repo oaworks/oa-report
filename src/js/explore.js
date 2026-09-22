@@ -8,7 +8,7 @@
 // =================================================
 
 import DOMPurify from "dompurify";
-import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, escapeQueryValue, normaliseFieldId, makeNumberReadable, makeTabCountReadable, announce, orcidDisplayNames } from "./utils.js";
+import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, escapeQueryValue, normaliseFieldId, makeNumberReadable, makeTabCountReadable, announce, orcidDisplayNames, resolveLicenseDisplay } from "./utils.js";
 import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, EXPLORE_ARTICLE_COLUMN_LAYOUT_BY_ORG, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, EXPLORE_ARTICLE_LAYOUT_OTHER_COL_CLASSES, EXPLORE_ARTICLE_LAYOUT_FIRST_COL_CLASSES, EXPLORE_ARTICLE_LAYOUT_SECOND_COL_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, SEGMENTED_PILL_CLASSES, VIEW_TAB_CLASSES, CONTROL_FIELD_SHELL_CLASSES, CONTROL_FOCUS_RING_CLASSES, CONTROL_SELECT_CLASSES, SORT_TRIGGER_CLASSES, SORT_CARET_CHIP_CLASSES, TAB_COUNT_BADGE_CLASSES, EXPLORE_SUMMARY_ROW_CLASSES, INFO_TRIGGER_ICON_CLASSES, INFO_TRIGGER_ICON_HTML, resolveFieldDefinition } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { startLoading, stopLoading } from "./components.js";
@@ -34,7 +34,7 @@ const RECORDS_SHOWN_DEFAULT = 10;
 const RECORDS_SHOWN_NO_SELECT_MAX = 20;
 const RECORDS_SHOWN_ALL_THRESHOLD = 1000;
 const exploreFilterTotalCache = new Map();
-const EXPLORE_SELECTED_ROW_CLASSES = ['!bg-neutral-300', 'hover:!bg-neutral-300', 'text-neutral-900'];
+const EXPLORE_SELECTED_ROW_CLASSES = ['!bg-neutral-800', 'text-neutral-100'];
 
 let orgKey = "";
 let loggedIn = false;
@@ -1501,6 +1501,9 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
    * @returns {string}
    */
   function formatArticleLayoutCellValue(value) {
+    // formatExploreCellContent() dedupes array values but leaves them as an
+    // array; join so downstream checks (e.g. license lookup) see a string.
+    if (Array.isArray(value)) value = value.join(', ');
     if (typeof value === 'boolean') {
       const label = value ? 'Yes' : 'No';
       const icon = value ? 'ph-check-circle' : 'ph-x-circle';
@@ -1514,7 +1517,7 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
     const row = document.createElement('tr');
     const normalisedKeyMap = buildNormalisedKeyMap(record);
 
-    articleLayout.forEach(({ keys, equalWeight, lineLabels, uppercaseKeys }, columnIndex) => {
+    articleLayout.forEach(({ keys, equalWeight, lineLabels, licenseKeys }, columnIndex) => {
       const [primaryKey] = keys;
       const values = keys.map((fieldKey) => {
         const value = normalisedKeyMap.has(fieldKey)
@@ -1528,9 +1531,11 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
           return 'Preprint copy, no DOI on file';
         }
 
-        return uppercaseKeys?.includes(fieldKey) && typeof formatted === 'string'
-          ? formatted.toUpperCase()
-          : formatted;
+        if (licenseKeys?.includes(fieldKey) && typeof formatted === 'string' && formatted !== 'N/A') {
+          return resolveLicenseDisplay(formatted).name;
+        }
+
+        return formatted;
       });
 
       const cellContent = keys.length === 1
@@ -1795,9 +1800,7 @@ function createTableCell(content, cssClass, exploreItemId = null, key = null, is
       case 'repository_license':
       case 'license':
       case 'dataset_license': {
-        const licenseInfo = LICENSE_CODES[rawValue];
-        const licenseName = licenseInfo?.name || rawValue.toUpperCase();
-        const licenseUrl = licenseInfo?.url || null;
+        const { name: licenseName, url: licenseUrl } = resolveLicenseDisplay(rawValue);
 
         labelWrapper = createFilterTargetButton(licenseName);
 
@@ -1946,7 +1949,7 @@ function enableExploreRowHighlighting() {
     if (event.target.tagName === 'TD') {
       const rowCells = event.target.parentElement.querySelectorAll('td');
       const firstCellContent = rowCells[0].textContent;
-      const isRowHighlighted = rowCells[0].classList.contains('!bg-neutral-300');
+      const isRowHighlighted = rowCells[0].classList.contains(EXPLORE_SELECTED_ROW_CLASSES[0]);
 
       if (isRowHighlighted) {
         rowCells.forEach(cell => cell.classList.remove(...EXPLORE_SELECTED_ROW_CLASSES));
