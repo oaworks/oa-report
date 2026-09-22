@@ -768,13 +768,16 @@ function updateRecordsShownControl(total) {
  * @param {boolean} [pretty=true] - Whether to prettify the table output.
  */
 async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 10, pretty = true) {
+  // Hoisted out of the try block below so the finally block can use it too.
+  let type;
   try {
     if (!itemData) {
       showNoResultsRow(10, "export_table_body", "js_export_table");
       return;
     }
 
-    const { type, id } = itemData;
+    ({ type } = itemData);
+    const { id } = itemData;
     const { field: sortField, direction: sortDirection } = getActiveExploreSortState(itemData);
     document.getElementById("csv_email_msg").innerHTML = ""; // Clear any existing message in CSV download form
     const exportTable = document.getElementById('export_table');
