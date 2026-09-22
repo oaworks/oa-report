@@ -1537,7 +1537,10 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
 
         // A preprint copy can exist without a captured DOI — say so instead
         // of a bare "N/A", which would otherwise read as "no preprint".
-        if (fieldKey === 'preprint_doi' && formatted === 'N/A' && normalisedKeyMap.get('has_preprint_copy') === true) {
+        // has_preprint_copy can itself be array-valued (see buildNormalisedKeyMap).
+        const hasPreprintCopyValue = normalisedKeyMap.get('has_preprint_copy');
+        const hasPreprintCopy = Array.isArray(hasPreprintCopyValue) ? hasPreprintCopyValue[0] : hasPreprintCopyValue;
+        if (fieldKey === 'preprint_doi' && formatted === 'N/A' && hasPreprintCopy === true) {
           return 'Preprint copy, no DOI on file';
         }
 
