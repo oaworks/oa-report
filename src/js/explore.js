@@ -9,7 +9,7 @@
 
 import DOMPurify from "dompurify";
 import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, escapeQueryValue, normaliseFieldId, makeNumberReadable, makeTabCountReadable, announce, orcidDisplayNames } from "./utils.js";
-import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, EXPLORE_ARTICLE_COLUMNS_BY_ORG, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, SEGMENTED_PILL_CLASSES, VIEW_TAB_CLASSES, CONTROL_FIELD_SHELL_CLASSES, CONTROL_FOCUS_RING_CLASSES, CONTROL_SELECT_CLASSES, SORT_TRIGGER_CLASSES, SORT_CARET_CHIP_CLASSES, TAB_COUNT_BADGE_CLASSES, EXPLORE_SUMMARY_ROW_CLASSES, INFO_TRIGGER_ICON_CLASSES, INFO_TRIGGER_ICON_HTML, resolveFieldDefinition } from "./constants.js";
+import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, EXPLORE_ARTICLE_COLUMN_LAYOUT_BY_ORG, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, EXPLORE_ARTICLE_LAYOUT_OTHER_COL_CLASSES, EXPLORE_ARTICLE_LAYOUT_FIRST_COL_CLASSES, EXPLORE_ARTICLE_LAYOUT_SECOND_COL_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, SEGMENTED_PILL_CLASSES, VIEW_TAB_CLASSES, CONTROL_FIELD_SHELL_CLASSES, CONTROL_FOCUS_RING_CLASSES, CONTROL_SELECT_CLASSES, SORT_TRIGGER_CLASSES, SORT_CARET_CHIP_CLASSES, TAB_COUNT_BADGE_CLASSES, EXPLORE_SUMMARY_ROW_CLASSES, INFO_TRIGGER_ICON_CLASSES, INFO_TRIGGER_ICON_HTML, resolveFieldDefinition } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { startLoading, stopLoading } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
@@ -1033,36 +1033,130 @@ function getExploreSortAdjective({ type, sortField, sortDirection }) {
 }
 
 /**
- * Whether a raw record key should render as an Explore column. Curated
- * per-org allow-lists (see EXPLORE_ARTICLE_COLUMNS_BY_ORG) narrow which
- * article fields show; orgs without one show everything the query returns.
+ * Whether a raw record key should render as an Explore column. Only hides
+ * author bucket metadata from terms tables — article columns are handled
+ * by getArticleColumnLayout() instead.
  *
  * @param {string} rawKey - The raw record field key.
  * @param {string} dataType - The current Explore table type.
  * @returns {boolean}
  */
 function isExploreColumnVisible(rawKey, dataType) {
-  // Hide author bucket metadata from the rendered table.
-  if (dataType === 'terms' && currentActiveExploreItemData?.id === 'author' && (rawKey === 'display_name' || rawKey === 'orcid')) {
-    return false;
+  return !(dataType === 'terms' && currentActiveExploreItemData?.id === 'author' && (rawKey === 'display_name' || rawKey === 'orcid'));
+}
+
+/**
+ * Returns the article column layout for the active org, or null when it has
+ * none (columns then come from whatever fields the query returns).
+ *
+ * @returns {{keys: string[], equalWeight?: boolean}[]|null}
+ */
+function getArticleColumnLayout() {
+  const orgSlug = orgData?.hits?.hits?.[0]?._source?.objectID;
+  return EXPLORE_ARTICLE_COLUMN_LAYOUT_BY_ORG[orgSlug] || null;
+}
+
+/**
+ * Maps a record's fields to their values by normalised name, so a layout's
+ * clean field names (e.g. "grantid") can find them regardless of an "__org"
+ * suffix. "supplements" comes back as a nested array of small objects (e.g.
+ * [{preprint_doi: "..."}, {publisher_license_best: "cc-by"}]) rather than
+ * flat "supplements.x" keys, so its entries are flattened in too.
+ *
+ * @param {Object} record
+ * @returns {Map<string, *>}
+ */
+function buildNormalisedKeyMap(record) {
+  const map = new Map();
+  Object.keys(record).forEach((rawKey) => {
+    if (rawKey === 'supplements') return;
+    map.set(normaliseFieldId(rawKey), record[rawKey]);
+  });
+  if (Array.isArray(record.supplements)) {
+    record.supplements.forEach((entry) => {
+      Object.keys(entry || {}).forEach((rawKey) => map.set(normaliseFieldId(rawKey), entry[rawKey]));
+    });
+  }
+  return map;
+}
+
+/**
+ * Shared Explore article value formatting (DOI links, readable dates,
+ * deduplicated arrays) for both the default and stacked-column rendering.
+ *
+ * @param {string} dataType
+ * @param {string} rawKey
+ * @param {*} rawContent
+ * @returns {*}
+ */
+function formatExploreCellContent(dataType, rawKey, rawContent) {
+  // API returns the literal string "null" for missing values.
+  if (rawContent === null || rawContent === 'null') return '';
+
+  let content = rawContent;
+
+  // preprint_doi arrives prefixed (e.g. "supplements.preprint_doi").
+  if (dataType === 'articles' && (rawKey === 'DOI' || normaliseFieldId(rawKey) === 'preprint_doi')) {
+    content = convertTextToLinks(content, true, 'https://doi.org/');
   }
 
-  if (dataType === 'articles') {
-    const orgSlug = orgData?.hits?.hits?.[0]?._source?.objectID;
-    const allowlist = EXPLORE_ARTICLE_COLUMNS_BY_ORG[orgSlug];
-    // Raw keys can arrive as e.g. "supplements.grantid__bmgf"; compare against
-    // the normalised form so the allow-list doesn't need to know the org suffix.
-    if (allowlist) return allowlist.includes(normaliseFieldId(rawKey));
+  if (dataType === 'articles' && rawKey === 'published_date') {
+    content = makeDateReadable(new Date(content));
   }
 
-  return true;
+  if (Array.isArray(content)) {
+    content = removeArrayDuplicates(content);
+  }
+
+  return content;
+}
+
+/**
+ * Resolves the header columns for an Explore table: from the article layout
+ * when one applies, otherwise one column per visible record key, as before.
+ * A multi-key column's label mirrors its body cell: first field normal,
+ * the rest stacked beneath in a muted line (or all equal for equalWeight).
+ *
+ * @param {Object[]} records
+ * @param {string} dataType
+ * @returns {{isLayoutDriven: boolean, columns: {rawKey: string, labelOverride: string|null, labelHTML: string|null}[]}}
+ */
+function resolveExploreHeaderColumns(records, dataType) {
+  const layout = dataType === 'articles' ? getArticleColumnLayout() : null;
+  if (layout) {
+    return {
+      isLayoutDriven: true,
+      columns: layout.map(({ keys, equalWeight, shortHeaderLabel }) => {
+        if (keys.length === 1) return { rawKey: keys[0], labelOverride: null, labelHTML: null };
+        if (shortHeaderLabel) return { rawKey: keys[0], labelOverride: shortHeaderLabel, labelHTML: null };
+
+        const fieldLabels = keys.map((fieldKey) => EXPLORE_HEADER_ARTICLES_LABELS[fieldKey]?.label || fieldKey);
+        return {
+          rawKey: keys[0],
+          labelOverride: fieldLabels.join(' / '),
+          labelHTML: fieldLabels
+            .map((text, i) => (i === 0 || equalWeight
+              ? `<span class="block truncate">${text}</span>`
+              : `<span class="block truncate text-neutral-300">${text}</span>`))
+            .join('')
+        };
+      })
+    };
+  }
+
+  return {
+    isLayoutDriven: false,
+    columns: Object.keys(records)
+      .filter((rawKey) => isExploreColumnVisible(rawKey, dataType))
+      .map((rawKey) => ({ rawKey, labelOverride: null, labelHTML: null }))
+  };
 }
 
 /**
  * Populates the header of a table with column headers derived from the keys of a data object.
- * The function clears any existing headers before appending the new ones. It assumes that the 
+ * The function clears any existing headers before appending the new ones. It assumes that the
  * first object in the data array is representative of the structure for all objects in the array.
- * 
+ *
  * @param {Object[]} records - An array of data objects used to derive the header columns. Assumes all objects have the same structure.
  * @param {string} tableHeaderId - The ID of the table header element where the headers should be appended.
  */
@@ -1076,18 +1170,17 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
   }
 
   const headerRow = document.createElement('tr');
-  Object.keys(records)
-    .filter((rawKey) => isExploreColumnVisible(rawKey, dataType))
-    .forEach((rawKey, index) => {
-      const cssClass = getExploreColumnClass('header', dataType, index);
+  const { columns, isLayoutDriven } = resolveExploreHeaderColumns(records, dataType);
+  columns.forEach(({ rawKey, labelOverride, labelHTML }, index) => {
+    const cssClass = getExploreColumnClass('header', dataType, index, isLayoutDriven);
 
-      // Headers always stay left-aligned (via Tailwind's th reset); only body
-      // cells right-align numeric columns for easier value comparison.
-      const headerCell = createTableCell('', cssClass, null, null, true);
-      setupHeaderTooltip(headerCell, rawKey, dataType);
+    // Headers always stay left-aligned (via Tailwind's th reset); only body
+    // cells right-align numeric columns for easier value comparison.
+    const headerCell = createTableCell('', cssClass, null, null, true);
+    setupHeaderTooltip(headerCell, rawKey, dataType, labelOverride, labelHTML);
 
-      headerRow.appendChild(headerCell);
-    });
+    headerRow.appendChild(headerCell);
+  });
   tableHeader.appendChild(headerRow);
 }
 
@@ -1270,16 +1363,18 @@ function generateTooltipContent(labelData, additionalHelpText = null) {
  * @param {HTMLElement} element - The element to attach the tooltip to.
  * @param {string} rawKey - The raw data key associated with the header cell.
  * @param {string} dataType - Indicates the type of data ('terms' or 'articles'), which determines the labels configuration to use.
+ * @param {string|null} [labelOverride] - Plain-text label (e.g. for aria) to use instead of rawKey's own; sort key and tooltip info still come from rawKey.
+ * @param {string|null} [labelHTML] - Rich HTML to show visually instead of labelOverride/rawKey's own label (e.g. stacked lines matching a body cell).
  */
-function setupHeaderTooltip(element, rawKey, dataType) {
+function setupHeaderTooltip(element, rawKey, dataType, labelOverride = null, labelHTML = null) {
   const key = normaliseFieldId(rawKey);
   const exploreTypeLabel = document.querySelector(".explore_type")?.textContent?.trim();
   const labelData = dataType === 'terms'
     ? resolveFieldDefinition(key, 'explore')
     : EXPLORE_HEADER_ARTICLES_LABELS[key];
-  const label = key === "key" && dataType === "terms"
+  const label = labelOverride || (key === "key" && dataType === "terms"
     ? (exploreTypeLabel || key)
-    : (labelData && labelData.label ? labelData.label : key);
+    : (labelData && labelData.label ? labelData.label : key));
   const sortIndicator = getExploreSortIndicator(dataType);
   const isSortedColumn = sortIndicator?.key === key;
 
@@ -1297,7 +1392,7 @@ function setupHeaderTooltip(element, rawKey, dataType) {
   content.className = contentClassName;
 
   const labelSpan = document.createElement("span");
-  labelSpan.innerHTML = DOMPurify.sanitize(label);
+  labelSpan.innerHTML = DOMPurify.sanitize(labelHTML || label);
   content.appendChild(labelSpan);
 
   if (isSortedColumn) {
@@ -1383,17 +1478,101 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
   // Limit the number of rows to the specified size
   otherRecords.length = Math.min(otherRecords.length, currentActiveExploreItemSize);
 
-  function appendRow(target, record, section) {
+  const articleLayout = dataType === 'articles' ? getArticleColumnLayout() : null;
+
+  /**
+   * Right-aligns numeric-looking columns (skipping the two sticky ones) and
+   * applies summary-row styling — shared by both row-building paths below.
+   */
+  function finishExploreCell(cell, columnIndex, summaryRowType, sampleKey, sampleValue) {
+    if (columnIndex > 1) {
+      cell.classList.add(shouldRightAlignExploreColumn(sampleKey, sampleValue) ? "text-right" : "text-left");
+    }
+    if (summaryRowType) {
+      cell.classList.add(...EXPLORE_SUMMARY_ROW_CLASSES[summaryRowType].split(" "));
+    }
+  }
+
+  /**
+   * Fills in "N/A" for missing data, and swaps booleans for a Yes/No badge
+   * (same icon/color as the point-of-award check in Actions).
+   *
+   * @param {*} value - Output of formatExploreCellContent().
+   * @returns {string}
+   */
+  function formatArticleLayoutCellValue(value) {
+    if (typeof value === 'boolean') {
+      const label = value ? 'Yes' : 'No';
+      const icon = value ? 'ph-check-circle' : 'ph-x-circle';
+      const color = value ? 'text-green-light' : 'text-carnation-300';
+      return `<span class="inline-flex items-center gap-1"><span>${label}</span><i class="ph ${icon} text-[16px] leading-none ${color}" aria-hidden="true"></i></span>`;
+    }
+    return value === '' || value === null || value === undefined ? 'N/A' : value;
+  }
+
+  function appendArticleLayoutRow(target, record, section, summaryRowType) {
     const row = document.createElement('tr');
+    const normalisedKeyMap = buildNormalisedKeyMap(record);
+
+    articleLayout.forEach(({ keys, equalWeight, lineLabels, uppercaseKeys }, columnIndex) => {
+      const [primaryKey] = keys;
+      const values = keys.map((fieldKey) => {
+        const value = normalisedKeyMap.has(fieldKey)
+          ? formatExploreCellContent(dataType, fieldKey, normalisedKeyMap.get(fieldKey))
+          : '';
+        const formatted = formatArticleLayoutCellValue(value);
+
+        // A preprint copy can exist without a captured DOI — say so instead
+        // of a bare "N/A", which would otherwise read as "no preprint".
+        if (fieldKey === 'preprint_doi' && formatted === 'N/A' && normalisedKeyMap.get('has_preprint_copy') === true) {
+          return 'Preprint copy, no DOI on file';
+        }
+
+        return uppercaseKeys?.includes(fieldKey) && typeof formatted === 'string'
+          ? formatted.toUpperCase()
+          : formatted;
+      });
+
+      const cellContent = keys.length === 1
+        ? values[0]
+        : keys
+          .map((fieldKey, lineIndex) => {
+            const label = lineLabels?.[lineIndex];
+            const valueHTML = label
+              ? `<span class="text-[10px] uppercase text-neutral-300">${label}:</span> ${values[lineIndex]}`
+              : values[lineIndex];
+            return (lineIndex === 0 || equalWeight)
+              ? `<span class="block truncate">${valueHTML}</span>`
+              : `<span class="block truncate text-neutral-300">${valueHTML}</span>`;
+          })
+          .join('');
+
+      const cell = createTableCell(cellContent, getExploreColumnClass(section, dataType, columnIndex, true));
+      finishExploreCell(cell, columnIndex, summaryRowType, primaryKey, values[0]);
+
+      row.appendChild(cell);
+    });
+
+    target.appendChild(row);
+  }
+
+  function appendRow(target, record, section) {
     const summaryRowType = section === 'foot'
       ? (record.key === 'all_values' ? 'total' : record.key === 'no_values' ? 'missing' : null)
       : null;
+
+    if (articleLayout) {
+      appendArticleLayoutRow(target, record, section, summaryRowType);
+      return;
+    }
+
+    const row = document.createElement('tr');
     if (dataType === 'terms' && exploreItemId === 'author' && record.display_name) orcidDisplayNames.set(record.key, record.display_name);
     const visibleEntries = Object.entries(record)
       .filter(([key]) => isExploreColumnVisible(key, dataType));
 
     visibleEntries.forEach(([key, rawContent], columnIndex) => {
-      let content = rawContent;
+      const content = formatExploreCellContent(dataType, key, rawContent);
       const displayName =
         dataType === 'terms' && key === 'key' && exploreItemId === 'author'
           ? record.display_name
@@ -1402,18 +1581,6 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
         dataType === 'terms' && key === 'key' && exploreItemId === 'author'
           ? record.orcid
           : null;
-
-      if (dataType === 'articles' && key === 'DOI') {
-        content = convertTextToLinks(content, true, 'https://doi.org/');
-      }
-
-      if (dataType === 'articles' && key === 'published_date') {
-        content = makeDateReadable(new Date(content));
-      }
-
-      if (Array.isArray(content)) {
-        content = removeArrayDuplicates(content);
-      }
 
       const cell = createTableCell(
         content,
@@ -1425,12 +1592,7 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
         authorOrcid
       );
 
-      if (columnIndex > 1) {
-        cell.classList.add(shouldRightAlignExploreColumn(key, rawContent) ? "text-right" : "text-left");
-      }
-      if (summaryRowType) {
-        cell.classList.add(...EXPLORE_SUMMARY_ROW_CLASSES[summaryRowType].split(" "));
-      }
+      finishExploreCell(cell, columnIndex, summaryRowType, key, rawContent);
 
       row.appendChild(cell);
     });
@@ -1853,9 +2015,10 @@ function enableExploreTableScroll() {
  * @param {'header'|'body'|'foot'} section
  * @param {'terms'|'articles'} dataType
  * @param {number} columnIndex
+ * @param {boolean} [useFlexibleWidth] - Use EXPLORE_ARTICLE_LAYOUT_OTHER_COL_CLASSES for "other" columns instead of the fixed article width.
  * @returns {string}
  */
-function getExploreColumnClass(section, dataType, columnIndex) {
+function getExploreColumnClass(section, dataType, columnIndex, useFlexibleWidth = false) {
   const classMap = section === 'header'
     ? DATA_TABLE_HEADER_CLASSES[dataType]
     : section === 'foot'
@@ -1863,14 +2026,14 @@ function getExploreColumnClass(section, dataType, columnIndex) {
       : DATA_TABLE_BODY_CLASSES[dataType];
 
   if (section === 'header') {
-    if (columnIndex === 0) return classMap.firstHeaderCol;
-    if (columnIndex === 1) return classMap.secondHeaderCol;
-    return classMap.otherHeaderCols;
+    if (columnIndex === 0) return useFlexibleWidth ? EXPLORE_ARTICLE_LAYOUT_FIRST_COL_CLASSES.header : classMap.firstHeaderCol;
+    if (columnIndex === 1) return useFlexibleWidth ? EXPLORE_ARTICLE_LAYOUT_SECOND_COL_CLASSES.header : classMap.secondHeaderCol;
+    return useFlexibleWidth ? EXPLORE_ARTICLE_LAYOUT_OTHER_COL_CLASSES.header : classMap.otherHeaderCols;
   }
 
-  if (columnIndex === 0) return classMap.firstCol;
-  if (columnIndex === 1) return classMap.secondCol;
-  return classMap.otherCols;
+  if (columnIndex === 0) return useFlexibleWidth ? EXPLORE_ARTICLE_LAYOUT_FIRST_COL_CLASSES[section] : classMap.firstCol;
+  if (columnIndex === 1) return useFlexibleWidth ? EXPLORE_ARTICLE_LAYOUT_SECOND_COL_CLASSES[section] : classMap.secondCol;
+  return useFlexibleWidth ? EXPLORE_ARTICLE_LAYOUT_OTHER_COL_CLASSES[section] : classMap.otherCols;
 }
 
 /**

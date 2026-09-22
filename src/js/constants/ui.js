@@ -38,8 +38,38 @@ export const DATA_TABLE_HEADER_CLASSES = {
   articles: {
     firstHeaderCol: "border-b border-r border-neutral-700 sticky left-0 bg-neutral-900 p-3 w-32 md:w-60 lg:w-80 align-bottom",
     secondHeaderCol: "border-b border-r border-neutral-700 sticky left-32 md:left-60 lg:left-80 bg-neutral-900 p-3 w-28 md:w-36 align-bottom break-words",
-    otherHeaderCols: "border-b border-r border-neutral-700 p-3 w-64 max-w-4xl align-bottom break-words"
+    otherHeaderCols: "border-b border-r border-neutral-700 p-3 w-64 align-bottom break-words"
   }
+};
+
+/**
+ * "Other column" width for orgs with an article layout: no fixed width
+ * (fewer columns fill the space instead of scrolling), just a min-w-40
+ * floor. Kept separate from DATA_TABLE_*_CLASSES.articles so it doesn't
+ * affect orgs without a layout.
+ */
+export const EXPLORE_ARTICLE_LAYOUT_OTHER_COL_CLASSES = {
+  header: "border-b border-r border-neutral-700 p-3 min-w-40 align-bottom break-words",
+  body: "border-b border-neutral-700 bg-neutral-800 px-3 py-2 min-w-40 truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-750",
+  foot: "border-b border-neutral-600 bg-neutral-800 px-3 py-2 min-w-40 truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-750"
+};
+
+/**
+ * Narrower first (sticky) column for orgs with an article layout — the
+ * second column's left offset is shifted to match so it stays aligned.
+ * Kept separate from DATA_TABLE_*_CLASSES.articles so it doesn't affect
+ * orgs without a layout.
+ */
+export const EXPLORE_ARTICLE_LAYOUT_FIRST_COL_CLASSES = {
+  header: "border-b border-r border-neutral-700 sticky left-0 bg-neutral-900 p-3 w-28 md:w-48 lg:w-64 align-bottom",
+  body: "border-b border-neutral-700 sticky left-0 bg-neutral-900 px-3 py-2 w-28 md:w-48 lg:w-64 text-left text-neutral-100",
+  foot: "border-b border-neutral-600 sticky left-0 bg-neutral-900 px-3 py-2 w-28 md:w-48 lg:w-64 text-left text-neutral-100"
+};
+
+export const EXPLORE_ARTICLE_LAYOUT_SECOND_COL_CLASSES = {
+  header: "border-b border-r border-neutral-700 sticky left-28 md:left-48 lg:left-64 bg-neutral-900 p-3 w-28 md:w-36 align-bottom break-words",
+  body: "border-b border-neutral-700 sticky left-28 md:left-48 lg:left-64 bg-neutral-900 px-3 py-2 w-28 md:w-36 whitespace-nowrap truncate text-neutral-100",
+  foot: "border-b border-neutral-600 sticky left-28 md:left-48 lg:left-64 bg-neutral-900 px-3 py-2 w-28 md:w-36 whitespace-nowrap truncate text-neutral-100"
 };
 
 /**
@@ -54,7 +84,7 @@ export const DATA_TABLE_BODY_CLASSES = {
   articles: {
     firstCol: "border-b border-neutral-700 sticky left-0 bg-neutral-900 px-3 py-2 w-32 md:w-60 lg:w-80 text-left text-neutral-100",
     secondCol: "border-b border-neutral-700 sticky left-32 md:left-60 lg:left-80 bg-neutral-900 px-3 py-2 w-28 md:w-36 whitespace-nowrap truncate text-neutral-100",
-    otherCols: "border-b border-neutral-700 bg-neutral-800 px-3 py-2 w-64 max-w-4xl truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-750"
+    otherCols: "border-b border-neutral-700 bg-neutral-800 px-3 py-2 w-64 truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-750"
   }
 };
 
@@ -70,7 +100,7 @@ export const DATA_TABLE_FOOT_CLASSES = {
   articles: {
     firstCol: "border-b border-neutral-600 sticky left-0 bg-neutral-900 px-3 py-2 w-32 md:w-60 lg:w-80 text-left text-neutral-100",
     secondCol: "border-b border-neutral-600 sticky left-32 md:left-60 lg:left-80 bg-neutral-900 px-3 py-2 w-28 md:w-36 whitespace-nowrap truncate text-neutral-100",
-    otherCols: "border-b border-neutral-600 bg-neutral-800 px-3 py-2 w-64 max-w-4xl truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-750"
+    otherCols: "border-b border-neutral-600 bg-neutral-800 px-3 py-2 w-64 truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-750"
   }
 };
 

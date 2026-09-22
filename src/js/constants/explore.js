@@ -771,27 +771,38 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
 };
 
 /**
- * Opt-in list of article fields shown in the Explore articles table, keyed by
- * org slug (orgData._source.objectID). Orgs with no entry here show every
- * field the query returns, unchanged.
+ * Column layout for the Explore articles table, keyed by org slug. Orgs
+ * with no entry show every field the query returns, one column per field.
+ *
+ * `keys` are normalised field names (see normaliseFieldId()); multiple keys
+ * stack in one cell, first as the main line. `equalWeight: true` renders all
+ * stacked lines the same instead of muting everything after the first.
+ * `shortHeaderLabel` + `lineLabels` replace the (long) per-field labels with
+ * a short column name and a short prefix on each stacked line instead.
+ * `uppercaseKeys` renders those fields' values in caps (e.g. license codes).
  *
  * See https://github.com/oaworks/discussion/issues/3975
  */
-export const EXPLORE_ARTICLE_COLUMNS_BY_ORG = {
+export const EXPLORE_ARTICLE_COLUMN_LAYOUT_BY_ORG = {
   "gates-foundation": [
-    "DOI",
-    "title",
-    "published_date",
-    "grantid",
-    "PMCID",
-    "publisher",
-    "journal",
-    "publisher_license_best",
-    "repository_license_best",
-    "has_preprint_copy",
-    "preprint_doi",
-    "preprint_license",
-    "program",
-    "has_data_availability_statement"
+    { keys: ["title", "DOI"] },
+    { keys: ["published_date"] },
+    { keys: ["grantid", "program"] },
+    { keys: ["journal", "publisher"] },
+    { keys: ["PMCID"] },
+    {
+      keys: ["publisher_license_best", "repository_license_best"],
+      equalWeight: true,
+      shortHeaderLabel: "Licenses",
+      lineLabels: ["Pub", "Repo"],
+      uppercaseKeys: ["publisher_license_best", "repository_license_best"]
+    },
+    {
+      keys: ["preprint_doi", "preprint_license"],
+      shortHeaderLabel: "Preprint",
+      lineLabels: ["DOI", "License"],
+      uppercaseKeys: ["preprint_license"]
+    },
+    { keys: ["has_data_availability_statement"] }
   ]
 };
