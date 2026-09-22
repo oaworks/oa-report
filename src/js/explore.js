@@ -1207,7 +1207,7 @@ function resolveExploreHeaderColumns(records, dataType) {
           labelHTML: fieldLabels
             .map((text, i) => (i === 0 || equalWeight
               ? `<span class="block truncate">${text}</span>`
-              : `<span class="block truncate text-neutral-400">${text}</span>`))
+              : `<span class="block truncate text-neutral-350">${text}</span>`))
             .join('')
         };
       })
@@ -1620,11 +1620,11 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
           .map((fieldKey, lineIndex) => {
             const label = lineLabels?.[lineIndex];
             const valueHTML = label
-              ? `<span class="text-[10px] uppercase text-neutral-400">${label}:</span> ${values[lineIndex]}`
+              ? `<span class="text-[10px] uppercase text-neutral-350">${label}:</span> ${values[lineIndex]}`
               : values[lineIndex];
             return (lineIndex === 0 || equalWeight)
               ? `<span class="block truncate">${valueHTML}</span>`
-              : `<span class="block truncate text-neutral-400">${valueHTML}</span>`;
+              : `<span class="block truncate text-neutral-350">${valueHTML}</span>`;
           })
           .join('');
 
