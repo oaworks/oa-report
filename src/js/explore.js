@@ -1587,13 +1587,15 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
     const row = document.createElement('tr');
     const normalisedKeyMap = buildNormalisedKeyMap(record);
 
-    // Whether this record is known to be a preprint, so a missing DOI can
-    // read as "no DOI captured" rather than "no preprint" — different tabs
-    // carry this on different fields (has_preprint_copy vs is_preprint).
-    const isKnownPreprint = ['has_preprint_copy', 'is_preprint'].some((key) => {
+    // has_preprint_copy: this record has a separate preprint elsewhere.
+    // is_preprint: this record itself IS the preprint (its own DOI above
+    // already covers it) — two different situations, two different messages.
+    const readBool = (key) => {
       const value = normalisedKeyMap.get(key);
       return (Array.isArray(value) ? value[0] : value) === true;
-    });
+    };
+    const hasPreprintCopy = readBool('has_preprint_copy');
+    const isPreprint = readBool('is_preprint');
 
     articleLayout.forEach(({ keys, equalWeight, lineLabels, licenseKeys }, columnIndex) => {
       const [primaryKey] = keys;
@@ -1603,8 +1605,9 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
           : '';
         const formatted = formatArticleLayoutCellValue(value);
 
-        if (fieldKey === 'preprint_doi' && formatted === 'N/A' && isKnownPreprint) {
-          return '<em>Has preprint copy; no DOI found</em>';
+        if (fieldKey === 'preprint_doi' && formatted === 'N/A') {
+          if (isPreprint) return '<em>This is a preprint</em>';
+          if (hasPreprintCopy) return '<em>Has preprint copy; no DOI found</em>';
         }
 
         if (licenseKeys?.includes(fieldKey) && typeof formatted === 'string' && formatted !== 'N/A') {
