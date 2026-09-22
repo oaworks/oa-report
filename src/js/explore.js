@@ -9,7 +9,7 @@
 
 import DOMPurify from "dompurify";
 import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, escapeQueryValue, normaliseFieldId, makeNumberReadable, makeTabCountReadable, announce, orcidDisplayNames } from "./utils.js";
-import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, SEGMENTED_PILL_CLASSES, VIEW_TAB_CLASSES, CONTROL_FIELD_SHELL_CLASSES, CONTROL_FOCUS_RING_CLASSES, CONTROL_SELECT_CLASSES, SORT_TRIGGER_CLASSES, SORT_CARET_CHIP_CLASSES, TAB_COUNT_BADGE_CLASSES, EXPLORE_SUMMARY_ROW_CLASSES, INFO_TRIGGER_ICON_CLASSES, INFO_TRIGGER_ICON_HTML, resolveFieldDefinition } from "./constants.js";
+import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, EXPLORE_ARTICLE_COLUMNS_BY_ORG, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, SEGMENTED_PILL_CLASSES, VIEW_TAB_CLASSES, CONTROL_FIELD_SHELL_CLASSES, CONTROL_FOCUS_RING_CLASSES, CONTROL_SELECT_CLASSES, SORT_TRIGGER_CLASSES, SORT_CARET_CHIP_CLASSES, TAB_COUNT_BADGE_CLASSES, EXPLORE_SUMMARY_ROW_CLASSES, INFO_TRIGGER_ICON_CLASSES, INFO_TRIGGER_ICON_HTML, resolveFieldDefinition } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { startLoading, stopLoading } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
@@ -1033,6 +1033,32 @@ function getExploreSortAdjective({ type, sortField, sortDirection }) {
 }
 
 /**
+ * Whether a raw record key should render as an Explore column. Curated
+ * per-org allow-lists (see EXPLORE_ARTICLE_COLUMNS_BY_ORG) narrow which
+ * article fields show; orgs without one show everything the query returns.
+ *
+ * @param {string} rawKey - The raw record field key.
+ * @param {string} dataType - The current Explore table type.
+ * @returns {boolean}
+ */
+function isExploreColumnVisible(rawKey, dataType) {
+  // Hide author bucket metadata from the rendered table.
+  if (dataType === 'terms' && currentActiveExploreItemData?.id === 'author' && (rawKey === 'display_name' || rawKey === 'orcid')) {
+    return false;
+  }
+
+  if (dataType === 'articles') {
+    const orgSlug = orgData?.hits?.hits?.[0]?._source?.objectID;
+    const allowlist = EXPLORE_ARTICLE_COLUMNS_BY_ORG[orgSlug];
+    // Raw keys can arrive as e.g. "supplements.grantid__bmgf"; compare against
+    // the normalised form so the allow-list doesn't need to know the org suffix.
+    if (allowlist) return allowlist.includes(normaliseFieldId(rawKey));
+  }
+
+  return true;
+}
+
+/**
  * Populates the header of a table with column headers derived from the keys of a data object.
  * The function clears any existing headers before appending the new ones. It assumes that the 
  * first object in the data array is representative of the structure for all objects in the array.
@@ -1051,8 +1077,7 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
 
   const headerRow = document.createElement('tr');
   Object.keys(records)
-    // Hide author bucket metadata from the rendered table.
-    .filter((rawKey) => !(dataType === 'terms' && currentActiveExploreItemData?.id === 'author' && (rawKey === 'display_name' || rawKey === 'orcid')))
+    .filter((rawKey) => isExploreColumnVisible(rawKey, dataType))
     .forEach((rawKey, index) => {
       const cssClass = getExploreColumnClass('header', dataType, index);
 
@@ -1365,7 +1390,7 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
       : null;
     if (dataType === 'terms' && exploreItemId === 'author' && record.display_name) orcidDisplayNames.set(record.key, record.display_name);
     const visibleEntries = Object.entries(record)
-      .filter(([key]) => !(dataType === 'terms' && exploreItemId === 'author' && (key === 'display_name' || key === 'orcid')));
+      .filter(([key]) => isExploreColumnVisible(key, dataType));
 
     visibleEntries.forEach(([key, rawContent], columnIndex) => {
       let content = rawContent;

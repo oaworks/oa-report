@@ -769,3 +769,29 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
     info: "The license applied to the full text in Europe PMC"
   }
 };
+
+/**
+ * Opt-in list of article fields shown in the Explore articles table, keyed by
+ * org slug (orgData._source.objectID). Orgs with no entry here show every
+ * field the query returns, unchanged.
+ *
+ * See https://github.com/oaworks/discussion/issues/3975
+ */
+export const EXPLORE_ARTICLE_COLUMNS_BY_ORG = {
+  "gates-foundation": [
+    "DOI",
+    "title",
+    "published_date",
+    "grantid",
+    "PMCID",
+    "publisher",
+    "journal",
+    "publisher_license_best",
+    "repository_license_best",
+    "has_preprint_copy",
+    "preprint_doi",
+    "preprint_license",
+    "program",
+    "has_data_availability_statement"
+  ]
+};
