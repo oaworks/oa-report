@@ -42,6 +42,11 @@ export const DATA_TABLE_HEADER_CLASSES = {
   }
 };
 
+// Sticks header below the sticky nav (lg+), offset by --report-nav-height
+// (synced by observeReportNavHeight()). Gates-only: other orgs' overflow-x-auto
+// forces overflow-y:auto too, which breaks page-level sticky.
+const STICKY_HEADER_ROW_CLASSES = "lg:sticky lg:top-[var(--report-nav-height,0px)] z-40";
+
 /**
  * "Other column" width for orgs with an article layout: no fixed width
  * (fewer columns fill the space instead of scrolling), just a min-w-40
@@ -49,7 +54,7 @@ export const DATA_TABLE_HEADER_CLASSES = {
  * affect orgs without a layout.
  */
 export const EXPLORE_ARTICLE_LAYOUT_OTHER_COL_CLASSES = {
-  header: "border-b border-r border-neutral-700 p-3 min-w-40 align-bottom break-words",
+  header: `border-b border-r border-neutral-700 ${STICKY_HEADER_ROW_CLASSES} bg-neutral-900 p-3 min-w-40 align-bottom break-words`,
   body: "border-b border-neutral-700 bg-neutral-900 px-3 py-2 min-w-40 align-top truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-800",
   foot: "border-b border-neutral-600 bg-neutral-900 px-3 py-2 min-w-40 align-top truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-800"
 };
@@ -61,13 +66,13 @@ export const EXPLORE_ARTICLE_LAYOUT_OTHER_COL_CLASSES = {
  * orgs without a layout.
  */
 export const EXPLORE_ARTICLE_LAYOUT_FIRST_COL_CLASSES = {
-  header: "border-b border-r border-neutral-700 sticky left-0 bg-neutral-900 p-3 w-28 md:w-48 lg:w-64 align-bottom",
+  header: `border-b border-r border-neutral-700 sticky left-0 ${STICKY_HEADER_ROW_CLASSES} bg-neutral-900 p-3 w-28 md:w-48 lg:w-64 align-bottom`,
   body: "border-b border-neutral-700 sticky left-0 bg-neutral-900 px-3 py-2 w-28 md:w-48 lg:w-64 align-top text-left text-neutral-100 transition-colors duration-200 hover:bg-neutral-800",
   foot: "border-b border-neutral-600 sticky left-0 bg-neutral-900 px-3 py-2 w-28 md:w-48 lg:w-64 align-top text-left text-neutral-100 transition-colors duration-200 hover:bg-neutral-800"
 };
 
 export const EXPLORE_ARTICLE_LAYOUT_SECOND_COL_CLASSES = {
-  header: "border-b border-r border-neutral-700 sticky left-28 md:left-48 lg:left-64 bg-neutral-900 p-3 w-28 md:w-36 align-bottom break-words",
+  header: `border-b border-r border-neutral-700 sticky left-28 md:left-48 lg:left-64 ${STICKY_HEADER_ROW_CLASSES} bg-neutral-900 p-3 w-28 md:w-36 align-bottom break-words`,
   body: "border-b border-neutral-700 sticky left-28 md:left-48 lg:left-64 bg-neutral-900 px-3 py-2 w-28 md:w-36 align-top whitespace-nowrap truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-800",
   foot: "border-b border-neutral-600 sticky left-28 md:left-48 lg:left-64 bg-neutral-900 px-3 py-2 w-28 md:w-36 align-top whitespace-nowrap truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-800"
 };

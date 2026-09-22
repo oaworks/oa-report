@@ -185,9 +185,25 @@ function refreshFiltersBanner() {
 // =================================================
 
 /**
- * Initializes the data explore section by fetching data from the org index 
+ * Keeps --report-nav-height in sync with the sticky top nav's rendered
+ * height, so the Explore table header can stick just below it.
+ */
+function observeReportNavHeight() {
+  const nav = document.getElementById('js-report-nav');
+  if (!nav) return;
+
+  const setHeight = () => {
+    document.documentElement.style.setProperty('--report-nav-height', `${nav.offsetHeight}px`);
+  };
+
+  setHeight();
+  new ResizeObserver(setHeight).observe(nav);
+}
+
+/**
+ * Initializes the data explore section by fetching data from the org index
  * and adding buttons, filters, and functionalities.
- * 
+ *
  * @async
  * @param {string} org - The organization identifier for the API query.
  */
@@ -205,6 +221,7 @@ export async function initDataExplore(org) {
       const initialRenderPromise = addExploreButtonsToDOM(orgData.hits.hits[0]._source.explore);
       handleDataDisplayToggle();
       enableExploreRowHighlighting();
+      observeReportNavHeight();
       copyToClipboard('explore_copy_clipboard', 'explore_table');
       isDataExploreInit = true; // Set the flag after successful initialisation
       await initialRenderPromise; // let callers await the actual render, not just its kickoff
@@ -842,10 +859,13 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     }
     hasRenderedExploreTableOnce = true;
 
-    // No horizontal scroll for article layouts, so skip the scroll padding/bg.
+    // Article layouts don't scroll horizontally, so drop the scroll
+    // padding/bg — and overflow-x-auto, which would otherwise break sticky.
     const hasArticleLayout = type === 'articles' && Boolean(getArticleColumnLayout());
-    document.querySelector('.js_export_table_container')?.classList.toggle('bg-neutral-800', !hasArticleLayout);
-    document.querySelector('.js_export_table_container')?.classList.toggle('pb-4', !hasArticleLayout);
+    const tableContainerEl = document.querySelector('.js_export_table_container');
+    tableContainerEl?.classList.toggle('bg-neutral-800', !hasArticleLayout);
+    tableContainerEl?.classList.toggle('pb-4', !hasArticleLayout);
+    tableContainerEl?.classList.toggle('overflow-x-auto', !hasArticleLayout);
   }
 }
 
