@@ -36,13 +36,13 @@ const HEADER_CELL_BORDER_CLASSES = "border-b border-r border-neutral-700 last:bo
  */
 export const DATA_TABLE_HEADER_CLASSES = {
   terms: {
-    firstHeaderCol: `${HEADER_CELL_BORDER_CLASSES} sticky left-0 bg-neutral-900 p-2 w-32 md:w-60 align-bottom`,
-    secondHeaderCol: `${HEADER_CELL_BORDER_CLASSES} sticky left-32 md:left-60 bg-neutral-900 p-2 w-28 md:w-36 align-bottom break-words`,
+    firstHeaderCol: `${HEADER_CELL_BORDER_CLASSES} sticky left-0 z-10 bg-neutral-900 p-2 w-32 md:w-60 align-bottom`,
+    secondHeaderCol: `${HEADER_CELL_BORDER_CLASSES} sticky left-32 md:left-60 z-10 bg-neutral-900 p-2 w-28 md:w-36 align-bottom break-words`,
     otherHeaderCols: `${HEADER_CELL_BORDER_CLASSES} p-2 w-32 align-bottom break-words`
   },
   articles: {
-    firstHeaderCol: `${HEADER_CELL_BORDER_CLASSES} sticky left-0 bg-neutral-900 p-2 w-32 md:w-60 lg:w-80 align-bottom`,
-    secondHeaderCol: `${HEADER_CELL_BORDER_CLASSES} sticky left-32 md:left-60 lg:left-80 bg-neutral-900 p-2 w-28 md:w-36 align-bottom break-words`,
+    firstHeaderCol: `${HEADER_CELL_BORDER_CLASSES} sticky left-0 z-10 bg-neutral-900 p-2 w-32 md:w-60 lg:w-80 align-bottom`,
+    secondHeaderCol: `${HEADER_CELL_BORDER_CLASSES} sticky left-32 md:left-60 lg:left-80 z-10 bg-neutral-900 p-2 w-28 md:w-36 align-bottom break-words`,
     otherHeaderCols: `${HEADER_CELL_BORDER_CLASSES} p-2 w-64 align-bottom break-words`
   }
 };

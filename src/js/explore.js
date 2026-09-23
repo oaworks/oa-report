@@ -916,7 +916,8 @@ async function loadExploreRecords(itemData, query, size, pretty) {
       size,
       activeFilterQuery,
       includeValuesOverride.length ? includeValuesOverride : undefined,
-      sortDirection
+      sortDirection,
+      pretty
     );
 
     return {
@@ -957,7 +958,7 @@ async function loadExploreRecords(itemData, query, size, pretty) {
  * @param {string} [sortDirection="desc"] - Sort direction for the selected field.
  * @returns {Promise<Object>} A promise that resolves to term-based records and total count.
  */
-export async function fetchTermBasedData(suffix, query, term, sort, size, activeFilterQuery = query, includeValuesOverride, sortDirection = "desc") {
+export async function fetchTermBasedData(suffix, query, term, sort, size, activeFilterQuery = query, includeValuesOverride, sortDirection = "desc", isPercentMode = true) {
   // Percentage sorts (e.g. "open_access_sort") fetch ordered by count, then
   // get re-sorted by their actual percentage client-side below — ES can't
   // order by a sibling pipeline aggregation.
@@ -990,9 +991,12 @@ export async function fetchTermBasedData(suffix, query, term, sort, size, active
   buckets = buckets.filter(bucket => bucket.doc_count > 0);
 
   if (percentageKey) {
+    // Match whichever value the table is currently showing (percent or raw count).
     const multiplier = sortDirection === "asc" ? 1 : -1;
-    const pctOf = (bucket) => bucket.doc_count > 0 ? (bucket[percentageKey] || 0) / bucket.doc_count : 0;
-    buckets.sort((a, b) => (pctOf(a) - pctOf(b)) * multiplier);
+    const valueOf = isPercentMode
+      ? (bucket) => bucket.doc_count > 0 ? (bucket[percentageKey] || 0) / bucket.doc_count : 0
+      : (bucket) => bucket[percentageKey] || 0;
+    buckets.sort((a, b) => (valueOf(a) - valueOf(b)) * multiplier);
   } else if (sort === '_count') {
     // Keep count-based ordering stable even when the API response comes back
     // unordered or partially ordered.
@@ -1481,35 +1485,26 @@ function setupHeaderTooltip(element, rawKey, dataType, labelOverride = null, lab
     temp.innerHTML = DOMPurify.sanitize(label, { ALLOWED_TAGS: [] });
     return temp.textContent?.trim() || key;
   })();
-  const container = document.createElement("div");
-  container.className = "flex h-full w-full min-w-0 items-stretch justify-between gap-2";
+  element.classList.add("relative");
 
-  // (1) Label, bottom-aligned, takes the remaining width.
-  const labelContainer = document.createElement("span");
-  labelContainer.className = "flex min-w-0 flex-1 items-end";
+  // Label sits in normal flow, bottom-aligned, with room reserved on the
+  // right for the info icon and sort caret pinned to opposite corners below.
+  const container = document.createElement("div");
+  container.className = "flex h-full w-full min-w-0 items-end pr-6";
   const labelSpan = document.createElement("span");
   labelSpan.innerHTML = DOMPurify.sanitize(labelHTML || label);
-  labelContainer.appendChild(labelSpan);
-  container.appendChild(labelContainer);
-
-  // (2) Sort caret and info icon share one narrow column, stacked
-  // top (info) and bottom (caret) so both stay vertically aligned.
-  const iconStack = document.createElement("span");
-  iconStack.className = "flex shrink-0 flex-col items-center justify-between gap-2";
-
-  const infoSlot = document.createElement("span");
-  infoSlot.className = "flex min-h-6 items-center";
-  iconStack.appendChild(infoSlot);
+  container.appendChild(labelSpan);
+  element.appendChild(container);
 
   if (labelData && labelData.info && labelData.info.trim()) {
     const additionalHelpText = orgData.hits.hits[0]?._source.policy?.help_text?.[key] ?? null;
 
     const infoButton = document.createElement("button");
     infoButton.type = "button";
-    infoButton.className = INFO_TRIGGER_ICON_CLASSES;
+    infoButton.className = `${INFO_TRIGGER_ICON_CLASSES} absolute top-1 right-1`;
     infoButton.setAttribute("aria-label", `More information about ${labelText}`);
     infoButton.innerHTML = INFO_TRIGGER_ICON_HTML;
-    infoSlot.appendChild(infoButton);
+    element.appendChild(infoButton);
 
     createPopover(infoButton, generateTooltipContent(labelData, additionalHelpText), {
       placement: 'bottom',
@@ -1517,17 +1512,13 @@ function setupHeaderTooltip(element, rawKey, dataType, labelOverride = null, lab
     });
   }
 
-  const sortSlot = document.createElement("span");
-  sortSlot.className = "flex min-h-6 items-center";
-  iconStack.appendChild(sortSlot);
-
   if (isSortable) {
     const sortDescription = isSortedColumn
       ? `${labelText}, currently sorted ${sortIndicator.direction}. Click to sort ${sortIndicator.direction === "ascending" ? "descending" : "ascending"}.`
       : `Sort by ${labelText}.`;
     const sortToggle = document.createElement("button");
     sortToggle.type = "button";
-    sortToggle.className = `inline-flex items-center ${SORT_TRIGGER_CLASSES}`;
+    sortToggle.className = `absolute bottom-1 right-1 inline-flex items-center ${SORT_TRIGGER_CLASSES}`;
     sortToggle.dataset.exploreSortKey = key;
     sortToggle.setAttribute("aria-label", sortDescription);
     sortToggle.addEventListener("click", () => {
@@ -1546,15 +1537,12 @@ function setupHeaderTooltip(element, rawKey, dataType, labelOverride = null, lab
     srText.textContent = isSortedColumn ? `Sorted ${sortIndicator.direction}` : "Not sorted";
     sortToggle.appendChild(srText);
 
-    sortSlot.appendChild(sortToggle);
+    element.appendChild(sortToggle);
     if (isSortedColumn) element.setAttribute("aria-sort", sortIndicator.direction);
     else element.removeAttribute("aria-sort");
   } else {
     element.removeAttribute("aria-sort");
   }
-
-  container.appendChild(iconStack);
-  element.appendChild(container);
 }
 
 /**
