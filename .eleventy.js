@@ -25,7 +25,7 @@ const now = String(Date.now());
 // ───────────────────────────────────────────────────────────
 // Main Eleventy config
 // ───────────────────────────────────────────────────────────
-module.exports = function (eleventyConfig) {
+module.exports = async function (eleventyConfig) {
 
   /* ─── Add the missing Nunjucks `date` filter ───────────── */
   eleventyConfig.addFilter("date", (value, fmt = "LLL d, yyyy") =>
@@ -41,6 +41,9 @@ module.exports = function (eleventyConfig) {
   /* ─── Phosphor icons ───────────────────────────────────── */
   eleventyConfig.addShortcode('icon',        iconShortcode);
   eleventyConfig.addShortcode('icon_small',  iconShortcodeSmall);
+
+  /* ─── Shared JS constants exposed to templates ─────────── */
+  eleventyConfig.addGlobalData('uiClasses', await import('./src/js/constants/ui.js'));
 
   /* ─── Passthrough files ───────────────────────────────── */
   eleventyConfig.addPassthroughCopy({

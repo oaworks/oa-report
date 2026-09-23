@@ -10,7 +10,7 @@
 Click-triggered (a dialog) by default; pass trigger: "hover" for a true hover/focus tooltip.
 #}
 
-{% from "components/info-trigger-icon.njk" import triggerIconClasses %}
+{% from "components/info-trigger-icon.njk" import triggerIconClasses with context %}
 {% set triggerClasses = "tooltip " + triggerIconClasses() + " rounded-sm" %}
 
 {% if params.sup %}
@@ -30,7 +30,7 @@ Click-triggered (a dialog) by default; pass trigger: "hover" for a true hover/fo
   "
 >
   {% if params.text %}
-    <span class="border border-neutral-500 px-1 py-0.5 text-xs font-semibold uppercase transition duration-300 ease-in-out hover:bg-neutral-100 hover:text-neutral-900">{{ params.text }}</span>
+    <span class="border border-neutral-500 px-1 py-0.5 text-xs font-semibold uppercase transition-colors duration-200 hover:bg-neutral-100 hover:text-neutral-900">{{ params.text }}</span>
   {% else %}
     {% icon_small "info" %}
   {% endif %}

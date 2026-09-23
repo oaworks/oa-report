@@ -30,7 +30,7 @@ const ACTION_TABLE_CENTER_CELL_CLASSES = "border-b border-neutral-700 bg-neutral
 const ACTION_TABLE_OPTIONAL_CENTER_CELL_CLASSES = "hidden border-b border-neutral-700 bg-neutral-800 px-3 py-2 text-sm text-center align-middle break-words sm:table-cell";
 const ACTION_TABLE_PRIMARY_TEXT_CLASSES = "text-neutral-100";
 const ACTION_TABLE_SECONDARY_TEXT_CLASSES = "text-neutral-300";
-const ACTION_TABLE_DRAFT_BUTTON_CLASSES = "inline-flex items-center rounded-full border border-transparent bg-carnation-500 p-2 text-white shadow-sm transition duration-200 hover:border-carnation-500 hover:bg-neutral-100 hover:text-carnation-500";
+const ACTION_TABLE_DRAFT_BUTTON_CLASSES = "inline-flex items-center rounded-full border border-transparent bg-carnation-500 p-2 text-white shadow-sm transition-colors duration-200 hover:border-carnation-500 hover:bg-neutral-100 hover:text-carnation-500";
 
 export const DEFAULT_ACTION_EMPTY_STATE_MESSAGE = "We couldn’t find any articles! <br>Try selecting another date range or come back later once new articles are ready.";
 

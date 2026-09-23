@@ -14,13 +14,13 @@ export const DATE_SELECTION_BUTTON_CLASSES = {
 };
 
 export const CONTROL_FOCUS_RING_CLASSES = "focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-900";
-export const INFO_TRIGGER_ICON_CLASSES = "flex h-auto w-auto text-neutral-100 transition-colors hover:text-carnation-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400";
+export const INFO_TRIGGER_ICON_CLASSES = "inline-flex h-auto w-auto text-neutral-200 transition-colors duration-200 hover:text-carnation-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400";
 export const INFO_TRIGGER_ICON_HTML = '<i class="ph ph-info inline-block text-[16px] leading-none" aria-hidden="true"></i>';
 export const CONTROL_FIELD_SHELL_CLASSES = "rounded-sm border border-neutral-600 bg-neutral-900/50 p-0.5 shadow-sm transition-colors hover:border-neutral-400 focus-within:border-neutral-300";
 export const CONTROL_SELECT_CLASSES = "appearance-none cursor-pointer rounded-sm bg-transparent px-3 py-1.5 pr-8 text-xs font-semibold uppercase tracking-wide text-neutral-100 transition-colors hover:bg-neutral-800 hover:text-white";
 export const SORT_TRIGGER_CLASSES = `group cursor-pointer rounded-sm ${CONTROL_FOCUS_RING_CLASSES}`;
-export const SORT_CARET_CHIP_CLASSES = "shrink-0 text-[16px] leading-none text-neutral-100 transition-colors group-hover:text-carnation-200 group-focus-visible:text-carnation-200";
-export const SORT_CARET_CHIP_ACTIVE_CLASSES = "shrink-0 text-[16px] leading-none text-carnation-300 transition-colors group-hover:text-carnation-200 group-focus-visible:text-carnation-200";
+export const SORT_CARET_CHIP_CLASSES = "shrink-0 text-[16px] leading-none text-neutral-100 transition-colors duration-200 group-hover:text-carnation-200 group-focus-visible:text-carnation-200";
+export const SORT_CARET_CHIP_ACTIVE_CLASSES = "shrink-0 text-[16px] leading-none text-carnation-300 transition-colors duration-200 group-hover:text-carnation-200 group-focus-visible:text-carnation-200";
 export const TAB_COUNT_BADGE_CLASSES = "ml-3 rounded-full bg-neutral-200 px-2.5 py-0.5 text-xs font-medium text-neutral-900 transition-colors group-hover:bg-neutral-100 md:inline-block";
 export const EXPLORE_SUMMARY_ROW_CLASSES = {
   total: "border-t border-neutral-500 !bg-neutral-700 font-semibold text-white",
