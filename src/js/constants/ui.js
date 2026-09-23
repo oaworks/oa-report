@@ -36,9 +36,9 @@ const HEADER_CELL_BORDER_CLASSES = "border-b border-r border-neutral-700 last:bo
  */
 export const DATA_TABLE_HEADER_CLASSES = {
   terms: {
-    firstHeaderCol: `${HEADER_CELL_BORDER_CLASSES} sticky left-0 z-10 bg-neutral-900 p-2 w-32 md:w-60 align-bottom`,
-    secondHeaderCol: `${HEADER_CELL_BORDER_CLASSES} sticky left-32 md:left-60 z-10 bg-neutral-900 p-2 w-28 md:w-36 align-bottom break-words`,
-    otherHeaderCols: `${HEADER_CELL_BORDER_CLASSES} p-2 w-32 align-bottom break-words`
+    firstHeaderCol: `${HEADER_CELL_BORDER_CLASSES} sticky left-0 z-10 bg-neutral-900 p-1.5 w-28 md:w-52 align-bottom`,
+    secondHeaderCol: `${HEADER_CELL_BORDER_CLASSES} sticky left-28 md:left-52 z-10 bg-neutral-900 p-1.5 w-24 md:w-32 align-bottom break-words`,
+    otherHeaderCols: `${HEADER_CELL_BORDER_CLASSES} p-1.5 w-28 align-bottom break-words`
   },
   articles: {
     firstHeaderCol: `${HEADER_CELL_BORDER_CLASSES} sticky left-0 z-10 bg-neutral-900 p-2 w-32 md:w-60 lg:w-80 align-bottom`,
@@ -93,8 +93,8 @@ export const EXPLORE_ARTICLE_LAYOUT_SECOND_COL_CLASSES = {
  */
 export const DATA_TABLE_BODY_CLASSES = {
   terms: {
-    firstCol: "border-b border-neutral-700 sticky left-0 bg-neutral-900 p-2 w-32 md:w-60 align-top text-left text-neutral-100",
-    secondCol: "border-b border-neutral-700 sticky left-32 md:left-60 bg-neutral-900 p-2 w-28 md:w-36 align-top whitespace-nowrap truncate text-neutral-100",
+    firstCol: "border-b border-neutral-700 sticky left-0 bg-neutral-900 p-2 w-28 md:w-52 align-top text-left text-neutral-100",
+    secondCol: "border-b border-neutral-700 sticky left-28 md:left-52 bg-neutral-900 p-2 w-24 md:w-32 align-top whitespace-nowrap truncate text-neutral-100",
     otherCols: "border-b border-neutral-700 bg-neutral-800 p-2 align-top truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-750"
   },
   articles: {
@@ -109,8 +109,8 @@ export const DATA_TABLE_BODY_CLASSES = {
  */
 export const DATA_TABLE_FOOT_CLASSES = {
   terms: {
-    firstCol: "border-b border-neutral-600 sticky left-0 bg-neutral-900 p-2 w-32 md:w-60 align-top text-left text-neutral-100",
-    secondCol: "border-b border-neutral-600 sticky left-32 md:left-60 bg-neutral-900 p-2 w-28 md:w-36 align-top whitespace-nowrap truncate text-neutral-100",
+    firstCol: "border-b border-neutral-600 sticky left-0 bg-neutral-900 p-2 w-28 md:w-52 align-top text-left text-neutral-100",
+    secondCol: "border-b border-neutral-600 sticky left-28 md:left-52 bg-neutral-900 p-2 w-24 md:w-32 align-top whitespace-nowrap truncate text-neutral-100",
     otherCols: "border-b border-neutral-600 bg-neutral-800 p-2 align-top truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-750"
   },
   articles: {
