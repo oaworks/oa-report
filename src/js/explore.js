@@ -15,7 +15,7 @@ import { startLoading, stopLoading } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
 import { renderActiveFiltersBanner } from './report-filter-manager.js';
 import { orgDataPromise, initInsightsAndActions } from './insights-and-actions.js';
-import { AUTHOR_BREAKDOWN_TERM, getAggregatedDataQuery, formatAggregationBucket, getFieldFilterValues, toTermField } from './aggregated-data-query.js';
+import { AUTHOR_BREAKDOWN_TERM, getAggregatedDataQuery, formatAggregationBucket, getFieldFilterValues, toTermField, getPercentageMetricAggKeys } from './aggregated-data-query.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { createTooltip, createPopover } from './tooltip-manager.js';
 import { buildDefinitionTooltipContent } from './tooltip-content.js';
@@ -859,13 +859,13 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     }
     hasRenderedExploreTableOnce = true;
 
-    // Article layouts don't scroll horizontally, so drop the scroll
-    // padding/bg — and overflow-x-auto, which would otherwise break sticky.
+    // Article layouts use a sticky header, which any non-visible overflow-x here would break.
     const hasArticleLayout = type === 'articles' && Boolean(getArticleColumnLayout());
     const tableContainerEl = document.querySelector('.js_export_table_container');
     tableContainerEl?.classList.toggle('bg-neutral-800', !hasArticleLayout);
     tableContainerEl?.classList.toggle('pb-4', !hasArticleLayout);
     tableContainerEl?.classList.toggle('overflow-x-auto', !hasArticleLayout);
+    document.querySelector('.js_export_table_scroll_wrapper')?.classList.toggle('overflow-x-hidden', !hasArticleLayout);
   }
 }
 
@@ -958,7 +958,13 @@ async function loadExploreRecords(itemData, query, size, pretty) {
  * @returns {Promise<Object>} A promise that resolves to term-based records and total count.
  */
 export async function fetchTermBasedData(suffix, query, term, sort, size, activeFilterQuery = query, includeValuesOverride, sortDirection = "desc") {
-  const postData = getAggregatedDataQuery(suffix, query, term, startYear, endYear, size, sort, activeFilterQuery, includeValuesOverride, sortDirection);
+  // Percentage sorts (e.g. "open_access_sort") fetch ordered by count, then
+  // get re-sorted by their actual percentage client-side below — ES can't
+  // order by a sibling pipeline aggregation.
+  const percentageKey = sort.endsWith('_sort') ? sort.slice(0, -"_sort".length) : null;
+  const backendSort = percentageKey ? '_count' : sort;
+
+  const postData = getAggregatedDataQuery(suffix, query, term, startYear, endYear, size, backendSort, activeFilterQuery, includeValuesOverride, sortDirection);
   const response = await fetchPostData(postData);
 
   let buckets = [];
@@ -983,9 +989,13 @@ export async function fetchTermBasedData(suffix, query, term, sort, size, active
   // Filter out buckets with doc_count of 0
   buckets = buckets.filter(bucket => bucket.doc_count > 0);
 
-  // Keep count-based ordering stable even when the API response comes back
-  // unordered or partially ordered.
-  if (sort === '_count') {
+  if (percentageKey) {
+    const multiplier = sortDirection === "asc" ? 1 : -1;
+    const pctOf = (bucket) => bucket.doc_count > 0 ? (bucket[percentageKey] || 0) / bucket.doc_count : 0;
+    buckets.sort((a, b) => (pctOf(a) - pctOf(b)) * multiplier);
+  } else if (sort === '_count') {
+    // Keep count-based ordering stable even when the API response comes back
+    // unordered or partially ordered.
     const multiplier = sortDirection === "asc" ? 1 : -1;
     buckets.sort((a, b) => (a.doc_count - b.doc_count) * multiplier);
   }
@@ -1268,6 +1278,17 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
   tableHeader.appendChild(headerRow);
 }
 
+/** Percentage-metric terms columns (e.g. "compliant") — sorted client-side, see fetchTermBasedData(). */
+const TERMS_SORTABLE_PERCENTAGE_FIELDS = new Set(getPercentageMetricAggKeys());
+
+/** Maps a terms display field to its ES order field (key/doc_count to _key/_count); others pass through. */
+function toEsSortField(displayField) {
+  if (displayField === "key") return "_key";
+  if (displayField === "doc_count") return "_count";
+  if (TERMS_SORTABLE_PERCENTAGE_FIELDS.has(displayField)) return `${displayField}_sort`;
+  return displayField;
+}
+
 /**
  * Derives the default sort state for an Explore item from its config.
  *
@@ -1288,14 +1309,9 @@ function resolveExploreSortState(itemData) {
   }
 
   const [rawField = "_count", rawDirection] = String(itemData.sort || "_count").split(":");
-  const field = rawField === "key"
-    ? "_key"
-    : rawField === "doc_count"
-      ? "_count"
-      : rawField;
 
   return {
-    field,
+    field: toEsSortField(rawField),
     direction: rawDirection === "asc" ? "asc" : "desc"
   };
 }
@@ -1332,34 +1348,17 @@ function getActiveExploreSortState(itemData = currentActiveExploreItemData, opti
  */
 function getExploreSortIndicator(dataType) {
   const { field, direction } = getActiveExploreSortState();
-
   if (!field) return null;
 
-  if (dataType === "articles") {
-    return {
-      key: normaliseFieldId(field),
-      direction: direction === "asc" ? "ascending" : "descending"
-    };
+  // Reverse toEsSortField(): back to the terms column this ES field displays as.
+  let key = normaliseFieldId(field);
+  if (dataType !== "articles") {
+    if (field === "_key") key = "key";
+    else if (field === "_count") key = "doc_count";
+    else if (field.endsWith("_sort") && TERMS_SORTABLE_PERCENTAGE_FIELDS.has(field.slice(0, -5))) key = field.slice(0, -5);
   }
 
-  if (field === "_count") {
-    return {
-      key: "doc_count",
-      direction: direction === "asc" ? "ascending" : "descending"
-    };
-  }
-
-  if (field === "_key") {
-    return {
-      key: "key",
-      direction: direction === "asc" ? "ascending" : "descending"
-    };
-  }
-
-  return {
-    key: normaliseFieldId(field),
-    direction: direction === "asc" ? "ascending" : "descending"
-  };
+  return { key, direction: direction === "asc" ? "ascending" : "descending" };
 }
 
 /**
@@ -1374,10 +1373,14 @@ function getExploreSortIndicator(dataType) {
 async function handleExploreSortToggle(sortKey, labelText) {
   if (!currentActiveExploreItemData) return;
 
-  currentActiveExploreSortDirection = sortKey === currentActiveExploreSortField
+  // currentActiveExploreSortField always holds the query-facing value (ES's
+  // _key/_count for terms tables), matching resolveExploreSortState().
+  const queryField = currentActiveExploreItemData.type === 'terms' ? toEsSortField(sortKey) : sortKey;
+
+  currentActiveExploreSortDirection = queryField === currentActiveExploreSortField
     ? (currentActiveExploreSortDirection === "asc" ? "desc" : "asc")
     : "asc";
-  currentActiveExploreSortField = sortKey;
+  currentActiveExploreSortField = queryField;
 
   startLoading();
 
@@ -1465,7 +1468,11 @@ function setupHeaderTooltip(element, rawKey, dataType, labelOverride = null, lab
     : (labelData && labelData.label ? labelData.label : key));
   const sortIndicator = getExploreSortIndicator(dataType);
   const isSortedColumn = sortIndicator?.key === key;
-  const isSortable = isSortedColumn || (dataType === 'articles' && isExploreColumnSortable(key));
+  // Terms: key/doc_count, total_/mean_ metrics, and percentage metrics are sortable.
+  const isTermsSortable = key === 'key' || key === 'doc_count' || key.startsWith('total_') || key.startsWith('mean_') || TERMS_SORTABLE_PERCENTAGE_FIELDS.has(key);
+  const isSortable = isSortedColumn
+    || (dataType === 'articles' && isExploreColumnSortable(key))
+    || (dataType === 'terms' && isTermsSortable);
 
   element.innerHTML = "";
 
@@ -1475,7 +1482,7 @@ function setupHeaderTooltip(element, rawKey, dataType, labelOverride = null, lab
     return temp.textContent?.trim() || key;
   })();
   const container = document.createElement("div");
-  container.className = "flex h-full items-stretch justify-between gap-2";
+  container.className = "flex h-full w-full min-w-0 items-stretch justify-between gap-2";
 
   // (1) Label, bottom-aligned, takes the remaining width.
   const labelContainer = document.createElement("span");
