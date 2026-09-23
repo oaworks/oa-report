@@ -21,6 +21,21 @@ export function resolveLicenseDisplay(code) {
   return { name: licenseInfo?.name || code.toUpperCase(), url: licenseInfo?.url || null };
 }
 
+/**
+ * Shared Yes/No badge (label, icon, colour) for a boolean status, used by
+ * the Explore table's boolean columns and the point-of-award check.
+ *
+ * @param {boolean} value
+ * @returns {{label: string, icon: string, color: string}}
+ */
+export function resolveBooleanStatusDisplay(value) {
+  return {
+    label: value ? 'Yes' : 'No',
+    icon: value ? 'ph-check-circle' : 'ph-x-circle',
+    color: value ? 'text-green-light' : 'text-carnation-300'
+  };
+}
+
 // =================================================
 // Network and caching helpers
 // =================================================

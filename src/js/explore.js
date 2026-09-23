@@ -8,7 +8,7 @@
 // =================================================
 
 import DOMPurify from "dompurify";
-import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, escapeQueryValue, normaliseFieldId, makeNumberReadable, makeTabCountReadable, announce, orcidDisplayNames, resolveLicenseDisplay } from "./utils.js";
+import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, escapeQueryValue, normaliseFieldId, makeNumberReadable, makeTabCountReadable, announce, orcidDisplayNames, resolveLicenseDisplay, resolveBooleanStatusDisplay } from "./utils.js";
 import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, EXPLORE_ARTICLE_COLUMN_LAYOUT_BY_ORG, EXPLORE_SORTABLE_ARTICLE_FIELDS_BY_ORG, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, EXPLORE_ARTICLE_LAYOUT_OTHER_COL_CLASSES, EXPLORE_ARTICLE_LAYOUT_FIRST_COL_CLASSES, EXPLORE_ARTICLE_LAYOUT_SECOND_COL_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, SEGMENTED_PILL_CLASSES, VIEW_TAB_CLASSES, CONTROL_FIELD_SHELL_CLASSES, CONTROL_FOCUS_RING_CLASSES, CONTROL_SELECT_CLASSES, SORT_TRIGGER_CLASSES, SORT_CARET_CHIP_CLASSES, SORT_CARET_CHIP_ACTIVE_CLASSES, TAB_COUNT_BADGE_CLASSES, EXPLORE_SUMMARY_ROW_CLASSES, INFO_TRIGGER_ICON_CLASSES, INFO_TRIGGER_ICON_HTML, resolveFieldDefinition } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { startLoading, stopLoading } from "./components.js";
@@ -767,7 +767,7 @@ function updateRecordsShownControl(total) {
   });
 
   const caret = document.createElement("i");
-  caret.className = "ph ph-caret-circle-down absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-neutral-100 pointer-events-none";
+  caret.className = "ph ph-caret-down absolute right-2.5 top-1/2 -translate-y-1/2 text-[16px] text-neutral-100 pointer-events-none";
   caret.setAttribute("aria-hidden", "true");
 
   wrapper.append(selectMenu, caret);
@@ -1605,10 +1605,8 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
     // array; join so downstream checks (e.g. license lookup) see a string.
     if (Array.isArray(value)) value = value.join(', ');
     if (typeof value === 'boolean') {
-      const label = value ? 'Yes' : 'No';
-      const icon = value ? 'ph-check-circle' : 'ph-x-circle';
-      const color = value ? 'text-green-light' : 'text-carnation-300';
-      return `<span class="inline-flex items-center gap-1"><span>${label}</span><i class="ph ${icon} text-[16px] leading-none ${color}" aria-hidden="true"></i></span>`;
+      const { label, icon, color } = resolveBooleanStatusDisplay(value);
+      return `<span class="inline-flex items-center gap-1"><i class="ph ${icon} text-[16px] leading-none ${color}" aria-hidden="true"></i><span>${label}</span></span>`;
     }
     return value === '' || value === null || value === undefined ? 'N/A' : value;
   }

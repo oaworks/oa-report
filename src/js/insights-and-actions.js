@@ -9,7 +9,7 @@
 // Imports
 // =================================================
 
-import { dateRange, startYear, endYear, displayNone, changeOpacity, makeNumberReadable, makeTabCountReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setDenominatorBasisLabel, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings, copyToClipboard, escapeHtmlEntities, resolveLicenseDisplay } from './utils.js';
+import { dateRange, startYear, endYear, displayNone, changeOpacity, makeNumberReadable, makeTabCountReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setDenominatorBasisLabel, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings, copyToClipboard, escapeHtmlEntities, resolveLicenseDisplay, resolveBooleanStatusDisplay } from './utils.js';
 import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, INSIGHT_EXPLORE_MAPPINGS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS, DEFAULT_ACTION_EMPTY_STATE_MESSAGE, DEFAULT_NO_AUTHOR_FILTERED_MESSAGE, DEFAULT_MULTIPLE_AUTHORS_FILTERED_MESSAGE, SEGMENTED_PILL_CLASSES, TAB_COUNT_BADGE_CLASSES, resolveFieldDefinition } from './constants.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { initActionTabs, formatDoiEpmcListForClipboard, getAuthorFilterCount } from './actions.js';
@@ -787,10 +787,10 @@ export function initInsightsAndActions(org) {
                     // If EPMC fulltext status is included, derive a human-readable label + icon for
                     // display, without touching the raw value the data-in-epmc attribute relies on
                     if ("has_epmc_fulltext" in action) {
-                      var inEpmc = action.has_epmc_fulltext === true;
-                      action.epmc_status_label = inEpmc ? "Yes" : "No";
-                      action.epmc_status_icon = inEpmc ? "ph-check-circle" : "ph-x-circle";
-                      action.epmc_status_color = inEpmc ? "text-green-light" : "text-carnation-300";
+                      var epmcStatus = resolveBooleanStatusDisplay(action.has_epmc_fulltext === true);
+                      action.epmc_status_label = epmcStatus.label;
+                      action.epmc_status_icon = epmcStatus.icon;
+                      action.epmc_status_color = epmcStatus.color;
                     }
 
                     if (typeof action.title === "string" && action.title.includes("&")) {
