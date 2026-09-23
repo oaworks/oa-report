@@ -47,7 +47,13 @@ module.exports = function (eleventyConfig) {
     "./node_modules/axios/dist/axios.min.js": "/js/axios.min.js"
   });
   eleventyConfig.addPassthroughCopy({
-    "./node_modules/@phosphor-icons/web/src/regular/": "/phosphor/"
+    "./node_modules/@phosphor-icons/web/src/regular/style.css": "/phosphor/style.css"
+  });
+  eleventyConfig.addPassthroughCopy({
+    "./node_modules/@phosphor-icons/web/src/fill/Phosphor-Fill.woff2": "/phosphor/Phosphor.woff2",
+    "./node_modules/@phosphor-icons/web/src/fill/Phosphor-Fill.woff": "/phosphor/Phosphor.woff",
+    "./node_modules/@phosphor-icons/web/src/fill/Phosphor-Fill.ttf": "/phosphor/Phosphor.ttf",
+    "./node_modules/@phosphor-icons/web/src/fill/Phosphor-Fill.svg": "/phosphor/Phosphor.svg"
   });
   eleventyConfig.addPassthroughCopy({
     "./node_modules/sal.js/dist/sal.css": "sal.css",

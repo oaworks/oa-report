@@ -398,8 +398,8 @@ function createExploreButton(exploreDataItem) {
   button.id = `explore_${id}_button`;
   const label = EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id);
   const iconName = iconForFilterId(id);
-  const iconMarkup = iconName ? `<i class="ph ph-${iconName} mr-1 text-[14px] leading-none" aria-hidden="true"></i>` : "";
-  button.innerHTML = `${iconMarkup}<span>${label}</span>`;
+  const iconMarkup = iconName ? `<i class="ph ph-${iconName} -ml-1 mr-1 text-[16px] leading-none" aria-hidden="true"></i>` : "";
+  button.innerHTML = `<span class="inline-flex items-center">${iconMarkup}<span>${label}</span></span>`;
   button.className = `js_explore_btn ${SEGMENTED_PILL_CLASSES.base} ${SEGMENTED_PILL_CLASSES.inactive}`;
   button.setAttribute("aria-pressed", "false");
 
@@ -767,7 +767,7 @@ function updateRecordsShownControl(total) {
   });
 
   const caret = document.createElement("i");
-  caret.className = "ph ph-caret-down absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-neutral-100 pointer-events-none";
+  caret.className = "ph ph-caret-circle-down absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-neutral-100 pointer-events-none";
   caret.setAttribute("aria-hidden", "true");
 
   wrapper.append(selectMenu, caret);

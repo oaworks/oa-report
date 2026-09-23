@@ -26,8 +26,8 @@ export const ACTION_ORDER = [
 const ACTION_ARTICLE_LINK_CLASSES = "inline-flex items-center rounded-full my-1 bg-neutral-200 px-2 py-0.5 text-[10px] text-neutral-900 font-semibold whitespace-nowrap outline outline-1 outline-transparent transition-colors hover:bg-carnation-200";
 const ACTION_TABLE_CELL_CLASSES = "border-b border-neutral-700 bg-neutral-800 px-3 py-2 text-sm align-top break-words";
 const ACTION_TABLE_OPTIONAL_CELL_CLASSES = "hidden border-b border-neutral-700 bg-neutral-800 px-3 py-2 text-sm align-top break-words sm:table-cell";
-const ACTION_TABLE_CENTER_CELL_CLASSES = "border-b border-neutral-700 bg-neutral-800 px-3 py-2 text-sm text-center align-top break-words";
-const ACTION_TABLE_OPTIONAL_CENTER_CELL_CLASSES = "hidden border-b border-neutral-700 bg-neutral-800 px-3 py-2 text-sm text-center align-top break-words sm:table-cell";
+const ACTION_TABLE_CENTER_CELL_CLASSES = "border-b border-neutral-700 bg-neutral-800 px-3 py-2 text-sm text-center align-middle break-words";
+const ACTION_TABLE_OPTIONAL_CENTER_CELL_CLASSES = "hidden border-b border-neutral-700 bg-neutral-800 px-3 py-2 text-sm text-center align-middle break-words sm:table-cell";
 const ACTION_TABLE_PRIMARY_TEXT_CLASSES = "text-neutral-100";
 const ACTION_TABLE_SECONDARY_TEXT_CLASSES = "text-neutral-300";
 const ACTION_TABLE_DRAFT_BUTTON_CLASSES = "inline-flex items-center rounded-full border border-transparent bg-carnation-500 p-2 text-white shadow-sm transition duration-200 hover:border-carnation-500 hover:bg-neutral-100 hover:text-carnation-500";
@@ -112,7 +112,7 @@ export const ACTION_TABLE_CONFIGS = [
           data-doi='\${action.DOI}'\
           data-mailto='\${action.mailto}'\
           onclick='handleDecryptEmailClick(this)'>\
-          <i class='ph ph-envelope inline-block text-[16px] leading-none duration-500' aria-hidden='true'></i>\
+          <i class='ph ph-paper-plane-tilt inline-block text-[16px] leading-none duration-500' aria-hidden='true'></i>\
         </button>\
       </td>`
   },
@@ -140,7 +140,7 @@ export const ACTION_TABLE_CONFIGS = [
           data-doi='\${action.DOI}'\
           data-mailto='\${action.mailto}'\
           onclick='handleDecryptEmailClick(this)'>\
-          <i class='ph ph-envelope inline-block text-[16px] leading-none duration-500' aria-hidden='true'></i>\
+          <i class='ph ph-paper-plane-tilt inline-block text-[16px] leading-none duration-500' aria-hidden='true'></i>\
         </button>\
       </td>`
   },
@@ -168,7 +168,7 @@ export const ACTION_TABLE_CONFIGS = [
           data-doi='\${action.DOI}'\
           data-mailto='\${action.mailto}'\
           onclick='handleDecryptEmailClick(this)'>\
-          <i class='ph ph-envelope inline-block text-[16px] leading-none duration-500' aria-hidden='true'></i>\
+          <i class='ph ph-paper-plane-tilt inline-block text-[16px] leading-none duration-500' aria-hidden='true'></i>\
         </button>\
       </td>`
   },
@@ -196,7 +196,7 @@ export const ACTION_TABLE_CONFIGS = [
           data-doi='\${action.DOI}'\
           data-mailto='\${action.mailto}'\
           onclick='handleDecryptEmailClick(this)'>\
-          <i class='ph ph-envelope inline-block text-[16px] leading-none duration-500' aria-hidden='true'></i>\
+          <i class='ph ph-paper-plane-tilt inline-block text-[16px] leading-none duration-500' aria-hidden='true'></i>\
         </button>\
       </td>`
   },
@@ -225,7 +225,7 @@ export const ACTION_TABLE_CONFIGS = [
           data-doi='\${action.DOI}'\
           data-mailto='\${action.mailto}'\
           onclick='handleDecryptEmailClick(this)'>\
-          <i class='ph ph-envelope inline-block text-[16px] leading-none duration-500' aria-hidden='true'></i>\
+          <i class='ph ph-paper-plane-tilt inline-block text-[16px] leading-none duration-500' aria-hidden='true'></i>\
         </button>\
       </td>`
   },
