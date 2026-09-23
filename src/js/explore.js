@@ -959,13 +959,14 @@ async function loadExploreRecords(itemData, query, size, pretty) {
  * @returns {Promise<Object>} A promise that resolves to term-based records and total count.
  */
 export async function fetchTermBasedData(suffix, query, term, sort, size, activeFilterQuery = query, includeValuesOverride, sortDirection = "desc", isPercentMode = true) {
-  // Percentage sorts (e.g. "open_access_sort") fetch ordered by count, then
-  // get re-sorted by their actual percentage client-side below — ES can't
-  // order by a sibling pipeline aggregation.
+  // Percentage sorts fetch ordered by count, then get re-sorted by their
+  // actual percentage client-side below — ES can't order by a sibling
+  // pipeline aggregation.
   const percentageKey = sort.endsWith('_sort') ? sort.slice(0, -"_sort".length) : null;
   const backendSort = percentageKey ? '_count' : sort;
+  const backendSortDirection = percentageKey ? 'desc' : sortDirection;
 
-  const postData = getAggregatedDataQuery(suffix, query, term, startYear, endYear, size, backendSort, activeFilterQuery, includeValuesOverride, sortDirection);
+  const postData = getAggregatedDataQuery(suffix, query, term, startYear, endYear, size, backendSort, activeFilterQuery, includeValuesOverride, backendSortDirection);
   const response = await fetchPostData(postData);
 
   let buckets = [];
@@ -989,7 +990,6 @@ export async function fetchTermBasedData(suffix, query, term, sort, size, active
 
   // Filter out buckets with doc_count of 0
   buckets = buckets.filter(bucket => bucket.doc_count > 0);
-
   if (percentageKey) {
     // Match whichever value the table is currently showing (percent or raw count).
     const multiplier = sortDirection === "asc" ? 1 : -1;
@@ -1071,7 +1071,7 @@ function getExploreSortAdjective({ type, sortField, sortDirection }) {
     return "Top";
   }
 
-  return sortField === "_key" ? "By" : "";
+  return "";
 }
 
 /**
@@ -1285,9 +1285,8 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
 /** Percentage-metric terms columns (e.g. "compliant") — sorted client-side, see fetchTermBasedData(). */
 const TERMS_SORTABLE_PERCENTAGE_FIELDS = new Set(getPercentageMetricAggKeys());
 
-/** Maps a terms display field to its ES order field (key/doc_count to _key/_count); others pass through. */
+/** Maps a terms display field to its ES order field (doc_count to _count); others pass through. */
 function toEsSortField(displayField) {
-  if (displayField === "key") return "_key";
   if (displayField === "doc_count") return "_count";
   if (TERMS_SORTABLE_PERCENTAGE_FIELDS.has(displayField)) return `${displayField}_sort`;
   return displayField;
@@ -1313,9 +1312,11 @@ function resolveExploreSortState(itemData) {
   }
 
   const [rawField = "_count", rawDirection] = String(itemData.sort || "_count").split(":");
+  // Key sorting isn't supported; some items still default to it in config.
+  const field = rawField === "_key" ? "_count" : toEsSortField(rawField);
 
   return {
-    field: toEsSortField(rawField),
+    field,
     direction: rawDirection === "asc" ? "asc" : "desc"
   };
 }
@@ -1357,8 +1358,7 @@ function getExploreSortIndicator(dataType) {
   // Reverse toEsSortField(): back to the terms column this ES field displays as.
   let key = normaliseFieldId(field);
   if (dataType !== "articles") {
-    if (field === "_key") key = "key";
-    else if (field === "_count") key = "doc_count";
+    if (field === "_count") key = "doc_count";
     else if (field.endsWith("_sort") && TERMS_SORTABLE_PERCENTAGE_FIELDS.has(field.slice(0, -5))) key = field.slice(0, -5);
   }
 
@@ -1378,7 +1378,7 @@ async function handleExploreSortToggle(sortKey, labelText) {
   if (!currentActiveExploreItemData) return;
 
   // currentActiveExploreSortField always holds the query-facing value (ES's
-  // _key/_count for terms tables), matching resolveExploreSortState().
+  // _count for terms tables), matching resolveExploreSortState().
   const queryField = currentActiveExploreItemData.type === 'terms' ? toEsSortField(sortKey) : sortKey;
 
   currentActiveExploreSortDirection = queryField === currentActiveExploreSortField
@@ -1472,8 +1472,7 @@ function setupHeaderTooltip(element, rawKey, dataType, labelOverride = null, lab
     : (labelData && labelData.label ? labelData.label : key));
   const sortIndicator = getExploreSortIndicator(dataType);
   const isSortedColumn = sortIndicator?.key === key;
-  // Terms: key/doc_count, total_/mean_ metrics, and percentage metrics are sortable.
-  const isTermsSortable = key === 'key' || key === 'doc_count' || key.startsWith('total_') || key.startsWith('mean_') || TERMS_SORTABLE_PERCENTAGE_FIELDS.has(key);
+  const isTermsSortable = key === 'doc_count' || key.startsWith('total_') || key.startsWith('mean_') || TERMS_SORTABLE_PERCENTAGE_FIELDS.has(key);
   const isSortable = isSortedColumn
     || (dataType === 'articles' && isExploreColumnSortable(key))
     || (dataType === 'terms' && isTermsSortable);
