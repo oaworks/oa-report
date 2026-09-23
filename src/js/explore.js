@@ -9,7 +9,7 @@
 
 import DOMPurify from "dompurify";
 import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, escapeQueryValue, normaliseFieldId, makeNumberReadable, makeTabCountReadable, announce, orcidDisplayNames, resolveLicenseDisplay, resolveBooleanStatusDisplay } from "./utils.js";
-import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, EXPLORE_ARTICLE_COLUMN_LAYOUT_BY_ORG, EXPLORE_SORTABLE_ARTICLE_FIELDS_BY_ORG, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, EXPLORE_ARTICLE_LAYOUT_OTHER_COL_CLASSES, EXPLORE_ARTICLE_LAYOUT_FIRST_COL_CLASSES, EXPLORE_ARTICLE_LAYOUT_SECOND_COL_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, SEGMENTED_PILL_CLASSES, VIEW_TAB_CLASSES, CONTROL_FIELD_SHELL_CLASSES, CONTROL_FOCUS_RING_CLASSES, CONTROL_SELECT_CLASSES, SORT_TRIGGER_CLASSES, SORT_CARET_CHIP_CLASSES, SORT_CARET_CHIP_ACTIVE_CLASSES, TAB_COUNT_BADGE_CLASSES, EXPLORE_SUMMARY_ROW_CLASSES, INFO_TRIGGER_ICON_CLASSES, INFO_TRIGGER_ICON_HTML, resolveFieldDefinition } from "./constants.js";
+import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, EXPLORE_ARTICLE_COLUMN_LAYOUT_BY_ORG, EXPLORE_SORTABLE_ARTICLE_FIELDS_BY_ORG, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, EXPLORE_ARTICLE_LAYOUT_OTHER_COL_CLASSES, EXPLORE_ARTICLE_LAYOUT_FIRST_COL_CLASSES, EXPLORE_ARTICLE_LAYOUT_SECOND_COL_CLASSES, EXPLORE_ARTICLE_ROW_STRIPE_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, SEGMENTED_PILL_CLASSES, VIEW_TAB_CLASSES, CONTROL_FIELD_SHELL_CLASSES, CONTROL_FOCUS_RING_CLASSES, CONTROL_SELECT_CLASSES, SORT_TRIGGER_CLASSES, SORT_CARET_CHIP_CLASSES, SORT_CARET_CHIP_ACTIVE_CLASSES, TAB_COUNT_BADGE_CLASSES, EXPLORE_SUMMARY_ROW_CLASSES, INFO_TRIGGER_ICON_CLASSES, INFO_TRIGGER_ICON_HTML, resolveFieldDefinition } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { startLoading, stopLoading } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
@@ -1611,7 +1611,7 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
     return value === '' || value === null || value === undefined ? 'N/A' : value;
   }
 
-  function appendArticleLayoutRow(target, record, section, summaryRowType) {
+  function appendArticleLayoutRow(target, record, section, summaryRowType, rowIndex) {
     const row = document.createElement('tr');
     const normalisedKeyMap = buildNormalisedKeyMap(record);
 
@@ -1662,19 +1662,21 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
       const cell = createTableCell(cellContent, getExploreColumnClass(section, dataType, columnIndex, true));
       finishExploreCell(cell, columnIndex, summaryRowType, primaryKey, values[0]);
 
+      if (section === 'body') cell.classList.add(EXPLORE_ARTICLE_ROW_STRIPE_CLASSES[rowIndex % 2]);
+
       row.appendChild(cell);
     });
 
     target.appendChild(row);
   }
 
-  function appendRow(target, record, section) {
+  function appendRow(target, record, section, rowIndex) {
     const summaryRowType = section === 'foot'
       ? (record.key === 'all_values' ? 'total' : record.key === 'no_values' ? 'missing' : null)
       : null;
 
     if (articleLayout) {
-      appendArticleLayoutRow(target, record, section, summaryRowType);
+      appendArticleLayoutRow(target, record, section, summaryRowType, rowIndex);
       return;
     }
 
@@ -1713,8 +1715,8 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
   }
 
   // Add rows from other records to the tbody
-  otherRecords.forEach(record => {
-    appendRow(tableBody, record, 'body');
+  otherRecords.forEach((record, rowIndex) => {
+    appendRow(tableBody, record, 'body', rowIndex);
   });
 
   // Add synthetic summary rows to the footer, keeping "No … recorded" below
