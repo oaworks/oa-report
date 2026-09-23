@@ -1489,7 +1489,7 @@ function setupHeaderTooltip(element, rawKey, dataType, labelOverride = null, lab
   // Label sits in normal flow, bottom-aligned, with room reserved on the
   // right for the info icon and sort caret pinned to opposite corners below.
   const container = document.createElement("div");
-  container.className = "flex h-full w-full min-w-0 items-end pr-6";
+  container.className = "flex h-full min-h-10 w-full min-w-0 items-end pr-6";
   const labelSpan = document.createElement("span");
   labelSpan.innerHTML = DOMPurify.sanitize(labelHTML || label);
   container.appendChild(labelSpan);

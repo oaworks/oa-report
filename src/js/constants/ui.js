@@ -29,6 +29,7 @@ export const EXPLORE_SUMMARY_ROW_CLASSES = {
 
 // Shared header-cell border: last:border-r-0 drops the last column's own
 // right border so it doesn't double up against the table wrapper's border.
+// min-h reserves room for the corner-pinned info icon and sort caret so they never touch.
 const HEADER_CELL_BORDER_CLASSES = "border-b border-r border-neutral-700 last:border-r-0";
 
 /**
