@@ -1312,11 +1312,9 @@ function resolveExploreSortState(itemData) {
   }
 
   const [rawField = "_count", rawDirection] = String(itemData.sort || "_count").split(":");
-  // Key sorting isn't supported; some items still default to it in config.
-  const field = rawField === "_key" ? "_count" : toEsSortField(rawField);
 
   return {
-    field,
+    field: toEsSortField(rawField),
     direction: rawDirection === "asc" ? "asc" : "desc"
   };
 }
