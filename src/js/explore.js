@@ -775,7 +775,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     }
 
     const { type, id } = itemData;
-    const { field: sortField, direction: sortDirection } = getActiveExploreSortState(itemData);
+    getActiveExploreSortState(itemData); // Initialises the sort state used by the table header's caret icons.
     document.getElementById("csv_email_msg").innerHTML = ""; // Clear any existing message in CSV download form
     const exportTable = document.getElementById('export_table');
     exportTable.classList.remove('hidden');
@@ -793,9 +793,6 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 
     const { records, total: totalRecords } = await loadExploreRecords(itemData, query, size, pretty);
 
-    const sortAdjective = getExploreSortAdjective({ type, sortField, sortDirection });
-    replaceText("report_sort_adjective", sortAdjective);
-    document.querySelectorAll(".report_sort_adjective").forEach(el => el.classList.toggle("hidden", !sortAdjective));
     setExploreModeUI(type);
 
     const shownCount = type === "terms"
@@ -1021,25 +1018,6 @@ function updateExploreCountSummary({ id, total }) {
 
   totalElement.textContent = makeNumberReadable(Number.isFinite(total) ? total : 0);
   labelElement.innerHTML = DOMPurify.sanitize(label);
-}
-
-/**
- * Determines the adjective used in the Explore heading (e.g. "Latest", "By").
- *
- * @param {Object} params
- * @param {string} params.type - The explore item type.
- * @param {string} params.sortField - The active sort field.
- * @param {string} params.sortDirection - The active sort direction.
- * @returns {string} Heading adjective, or an empty string if none applies.
- */
-function getExploreSortAdjective({ type, sortField, sortDirection }) {
-  if (type === "articles") {
-    if (!sortField) return "Latest";
-    if (sortField === "published_date") return sortDirection === "asc" ? "Earliest" : "Latest";
-    return "Top";
-  }
-
-  return sortField === "_key" ? "By" : "";
 }
 
 /**
