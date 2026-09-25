@@ -836,7 +836,8 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 
     if (records.length > 0) {
       // Populate table with data
-      populateTableHeader(records[0], 'export_table_head', type);
+      const isCompleteSet = type === 'terms' && shownCount >= totalCount;
+      populateTableHeader(records[0], 'export_table_head', type, isCompleteSet);
       populateTableBody(records, 'export_table_body', id, type);
     
       // Add functionalities to the table
@@ -1257,8 +1258,10 @@ function resolveExploreHeaderColumns(records, dataType) {
  *
  * @param {Object[]} records - An array of data objects used to derive the header columns. Assumes all objects have the same structure.
  * @param {string} tableHeaderId - The ID of the table header element where the headers should be appended.
+ * @param {string} [dataType] - 'terms' or 'articles'; determines label lookup and sortability rules.
+ * @param {boolean} [isCompleteSet] - Whether every record for this breakdown is currently shown; gates percentage-column sorting.
  */
-function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
+function populateTableHeader(records, tableHeaderId, dataType = 'terms', isCompleteSet = false) {
   const tableHeader = document.getElementById(tableHeaderId);
   if (!tableHeader) return;
 
@@ -1275,7 +1278,7 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms') {
     // Headers always stay left-aligned (via Tailwind's th reset); only body
     // cells right-align numeric columns for easier value comparison.
     const headerCell = createTableCell('', cssClass, null, null, true);
-    setupHeaderTooltip(headerCell, rawKey, dataType, labelOverride, labelHTML);
+    setupHeaderTooltip(headerCell, rawKey, dataType, labelOverride, labelHTML, isCompleteSet);
 
     headerRow.appendChild(headerCell);
   });
@@ -1458,8 +1461,9 @@ function generateTooltipContent(labelData, additionalHelpText = null) {
  * @param {string} dataType - Indicates the type of data ('terms' or 'articles'), which determines the labels configuration to use.
  * @param {string|null} [labelOverride] - Plain-text label (e.g. for aria) to use instead of rawKey's own; sort key and tooltip info still come from rawKey.
  * @param {string|null} [labelHTML] - Rich HTML to show visually instead of labelOverride/rawKey's own label (e.g. stacked lines matching a body cell).
+ * @param {boolean} [isCompleteSet] - Whether every record for this breakdown is currently shown; gates percentage-column sorting.
  */
-function setupHeaderTooltip(element, rawKey, dataType, labelOverride = null, labelHTML = null) {
+function setupHeaderTooltip(element, rawKey, dataType, labelOverride = null, labelHTML = null, isCompleteSet = false) {
   const key = normaliseFieldId(rawKey);
   const exploreTypeLabel = document.querySelector(".explore_type")?.textContent?.trim();
   const labelData = dataType === 'terms'
@@ -1470,8 +1474,15 @@ function setupHeaderTooltip(element, rawKey, dataType, labelOverride = null, lab
     : (labelData && labelData.label ? labelData.label : key));
   const sortIndicator = getExploreSortIndicator(dataType);
   const isSortedColumn = sortIndicator?.key === key;
-  const isTermsSortable = key === 'doc_count' || key.startsWith('total_') || key.startsWith('mean_') || TERMS_SORTABLE_PERCENTAGE_FIELDS.has(key);
-  const isSortable = isSortedColumn
+  // doc_count/total_/mean_ search the whole dataset regardless of records
+  // shown; percentage metrics only sort what's fetched, so only offer them
+  // when every record is already in view (otherwise the sort would be misleading).
+  const isTermsSortable = key === 'doc_count' || key.startsWith('total_') || key.startsWith('mean_') || (isCompleteSet && TERMS_SORTABLE_PERCENTAGE_FIELDS.has(key));
+  // Percentage columns rely solely on isTermsSortable (gated by isCompleteSet);
+  // excluded from the isSortedColumn bypass so a stale active sort can't show
+  // a caret once records shown drops below the total.
+  const isPercentageColumn = dataType === 'terms' && TERMS_SORTABLE_PERCENTAGE_FIELDS.has(key);
+  const isSortable = (isSortedColumn && !isPercentageColumn)
     || (dataType === 'articles' && isExploreColumnSortable(key))
     || (dataType === 'terms' && isTermsSortable);
 
