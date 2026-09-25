@@ -482,7 +482,7 @@ async function addExploreFiltersToDOM(query) {
  */
 function createExploreFilterTab(id, isActive, showCount) {
   const labelData = EXPLORE_FILTERS_LABELS[id];
-  const label = labelData ? labelData.label || id : id; // Use label from filters or default to ID
+  const label = labelData ? injectOrgFields(labelData.label || id, { orgName }) : id; // Use label from filters or default to ID
 
   const tabWrapper = document.createElement('div');
   tabWrapper.className = 'flex';
@@ -812,7 +812,17 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 
     updateExploreCountSummary({ id, total: totalCount });
     updateRecordsShownControl(totalCount);
-    replaceText("explore_type", EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id), { allowHTML: true });
+
+    // Reuses each filter's tab label as-is in the heading; headingPosition just says where it goes.
+    // Filters with no position (e.g. is_paper) leave the heading showing only the plain type.
+    const activeFilterLabels = EXPLORE_FILTERS_LABELS[filter];
+    const headingPosition = activeFilterLabels?.headingPosition;
+    const headingLabel = activeFilterLabels?.label ? injectOrgFields(activeFilterLabels.label, { orgName }) : "";
+    const defaultType = EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id);
+
+    replaceText("explore_type", headingPosition === "type" ? headingLabel : defaultType, { allowHTML: true });
+    replaceText("explore_heading_filter", headingPosition === "suffix" ? headingLabel : "", { allowHTML: true });
+    document.querySelectorAll(".explore_heading_filter").forEach(el => el.classList.toggle("hidden", headingPosition !== "suffix"));
 
     if (records.length > 0) {
       // Populate table with data

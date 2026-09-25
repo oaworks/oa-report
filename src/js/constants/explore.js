@@ -167,7 +167,8 @@ export const EXPLORE_FILTERS_LABELS = {
     info: "<p>Publications that haven’t been peer-reviewed.</p>"
   },
   "is_authored": {
-    label: "Authored journal articles",
+    label: "Authored by <span class='org-name'></span>",
+    headingPosition: "suffix",
     info: "<p>Journal articles authored by someone at <span class='org-name'></span>, <strong>including</strong>:</p>\
     <ul class='list-disc list-inside'>\
       <li>peer-reviewed research</li>\
@@ -184,30 +185,37 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "is_covered_by_policy": {
     label: "Covered by <span class='uppercase'>OA</span> policy",
+    headingPosition: "suffix",
     info: "<p>Publications covered by <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p>"
   },
   "is_covered_by_current_policy": {
     label: "Covered by current <span class='uppercase'>OA</span> policy",
+    headingPosition: "suffix",
     info: "<p>Publications covered by <span class='org-name'></span>’s most recent <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p>"
   },
   "is_covered_by_old_policy": {
     label: "Covered by old <span class='uppercase'>OA</span> policy",
+    headingPosition: "suffix",
     info: "<p>Publications covered by an older <span class='org-name'></span> Open Access policy.</p>"
   },
   "is_compliant": {
     label: "Covered by & compliant with <span class='uppercase'>OA</span> policy",
+    headingPosition: "suffix",
     info: "<p>Publications covered by <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a> and compliant with its terms.</p>"
   },
   "is_compliant_all_works": {
     label: "Compliant with <span class='uppercase'>OA</span> policy",
+    headingPosition: "suffix",
     info: "<p>Publications that comply with the terms of <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>, but are not necessarily covered by it.</p>"
   },
     "is_not_compliant": {
     label: "Covered by & not compliant with <span class='uppercase'>OA</span> policy",
+    headingPosition: "suffix",
     info: "<p>Works that do not comply with the terms of <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p>"
   },
   "is_original_research": {
     label: "Original research",
+    headingPosition: "type",
     info: "<p>Journal articles, <strong>including only</strong>:</p>\
     <ul class='list-disc list-inside'>\
       <li>peer-reviewed research (that present new findings)</li>\
@@ -222,6 +230,7 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "with_grant_id": {
     label: "With grant <span class='uppercase'>ID</span>",
+    headingPosition: "suffix",
     info: "<p>Publications with a grant ID from <span class='org-name'></span>, <strong>including</strong>:</p>\
     <ul class='list-disc list-inside'>\
       <li>peer-reviewed research</li>\
@@ -306,6 +315,7 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "is_authored_and_is_original_research": {
     label: "Authored original research",
+    headingPosition: "type",
     info: "<p>Journal articles authored by someone at <span class='org-name'></span>, <strong>including only</strong>:</p>\
     <ul class='list-disc list-inside'>\
       <li>peer-reviewed research</li>\
