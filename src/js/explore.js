@@ -8,7 +8,7 @@
 // =================================================
 
 import DOMPurify from "dompurify";
-import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, escapeQueryValue, normaliseFieldId, makeNumberReadable, makeTabCountReadable, announce, orcidDisplayNames } from "./utils.js";
+import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader, updateInfoPopoverButton, getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, escapeQueryValue, normaliseFieldId, makeNumberReadable, makeTabCountReadable, announce, orcidDisplayNames } from "./utils.js";
 import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, SEGMENTED_PILL_CLASSES, VIEW_TAB_CLASSES, CONTROL_FIELD_SHELL_CLASSES, CONTROL_FOCUS_RING_CLASSES, CONTROL_SELECT_CLASSES, SORT_TRIGGER_CLASSES, SORT_CARET_CHIP_CLASSES, TAB_COUNT_BADGE_CLASSES, EXPLORE_SUMMARY_ROW_CLASSES, INFO_TRIGGER_ICON_CLASSES, INFO_TRIGGER_ICON_HTML, resolveFieldDefinition } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { startLoading, stopLoading } from "./components.js";
@@ -104,7 +104,7 @@ export let currentActiveDataDisplayToggle = true;
 let currentActiveExploreSortField = null;
 let currentActiveExploreSortDirection = null;
 
-/** 
+/**
  * Map of explore button id -> its data object, used to render without synthesising a click.
  * @type {Map<string, Object>}
  */
@@ -502,13 +502,6 @@ function createExploreFilterTab(id, isActive, showCount) {
   buttonElement.setAttribute('aria-controls', 'explore_view_panel');
   tabWrapper.appendChild(buttonElement);
 
-  if (labelData && labelData.info && labelData.info.trim()) {
-    createTooltip(buttonElement, generateTooltipContent(labelData), {
-      placement: 'bottom',
-      theme: 'tooltip-light'
-    });
-  }
-
   applyExploreTabState(buttonElement, isActive);
 
   return tabWrapper;
@@ -821,6 +814,14 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     replaceText("explore_type", headingPosition === "type" ? headingLabel : defaultType, { allowHTML: true });
     replaceText("explore_heading_filter", headingPosition === "suffix" ? headingLabel : "", { allowHTML: true });
     document.querySelectorAll(".explore_heading_filter").forEach(el => el.classList.toggle("hidden", headingPosition !== "suffix"));
+
+    // Info button always describes the active filter, regardless of whether its label appears in the heading text above.
+    const hasFilterInfo = Boolean(activeFilterLabels?.info?.trim());
+    const plainFilterLabel = headingLabel ? DOMPurify.sanitize(headingLabel, { ALLOWED_TAGS: [] }) : "";
+    updateInfoPopoverButton(document.getElementById('explore_heading_info_button'), {
+      content: hasFilterInfo ? generateTooltipContent(activeFilterLabels) : "",
+      ariaLabel: `More information about ${plainFilterLabel}`
+    });
 
     if (records.length > 0) {
       // Populate table with data

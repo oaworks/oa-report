@@ -1,5 +1,6 @@
 {# Explore section #}
 {% from "partials/report/section-wrapper.njk" import sectionWrapper %}
+{% from "components/info-trigger-icon.njk" import triggerIconClasses %}
 
 {% call sectionWrapper("explore", "Explore") %}
   {# Breakdown table options #}
@@ -22,6 +23,14 @@
             <i class="ph ph-note text-[18px] leading-none js-explore-heading-icon" aria-hidden="true"></i>
             <strong class="uppercase font-semibold explore_type">articles</strong>
             <span class="explore_heading_filter hidden"></span>
+            <button
+              type="button"
+              id="explore_heading_info_button"
+              class="hidden {{ triggerIconClasses() }} shrink-0 p-0 leading-none"
+              aria-label="More information"
+            >
+              {% icon_small "info" %}
+            </button>
           </span>
         </h3>
       </header>
