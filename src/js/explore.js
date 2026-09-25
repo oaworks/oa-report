@@ -811,9 +811,10 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     updateRecordsShownControl(totalCount);
 
     // Reuses each filter's tab label as-is in the heading; headingPosition just says where it goes.
-    // Filters with no position (e.g. is_paper) leave the heading showing only the plain type.
+    // Only article-level tables (each row a publication) get this — on terms breakdowns (Authors,
+    // Journals, etc.) the filter describes the underlying works, not the thing being listed.
     const activeFilterLabels = EXPLORE_FILTERS_LABELS[filter];
-    const headingPosition = activeFilterLabels?.headingPosition;
+    const headingPosition = type === "articles" ? activeFilterLabels?.headingPosition : undefined;
     const headingLabel = activeFilterLabels?.label ? injectOrgFields(activeFilterLabels.label, { orgName }) : "";
     const defaultType = EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id);
 
