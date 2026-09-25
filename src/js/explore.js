@@ -33,6 +33,10 @@ const RECORDS_SHOWN_TIERS = [10, 20, 50, 100, 500];
 const RECORDS_SHOWN_DEFAULT = 10;
 const RECORDS_SHOWN_NO_SELECT_MAX = 20;
 const RECORDS_SHOWN_ALL_THRESHOLD = 1000;
+// Largest true total a terms breakdown can have and still be fetched and
+// sorted in full for a percentage-column sort. Shares its value with
+// RECORDS_SHOWN_ALL_THRESHOLD (the same ceiling "All" already fetches).
+const SORTABLE_TERMS_THRESHOLD = RECORDS_SHOWN_ALL_THRESHOLD;
 const exploreFilterTotalCache = new Map();
 const EXPLORE_SELECTED_ROW_CLASSES = ['!bg-neutral-800', 'text-neutral-100'];
 
@@ -836,8 +840,8 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 
     if (records.length > 0) {
       // Populate table with data
-      const isCompleteSet = type === 'terms' && shownCount >= totalCount;
-      populateTableHeader(records[0], 'export_table_head', type, isCompleteSet);
+      const isSortableSet = type === 'terms' && totalCount <= SORTABLE_TERMS_THRESHOLD;
+      populateTableHeader(records[0], 'export_table_head', type, isSortableSet);
       populateTableBody(records, 'export_table_body', id, type);
     
       // Add functionalities to the table
@@ -951,7 +955,8 @@ async function loadExploreRecords(itemData, query, size, pretty) {
  * @param {string} query - The query string for fetching data.
  * @param {string} term - The term (i.e. type of data breakdown) associated with the explore item.
  * @param {string} sort - The sorting field.
- * @param {number} size - The number of records to fetch.
+ * @param {number} size - The number of records to display; a percentage sort may fetch more
+ * than this internally (up to SORTABLE_TERMS_THRESHOLD) to sort the full set correctly.
  * @param {string} [activeFilterQuery=query] - Just the user's active filter, excluding any base
  * org query, so exact-match restriction never picks up unrelated baseline query clauses.
  * @param {string[]} [includeValuesOverride] - Exact values to restrict buckets to, bypassing
@@ -967,8 +972,11 @@ export async function fetchTermBasedData(suffix, query, term, sort, size, active
   const backendSort = percentageKey ? '_count' : sort;
   const backendSortDirection = percentageKey ? 'desc' : sortDirection;
 
-  const postData = getAggregatedDataQuery(suffix, query, term, startYear, endYear, size, backendSort, activeFilterQuery, includeValuesOverride, backendSortDirection);
-  const response = await fetchPostData(postData);
+  const fetchBuckets = (fetchSize) => fetchPostData(
+    getAggregatedDataQuery(suffix, query, term, startYear, endYear, fetchSize, backendSort, activeFilterQuery, includeValuesOverride, backendSortDirection)
+  );
+
+  let response = await fetchBuckets(size);
 
   let buckets = [];
   // Once restricted to exact filter value(s), "of Y" should mean "how many you
@@ -976,6 +984,13 @@ export async function fetchTermBasedData(suffix, query, term, sort, size, active
   // cardinality, which co-occurring values on shared articles would inflate.
   const includeValues = includeValuesOverride ?? getFieldFilterValues(activeFilterQuery, toTermField(term));
   const totalUniqueTerms = includeValues.length || (response?.aggregations?.values_total?.value ?? 0);
+
+  // A percentage sort only re-sorts whatever was fetched; if the display size
+  // didn't already cover the true total, re-fetch up to it (capped at
+  // SORTABLE_TERMS_THRESHOLD) so the full set can be sorted correctly.
+  if (percentageKey && totalUniqueTerms > size && totalUniqueTerms <= SORTABLE_TERMS_THRESHOLD) {
+    response = await fetchBuckets(totalUniqueTerms);
+  }
 
   if (response && response.aggregations && response.aggregations.values && response.aggregations.values.buckets) {
     buckets = response.aggregations.values.buckets.map(bucket => formatAggregationBucket(bucket, term));
@@ -1259,9 +1274,9 @@ function resolveExploreHeaderColumns(records, dataType) {
  * @param {Object[]} records - An array of data objects used to derive the header columns. Assumes all objects have the same structure.
  * @param {string} tableHeaderId - The ID of the table header element where the headers should be appended.
  * @param {string} [dataType] - 'terms' or 'articles'; determines label lookup and sortability rules.
- * @param {boolean} [isCompleteSet] - Whether every record for this breakdown is currently shown; gates percentage-column sorting.
+ * @param {boolean} [isSortableSet] - Whether this breakdown's true total is within SORTABLE_TERMS_THRESHOLD; gates percentage-column sorting.
  */
-function populateTableHeader(records, tableHeaderId, dataType = 'terms', isCompleteSet = false) {
+function populateTableHeader(records, tableHeaderId, dataType = 'terms', isSortableSet = false) {
   const tableHeader = document.getElementById(tableHeaderId);
   if (!tableHeader) return;
 
@@ -1278,7 +1293,7 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms', isCompl
     // Headers always stay left-aligned (via Tailwind's th reset); only body
     // cells right-align numeric columns for easier value comparison.
     const headerCell = createTableCell('', cssClass, null, null, true);
-    setupHeaderTooltip(headerCell, rawKey, dataType, labelOverride, labelHTML, isCompleteSet);
+    setupHeaderTooltip(headerCell, rawKey, dataType, labelOverride, labelHTML, isSortableSet);
 
     headerRow.appendChild(headerCell);
   });
@@ -1461,9 +1476,9 @@ function generateTooltipContent(labelData, additionalHelpText = null) {
  * @param {string} dataType - Indicates the type of data ('terms' or 'articles'), which determines the labels configuration to use.
  * @param {string|null} [labelOverride] - Plain-text label (e.g. for aria) to use instead of rawKey's own; sort key and tooltip info still come from rawKey.
  * @param {string|null} [labelHTML] - Rich HTML to show visually instead of labelOverride/rawKey's own label (e.g. stacked lines matching a body cell).
- * @param {boolean} [isCompleteSet] - Whether every record for this breakdown is currently shown; gates percentage-column sorting.
+ * @param {boolean} [isSortableSet] - Whether this breakdown's true total is within SORTABLE_TERMS_THRESHOLD; gates percentage-column sorting.
  */
-function setupHeaderTooltip(element, rawKey, dataType, labelOverride = null, labelHTML = null, isCompleteSet = false) {
+function setupHeaderTooltip(element, rawKey, dataType, labelOverride = null, labelHTML = null, isSortableSet = false) {
   const key = normaliseFieldId(rawKey);
   const exploreTypeLabel = document.querySelector(".explore_type")?.textContent?.trim();
   const labelData = dataType === 'terms'
@@ -1475,12 +1490,12 @@ function setupHeaderTooltip(element, rawKey, dataType, labelOverride = null, lab
   const sortIndicator = getExploreSortIndicator(dataType);
   const isSortedColumn = sortIndicator?.key === key;
   // doc_count/total_/mean_ search the whole dataset regardless of records
-  // shown; percentage metrics only sort what's fetched, so only offer them
-  // when every record is already in view (otherwise the sort would be misleading).
-  const isTermsSortable = key === 'doc_count' || key.startsWith('total_') || key.startsWith('mean_') || (isCompleteSet && TERMS_SORTABLE_PERCENTAGE_FIELDS.has(key));
-  // Percentage columns rely solely on isTermsSortable (gated by isCompleteSet);
+  // shown; percentage metrics can only be fully fetched and sorted when the
+  // breakdown's true total is within SORTABLE_TERMS_THRESHOLD.
+  const isTermsSortable = key === 'doc_count' || key.startsWith('total_') || key.startsWith('mean_') || (isSortableSet && TERMS_SORTABLE_PERCENTAGE_FIELDS.has(key));
+  // Percentage columns rely solely on isTermsSortable (gated by isSortableSet);
   // excluded from the isSortedColumn bypass so a stale active sort can't show
-  // a caret once records shown drops below the total.
+  // a caret once the breakdown's total no longer qualifies.
   const isPercentageColumn = dataType === 'terms' && TERMS_SORTABLE_PERCENTAGE_FIELDS.has(key);
   const isSortable = (isSortedColumn && !isPercentageColumn)
     || (dataType === 'articles' && isExploreColumnSortable(key))
