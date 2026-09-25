@@ -154,7 +154,7 @@ export const EXPLORE_FILTERS_LABELS = {
   "is_paper": {
     label: "All journal articles",
     info: "<p>Journal articles, <strong>including</strong>:</p>\
-      <ul class='mb-2 list-disc list-inside'>\
+      <ul class='list-disc list-inside'>\
         <li>peer-reviewed research</li>\
         <li>reviews</li>\
         <li>letters</li>\
@@ -172,9 +172,10 @@ export const EXPLORE_FILTERS_LABELS = {
     info: "<p>Publications that haven’t been peer-reviewed.</p>"
   },
   "is_authored": {
-    label: "Authored journal articles",
+    label: "Authored by <span class='org-name'></span>",
+    headingPosition: "suffix",
     info: "<p>Journal articles authored by someone at <span class='org-name'></span>, <strong>including</strong>:</p>\
-    <ul class='mb-2 list-disc list-inside'>\
+    <ul class='list-disc list-inside'>\
       <li>peer-reviewed research</li>\
       <li>reviews</li>\
       <li>letters</li>\
@@ -189,32 +190,39 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "is_covered_by_policy": {
     label: "Covered by <span class='uppercase'>OA</span> policy",
-    info: "<p class='mb-2'>Publications covered by <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p><p><span class='org-policy-coverage'></span></p>"
+    headingPosition: "suffix",
+    info: "<p>Publications covered by <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p>"
   },
   "is_covered_by_current_policy": {
     label: "Covered by current <span class='uppercase'>OA</span> policy",
+    headingPosition: "suffix",
     info: "<p>Publications covered by <span class='org-name'></span>’s most recent <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p>"
   },
   "is_covered_by_old_policy": {
     label: "Covered by old <span class='uppercase'>OA</span> policy",
+    headingPosition: "suffix",
     info: "<p>Publications covered by an older <span class='org-name'></span> Open Access policy.</p>"
   },
   "is_compliant": {
     label: "Covered by & compliant with <span class='uppercase'>OA</span> policy",
-    info: "<p>Publications covered by <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a> and compliant with its terms.</p><p><span class='org-policy-compliance'></span></p><p><span class='org-policy-coverage'></span></p>"
+    headingPosition: "suffix",
+    info: "<p>Publications covered by <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a> and compliant with its terms.</p>"
   },
   "is_compliant_all_works": {
     label: "Compliant with <span class='uppercase'>OA</span> policy",
-    info: "<p>Publications that comply with the terms of <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>, but are not necessarily covered by it.</p><p><span class='org-policy-compliance'></span></p>"
+    headingPosition: "suffix",
+    info: "<p>Publications that comply with the terms of <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>, but are not necessarily covered by it.</p>"
   },
     "is_not_compliant": {
     label: "Covered by & not compliant with <span class='uppercase'>OA</span> policy",
-    info: "<p>Works that do not comply with the terms of <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p><p><span class='org-policy-compliance'></span></p>"
+    headingPosition: "suffix",
+    info: "<p>Works that do not comply with the terms of <span class='org-name'></span>’s <a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>Open Access policy</a>.</p>"
   },
   "is_original_research": {
     label: "Original research",
+    headingPosition: "type",
     info: "<p>Journal articles, <strong>including only</strong>:</p>\
-    <ul class='mb-2 list-disc list-inside'>\
+    <ul class='list-disc list-inside'>\
       <li>peer-reviewed research (that present new findings)</li>\
     </ul>\
     <p>This <strong>excludes</strong>:</p>\
@@ -227,8 +235,9 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "with_grant_id": {
     label: "With grant <span class='uppercase'>ID</span>",
+    headingPosition: "suffix",
     info: "<p>Publications with a grant ID from <span class='org-name'></span>, <strong>including</strong>:</p>\
-    <ul class='mb-2 list-disc list-inside'>\
+    <ul class='list-disc list-inside'>\
       <li>peer-reviewed research</li>\
       <li>reviews</li>\
       <li>letters</li>\
@@ -236,7 +245,7 @@ export const EXPLORE_FILTERS_LABELS = {
       <li>methods</li>\
     </ul>\
     <p>This <strong>excludes</strong>:</p>\
-    <ul class='mb-2 list-disc list-inside'>\
+    <ul class='list-disc list-inside'>\
       <li>preprints</li>\
       <li>conference proceedings</li>\
     </ul>",
@@ -256,7 +265,7 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "has_data_availability_statement": {
     label: "Has data availability statement",
-    info: "<p class='mb-2'>Any journal article that has a data availability statement. Data availability statements (i.e. “data access statement”, “resource availability statements”, “code availability statements”) tell a reader where the research data or code associated with an article is available and how they can be accessed. This doesn’t tell you what type of data availability statement is provided (e.g., there is Open Data VS there is no data).</p><p>To check if an article has a data availability statement, we use data from PubMed’s data availability filter and review articles manually.</p>"
+    info: "<p>Any journal article that has a data availability statement. Data availability statements (i.e. “data access statement”, “resource availability statements”, “code availability statements”) tell a reader where the research data or code associated with an article is available and how they can be accessed. This doesn’t tell you what type of data availability statement is provided (e.g., there is Open Data VS there is no data).</p><p>To check if an article has a data availability statement, we use data from PubMed’s data availability filter and review articles manually.</p>"
   },
   "has_apc": {
     label: "APC-funded journal articles",
@@ -268,7 +277,7 @@ export const EXPLORE_FILTERS_LABELS = {
   "is_funded": {
     label: "Funded",
     info: "<p>Publications funded by <span class='org-name'></span>, <strong>including</strong>:</p>\
-    <ul class='mb-2 list-disc list-inside'>\
+    <ul class='list-disc list-inside'>\
       <li>peer-reviewed research</li>\
       <li>reviews</li>\
       <li>letters</li>\
@@ -311,8 +320,9 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "is_authored_and_is_original_research": {
     label: "Authored original research",
+    headingPosition: "type",
     info: "<p>Journal articles authored by someone at <span class='org-name'></span>, <strong>including only</strong>:</p>\
-    <ul class='mb-2 list-disc list-inside'>\
+    <ul class='list-disc list-inside'>\
       <li>peer-reviewed research</li>\
     </ul>\
     <p>This <strong>excludes</strong>:</p>\
@@ -414,8 +424,8 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "openalx.open_access.oa_status": {
     label: "Open Access status",
-    info: "<p class='mb-2'>Uses <a href='https://help.openalex.org/hc/en-us/articles/24347035046295-Open-Access-OA' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1'>OpenAlex’s definition of Open Access</a>. Values include:</p>\
-      <ul class='mb-2'>\
+    info: "<p>Uses <a href='https://help.openalex.org/hc/en-us/articles/24347035046295-Open-Access-OA' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1'>OpenAlex’s definition of Open Access</a>. Values include:</p>\
+      <ul>\
         <li><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>diamond</code>: Published in a fully OA journal—one that is indexed by the DOAJ or that we have determined to be OA—with no article processing charges (i.e., free for both readers and authors).</li> \
         <li><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>gold</code>: Published in a fully OA journal.</li> \
         <li><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>green</code>: Toll-access on the publisher landing page, but there is a free copy in an OA repository.</li> \
@@ -435,8 +445,8 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "journal_oa_type": {
     label: "Journal <span class='uppercase'>OA</span> type",
-    info: "<p class='mb-2'>Values include:</p>\
-      <ul class='mb-2'>\
+    info: "<p>Values include:</p>\
+      <ul>\
         <li><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>gold</code>: The journal’s entire output is published in Open Access.</li> \
         <li><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>hybrid</code>: The journal allows some articles to be published in Open Access.</li> \
         <li><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>transformative</code>: The journal allows some articles to be published in Open Access and is listed by Coalition S as a transformative journal.</li> \
@@ -444,7 +454,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
         <li><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>closed</code>: The journal’s output is entirely behind a paywall, or bronze.</li> \
         <li><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>not applicable</code>: The work is not in a journal (typically, a pre-print).</li> \
       </ul>\
-    <p class='mb-2'>This is akin to <code class='p-1 rounded-md bg-neutral-700 text-white text-xs hover:bg-neutral-800'><a href='https://unpaywall.org/data-format#:~:text=oa_status' target='_blank'>oa_status</a></code> for a journal.</p>\
+    <p>This is akin to <code class='p-1 rounded-md bg-neutral-700 text-white text-xs hover:bg-neutral-800'><a href='https://unpaywall.org/data-format#:~:text=oa_status' target='_blank'>oa_status</a></code> for a journal.</p>\
     "
   },
   "journal": {
@@ -666,7 +676,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   "is_original_research": {
     label: "Original research?",
     info: "<p>Journal articles, <strong>including only</strong>:</p>\
-    <ul class='mb-2 list-disc list-inside'>\
+    <ul class='list-disc list-inside'>\
       <li>peer-reviewed research (that present new findings)</li>\
     </ul>\
     <p>This <strong>excludes</strong>:</p>\

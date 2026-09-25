@@ -19,41 +19,43 @@ export const FIELD_DEFINITIONS = {
   },
   compliant: {
     label: "Compliant",
-    details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex.",
+    details: "<p>We use data from Crossref and OpenAlex.</p>",
     explore: {
-      info: `Publications covered by ${POLICY_LINK_EXPLORE} that are compliant with the policy. <span class='org-policy-compliance'></span>`,
+      info: `Publications covered by ${POLICY_LINK_EXPLORE} that are compliant with the policy.`,
       help_text: ["compliant"],
-      help_text_style: "paragraph"
+      help_text_style: "bullets"
     },
     insights: {
       info: `<p>The percentage of {subject} covered by ${POLICY_LINK_INSIGHTS} that are compliant with the policy.</p>`,
-      help_text: ["compliant", "covered_by_policy"],
+      help_text: ["covered_by_policy", "compliant"],
       help_text_style: "bullets"
     }
   },
   covered_by_policy: {
     label: "Covered by policy",
     explore: {
-      info: `Publications covered by ${POLICY_LINK_EXPLORE}. <span class='org-policy-coverage'></span>`,
+      info: `Publications covered by ${POLICY_LINK_EXPLORE}.`,
       help_text: ["covered_by_policy"],
-      help_text_style: "paragraph"
+      help_text_style: "bullets"
     }
   },
   compliant_and_covered_by_policy: {
     label: "Compliant (all)",
-    details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex.",
+    details: "<p>We use data from Crossref and OpenAlex.</p>",
     explore: {
-      info: "All publications that comply with the requirements of the Open Access policy, even if they are not covered by said policy. <p><span class='org-policy-compliance'></span></p>"
+      info: "All publications that comply with the requirements of the Open Access policy, even if they are not covered by said policy.",
+      help_text: ["compliant"],
+      help_text_style: "bullets"
     }
   },
   free_to_read: {
     label: "Free-to-read",
-    details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex.",
+    details: "<p>We use data from Crossref and OpenAlex.</p>",
     explore: {
       info: "Publications that are free to read on the publisher’s website or any online repository, including temporarily accessible articles (“bronze Open Access”)."
     },
     insights: {
-      info: "<p>{subject} that are free to read on the publisher website or any online repository, including temporarily accessible articles (“bronze Open Access”).</p>"
+      info: "<p>The percentage of {subject} that are free to read on the publisher’s website or any online repository, including temporarily accessible articles (“bronze Open Access”).</p>"
     }
   },
   open_access: {
@@ -63,22 +65,22 @@ export const FIELD_DEFINITIONS = {
       info: "Publications that are free and CC BY or CC0 (in the public domain) on the publisher’s website, a repository or a preprint server."
     },
     insights: {
-      info: "<p>The number of {subject} that are free and <a href='https://creativecommons.org/licenses/by/4.0/' class='underline underline-offset-2 decoration-1' target='_blank' rel='noopener'>CC BY</a> <strong class='bold'>or</strong> <a href='https://creativecommons.org/publicdomain/zero/1.0/' class='underline underline-offset-2 decoration-1' target='_blank' rel='noopener'>CC0</a> (in the public domain) on the publisher’s website, a repository or a preprint server.</p>"
+      info: "<p>The percentage of {subject} that are free and <a href='https://creativecommons.org/licenses/by/4.0/' class='underline underline-offset-2 decoration-1' target='_blank' rel='noopener'>CC BY</a> <strong class='bold'>or</strong> <a href='https://creativecommons.org/publicdomain/zero/1.0/' class='underline underline-offset-2 decoration-1' target='_blank' rel='noopener'>CC0</a> (in the public domain) on the publisher’s website, a repository, or a preprint server.</p>"
     }
   },
   data_availability_statement: {
     label: "With data availability statement",
-    details: "To confirm that a paper has a data availability statement, we first use PubMed’s data availability filter and then review articles manually.",
+    details: "<p>To confirm that {subject} have a data availability statement, we first use PubMed’s data availability filter and then review them manually.</p>",
     explore: {
       info: "Publications that include a data availability statement. These statements (also called ‘data access’, ‘resource availability’ or ‘code availability’ statements) tell readers where the underlying data or code can be found and how to access it. This figure doesn’t specify the kind of statement provided (e.g., whether the data are openly available or not)"
     },
     insights: {
-      info: "<p>This number tells you how many {subject} that we’ve analyzed have a data availability statement.</p> <p>To check if a paper has a data availability statement, we use data from PubMed and review {review_subject} manually. This figure doesn’t tell you what type of data availability statement is provided (e.g there is Open Data vs there is no data).</p>"
+      info: "<p>The percentage of {subject} that we’ve analyzed that have a data availability statement.</p>"
     }
   },
   in_repository: {
     label: "In repository",
-    details: "We use data from Unpaywall —the gold standard for this data— and supplement that with data from Crossref and OpenAlex.",
+    details: "<p>We use data from Crossref and OpenAlex..</p>",
     explore: {
       info: "Publications that have a copy of the work freely available and discoverable in any repository."
     }
@@ -91,7 +93,7 @@ export const FIELD_DEFINITIONS = {
   },
   mean_citations: {
     label: "Mean citations",
-    details: "We used data from OpenAlex's <code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>cited_by_count</code>.",
+    details: "<p>We used data from OpenAlex's <code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>cited_by_count</code>.</p>",
     explore: {
       info: "The mean (i.e. average) number of citations of these publications."
     }
@@ -235,7 +237,7 @@ export function resolveFieldDefinition(key, section, context = {}) {
   return {
     label: definition.label,
     info: interpolateDefinitionTokens(sectionDefinition.info, context),
-    details: definition.details,
+    details: interpolateDefinitionTokens(definition.details, context),
     help_text: sectionDefinition.help_text || [],
     help_text_style: sectionDefinition.help_text_style || 'paragraph'
   };

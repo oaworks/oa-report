@@ -5,6 +5,7 @@
 
 import DOMPurify from 'dompurify';
 import { WORKS_REPORT_BG_API_BASE_URL, READABLE_DATE_OPTIONS, USER_LOCALE, EXPLORE_FILTERS_LABELS, LICENSE_CODES } from './constants.js';
+import { createPopover } from './tooltip-manager.js';
 
 /** ORCID → author display name; populated by explore.js whenever the Authors table renders. */
 export const orcidDisplayNames = new Map();
@@ -1112,6 +1113,33 @@ export function updateExploreFilterHeader(filterId) {
       ? EXPLORE_FILTERS_LABELS[filterId].label
       : (EXPLORE_FILTERS_LABELS[filterId]?.label || filterId);
   replaceText("explore_filter", text, { allowHTML: true });
+}
+
+// One popover instance per button, reused via setContent() rather than recreated on every call.
+const infoPopoverInstances = new WeakMap();
+
+/**
+ * Shows/hides a click-triggered info-popover button and keeps its content in sync.
+ * Safe to call on every re-render — the popover is created once per button, then reused.
+ *
+ * @param {HTMLElement|null} button
+ * @param {{ content?: string, ariaLabel?: string }} [options={}]
+ */
+export function updateInfoPopoverButton(button, { content, ariaLabel } = {}) {
+  if (!button) return;
+
+  const hasContent = Boolean(content?.trim());
+  button.classList.toggle("hidden", !hasContent);
+  if (!hasContent) return;
+
+  if (ariaLabel) button.setAttribute("aria-label", ariaLabel);
+
+  const existing = infoPopoverInstances.get(button);
+  if (existing) {
+    existing.setContent(content);
+  } else {
+    infoPopoverInstances.set(button, createPopover(button, content, { placement: "bottom", theme: "tooltip-light" }));
+  }
 }
 
 // Chart helpers
