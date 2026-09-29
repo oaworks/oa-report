@@ -1107,12 +1107,15 @@ export function updateInfoPopoverButton(button, { content, ariaLabel } = {}) {
 
   if (ariaLabel) button.setAttribute("aria-label", ariaLabel);
 
-  const existing = infoPopoverInstances.get(button);
-  if (existing) {
-    existing.setContent(content);
+  let instance = infoPopoverInstances.get(button);
+  if (instance) {
+    instance.setContent(content);
   } else {
-    infoPopoverInstances.set(button, createPopover(button, content, { placement: "bottom", theme: "tooltip-light" }));
+    instance = createPopover(button, content, { placement: "bottom", theme: "tooltip-light" });
+    infoPopoverInstances.set(button, instance);
   }
+  // Name the popover panel itself, not just its trigger button.
+  if (ariaLabel) instance.popper.querySelector(".tooltip-box")?.setAttribute("aria-label", ariaLabel);
 }
 
 // Chart helpers

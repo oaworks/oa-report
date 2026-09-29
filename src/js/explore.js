@@ -1284,6 +1284,38 @@ function setupHeaderTooltip(element, rawKey, dataType) {
   content.appendChild(labelSpan);
   element.appendChild(content);
 
+  // Publications counts filtered works, so its info icon explains the active filter instead.
+  const activeFilterLabels = dataType === 'terms' && key === 'doc_count'
+    ? EXPLORE_FILTERS_LABELS[currentActiveExploreItemQuery]
+    : null;
+  const infoLabelData = activeFilterLabels || labelData;
+  const infoLabelText = activeFilterLabels
+    ? DOMPurify.sanitize(injectOrgFields(activeFilterLabels.label, { orgName }), { ALLOWED_TAGS: [] })
+    : labelText;
+
+  // Generate and set tooltip if info is present and non-empty. Appended (and so
+  // tab-ordered) before the sort toggle below, matching its top-right position
+  // against the toggle's bottom-right one.
+  if (infoLabelData && infoLabelData.info && infoLabelData.info.trim()) {
+    // Org-specific help text (e.g. compliant/covered_by_policy criteria), keyed by field id
+    const helpTextByKey = orgData.hits.hits[0]?._source.policy?.help_text ?? null;
+    const infoAriaLabel = `More information about ${infoLabelText}`;
+
+    const infoButton = document.createElement("button");
+    infoButton.type = "button";
+    infoButton.className = `${INFO_TRIGGER_ICON_CLASSES} absolute top-1 right-1`;
+    infoButton.setAttribute("aria-label", infoAriaLabel);
+    infoButton.innerHTML = INFO_TRIGGER_ICON_HTML;
+    element.appendChild(infoButton);
+
+    const infoPopover = createPopover(infoButton, generateTooltipContent(infoLabelData, helpTextByKey), {
+      placement: 'bottom',
+      theme: 'tooltip-light'
+    });
+    // Name the popover panel itself, not just its trigger button.
+    infoPopover.popper.querySelector(".tooltip-box")?.setAttribute("aria-label", infoAriaLabel);
+  }
+
   if (isSortedColumn) {
     const nextDirection = sortIndicator.direction === "ascending" ? "descending" : "ascending";
     const sortDescription = `${labelText}, currently sorted ${sortIndicator.direction}. Click to sort ${nextDirection}.`;
@@ -1316,33 +1348,6 @@ function setupHeaderTooltip(element, rawKey, dataType) {
     element.setAttribute("aria-sort", sortIndicator.direction);
   } else {
     element.removeAttribute("aria-sort");
-  }
-
-  // Publications counts filtered works, so its info icon explains the active filter instead.
-  const activeFilterLabels = dataType === 'terms' && key === 'doc_count'
-    ? EXPLORE_FILTERS_LABELS[currentActiveExploreItemQuery]
-    : null;
-  const infoLabelData = activeFilterLabels || labelData;
-  const infoLabelText = activeFilterLabels
-    ? DOMPurify.sanitize(injectOrgFields(activeFilterLabels.label, { orgName }), { ALLOWED_TAGS: [] })
-    : labelText;
-
-  // Generate and set tooltip if info is present and non-empty
-  if (infoLabelData && infoLabelData.info && infoLabelData.info.trim()) {
-    // Org-specific help text (e.g. compliant/covered_by_policy criteria), keyed by field id
-    const helpTextByKey = orgData.hits.hits[0]?._source.policy?.help_text ?? null;
-
-    const infoButton = document.createElement("button");
-    infoButton.type = "button";
-    infoButton.className = `${INFO_TRIGGER_ICON_CLASSES} absolute top-1 right-1`;
-    infoButton.setAttribute("aria-label", `More information about ${infoLabelText}`);
-    infoButton.innerHTML = INFO_TRIGGER_ICON_HTML;
-    element.appendChild(infoButton);
-
-    createPopover(infoButton, generateTooltipContent(infoLabelData, helpTextByKey), {
-      placement: 'bottom',
-      theme: 'tooltip-light'
-    });
   }
 }
 
