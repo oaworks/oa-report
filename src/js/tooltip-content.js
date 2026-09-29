@@ -19,7 +19,14 @@ export function injectOrgFields(html = '', orgMeta = {}) {
     .replace(/<span class=['"]org-name['"]><\/span>/g, orgMeta.orgName ?? '')
     .replace(/<span class=['"]org-policy-coverage['"]><\/span>/g, orgMeta.orgPolicyCoverage ?? '')
     .replace(/<span class=['"]org-policy-compliance['"]><\/span>/g, orgMeta.orgPolicyCompliance ?? '')
-    .replace(/class=['"]org-policy-url['"][^>]*href=['"][^'"]*['"]/g, match => match.replace(/href=['"][^'"]*['"]/, `href='${orgMeta.orgPolicyUrl ?? '#'}'`))
+    // Matches the class attribute wherever it falls in the tag (it's always after
+    // href in our markup) and among however many other classes sit alongside it.
+    .replace(/<a\b[^>]*>/g, tag => {
+      const classes = tag.match(/class=(['"])([^'"]*)\1/)?.[2].split(/\s+/) ?? [];
+      return classes.includes('org-policy-url')
+        ? tag.replace(/href=(['"])[^'"]*\1/, `href='${orgMeta.orgPolicyUrl ?? '#'}'`)
+        : tag;
+    })
     : html;
 }
 
