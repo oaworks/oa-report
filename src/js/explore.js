@@ -400,7 +400,7 @@ const updateExploreHeadingIcon = (id) => {
   const icon = document.querySelector(".js-explore-heading-icon");
   if (!icon) return;
   const iconName = iconForFilterId(id);
-  icon.className = `ph ph-${iconName || "note"} text-[18px] leading-none js-explore-heading-icon`;
+  icon.className = `ph ph-${iconName || "note"} text-[18px] leading-none align-middle mr-1.5 js-explore-heading-icon`;
 };
 
 /**
