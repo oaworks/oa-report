@@ -31,13 +31,13 @@ export const EXPLORE_SUMMARY_ROW_CLASSES = {
  */
 export const DATA_TABLE_HEADER_CLASSES = {
   terms: {
-    firstHeaderCol: "border-b border-r border-neutral-700 sticky left-0 bg-neutral-900 p-3 w-32 md:w-60 align-bottom",
-    secondHeaderCol: "border-b border-r border-neutral-700 sticky left-32 md:left-60 bg-neutral-900 p-3 w-28 md:w-36 align-bottom break-words",
+    firstHeaderCol: "border-b border-r border-neutral-700 sticky left-0 z-10 bg-neutral-900 p-3 w-32 md:w-60 align-bottom",
+    secondHeaderCol: "border-b border-r border-neutral-700 sticky left-32 md:left-60 z-10 bg-neutral-900 p-3 w-28 md:w-36 align-bottom break-words",
     otherHeaderCols: "border-b border-r border-neutral-700 p-3 w-32 align-bottom break-words"
   },
   articles: {
-    firstHeaderCol: "border-b border-r border-neutral-700 sticky left-0 bg-neutral-900 p-3 w-32 md:w-60 lg:w-80 align-bottom",
-    secondHeaderCol: "border-b border-r border-neutral-700 sticky left-32 md:left-60 lg:left-80 bg-neutral-900 p-3 w-28 md:w-36 align-bottom break-words",
+    firstHeaderCol: "border-b border-r border-neutral-700 sticky left-0 z-10 bg-neutral-900 p-3 w-32 md:w-60 lg:w-80 align-bottom",
+    secondHeaderCol: "border-b border-r border-neutral-700 sticky left-32 md:left-60 lg:left-80 z-10 bg-neutral-900 p-3 w-28 md:w-36 align-bottom break-words",
     otherHeaderCols: "border-b border-r border-neutral-700 p-3 w-64 max-w-4xl align-bottom break-words"
   }
 };
