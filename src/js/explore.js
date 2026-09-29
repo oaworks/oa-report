@@ -1272,22 +1272,24 @@ function setupHeaderTooltip(element, rawKey, dataType) {
     temp.innerHTML = DOMPurify.sanitize(label, { ALLOWED_TAGS: [] });
     return temp.textContent?.trim() || key;
   })();
-  const contentClassName = "inline-flex w-full min-w-0 items-end gap-1 justify-between";
-  // Plain wrapper — the sort toggle and info triggers are separate buttons
-  // within it, since a button can't be nested inside another button.
+  element.classList.add("relative");
+
+  // Label sits in normal flow, bottom-aligned, with room reserved on the
+  // right for the info icon and sort caret pinned to opposite corners below.
   const content = document.createElement("span");
-  content.className = contentClassName;
+  content.className = "flex h-full w-full min-w-0 items-end pr-6";
 
   const labelSpan = document.createElement("span");
   labelSpan.innerHTML = DOMPurify.sanitize(label);
   content.appendChild(labelSpan);
+  element.appendChild(content);
 
   if (isSortedColumn) {
     const nextDirection = sortIndicator.direction === "ascending" ? "descending" : "ascending";
     const sortDescription = `${labelText}, currently sorted ${sortIndicator.direction}. Click to sort ${nextDirection}.`;
     const sortToggle = document.createElement("button");
     sortToggle.type = "button";
-    sortToggle.className = `inline-flex items-center ${SORT_TRIGGER_CLASSES}`;
+    sortToggle.className = `absolute bottom-1 right-1 inline-flex items-center ${SORT_TRIGGER_CLASSES}`;
     sortToggle.dataset.exploreSortKey = key;
     sortToggle.setAttribute("aria-label", sortDescription);
     sortToggle.addEventListener("click", () => {
@@ -1310,16 +1312,13 @@ function setupHeaderTooltip(element, rawKey, dataType) {
     srText.textContent = `Sorted ${sortIndicator.direction}`;
     sortToggle.appendChild(srText);
 
-    content.appendChild(sortToggle);
+    element.appendChild(sortToggle);
     element.setAttribute("aria-sort", sortIndicator.direction);
   } else {
     element.removeAttribute("aria-sort");
   }
 
-  element.appendChild(content);
-
-  // Publications counts works matching the active filter, so on terms tables its info icon
-  // explains the filter itself, not the otherwise-undefined doc_count field.
+  // Publications counts filtered works, so its info icon explains the active filter instead.
   const activeFilterLabels = dataType === 'terms' && key === 'doc_count'
     ? EXPLORE_FILTERS_LABELS[currentActiveExploreItemQuery]
     : null;
@@ -1335,10 +1334,10 @@ function setupHeaderTooltip(element, rawKey, dataType) {
 
     const infoButton = document.createElement("button");
     infoButton.type = "button";
-    infoButton.className = INFO_TRIGGER_ICON_CLASSES;
+    infoButton.className = `${INFO_TRIGGER_ICON_CLASSES} absolute top-1 right-1`;
     infoButton.setAttribute("aria-label", `More information about ${infoLabelText}`);
     infoButton.innerHTML = INFO_TRIGGER_ICON_HTML;
-    content.appendChild(infoButton);
+    element.appendChild(infoButton);
 
     createPopover(infoButton, generateTooltipContent(infoLabelData, helpTextByKey), {
       placement: 'bottom',
