@@ -815,8 +815,9 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     replaceText("explore_heading_filter", headingPosition === "suffix" ? headingLabel : "", { allowHTML: true });
     document.querySelectorAll(".explore_heading_filter").forEach(el => el.classList.toggle("hidden", headingPosition !== "suffix"));
 
-    // Info button always describes the active filter, regardless of whether its label appears in the heading text above.
-    const hasFilterInfo = Boolean(activeFilterLabels?.info?.trim());
+    // Info button describes the active filter — article-level tables only; on terms breakdowns
+    // (Authors, Journals, etc.) the Publications column header displays this info instead.
+    const hasFilterInfo = type === "articles" && Boolean(activeFilterLabels?.info?.trim());
     const plainFilterLabel = headingLabel ? DOMPurify.sanitize(headingLabel, { ALLOWED_TAGS: [] }) : "";
     updateInfoPopoverButton(document.getElementById('explore_heading_info_button'), {
       content: hasFilterInfo ? generateTooltipContent(activeFilterLabels) : "",
@@ -1317,19 +1318,29 @@ function setupHeaderTooltip(element, rawKey, dataType) {
 
   element.appendChild(content);
 
+  // Publications counts works matching the active filter, so on terms tables its info icon
+  // explains the filter itself, not the otherwise-undefined doc_count field.
+  const activeFilterLabels = dataType === 'terms' && key === 'doc_count'
+    ? EXPLORE_FILTERS_LABELS[currentActiveExploreItemQuery]
+    : null;
+  const infoLabelData = activeFilterLabels || labelData;
+  const infoLabelText = activeFilterLabels
+    ? DOMPurify.sanitize(injectOrgFields(activeFilterLabels.label, { orgName }), { ALLOWED_TAGS: [] })
+    : labelText;
+
   // Generate and set tooltip if info is present and non-empty
-  if (labelData && labelData.info && labelData.info.trim()) {
+  if (infoLabelData && infoLabelData.info && infoLabelData.info.trim()) {
     // Org-specific help text (e.g. compliant/covered_by_policy criteria), keyed by field id
     const helpTextByKey = orgData.hits.hits[0]?._source.policy?.help_text ?? null;
 
     const infoButton = document.createElement("button");
     infoButton.type = "button";
     infoButton.className = INFO_TRIGGER_ICON_CLASSES;
-    infoButton.setAttribute("aria-label", `More information about ${labelText}`);
+    infoButton.setAttribute("aria-label", `More information about ${infoLabelText}`);
     infoButton.innerHTML = INFO_TRIGGER_ICON_HTML;
     content.appendChild(infoButton);
 
-    createPopover(infoButton, generateTooltipContent(labelData, helpTextByKey), {
+    createPopover(infoButton, generateTooltipContent(infoLabelData, helpTextByKey), {
       placement: 'bottom',
       theme: 'tooltip-light'
     });
