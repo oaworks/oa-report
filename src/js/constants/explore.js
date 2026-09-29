@@ -314,7 +314,7 @@ export const EXPLORE_FILTERS_LABELS = {
     info: "Articles that mention PPMI biospecimen use in their data availability statement or acknowledgment/funding statement."
   },
   "is_authored_and_is_original_research": {
-    label: "Authored original research",
+    label: "Original research by <span class='org-name'></span>",
     headingPosition: "type",
     info: "<p>Journal articles authored by someone at <span class='org-name'></span>, <strong>including only</strong>:</p>\
     <ul class='list-disc list-inside'>\
