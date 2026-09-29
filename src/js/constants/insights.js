@@ -13,7 +13,7 @@ export const INSIGHTS_CARDS = [
   {
     numerator: "is_paper",
     denominator: null,
-    denominatorText: "articles",
+    denominatorText: "journal articles",
     info: "<p>The total number of journal articles published by grantees or authors at your organization.</p>"
   },
   {
@@ -31,21 +31,21 @@ export const INSIGHTS_CARDS = [
   {
     numerator: "is_free_to_read",
     denominator: "is_paper",
-    denominatorText: "articles",
+    denominatorText: "journal articles",
     definition_key: "free_to_read",
-    info: resolveFieldDefinition("free_to_read", "insights", { subject: "Journal articles" }).info
+    info: resolveFieldDefinition("free_to_read", "insights", { subject: "journal articles" }).info
   },
   {
     numerator: "is_free_to_read_preprint",
     denominator: "is_preprint",
     denominatorText: "preprints",
     definition_key: "free_to_read",
-    info: resolveFieldDefinition("free_to_read", "insights", { subject: "Preprints" }).info
+    info: resolveFieldDefinition("free_to_read", "insights", { subject: "preprints" }).info
   },
   {
     numerator: "is_compliant",
     denominator: "is_covered_by_policy",
-    denominatorText: "articles covered by policy",
+    denominatorText: "journal articles covered by policy",
     definition_key: "compliant",
     info: resolveFieldDefinition("compliant", "insights", { subject: "journal articles" }).info,
     denominatorBasisLabel: "Of covered"
@@ -61,7 +61,7 @@ export const INSIGHTS_CARDS = [
   {
     numerator: "is_compliant_article",
     denominator: "is_covered_by_policy",
-    denominatorText: "articles covered by policy",
+    denominatorText: "journal articles covered by policy",
     definition_key: "compliant",
     info: resolveFieldDefinition("compliant", "insights", { subject: "journal articles" }).info,
     denominatorBasisLabel: "Of covered"
@@ -69,16 +69,17 @@ export const INSIGHTS_CARDS = [
   {
     numerator: "is_oa",
     denominator: "is_paper",
-    denominatorText: "articles",
+    denominatorText: "journal articles",
     definition_key: "open_access",
     info: resolveFieldDefinition("open_access", "insights", { subject: "journal articles" }).info
   },
   {
     numerator: "has_data_availability_statement",
     denominator: "has_checked_data_availability_statement",
-    denominatorText: "articles checked to date",
+    denominatorText: "journal articles checked to date",
     definition_key: "data_availability_statement",
-    info: resolveFieldDefinition("data_availability_statement", "insights", { subject: "journal articles", review_subject: "articles" }).info,
+    subject: "journal articles",
+    info: resolveFieldDefinition("data_availability_statement", "insights", { subject: "journal articles" }).info,
     denominatorBasisLabel: "Of reviewed"
   },
   {
@@ -86,21 +87,22 @@ export const INSIGHTS_CARDS = [
     denominator: "has_checked_data_availability_statement_preprint",
     denominatorText: "preprints checked to date",
     definition_key: "data_availability_statement",
-    info: resolveFieldDefinition("data_availability_statement", "insights", { subject: "preprints", review_subject: "preprints" }).info,
+    subject: "preprints",
+    info: resolveFieldDefinition("data_availability_statement", "insights", { subject: "preprints" }).info,
     denominatorBasisLabel: "Of reviewed"
   },
   {
     numerator: "has_open_data",
     denominator: "has_data",
     denominatorText: "articles with data",
-    info: "<p class='mb-2'>The percentage of journal articles that shared any data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>CC-BY</a> license.</p> <p class='mb-2'>This figure only measures how many articles shared Open Data if they generated data in the first place. It also only measures if any of the datasets generated were open, not if all of them were open.</p> <p>We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>",
+    info: "<p>The percentage of journal articles that shared any data under a <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>CC0</a> or <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>CC-BY</a> license.</p> <p>This figure only measures how many articles shared Open Data if they generated data in the first place. It also only measures if any of the datasets generated were open, not if all of them were open.</p> <p>We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>",
     denominatorBasisLabel: "With data"
   },
   {
     numerator: "has_open_code",
     denominator: "has_code",
     denominatorText: "articles with code",
-    info: "<p class='mb-2'>The percentage of journal articles that shared any code under a permissive open-source licence, such as MIT.</p> <p class='mb-2'>This figure measures how many articles shared Open Code if they generated code in the first place. It also only measures if <strong>any parts</strong> of the code generated are open, not if <strong>all</strong> of it is open.</p> <p> We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>",
+    info: "<p>The percentage of journal articles that shared any code under a permissive open-source licence, such as MIT.</p> <p>This figure measures how many articles shared Open Code if they generated code in the first place. It also only measures if <strong>any parts</strong> of the code generated are open, not if <strong>all</strong> of it is open.</p> <p> We work with <a href='https://dataseer.ai/' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>Dataseer</a>’s data, which uses a combination of machine learning and human review to analyze the articles’ content.</p>",
     denominatorBasisLabel: "With code"
   },
   {
