@@ -48,6 +48,47 @@ export const DATA_TABLE_HEADER_CLASSES = {
   }
 };
 
+// Sticks header below the sticky nav (lg+), offset by --report-nav-height
+// (synced by observeReportNavHeight()). Gates-only: other orgs' overflow-x-auto
+// forces overflow-y:auto too, which breaks page-level sticky.
+const STICKY_HEADER_ROW_CLASSES = "lg:sticky lg:top-[var(--report-nav-height,0px)] z-40";
+
+/**
+ * Alternating row background for Gates' article layout, replacing the flat
+ * bg-neutral-850 + per-cell border-b row dividers. Indexed by rowIndex % 2.
+ */
+export const EXPLORE_ARTICLE_ROW_STRIPE_CLASSES = ["bg-neutral-850", "bg-neutral-900"];
+
+/**
+ * "Other column" width for orgs with an article layout: no fixed width
+ * (fewer columns fill the space instead of scrolling), just a min-w-40
+ * floor. Kept separate from DATA_TABLE_*_CLASSES.articles so it doesn't
+ * affect orgs without a layout.
+ */
+export const EXPLORE_ARTICLE_LAYOUT_OTHER_COL_CLASSES = {
+  header: `border-b border-r border-neutral-700 last:border-r-0 ${STICKY_HEADER_ROW_CLASSES} bg-neutral-900 p-2 min-w-40 align-bottom break-words`,
+  body: "p-2 min-w-40 align-top truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-800",
+  foot: "border-b border-neutral-600 bg-neutral-900 p-2 min-w-40 align-top truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-800"
+};
+
+/**
+ * Narrower first (sticky) column for orgs with an article layout — the
+ * second column's left offset is shifted to match so it stays aligned.
+ * Kept separate from DATA_TABLE_*_CLASSES.articles so it doesn't affect
+ * orgs without a layout.
+ */
+export const EXPLORE_ARTICLE_LAYOUT_FIRST_COL_CLASSES = {
+  header: `border-b border-r border-neutral-700 sticky left-0 ${STICKY_HEADER_ROW_CLASSES} bg-neutral-900 p-2 w-28 md:w-48 lg:w-64 align-bottom`,
+  body: "sticky left-0 p-2 w-28 md:w-48 lg:w-64 align-top text-left text-neutral-100 transition-colors duration-200 hover:bg-neutral-800",
+  foot: "border-b border-neutral-600 sticky left-0 bg-neutral-900 p-2 w-28 md:w-48 lg:w-64 align-top text-left text-neutral-100 transition-colors duration-200 hover:bg-neutral-800"
+};
+
+export const EXPLORE_ARTICLE_LAYOUT_SECOND_COL_CLASSES = {
+  header: `border-b border-r border-neutral-700 sticky left-28 md:left-48 lg:left-64 ${STICKY_HEADER_ROW_CLASSES} bg-neutral-900 p-2 w-28 md:w-36 align-bottom break-words`,
+  body: "sticky left-28 md:left-48 lg:left-64 p-2 w-28 md:w-36 align-top whitespace-nowrap truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-800",
+  foot: "border-b border-neutral-600 sticky left-28 md:left-48 lg:left-64 bg-neutral-900 p-2 w-28 md:w-36 align-top whitespace-nowrap truncate text-neutral-100 transition-colors duration-200 hover:bg-neutral-800"
+};
+
 /**
  * Class names for table body (<tbody>) columns in the data explore section.
  */

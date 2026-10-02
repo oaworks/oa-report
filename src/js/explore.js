@@ -8,8 +8,8 @@
 // =================================================
 
 import DOMPurify from "dompurify";
-import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader, updateInfoPopoverButton, getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, escapeQueryValue, normaliseFieldId, makeNumberReadable, makeTabCountReadable, announce, orcidDisplayNames, resolveLicenseDisplay } from "./utils.js";
-import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, SEGMENTED_PILL_CLASSES, VIEW_TAB_CLASSES, CONTROL_FIELD_SHELL_CLASSES, CONTROL_FOCUS_RING_CLASSES, CONTROL_SELECT_CLASSES, SORT_TRIGGER_CLASSES, SORT_CARET_CHIP_CLASSES, SORT_CARET_CHIP_ACTIVE_CLASSES, TAB_COUNT_BADGE_CLASSES, EXPLORE_SUMMARY_ROW_CLASSES, INFO_TRIGGER_ICON_CLASSES, INFO_TRIGGER_ICON_HTML, resolveFieldDefinition } from "./constants.js";
+import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader, updateInfoPopoverButton, getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, escapeQueryValue, normaliseFieldId, makeNumberReadable, makeTabCountReadable, announce, orcidDisplayNames, resolveLicenseDisplay, resolveBooleanStatusDisplay } from "./utils.js";
+import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, EXPLORE_ARTICLE_COLUMN_LAYOUT_BY_ORG, EXPLORE_SORTABLE_ARTICLE_FIELDS_BY_ORG, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, EXPLORE_ARTICLE_LAYOUT_OTHER_COL_CLASSES, EXPLORE_ARTICLE_LAYOUT_FIRST_COL_CLASSES, EXPLORE_ARTICLE_LAYOUT_SECOND_COL_CLASSES, EXPLORE_ARTICLE_ROW_STRIPE_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, SEGMENTED_PILL_CLASSES, VIEW_TAB_CLASSES, CONTROL_FIELD_SHELL_CLASSES, CONTROL_FOCUS_RING_CLASSES, CONTROL_SELECT_CLASSES, SORT_TRIGGER_CLASSES, SORT_CARET_CHIP_CLASSES, SORT_CARET_CHIP_ACTIVE_CLASSES, TAB_COUNT_BADGE_CLASSES, EXPLORE_SUMMARY_ROW_CLASSES, INFO_TRIGGER_ICON_CLASSES, INFO_TRIGGER_ICON_HTML, resolveFieldDefinition } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { startLoading, stopLoading } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
@@ -190,6 +190,22 @@ function refreshFiltersBanner() {
 // =================================================
 
 /**
+ * Keeps --report-nav-height in sync with the sticky top nav's rendered
+ * height, so the Explore table header can stick just below it.
+ */
+function observeReportNavHeight() {
+  const nav = document.getElementById('js-report-nav');
+  if (!nav) return;
+
+  const setHeight = () => {
+    document.documentElement.style.setProperty('--report-nav-height', `${nav.offsetHeight}px`);
+  };
+
+  setHeight();
+  new ResizeObserver(setHeight).observe(nav);
+}
+
+/**
  * Initializes the data explore section by fetching data from the org index
  * and adding buttons, filters, and functionalities.
  *
@@ -210,6 +226,7 @@ export async function initDataExplore(org) {
       const initialRenderPromise = addExploreButtonsToDOM(orgData.hits.hits[0]._source.explore);
       handleDataDisplayToggle();
       enableExploreRowHighlighting();
+      observeReportNavHeight();
       copyToClipboard('explore_copy_clipboard', 'explore_table');
       document.getElementById('explore_reset_sort')?.addEventListener('click', handleExploreSortReset);
       isDataExploreInit = true; // Set the flag after successful initialisation
@@ -860,6 +877,14 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       document.querySelector('.js_export_table_container')?.classList.remove('min-h-[6rem]', 'md:min-h-[8rem]', 'lg:min-h-[10rem]');
     }
     hasRenderedExploreTableOnce = true;
+
+    // Article layouts use a sticky header, which any non-visible overflow-x here would break.
+    const hasArticleLayout = type === 'articles' && Boolean(getArticleColumnLayout());
+    const tableContainerEl = document.querySelector('.js_export_table_container');
+    tableContainerEl?.classList.toggle('bg-neutral-800', !hasArticleLayout);
+    tableContainerEl?.classList.toggle('pb-4', !hasArticleLayout);
+    tableContainerEl?.classList.toggle('overflow-x-auto', !hasArticleLayout);
+    document.querySelector('.js_export_table_scroll_wrapper')?.classList.toggle('overflow-x-hidden', !hasArticleLayout);
   }
 }
 
@@ -1062,7 +1087,8 @@ function updateExploreCountSummary({ id, total }) {
 
 /**
  * Whether a raw record key should render as an Explore column. Only hides
- * author bucket metadata from terms tables.
+ * author bucket metadata from terms tables — article columns are handled
+ * by getArticleColumnLayout() instead.
  *
  * @param {string} rawKey - The raw record field key.
  * @param {string} dataType - The current Explore table type.
@@ -1070,6 +1096,79 @@ function updateExploreCountSummary({ id, total }) {
  */
 function isExploreColumnVisible(rawKey, dataType) {
   return !(dataType === 'terms' && currentActiveExploreItemData?.id === 'author' && (rawKey === 'display_name' || rawKey === 'orcid'));
+}
+
+/**
+ * Returns the article column layout for the active org and Explore tab, or
+ * null when the org has none. Each column's keys are filtered down to
+ * whichever ones the active tab's own query actually returns (different
+ * tabs, e.g. articles vs preprint, return different field sets); a column
+ * left with no available keys is dropped entirely.
+ *
+ * @returns {{keys: string[], equalWeight?: boolean}[]|null}
+ */
+function getArticleColumnLayout() {
+  const orgSlug = orgData?.hits?.hits?.[0]?._source?.objectID;
+  const layout = EXPLORE_ARTICLE_COLUMN_LAYOUT_BY_ORG[orgSlug];
+  if (!layout) return null;
+
+  const availableFields = new Set(
+    String(currentActiveExploreItemData?.includes || '')
+      .split(',')
+      .map((token) => normaliseFieldId(token.trim()))
+      .filter(Boolean)
+  );
+
+  return layout
+    .map((column) => {
+      const keys = column.keys.filter((key) => availableFields.has(key));
+      if (keys.length === 0) return null;
+      return {
+        ...column,
+        keys,
+        lineLabels: column.lineLabels?.filter((_, i) => availableFields.has(column.keys[i])),
+        licenseKeys: column.licenseKeys?.filter((key) => keys.includes(key))
+      };
+    })
+    .filter(Boolean);
+}
+
+/**
+ * Whether a normalised article field should get a sort button, per
+ * EXPLORE_SORTABLE_ARTICLE_FIELDS_BY_ORG for the active org and tab.
+ *
+ * @param {string} normalisedKey
+ * @returns {boolean}
+ */
+function isExploreColumnSortable(normalisedKey) {
+  const orgSlug = orgData?.hits?.hits?.[0]?._source?.objectID;
+  const itemId = currentActiveExploreItemData?.id;
+  return Boolean(EXPLORE_SORTABLE_ARTICLE_FIELDS_BY_ORG[orgSlug]?.[itemId]?.includes(normalisedKey));
+}
+
+
+/**
+ * Maps a record's fields to their values by normalised name, so a layout's
+ * clean field names (e.g. "grantid") can find them regardless of an "__org"
+ * suffix. "supplements" comes back as a nested array of small objects (e.g.
+ * [{preprint_doi: "..."}, {publisher_license_best: "cc-by"}]) rather than
+ * flat "supplements.x" keys, so its entries are flattened in too.
+ *
+ * @param {Object} record
+ * @returns {Map<string, *>}
+ */
+function buildNormalisedKeyMap(record) {
+  const map = new Map();
+  Object.keys(record).forEach((rawKey) => {
+    if (rawKey === 'supplements') return;
+    map.set(normaliseFieldId(rawKey), record[rawKey]);
+  });
+  if (Array.isArray(record.supplements)) {
+    record.supplements.forEach((entry) => {
+      Object.keys(entry || {}).forEach((rawKey) => map.set(normaliseFieldId(rawKey), entry[rawKey]));
+    });
+  }
+  return map;
 }
 
 /**
@@ -1107,14 +1206,53 @@ function formatExploreCellContent(dataType, rawKey, rawContent) {
 }
 
 /**
- * Resolves the header columns for an Explore table: one column per visible
- * record key.
+ * Label for an article field, e.g. "Grant ID". "title" is special-cased to
+ * name the active tab's publication type, e.g. "Preprint title".
+ *
+ * @param {string} fieldKey
+ * @returns {string}
+ */
+function resolveArticleFieldLabel(fieldKey) {
+  if (fieldKey === 'title') {
+    const itemLabel = EXPLORE_ITEMS_LABELS[currentActiveExploreItemData?.id]?.singular || 'Publication';
+    return `${itemLabel} title`;
+  }
+  return EXPLORE_HEADER_ARTICLES_LABELS[fieldKey]?.label || fieldKey;
+}
+
+/**
+ * Resolves the header columns for an Explore table: from the article layout
+ * when one applies, otherwise one column per visible record key, as before.
+ * A multi-key column's label mirrors its body cell: first field normal,
+ * the rest stacked beneath in a muted line (or all equal for equalWeight).
  *
  * @param {Object[]} records
  * @param {string} dataType
  * @returns {{isLayoutDriven: boolean, columns: {rawKey: string, labelOverride: string|null, labelHTML: string|null}[]}}
  */
 function resolveExploreHeaderColumns(records, dataType) {
+  const layout = dataType === 'articles' ? getArticleColumnLayout() : null;
+  if (layout) {
+    return {
+      isLayoutDriven: true,
+      columns: layout.map(({ keys, equalWeight, shortHeaderLabel }) => {
+        if (keys.length === 1) return { rawKey: keys[0], labelOverride: resolveArticleFieldLabel(keys[0]), labelHTML: null };
+        if (shortHeaderLabel) return { rawKey: keys[0], labelOverride: shortHeaderLabel, labelHTML: null };
+
+        const fieldLabels = keys.map((fieldKey) => resolveArticleFieldLabel(fieldKey));
+        return {
+          rawKey: keys[0],
+          labelOverride: fieldLabels.join(' / '),
+          labelHTML: fieldLabels
+            .map((text, i) => (i === 0 || equalWeight
+              ? `<span class="block truncate">${text}</span>`
+              : `<span class="block truncate text-neutral-350">${text}</span>`))
+            .join('')
+        };
+      })
+    };
+  }
+
   return {
     isLayoutDriven: false,
     columns: Object.keys(records)
@@ -1417,6 +1555,7 @@ function setupHeaderTooltip(element, rawKey, dataType, labelOverride = null, lab
   // a caret once the breakdown's total no longer qualifies.
   const isPercentageColumn = dataType === 'terms' && TERMS_SORTABLE_PERCENTAGE_FIELDS.has(key);
   const isSortable = (isSortedColumn && !isPercentageColumn)
+    || (dataType === 'articles' && isExploreColumnSortable(key))
     || (dataType === 'terms' && isTermsSortable);
 
   element.innerHTML = "";
@@ -1530,6 +1669,8 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
   // Limit the number of rows to the specified size
   otherRecords.length = Math.min(otherRecords.length, currentActiveExploreItemSize);
 
+  const articleLayout = dataType === 'articles' ? getArticleColumnLayout() : null;
+
   /**
    * Right-aligns numeric-looking columns (skipping the two sticky ones) and
    * applies summary-row styling — shared by both row-building paths below.
@@ -1543,10 +1684,92 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
     }
   }
 
-  function appendRow(target, record, section) {
+  /**
+   * Fills in "N/A" for missing data, and swaps booleans for a Yes/No badge
+   * (same icon/color as the point-of-award check in Actions).
+   *
+   * @param {*} value - Output of formatExploreCellContent().
+   * @returns {string}
+   */
+  function formatArticleLayoutCellValue(value) {
+    // formatExploreCellContent() dedupes array values but leaves them as an
+    // array; join so downstream checks (e.g. license lookup) see a string.
+    if (Array.isArray(value)) value = value.join(', ');
+    if (typeof value === 'boolean') {
+      const { label, icon, color } = resolveBooleanStatusDisplay(value);
+      return `<span class="inline-flex items-center gap-1"><i class="ph ${icon} text-[16px] leading-none ${color}" aria-hidden="true"></i><span>${label}</span></span>`;
+    }
+    return value === '' || value === null || value === undefined ? 'N/A' : value;
+  }
+
+  function appendArticleLayoutRow(target, record, section, summaryRowType, rowIndex) {
+    const row = document.createElement('tr');
+    const normalisedKeyMap = buildNormalisedKeyMap(record);
+
+    // has_preprint_copy: this record has a separate preprint elsewhere.
+    // is_preprint: this record itself IS the preprint (its own DOI above
+    // already covers it) — two different situations, two different messages.
+    const readBool = (key) => {
+      const value = normalisedKeyMap.get(key);
+      return (Array.isArray(value) ? value[0] : value) === true;
+    };
+    const hasPreprintCopy = readBool('has_preprint_copy');
+    const isPreprint = readBool('is_preprint');
+
+    articleLayout.forEach(({ keys, equalWeight, lineLabels, licenseKeys }, columnIndex) => {
+      const [primaryKey] = keys;
+      const values = keys.map((fieldKey) => {
+        const value = normalisedKeyMap.has(fieldKey)
+          ? formatExploreCellContent(dataType, fieldKey, normalisedKeyMap.get(fieldKey))
+          : '';
+        const formatted = formatArticleLayoutCellValue(value);
+
+        if (fieldKey === 'preprint_doi' && formatted === 'N/A') {
+          if (isPreprint) return '<em>This is a preprint</em>';
+          if (hasPreprintCopy) return '<em>Has preprint copy; no DOI found</em>';
+        }
+
+        if (licenseKeys?.includes(fieldKey) && typeof formatted === 'string' && formatted !== 'N/A') {
+          return resolveLicenseDisplay(formatted).name;
+        }
+
+        return formatted;
+      });
+
+      const cellContent = keys.length === 1
+        ? values[0]
+        : keys
+          .map((fieldKey, lineIndex) => {
+            const label = lineLabels?.[lineIndex];
+            const valueHTML = label
+              ? `<span class="text-[10px] uppercase text-neutral-350">${label}:</span> ${values[lineIndex]}`
+              : values[lineIndex];
+            return (lineIndex === 0 || equalWeight)
+              ? `<span class="block truncate">${valueHTML}</span>`
+              : `<span class="block truncate text-neutral-350">${valueHTML}</span>`;
+          })
+          .join('');
+
+      const cell = createTableCell(cellContent, getExploreColumnClass(section, dataType, columnIndex, true));
+      finishExploreCell(cell, columnIndex, summaryRowType, primaryKey, values[0]);
+
+      if (section === 'body') cell.classList.add(EXPLORE_ARTICLE_ROW_STRIPE_CLASSES[rowIndex % 2]);
+
+      row.appendChild(cell);
+    });
+
+    target.appendChild(row);
+  }
+
+  function appendRow(target, record, section, rowIndex) {
     const summaryRowType = section === 'foot'
       ? (record.key === 'all_values' ? 'total' : record.key === 'no_values' ? 'missing' : null)
       : null;
+
+    if (articleLayout) {
+      appendArticleLayoutRow(target, record, section, summaryRowType, rowIndex);
+      return;
+    }
 
     const row = document.createElement('tr');
     if (dataType === 'terms' && exploreItemId === 'author' && record.display_name) orcidDisplayNames.set(record.key, record.display_name);
@@ -1583,8 +1806,8 @@ function populateTableBody(data, tableBodyId, exploreItemId, dataType = 'terms')
   }
 
   // Add rows from other records to the tbody
-  otherRecords.forEach(record => {
-    appendRow(tableBody, record, 'body');
+  otherRecords.forEach((record, rowIndex) => {
+    appendRow(tableBody, record, 'body', rowIndex);
   });
 
   // Add synthetic summary rows to the footer, keeping "No … recorded" below
@@ -1995,9 +2218,10 @@ function enableExploreTableScroll() {
  * @param {'header'|'body'|'foot'} section
  * @param {'terms'|'articles'} dataType
  * @param {number} columnIndex
+ * @param {boolean} [useFlexibleWidth] - Use EXPLORE_ARTICLE_LAYOUT_OTHER_COL_CLASSES for "other" columns instead of the fixed article width.
  * @returns {string}
  */
-function getExploreColumnClass(section, dataType, columnIndex) {
+function getExploreColumnClass(section, dataType, columnIndex, useFlexibleWidth = false) {
   const classMap = section === 'header'
     ? DATA_TABLE_HEADER_CLASSES[dataType]
     : section === 'foot'
@@ -2005,14 +2229,14 @@ function getExploreColumnClass(section, dataType, columnIndex) {
       : DATA_TABLE_BODY_CLASSES[dataType];
 
   if (section === 'header') {
-    if (columnIndex === 0) return classMap.firstHeaderCol;
-    if (columnIndex === 1) return classMap.secondHeaderCol;
-    return classMap.otherHeaderCols;
+    if (columnIndex === 0) return useFlexibleWidth ? EXPLORE_ARTICLE_LAYOUT_FIRST_COL_CLASSES.header : classMap.firstHeaderCol;
+    if (columnIndex === 1) return useFlexibleWidth ? EXPLORE_ARTICLE_LAYOUT_SECOND_COL_CLASSES.header : classMap.secondHeaderCol;
+    return useFlexibleWidth ? EXPLORE_ARTICLE_LAYOUT_OTHER_COL_CLASSES.header : classMap.otherHeaderCols;
   }
 
-  if (columnIndex === 0) return classMap.firstCol;
-  if (columnIndex === 1) return classMap.secondCol;
-  return classMap.otherCols;
+  if (columnIndex === 0) return useFlexibleWidth ? EXPLORE_ARTICLE_LAYOUT_FIRST_COL_CLASSES[section] : classMap.firstCol;
+  if (columnIndex === 1) return useFlexibleWidth ? EXPLORE_ARTICLE_LAYOUT_SECOND_COL_CLASSES[section] : classMap.secondCol;
+  return useFlexibleWidth ? EXPLORE_ARTICLE_LAYOUT_OTHER_COL_CLASSES[section] : classMap.otherCols;
 }
 
 /**

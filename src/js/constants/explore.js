@@ -785,3 +785,61 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   }
 };
 
+/**
+ * Column layout for the Explore articles table, keyed by org slug. Orgs
+ * with no entry show every field the query returns, one column per field.
+ *
+ * `keys` are normalised field names (see normaliseFieldId()); multiple keys
+ * stack in one cell, first as the main line. `equalWeight: true` renders all
+ * stacked lines the same instead of muting everything after the first.
+ * `shortHeaderLabel` + `lineLabels` replace the (long) per-field labels with
+ * a short column name and a short prefix on each stacked line instead.
+ * `licenseKeys` resolves those fields' raw codes to their display name via
+ * LICENSE_CODES (e.g. "cc-by" → "CC-BY").
+ *
+ * Explore tabs (e.g. articles vs preprint) each return a different field
+ * set; getArticleColumnLayout() keeps only the keys each tab's own query
+ * actually returns, so unavailable fields (and columns left with none)
+ * drop out per tab rather than showing blank.
+ *
+ * See https://github.com/oaworks/discussion/issues/3975
+ */
+export const EXPLORE_ARTICLE_COLUMN_LAYOUT_BY_ORG = {
+  "gates-foundation": [
+    { keys: ["title", "DOI"] },
+    { keys: ["published_date"] },
+    { keys: ["grantid", "program"] },
+    { keys: ["journal", "publisher"] },
+    { keys: ["host_venue.display_name"] },
+    { keys: ["PMCID"] },
+    {
+      keys: ["publisher_license_best", "repository_license_best"],
+      equalWeight: true,
+      shortHeaderLabel: "Licenses",
+      lineLabels: ["Pub", "Repo"],
+      licenseKeys: ["publisher_license_best", "repository_license_best"]
+    },
+    {
+      keys: ["preprint_doi", "preprint_license"],
+      shortHeaderLabel: "Preprint",
+      lineLabels: ["DOI", "License"],
+      licenseKeys: ["preprint_license"]
+    },
+    { keys: ["is_preprint_of"] },
+    { keys: ["has_data_availability_statement"] }
+  ]
+};
+
+/**
+ * Article fields that get a sort button on their column header, per org and
+ * Explore tab. published_date must be listed even though it's the default
+ * sort, or its button vanishes once another column becomes active. Only
+ * fields confirmed to actually sort (not empty the table) are listed here.
+ */
+export const EXPLORE_SORTABLE_ARTICLE_FIELDS_BY_ORG = {
+  "gates-foundation": {
+    articles: ["published_date", "has_data_availability_statement"],
+    preprint: ["published_date", "has_data_availability_statement"],
+    unique_publication: ["published_date", "has_data_availability_statement"]
+  }
+};
