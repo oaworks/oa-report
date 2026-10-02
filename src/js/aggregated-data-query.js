@@ -348,6 +348,31 @@ function createAggregationTemplate(suffix) {
         percents: [50]
       }
     },
+    with_data: {
+      filter: {
+        term: {
+          "supplements.is_original_research": true
+        }
+      }
+    },
+    without_data: {
+      filter: {
+        term: {
+          "supplements.is_original_research": false
+        }
+      }
+    },
+    unknown_data_status: {
+      filter: {
+        bool: {
+          must_not: {
+            exists: {
+              field: "supplements.is_original_research"
+            }
+          }
+        }
+      }
+    },
   };
 }
 

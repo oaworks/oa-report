@@ -128,7 +128,7 @@ export const FIELD_DEFINITIONS = {
       info: "Publications where we have not yet confirmed whether they include a data availability statement. These statements (also called ‘data access’, ‘resource availability’ or ‘code availability’ statements) tell readers where the underlying data or code can be found and how to access it."
     }
   },
-  unknown_data_status: { label: "Unknown data status", explore: {} },
+  unknown_data_status: { label: "Unknown research type", explore: {} },
   unknown_shared_data_status: { label: "Unknown shared data status", explore: {} },
   unknown_shared_code_status: { label: "Unknown shared code status", explore: {} },
   with_apc: {
@@ -137,7 +137,7 @@ export const FIELD_DEFINITIONS = {
       info: "Journal articles with an article-processing charge (APC) paid by <span class='org-name'></span>."
     }
   },
-  with_data: { label: "With data", explore: {} },
+  with_data: { label: "Original research", explore: {} },
   with_code: { label: "With code", explore: {} },
   with_data_accession_number: { label: "With data accession number", explore: {} },
   with_code_accession_number: { label: "With code accession number", explore: {} },
@@ -204,7 +204,7 @@ export const FIELD_DEFINITIONS = {
   with_shared_code: { label: "With shared code", explore: {} },
   with_shared_data_in_repository: { label: "With shared data in repository", explore: {} },
   with_shared_code_in_repository: { label: "With shared code in repository", explore: {} },
-  without_data: { label: "Without data", explore: {} },
+  without_data: { label: "Not original research", explore: {} },
   without_code: { label: "Without code", explore: {} },
   without_data_availability_statement: {
     label: "Without data availability statement",
