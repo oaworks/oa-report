@@ -34,9 +34,10 @@ const RECORDS_SHOWN_DEFAULT = 10;
 const RECORDS_SHOWN_NO_SELECT_MAX = 20;
 const RECORDS_SHOWN_ALL_THRESHOLD = 1000;
 // Largest true total a terms breakdown can have and still be fetched and
-// sorted in full for a percentage-column sort. Shares its value with
-// RECORDS_SHOWN_ALL_THRESHOLD (the same ceiling "All" already fetches).
-const SORTABLE_TERMS_THRESHOLD = RECORDS_SHOWN_ALL_THRESHOLD;
+// sorted in full for a percentage-column sort. Independent of
+// RECORDS_SHOWN_ALL_THRESHOLD (the "All" records-shown option still caps at
+// that lower value even when sorting is available further out).
+const SORTABLE_TERMS_THRESHOLD = 2000;
 const exploreFilterTotalCache = new Map();
 const EXPLORE_SELECTED_ROW_CLASSES = ['!bg-neutral-800', 'text-neutral-100'];
 
