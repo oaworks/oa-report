@@ -8,7 +8,7 @@
 // =================================================
 
 import DOMPurify from "dompurify";
-import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader,getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, escapeQueryValue, normaliseFieldId, makeNumberReadable, makeTabCountReadable, announce, orcidDisplayNames } from "./utils.js";
+import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader, updateInfoPopoverButton, getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, escapeQueryValue, normaliseFieldId, makeNumberReadable, makeTabCountReadable, announce, orcidDisplayNames } from "./utils.js";
 import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, SEGMENTED_PILL_CLASSES, VIEW_TAB_CLASSES, CONTROL_FIELD_SHELL_CLASSES, CONTROL_FOCUS_RING_CLASSES, CONTROL_SELECT_CLASSES, SORT_TRIGGER_CLASSES, SORT_CARET_CHIP_CLASSES, TAB_COUNT_BADGE_CLASSES, EXPLORE_SUMMARY_ROW_CLASSES, INFO_TRIGGER_ICON_CLASSES, INFO_TRIGGER_ICON_HTML, resolveFieldDefinition } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { startLoading, stopLoading } from "./components.js";
@@ -18,7 +18,7 @@ import { orgDataPromise, initInsightsAndActions } from './insights-and-actions.j
 import { AUTHOR_BREAKDOWN_TERM, getAggregatedDataQuery, formatAggregationBucket, getFieldFilterValues, toTermField } from './aggregated-data-query.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { createTooltip, createPopover } from './tooltip-manager.js';
-import { buildDefinitionTooltipContent } from './tooltip-content.js';
+import { buildDefinitionTooltipContent, buildTooltipContent, buildDefinitionHelpHtml, injectOrgFields } from './tooltip-content.js';
 
 // =================================================
 // Global variables
@@ -104,7 +104,7 @@ export let currentActiveDataDisplayToggle = true;
 let currentActiveExploreSortField = null;
 let currentActiveExploreSortDirection = null;
 
-/** 
+/**
  * Map of explore button id -> its data object, used to render without synthesising a click.
  * @type {Map<string, Object>}
  */
@@ -400,7 +400,7 @@ const updateExploreHeadingIcon = (id) => {
   const icon = document.querySelector(".js-explore-heading-icon");
   if (!icon) return;
   const iconName = iconForFilterId(id);
-  icon.className = `ph ph-${iconName || "note"} text-[18px] leading-none js-explore-heading-icon`;
+  icon.className = `ph ph-${iconName || "note"} text-[18px] leading-none align-middle mr-1.5 js-explore-heading-icon`;
 };
 
 /**
@@ -482,7 +482,7 @@ async function addExploreFiltersToDOM(query) {
  */
 function createExploreFilterTab(id, isActive, showCount) {
   const labelData = EXPLORE_FILTERS_LABELS[id];
-  const label = labelData ? labelData.label || id : id; // Use label from filters or default to ID
+  const label = labelData ? injectOrgFields(labelData.label || id, { orgName }) : id; // Use label from filters or default to ID
 
   const tabWrapper = document.createElement('div');
   tabWrapper.className = 'flex';
@@ -501,13 +501,6 @@ function createExploreFilterTab(id, isActive, showCount) {
   buttonElement.setAttribute('role', 'tab');
   buttonElement.setAttribute('aria-controls', 'explore_view_panel');
   tabWrapper.appendChild(buttonElement);
-
-  if (labelData && labelData.info && labelData.info.trim()) {
-    createTooltip(buttonElement, generateTooltipContent(labelData), {
-      placement: 'bottom',
-      theme: 'tooltip-light'
-    });
-  }
 
   applyExploreTabState(buttonElement, isActive);
 
@@ -775,7 +768,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     }
 
     const { type, id } = itemData;
-    const { field: sortField, direction: sortDirection } = getActiveExploreSortState(itemData);
+    getActiveExploreSortState(itemData); // Initialises the sort state used by the table header's caret icons.
     document.getElementById("csv_email_msg").innerHTML = ""; // Clear any existing message in CSV download form
     const exportTable = document.getElementById('export_table');
     exportTable.classList.remove('hidden');
@@ -793,9 +786,6 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 
     const { records, total: totalRecords } = await loadExploreRecords(itemData, query, size, pretty);
 
-    const sortAdjective = getExploreSortAdjective({ type, sortField, sortDirection });
-    replaceText("report_sort_adjective", sortAdjective);
-    document.querySelectorAll(".report_sort_adjective").forEach(el => el.classList.toggle("hidden", !sortAdjective));
     setExploreModeUI(type);
 
     const shownCount = type === "terms"
@@ -812,7 +802,27 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 
     updateExploreCountSummary({ id, total: totalCount });
     updateRecordsShownControl(totalCount);
-    replaceText("explore_type", EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id), { allowHTML: true });
+
+    // Reuses each filter's tab label as-is in the heading; headingPosition just says where it goes.
+    // Only article-level tables (each row a publication) get this — on terms breakdowns (Authors,
+    // Journals, etc.) the filter describes the underlying works, not the thing being listed.
+    const activeFilterLabels = EXPLORE_FILTERS_LABELS[filter];
+    const headingPosition = type === "articles" ? activeFilterLabels?.headingPosition : undefined;
+    const headingLabel = activeFilterLabels?.label ? injectOrgFields(activeFilterLabels.label, { orgName }) : "";
+    const defaultType = EXPLORE_ITEMS_LABELS[id]?.plural || pluraliseNoun(id);
+
+    replaceText("explore_type", headingPosition === "type" ? headingLabel : defaultType, { allowHTML: true });
+    replaceText("explore_heading_filter", headingPosition === "suffix" ? headingLabel : "", { allowHTML: true });
+    document.querySelectorAll(".explore_heading_filter").forEach(el => el.classList.toggle("hidden", headingPosition !== "suffix"));
+
+    // Info button describes the active filter — article-level tables only; on terms breakdowns
+    // (Authors, Journals, etc.) the Publications column header displays this info instead.
+    const hasFilterInfo = type === "articles" && Boolean(activeFilterLabels?.info?.trim());
+    const plainFilterLabel = headingLabel ? DOMPurify.sanitize(headingLabel, { ALLOWED_TAGS: [] }) : "";
+    updateInfoPopoverButton(document.getElementById('explore_heading_info_button'), {
+      content: hasFilterInfo ? generateTooltipContent(activeFilterLabels) : "",
+      ariaLabel: `More information about ${plainFilterLabel}`
+    });
 
     if (records.length > 0) {
       // Populate table with data
@@ -1014,25 +1024,6 @@ function updateExploreCountSummary({ id, total }) {
 }
 
 /**
- * Determines the adjective used in the Explore heading (e.g. "Latest", "By").
- *
- * @param {Object} params
- * @param {string} params.type - The explore item type.
- * @param {string} params.sortField - The active sort field.
- * @param {string} params.sortDirection - The active sort direction.
- * @returns {string} Heading adjective, or an empty string if none applies.
- */
-function getExploreSortAdjective({ type, sortField, sortDirection }) {
-  if (type === "articles") {
-    if (!sortField) return "Latest";
-    if (sortField === "published_date") return sortDirection === "asc" ? "Earliest" : "Latest";
-    return "Top";
-  }
-
-  return sortField === "_key" ? "By" : "";
-}
-
-/**
  * Populates the header of a table with column headers derived from the keys of a data object.
  * The function clears any existing headers before appending the new ones. It assumes that the 
  * first object in the data array is representative of the structure for all objects in the array.
@@ -1226,15 +1217,31 @@ function isNumericLikeValue(value) {
 /**
  * Generates the HTML content for a tooltip, including information and optional methodology details.
  *
- * @param {Object} labelData - The object containing the label, info, and optionally details for the tooltip.
+ * Field definitions with a `help_text` list (e.g. compliant/covered_by_policy columns) get their
+ * org-specific policy text rendered as a bulleted list behind the Methodology section, matching Insights.
+ *
+ * @param {Object} labelData - The object containing the label, info, and optionally details/help_text for the tooltip.
+ * @param {Object|null} [helpTextByKey=null] - Org-specific help text keyed by field id.
  * @returns {string} The generated HTML content for the tooltip.
  */
-function generateTooltipContent(labelData, additionalHelpText = null) {
-  return buildDefinitionTooltipContent(labelData, additionalHelpText, {
-    orgName,
-    orgPolicyCoverage,
-    orgPolicyCompliance,
-    orgPolicyUrl
+function generateTooltipContent(labelData, helpTextByKey = null) {
+  const orgMeta = { orgName, orgPolicyCoverage, orgPolicyCompliance, orgPolicyUrl };
+
+  if (!labelData?.help_text?.length) {
+    return buildDefinitionTooltipContent(labelData, null, orgMeta);
+  }
+
+  const helpHtml = buildDefinitionHelpHtml({
+    help_text: labelData.help_text,
+    help_text_by_key: helpTextByKey || {},
+    org_meta: orgMeta,
+    help_text_style: labelData.help_text_style
+  });
+  const detailsParts = [injectOrgFields(labelData.details, orgMeta), helpHtml].filter(Boolean);
+
+  return buildTooltipContent({
+    leadHtml: injectOrgFields(labelData.info, orgMeta),
+    detailsHtml: detailsParts.length > 1 ? `<div class="space-y-2">${detailsParts.join('')}</div>` : detailsParts.join('')
   });
 }
 
@@ -1265,22 +1272,56 @@ function setupHeaderTooltip(element, rawKey, dataType) {
     temp.innerHTML = DOMPurify.sanitize(label, { ALLOWED_TAGS: [] });
     return temp.textContent?.trim() || key;
   })();
-  const contentClassName = "inline-flex w-full min-w-0 items-end gap-1 justify-between";
-  // Plain wrapper — the sort toggle and info triggers are separate buttons
-  // within it, since a button can't be nested inside another button.
+  element.classList.add("relative");
+
+  // Label sits in normal flow, bottom-aligned, with room reserved on the
+  // right for the info icon and sort caret pinned to opposite corners below.
   const content = document.createElement("span");
-  content.className = contentClassName;
+  content.className = "flex h-full w-full min-w-0 items-end pr-6";
 
   const labelSpan = document.createElement("span");
   labelSpan.innerHTML = DOMPurify.sanitize(label);
   content.appendChild(labelSpan);
+  element.appendChild(content);
+
+  // Publications counts filtered works, so its info icon explains the active filter instead.
+  const activeFilterLabels = dataType === 'terms' && key === 'doc_count'
+    ? EXPLORE_FILTERS_LABELS[currentActiveExploreItemQuery]
+    : null;
+  const infoLabelData = activeFilterLabels || labelData;
+  const infoLabelText = activeFilterLabels
+    ? DOMPurify.sanitize(injectOrgFields(activeFilterLabels.label, { orgName }), { ALLOWED_TAGS: [] })
+    : labelText;
+
+  // Generate and set tooltip if info is present and non-empty. Appended (and so
+  // tab-ordered) before the sort toggle below, matching its top-right position
+  // against the toggle's bottom-right one.
+  if (infoLabelData && infoLabelData.info && infoLabelData.info.trim()) {
+    // Org-specific help text (e.g. compliant/covered_by_policy criteria), keyed by field id
+    const helpTextByKey = orgData.hits.hits[0]?._source.policy?.help_text ?? null;
+    const infoAriaLabel = `More information about ${infoLabelText}`;
+
+    const infoButton = document.createElement("button");
+    infoButton.type = "button";
+    infoButton.className = `${INFO_TRIGGER_ICON_CLASSES} absolute top-1 right-1`;
+    infoButton.setAttribute("aria-label", infoAriaLabel);
+    infoButton.innerHTML = INFO_TRIGGER_ICON_HTML;
+    element.appendChild(infoButton);
+
+    const infoPopover = createPopover(infoButton, generateTooltipContent(infoLabelData, helpTextByKey), {
+      placement: 'bottom',
+      theme: 'tooltip-light'
+    });
+    // Name the popover panel itself, not just its trigger button.
+    infoPopover.popper.querySelector(".tooltip-box")?.setAttribute("aria-label", infoAriaLabel);
+  }
 
   if (isSortedColumn) {
     const nextDirection = sortIndicator.direction === "ascending" ? "descending" : "ascending";
     const sortDescription = `${labelText}, currently sorted ${sortIndicator.direction}. Click to sort ${nextDirection}.`;
     const sortToggle = document.createElement("button");
     sortToggle.type = "button";
-    sortToggle.className = `inline-flex items-center ${SORT_TRIGGER_CLASSES}`;
+    sortToggle.className = `absolute bottom-1 right-1 inline-flex items-center ${SORT_TRIGGER_CLASSES}`;
     sortToggle.dataset.exploreSortKey = key;
     sortToggle.setAttribute("aria-label", sortDescription);
     sortToggle.addEventListener("click", () => {
@@ -1303,30 +1344,10 @@ function setupHeaderTooltip(element, rawKey, dataType) {
     srText.textContent = `Sorted ${sortIndicator.direction}`;
     sortToggle.appendChild(srText);
 
-    content.appendChild(sortToggle);
+    element.appendChild(sortToggle);
     element.setAttribute("aria-sort", sortIndicator.direction);
   } else {
     element.removeAttribute("aria-sort");
-  }
-
-  element.appendChild(content);
-
-  // Generate and set tooltip if info is present and non-empty
-  if (labelData && labelData.info && labelData.info.trim()) {
-    // Get additional help text from orgData if available
-    const additionalHelpText = orgData.hits.hits[0]?._source.policy?.help_text?.[key] ?? null;
-
-    const infoButton = document.createElement("button");
-    infoButton.type = "button";
-    infoButton.className = INFO_TRIGGER_ICON_CLASSES;
-    infoButton.setAttribute("aria-label", `More information about ${labelText}`);
-    infoButton.innerHTML = INFO_TRIGGER_ICON_HTML;
-    content.appendChild(infoButton);
-
-    createPopover(infoButton, generateTooltipContent(labelData, additionalHelpText), {
-      placement: 'bottom',
-      theme: 'tooltip-light'
-    });
   }
 }
 

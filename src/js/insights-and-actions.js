@@ -115,7 +115,7 @@ function buildInsightDefinitionsHtml(numerator, insightInfo = '', helpTextByKey 
     return buildInsightTooltipSection(contentHtml, showHeading);
   }
 
-  const fieldDefinition = resolveFieldDefinition(definitionKey, 'insights');
+  const fieldDefinition = resolveFieldDefinition(definitionKey, 'insights', { subject: matchingCard?.subject });
   if (!fieldDefinition) {
     return buildInsightTooltipSection(insightInfo, showHeading);
   }
@@ -126,11 +126,10 @@ function buildInsightDefinitionsHtml(numerator, insightInfo = '', helpTextByKey 
     org_meta: orgMeta,
     help_text_style: fieldDefinition.help_text_style
   });
+  const detailsParts = [injectOrgFields(fieldDefinition.details, orgMeta), helpHtml].filter(Boolean);
   const contentHtml = buildTooltipContent({
     leadHtml: injectOrgFields(insightInfo, orgMeta),
-    helpHtml,
-    detailsHtml: injectOrgFields(fieldDefinition.details, orgMeta),
-    dedupeHelpTextAgainstLead: fieldDefinition.help_text_style !== 'bullets'
+    detailsHtml: detailsParts.length > 1 ? `<div class="space-y-2">${detailsParts.join('')}</div>` : detailsParts.join('')
   });
 
   return buildInsightTooltipSection(contentHtml, showHeading);
