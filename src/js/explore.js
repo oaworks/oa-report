@@ -228,6 +228,7 @@ export async function initDataExplore(org) {
       enableExploreRowHighlighting();
       observeReportNavHeight();
       copyToClipboard('explore_copy_clipboard', 'explore_table');
+      document.getElementById('explore_reset_sort')?.addEventListener('click', handleExploreSortReset);
       isDataExploreInit = true; // Set the flag after successful initialisation
       await initialRenderPromise; // let callers await the actual render, not just its kickoff
     } else {
@@ -849,6 +850,8 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       ariaLabel: `More information about ${plainFilterLabel}`
     });
 
+    updateResetSortControl();
+
     if (records.length > 0) {
       // Populate table with data
       const isSortableSet = type === 'terms' && totalCount <= SORTABLE_TERMS_THRESHOLD;
@@ -1350,6 +1353,52 @@ function getActiveExploreSortState(itemData = currentActiveExploreItemData, opti
     field: currentActiveExploreSortField,
     direction: currentActiveExploreSortDirection
   };
+}
+
+/**
+ * Shows the "Reset sort" control only once the active sort differs from the
+ * current breakdown's own default (e.g. Years defaults to key/desc, most
+ * others to doc_count/desc), so it stays out of the way otherwise.
+ */
+function updateResetSortControl() {
+  const button = document.getElementById('explore_reset_sort');
+  if (!button) return;
+
+  const { field, direction } = getActiveExploreSortState();
+  const defaultState = resolveExploreSortState(currentActiveExploreItemData);
+  const isDefault = field === defaultState.field && direction === defaultState.direction;
+
+  button.classList.toggle("hidden", isDefault);
+}
+
+/**
+ * Resets the active Explore sort back to the current breakdown's own
+ * default and re-renders the table.
+ *
+ * @returns {Promise<void>}
+ */
+async function handleExploreSortReset() {
+  if (!currentActiveExploreItemData) return;
+
+  getActiveExploreSortState(currentActiveExploreItemData, { reset: true });
+
+  startLoading();
+
+  try {
+    await fetchAndDisplayExploreData(
+      currentActiveExploreItemData,
+      currentActiveExploreItemQuery,
+      currentActiveExploreItemSize
+    );
+    announce("Sort reset to default.");
+  } catch (error) {
+    console.error("Error resetting Explore sort:", error);
+  } finally {
+    // The reset button itself just hid; return focus to the active tab instead.
+    if (currentActiveExploreItemButton instanceof HTMLButtonElement) {
+      currentActiveExploreItemButton.focus();
+    }
+  }
 }
 
 /**

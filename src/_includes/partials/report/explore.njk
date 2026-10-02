@@ -90,15 +90,26 @@
             </fieldset>
           </form>
         </div>
-        <button
-          id="explore_copy_clipboard"
-          class="group inline-flex items-center self-start focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-800"
-        >
-          <span class="inline-flex items-center gap-1.5 rounded-sm border border-neutral-600 bg-neutral-900/50 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-100 shadow-sm transition-colors group-hover:border-neutral-400 group-hover:bg-neutral-800 group-hover:text-white group-focus-visible:border-neutral-400 group-focus-visible:bg-neutral-800 group-focus-visible:text-white [&>i]:shrink-0 [&>i]:text-base">
-            <span aria-hidden="true">{% icon_small "clipboard" %}</span>
-            <span data-copy-label>Copy table</span>
-          </span>
-        </button>
+        <div class="flex items-center gap-3">
+          <button
+            id="explore_reset_sort"
+            class="hidden group inline-flex items-center self-start focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-800"
+          >
+            <span class="inline-flex items-center gap-1.5 rounded-sm border border-neutral-600 bg-neutral-900/50 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-100 shadow-sm transition-colors group-hover:border-neutral-400 group-hover:bg-neutral-800 group-hover:text-white group-focus-visible:border-neutral-400 group-focus-visible:bg-neutral-800 group-focus-visible:text-white [&>i]:shrink-0 [&>i]:text-base">
+              <span aria-hidden="true">{% icon_small "arrow-counter-clockwise" %}</span>
+              <span>Reset sort</span>
+            </span>
+          </button>
+          <button
+            id="explore_copy_clipboard"
+            class="group inline-flex items-center self-start focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-800"
+          >
+            <span class="inline-flex items-center gap-1.5 rounded-sm border border-neutral-600 bg-neutral-900/50 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-100 shadow-sm transition-colors group-hover:border-neutral-400 group-hover:bg-neutral-800 group-hover:text-white group-focus-visible:border-neutral-400 group-focus-visible:bg-neutral-800 group-focus-visible:text-white [&>i]:shrink-0 [&>i]:text-base">
+              <span aria-hidden="true">{% icon_small "clipboard" %}</span>
+              <span data-copy-label>Copy table</span>
+            </span>
+          </button>
+        </div>
         </div>
       <div class="relative js_export_table_scroll_wrapper">
         {# Scroll table button #}
