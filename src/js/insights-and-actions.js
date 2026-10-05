@@ -250,9 +250,7 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
     "is_free_to_read",
     "is_compliant",
     "is_oa",
-    "has_data_availability_statement",
-    "has_open_data",
-    "has_open_code"
+    "has_data_availability_statement"
   ];
 
   const isOutsideAvailabilityWindow = (analysisEntry) =>

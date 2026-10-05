@@ -120,7 +120,6 @@ export const FIELD_DEFINITIONS = {
       info: "Number of citations the publications received."
     }
   },
-  unknown_code_status: { label: "Unknown code status", explore: {} },
   unknown_data_availability_statement: {
     label: "Unknown data availability statement",
     details: "To confirm whether a paper has a data availability statement, we first use PubMed’s data availability filter and then review articles manually. Because we wait for external sources to update before collectinf these data ourselves, this process can take up to six months.",
@@ -138,7 +137,6 @@ export const FIELD_DEFINITIONS = {
     }
   },
   with_data: { label: "Original research", explore: {} },
-  with_code: { label: "With code", explore: {} },
   with_data_accession_number: { label: "With data accession number", explore: {} },
   with_code_accession_number: { label: "With code accession number", explore: {} },
   with_data_availability_statement: {
@@ -205,7 +203,6 @@ export const FIELD_DEFINITIONS = {
   with_shared_data_in_repository: { label: "With shared data in repository", explore: {} },
   with_shared_code_in_repository: { label: "With shared code in repository", explore: {} },
   without_data: { label: "Not original research", explore: {} },
-  without_code: { label: "Without code", explore: {} },
   without_data_availability_statement: {
     label: "Without data availability statement",
     details: "To check if a paper has a data availability statement, we use data from PubMed’s data availability filter and review articles manually.",
