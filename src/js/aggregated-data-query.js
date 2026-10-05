@@ -348,6 +348,7 @@ function createAggregationTemplate(suffix) {
         percents: [50]
       }
     },
+    /* TEMP: disable original research columns
     with_data: {
       filter: {
         term: {
@@ -373,6 +374,7 @@ function createAggregationTemplate(suffix) {
         }
       }
     },
+    */
   };
 }
 
