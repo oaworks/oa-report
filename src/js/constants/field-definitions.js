@@ -78,7 +78,7 @@ export const FIELD_DEFINITIONS = {
     label: "With data availability statement",
     details: DAS_METHODOLOGY,
     explore: {
-      info: `Includes {subject} that have a data availability statement, which tells readers where the underlying data or code can be found and how to access it. This figure doesn’t specify the kind of statement provided — e.g. whether the underlying data is openly available or not.`
+      info: `Publications that have a data availability statement, which tells readers where the underlying data or code can be found and how to access it. This figure doesn’t specify the kind of statement provided — e.g. whether the underlying data is openly available or not.`
     },
     insights: {
       info: "<p>The percentage of {subject} that we’ve analyzed that have a data availability statement.</p>"
@@ -138,7 +138,7 @@ export const FIELD_DEFINITIONS = {
     label: "With data availability statement",
     details: DAS_METHODOLOGY,
     explore: {
-      info: `Includes {subject} that have a data availability statement, which tells readers where the underlying data or code can be found and how to access it. This figure doesn’t specify the kind of statement provided — e.g. whether the underlying data is openly available or not.`
+      info: `Publications that have a data availability statement, which tells readers where the underlying data or code can be found and how to access it. This figure doesn’t specify the kind of statement provided — e.g. whether the underlying data is openly available or not.`
     }
   },
   with_data_dois: { label: "With data DOI<span style='text-transform: lowercase;'>s</span>", explore: {} },
