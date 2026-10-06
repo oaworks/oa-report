@@ -87,9 +87,7 @@ export const FIELD_DEFINITIONS = {
   },
   mean_apc_amount: {
     label: "Mean APC amount",
-    explore: {
-      info: "Mean (i.e. average) of article-processing charges (APCs) paid by <span class='org-name'></span>."
-    }
+    explore: {}
   },
   mean_citations: {
     label: "Mean citations",
@@ -100,9 +98,7 @@ export const FIELD_DEFINITIONS = {
   },
   median_apc_amount: {
     label: "Median APC amount",
-    explore: {
-      info: "Median of article-processing charges (APCs) paid by <span class='org-name'></span>."
-    }
+    explore: {}
   },
   publications: {
     label: "Publications",
@@ -110,15 +106,11 @@ export const FIELD_DEFINITIONS = {
   },
   total_apc_amount: {
     label: "Total APC amount",
-    explore: {
-      info: "Total article-processing charges (APCs) paid by <span class='org-name'></span>."
-    }
+    explore: {}
   },
   total_citations: {
     label: "Total citations",
-    explore: {
-      info: "Number of citations the publications received."
-    }
+    explore: {}
   },
   unknown_data_availability_statement: {
     label: "Unknown data availability statement",

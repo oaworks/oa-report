@@ -578,7 +578,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "grantid": {
     label: "Grant ID",
-    info: "<p>The identifier(s) for the grant(s) associated with the work.</p>"
+    info: ""
   },
   "has_data_availability_statement": {
     label: "Data availability statement?",
@@ -756,7 +756,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "updated": {
     label: "Updated",
-    info: "<p>Timestamp showing when the record was last updated.</p>"
+    info: ""
   },
   "version": {
     label: "Version",
@@ -772,7 +772,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "epmc_licence": {
     label: "Europe PMC license",
-    info: "The license applied to the full text in Europe PMC"
+    info: ""
   }
 };
 
