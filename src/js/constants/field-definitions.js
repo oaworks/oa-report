@@ -91,10 +91,7 @@ export const FIELD_DEFINITIONS = {
   },
   mean_citations: {
     label: "Mean citations",
-    details: "<p>We used data from OpenAlex's <code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>cited_by_count</code>.</p>",
-    explore: {
-      info: "The mean (i.e. average) number of citations of these publications."
-    }
+    explore: {}
   },
   median_apc_amount: {
     label: "Median APC amount",
