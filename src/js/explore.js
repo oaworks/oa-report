@@ -1355,6 +1355,13 @@ function isNumericLikeValue(value) {
   return /^-?\$?\d[\d,]*(\.\d+)?%?$/.test(trimmed);
 }
 
+// Matches the subject wording Insight cards use, for the same {subject} tokens.
+const EXPLORE_SUBJECT_LABELS = {
+  articles: "journal articles",
+  preprint: "preprints",
+  unique_publication: "unique publications"
+};
+
 /**
  * Generates the HTML content for a tooltip from a field definition. Unlike
  * Insights, an Explore tooltip only ever shows one help-text group at a
@@ -1392,8 +1399,9 @@ function generateTooltipContent(labelData, helpTextByKey = null) {
 function setupHeaderTooltip(element, rawKey, dataType, labelOverride = null, labelHTML = null, isSortableSet = false) {
   const key = normaliseFieldId(rawKey);
   const exploreTypeLabel = document.querySelector(".explore_type")?.textContent?.trim();
+  const subject = EXPLORE_SUBJECT_LABELS[currentActiveExploreItemData?.id] || "publications";
   const labelData = dataType === 'terms'
-    ? resolveFieldDefinition(key, 'explore')
+    ? resolveFieldDefinition(key, 'explore', { subject })
     : EXPLORE_HEADER_ARTICLES_LABELS[key];
   const label = labelOverride || (key === "key" && dataType === "terms"
     ? (exploreTypeLabel || key)

@@ -256,7 +256,8 @@ export const EXPLORE_FILTERS_LABELS = {
   },
   "has_data_availability_statement": {
     label: "Has data availability statement",
-    info: "<p>Any journal article that has a data availability statement. Data availability statements (i.e. “data access statement”, “resource availability statements”, “code availability statements”) tell a reader where the research data or code associated with an article is available and how they can be accessed. This doesn’t tell you what type of data availability statement is provided (e.g., there is Open Data VS there is no data).</p><p>To check if an article has a data availability statement, we use data from PubMed’s data availability filter and review articles manually.</p>"
+    info: "Journal articles that include a data availability statement, which tells readers where the underlying data or code can be found and how to access it. This figure doesn’t specify the kind of statement provided — e.g. whether the underlying data is openly available or not.",
+    details: "<p>We use PubMed Central (PMC) to confirm whether journal articles have a data availability statement (DAS). PMC data can take up to 6 months to appear, so recent figures may be incomplete. After 6 months, we manually review any journal articles that we couldn’t automatically confirm. We may be unable to confirm this for closed-access publications.</p>"
   },
   "has_apc": {
     label: "APC-funded journal articles",

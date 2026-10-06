@@ -6,6 +6,11 @@
 const POLICY_LINK_EXPLORE = "<a href='' target='_blank' rel='noopener noreferrer' class='underline underline-offset-1 md:underline-offset-4 decoration-1 org-policy-url'>your organization’s Open Access policy</a>";
 const POLICY_LINK_INSIGHTS = "<a href='{policyUrl}' target='_blank' rel='noopener' class='underline underline-offset-2 decoration-1'>your organization’s Open Access policy</a>";
 
+// Shared wording for the data availability statement (DAS) field family
+// (data_availability_statement, with/without/unknown_data_availability_statement)
+// so all four states describe the same thing the same way instead of varying from one another.
+export const DAS_METHODOLOGY = `<p>We use PubMed Central (PMC) to confirm whether {subject} have a data availability statement (DAS). PMC data can take up to 6 months to appear, so recent figures may be incomplete. After 6 months, we manually review any {subject} that we couldn’t automatically confirm. We may be unable to confirm this for closed-access publications.</p>`;
+
 /**
  * Canonical field definitions shared across report sections.
  * Section-specific wording lives under `explore` and `insights`.
@@ -71,9 +76,9 @@ export const FIELD_DEFINITIONS = {
   },
   data_availability_statement: {
     label: "With data availability statement",
-    details: "<p>To confirm that {subject} have a data availability statement, we first use PubMed’s data availability filter and then review them manually.</p>",
+    details: DAS_METHODOLOGY,
     explore: {
-      info: "Publications that include a data availability statement. These statements (also called ‘data access’, ‘resource availability’ or ‘code availability’ statements) tell readers where the underlying data or code can be found and how to access it. This figure doesn’t specify the kind of statement provided (e.g., whether the data are openly available or not)"
+      info: `Includes {subject} that have a data availability statement, which tells readers where the underlying data or code can be found and how to access it. This figure doesn’t specify the kind of statement provided — e.g. whether the underlying data is openly available or not.`
     },
     insights: {
       info: "<p>The percentage of {subject} that we’ve analyzed that have a data availability statement.</p>"
@@ -112,9 +117,9 @@ export const FIELD_DEFINITIONS = {
   },
   unknown_data_availability_statement: {
     label: "Unknown data availability statement",
-    details: "To confirm whether a paper has a data availability statement, we first use PubMed’s data availability filter and then review articles manually. Because we wait for external sources to update before collectinf these data ourselves, this process can take up to six months.",
+    details: DAS_METHODOLOGY,
     explore: {
-      info: "Publications where we have not yet confirmed whether they include a data availability statement. These statements (also called ‘data access’, ‘resource availability’ or ‘code availability’ statements) tell readers where the underlying data or code can be found and how to access it."
+      info: `Includes {subject} where we have not yet confirmed whether they have a data availability statement.`
     }
   },
   unknown_data_status: { label: "Unknown research type", explore: {} },
@@ -131,9 +136,9 @@ export const FIELD_DEFINITIONS = {
   with_code_accession_number: { label: "With code accession number", explore: {} },
   with_data_availability_statement: {
     label: "With data availability statement",
-    details: "To confirm that a paper has a data availability statement, we first use PubMed’s data availability filter and then review articles manually.",
+    details: DAS_METHODOLOGY,
     explore: {
-      info: "Publications that include a data availability statement. These statements (also called ‘data access’, ‘resource availability’ or ‘code availability’ statements) tell readers where the underlying data or code can be found and how to access it. This figure doesn’t specify the kind of statement provided (e.g., whether the data are openly available or not)"
+      info: `Includes {subject} that have a data availability statement, which tells readers where the underlying data or code can be found and how to access it. This figure doesn’t specify the kind of statement provided — e.g. whether the underlying data is openly available or not.`
     }
   },
   with_data_dois: { label: "With data DOI<span style='text-transform: lowercase;'>s</span>", explore: {} },
@@ -195,9 +200,9 @@ export const FIELD_DEFINITIONS = {
   without_data: { label: "Not original research", explore: {} },
   without_data_availability_statement: {
     label: "Without data availability statement",
-    details: "To check if a paper has a data availability statement, we use data from PubMed’s data availability filter and review articles manually.",
+    details: DAS_METHODOLOGY,
     explore: {
-      info: "Publications that do not have a data availability statement. Data availability statements (or 'data access statement', 'resource availability statements', 'code availability statements') tell a reader where the research data or code associated with a paper is available, and how they can be accessed. This figure doesn’t tell you what type of data availability statement is provided (e.g whether there is Open Data or no data at all)."
+      info: `Includes {subject} that do not have a data availability statement.`
     }
   },
   without_shared_data: { label: "Without shared data", explore: {} },
