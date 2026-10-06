@@ -81,27 +81,77 @@ export function getTooltipPlainText(html = '') {
 }
 
 /**
- * Builds definition-style tooltip content from a labels config entry plus
- * optional organisation-specific help text.
+ * Builds tooltip HTML for a field definition.
  *
- * @param {Object} labelData - Labels config entry with info/details fields.
- * @param {string|null} [additionalHelpText=null] - Optional org-specific help text as trusted HTML.
- * @param {Object} [orgMeta={}] - Org-specific field values for placeholder injection.
+ * With the "label" heading style (Insights), the generic lead sentence
+ * always shows — matching every other Insight card's "The percentage of
+ * {subject}..." sentence — with the organisation's own configured help text
+ * (e.g. Coverage/Compliance bullets), when available, shown underneath as
+ * the specific criteria.
+ *
+ * With the "sentence" heading style (Explore), the organisation's help text
+ * instead replaces the generic lead entirely, folded into one sentence with
+ * its own framing phrase — Explore only ever shows one such group, so a
+ * second, separate generic sentence above it would just be redundant.
+ *
+ * Either way, the generic, cross-organisation details note (e.g. which data
+ * sources we use) is always kept separate, collapsed behind "Methodology".
+ *
+ * @param {Object} options - Field definition tooltip options.
+ * @param {string} [options.info=''] - Generic, organisation-agnostic lead sentence.
+ * @param {string} [options.details=''] - Generic, cross-organisation methodology note.
+ * @param {string[]} [options.help_text=[]] - Help-text keys to resolve for this field.
+ * @param {Object.<string, string>} [options.help_text_by_key={}] - Organisation-specific help text keyed by field id.
+ * @param {string} [options.help_text_style='paragraph'] - "paragraph" or "bullets".
+ * @param {'label'|'sentence'} [options.heading_style='label'] - See {@link buildDefinitionHelpHtml}.
+ * @param {Object} [options.orgMeta={}] - Organisation-specific values for placeholder injection.
  * @returns {string} Tooltip HTML.
  */
-export function buildDefinitionTooltipContent(labelData, additionalHelpText = null, orgMeta = {}) {
+export function buildFieldDefinitionTooltipContent({
+  info = '',
+  details = '',
+  help_text = [],
+  help_text_by_key = {},
+  help_text_style = 'paragraph',
+  heading_style = 'label',
+  orgMeta = {}
+} = {}) {
+  const helpHtml = buildDefinitionHelpHtml({
+    help_text,
+    help_text_by_key,
+    org_meta: orgMeta,
+    help_text_style,
+    heading_style
+  });
+
+  const infoHtml = injectOrgFields(info, orgMeta);
+  const leadHtml = heading_style === 'label'
+    ? [infoHtml, helpHtml].filter(Boolean).join('')
+    : (helpHtml || infoHtml);
+
   return buildTooltipContent({
-    leadHtml: injectOrgFields(labelData?.info, orgMeta),
-    helpHtml: additionalHelpText ? injectOrgFields(additionalHelpText, orgMeta) : '',
-    detailsHtml: injectOrgFields(labelData?.details, orgMeta),
-    dedupeHelpTextAgainstLead: true
+    leadHtml,
+    detailsHtml: injectOrgFields(details, orgMeta)
   });
 }
 
-// Section headings shown above bullets grouped by help-text key.
+// Small muted eyebrow labels shown above bullets grouped by help-text key —
+// used in Insights, where "Compliant" can combine both coverage and
+// compliance criteria in one tooltip and needs the labels to tell them apart.
 const HELP_TEXT_SECTION_HEADINGS = {
   covered_by_policy: 'Coverage',
   compliant: 'Compliance'
+};
+
+// Short framing phrases used instead, in Explore, where each tooltip only
+// ever shows one of these groups — a label would just repeat the tooltip's
+// own subject, so a phrase introducing the criteria reads better. Written
+// without trailing punctuation: a single point folds straight into one
+// sentence with this phrase (see renderPointsWithLeadIn); multiple points
+// get it as its own line, with a colon added, above a bulleted list.
+const HELP_TEXT_SECTION_INTROS = {
+  covered_by_policy: 'Publications are covered if',
+  compliant: 'Publications are compliant if'
 };
 
 /**
@@ -115,19 +165,62 @@ function escapeHtml(text = '') {
 }
 
 /**
- * Converts plain text (one requirement per line) into escaped `<li>` items,
- * so org contacts can list bullets in a Sheet cell without writing HTML.
+ * Splits plain text (one point per line, so org contacts can list points in
+ * a Sheet cell without writing HTML) into trimmed, non-empty points.
  *
- * @param {string} [text=''] - Plain text, one bullet per line.
- * @returns {string} Concatenated `<li>` items.
+ * @param {string} [text=''] - Plain text, one point per line.
+ * @returns {string[]} The individual points.
  */
-function buildBulletItemsFromPlainText(text = '') {
+function splitPoints(text = '') {
   return text
     .split(/\r?\n/)
     .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line) => `<li>${escapeHtml(line)}</li>`)
-    .join('');
+    .filter(Boolean);
+}
+
+/**
+ * Renders points as a bulleted list — or, when there's only one, as a single
+ * line, since a one-item bullet list reads oddly.
+ *
+ * @param {string[]} points - Points to render.
+ * @returns {string} Rendered HTML.
+ */
+function renderPointsAsListOrLine(points) {
+  if (points.length === 1) return `<p>${escapeHtml(points[0])}</p>`;
+  return `<ul class="list-disc list-outside pl-5">${points.map((point) => `<li>${escapeHtml(point)}</li>`).join('')}</ul>`;
+}
+
+/**
+ * Renders plain text (one point per line) introduced by a framing phrase
+ * (e.g. "Publications are covered if"). A single point folds into one
+ * flowing sentence with the phrase — its first letter styled lowercase (via
+ * the `lowercase` class, matching the pluralising-suffix pattern used
+ * elsewhere in this codebase) since the org's own text still starts with a
+ * capital, as it does where it's shown standalone (e.g. Insights). Multiple
+ * points keep the phrase as its own line, followed by a list, since several
+ * points can't be folded into one sentence.
+ *
+ * This only reads well when the org's point is itself phrased as something
+ * that can follow "if" (e.g. "supported by the Gates Foundation…", not a
+ * bare noun phrase missing a verb like "Any version freely available…",
+ * which "if" can't turn into a grammatical clause no matter the casing) —
+ * that's a content-authoring concern for whoever writes the org's text, not
+ * something this function can detect or fix.
+ *
+ * @param {string} [text=''] - Plain text, one point per line.
+ * @param {string} [leadIn=''] - Framing phrase, without trailing punctuation.
+ * @returns {string} Rendered HTML.
+ */
+function renderPointsWithLeadIn(text = '', leadIn = '') {
+  const points = splitPoints(text);
+
+  if (points.length === 1 && leadIn) {
+    const [first, ...rest] = points[0];
+    return `<p>${escapeHtml(leadIn)} <span class="lowercase">${escapeHtml(first)}</span>${escapeHtml(rest.join(''))}</p>`;
+  }
+
+  const introHtml = leadIn ? `<p class="mb-1">${escapeHtml(leadIn)}:</p>` : '';
+  return `${introHtml}${renderPointsAsListOrLine(points)}`;
 }
 
 /**
@@ -140,13 +233,16 @@ function buildBulletItemsFromPlainText(text = '') {
  * For "paragraph" style, trusted HTML.
  * @param {Object} [options.org_meta={}] - Org-specific values for placeholder injection.
  * @param {string} [options.help_text_style='paragraph'] - Output style, e.g. "paragraph" or "bullets".
+ * @param {'label'|'sentence'} [options.heading_style='label'] - How to introduce each group for "bullets" style:
+ * a small eyebrow label (Insights, where groups can combine) or a framing sentence (Explore, always one group).
  * @returns {string} Rendered help HTML.
  */
 export function buildDefinitionHelpHtml({
   help_text = [],
   help_text_by_key = {},
   org_meta = {},
-  help_text_style = 'paragraph'
+  help_text_style = 'paragraph',
+  heading_style = 'label'
 } = {}) {
   const helpEntries = help_text
     .map((key) => ({ key, html: help_text_by_key[key]?.trim() }))
@@ -156,9 +252,12 @@ export function buildDefinitionHelpHtml({
   if (!helpEntries.length) return '';
   if (help_text_style === 'bullets') {
     const groups = helpEntries.map(({ key, html }) => {
+      if (heading_style === 'sentence') {
+        return `<div>${renderPointsWithLeadIn(html, HELP_TEXT_SECTION_INTROS[key])}</div>`;
+      }
       const heading = HELP_TEXT_SECTION_HEADINGS[key];
-      const headingHtml = heading ? `<div class="font-semibold uppercase mt-2 mb-1">${heading}:</div>` : '';
-      return `<div>${headingHtml}<ul class="list-disc list-outside pl-5">${buildBulletItemsFromPlainText(html)}</ul></div>`;
+      const headingHtml = heading ? `<div class="text-xs font-medium uppercase tracking-wide text-neutral-700 mt-2 mb-1">${heading}:</div>` : '';
+      return `<div>${headingHtml}${renderPointsAsListOrLine(splitPoints(html))}</div>`;
     });
     return `<div class="space-y-2">${groups.join('')}</div>`;
   }

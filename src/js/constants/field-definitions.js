@@ -33,6 +33,7 @@ export const FIELD_DEFINITIONS = {
   },
   covered_by_policy: {
     label: "Covered by policy",
+    details: "<p>We use data from Crossref and OpenAlex.</p>",
     explore: {
       info: `Publications covered by ${POLICY_LINK_EXPLORE}.`,
       help_text: ["covered_by_policy"],
@@ -122,7 +123,7 @@ export const FIELD_DEFINITIONS = {
   with_apc: {
     label: "With APC<span class='lowercase'>s</span>",
     explore: {
-      info: "Journal articles with an article-processing charge (APC) paid by <span class='org-name'></span>."
+      info: "Publications with an article-processing charge (APC) paid by <span class='org-name'></span>."
     }
   },
   with_data: { label: "Original research", explore: {} },

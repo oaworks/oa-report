@@ -18,7 +18,7 @@ import { orgDataPromise, initInsightsAndActions } from './insights-and-actions.j
 import { AUTHOR_BREAKDOWN_TERM, getAggregatedDataQuery, formatAggregationBucket, getFieldFilterValues, toTermField, getPercentageMetricAggKeys } from './aggregated-data-query.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { createTooltip, createPopover } from './tooltip-manager.js';
-import { buildDefinitionTooltipContent, buildTooltipContent, buildDefinitionHelpHtml, injectOrgFields } from './tooltip-content.js';
+import { buildFieldDefinitionTooltipContent, injectOrgFields } from './tooltip-content.js';
 
 // =================================================
 // Global variables
@@ -1356,10 +1356,9 @@ function isNumericLikeValue(value) {
 }
 
 /**
- * Generates the HTML content for a tooltip, including information and optional methodology details.
- *
- * Field definitions with a `help_text` list (e.g. compliant/covered_by_policy columns) get their
- * org-specific policy text rendered as a bulleted list behind the Methodology section, matching Insights.
+ * Generates the HTML content for a tooltip from a field definition. Unlike
+ * Insights, an Explore tooltip only ever shows one help-text group at a
+ * time, so it introduces it with a framing sentence rather than a label.
  *
  * @param {Object} labelData - The object containing the label, info, and optionally details/help_text for the tooltip.
  * @param {Object|null} [helpTextByKey=null] - Org-specific help text keyed by field id.
@@ -1368,21 +1367,14 @@ function isNumericLikeValue(value) {
 function generateTooltipContent(labelData, helpTextByKey = null) {
   const orgMeta = { orgName, orgPolicyCoverage, orgPolicyCompliance, orgPolicyUrl };
 
-  if (!labelData?.help_text?.length) {
-    return buildDefinitionTooltipContent(labelData, null, orgMeta);
-  }
-
-  const helpHtml = buildDefinitionHelpHtml({
-    help_text: labelData.help_text,
+  return buildFieldDefinitionTooltipContent({
+    info: labelData?.info,
+    details: labelData?.details,
+    help_text: labelData?.help_text,
     help_text_by_key: helpTextByKey || {},
-    org_meta: orgMeta,
-    help_text_style: labelData.help_text_style
-  });
-  const detailsParts = [injectOrgFields(labelData.details, orgMeta), helpHtml].filter(Boolean);
-
-  return buildTooltipContent({
-    leadHtml: injectOrgFields(labelData.info, orgMeta),
-    detailsHtml: detailsParts.length > 1 ? `<div class="space-y-2">${detailsParts.join('')}</div>` : detailsParts.join('')
+    help_text_style: labelData?.help_text_style,
+    heading_style: 'sentence',
+    orgMeta
   });
 }
 

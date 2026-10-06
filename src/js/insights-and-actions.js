@@ -14,7 +14,7 @@ import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { initActionTabs, formatDoiEpmcListForClipboard, getAuthorFilterCount } from './actions.js';
 import { createPopover } from './tooltip-manager.js';
-import { buildTooltipContent, buildDefinitionHelpHtml, injectOrgFields } from './tooltip-content.js';
+import { buildTooltipContent, buildFieldDefinitionTooltipContent, injectOrgFields } from './tooltip-content.js';
 import { getInsightsAggregationQuery, formatAggregationBucket } from './aggregated-data-query.js';
 import { startLoading, stopLoading } from './components.js';
 
@@ -120,16 +120,13 @@ function buildInsightDefinitionsHtml(numerator, insightInfo = '', helpTextByKey 
     return buildInsightTooltipSection(insightInfo, showHeading);
   }
 
-  const helpHtml = buildDefinitionHelpHtml({
+  const contentHtml = buildFieldDefinitionTooltipContent({
+    info: insightInfo,
+    details: fieldDefinition.details,
     help_text: fieldDefinition.help_text,
     help_text_by_key: helpTextByKey,
-    org_meta: orgMeta,
-    help_text_style: fieldDefinition.help_text_style
-  });
-  const detailsParts = [injectOrgFields(fieldDefinition.details, orgMeta), helpHtml].filter(Boolean);
-  const contentHtml = buildTooltipContent({
-    leadHtml: injectOrgFields(insightInfo, orgMeta),
-    detailsHtml: detailsParts.length > 1 ? `<div class="space-y-2">${detailsParts.join('')}</div>` : detailsParts.join('')
+    help_text_style: fieldDefinition.help_text_style,
+    orgMeta
   });
 
   return buildInsightTooltipSection(contentHtml, showHeading);
