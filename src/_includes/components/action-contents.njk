@@ -45,12 +45,6 @@
       <p class="flex items-center gap-1.5" aria-live="polite">
         <span id="total_{{ params.id }}">00</span>
         <span>actions shown</span>
-        {% if params.action_help_txt %}
-        {{ component("tooltip", {
-          sup: true,
-          msg: "<p class='mb-2'>We tried to remove common errors and publications that are already in a repository (either embargoed or available). This list was produced using Unpaywall, Crossref, and ShareYourPaper Permissions data.</p>"
-        }) }}
-        {% endif %}
       </p>
       {% if params.copy_btn %}
       {{ component("copy-btn", {
