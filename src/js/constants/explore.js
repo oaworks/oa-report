@@ -570,7 +570,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "financial_disclosures": {
     label: "Financial disclosures",
-    info: "<p><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if this work’s funding statement is a financial disclosure.</p>"
+    info: ""
   },
   "fundingstatement": {
     label: "Funding statement",
@@ -634,11 +634,11 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "is_compliant": {
     label: "Compliant?",
-    info: "<p><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if the work is compliant with the organization’s Open Access policy.</p>"
+    info: ""
   },
   "is_compliant_all_works": {
     label: "Compliant?",
-    info: "<p><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if the work is compliant with the organization’s Open Access policy.</p>"
+    info: ""
   },
   "is_compliant_with_current_policy": {
     label: "Compliant with current <span class='uppercase'>OA</span> policy",
@@ -658,7 +658,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "is_covered_by_policy": {
     label: "Covered by <span class='uppercase'>OA</span> policy",
-    info: "<p><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if the work is covered under the organization’s Open Access policy.</p>"
+    info: ""
   },
   "is_new": {
     label: "New?",
@@ -684,7 +684,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "is_preprint": {
     label: "Preprint?",
-    info: "<p><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if the publication is a preprint.</p>"
+    info: ""
   },
   "oasupport.status": {
     label: "OA.Support status",
@@ -716,7 +716,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "remove": {
     label: "Remove",
-    info: "<p><code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if the work should be removed from an organization’s results for any reason.</p>"
+    info: ""
   },
   "repository_license_best": {
     label: "Repository license (best)",
@@ -748,7 +748,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "is_financial_disclosure": {
     label: "Financial disclosure",
-    info: "<code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if this work's funding statement is actually a financial disclosure"
+    info: ""
   },
   "removed_from_report": {
     label: "Removed from OA.Report",
@@ -768,7 +768,7 @@ export const EXPLORE_HEADER_ARTICLES_LABELS = {
   },
   "has_epmc_fulltext": {
     label: "Europe PMC full text",
-    info: "<code class='p-1 rounded-md bg-neutral-700 text-white text-xs'>True</code> if the article has full text available in Europe PMC"
+    info: ""
   },
   "epmc_licence": {
     label: "Europe PMC license",
