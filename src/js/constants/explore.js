@@ -6,48 +6,39 @@
 export const EXPLORE_ITEMS_LABELS = {
   "articles": {
     singular: "Journal article",
-    plural: "Journal articles",
-    tooltip: "Explore various journal articles"
+    plural: "Journal articles"
   },
   "covered_by_policy": {
     singular: "Work covered by policy",
-    plural: "Works covered by policy",
-    tooltip: "Explore various works covered by your policy"
+    plural: "Works covered by policy"
   },
   "unique_publication": {
     singular: "Publication",
-    plural: "Publications",
-    tooltip: "Explore unique publications, i.e., journal articles and preprints without an associated journal article"
+    plural: "Publications"
   },
   "preprint": {
     singular: "Preprint",
-    plural: "Preprints",
-    tooltip: "Explore various preprints"
+    plural: "Preprints"
   },
   "grant": {
     singular: "Grant",
-    plural: "Grants",
-    tooltip: "View grant-related data"
+    plural: "Grants"
   },
   "author": {
     singular: "Author",
-    plural: "Authors",
-    tooltip: "Discover information about authors"
+    plural: "Authors"
   },
   "author_name": {
     singular: "Author (Name)",
-    plural: "Authors (Name)",
-    tooltip: "Discover information about authors by name"
+    plural: "Authors (Name)"
   },
   "year": {
     singular: "Year",
-    plural: "Years",
-    tooltip: "Discover information about years"
+    plural: "Years"
   },
   "journal": {
     singular: "Journal",
-    plural: "Journals",
-    tooltip: "Discover information about journals"
+    plural: "Journals"
   },
   "publisher": {
     singular: "Publisher",
