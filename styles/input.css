@@ -181,7 +181,7 @@
   }
 
   .loading-logo-pulse__dot {
-    background-color: var(--color-carnation-500);
+    background-color: theme(colors.carnation.500);
     border-radius: 9999px;
     inset: 0;
     position: absolute;
