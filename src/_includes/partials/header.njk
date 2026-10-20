@@ -46,7 +46,7 @@
     {% endif %}
 
     <!-- Hamburger Button -->
-    <button id="menu-toggle" aria-expanded="false" aria-controls="mobile-menu" class="sm:hidden {% if isReportPage %}hidden{% endif %} flex items-center justify-center p-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-carnation-500">
+    <button id="menu-toggle" aria-expanded="false" aria-controls="mobile-menu" class="sm:hidden {% if isReportPage %}hidden{% endif %} flex items-center justify-center p-2 text-gray-900 focus:outline-hidden focus:ring-2 focus:ring-carnation-500">
       {% icon_small "menu" %}
       <span id="menu-toggle-label" class="sr-only">Open menu</span>
     </button>
@@ -57,7 +57,7 @@
         {% if isMarketingHeader %}
         <a href="https://about.oa.report/" class="text-[11px] md:text-xs lg:text-sm font-medium leading-6 px-4 py-2 sm:p-0">About</a>
         <a href="https://blog.oa.works/join-the-oa-report-for-libraries-pilot-to-simplify-compliance-checking-for-your-institutional-funders-oa-policies/" target="_blank" class="text-[11px] md:text-xs lg:text-sm font-semibold leading-6 px-4 py-2 sm:p-0">For libraries</a>
-        <a href="https://savvycal.com/Joe/ed52a37f" data-savvycal-embed class="inline-block bg-carnation-600 text-white text-[11px] md:text-xs lg:text-sm p-2 md:rounded-sm hover:bg-carnation-500 transition-all duration-300 ease-in-out transform md:hover:scale-105 focus:outline-none focus:ring-4 focus:ring-carnation-200 font-semibold px-4 py-2">
+        <a href="https://savvycal.com/Joe/ed52a37f" data-savvycal-embed class="inline-block bg-carnation-600 text-white text-[11px] md:text-xs lg:text-sm p-2 md:rounded-xs hover:bg-carnation-500 transition-all duration-300 ease-in-out transform md:hover:scale-105 focus:outline-hidden focus:ring-4 focus:ring-carnation-200 font-semibold px-4 py-2">
           Schedule a demo
         </a>
         {% endif %}
@@ -96,7 +96,7 @@
               <button
                 type="button"
                 id="js-filters-trigger"
-                class="inline-flex items-center rounded-full border border-neutral-600 bg-neutral-900 px-2.5 py-1 text-sm font-medium text-neutral-200 transition-colors hover:border-neutral-400 hover:bg-neutral-800 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-900"
+                class="inline-flex items-center rounded-full border border-neutral-600 bg-neutral-900 px-2.5 py-1 text-sm font-medium text-neutral-200 transition-colors hover:border-neutral-400 hover:bg-neutral-800 hover:text-white focus:outline-hidden focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-900"
                 aria-haspopup="dialog"
                 aria-expanded="false"
                 aria-disabled="true"
@@ -107,9 +107,9 @@
 
         {% if isReportPage %}
         <nav class="hidden sm:flex items-center" aria-label="Report sections">
-          <a id="section-tab-insights" class="mr-4 inline-flex items-center gap-1 text-sm font-medium text-neutral-300 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-sm js_section_tab" href="#insights">Insights {% icon_small "arrow-down" %}</a>
-          <a id="section-tab-explore" class="mr-4 inline-flex items-center gap-1 text-sm font-medium text-neutral-300 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-sm js_section_tab" href="#explore">Explore {% icon_small "arrow-down" %}</a>
-          <a id="section-tab-actions" data-auth="in" class="inline-flex items-center gap-1 text-sm font-medium text-neutral-300 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-sm js_section_tab" href="#actions">Actions {% icon_small "arrow-down" %}</a>
+          <a id="section-tab-insights" class="mr-4 inline-flex items-center gap-1 text-sm font-medium text-neutral-300 hover:text-white transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-white rounded-xs js_section_tab" href="#insights">Insights {% icon_small "arrow-down" %}</a>
+          <a id="section-tab-explore" class="mr-4 inline-flex items-center gap-1 text-sm font-medium text-neutral-300 hover:text-white transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-white rounded-xs js_section_tab" href="#explore">Explore {% icon_small "arrow-down" %}</a>
+          <a id="section-tab-actions" data-auth="in" class="inline-flex items-center gap-1 text-sm font-medium text-neutral-300 hover:text-white transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-white rounded-xs js_section_tab" href="#actions">Actions {% icon_small "arrow-down" %}</a>
         </nav>
         {% endif %}
       </div>

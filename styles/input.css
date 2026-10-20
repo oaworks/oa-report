@@ -32,12 +32,6 @@
   text-align: left;
 }
 
-@utility has-orgkey {
-  &html [data-auth='out'] {
-    display: none;
-  }
-}
-
 @layer utilities {
   /* Default sans-serif body font, Inter */
   :root {
@@ -209,6 +203,9 @@
 }
 
 @layer components {
+  html.has-orgkey [data-auth="out"] {
+    display: none;
+  }
   html:not(.has-orgkey) [data-auth="in"] {
     display: none;
   }
