@@ -1,88 +1,130 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
-/* Default sans-serif body font, Inter */
-:root { font-family: 'Inter', sans-serif; }
+@config './tailwind.config.js';
 
-@supports (font-variation-settings: normal) {
-  :root { font-family: 'Inter var', sans-serif; }
-}
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
 
-@font-face {
-  font-family: 'Inter var';
-  src: url('fonts/inter/InterVariable.woff2') format('woff2');
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Inter var';
-  src: url('fonts/inter/InterVariable-Italic.woff2') format('woff2');
-  font-weight: 100 900;
-  font-style: italic;
-  font-display: swap;
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
 }
 
-@font-face {
-  font-family: 'Inter';
-  src: url('fonts/inter/InterVariable.woff2') format('woff2');
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Inter';
-  src: url('fonts/inter/InterVariable-Italic.woff2') format('woff2');
-  font-weight: 100 900;
-  font-style: italic;
-  font-display: swap;
+@utility report_readable_start_date {
+  display: inline-block;
+  min-width: 11ch;
+  text-align: right;
 }
 
-/* Serif font used for some headings, Redaction */
-@font-face {
-  font-family: 'Redaction';
-  src: url('fonts/redaction/Redaction-Regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Redaction';
-  src: url('fonts/redaction/Redaction-Bold.woff2') format('woff2');
-  font-weight: 700;
-  font-style: bold;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Redaction';
-  src: url('fonts/redaction/Redaction-Italic.woff2') format('woff2');
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
+@utility report_readable_end_date {
+  display: inline-block;
+  min-width: 11ch;
+  text-align: left;
 }
 
-/* Redaction 20 (Degraded) Styles */
-@font-face {
-  font-family: 'Redaction 20';
-  src: url('fonts/redaction/Redaction_20-Regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
+@utility has-orgkey {
+  &html [data-auth='out'] {
+    display: none;
+  }
 }
-@font-face {
-  font-family: 'Redaction 20';
-  src: url('fonts/redaction/Redaction_20-Bold.woff2') format('woff2');
-  font-weight: 700;
-  font-style: bold;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Redaction 20';
-  src: url('fonts/redaction/Redaction_20-Italic.woff2') format('woff2');
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
+
+@layer utilities {
+  /* Default sans-serif body font, Inter */
+  :root {
+    font-family: 'Inter', sans-serif;
+  }
+
+  @supports (font-variation-settings: normal) {
+    :root {
+      font-family: 'Inter var', sans-serif;
+    }
+  }
+
+  @font-face {
+    font-family: 'Inter var';
+    src: url('fonts/inter/InterVariable.woff2') format('woff2');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Inter var';
+    src: url('fonts/inter/InterVariable-Italic.woff2') format('woff2');
+    font-weight: 100 900;
+    font-style: italic;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'Inter';
+    src: url('fonts/inter/InterVariable.woff2') format('woff2');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Inter';
+    src: url('fonts/inter/InterVariable-Italic.woff2') format('woff2');
+    font-weight: 100 900;
+    font-style: italic;
+    font-display: swap;
+  }
+
+  /* Serif font used for some headings, Redaction */
+  @font-face {
+    font-family: 'Redaction';
+    src: url('fonts/redaction/Redaction-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Redaction';
+    src: url('fonts/redaction/Redaction-Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-style: bold;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Redaction';
+    src: url('fonts/redaction/Redaction-Italic.woff2') format('woff2');
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+  }
+
+  /* Redaction 20 (Degraded) Styles */
+  @font-face {
+    font-family: 'Redaction 20';
+    src: url('fonts/redaction/Redaction_20-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Redaction 20';
+    src: url('fonts/redaction/Redaction_20-Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-style: bold;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Redaction 20';
+    src: url('fonts/redaction/Redaction_20-Italic.woff2') format('woff2');
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+  }
 }
 
 @layer base {
@@ -96,92 +138,77 @@
     [role="button"],
     [tabindex]:not([tabindex="-1"])
   ):focus-visible {
-    outline: 2px solid theme('colors.carnation.400') !important;
+    outline: 2px solid var(--color-carnation-400) !important;
     outline-offset: 2px !important;
     box-shadow: none !important;
   }
 }
 
-@keyframes loadingLogoPulse {
-  from {
-    transform: scale(1);
+@layer utilities {
+  @keyframes loadingLogoPulse {
+    from {
+      transform: scale(1);
+    }
+
+    to {
+      transform: scale(2.4);
+    }
   }
 
-  to {
-    transform: scale(2.4);
-  }
-}
+  @keyframes loadingCompactPulse {
+    from {
+      transform: scale(1);
+    }
 
-@keyframes loadingCompactPulse {
-  from {
-    transform: scale(1);
-  }
-
-  to {
-    transform: scale(1.35);
-  }
-}
-
-.loading-overlay__compact-indicator {
-  display: none;
-}
-
-.loading-overlay--compact .loading-overlay__background {
-  background-color: rgb(23 23 23 / 80%);
-}
-
-.loading-overlay--compact .loading-logo {
-  display: none;
-}
-
-.loading-overlay--compact .loading-overlay__compact-indicator {
-  display: block;
-}
-
-.loading-logo-pulse {
-  height: 1.25rem;
-  width: 1.25rem;
-}
-
-.loading-logo-pulse__dot {
-  background-color: theme('colors.carnation.500');
-  border-radius: 9999px;
-  inset: 0;
-  position: absolute;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .loading-logo-pulse__dot {
-    animation: loadingLogoPulse .5s ease-in-out infinite alternate;
+    to {
+      transform: scale(1.35);
+    }
   }
 
   .loading-overlay__compact-indicator {
-    animation: loadingCompactPulse .8s ease-in-out infinite alternate;
-  }
-}
-
-.loading-logo .logo-dot {
-  visibility: hidden;
-}
-
-@layer components {
-  .report_readable_start_date,
-  .report_readable_end_date {
-    display: inline-block;
-    min-width: 11ch;
-  }
-  .report_readable_start_date {
-    text-align: right;
-  }
-  .report_readable_end_date {
-    text-align: left;
-  }
-}
-
-@layer components {
-  html.has-orgkey [data-auth="out"] {
     display: none;
   }
+
+  .loading-overlay--compact .loading-overlay__background {
+    background-color: rgb(23 23 23 / 80%);
+  }
+
+  .loading-overlay--compact .loading-logo {
+    display: none;
+  }
+
+  .loading-overlay--compact .loading-overlay__compact-indicator {
+    display: block;
+  }
+
+  .loading-logo-pulse {
+    height: 1.25rem;
+    width: 1.25rem;
+  }
+
+  .loading-logo-pulse__dot {
+    background-color: var(--color-carnation-500);
+    border-radius: 9999px;
+    inset: 0;
+    position: absolute;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .loading-logo-pulse__dot {
+      animation: loadingLogoPulse 0.5s ease-in-out infinite alternate;
+    }
+
+    .loading-overlay__compact-indicator {
+      animation: loadingCompactPulse 0.8s ease-in-out infinite alternate;
+    }
+  }
+
+  .loading-logo .logo-dot {
+    visibility: hidden;
+  }
+}
+
+@layer components {
   html:not(.has-orgkey) [data-auth="in"] {
     display: none;
   }
