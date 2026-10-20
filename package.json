@@ -8,7 +8,7 @@
     "clean": "rm -rf dist",
     "build": "ELEVENTY_PRODUCTION=true eleventy && NODE_ENV=production npm run minify-css && npm run minify-js",
     "minify-js": "mkdir -p dist/js && esbuild src/js/main.js --bundle --minify --format=esm --target=es2018 --outfile=dist/js/main.min.js",
-    "minify-css": "npx tailwindcss -i styles/input.css -c styles/tailwind.config.js -o dist/tailwind.css --minify"
+    "minify-css": "npx @tailwindcss/cli -i styles/input.css -o dist/tailwind.css --minify"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +17,7 @@
     "@11ty/eleventy": "^3.1.7",
     "@floating-ui/dom": "^1.8.0",
     "@phosphor-icons/web": "^2.1.1",
+    "@tailwindcss/cli": "^4.3.3",
     "@tryghost/content-api": "^1.12.13",
     "concurrently": "^10.0.6",
     "dompurify": "3.4.17",
