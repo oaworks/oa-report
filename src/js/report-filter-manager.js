@@ -608,7 +608,7 @@ function addFilterRow(container) {
 
   const fieldSelect = document.createElement("select");
   fieldSelect.id = fieldId;
-  fieldSelect.className = `js-filter-field mt-1 block h-9 w-full rounded-sm border border-neutral-600 bg-neutral-900/50 px-2 text-xs leading-tight text-white shadow-sm transition-colors hover:border-neutral-400 focus:border-neutral-300 ${CONTROL_FOCUS_RING_CLASSES} md:text-sm`;
+  fieldSelect.className = `js-filter-field mt-1 block h-9 w-full rounded-xs border border-neutral-600 bg-neutral-900/50 px-2 text-xs leading-tight md:leading-5 text-white shadow-xs transition-colors hover:border-neutral-400 focus:border-neutral-300 ${CONTROL_FOCUS_RING_CLASSES} md:text-sm`;
   fieldSelect.required = true;
   fieldSelect.setAttribute("aria-required", "true");
 
@@ -640,7 +640,7 @@ function addFilterRow(container) {
   const input = document.createElement("input");
   input.id = inputId;
   input.type = "text";
-  input.className = `js-filter-input mt-1 h-9 w-full rounded-sm border border-neutral-600 bg-neutral-900/50 p-2 text-xs leading-tight text-white shadow-sm transition-colors placeholder-neutral-500 hover:border-neutral-400 focus:border-neutral-300 disabled:border-neutral-700 disabled:bg-neutral-800 disabled:text-neutral-500 disabled:placeholder-neutral-500 ${CONTROL_FOCUS_RING_CLASSES} md:text-sm`;
+  input.className = `js-filter-input mt-1 h-9 w-full rounded-xs border border-neutral-600 bg-neutral-900/50 p-2 text-xs leading-tight md:leading-5 text-white shadow-xs transition-colors placeholder-neutral-500 hover:border-neutral-400 focus:border-neutral-300 disabled:border-neutral-700 disabled:bg-neutral-800 disabled:text-neutral-500 disabled:placeholder-neutral-500 ${CONTROL_FOCUS_RING_CLASSES} md:text-sm`;
   input.placeholder = "Start typing to see suggestions…";
   input.disabled = true;
   input.setAttribute("aria-disabled", "true");
@@ -658,7 +658,7 @@ function addFilterRow(container) {
 
   const listbox = document.createElement("ul");
   listbox.id = listboxId;
-  listbox.className = "js-filter-suggestions absolute z-10 mt-1 hidden max-h-48 w-full overflow-auto rounded-sm border border-neutral-600 bg-neutral-900 shadow-lg";
+  listbox.className = "js-filter-suggestions absolute z-10 mt-1 hidden max-h-48 w-full overflow-auto rounded-xs border border-neutral-600 bg-neutral-900 shadow-lg";
   listbox.setAttribute("role", "listbox");
   listbox.setAttribute("aria-label", "Filter value suggestions");
 
@@ -1162,7 +1162,7 @@ export function renderActiveFiltersBanner() {
         const chipText = fieldDef?.suffix ? `${displayVal} ${fieldDef.suffix}` : displayVal;
         const chip = document.createElement("button");
         chip.type = "button";
-        chip.className = "js-filter-chip inline-flex items-center rounded-full bg-neutral-100 px-2.5 py-1 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-900";
+        chip.className = "js-filter-chip inline-flex items-center rounded-full bg-neutral-100 px-2.5 py-1 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-200 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-900";
         chip.setAttribute("aria-label", `Remove ${DOMPurify.sanitize(label, { ALLOWED_TAGS: [] })}: ${chipText}`);
         chip.setAttribute("data-field", ensureKeywordField(field));
         const chipIconName = iconForField(field);
@@ -1218,7 +1218,7 @@ export function renderActiveFiltersBanner() {
     clearBtn = document.createElement("button");
     clearBtn.type = "button";
     clearBtn.id = "js-clear-q-filters";
-    clearBtn.className = "inline-flex items-center px-2.5 py-1 text-sm font-medium text-neutral-300 transition-colors hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-900";
+    clearBtn.className = "inline-flex items-center px-2.5 py-1 text-sm font-medium text-neutral-300 transition-colors hover:text-white focus:outline-hidden focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-900";
     clearBtn.textContent = "Clear all";
     mount.appendChild(clearBtn);
   }
@@ -1250,7 +1250,7 @@ export function renderActiveFiltersBanner() {
   // filter's own icon, Actions shown, Open draft).
   const helpIcon = document.createElement("button");
   helpIcon.type = "button";
-  helpIcon.className = `tooltip ${INFO_TRIGGER_ICON_CLASSES} rounded-sm`;
+  helpIcon.className = `tooltip ${INFO_TRIGGER_ICON_CLASSES} rounded-xs`;
   helpIcon.setAttribute("aria-label", "Filtering tips");
   helpIcon.setAttribute("data-tooltip-trigger", "click");
   helpIcon.setAttribute("data-tooltip-placement", "bottom-start");
@@ -1281,7 +1281,7 @@ export function renderActiveFiltersBanner() {
   const applyBtn = document.createElement("button");
   applyBtn.type = "submit";
   applyBtn.id = "js-apply-filters";
-  applyBtn.className = "mb-1 mt-1 inline-flex w-full items-center justify-center rounded-sm border border-neutral-100 bg-neutral-100 p-2 font-semibold text-neutral-900 transition-colors hover:bg-neutral-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900";
+  applyBtn.className = "mb-1 mt-1 inline-flex w-full items-center justify-center rounded-xs border border-neutral-100 bg-neutral-100 p-2 font-semibold text-neutral-900 transition-colors hover:bg-neutral-200 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900";
   applyBtn.textContent = "Apply";
   filterForm.appendChild(applyBtn);
 

@@ -478,7 +478,7 @@ function createDropdownContainer(id = null) {
   dropdown.className = DATE_SELECTION_BUTTON_CLASSES.enabled + " relative inline-block js_dropdown";
 
   const dropdownButton = document.createElement("button");
-  dropdownButton.className = "h-full w-full rounded-t-sm js_dropdown_button focus:outline-none focus-visible:ring-2 focus-visible:ring-white";
+  dropdownButton.className = "h-full w-full rounded-t-xs js_dropdown_button focus:outline-hidden focus-visible:ring-2 focus-visible:ring-white";
   if (id) dropdownButton.id = id;
   dropdownButton.setAttribute("aria-expanded", "false");
   dropdownButton.innerHTML = "More <span class='sr-only'>years</span> <span class='ml-1 text-xs' aria-hidden='true'>&#9660;</span>";
@@ -499,13 +499,13 @@ function createDropdownContainer(id = null) {
     "max-h-[min(20rem,calc(100vh-6rem))]",
     "overflow-y-auto",
     "overscroll-contain",
-    "rounded-sm",
+    "rounded-xs",
     "shadow-lg",
     "border",
     "border-neutral-400",
     "bg-neutral-800",
     "text-neutral-100",
-    "focus:outline-none",
+    "focus:outline-hidden",
     "focus:ring-2",
     "focus:ring-offset-2",
     "focus:ring-neutral-300",
@@ -539,7 +539,7 @@ function createDropdownItem(buttonId, buttonText, startDate, endDate, dropdownBu
 
   item.className =
     "js_dropdown_item block w-full px-4 py-2 text-left text-xs " +
-    "bg-neutral-800 text-neutral-100 hover:bg-neutral-700 focus:outline-none focus:bg-neutral-700 active:bg-neutral-700";
+    "bg-neutral-800 text-neutral-100 hover:bg-neutral-700 focus:outline-hidden focus:bg-neutral-700 active:bg-neutral-700";
 
   item.textContent = buttonText;
 
@@ -686,7 +686,7 @@ function createDateRangeForm() {
   const applyBtn = document.createElement("button");
   applyBtn.type = "submit";
   applyBtn.id = "js-date-range-apply-button";
-  applyBtn.className = "mt-1 inline-flex w-full items-center justify-center rounded-sm border border-neutral-100 bg-neutral-100 px-2 py-1 font-semibold text-neutral-900 transition-colors hover:bg-neutral-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 md:mt-0 md:px-3 md:py-1.5";
+  applyBtn.className = "mt-1 inline-flex w-full items-center justify-center rounded-xs border border-neutral-100 bg-neutral-100 px-2 py-1 font-semibold text-neutral-900 transition-colors hover:bg-neutral-200 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 md:mt-0 md:px-3 md:py-1.5";
   applyBtn.textContent = "Apply";
   dateForm.appendChild(applyBtn);
 
@@ -823,7 +823,7 @@ function createDateInput(id, label) {
   const input = document.createElement("input");
   input.type = "date";
   input.id = id;
-  input.className = "block w-full rounded-sm border border-neutral-600 bg-neutral-900/50 px-2 py-1 text-center text-xs text-white shadow-sm transition-colors hover:border-neutral-400 focus:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-carnation-400 focus:ring-offset-1 focus:ring-offset-neutral-900 md:text-sm";
+  input.className = "block w-full rounded-xs border border-neutral-600 bg-neutral-900/50 px-2 py-1 text-center text-xs text-white shadow-xs transition-colors hover:border-neutral-400 focus:border-neutral-300 focus:outline-hidden focus:ring-2 focus:ring-carnation-400 focus:ring-offset-1 focus:ring-offset-neutral-900 md:text-sm";
   input.setAttribute('aria-label', label);
   input.required = label === "From";
   wrapper.appendChild(input);

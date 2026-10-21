@@ -11,7 +11,7 @@ Click-triggered (a dialog) by default; pass trigger: "hover" for a true hover/fo
 #}
 
 {% from "components/info-trigger-icon.njk" import triggerIconClasses with context %}
-{% set triggerClasses = "tooltip " + triggerIconClasses() + " rounded-sm" %}
+{% set triggerClasses = "tooltip " + triggerIconClasses() + " rounded-xs" %}
 
 {% if params.sup %}
 <sup

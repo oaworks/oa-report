@@ -8,17 +8,17 @@
  * @type {{enabled:string,disabled:string,active:string}}
  */
 export const DATE_SELECTION_BUTTON_CLASSES = {
-  enabled: "inline-flex items-center px-2.5 py-1 md:px-3 border rounded-sm text-sm font-medium bg-neutral-800 text-white border-neutral-400 hover:bg-neutral-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors js-nav-chip",
-  disabled: "inline-flex items-center px-2.5 py-1 md:px-3 border rounded-sm text-sm font-medium bg-neutral-800 text-neutral-500 opacity-60 cursor-not-allowed border-neutral-700 js-nav-chip",
-  active: "inline-flex items-center px-2.5 py-1 md:px-3 border rounded-sm text-sm font-semibold bg-neutral-200 text-neutral-900 border-neutral-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-700 transition-colors js-nav-chip"
+  enabled: "inline-flex items-center px-2.5 py-1 md:px-3 border rounded-xs text-sm font-medium bg-neutral-800 text-white border-neutral-400 hover:bg-neutral-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-white transition-colors js-nav-chip",
+  disabled: "inline-flex items-center px-2.5 py-1 md:px-3 border rounded-xs text-sm font-medium bg-neutral-800 text-neutral-500 opacity-60 cursor-not-allowed border-neutral-700 js-nav-chip",
+  active: "inline-flex items-center px-2.5 py-1 md:px-3 border rounded-xs text-sm font-semibold bg-neutral-200 text-neutral-900 border-neutral-900 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-neutral-700 transition-colors js-nav-chip"
 };
 
-export const CONTROL_FOCUS_RING_CLASSES = "focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-900";
-export const INFO_TRIGGER_ICON_CLASSES = "inline-flex h-auto w-auto text-neutral-200 transition-colors duration-200 hover:text-carnation-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400";
+export const CONTROL_FOCUS_RING_CLASSES = "focus:outline-hidden focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-900";
+export const INFO_TRIGGER_ICON_CLASSES = "inline-flex h-auto w-auto text-neutral-200 transition-colors duration-200 hover:text-carnation-200 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-carnation-400";
 export const INFO_TRIGGER_ICON_HTML = '<i class="ph ph-info inline-block text-[16px] leading-none" aria-hidden="true"></i>';
-export const CONTROL_FIELD_SHELL_CLASSES = "rounded-sm border border-neutral-600 bg-neutral-900/50 p-0.5 shadow-sm transition-colors hover:border-neutral-400 focus-within:border-neutral-300";
-export const CONTROL_SELECT_CLASSES = "appearance-none cursor-pointer rounded-sm bg-transparent px-3 py-1.5 pr-8 text-xs font-semibold uppercase tracking-wide text-neutral-100 transition-colors hover:bg-neutral-800 hover:text-white";
-export const SORT_TRIGGER_CLASSES = `group cursor-pointer rounded-sm ${CONTROL_FOCUS_RING_CLASSES}`;
+export const CONTROL_FIELD_SHELL_CLASSES = "rounded-xs border border-neutral-600 bg-neutral-900/50 p-0.5 shadow-xs transition-colors hover:border-neutral-400 focus-within:border-neutral-300";
+export const CONTROL_SELECT_CLASSES = "appearance-none cursor-pointer rounded-xs bg-transparent px-3 py-1.5 pr-8 text-xs font-semibold uppercase tracking-wide text-neutral-100 transition-colors hover:bg-neutral-800 hover:text-white";
+export const SORT_TRIGGER_CLASSES = `group cursor-pointer rounded-xs ${CONTROL_FOCUS_RING_CLASSES}`;
 export const SORT_CARET_CHIP_CLASSES = "shrink-0 text-[16px] leading-none text-neutral-100 transition-colors duration-200 group-hover:text-carnation-200 group-focus-visible:text-carnation-200";
 export const SORT_CARET_CHIP_ACTIVE_CLASSES = "shrink-0 text-[16px] leading-none text-carnation-300 transition-colors duration-200 group-hover:text-carnation-200 group-focus-visible:text-carnation-200";
 export const TAB_COUNT_BADGE_CLASSES = "ml-3 rounded-full bg-neutral-200 px-2.5 py-0.5 text-xs font-medium text-neutral-900 transition-colors group-hover:bg-neutral-100 md:inline-block";
@@ -83,7 +83,7 @@ export const DATA_TABLE_FOOT_CLASSES = {
 // Segmented pill styles for tab-like groups
 // TODO: Refactor Actions pills to consume these shared classes so Explore and Actions stay visually aligned from one source of truth.
 export const SEGMENTED_PILL_CLASSES = {
-  base: "px-4 py-1.5 text-sm font-medium rounded-md outline outline-1 outline-transparent outline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 transition duration-200 ease-in-out hover:shadow-md hover:-translate-y-0.5",
+  base: "px-4 py-1.5 text-sm font-medium rounded-md outline outline-1 outline-transparent outline-offset-4 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-1 focus-visible:ring-offset-neutral-800 transition duration-200 ease-in-out hover:shadow-md hover:-translate-y-0.5",
   active: "bg-neutral-100 text-neutral-900 shadow-inner border border-1 border-neutral-100",
   inactive: "bg-neutral-800 text-white hover:bg-neutral-750"
 };
@@ -92,7 +92,7 @@ export const SEGMENTED_PILL_CLASSES = {
  * Class names for Explore table view tabs.
  */
 export const VIEW_TAB_CLASSES = {
-  base: "inline-flex items-center border-b-4 px-0 pb-3 pt-1 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900",
+  base: "inline-flex items-center border-b-4 px-0 pb-3 pt-1 text-sm font-medium transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900",
   active: "border-carnation-300 text-white font-semibold",
   inactive: "border-transparent text-neutral-300 hover:border-neutral-200 hover:text-white"
 };

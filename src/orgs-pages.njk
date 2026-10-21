@@ -12,7 +12,7 @@ permalink: "{{ org._source.objectID | slug }}/"
 
 <a
   href="#main-content"
-  class="fixed inset-x-0 top-0 z-[100] block -translate-y-full bg-carnation-700 px-4 py-3 text-center text-sm font-medium text-white shadow-lg transition-transform focus-visible:translate-y-0 focus-visible:outline-none"
+  class="fixed inset-x-0 top-0 z-[100] block -translate-y-full bg-carnation-700 px-4 py-3 text-center text-sm font-medium text-white shadow-lg transition-transform focus-visible:translate-y-0 focus-visible:outline-hidden"
 >
   Skip to main content
 </a>
@@ -31,13 +31,13 @@ permalink: "{{ org._source.objectID | slug }}/"
   </div>
 
   {# Dynamic modal #}
-  <div id="dynamic-modal" class="fixed inset-0 flex items-center justify-center p-4 bg-neutral-900 bg-opacity-50 hidden z-50" aria-hidden="true" tabindex="-1" role="dialog" aria-modal="true">
+  <div id="dynamic-modal" class="fixed inset-0 flex items-center justify-center p-4 bg-neutral-900/50 hidden z-50" aria-hidden="true" tabindex="-1" role="dialog" aria-modal="true">
     <div class="modal-content scale-95 transform overflow-y-auto min-h-0 max-h-[80vh] bg-neutral-900 text-neutral-100 shadow-lg md:w-1/3" role="document">
       <div class="flex items-center border-b border-neutral-700 bg-neutral-900 p-2">
         <div class="flex-grow text-xs font-semibold text-neutral-100 md:text-sm">
           <h2 class="modal-title text-center"><span class="sr-only">Dialog</span></h2>
         </div>
-        <button class="close-modal-btn text-neutral-300 transition-colors hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900">
+        <button class="close-modal-btn text-neutral-300 transition-colors hover:text-white focus:outline-hidden focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900">
           <span class="sr-only">Close modal</span>
           &times;
         </button>
