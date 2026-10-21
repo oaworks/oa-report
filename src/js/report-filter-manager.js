@@ -608,7 +608,7 @@ function addFilterRow(container) {
 
   const fieldSelect = document.createElement("select");
   fieldSelect.id = fieldId;
-  fieldSelect.className = `js-filter-field mt-1 block h-9 w-full rounded-xs border border-neutral-600 bg-neutral-900/50 px-2 text-xs leading-tight text-white shadow-xs transition-colors hover:border-neutral-400 focus:border-neutral-300 ${CONTROL_FOCUS_RING_CLASSES} md:text-sm`;
+  fieldSelect.className = `js-filter-field mt-1 block h-9 w-full rounded-xs border border-neutral-600 bg-neutral-900/50 px-2 text-xs leading-tight md:leading-5 text-white shadow-xs transition-colors hover:border-neutral-400 focus:border-neutral-300 ${CONTROL_FOCUS_RING_CLASSES} md:text-sm`;
   fieldSelect.required = true;
   fieldSelect.setAttribute("aria-required", "true");
 
@@ -640,7 +640,7 @@ function addFilterRow(container) {
   const input = document.createElement("input");
   input.id = inputId;
   input.type = "text";
-  input.className = `js-filter-input mt-1 h-9 w-full rounded-xs border border-neutral-600 bg-neutral-900/50 p-2 text-xs leading-tight text-white shadow-xs transition-colors placeholder-neutral-500 hover:border-neutral-400 focus:border-neutral-300 disabled:border-neutral-700 disabled:bg-neutral-800 disabled:text-neutral-500 disabled:placeholder-neutral-500 ${CONTROL_FOCUS_RING_CLASSES} md:text-sm`;
+  input.className = `js-filter-input mt-1 h-9 w-full rounded-xs border border-neutral-600 bg-neutral-900/50 p-2 text-xs leading-tight md:leading-5 text-white shadow-xs transition-colors placeholder-neutral-500 hover:border-neutral-400 focus:border-neutral-300 disabled:border-neutral-700 disabled:bg-neutral-800 disabled:text-neutral-500 disabled:placeholder-neutral-500 ${CONTROL_FOCUS_RING_CLASSES} md:text-sm`;
   input.placeholder = "Start typing to see suggestions…";
   input.disabled = true;
   input.setAttribute("aria-disabled", "true");

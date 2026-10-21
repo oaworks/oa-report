@@ -24,6 +24,22 @@
   ::-webkit-datetime-edit {
     display: revert;
   }
+
+  /* Restore v3 Preflight’s pointer cursor on buttons and grey placeholders */
+  button,
+  [role="button"] {
+    cursor: pointer;
+  }
+
+  :disabled {
+    cursor: default;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    opacity: 1;
+    color: #9ca3af;
+  }
 }
 
 @utility report_readable_start_date {
@@ -138,7 +154,7 @@
     [role="button"],
     [tabindex]:not([tabindex="-1"])
   ):focus-visible {
-    outline: 2px solid var(--color-carnation-400) !important;
+    outline: 2px solid theme(colors.carnation.400) !important;
     outline-offset: 2px !important;
     box-shadow: none !important;
   }
@@ -396,8 +412,7 @@
   border: 1px solid rgb(171, 173, 176);
   color: rgb(247, 247, 248);
   max-width: min(36rem, calc(100vw - 1rem));
-  --tw-drop-shadow: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
-  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+  filter: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
 }
 
 .tooltip-box[data-theme~='popover'] .tooltip-arrow {
@@ -409,8 +424,7 @@
   background-color: rgb(247, 247, 248);
   color: rgb(46, 46, 47);
   text-transform: none;
-  --tw-drop-shadow: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
-  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+  filter: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
 }
 
 .tooltip-box[data-theme~='tooltip-light'] .tooltip-arrow {
