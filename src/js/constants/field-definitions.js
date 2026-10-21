@@ -9,7 +9,7 @@ const POLICY_LINK_INSIGHTS = "<a href='{policyUrl}' target='_blank' rel='noopene
 // Shared wording for the data availability statement (DAS) field family
 // (data_availability_statement, with/without/unknown_data_availability_statement)
 // so all four states describe the same thing the same way instead of varying from one another.
-export const DAS_METHODOLOGY = `<p>We use PubMed Central (PMC) to confirm whether {subject} have a data availability statement (DAS). PMC data can take up to 6 months to appear, so recent figures may be incomplete. After 6 months, we manually review any {subject} that we couldn’t automatically confirm. We may be unable to confirm this for closed-access publications.</p>`;
+export const DAS_METHODOLOGY = `<p>We use PubMed Central (PMC) to confirm whether {subject} have a data availability statement (DAS). PMC data can take up to 6 months to appear, so recent figures may be incomplete. After 6 months, we manually review any {subject} that we couldn’t automatically confirm. We may be unable to confirm DAS for closed-access publications.</p>`;
 
 /**
  * Canonical field definitions shared across report sections.
