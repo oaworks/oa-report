@@ -2147,8 +2147,9 @@ async function handleRecordsShownChange(event) {
 async function handleFilterChange(filterId) {
   startLoading();
   updateURLParams({ 'explore_filter': filterId });
-  await fetchAndDisplayExploreData(currentActiveExploreItemData, filterId);
+  // Set before rendering, as table headers read it for the Publications info popover
   currentActiveExploreItemQuery = filterId;
+  await fetchAndDisplayExploreData(currentActiveExploreItemData, filterId);
   updateExploreFilterHeader(filterId);
   updateExploreTabStates(filterId);
   announce(`Explore view: ${EXPLORE_FILTERS_LABELS[filterId] || filterId}.`);
