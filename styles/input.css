@@ -18,6 +18,12 @@
   ::file-selector-button {
     border-color: var(--color-gray-200, currentcolor);
   }
+
+  /* Undo v4 Preflight’s inline-flex on date fields, which sends typed digits
+     into the year segment instead of the month */
+  ::-webkit-datetime-edit {
+    display: revert;
+  }
 }
 
 @utility report_readable_start_date {
