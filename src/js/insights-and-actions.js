@@ -9,7 +9,7 @@
 // Imports
 // =================================================
 
-import { dateRange, startYear, endYear, displayNone, changeOpacity, makeNumberReadable, makeTabCountReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setDenominatorBasisLabel, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings, copyToClipboard, escapeHtmlEntities, resolveLicenseDisplay, resolveBooleanStatusDisplay } from './utils.js';
+import { dateRange, startYear, endYear, getReviewLagWindow, displayNone, changeOpacity, makeNumberReadable, makeTabCountReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setDenominatorBasisLabel, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings, copyToClipboard, escapeHtmlEntities, resolveLicenseDisplay, resolveBooleanStatusDisplay } from './utils.js';
 import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, INSIGHT_EXPLORE_MAPPINGS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS, DEFAULT_ACTION_EMPTY_STATE_MESSAGE, DEFAULT_NO_AUTHOR_FILTERED_MESSAGE, DEFAULT_MULTIPLE_AUTHORS_FILTERED_MESSAGE, SEGMENTED_PILL_CLASSES, TAB_COUNT_BADGE_CLASSES, resolveFieldDefinition } from './constants.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { initActionTabs, formatDoiEpmcListForClipboard, getAuthorFilterCount } from './actions.js';
@@ -173,7 +173,7 @@ function wireInsightTooltipTrigger(tooltipTarget, numerator, content) {
  * @returns {void}
  */
 function wireUnavailableInsightTooltips(renderedInsightIds, analysis, helpTextByKey) {
-  INSIGHTS_CARDS.forEach(({ numerator, info }) => {
+  INSIGHTS_CARDS.forEach(({ numerator, info, reviewLagMonths, reviewLagNote }) => {
     if (renderedInsightIds.has(numerator)) return;
 
     const cardContents = document.getElementById(numerator);
@@ -182,8 +182,9 @@ function wireUnavailableInsightTooltips(renderedInsightIds, analysis, helpTextBy
 
     const definitionHtml = buildInsightDefinitionsHtml(numerator, info, helpTextByKey, analysis?.[numerator]?.help_text || '');
     const unavailableNoteHtml = '<div class="mb-2 font-semibold text-carnation-800">Unavailable for the selected date range.</div>';
+    const reviewLagNoteHtml = getReviewLagWindow(startYear, endYear, reviewLagMonths).status === 'unavailable' ? `<p class="mb-2">${reviewLagNote}</p>` : '';
 
-    wireInsightTooltipTrigger(tooltipTarget, numerator, `${unavailableNoteHtml}${definitionHtml}`);
+    wireInsightTooltipTrigger(tooltipTarget, numerator, `${unavailableNoteHtml}${reviewLagNoteHtml}${definitionHtml}`);
   });
 }
 
@@ -304,8 +305,11 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
       const card = template.content.querySelector(`#${cardId}`);
       if (!card) return;
       const clonedCard = card.cloneNode(true);
-      // Show a placeholder when the API returns no data or the date range is outside the card's available window.
-      const unavailable = isOutsideAvailabilityWindow(analysisEntry);
+      // Show a placeholder when the API returns no data, the date range is outside the card's available
+      // window, or the whole range is too recent for the card's review lag (e.g. DAS).
+      const { reviewLagMonths } = INSIGHT_CARD_BY_NUMERATOR.get(cardId) || {};
+      const unavailable = isOutsideAvailabilityWindow(analysisEntry)
+        || getReviewLagWindow(startYear, endYear, reviewLagMonths).status === 'unavailable';
       if (unavailable) {
         showUnavailableCard(clonedCard);
       }

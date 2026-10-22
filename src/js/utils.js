@@ -243,13 +243,15 @@ export function formatDateToISO(date) {
  *
  * @param {string} startISO - Selected start date, as YYYY-MM-DD (inclusive).
  * @param {string} endISO - Selected end date, as YYYY-MM-DD (inclusive).
- * @param {number} lagMonths - How many months the review runs behind.
+ * @param {number} [lagMonths] - How many months the review runs behind. No lag means `complete`.
  * @param {Date} [today=new Date()] - Injectable for testing.
  * @returns {{status: 'complete'|'projected'|'unavailable', endISO: string}}
  * `unavailable` if the whole range is within the lag, `projected` (with the
  * end date moved back to the cut-off) if only the end is, else `complete`.
  */
 export function getReviewLagWindow(startISO, endISO, lagMonths, today = new Date()) {
+  if (!lagMonths) return { status: 'complete', endISO };
+
   // Subtract months on the 1st, then clamp the day so 31 Aug − 6 months is 28/29 Feb, not 3 Mar
   const cutoff = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() - lagMonths, 1));
   const lastDayOfMonth = new Date(Date.UTC(cutoff.getUTCFullYear(), cutoff.getUTCMonth() + 1, 0)).getUTCDate();
