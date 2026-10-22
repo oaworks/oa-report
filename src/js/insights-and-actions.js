@@ -562,13 +562,16 @@ export function initInsightsAndActions(org) {
             : figureDetails?.innerHTML
               ? `<div class="mb-2 font-semibold">${figureDetails.innerHTML}</div>`
               : '<div class="mb-2 font-semibold text-carnation-800">Unavailable for the selected date range.</div>';
+          const projectedNoteHtml = reviewLag.status === 'projected' && figureDetails?.innerHTML
+            ? `<p class="mb-2">Based on ${matchingCard.subject} published ${makeDateReadable(new Date(startYear))} – ${makeDateReadable(new Date(reviewLag.endISO))}. ${matchingCard.reviewLagNote}</p>`
+            : '';
           const definitionHtml = buildInsightDefinitionsHtml(
             numerator,
             insightInfo,
             helpTextByKey,
             analysisEntry.help_text || ''
           );
-          instance.setContent(`${detailHtml}${definitionHtml}`);
+          instance.setContent(`${detailHtml}${projectedNoteHtml}${definitionHtml}`);
         };
 
         const exploreMapping = INSIGHT_EXPLORE_MAPPINGS[numerator] || null;
