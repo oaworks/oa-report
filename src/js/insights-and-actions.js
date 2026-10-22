@@ -44,10 +44,11 @@ const insightAggregateCache = new Map();
  *
  * @param {Object} orgData - Organisation record from the org index response.
  * @param {string} filterId - Analysis filter ID, such as `is_paper`.
+ * @param {string} [endISO=endYear] - End date to query, if not the selected one (e.g. for a review lag).
  * @returns {Promise<Object|null>} Flattened aggregate metrics, or null when the
  * filter cannot be resolved.
  */
-function fetchExploreInsightMetrics(orgData, filterId) {
+function fetchExploreInsightMetrics(orgData, filterId, endISO = endYear) {
   const suffix = orgData?.hits?.hits?.[0]?._source?.key_suffix;
   const analysis = orgData?.hits?.hits?.[0]?._source?.analysis || {};
   const filterQuery = analysis?.[filterId]?.query;
@@ -65,11 +66,11 @@ function fetchExploreInsightMetrics(orgData, filterId) {
     filterId,
     query: decodedQuery,
     startYear,
-    endYear
+    endISO
   });
 
   if (!insightAggregateCache.has(cacheKey)) {
-    const postData = getInsightsAggregationQuery(suffix, decodedQuery, startYear, endYear);
+    const postData = getInsightsAggregationQuery(suffix, decodedQuery, startYear, endISO);
 
     insightAggregateCache.set(
       cacheKey,
@@ -529,8 +530,10 @@ export function initInsightsAndActions(org) {
         resetBarChart(cardContents);
 
         // Flags that this card's percentage is of a subset, not the section total (e.g. "Of covered").
+        // Cards with a review lag (e.g. DAS) whose range ends too recently are projected from older data.
         const matchingCard = INSIGHT_CARD_BY_NUMERATOR.get(numerator);
-        setDenominatorBasisLabel(cardContents, matchingCard?.denominatorBasisLabel);
+        const reviewLag = getReviewLagWindow(startYear, endYear, matchingCard?.reviewLagMonths);
+        setDenominatorBasisLabel(cardContents, reviewLag.status === 'projected' ? 'Projected' : matchingCard?.denominatorBasisLabel);
 
         // Locate placeholders
         const percentageContents = document.getElementById(`percent_${numerator}`);
@@ -573,7 +576,7 @@ export function initInsightsAndActions(org) {
         // Mapped cards can read directly from Explore's all-values aggregate.
         if (exploreMapping) {
           // Reuse the same aggregate source as Explore Years for matching totals.
-          const cardPromise = fetchExploreInsightMetrics(orgData, exploreMapping.exploreFilter)
+          const cardPromise = fetchExploreInsightMetrics(orgData, exploreMapping.exploreFilter, reviewLag.endISO)
             .then((metrics) => {
               const numeratorCount = metrics?.[exploreMapping.numeratorMetric];
               const denominatorCount = Array.isArray(exploreMapping.denominatorSumOf)
