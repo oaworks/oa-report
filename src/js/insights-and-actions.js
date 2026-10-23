@@ -763,12 +763,15 @@ export function initInsightsAndActions(org) {
                           .trim();
                       };
 
+                      // Templates are already URL-encoded, so encode values too (e.g. & or # in a title would cut the body short)
+                      const encodeMailtoValue = (value, fallback) => encodeURIComponent(decodeMailtoValue(value, fallback));
+
                       var newMailto = mailto.replaceAll("\'", "’");
-                      newMailto = newMailto.replaceAll("{doi}", decodeMailtoValue(action.DOI, "[No DOI found]"));
-                      newMailto = newMailto.replaceAll("{author_email_name}", decodeMailtoValue(action.author_email_name, "[No author’s name found]"));
-                      newMailto = newMailto.replaceAll("{title}", decodeMailtoValue(action.title, "[No title found]"));
+                      newMailto = newMailto.replaceAll("{doi}", encodeMailtoValue(action.DOI, "[No DOI found]"));
+                      newMailto = newMailto.replaceAll("{author_email_name}", encodeMailtoValue(action.author_email_name, "[No author’s name found]"));
+                      newMailto = newMailto.replaceAll("{title}", encodeMailtoValue(action.title, "[No title found]"));
                       for (var actionKey in action) {
-                        if (actionKey !== "email" && typeof action[actionKey] === "string") newMailto = newMailto.replaceAll("{" + actionKey + "}", decodeMailtoValue(action[actionKey], ""));
+                        if (actionKey !== "email" && typeof action[actionKey] === "string") newMailto = newMailto.replaceAll("{" + actionKey + "}", encodeMailtoValue(action[actionKey], ""));
                       }
 
                       // And add it to the action array
