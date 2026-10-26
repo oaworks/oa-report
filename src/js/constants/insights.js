@@ -80,7 +80,6 @@ export const INSIGHTS_CARDS = [
     definition_key: "data_availability_statement",
     subject: "journal articles",
     info: resolveFieldDefinition("data_availability_statement", "insights", { subject: "journal articles" }).info,
-    denominatorBasisLabel: "Of reviewed",
     reviewLagMonths: 6,
     reviewLagNote: "Data availability statements are reviewed about 6 months after publication."
   },
@@ -91,7 +90,6 @@ export const INSIGHTS_CARDS = [
     definition_key: "data_availability_statement",
     subject: "preprints",
     info: resolveFieldDefinition("data_availability_statement", "insights", { subject: "preprints" }).info,
-    denominatorBasisLabel: "Of reviewed",
     reviewLagMonths: 6,
     reviewLagNote: "Data availability statements are reviewed about 6 months after publication."
   },
