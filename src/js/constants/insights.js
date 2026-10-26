@@ -81,7 +81,7 @@ export const INSIGHTS_CARDS = [
     subject: "journal articles",
     info: resolveFieldDefinition("data_availability_statement", "insights", { subject: "journal articles" }).info,
     reviewLagMonths: 6,
-    reviewLagNote: "Data availability statements are reviewed about 6 months after publication."
+    reviewLagNote: "Full coverage takes about 6 months after publication. For the latest data, use <a href='#explore' class='underline underline-offset-2 decoration-1'>Explore</a>."
   },
   {
     numerator: "has_data_availability_statement_preprint",
@@ -91,7 +91,7 @@ export const INSIGHTS_CARDS = [
     subject: "preprints",
     info: resolveFieldDefinition("data_availability_statement", "insights", { subject: "preprints" }).info,
     reviewLagMonths: 6,
-    reviewLagNote: "Data availability statements are reviewed about 6 months after publication."
+    reviewLagNote: "Full coverage takes about 6 months after publication. For the latest data, use <a href='#explore' class='underline underline-offset-2 decoration-1'>Explore</a>."
   },
   {
     numerator: "is_compliant_publication",
