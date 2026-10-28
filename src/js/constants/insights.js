@@ -76,20 +76,22 @@ export const INSIGHTS_CARDS = [
   {
     numerator: "has_data_availability_statement",
     denominator: "has_checked_data_availability_statement",
-    denominatorText: "journal articles checked to date",
+    denominatorText: "reviewed journal articles",
     definition_key: "data_availability_statement",
     subject: "journal articles",
     info: resolveFieldDefinition("data_availability_statement", "insights", { subject: "journal articles" }).info,
-    denominatorBasisLabel: "Of reviewed"
+    reviewLagMonths: 6,
+    reviewLagNote: "Full coverage takes about 6 months after publication. For the latest data, use <a href='#explore' class='underline underline-offset-2 decoration-1'>Explore</a>."
   },
   {
     numerator: "has_data_availability_statement_preprint",
     denominator: "has_checked_data_availability_statement_preprint",
-    denominatorText: "preprints checked to date",
+    denominatorText: "reviewed preprints",
     definition_key: "data_availability_statement",
     subject: "preprints",
     info: resolveFieldDefinition("data_availability_statement", "insights", { subject: "preprints" }).info,
-    denominatorBasisLabel: "Of reviewed"
+    reviewLagMonths: 6,
+    reviewLagNote: "Full coverage takes about 6 months after publication. For the latest data, use <a href='#explore' class='underline underline-offset-2 decoration-1'>Explore</a>."
   },
   {
     numerator: "is_compliant_publication",

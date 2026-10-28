@@ -257,7 +257,7 @@ export const EXPLORE_FILTERS_LABELS = {
   "has_data_availability_statement": {
     label: "Has data availability statement",
     info: "Journal articles that include a data availability statement, which tells readers where the underlying data or code can be found and how to access it. This figure doesn’t specify the kind of statement provided — e.g. whether the underlying data is openly available or not.",
-    details: "<p>We use PubMed Central (PMC) to confirm whether journal articles have a data availability statement (DAS). PMC data can take up to 6 months to appear, so recent figures may be incomplete. After 6 months, we manually review any journal articles that we couldn’t automatically confirm. We may be unable to confirm this for closed-access publications.</p>"
+    details: "<p>We use PubMed Central (PMC) to confirm whether journal articles have a data availability statement (DAS). PMC data can take up to 6 months to appear, so recent figures may be incomplete. After 6 months, we manually review any journal articles that we couldn’t automatically confirm. We may be unable to confirm DAS for closed-access publications.</p>"
   },
   "has_apc": {
     label: "APC-funded journal articles",
