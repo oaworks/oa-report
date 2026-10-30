@@ -360,15 +360,6 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
   sectionsWrapper.classList.remove("md:grid-cols-1", "md:grid-cols-2", "md:grid-cols-3");
   sectionsWrapper.classList.add(columnsClass);
 
-  const gridClass =
-    visibleSections.length === 3
-      ? "grid gap-4 grid-cols-1 xl:grid-cols-2"
-      : "grid gap-4 grid-cols-2 md:grid-cols-3 xl:grid-cols-6";
-
-  document.querySelectorAll(".js_insights_card_grid").forEach((grid) => {
-    grid.className = `js_insights_card_grid ${gridClass}`;
-  });
-
   return renderedIds;
 }
 

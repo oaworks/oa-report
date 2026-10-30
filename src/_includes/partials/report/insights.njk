@@ -28,27 +28,27 @@
 
   <div id="insights_sections" class="mt-4 grid grid-cols-1 gap-8 md:gap-10">
     {# ARTICLE INSIGHTS #}
-    <article class="hidden rounded-lg bg-neutral-900/70 p-4 shadow-lg js_insights_section md:p-6" id="insights_articles">
+    <article class="@container hidden rounded-lg bg-neutral-900/70 p-4 shadow-lg js_insights_section md:p-6" id="insights_articles">
       <h3 class="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide leading-none text-neutral-100">
         {{ headingTotal("is_paper", "journal articles") }}
       </h3>
-      <div class="js_insights_card_grid" id="insights_articles_cards"></div>
+      <div class="js_insights_card_grid grid gap-4 grid-cols-1 @2xs:grid-cols-2 @lg:grid-cols-3 @5xl:grid-cols-6" id="insights_articles_cards"></div>
     </article>
 
     {# PREPRINT INSIGHTS — SHOWN PER ORG VIA analysis.*.show_on_web #}
-    <article class="hidden rounded-lg bg-neutral-900/70 p-4 shadow-lg js_insights_section md:p-6" id="insights_preprints">
+    <article class="@container hidden rounded-lg bg-neutral-900/70 p-4 shadow-lg js_insights_section md:p-6" id="insights_preprints">
       <h3 class="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide leading-none text-neutral-100">
         {{ headingTotal("is_preprint", "preprints") }}
       </h3>
-      <div class="js_insights_card_grid" id="insights_preprints_cards"></div>
+      <div class="js_insights_card_grid grid gap-4 grid-cols-1 @2xs:grid-cols-2 @lg:grid-cols-3 @5xl:grid-cols-6" id="insights_preprints_cards"></div>
     </article>
 
     {# UNIQUE PUBLICATIONS INSIGHTS #}
-    <article class="hidden rounded-lg bg-neutral-900/70 p-4 shadow-lg js_insights_section md:p-6" id="insights_unique_publications">
+    <article class="@container hidden rounded-lg bg-neutral-900/70 p-4 shadow-lg js_insights_section md:p-6" id="insights_unique_publications">
       <h3 class="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide leading-none text-neutral-100">
         {{ headingTotal("is_unique_publication", "unique publications") }}
       </h3>
-      <div class="js_insights_card_grid" id="insights_unique_publications_cards"></div>
+      <div class="js_insights_card_grid grid gap-4 grid-cols-1 @2xs:grid-cols-2 @lg:grid-cols-3 @5xl:grid-cols-6" id="insights_unique_publications_cards"></div>
     </article>
   </div>
 
