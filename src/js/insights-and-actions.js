@@ -277,7 +277,7 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
       sectionId: "insights_preprints",
       containerId: "insights_preprints_cards",
       cardIds: showPreprints
-        ? ["is_compliant_preprint", "has_data_availability_statement_preprint"]
+        ? ["is_compliant_preprint", "is_preprint_oa", "has_data_availability_statement_preprint"]
         : []
     },
     {
