@@ -9,7 +9,7 @@
 // Imports
 // =================================================
 
-import { dateRange, startYear, endYear, displayNone, changeOpacity, makeNumberReadable, makeTabCountReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setDenominatorBasisLabel, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings, copyToClipboard, escapeHtmlEntities, resolveLicenseDisplay, resolveBooleanStatusDisplay } from './utils.js';
+import { dateRange, startYear, endYear, getReviewLagWindow, displayNone, changeOpacity, makeNumberReadable, makeTabCountReadable, makeDateReadable, displayErrorHeader, showUnavailableCard, resetBarChart, setDenominatorBasisLabel, setBarChart, buildEncodedQueryWithUrlFilter, fetchJson, fetchText, fetchPostData, decodeAndReplaceUrlEncodedChars, getDecodedUrlQuery, andQueryStrings, copyToClipboard, escapeHtmlEntities, resolveLicenseDisplay, resolveBooleanStatusDisplay } from './utils.js';
 import { ORGS_REPORT_API_BASE_URL, QUERY_BASE, COUNT_QUERY_BASE, CSV_EXPORT_BASE, ARTICLE_EMAIL_BASE, INSIGHTS_CARDS, INSIGHT_EXPLORE_MAPPINGS, ACTION_LABELS, ACTION_ORDER, ACTION_TABLE_CONFIGS, DEFAULT_ACTION_EMPTY_STATE_MESSAGE, DEFAULT_NO_AUTHOR_FILTERED_MESSAGE, DEFAULT_MULTIPLE_AUTHORS_FILTERED_MESSAGE, SEGMENTED_PILL_CLASSES, TAB_COUNT_BADGE_CLASSES, resolveFieldDefinition } from './constants.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { initActionTabs, formatDoiEpmcListForClipboard, getAuthorFilterCount } from './actions.js';
@@ -44,10 +44,11 @@ const insightAggregateCache = new Map();
  *
  * @param {Object} orgData - Organisation record from the org index response.
  * @param {string} filterId - Analysis filter ID, such as `is_paper`.
+ * @param {string} [endISO=endYear] - End date to query, if not the selected one (e.g. for a review lag).
  * @returns {Promise<Object|null>} Flattened aggregate metrics, or null when the
  * filter cannot be resolved.
  */
-function fetchExploreInsightMetrics(orgData, filterId) {
+function fetchExploreInsightMetrics(orgData, filterId, endISO = endYear) {
   const suffix = orgData?.hits?.hits?.[0]?._source?.key_suffix;
   const analysis = orgData?.hits?.hits?.[0]?._source?.analysis || {};
   const filterQuery = analysis?.[filterId]?.query;
@@ -65,11 +66,11 @@ function fetchExploreInsightMetrics(orgData, filterId) {
     filterId,
     query: decodedQuery,
     startYear,
-    endYear
+    endISO
   });
 
   if (!insightAggregateCache.has(cacheKey)) {
-    const postData = getInsightsAggregationQuery(suffix, decodedQuery, startYear, endYear);
+    const postData = getInsightsAggregationQuery(suffix, decodedQuery, startYear, endISO);
 
     insightAggregateCache.set(
       cacheKey,
@@ -173,7 +174,7 @@ function wireInsightTooltipTrigger(tooltipTarget, numerator, content) {
  * @returns {void}
  */
 function wireUnavailableInsightTooltips(renderedInsightIds, analysis, helpTextByKey) {
-  INSIGHTS_CARDS.forEach(({ numerator, info }) => {
+  INSIGHTS_CARDS.forEach(({ numerator, info, reviewLagMonths, reviewLagNote }) => {
     if (renderedInsightIds.has(numerator)) return;
 
     const cardContents = document.getElementById(numerator);
@@ -182,8 +183,9 @@ function wireUnavailableInsightTooltips(renderedInsightIds, analysis, helpTextBy
 
     const definitionHtml = buildInsightDefinitionsHtml(numerator, info, helpTextByKey, analysis?.[numerator]?.help_text || '');
     const unavailableNoteHtml = '<div class="mb-2 font-semibold text-carnation-800">Unavailable for the selected date range.</div>';
+    const reviewLagNoteHtml = getReviewLagWindow(startYear, endYear, reviewLagMonths).status === 'unavailable' ? `<p class="mb-2">${reviewLagNote}</p>` : '';
 
-    wireInsightTooltipTrigger(tooltipTarget, numerator, `${unavailableNoteHtml}${definitionHtml}`);
+    wireInsightTooltipTrigger(tooltipTarget, numerator, `${unavailableNoteHtml}${reviewLagNoteHtml}${definitionHtml}`);
   });
 }
 
@@ -275,7 +277,7 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
       sectionId: "insights_preprints",
       containerId: "insights_preprints_cards",
       cardIds: showPreprints
-        ? ["is_compliant_preprint", "has_data_availability_statement_preprint"]
+        ? ["is_compliant_preprint", "is_preprint_oa", "has_data_availability_statement_preprint"]
         : []
     },
     {
@@ -304,8 +306,11 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
       const card = template.content.querySelector(`#${cardId}`);
       if (!card) return;
       const clonedCard = card.cloneNode(true);
-      // Show a placeholder when the API returns no data or the date range is outside the card's available window.
-      const unavailable = isOutsideAvailabilityWindow(analysisEntry);
+      // Show a placeholder when the API returns no data, the date range is outside the card's available
+      // window, or the whole range is too recent for the card's review lag (e.g. DAS).
+      const { reviewLagMonths } = INSIGHT_CARD_BY_NUMERATOR.get(cardId) || {};
+      const unavailable = isOutsideAvailabilityWindow(analysisEntry)
+        || getReviewLagWindow(startYear, endYear, reviewLagMonths).status === 'unavailable';
       if (unavailable) {
         showUnavailableCard(clonedCard);
       }
@@ -354,15 +359,6 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
 
   sectionsWrapper.classList.remove("md:grid-cols-1", "md:grid-cols-2", "md:grid-cols-3");
   sectionsWrapper.classList.add(columnsClass);
-
-  const gridClass =
-    visibleSections.length === 3
-      ? "grid gap-4 grid-cols-1 xl:grid-cols-2"
-      : "grid gap-4 grid-cols-2 md:grid-cols-3 xl:grid-cols-6";
-
-  document.querySelectorAll(".js_insights_card_grid").forEach((grid) => {
-    grid.className = `js_insights_card_grid ${gridClass}`;
-  });
 
   return renderedIds;
 }
@@ -525,8 +521,10 @@ export function initInsightsAndActions(org) {
         resetBarChart(cardContents);
 
         // Flags that this card's percentage is of a subset, not the section total (e.g. "Of covered").
+        // Cards with a review lag (e.g. DAS) whose range ends too recently are projected from older data.
         const matchingCard = INSIGHT_CARD_BY_NUMERATOR.get(numerator);
-        setDenominatorBasisLabel(cardContents, matchingCard?.denominatorBasisLabel);
+        const reviewLag = getReviewLagWindow(startYear, endYear, matchingCard?.reviewLagMonths);
+        setDenominatorBasisLabel(cardContents, reviewLag.status === 'projected' ? 'Projected' : matchingCard?.denominatorBasisLabel);
 
         // Locate placeholders
         const percentageContents = document.getElementById(`percent_${numerator}`);
@@ -555,13 +553,16 @@ export function initInsightsAndActions(org) {
             : figureDetails?.innerHTML
               ? `<div class="mb-2 font-semibold">${figureDetails.innerHTML}</div>`
               : '<div class="mb-2 font-semibold text-carnation-800">Unavailable for the selected date range.</div>';
+          const projectedNoteHtml = reviewLag.status === 'projected' && figureDetails?.innerHTML
+            ? `<p class="mb-2">Based on ${matchingCard.subject} published ${makeDateReadable(new Date(startYear))} – ${makeDateReadable(new Date(reviewLag.endISO))}. ${matchingCard.reviewLagNote}</p>`
+            : '';
           const definitionHtml = buildInsightDefinitionsHtml(
             numerator,
             insightInfo,
             helpTextByKey,
             analysisEntry.help_text || ''
           );
-          instance.setContent(`${detailHtml}${definitionHtml}`);
+          instance.setContent(`${detailHtml}${projectedNoteHtml}${definitionHtml}`);
         };
 
         const exploreMapping = INSIGHT_EXPLORE_MAPPINGS[numerator] || null;
@@ -569,7 +570,7 @@ export function initInsightsAndActions(org) {
         // Mapped cards can read directly from Explore's all-values aggregate.
         if (exploreMapping) {
           // Reuse the same aggregate source as Explore Years for matching totals.
-          const cardPromise = fetchExploreInsightMetrics(orgData, exploreMapping.exploreFilter)
+          const cardPromise = fetchExploreInsightMetrics(orgData, exploreMapping.exploreFilter, reviewLag.endISO)
             .then((metrics) => {
               const numeratorCount = metrics?.[exploreMapping.numeratorMetric];
               const denominatorCount = Array.isArray(exploreMapping.denominatorSumOf)
