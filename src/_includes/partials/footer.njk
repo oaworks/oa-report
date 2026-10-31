@@ -13,6 +13,9 @@
       </li>
       {% endfor %}
       {% if org._source.name %}
+      <li data-auth="in">
+        <a href="https://about.oa.report/about-oa.report/product-updates?visitor.org={{ org._source.objectID | slug }}" target="_blank" rel="noopener" class="inline-flex min-h-[44px] items-center rounded-md px-0 py-0 text-[11px] md:text-xs lg:text-sm transition duration-300 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-2">Product updates</a>
+      </li>
       <li>
         <a href="?logout" data-auth="in" id="logout" class="inline-flex min-h-[44px] items-center rounded-md px-0 py-0 text-[11px] md:text-xs lg:text-sm font-semibold transition duration-300 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-carnation-400 focus-visible:ring-offset-2">Log out <span aria-hidden="true" class="ml-1">&rarr;</span></a>
       </li>

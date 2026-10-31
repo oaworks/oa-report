@@ -45,6 +45,13 @@
     <div class="flex-1"></div>
     {% endif %}
 
+    {% if isReportPage %}
+    {# Logged-in only; data-auth sits on a wrapper with no display class, as utilities override its hide rule #}
+    <div data-auth="in" class="shrink-0">
+      <a href="https://about.oa.report/about-oa.report/product-updates?visitor.org={{ org._source.objectID | slug }}" target="_blank" rel="noopener" class="text-[11px] md:text-xs lg:text-sm font-medium leading-6 md:leading-4 lg:leading-5">Product updates</a>
+    </div>
+    {% endif %}
+
     <!-- Hamburger Button -->
     <button id="menu-toggle" aria-expanded="false" aria-controls="mobile-menu" class="sm:hidden {% if isReportPage %}hidden{% endif %} flex items-center justify-center p-2 text-gray-900 focus:outline-hidden focus:ring-2 focus:ring-carnation-500">
       {% icon_small "menu" %}
