@@ -1,0 +1,52 @@
+{# Story embed: how well a policy is working, as a share (or hero figure) plus supporting figures
+{{ component("embed/story", {
+  story: embed_figures.stories.policy_first_year,
+  org: embed_figures.org,
+  asOf: embed_figures.source.retrieved
+}) }}
+#}
+{%- from "system/component.njk" import component -%}
+
+{% set story = params.story %}
+{% set accent = params.accent or params.org.accent %}
+{% set comparedWith = story.period | comparedWith(story.comparison_period) %}
+{% set share = story.share %}
+{% if share %}{% set sharePct = (share.current.numerator / share.current.denominator) * 100 %}{% endif %}
+
+<figure
+  class="embed-root flex w-full max-w-sm flex-col rounded-sm border border-t-4 border-neutral-200 border-t-(--embed-accent) bg-white p-4 font-sans text-base leading-normal tracking-normal text-neutral-900"
+  {% if accent %}style="--embed-accent: {{ accent }};"{% endif %}>
+  <p class="text-xs font-semibold uppercase tracking-widest text-neutral-700">{{ params.org.name }}</p>
+  <p class="mt-0.5 text-sm font-medium text-neutral-900">
+    {{ story.period | dateRange }}
+    <span class="font-normal text-neutral-700">{{ comparedWith }}{% if story.comparison_note %}, {{ story.comparison_note }}{% endif %}</span>
+  </p>
+
+  {% if share %}
+    <div class="mt-5 flex items-center gap-4">
+      {# Decorative: the figure and label beside it carry the same information #}
+      <svg viewBox="-1 -1 38 38" class="size-20 shrink-0 -rotate-90" aria-hidden="true" focusable="false">
+        <circle cx="18" cy="18" r="15.9155" fill="none" stroke-width="5" class="stroke-neutral-200"/>
+        <circle cx="18" cy="18" r="15.9155" fill="none" stroke-width="5" class="stroke-(--embed-accent)" stroke-dasharray="{{ sharePct | round(1) }} 100"/>
+      </svg>
+      <div>
+        {{ component("embed/change-figure", { figure: share, comparedWith: comparedWith }) }}
+      </div>
+    </div>
+  {% else %}
+    {# No share to chart: the hero figure stands alone #}
+    <div class="mt-5">
+      {{ component("embed/change-figure", { figure: story.hero, comparedWith: comparedWith }) }}
+    </div>
+  {% endif %}
+
+  <div class="mt-5 space-y-2">
+    {% for f in story.figures %}
+      {{ component("embed/change-figure", { figure: f, comparedWith: comparedWith, compact: true }) }}
+    {% endfor %}
+  </div>
+
+  {# Spacer keeps the footer at the bottom when cards share a row height #}
+  <div class="grow" aria-hidden="true"></div>
+  {{ component("embed/attribution", { url: params.org.report_url, asOf: params.asOf }) }}
+</figure>

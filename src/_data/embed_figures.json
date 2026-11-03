@@ -2,7 +2,8 @@
   "source": {
     "api": "https://api.oa.works/report/works/count",
     "retrieved": "2026-11-03",
-    "note": "Hard-coded counts from the live API. Replace this file (same shape) to plug in live data."
+    "note": "Hard-coded counts from the live API. Replace this file (same shape) to plug in live data.",
+    "aggregations": "https://bg.api.oa.works/report/works (POST, e.g. APC spend)"
   },
   "org": {
     "id": "gates-foundation",
@@ -145,6 +146,223 @@
           "previous": {
             "numerator": 1089,
             "denominator": 1433
+          }
+        }
+      ]
+    }
+  },
+  "stories": {
+    "policy_first_year": {
+      "period": {
+        "start": "2025-01-01",
+        "end": "2025-12-31"
+      },
+      "comparison_period": {
+        "start": "2024-01-01",
+        "end": "2024-12-31"
+      },
+      "comparison_note": "before the policy",
+      "share": {
+        "metric": "is_preprint",
+        "denominator_metrics": [
+          "is_preprint",
+          "is_paper"
+        ],
+        "format": "percent",
+        "label": "Preprint share",
+        "part_label": "Preprints",
+        "rest_label": "Journal articles",
+        "current": {
+          "numerator": 1999,
+          "denominator": 5913
+        },
+        "previous": {
+          "numerator": 1108,
+          "denominator": 5294
+        }
+      },
+      "figures": [
+        {
+          "metric": "is_preprint",
+          "format": "count",
+          "label": "Preprints",
+          "current": {
+            "numerator": 1999
+          },
+          "previous": {
+            "numerator": 1108
+          }
+        },
+        {
+          "metric": "has_apc",
+          "format": "count",
+          "label": "APC-funded articles",
+          "better": "down",
+          "current": {
+            "numerator": 657
+          },
+          "previous": {
+            "numerator": 1592
+          }
+        }
+      ]
+    },
+    "apcs_and_preprinting": {
+      "period": {
+        "start": "2025-01-01",
+        "end": "2025-12-31"
+      },
+      "comparison_period": {
+        "start": "2024-01-01",
+        "end": "2024-12-31"
+      },
+      "comparison_note": "before the policy",
+      "share": {
+        "metric": "has_apc",
+        "denominator_metric": "is_paper",
+        "format": "percent",
+        "better": "down",
+        "label": "APC-funded share",
+        "part_label": "APC-funded",
+        "rest_label": "Other journal articles",
+        "current": {
+          "numerator": 657,
+          "denominator": 3914
+        },
+        "previous": {
+          "numerator": 1592,
+          "denominator": 4186
+        }
+      },
+      "figures": [
+        {
+          "metric": "has_apc",
+          "format": "count",
+          "label": "APC-funded articles",
+          "better": "down",
+          "current": {
+            "numerator": 657
+          },
+          "previous": {
+            "numerator": 1592
+          }
+        },
+        {
+          "metric": "is_paper AND supplements.has_preprint_copy:true",
+          "denominator_metric": "is_paper",
+          "format": "percent",
+          "label": "Articles with a preprint",
+          "current": {
+            "numerator": 1168,
+            "denominator": 3914
+          },
+          "previous": {
+            "numerator": 1027,
+            "denominator": 4186
+          }
+        }
+      ]
+    },
+    "apc_spend": {
+      "period": {
+        "start": "2025-01-01",
+        "end": "2025-12-31"
+      },
+      "comparison_period": {
+        "start": "2024-01-01",
+        "end": "2024-12-31"
+      },
+      "comparison_note": "before the policy",
+      "hero": {
+        "metric": "has_apc",
+        "aggregate": "sum:supplements.apc_cost",
+        "format": "currency",
+        "label": "Spent on APCs",
+        "better": "down",
+        "current": {
+          "numerator": 2368107
+        },
+        "previous": {
+          "numerator": 5151870
+        }
+      },
+      "figures": [
+        {
+          "metric": "is_preprint",
+          "format": "count",
+          "label": "Preprints",
+          "current": {
+            "numerator": 1999
+          },
+          "previous": {
+            "numerator": 1108
+          }
+        },
+        {
+          "metric": "has_apc",
+          "aggregate": "median:supplements.apc_cost",
+          "format": "currency",
+          "label": "Median APC",
+          "better": "down",
+          "current": {
+            "numerator": 3275
+          },
+          "previous": {
+            "numerator": 2870
+          }
+        }
+      ]
+    },
+    "open_without_apcs": {
+      "period": {
+        "start": "2025-01-01",
+        "end": "2025-12-31"
+      },
+      "comparison_period": {
+        "start": "2024-01-01",
+        "end": "2024-12-31"
+      },
+      "comparison_note": "before the policy",
+      "share": {
+        "metric": "is_preprint + (is_free_to_read AND NOT has_apc)",
+        "denominator_metrics": [
+          "is_preprint",
+          "is_paper"
+        ],
+        "format": "percent",
+        "label": "Open without an APC",
+        "current": {
+          "numerator": 5055,
+          "denominator": 5913
+        },
+        "previous": {
+          "numerator": 3555,
+          "denominator": 5294
+        }
+      },
+      "figures": [
+        {
+          "metric": "is_preprint",
+          "format": "count",
+          "label": "Preprints",
+          "current": {
+            "numerator": 1999
+          },
+          "previous": {
+            "numerator": 1108
+          }
+        },
+        {
+          "metric": "has_apc",
+          "aggregate": "sum:supplements.apc_cost",
+          "format": "currency",
+          "label": "Spent on APCs",
+          "better": "down",
+          "current": {
+            "numerator": 2368107
+          },
+          "previous": {
+            "numerator": 5151870
           }
         }
       ]

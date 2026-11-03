@@ -1,0 +1,59 @@
+{# Embed figure with its change since an earlier period (used by Set and Story)
+{{ component("embed/change-figure", {
+  figure: { format: "count", "percent" or "currency", label: "", better: "up" or "down",
+            current: { numerator, denominator }, previous: { numerator, denominator } },
+  comparedWith: "vs same period in 2025",
+  compact: false
+}) }}
+#}
+
+{% set f = params.figure %}
+{% if f.format == "percent" %}
+  {% set cur = ((f.current.numerator / f.current.denominator) * 100) | round %}
+  {% set prev = ((f.previous.numerator / f.previous.denominator) * 100) | round %}
+  {% set curDisplay = cur ~ "%" %}
+  {% set delta = cur - prev %}
+  {% set deltaDisplay = (delta | abs) ~ " pts" %}
+{% elif f.format == "currency" %}
+  {# Millions shown compactly, e.g. US$2.4M, smaller amounts in full, e.g. US$3,275 #}
+  {% set curDisplay = ("US$" ~ ((f.current.numerator / 1000000) | round(1)) ~ "M") if f.current.numerator >= 1000000 else ("US$" ~ (f.current.numerator | number)) %}
+  {% set delta = (((f.current.numerator - f.previous.numerator) / f.previous.numerator) * 100) | round %}
+  {% set deltaDisplay = (delta | abs) ~ "%" %}
+{% else %}
+  {% set curDisplay = f.current.numerator | number %}
+  {% set delta = (((f.current.numerator - f.previous.numerator) / f.previous.numerator) * 100) | round %}
+  {% set deltaDisplay = (delta | abs) ~ "%" %}
+{% endif %}
+{# Green marks an improvement; `better: "down"` flips this for figures like APCs #}
+{% set improved = (delta > 0 and f.better != "down") or (delta < 0 and f.better == "down") %}
+
+{# Arrow plus words, so the change never relies on colour alone #}
+{% set pill %}
+<p class="rounded-xs px-1 py-0.5 text-xs font-semibold leading-none tabular-nums {{ 'bg-green/15 text-green-dark' if improved else 'bg-neutral-100 text-neutral-800' }}">
+  {% if delta > 0 %}
+    <span aria-hidden="true">↑</span><span class="sr-only">Up</span> {{ deltaDisplay }}
+  {% elif delta < 0 %}
+    <span aria-hidden="true">↓</span><span class="sr-only">Down</span> {{ deltaDisplay }}
+  {% else %}
+    No change
+  {% endif %}
+  <span class="sr-only">{{ params.comparedWith }}{% if improved %}, an improvement{% endif %}</span>
+</p>
+{% endset %}
+
+{% if params.compact %}
+  {# One quiet row: label on the left, figure and change on the right #}
+  <div class="flex items-center justify-between gap-3 text-sm">
+    <p class="text-neutral-700">{{ f.label }}</p>
+    <div class="flex items-center gap-1.5"><span class="font-semibold tabular-nums">{{ curDisplay }}</span>{{ pill | safe }}</div>
+  </div>
+{% else %}
+  <div>
+    {# Change sits top-right of the figure, like a superscript, without <sup> semantics #}
+    <div class="flex flex-wrap items-start gap-x-1.5">
+      <p class="font-serif text-4xl font-bold leading-none tabular-nums text-(--embed-accent)">{{ curDisplay }}</p>
+      {{ pill | safe }}
+    </div>
+    <p class="mt-1 text-sm font-semibold">{{ f.label }}</p>
+  </div>
+{% endif %}
