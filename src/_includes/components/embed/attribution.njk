@@ -5,9 +5,9 @@
 }) }}
 #}
 
-<div class="mt-4 flex items-center justify-between gap-3 border-t border-neutral-200 pt-3 text-xs text-neutral-700">
+<footer class="mt-4 flex items-center justify-between gap-3 border-t border-neutral-200 pt-3 text-xs text-neutral-700">
   <p class="whitespace-nowrap">As of <time datetime="{{ params.asOf }}">{{ params.asOf | date("d LLL yyyy") }}</time></p>
   <a href="{{ params.url }}" target="_blank" rel="noopener" title="Powered by OA.Report" aria-label="Powered by OA.Report (opens in a new tab)" class="inline-flex w-20 shrink-0 translate-y-px [&>svg]:pointer-events-none text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--embed-accent)">
     {% include 'svg/logo.svg' %}
   </a>
-</div>
+</footer>

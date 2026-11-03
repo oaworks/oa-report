@@ -19,7 +19,8 @@ eleventyExcludeFromCollections: true
         {{ component("embed/tile", {
           figure: embed_figures.figures[key],
           org: embed_figures.org,
-          asOf: embed_figures.source.retrieved
+          asOf: embed_figures.source.retrieved,
+          headingLevel: 3
         }) }}
       {% endfor %}
     </div>
@@ -32,9 +33,11 @@ eleventyExcludeFromCollections: true
     <div class="flex flex-col items-center gap-12 rounded-sm bg-neutral-100 px-6 py-12">
       {% for key in ["preprints_and_cc_by", "preprints_and_cc_by_share", "das"] %}
         {{ component("embed/set", {
+          id: key,
           set: embed_figures.sets[key],
           org: embed_figures.org,
-          asOf: embed_figures.source.retrieved
+          asOf: embed_figures.source.retrieved,
+          headingLevel: 3
         }) }}
       {% endfor %}
     </div>
@@ -46,9 +49,11 @@ eleventyExcludeFromCollections: true
     <div class="flex flex-col items-center gap-12 rounded-sm bg-neutral-100 px-6 py-12">
       {% for key in ["open_without_apcs", "policy_first_year", "apcs_and_preprinting", "apc_spend"] %}
         {{ component("embed/story", {
+          id: key,
           story: embed_figures.stories[key],
           org: embed_figures.org,
-          asOf: embed_figures.source.retrieved
+          asOf: embed_figures.source.retrieved,
+          headingLevel: 3
         }) }}
       {% endfor %}
     </div>

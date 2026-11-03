@@ -1,0 +1,21 @@
+{# Embed header: one heading naming the org and period, so the card has an accessible title
+{{ component("embed/header", {
+  id: "embed_title_…",
+  org: "Gates Foundation",
+  period: "1 Jan – 3 Nov 2026",
+  note: "vs same period in 2025",
+  level: 2
+}) }}
+#}
+
+{# Heading level is configurable so the embed fits the host page’s outline #}
+{% set level = params.level or 2 %}
+<header>
+  <h{{ level }} id="{{ params.id }}" class="flex flex-col">
+    <span class="text-xs font-semibold uppercase tracking-widest text-neutral-700">{{ params.org }}<span class="sr-only">,</span></span>
+    <span class="text-sm font-medium text-neutral-900">
+      {{ params.period }}
+      {% if params.note %}<span class="font-normal text-neutral-700">{{ params.note }}</span>{% endif %}
+    </span>
+  </h{{ level }}>
+</header>

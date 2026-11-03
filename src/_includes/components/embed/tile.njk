@@ -2,7 +2,8 @@
 {{ component("embed/tile", {
   figure: embed_figures.figures.unique_publications_2025,
   org: embed_figures.org,
-  asOf: embed_figures.source.retrieved
+  asOf: embed_figures.source.retrieved,
+  headingLevel: 2
 }) }}
 #}
 {%- from "system/component.njk" import component -%}
@@ -10,21 +11,23 @@
 {% set figure = params.figure %}
 {% set accent = params.accent or params.org.accent %}
 {% set detailId = "embed_detail_" ~ figure.metric ~ "_" ~ figure.period %}
+{% set titleId = "embed_title_" ~ figure.metric ~ "_" ~ figure.period %}
 {% if figure.format == "percent" %}
   {% set display = ((figure.numerator / figure.denominator) * 100) | round ~ "%" %}
 {% else %}
   {% set display = figure.numerator | number %}
 {% endif %}
 
-<figure
+<article
+  aria-labelledby="{{ titleId }}"
   class="embed-root flex w-full max-w-60 flex-col rounded-sm border border-t-4 border-neutral-200 border-t-(--embed-accent) bg-white p-4 font-sans text-base leading-normal tracking-normal text-neutral-900"
   {% if accent %}style="--embed-accent: {{ accent }};"{% endif %}>
-  <p class="text-xs font-semibold uppercase tracking-widest text-neutral-700">{{ params.org.name }}</p>
-  <p class="mt-0.5 text-sm font-medium text-neutral-900">{{ figure.period }}</p>
-  <p class="mt-5 font-serif text-4xl font-bold leading-none tabular-nums text-(--embed-accent)">{{ display }}</p>
+  {{ component("embed/header", { id: titleId, org: params.org.name, period: figure.period, level: params.headingLevel }) }}
+  {# Label comes first for screen readers; column-reverse shows the figure above it #}
+  <dl class="mt-5 flex flex-col-reverse">
   {# Last word stays on the same line as the info icon #}
   {% set words = figure.label.split(" ") %}
-  <figcaption class="mt-1 text-sm font-semibold">
+  <dt class="mt-1 text-sm font-semibold">
     {{ words.slice(0, -1).join(" ") }}
     <span class="whitespace-nowrap">{{ words | last }}
     {% if figure.format == "percent" %}
@@ -49,8 +52,10 @@
       </span>
     {% endif %}
     </span>
-  </figcaption>
+  </dt>
+  <dd class="font-serif text-4xl font-bold leading-none tabular-nums text-(--embed-accent)">{{ display }}</dd>
+  </dl>
   {# Spacer keeps the footer at the bottom when tiles share a row height #}
   <div class="grow" aria-hidden="true"></div>
   {{ component("embed/attribution", { url: params.org.report_url, asOf: params.asOf }) }}
-</figure>
+</article>

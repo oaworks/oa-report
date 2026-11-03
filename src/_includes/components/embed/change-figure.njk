@@ -1,4 +1,4 @@
-{# Embed figure with its change since an earlier period (used by Set and Story)
+{# Embed figure with its change since an earlier period, as a <dt>/<dd> pair inside a <dl> (Set, Story)
 {{ component("embed/change-figure", {
   figure: { format: "count", "percent" or "currency", label: "", better: "up" or "down",
             current: { numerator, denominator }, previous: { numerator, denominator } },
@@ -29,7 +29,7 @@
 
 {# Arrow plus words, so the change never relies on colour alone #}
 {% set pill %}
-<p class="rounded-xs px-1 py-0.5 text-xs font-semibold leading-none tabular-nums {{ 'bg-green/15 text-green-dark' if improved else 'bg-neutral-100 text-neutral-800' }}">
+<span class="rounded-xs px-1 py-0.5 text-xs font-semibold leading-none tabular-nums {{ 'bg-green/15 text-green-dark' if improved else 'bg-neutral-100 text-neutral-800' }}">
   {% if delta > 0 %}
     <span aria-hidden="true">↑</span><span class="sr-only">Up</span> {{ deltaDisplay }}
   {% elif delta < 0 %}
@@ -38,22 +38,23 @@
     No change
   {% endif %}
   <span class="sr-only">{{ params.comparedWith }}{% if improved %}, an improvement{% endif %}</span>
-</p>
+</span>
 {% endset %}
 
 {% if params.compact %}
   {# One quiet row: label on the left, figure and change on the right #}
   <div class="flex items-center justify-between gap-3 text-sm">
-    <p class="text-neutral-700">{{ f.label }}</p>
-    <div class="flex items-center gap-1.5"><span class="font-semibold tabular-nums">{{ curDisplay }}</span>{{ pill | safe }}</div>
+    <dt class="text-neutral-700">{{ f.label }}</dt>
+    <dd class="flex items-center gap-1.5"><span class="font-semibold tabular-nums">{{ curDisplay }}</span>{{ pill | safe }}</dd>
   </div>
 {% else %}
-  <div>
+  {# Label comes first for screen readers; column-reverse shows the figure above it #}
+  <div class="flex flex-col-reverse">
+    <dt class="mt-1 text-sm font-semibold">{{ f.label }}</dt>
     {# Change sits top-right of the figure, like a superscript, without <sup> semantics #}
-    <div class="flex flex-wrap items-start gap-x-1.5">
-      <p class="font-serif text-4xl font-bold leading-none tabular-nums text-(--embed-accent)">{{ curDisplay }}</p>
+    <dd class="flex flex-wrap items-start gap-x-1.5">
+      <span class="font-serif text-4xl font-bold leading-none tabular-nums text-(--embed-accent)">{{ curDisplay }}</span>
       {{ pill | safe }}
-    </div>
-    <p class="mt-1 text-sm font-semibold">{{ f.label }}</p>
+    </dd>
   </div>
 {% endif %}
