@@ -37,6 +37,33 @@ module.exports = async function (eleventyConfig) {
     Number(value).toLocaleString("en-GB")
   );
 
+  /**
+   * Formats a { start, end } ISO date range, e.g. "1 Jan – 3 Nov 2026"
+   * or "1 Jul 2025 – 30 Jun 2026". A full calendar year shows as "2025".
+   */
+  const formatDateRange = ({ start, end }) => {
+    const s = DateTime.fromISO(start, { zone: "utc" });
+    const e = DateTime.fromISO(end, { zone: "utc" });
+    if (s.year === e.year && s.toFormat("LLdd") === "0101" && e.toFormat("LLdd") === "1231") return String(s.year);
+    return s.year === e.year
+      ? `${s.toFormat("d LLL")} – ${e.toFormat("d LLL yyyy")}`
+      : `${s.toFormat("d LLL yyyy")} – ${e.toFormat("d LLL yyyy")}`;
+  };
+  eleventyConfig.addFilter("dateRange", formatDateRange);
+
+  /**
+   * Describes a comparison period relative to the period shown,
+   * e.g. "vs same period in 2025", or the full range when it isn’t a year earlier.
+   */
+  eleventyConfig.addFilter("comparedWith", (period, comparison) => {
+    const yearEarlier = (iso) => DateTime.fromISO(iso, { zone: "utc" }).minus({ years: 1 }).toISODate();
+    const isYearEarlier = yearEarlier(period.start) === comparison.start && yearEarlier(period.end) === comparison.end;
+    const label = formatDateRange(comparison);
+    if (!isYearEarlier || /^\d{4}$/.test(label)) return `vs ${label}`;
+    const sameYear = comparison.start.slice(0, 4) === comparison.end.slice(0, 4);
+    return sameYear ? `vs same period in ${comparison.start.slice(0, 4)}` : "vs same period a year earlier";
+  });
+
   /* ─── Markdown setup ───────────────────────────────────── */
   eleventyConfig.setLibrary('md', markdownLib);
 

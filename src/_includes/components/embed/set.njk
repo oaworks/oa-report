@@ -1,4 +1,4 @@
-{# Set embed: a few figures, each compared with the same period in the previous year
+{# Set embed: a few figures for one period, each compared with an earlier period
 {{ component("embed/set", {
   set: embed_figures.sets.preprints_and_cc_by,
   org: embed_figures.org,
@@ -9,14 +9,15 @@
 
 {% set set = params.set %}
 {% set accent = params.accent or params.org.accent %}
+{% set comparedWith = set.period | comparedWith(set.comparison_period) %}
 
 <figure
   class="embed-root flex w-full max-w-sm flex-col rounded-sm border border-t-4 border-neutral-200 border-t-(--embed-accent) bg-white p-4 font-sans text-base leading-normal tracking-normal text-neutral-900"
   {% if accent %}style="--embed-accent: {{ accent }};"{% endif %}>
   <p class="text-xs font-semibold uppercase tracking-widest text-neutral-700">{{ params.org.name }}</p>
   <p class="mt-0.5 text-sm font-medium text-neutral-900">
-    {{ set.period_label }} {{ set.current }}
-    <span class="font-normal text-neutral-700">vs same period in {{ set.previous }}</span>
+    {{ set.period | dateRange }}
+    <span class="font-normal text-neutral-700">{{ comparedWith }}</span>
   </p>
 
   <div class="mt-5 grid gap-6 {{ "grid-cols-2" if set.figures.length > 1 else "grid-cols-1" }}">
@@ -48,7 +49,7 @@
             {% else %}
               No change
             {% endif %}
-            <span class="sr-only">vs {{ set.previous }}{% if improved %}, an improvement{% endif %}</span>
+            <span class="sr-only">{{ comparedWith }}{% if improved %}, an improvement{% endif %}</span>
           </p>
         </div>
         <p class="mt-1 text-sm font-semibold">{{ f.label }}</p>

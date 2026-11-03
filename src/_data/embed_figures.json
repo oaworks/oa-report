@@ -52,9 +52,14 @@
   },
   "sets": {
     "preprints_and_cc_by": {
-      "period_label": "1 Jan – 3 Nov",
-      "current": "2026",
-      "previous": "2025",
+      "period": {
+        "start": "2026-01-01",
+        "end": "2026-11-03"
+      },
+      "comparison_period": {
+        "start": "2025-01-01",
+        "end": "2025-11-03"
+      },
       "figures": [
         {
           "metric": "is_preprint",
@@ -81,9 +86,14 @@
       ]
     },
     "preprints_and_cc_by_share": {
-      "period_label": "1 Jan – 3 Nov",
-      "current": "2026",
-      "previous": "2025",
+      "period": {
+        "start": "2026-01-01",
+        "end": "2026-11-03"
+      },
+      "comparison_period": {
+        "start": "2025-01-01",
+        "end": "2025-11-03"
+      },
       "figures": [
         {
           "metric": "is_preprint",
@@ -113,9 +123,14 @@
       ]
     },
     "das": {
-      "period_label": "1 Jan – 3 May",
-      "current": "2026",
-      "previous": "2025",
+      "period": {
+        "start": "2026-01-01",
+        "end": "2026-05-03"
+      },
+      "comparison_period": {
+        "start": "2025-01-01",
+        "end": "2025-05-03"
+      },
       "review_lag_months": 6,
       "figures": [
         {

@@ -13,7 +13,7 @@ eleventyExcludeFromCollections: true
 
   <section aria-labelledby="tile_heading" class="mb-16">
     <h2 id="tile_heading" class="text-lg md:text-2xl font-serif mb-1">1. Tile</h2>
-    <p class="mb-6 text-sm text-neutral-700">One figure = one card = one period.</p>
+    <p class="mb-6 text-sm text-neutral-700">Highlights one headline figure for one completed period, such as total preprints in 2025. Answers “what’s the number?”</p>
     <div class="flex flex-col items-center gap-12 rounded-sm bg-neutral-100 px-6 py-12">
       {% for key in ["unique_publications_2025", "compliance_2025", "preprints_2025", "das_2025"] %}
         {{ component("embed/tile", {
@@ -27,7 +27,7 @@ eleventyExcludeFromCollections: true
 
   <section aria-labelledby="set_heading" class="mb-16">
     <h2 id="set_heading" class="text-lg md:text-2xl font-serif mb-1">2. Set</h2>
-    <p class="mb-6 text-sm text-neutral-700">One or more figures in one card, each compared with the same period last year.</p>
+    <p class="mb-6 text-sm text-neutral-700">Shows one or two figures for a chosen period, each compared with an earlier period of the same length, such as the same dates last year or the previous fiscal year. Answers “how does this period compare with the last?”</p>
 
     <div class="flex flex-col items-center gap-12 rounded-sm bg-neutral-100 px-6 py-12">
       {% for key in ["preprints_and_cc_by", "preprints_and_cc_by_share", "das"] %}
