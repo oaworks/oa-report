@@ -367,5 +367,190 @@
         }
       ]
     }
+  },
+  "trends": {
+    "preprint_share": {
+      "period": {
+        "start": "2020-01-01",
+        "end": "2026-11-03"
+      },
+      "format": "percent",
+      "categories": [
+        "2020",
+        "2021",
+        "2022",
+        "2023",
+        "2024",
+        "2025",
+        "2026"
+      ],
+      "policy_start": "2025",
+      "lines": [
+        {
+          "label": "Preprint share",
+          "style": "accent",
+          "points": [
+            {
+              "numerator": 1170,
+              "denominator": 5315
+            },
+            {
+              "numerator": 1289,
+              "denominator": 6082
+            },
+            {
+              "numerator": 1142,
+              "denominator": 5566
+            },
+            {
+              "numerator": 1218,
+              "denominator": 5329
+            },
+            {
+              "numerator": 1108,
+              "denominator": 5294
+            },
+            {
+              "numerator": 1999,
+              "denominator": 5913
+            },
+            {
+              "numerator": 1935,
+              "denominator": 4573,
+              "partial": true
+            }
+          ]
+        }
+      ],
+      "compared_with": "vs 2024",
+      "hero": {
+        "format": "percent",
+        "label": "Preprint share in 2025",
+        "current": {
+          "numerator": 1999,
+          "denominator": 5913
+        },
+        "previous": {
+          "numerator": 1108,
+          "denominator": 5294
+        }
+      },
+      "caption": "Preprint share by year"
+    },
+    "free_vs_paid": {
+      "period": {
+        "start": "2020-01-01",
+        "end": "2026-11-03"
+      },
+      "format": "percent",
+      "categories": [
+        "2020",
+        "2021",
+        "2022",
+        "2023",
+        "2024",
+        "2025",
+        "2026"
+      ],
+      "policy_start": "2025",
+      "note": "Share of all journal articles and preprints",
+      "lines": [
+        {
+          "label": "Preprints",
+          "style": "accent",
+          "points": [
+            {
+              "numerator": 1170,
+              "denominator": 5315
+            },
+            {
+              "numerator": 1289,
+              "denominator": 6082
+            },
+            {
+              "numerator": 1142,
+              "denominator": 5566
+            },
+            {
+              "numerator": 1218,
+              "denominator": 5329
+            },
+            {
+              "numerator": 1108,
+              "denominator": 5294
+            },
+            {
+              "numerator": 1999,
+              "denominator": 5913
+            },
+            {
+              "numerator": 1935,
+              "denominator": 4573,
+              "partial": true
+            }
+          ]
+        },
+        {
+          "label": "APC-funded",
+          "style": "muted",
+          "points": [
+            {
+              "numerator": 2019,
+              "denominator": 5315
+            },
+            {
+              "numerator": 1958,
+              "denominator": 6082
+            },
+            {
+              "numerator": 1864,
+              "denominator": 5566
+            },
+            {
+              "numerator": 1712,
+              "denominator": 5329
+            },
+            {
+              "numerator": 1592,
+              "denominator": 5294
+            },
+            {
+              "numerator": 657,
+              "denominator": 5913
+            }
+          ],
+          "note": "2026 not yet available: APC invoices arrive after publication"
+        }
+      ],
+      "compared_with": "vs 2024",
+      "rows": [
+        {
+          "format": "percent",
+          "label": "Preprints in 2025",
+          "current": {
+            "numerator": 1999,
+            "denominator": 5913
+          },
+          "previous": {
+            "numerator": 1108,
+            "denominator": 5294
+          }
+        },
+        {
+          "format": "percent",
+          "label": "APC-funded in 2025",
+          "better": "down",
+          "current": {
+            "numerator": 657,
+            "denominator": 5913
+          },
+          "previous": {
+            "numerator": 1592,
+            "denominator": 5294
+          }
+        }
+      ],
+      "caption": "Share of all journal articles and preprints, by year"
+    }
   }
 }

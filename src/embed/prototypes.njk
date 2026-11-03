@@ -58,4 +58,20 @@ eleventyExcludeFromCollections: true
       {% endfor %}
     </div>
   </section>
+
+  <section aria-labelledby="trend_heading" class="mb-16">
+    <h2 id="trend_heading" class="text-lg md:text-2xl font-serif mb-1">4. Trend</h2>
+    <p class="mb-6 text-sm text-neutral-700">Shows how figures have moved over time: one or two metrics year by year, with the start of the policy marked. Answers “how has it changed over time?”</p>
+    <div class="flex flex-col items-center gap-12 rounded-sm bg-neutral-100 px-6 py-12">
+      {% for key in ["free_vs_paid", "preprint_share"] %}
+        {{ component("embed/trend", {
+          id: key,
+          trend: embed_figures.trends[key],
+          org: embed_figures.org,
+          asOf: embed_figures.source.retrieved,
+          headingLevel: 3
+        }) }}
+      {% endfor %}
+    </div>
+  </section>
 </main>
