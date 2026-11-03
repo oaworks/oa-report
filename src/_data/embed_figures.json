@@ -152,6 +152,57 @@
     }
   },
   "stories": {
+    "compliant_without_apcs": {
+      "period": {
+        "start": "2025-01-01",
+        "end": "2025-12-31"
+      },
+      "comparison_period": {
+        "start": "2024-01-01",
+        "end": "2024-12-31"
+      },
+      "comparison_note": "before the policy change",
+      "share": {
+        "metric": "is_compliant_publication AND NOT has_apc",
+        "denominator_metric": "is_compliant_publication",
+        "format": "percent",
+        "label": "Compliant without an APC",
+        "current": {
+          "numerator": 3129,
+          "denominator": 3761
+        },
+        "previous": {
+          "numerator": 1958,
+          "denominator": 3515
+        }
+      },
+      "figures": [
+        {
+          "metric": "is_preprint",
+          "format": "count",
+          "label": "Preprints",
+          "current": {
+            "numerator": 1999
+          },
+          "previous": {
+            "numerator": 1108
+          }
+        },
+        {
+          "metric": "has_apc",
+          "aggregate": "sum:supplements.apc_cost",
+          "format": "currency",
+          "label": "Spent on APCs",
+          "better": "down",
+          "current": {
+            "numerator": 2368107
+          },
+          "previous": {
+            "numerator": 5151870
+          }
+        }
+      ]
+    },
     "policy_first_year": {
       "period": {
         "start": "2025-01-01",
@@ -161,7 +212,7 @@
         "start": "2024-01-01",
         "end": "2024-12-31"
       },
-      "comparison_note": "before the policy",
+      "comparison_note": "before the policy change",
       "share": {
         "metric": "is_preprint",
         "denominator_metrics": [
@@ -216,7 +267,7 @@
         "start": "2024-01-01",
         "end": "2024-12-31"
       },
-      "comparison_note": "before the policy",
+      "comparison_note": "before the policy change",
       "share": {
         "metric": "has_apc",
         "denominator_metric": "is_paper",
@@ -272,7 +323,7 @@
         "start": "2024-01-01",
         "end": "2024-12-31"
       },
-      "comparison_note": "before the policy",
+      "comparison_note": "before the policy change",
       "hero": {
         "metric": "has_apc",
         "aggregate": "sum:supplements.apc_cost",
@@ -313,7 +364,7 @@
         }
       ]
     },
-    "open_without_apcs": {
+    "policy_routes": {
       "period": {
         "start": "2025-01-01",
         "end": "2025-12-31"
@@ -322,47 +373,61 @@
         "start": "2024-01-01",
         "end": "2024-12-31"
       },
-      "comparison_note": "before the policy",
+      "comparison_note": "before the policy change",
       "share": {
-        "metric": "is_preprint + (is_free_to_read AND NOT has_apc)",
-        "denominator_metrics": [
-          "is_preprint",
-          "is_paper"
-        ],
+        "metric": "is_compliant_publication AND is_preprint",
+        "denominator_metric": "is_compliant_publication",
         "format": "percent",
-        "label": "Open without an APC",
+        "label": "Met the policy through a preprint alone",
         "current": {
-          "numerator": 5055,
-          "denominator": 5913
+          "numerator": 655,
+          "denominator": 3761
         },
         "previous": {
-          "numerator": 3555,
-          "denominator": 5294
-        }
+          "numerator": 0,
+          "denominator": 3515
+        },
+        "parts": [
+          {
+            "numerator": 655,
+            "swatch": "accent"
+          },
+          {
+            "numerator": 2830,
+            "swatch": "muted"
+          },
+          {
+            "numerator": 276,
+            "swatch": "light"
+          }
+        ]
       },
       "figures": [
         {
-          "metric": "is_preprint",
+          "metric": "is_compliant_publication AND is_preprint",
           "format": "count",
-          "label": "Preprints",
+          "label": "Preprint only",
+          "swatch": "accent",
           "current": {
-            "numerator": 1999
-          },
-          "previous": {
-            "numerator": 1108
+            "numerator": 655
           }
         },
         {
-          "metric": "has_apc",
-          "aggregate": "sum:supplements.apc_cost",
-          "format": "currency",
-          "label": "Spent on APCs",
-          "better": "down",
+          "metric": "is_compliant_publication AND is_paper AND publisher licence CC BY or equivalent",
+          "format": "count",
+          "label": "Open Access in the journal",
+          "swatch": "muted",
           "current": {
-            "numerator": 2368107
-          },
-          "previous": {
-            "numerator": 5151870
+            "numerator": 2830
+          }
+        },
+        {
+          "metric": "is_compliant_publication AND is_paper AND NOT publisher licence (repository, preprint licence or OA.Support)",
+          "format": "count",
+          "label": "Open copy in a repository",
+          "swatch": "light",
+          "current": {
+            "numerator": 276
           }
         }
       ]
@@ -419,7 +484,27 @@
               "denominator": 4573,
               "partial": true
             }
-          ]
+          ],
+          "end_label": "Actual"
+        },
+        {
+          "label": "Pre-policy trend",
+          "style": "expected",
+          "method": "Least-squares fit of 2020–2024, extended to 2025",
+          "missing_text": "Not projected",
+          "points": [
+            null,
+            null,
+            null,
+            null,
+            {
+              "value": 21.4
+            },
+            {
+              "value": 21.35
+            }
+          ],
+          "end_label": "Expected"
         }
       ],
       "compared_with": "vs 2024",
@@ -435,7 +520,8 @@
           "denominator": 5294
         }
       },
-      "caption": "Preprint share by year"
+      "caption": "Preprint share by year",
+      "note": "Expected: where the 2020–2024 trend was heading"
     },
     "free_vs_paid": {
       "period": {

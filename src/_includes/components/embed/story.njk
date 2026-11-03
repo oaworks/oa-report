@@ -29,7 +29,18 @@
       {# Decorative: the figure and label beside it carry the same information #}
       <svg viewBox="-1 -1 38 38" class="size-20 shrink-0 -rotate-90" aria-hidden="true" focusable="false">
         <circle cx="18" cy="18" r="15.9155" fill="none" stroke-width="5" class="stroke-neutral-200"/>
-        <circle cx="18" cy="18" r="15.9155" fill="none" stroke-width="5" class="stroke-(--embed-accent)" stroke-dasharray="{{ sharePct | round(1) }} 100"/>
+        {% if share.parts %}
+          {# One arc per part; the circle’s length is 100, so each arc’s length is its percentage #}
+          {% set total = share.current.denominator %}{% set offset = 0 %}
+          {% set strokes = { accent: "stroke-(--embed-accent)", muted: "stroke-neutral-500", light: "stroke-neutral-300" } %}
+          {% for part in share.parts %}
+            {% set pct = (part.numerator / total) * 100 %}
+            <circle cx="18" cy="18" r="15.9155" fill="none" stroke-width="5" class="{{ strokes[part.swatch] }}" stroke-dasharray="{{ pct | round(1) }} 100" stroke-dashoffset="{{ (0 - offset) | round(1) }}"/>
+            {% set offset = offset + pct %}
+          {% endfor %}
+        {% else %}
+          <circle cx="18" cy="18" r="15.9155" fill="none" stroke-width="5" class="stroke-(--embed-accent)" stroke-dasharray="{{ sharePct | round(1) }} 100"/>
+        {% endif %}
       </svg>
       <dl>
         {{ component("embed/change-figure", { figure: share, comparedWith: comparedWith }) }}
@@ -44,7 +55,7 @@
 
   <dl class="mt-5 space-y-2">
     {% for f in story.figures %}
-      {{ component("embed/change-figure", { figure: f, comparedWith: comparedWith, compact: true }) }}
+      {{ component("embed/change-figure", { figure: f, comparedWith: comparedWith, compact: true, swatch: f.swatch }) }}
     {% endfor %}
   </dl>
 

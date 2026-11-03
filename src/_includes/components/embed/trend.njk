@@ -16,7 +16,8 @@
 {% set comparedWith = (trend.period | comparedWith(trend.comparison_period)) if trend.comparison_period else trend.compared_with %}
 {% set styles = {
   accent: { stroke: "stroke-(--embed-accent)", fill: "fill-(--embed-accent)" },
-  muted:  { stroke: "stroke-neutral-500", fill: "fill-neutral-500" }
+  muted:  { stroke: "stroke-neutral-500", fill: "fill-neutral-500" },
+  expected: { stroke: "stroke-neutral-400", dash: "2 3", noDots: true }
 } %}
 
 {# Chart geometry in viewBox units; the y-axis starts at 0 so changes aren’t exaggerated #}
@@ -29,9 +30,14 @@
 {% for line in trend.lines %}
   {% set vals = [] %}
   {% for p in line.points %}
-    {% set v = ((p.numerator / p.denominator) * 100) if trend.format == "percent" else p.numerator %}
+    {# Projected lines give a ready-made `value`; others are worked out from counts #}
+    {% if p %}
+      {% set v = p.value if p.value is defined else (((p.numerator / p.denominator) * 100) if trend.format == "percent" else p.numerator) %}
+      {% if v > top %}{% set top = v %}{% endif %}
+    {% else %}
+      {% set v = null %}
+    {% endif %}
     {% set vals = (vals.push(v), vals) %}
-    {% if v > top %}{% set top = v %}{% endif %}
   {% endfor %}
   {% set lines = (lines.push({ line: line, vals: vals }), lines) %}
 {% endfor %}
@@ -64,7 +70,7 @@
     <div class="relative">
       {% for c in trend.categories %}
         {% if c == trend.policy_start %}
-          <span class="absolute top-0 -translate-x-1/2 text-xs text-neutral-700" style="left: {{ ((padL + loop.index0 * step) / W * 100) | round(2) }}%;">Policy</span>
+          <span class="absolute top-0 -translate-x-1/2 text-xs text-neutral-700" style="left: {{ ((padL + loop.index0 * step) / W * 100) | round(2) }}%;">{{ trend.policy_label or "Policy change" }}</span>
         {% endif %}
       {% endfor %}
       <svg viewBox="0 0 {{ W }} {{ H }}" class="block h-auto w-full" focusable="false">
@@ -77,23 +83,24 @@
         {% for l in lines %}
           {% set s = styles[l.line.style] or styles.accent %}
           {% set pts = [] %}
-          {% for v in l.vals %}
+          {# Gaps (null points) are skipped, e.g. a projection that only starts in 2024 #}
+          {% for v in l.vals %}{% if v !== null %}
             {% set pts = (pts.push({ x: (padL + loop.index0 * step) | round(1), y: (padTop + (1 - v / yMax) * (H - padTop - padBottom)) | round(1), partial: l.line.points[loop.index0].partial }), pts) %}
-          {% endfor %}
+          {% endif %}{% endfor %}
           {% set solid = [] %}
           {% for pt in pts %}{% if not pt.partial %}{% set solid = (solid.push(pt.x ~ "," ~ pt.y), solid) %}{% endif %}{% endfor %}
-          <polyline points="{{ solid | join(' ') }}" fill="none" class="{{ s.stroke }}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+          <polyline points="{{ solid | join(' ') }}" fill="none" class="{{ s.stroke }}" stroke-width="{{ 1.5 if s.dash else 2 }}" {% if s.dash %}stroke-dasharray="{{ s.dash }}"{% endif %} stroke-linejoin="round" stroke-linecap="round"/>
           {% for pt in pts %}
             {% if pt.partial %}
               {% set prevPt = pts[loop.index0 - 1] %}
               <line x1="{{ prevPt.x }}" y1="{{ prevPt.y }}" x2="{{ pt.x }}" y2="{{ pt.y }}" class="{{ s.stroke }}" stroke-width="2" stroke-dasharray="4 3" stroke-linecap="round"/>
               <circle cx="{{ pt.x }}" cy="{{ pt.y }}" r="3" class="fill-white {{ s.stroke }}" stroke-width="2"/>
-            {% else %}
+            {% elif not s.noDots %}
               <circle cx="{{ pt.x }}" cy="{{ pt.y }}" r="3" class="{{ s.fill }}"/>
             {% endif %}
           {% endfor %}
           {% set lastPt = pts[pts.length - 1] %}
-          {% set ends = (ends.push({ label: l.line.label, x: lastPt.x, y: lastPt.y, i: pts.length - 1, li: loop.index0 }), ends) %}
+          {% set ends = (ends.push({ label: l.line.end_label or l.line.label, x: lastPt.x, y: lastPt.y, i: l.vals.length - 1, li: loop.index0 }), ends) %}
           {% set allPts = (allPts.push(pts), allPts) %}
         {% endfor %}
       </svg>
@@ -103,10 +110,11 @@
         {% for e in ends %}{% if e.x > lastX %}{% set lastX = e.x %}{% endif %}{% endfor %}
         {% for e in ends %}
           {# A line that stops early is labelled on the side away from the longer line, so they don’t overlap #}
-          {% set other = allPts[1 - e.li][e.i] if allPts.length == 2 %}
+          {% set otherLine = lines[1 - e.li] if lines.length == 2 %}
+          {% set otherY = (padTop + (1 - otherLine.vals[e.i] / yMax) * (H - padTop - padBottom)) if otherLine and otherLine.vals[e.i] !== null and otherLine.vals[e.i] is defined %}
           {% if e.x >= lastX %}
             {% set placement = "-translate-y-1/2 pl-1.5" %}
-          {% elif other and other.y < e.y %}
+          {% elif otherY and otherY < e.y %}
             {% set placement = "pl-1.5 pt-0.5" %}
           {% else %}
             {% set placement = "-translate-x-1/2 -translate-y-full pb-1" %}
@@ -118,7 +126,7 @@
     <div class="mt-1 flex justify-between text-xs text-neutral-700" style="padding-right: {{ (padR / W * 100) | round(2) }}%;">
       <span>{{ trend.categories[0] }}</span>
       {% set lastPt = trend.lines[0].points[trend.lines[0].points.length - 1] %}
-      <span>{{ trend.categories[trend.categories.length - 1] }}{% if not multi and lastPt.partial %} so far{% endif %}</span>
+      <span>{{ trend.categories[trend.categories.length - 1] }}{% if lastPt.partial %} so far{% endif %}</span>
     </div>
   </div>
 
@@ -134,14 +142,14 @@
       {% for c in trend.categories %}
         {% set i = loop.index0 %}
         <tr>
-          <th scope="row">{{ c }}{% if c == trend.policy_start %} (policy starts){% endif %}</th>
+          <th scope="row">{{ c }}{% if c == trend.policy_start %} ({{ (trend.policy_label or "Policy change") | lower }}){% endif %}</th>
           {% for l in lines %}
             {% set p = l.line.points[i] %}
             <td>
-              {% if p %}
+              {% if p and l.vals[i] !== null %}
                 {{ (l.vals[i] | round ~ "%") if trend.format == "percent" else (l.vals[i] | number) }}{% if p.partial %} (so far){% endif %}
               {% else %}
-                Not available yet
+                {{ l.line.missing_text or "Not available yet" }}
               {% endif %}
             </td>
           {% endfor %}
