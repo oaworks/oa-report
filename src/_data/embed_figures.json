@@ -609,7 +609,8 @@
         }
       ],
       "compared_with": "vs 2024",
-      "rows": [
+      "caption": "Share of all journal articles and preprints, by year",
+      "figures": [
         {
           "format": "percent",
           "label": "Preprints in 2025",
@@ -635,8 +636,7 @@
             "denominator": 5294
           }
         }
-      ],
-      "caption": "Share of all journal articles and preprints, by year"
+      ]
     }
   }
 }

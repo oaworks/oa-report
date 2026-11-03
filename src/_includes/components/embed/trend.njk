@@ -56,6 +56,13 @@
       {{ component("embed/change-figure", { figure: trend.hero, comparedWith: comparedWith }) }}
     </dl>
   {% endif %}
+  {% if trend.figures %}
+    <dl class="mt-5 grid grid-cols-2 gap-6">
+      {% for f in trend.figures %}
+        {{ component("embed/change-figure", { figure: f, comparedWith: comparedWith }) }}
+      {% endfor %}
+    </dl>
+  {% endif %}
   {% if trend.rows %}
     <dl class="mt-5 space-y-2">
       {% for f in trend.rows %}
@@ -123,10 +130,16 @@
         {% endfor %}
       {% endif %}
     </div>
-    <div class="mt-1 flex justify-between text-xs text-neutral-700" style="padding-right: {{ (padR / W * 100) | round(2) }}%;">
-      <span>{{ trend.categories[0] }}</span>
-      {% set lastPt = trend.lines[0].points[trend.lines[0].points.length - 1] %}
-      <span>{{ trend.categories[trend.categories.length - 1] }}{% if lastPt.partial %} so far{% endif %}</span>
+    {# Axis labels sit under their own points: first year, the policy change and the last year #}
+    {% set lastPt = trend.lines[0].points[trend.lines[0].points.length - 1] %}
+    <div class="relative mt-1 h-8 text-xs leading-tight text-neutral-700">
+      {% for c in trend.categories %}
+        {% if loop.first or loop.last or c == trend.policy_start %}
+          {% set x = ((padL + loop.index0 * step) / W * 100) | round(2) %}
+          {% set align = "" if loop.first else ("-translate-x-full text-right" if x > 90 else "-translate-x-1/2 text-center") %}
+          <span class="absolute top-0 {{ align }}" style="left: {{ x }}%;">{{ c }}{% if loop.last and lastPt.partial %}<span class="block">so far</span>{% endif %}</span>
+        {% endif %}
+      {% endfor %}
     </div>
   </div>
 
