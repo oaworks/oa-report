@@ -1,0 +1,29 @@
+---
+layout: layouts/base.njk
+permalink: "embed/prototypes/"
+eleventyExcludeFromCollections: true
+---
+{%- from "system/component.njk" import component -%}
+
+<main class="px-4 py-6 md:px-8 md:py-10 max-w-6xl mx-auto">
+  <h1 class="text-xl md:text-3xl font-serif mb-2">Embed prototypes</h1>
+  <p class="mb-10 text-sm text-neutral-700">
+    Static designs for embedding OA.Report figures on external sites. Figures for {{ embed_figures.org.name }}, from the live API on {{ embed_figures.source.retrieved | date("d LLL yyyy") }}.
+  </p>
+
+  <section aria-labelledby="tile_heading" class="mb-16">
+    <h2 id="tile_heading" class="text-lg md:text-2xl font-serif mb-1">1. Tile</h2>
+    <p class="mb-6 text-sm text-neutral-700">One figure = one card = one period.</p>
+
+    <h3 class="mb-3 text-xs font-semibold uppercase tracking-widest text-neutral-700">Compact-style embeds</h3>
+    <div class="grid justify-items-center gap-6 rounded-sm bg-neutral-100 p-6 sm:grid-cols-2 lg:grid-cols-4">
+      {% for key in ["unique_publications_2025", "compliance_2025", "preprints_2025", "das_2025"] %}
+        {{ component("embed/tile", {
+          figure: embed_figures.figures[key],
+          org: embed_figures.org,
+          asOf: embed_figures.source.retrieved
+        }) }}
+      {% endfor %}
+    </div>
+  </section>
+</main>

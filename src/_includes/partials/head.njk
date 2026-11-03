@@ -1,7 +1,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  {% if org._source.private == true or page.fileSlug == 'report-unavailable' or page.fileSlug == 'report-list' %}
+  {% if org._source.private == true or page.fileSlug == 'report-unavailable' or page.fileSlug == 'report-list' or (page.url and page.url.startsWith('/embed/')) %}
   <meta name="robots" content="noindex">
   {% endif %}
   {% set env = (site.base_url or '') | lower %}

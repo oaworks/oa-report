@@ -1,0 +1,57 @@
+{# Compact Tile embed: one figure for one period
+{{ component("embed/tile", {
+  figure: embed_figures.figures.unique_publications_2025,
+  org: embed_figures.org,
+  asOf: embed_figures.source.retrieved
+}) }}
+#}
+{%- from "system/component.njk" import component -%}
+
+{% set figure = params.figure %}
+{% set accent = params.accent or params.org.accent %}
+{% set detailId = "embed_detail_" ~ figure.metric ~ "_" ~ figure.period %}
+{% if figure.format == "percent" %}
+  {% set display = ((figure.numerator / figure.denominator) * 100) | round ~ "%" %}
+{% else %}
+  {% set display = figure.numerator | number %}
+{% endif %}
+
+<figure
+  class="embed-root flex w-full max-w-60 flex-col rounded-sm border border-t-4 border-neutral-200 border-t-(--embed-accent) bg-white p-4 font-sans text-base leading-normal tracking-normal text-neutral-900"
+  {% if accent %}style="--embed-accent: {{ accent }};"{% endif %}>
+  <p class="text-xs font-semibold uppercase tracking-widest text-neutral-600">
+    {{ params.org.name }}<span aria-hidden="true"> · </span><span class="sr-only">, </span>{{ figure.period }}
+  </p>
+  <p class="mt-1.5 font-serif text-4xl font-bold leading-none tabular-nums text-(--embed-accent)">{{ display }}</p>
+  {# Last word stays on the same line as the info icon #}
+  {% set words = figure.label.split(" ") %}
+  <figcaption class="mt-2 text-sm font-semibold">
+    {{ words.slice(0, -1).join(" ") }}
+    <span class="whitespace-nowrap">{{ words | last }}
+    {% if figure.format == "percent" %}
+      {# Native popover: opens on click, tap or keyboard, closes on Esc or outside click #}
+      <button
+        type="button"
+        popovertarget="{{ detailId }}"
+        aria-label="Details for {{ figure.label }}"
+        class="-my-1 inline-flex size-6 items-center justify-center rounded-full align-middle text-neutral-600 hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-(--embed-accent)"
+        style="anchor-name: --{{ detailId }};">
+        <svg viewBox="0 0 16 16" class="size-3.5" aria-hidden="true" focusable="false">
+          <circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M8 7v4.5M8 4.5v.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <span
+        id="{{ detailId }}"
+        popover
+        class="max-w-52 whitespace-normal rounded-xs border-0 bg-neutral-900 px-2 py-1.5 text-xs font-normal leading-snug text-white shadow-md supports-[position-area:bottom]:inset-auto supports-[position-area:bottom]:m-0 supports-[position-area:bottom]:mt-1 supports-[position-area:bottom]:[position-area:bottom_span-right] supports-[position-area:bottom]:[position-try-fallbacks:flip-block,flip-inline]"
+        style="position-anchor: --{{ detailId }};">
+        {{ figure.numerator | number }} of {{ figure.denominator | number }} {{ figure.detail }}
+      </span>
+    {% endif %}
+    </span>
+  </figcaption>
+  {# Spacer keeps the footer at the bottom when tiles share a row height #}
+  <div class="grow" aria-hidden="true"></div>
+  {{ component("embed/attribution", { url: params.org.report_url, asOf: params.asOf }) }}
+</figure>

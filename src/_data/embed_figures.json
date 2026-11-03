@@ -1,0 +1,53 @@
+{
+  "source": {
+    "api": "https://api.oa.works/report/works/count",
+    "retrieved": "2026-11-03",
+    "note": "Hard-coded counts from the live API. Replace this file (same shape) to plug in live data."
+  },
+  "org": {
+    "id": "gates-foundation",
+    "name": "Gates Foundation",
+    "report_url": "https://oa.report/gates-foundation",
+    "accent": null
+  },
+  "figures": {
+    "unique_publications_2025": {
+      "metric": "is_unique_publication",
+      "period": "2025",
+      "format": "count",
+      "numerator": 4800,
+      "label": "Unique publications",
+      "definition": "Journal articles and preprints without an associated journal article, published by grantees or authors at the foundation."
+    },
+    "compliance_2025": {
+      "metric": "is_compliant_publication",
+      "denominator_metric": "is_covered_by_policy",
+      "period": "2025",
+      "format": "percent",
+      "numerator": 3761,
+      "denominator": 4802,
+      "label": "Policy compliance",
+      "detail": "publications covered by the policy",
+      "definition": "The percentage of publications covered by the foundation’s Open Access policy that are compliant with it."
+    },
+    "preprints_2025": {
+      "metric": "is_preprint",
+      "period": "2025",
+      "format": "count",
+      "numerator": 1999,
+      "label": "Preprints",
+      "definition": "Preprints published by grantees or authors at the foundation."
+    },
+    "das_2025": {
+      "metric": "has_data_availability_statement",
+      "denominator_metric": "has_checked_data_availability_statement",
+      "period": "2025",
+      "format": "percent",
+      "numerator": 2972,
+      "denominator": 3911,
+      "label": "Data availability statements",
+      "detail": "reviewed journal articles",
+      "definition": "The percentage of journal articles we’ve analysed that have a data availability statement."
+    }
+  }
+}

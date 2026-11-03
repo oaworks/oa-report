@@ -32,6 +32,11 @@ module.exports = async function (eleventyConfig) {
     DateTime.fromISO(value, { zone: "utc" }).toFormat(fmt)
   );
 
+  /* ─── Thousands separators for static figures, e.g. 4,800 ─ */
+  eleventyConfig.addFilter("number", (value) =>
+    Number(value).toLocaleString("en-GB")
+  );
+
   /* ─── Markdown setup ───────────────────────────────────── */
   eleventyConfig.setLibrary('md', markdownLib);
 

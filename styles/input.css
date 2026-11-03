@@ -42,6 +42,11 @@
   }
 }
 
+/* Embed root: default accent is carnation; an inline --embed-accent overrides it */
+@utility embed-root {
+  --embed-accent: theme(colors.carnation.500);
+}
+
 @utility report_readable_start_date {
   display: inline-block;
   min-width: 11ch;
