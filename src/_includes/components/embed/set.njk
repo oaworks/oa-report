@@ -1,0 +1,62 @@
+{# Set embed: a few figures, each compared with the same period in the previous year
+{{ component("embed/set", {
+  set: embed_figures.sets.preprints_and_cc_by,
+  org: embed_figures.org,
+  asOf: embed_figures.source.retrieved
+}) }}
+#}
+{%- from "system/component.njk" import component -%}
+
+{% set set = params.set %}
+{% set accent = params.accent or params.org.accent %}
+
+<figure
+  class="embed-root flex w-full max-w-sm flex-col rounded-sm border border-t-4 border-neutral-200 border-t-(--embed-accent) bg-white p-4 font-sans text-base leading-normal tracking-normal text-neutral-900"
+  {% if accent %}style="--embed-accent: {{ accent }};"{% endif %}>
+  <p class="text-xs font-semibold uppercase tracking-widest text-neutral-700">{{ params.org.name }}</p>
+  <p class="mt-0.5 text-sm font-medium text-neutral-900">
+    {{ set.period_label }} {{ set.current }}
+    <span class="font-normal text-neutral-700">vs same period in {{ set.previous }}</span>
+  </p>
+
+  <div class="mt-5 grid gap-6 {{ "grid-cols-2" if set.figures.length > 1 else "grid-cols-1" }}">
+    {% for f in set.figures %}
+      {% if f.format == "percent" %}
+        {% set cur = ((f.current.numerator / f.current.denominator) * 100) | round %}
+        {% set prev = ((f.previous.numerator / f.previous.denominator) * 100) | round %}
+        {% set curDisplay = cur ~ "%" %}
+        {% set delta = cur - prev %}
+        {% set deltaDisplay = (delta | abs) ~ " pts" %}
+      {% else %}
+        {% set curDisplay = f.current.numerator | number %}
+        {% set delta = (((f.current.numerator - f.previous.numerator) / f.previous.numerator) * 100) | round %}
+        {% set deltaDisplay = (delta | abs) ~ "%" %}
+      {% endif %}
+      {# Green marks an improvement; `better: "down"` flips this for figures like APCs #}
+      {% set improved = (delta > 0 and f.better != "down") or (delta < 0 and f.better == "down") %}
+
+      <div>
+        {# Change sits top-right of the figure, like a superscript, without <sup> semantics #}
+        <div class="flex flex-wrap items-start gap-x-1.5">
+          <p class="font-serif text-4xl font-bold leading-none tabular-nums text-(--embed-accent)">{{ curDisplay }}</p>
+          {# Arrow plus words, so the change never relies on colour alone #}
+          <p class="rounded-xs px-1 py-0.5 text-xs font-semibold leading-none tabular-nums {{ 'bg-green/15 text-green-dark' if improved else 'bg-neutral-100 text-neutral-800' }}">
+            {% if delta > 0 %}
+              <span aria-hidden="true">↑</span><span class="sr-only">Up</span> {{ deltaDisplay }}
+            {% elif delta < 0 %}
+              <span aria-hidden="true">↓</span><span class="sr-only">Down</span> {{ deltaDisplay }}
+            {% else %}
+              No change
+            {% endif %}
+            <span class="sr-only">vs {{ set.previous }}{% if improved %}, an improvement{% endif %}</span>
+          </p>
+        </div>
+        <p class="mt-1 text-sm font-semibold">{{ f.label }}</p>
+      </div>
+    {% endfor %}
+  </div>
+
+  {# Spacer keeps the footer at the bottom when cards share a row height #}
+  <div class="grow" aria-hidden="true"></div>
+  {{ component("embed/attribution", { url: params.org.report_url, asOf: params.asOf }) }}
+</figure>

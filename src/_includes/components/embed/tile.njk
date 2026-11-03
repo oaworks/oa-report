@@ -19,13 +19,12 @@
 <figure
   class="embed-root flex w-full max-w-60 flex-col rounded-sm border border-t-4 border-neutral-200 border-t-(--embed-accent) bg-white p-4 font-sans text-base leading-normal tracking-normal text-neutral-900"
   {% if accent %}style="--embed-accent: {{ accent }};"{% endif %}>
-  <p class="text-xs font-semibold uppercase tracking-widest text-neutral-600">
-    {{ params.org.name }}<span aria-hidden="true"> · </span><span class="sr-only">, </span>{{ figure.period }}
-  </p>
-  <p class="mt-1.5 font-serif text-4xl font-bold leading-none tabular-nums text-(--embed-accent)">{{ display }}</p>
+  <p class="text-xs font-semibold uppercase tracking-widest text-neutral-700">{{ params.org.name }}</p>
+  <p class="mt-0.5 text-sm font-medium text-neutral-900">{{ figure.period }}</p>
+  <p class="mt-5 font-serif text-4xl font-bold leading-none tabular-nums text-(--embed-accent)">{{ display }}</p>
   {# Last word stays on the same line as the info icon #}
   {% set words = figure.label.split(" ") %}
-  <figcaption class="mt-2 text-sm font-semibold">
+  <figcaption class="mt-1 text-sm font-semibold">
     {{ words.slice(0, -1).join(" ") }}
     <span class="whitespace-nowrap">{{ words | last }}
     {% if figure.format == "percent" %}
@@ -34,7 +33,7 @@
         type="button"
         popovertarget="{{ detailId }}"
         aria-label="Details for {{ figure.label }}"
-        class="-my-1 inline-flex size-6 items-center justify-center rounded-full align-middle text-neutral-600 hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-(--embed-accent)"
+        class="-my-1 inline-flex size-6 items-center justify-center rounded-full align-middle text-neutral-700 hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-(--embed-accent)"
         style="anchor-name: --{{ detailId }};">
         <svg viewBox="0 0 16 16" class="size-3.5" aria-hidden="true" focusable="false">
           <circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.5"/>

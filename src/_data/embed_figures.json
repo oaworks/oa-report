@@ -49,5 +49,90 @@
       "detail": "reviewed journal articles",
       "definition": "The percentage of journal articles we’ve analysed that have a data availability statement."
     }
+  },
+  "sets": {
+    "preprints_and_cc_by": {
+      "period_label": "1 Jan – 3 Nov",
+      "current": "2026",
+      "previous": "2025",
+      "figures": [
+        {
+          "metric": "is_preprint",
+          "format": "count",
+          "label": "Preprints",
+          "current": {
+            "numerator": 1935
+          },
+          "previous": {
+            "numerator": 1691
+          }
+        },
+        {
+          "metric": "is_compliant_preprint",
+          "format": "count",
+          "label": "Compliant preprints",
+          "current": {
+            "numerator": 1509
+          },
+          "previous": {
+            "numerator": 1099
+          }
+        }
+      ]
+    },
+    "preprints_and_cc_by_share": {
+      "period_label": "1 Jan – 3 Nov",
+      "current": "2026",
+      "previous": "2025",
+      "figures": [
+        {
+          "metric": "is_preprint",
+          "format": "count",
+          "label": "Preprints",
+          "current": {
+            "numerator": 1935
+          },
+          "previous": {
+            "numerator": 1691
+          }
+        },
+        {
+          "metric": "is_compliant_preprint",
+          "denominator_metric": "is_preprint",
+          "format": "percent",
+          "label": "Preprint compliance",
+          "current": {
+            "numerator": 1509,
+            "denominator": 1935
+          },
+          "previous": {
+            "numerator": 1099,
+            "denominator": 1691
+          }
+        }
+      ]
+    },
+    "das": {
+      "period_label": "1 Jan – 3 May",
+      "current": "2026",
+      "previous": "2025",
+      "review_lag_months": 6,
+      "figures": [
+        {
+          "metric": "has_data_availability_statement",
+          "denominator_metric": "has_checked_data_availability_statement",
+          "format": "percent",
+          "label": "Data availability statements",
+          "current": {
+            "numerator": 967,
+            "denominator": 1238
+          },
+          "previous": {
+            "numerator": 1089,
+            "denominator": 1433
+          }
+        }
+      ]
+    }
   }
 }

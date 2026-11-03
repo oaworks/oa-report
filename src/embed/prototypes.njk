@@ -14,12 +14,25 @@ eleventyExcludeFromCollections: true
   <section aria-labelledby="tile_heading" class="mb-16">
     <h2 id="tile_heading" class="text-lg md:text-2xl font-serif mb-1">1. Tile</h2>
     <p class="mb-6 text-sm text-neutral-700">One figure = one card = one period.</p>
-
-    <h3 class="mb-3 text-xs font-semibold uppercase tracking-widest text-neutral-700">Compact-style embeds</h3>
-    <div class="grid justify-items-center gap-6 rounded-sm bg-neutral-100 p-6 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="flex flex-col items-center gap-12 rounded-sm bg-neutral-100 px-6 py-12">
       {% for key in ["unique_publications_2025", "compliance_2025", "preprints_2025", "das_2025"] %}
         {{ component("embed/tile", {
           figure: embed_figures.figures[key],
+          org: embed_figures.org,
+          asOf: embed_figures.source.retrieved
+        }) }}
+      {% endfor %}
+    </div>
+  </section>
+
+  <section aria-labelledby="set_heading" class="mb-16">
+    <h2 id="set_heading" class="text-lg md:text-2xl font-serif mb-1">2. Set</h2>
+    <p class="mb-6 text-sm text-neutral-700">One or more figures in one card, each compared with the same period last year.</p>
+
+    <div class="flex flex-col items-center gap-12 rounded-sm bg-neutral-100 px-6 py-12">
+      {% for key in ["preprints_and_cc_by", "preprints_and_cc_by_share", "das"] %}
+        {{ component("embed/set", {
+          set: embed_figures.sets[key],
           org: embed_figures.org,
           asOf: embed_figures.source.retrieved
         }) }}

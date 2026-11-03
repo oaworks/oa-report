@@ -48,6 +48,7 @@ module.exports = {
       'green': {
         DEFAULT: 'rgb(44, 165, 141)',
         light: 'rgb(168, 215, 197)',
+        dark: 'rgb(0, 115, 88)', // AA-compliant text shade, e.g. positive changes
       },
       'blue': {
         DEFAULT: 'rgb(56, 120, 255)',
