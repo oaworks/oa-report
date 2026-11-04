@@ -32,7 +32,7 @@ eleventyExcludeFromCollections: true
     <p class="mb-6 max-w-prose text-sm text-neutral-700">Shows one or two figures for a chosen period, each compared with an earlier period of the same length, such as this year so far against the same dates last year, or one full year against another. Answers “how does this period compare with the last?”</p>
 
     <div class="flex flex-col items-center gap-16 rounded-sm bg-neutral-100 px-6 pt-16 pb-12">
-      {% for key in ["preprints_and_cc_by", "preprints_and_cc_by_share", "das"] %}
+      {% for key in ["preprints_and_cc_by", "preprints_and_cc_by_share", "das", "preprint_growth"] %}
         {{ component("embed/comparison", {
           id: key,
           comparison: embed_figures.comparisons[key],

@@ -193,6 +193,30 @@
           }
         }
       ]
+    },
+    "preprint_growth": {
+      "period": {
+        "start": "2025-01-01",
+        "end": "2025-12-31"
+      },
+      "comparison_period": {
+        "start": "2024-01-01",
+        "end": "2024-12-31"
+      },
+      "figures": [
+        {
+          "metric": "is_preprint",
+          "format": "count",
+          "label": "Preprints",
+          "current": {
+            "numerator": 1999
+          },
+          "previous": {
+            "numerator": 1108
+          }
+        }
+      ],
+      "source": "Yearly is_preprint counts from the live API, as in the preprint Trends. Only completed years are used."
     }
   },
   "stories": {
