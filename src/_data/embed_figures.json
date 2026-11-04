@@ -344,6 +344,78 @@
       ],
       "source": "Counted on 4 Nov 2026. From 2025 the policy also covers preprints, so 2024 compliance was measured under the old policy."
     },
+    "compliance_impact": {
+      "period": {
+        "start": "2025-01-01",
+        "end": "2025-12-31"
+      },
+      "comparison_period": {
+        "start": "2024-01-01",
+        "end": "2024-12-31"
+      },
+      "comparison_note": "before the policy change",
+      "share": {
+        "metric": "is_compliant_publication",
+        "denominator_metric": "is_covered_by_policy",
+        "format": "percent",
+        "label": "Policy compliance",
+        "current": {
+          "numerator": 3761,
+          "denominator": 4802
+        },
+        "previous": {
+          "numerator": 3515,
+          "denominator": 4186
+        }
+      },
+      "figures": [
+        {
+          "metric": "is_preprint",
+          "format": "count",
+          "label": "Preprints",
+          "current": {
+            "numerator": 1999
+          },
+          "previous": {
+            "numerator": 1108
+          }
+        },
+        {
+          "metric": "has_apc",
+          "aggregate": "sum:supplements.apc_cost",
+          "format": "currency",
+          "label": "Spent on APCs",
+          "better": "down",
+          "current": {
+            "numerator": 2368107
+          },
+          "previous": {
+            "numerator": 5151870
+          }
+        },
+        {
+          "metric": "is_unique_publication AND authorships.institutions.country_code:(LMIC list)",
+          "format": "count",
+          "label": "Low- and middle-income authors",
+          "current": {
+            "numerator": 3013
+          },
+          "previous": {
+            "numerator": 2755
+          }
+        },
+        {
+          "metric": "sum(journal published_date − earliest preprint published_date)",
+          "format": "measure",
+          "unit": "years",
+          "label": "Preprint head start",
+          "current": {
+            "numerator": 365
+          }
+        }
+      ],
+      "source": "Alternative to the compliance Headline, from the meeting with Joe: compliance first, with research acceleration and low- and middle-income country rows. Research acceleration has no comparison because it lags (2024: 542 years). Low- and middle-income country counts from the live API on 4 Nov 2026 (World Bank FY2026 list, incl. China)."
+    },
     "compliant_without_apcs": {
       "period": {
         "start": "2025-01-01",

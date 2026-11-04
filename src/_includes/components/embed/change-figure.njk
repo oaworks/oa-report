@@ -1,6 +1,6 @@
 {# Embed figure with its change since an earlier period, as a <dt>/<dd> pair inside a <dl> (Comparison, Headline)
 {{ component("embed/change-figure", {
-  figure: { format: "count", "percent", "one_in" or "currency", label: "", better: "up" or "down",
+  figure: { format: "count", "percent", "one_in", "measure" or "currency", label: "", better: "up" or "down",
             current: { numerator, denominator }, previous: { numerator, denominator } },
   comparedWith: "vs same period in 2025",
   compact: false,
@@ -21,6 +21,11 @@
   {% set curDisplay = "1 in " ~ ((f.current.denominator / f.current.numerator) | round) %}
   {% set delta = ((f.current.numerator / f.current.denominator) - (f.previous.numerator / f.previous.denominator)) if hasChange %}
   {% set deltaDisplay = "from 1 in " ~ ((f.previous.denominator / f.previous.numerator) | round) if hasChange %}
+{% elif f.format == "measure" %}
+  {# A value with its unit, e.g. “365 years” #}
+  {% set curDisplay = (f.current.numerator | number) ~ " " ~ f.unit %}
+  {% set delta = (((f.current.numerator - f.previous.numerator) / f.previous.numerator) * 100) | round if hasChange %}
+  {% set deltaDisplay = (delta | abs) ~ "%" %}
 {% elif f.format == "currency" %}
   {# Millions shown compactly, e.g. US$2.4M, smaller amounts in full, e.g. US$3,275 #}
   {% set curDisplay = ("US$" ~ ((f.current.numerator / 1000000) | round(1)) ~ "M") if f.current.numerator >= 1000000 else ("US$" ~ (f.current.numerator | number)) %}
@@ -37,7 +42,7 @@
 {# Arrow plus words, so the change never relies on colour alone #}
 {% set swatches = { accent: "bg-(--embed-accent)", muted: "bg-neutral-500", light: "bg-neutral-300" } %}
 {% set pill %}{% if hasChange %}
-<span class="rounded-xs px-1 py-0.5 text-xs font-semibold leading-none tabular-nums {{ 'bg-green/15 text-green-dark' if improved else 'bg-neutral-100 text-neutral-800' }}">
+<span class="whitespace-nowrap rounded-xs px-1 py-0.5 text-xs font-semibold leading-none tabular-nums {{ 'bg-green/15 text-green-dark' if improved else 'bg-neutral-100 text-neutral-800' }}">
   {% if delta > 0 %}
     <span aria-hidden="true">↑</span><span class="sr-only">Up</span> {{ deltaDisplay }}
   {% elif delta < 0 %}
