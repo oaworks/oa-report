@@ -363,6 +363,20 @@ function renderInsightCards({ analysis, showPreprints, showUnique, isGates }) {
   return renderedIds;
 }
 
+/**
+ * Resolves the human-readable name for an action. An org can override the
+ * default in its org index entry via `strategy.<id>.label` (e.g. Wellcome
+ * calls `email_author_deposit` its “point of publication check”).
+ *
+ * @param {string} id - Strategy ID, such as `email_author_deposit`.
+ * @param {Object} [config] - That strategy’s entry from the org index.
+ * @returns {string}
+ */
+function getActionLabel(id, config = {}) {
+  const customLabel = typeof config?.label === "string" ? config.label.trim() : "";
+  return customLabel || ACTION_LABELS[id] || id.replaceAll("_", " ");
+}
+
 function renderActionTabs(strategy = {}) {
   const tabsContainer = document.getElementById("actions_buttons");
   if (!tabsContainer) return;
@@ -392,7 +406,10 @@ function renderActionTabs(strategy = {}) {
   tabsContainer.innerHTML = "";
 
   visibleActions.forEach((id, index) => {
-    const label = ACTION_LABELS[id] || id.replaceAll("_", " ");
+    const label = getActionLabel(id, strategy[id]);
+    // Keep the panel’s heading in step with the tab when an org overrides the label
+    const panelHeading = document.querySelector(`#${id} [data-action-heading]`);
+    if (panelHeading) panelHeading.textContent = label;
     const item = document.createElement("li");
     item.className = "list-none";
     const tabBtn = document.createElement("button");

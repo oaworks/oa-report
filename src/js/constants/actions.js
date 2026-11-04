@@ -3,6 +3,8 @@
 // Human-readable labels and order for Actions tabs
 // ================================================
 
+// Default labels. An org can override one via `strategy.<id>.label` in the
+// org index (see getActionLabel in insights-and-actions.js).
 export const ACTION_LABELS = {
   email_author_deposit: "Self-archive articles",
   email_author_vor: "Deposit publisher PDFs",
