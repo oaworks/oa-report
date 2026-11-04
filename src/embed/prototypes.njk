@@ -29,7 +29,7 @@ eleventyExcludeFromCollections: true
     <h2 id="tile_heading" class="text-lg md:text-2xl font-serif mb-1">1. Tile</h2>
     <p class="mb-6 max-w-prose text-sm text-neutral-700">Highlights one key figure for one completed period, such as total preprints in 2025. Answers “what’s the number?”</p>
     <div class="flex flex-col divide-y divide-neutral-200 rounded-sm bg-neutral-100 p-10">
-      {% for key in ["compliance_2025", "preprints_lmic_2025", "head_start_median_2025"] %}
+      {% for key in ["compliance_2025", "preprints_lmic_2025", "head_start_median_2025", "head_start_total_2025"] %}
         {% set card %}
           {{ component("embed/tile", {
             id: key,
