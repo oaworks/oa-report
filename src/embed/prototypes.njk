@@ -5,7 +5,18 @@ eleventyExcludeFromCollections: true
 ---
 {%- from "system/component.njk" import component -%}
 
-<main class="px-4 py-6 md:px-8 md:py-10 max-w-2xl mx-auto">
+{# Embed on the left, its story on the right; stacked on small screens #}
+{% macro row(card, text) %}
+  <div class="grid w-full grid-cols-1 items-start gap-6 md:grid-cols-2 md:gap-10">
+    <div class="flex">{{ card | safe }}</div>
+    <div class="max-w-prose">
+      <h4 class="mb-1 text-xs font-semibold uppercase tracking-wide text-neutral-700">Story</h4>
+      {% if text %}<p class="text-sm text-neutral-900">{{ text }}</p>{% else %}<p class="text-sm italic text-neutral-500">...</p>{% endif %}
+    </div>
+  </div>
+{% endmacro %}
+
+<main class="px-4 py-6 md:px-8 md:py-10 max-w-5xl mx-auto">
   <h1 class="text-xl md:text-3xl font-serif mb-2">Embed prototypes</h1>
   <p class="mb-10 max-w-prose text-sm text-neutral-700">
     Static designs for embedding OA.Report figures on external sites. Figures for {{ embed_figures.org.name }}, obtained from the live API on {{ embed_figures.source.retrieved | date("d LLL yyyy") }}.
@@ -14,15 +25,18 @@ eleventyExcludeFromCollections: true
   <section aria-labelledby="tile_heading" class="mb-16">
     <h2 id="tile_heading" class="text-lg md:text-2xl font-serif mb-1">1. Tile</h2>
     <p class="mb-6 max-w-prose text-sm text-neutral-700">Highlights one key figure for one completed period, such as total preprints in 2025. Answers “what’s the number?”</p>
-    <div class="flex flex-col items-center gap-16 rounded-sm bg-neutral-100 px-6 pt-16 pb-12">
+    <div class="flex flex-col gap-10 rounded-sm bg-neutral-100 p-10">
       {% for key in ["compliance_2025", "preprints_lmic_2025", "head_start_median_2025"] %}
-        {{ component("embed/tile", {
-          id: key,
-          figure: embed_figures.figures[key],
-          org: embed_figures.org,
-          asOf: embed_figures.source.retrieved,
-          headingLevel: 3
-        }) }}
+        {% set card %}
+          {{ component("embed/tile", {
+            id: key,
+            figure: embed_figures.figures[key],
+            org: embed_figures.org,
+            asOf: embed_figures.source.retrieved,
+            headingLevel: 3
+          }) }}
+        {% endset %}
+        {{ row(card, embed_stories.tile[key]) }}
       {% endfor %}
     </div>
   </section>
@@ -31,15 +45,18 @@ eleventyExcludeFromCollections: true
     <h2 id="comparison_heading" class="text-lg md:text-2xl font-serif mb-1">2. Comparison</h2>
     <p class="mb-6 max-w-prose text-sm text-neutral-700">Shows one or two figures for a chosen period, each compared with an earlier period of the same length, such as this year so far against the same dates last year, or one full year against another. Answers “how does this period compare with the last?”</p>
 
-    <div class="flex flex-col items-center gap-16 rounded-sm bg-neutral-100 px-6 pt-16 pb-12">
+    <div class="flex flex-col gap-10 rounded-sm bg-neutral-100 p-10">
       {% for key in ["preprints_and_cc_by_share", "das", "preprint_growth", "lmic_authors"] %}
-        {{ component("embed/comparison", {
-          id: key,
-          comparison: embed_figures.comparisons[key],
-          org: embed_figures.org,
-          asOf: embed_figures.source.retrieved,
-          headingLevel: 3
-        }) }}
+        {% set card %}
+          {{ component("embed/comparison", {
+            id: key,
+            comparison: embed_figures.comparisons[key],
+            org: embed_figures.org,
+            asOf: embed_figures.source.retrieved,
+            headingLevel: 3
+          }) }}
+        {% endset %}
+        {{ row(card, embed_stories.comparison[key]) }}
       {% endfor %}
     </div>
   </section>
@@ -47,15 +64,18 @@ eleventyExcludeFromCollections: true
   <section aria-labelledby="headline_heading" class="mb-16">
     <h2 id="headline_heading" class="text-lg md:text-2xl font-serif mb-1">3. Headline</h2>
     <p class="mb-6 max-w-prose text-sm text-neutral-700">Shows how well a policy is working: a headline share or figure, with supporting figures, for a period since a policy change, each compared with a period before it. Answers “is the policy working?”</p>
-    <div class="flex flex-col items-center gap-16 rounded-sm bg-neutral-100 px-6 pt-16 pb-12">
+    <div class="flex flex-col gap-10 rounded-sm bg-neutral-100 p-10">
       {% for key in ["compliant_without_apcs", "apc_spend"] %}
-        {{ component("embed/headline", {
-          id: key,
-          headline: embed_figures.headlines[key],
-          org: embed_figures.org,
-          asOf: embed_figures.source.retrieved,
-          headingLevel: 3
-        }) }}
+        {% set card %}
+          {{ component("embed/headline", {
+            id: key,
+            headline: embed_figures.headlines[key],
+            org: embed_figures.org,
+            asOf: embed_figures.source.retrieved,
+            headingLevel: 3
+          }) }}
+        {% endset %}
+        {{ row(card, embed_stories.headline[key]) }}
       {% endfor %}
     </div>
   </section>
@@ -63,15 +83,18 @@ eleventyExcludeFromCollections: true
   <section aria-labelledby="trend_heading" class="mb-16">
     <h2 id="trend_heading" class="text-lg md:text-2xl font-serif mb-1">4. Trend</h2>
     <p class="mb-6 max-w-prose text-sm text-neutral-700">Shows how figures have moved over time: one or two metrics year by year, with the policy change marked. Answers “how has it changed over time?”</p>
-    <div class="flex flex-col items-center gap-16 rounded-sm bg-neutral-100 px-6 pt-16 pb-12">
+    <div class="flex flex-col gap-10 rounded-sm bg-neutral-100 p-10">
       {% for key in ["free_vs_paid", "preprint_share_percent"] %}
-        {{ component("embed/trend", {
-          id: key,
-          trend: embed_figures.trends[key],
-          org: embed_figures.org,
-          asOf: embed_figures.source.retrieved,
-          headingLevel: 3
-        }) }}
+        {% set card %}
+          {{ component("embed/trend", {
+            id: key,
+            trend: embed_figures.trends[key],
+            org: embed_figures.org,
+            asOf: embed_figures.source.retrieved,
+            headingLevel: 3
+          }) }}
+        {% endset %}
+        {{ row(card, embed_stories.trend[key]) }}
       {% endfor %}
     </div>
   </section>

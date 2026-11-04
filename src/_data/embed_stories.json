@@ -1,0 +1,21 @@
+{
+  "tile": {
+    "compliance_2025": "",
+    "preprints_lmic_2025": "",
+    "head_start_median_2025": ""
+  },
+  "comparison": {
+    "preprints_and_cc_by_share": "",
+    "das": "",
+    "preprint_growth": "",
+    "lmic_authors": ""
+  },
+  "headline": {
+    "compliant_without_apcs": "",
+    "apc_spend": ""
+  },
+  "trend": {
+    "free_vs_paid": "",
+    "preprint_share_percent": ""
+  }
+}
