@@ -345,6 +345,7 @@ export const EXPLORE_FILTERS_ICONS = {
   is_free_to_read: "gift",
   is_free_to_read_preprint: "gift",
   is_oa: "lock-open",
+  is_preprint_oa: "lock-open",
   has_data_availability_statement: "list-magnifying-glass",
   has_data_availability_statement_preprint: "list-magnifying-glass",
   has_open_data: "database",

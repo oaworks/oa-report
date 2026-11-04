@@ -232,7 +232,7 @@ export const ACTION_TABLE_CONFIGS = [
   {
     id: "point_of_award_check",
     keys: ["published_date", "title", "journal", "DOI", "has_epmc_fulltext", "epmc_licence"],
-    emptyStateMessage: "No non-compliant articles found for this author. <br>This author’s articles currently meet Wellcome’s point-of-award open access policy.",
+    emptyStateMessage: "No non-compliant articles found for this author. <br>This author’s articles currently comply with Wellcome’s open access policy.",
     requiresSingleAuthor: true,
     rowTemplate: `<td class='${ACTION_TABLE_CELL_CLASSES}' data-doi='\${action.DOI}' data-in-epmc='\${action.has_epmc_fulltext}' data-epmc-licence='\${action.epmc_licence}'>\
         <div class='mb-1 ${ACTION_TABLE_SECONDARY_TEXT_CLASSES}'>\${action.published_date}</div>\
