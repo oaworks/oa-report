@@ -1,0 +1,22 @@
+{# Info button with a native popover explaining how a figure is worked out
+{{ component("embed/info", { id: "embed_detail_preprints", label: "Preprints", text: "…" }) }}
+#}
+{# Native popover: opens on click, tap or keyboard, closes on Esc or outside click #}
+<button
+  type="button"
+  popovertarget="{{ params.id }}"
+  aria-label="Details for {{ params.label }}"
+  class="-my-1 inline-flex size-6 items-center justify-center rounded-full align-middle text-neutral-700 hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-(--embed-accent)"
+  style="anchor-name: --{{ params.id }};">
+  <svg viewBox="0 0 16 16" class="size-3.5" aria-hidden="true" focusable="false">
+    <circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M8 7v4.5M8 4.5v.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+  </svg>
+</button>
+<span
+  id="{{ params.id }}"
+  popover
+  class="max-w-60 whitespace-normal rounded-xs border-0 bg-neutral-900 px-2 py-1.5 text-xs font-normal leading-snug text-white shadow-md supports-[position-area:bottom]:inset-auto supports-[position-area:bottom]:m-0 supports-[position-area:bottom]:mt-1 supports-[position-area:bottom]:[position-area:bottom_span-right] supports-[position-area:bottom]:[position-try-fallbacks:flip-block,flip-inline]"
+  style="position-anchor: --{{ params.id }};">
+  {{ params.text }}
+</span>

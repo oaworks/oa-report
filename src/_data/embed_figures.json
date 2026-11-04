@@ -172,7 +172,8 @@
           },
           "previous": {
             "numerator": 1691
-          }
+          },
+          "info": "Preprints by grantees or foundation authors, by publication date."
         },
         {
           "metric": "is_compliant_preprint",
@@ -186,7 +187,8 @@
           "previous": {
             "numerator": 1099,
             "denominator": 1691
-          }
+          },
+          "info": "Preprints with a CC BY, CC0 or public domain licence, as the policy requires."
         }
       ]
     },
@@ -236,7 +238,8 @@
           },
           "previous": {
             "numerator": 1108
-          }
+          },
+          "info": "Preprints by grantees or foundation authors, by publication date."
         }
       ],
       "source": "Yearly is_preprint counts from the live API, as in the preprint Trends. Only completed years are used."
@@ -260,7 +263,8 @@
           },
           "previous": {
             "numerator": 4969
-          }
+          },
+          "info": "Publications with at least one author at an institution in a low- or middle-income country, as classed by the World Bank for 2025–26."
         },
         {
           "metric": "is_unique_publication AND authorships.institutions.country_code:(LMIC list)",
@@ -274,7 +278,8 @@
           "previous": {
             "numerator": 4969,
             "denominator": 7962
-          }
+          },
+          "info": "Of the publications where author locations are known."
         }
       ],
       "source": "Counted from the live API on 4 Nov 2026. Since the policy (1 Jan 2025 – 3 Nov 2026) vs the same length of time before it. Unique publications with at least one author institution in a World Bank FY2026 low or middle income country (130 countries incl. China); publications without country data (4% and 2%) are left out of the share."
@@ -303,7 +308,8 @@
         "previous": {
           "numerator": 3515,
           "denominator": 4186
-        }
+        },
+        "info": "Publications with a CC BY, CC0 or public domain licence from the publisher, a repository or the preprint. From 2025, the policy also covers preprints."
       },
       "figures": [
         {
@@ -315,7 +321,8 @@
           },
           "previous": {
             "numerator": 4584
-          }
+          },
+          "info": "Journal articles, plus preprints without a journal article, so each piece of research counts once."
         },
         {
           "metric": "is_preprint",
@@ -326,7 +333,8 @@
           },
           "previous": {
             "numerator": 1108
-          }
+          },
+          "info": "Preprints by grantees or foundation authors, by publication date."
         },
         {
           "metric": "has_apc",
@@ -339,7 +347,8 @@
           },
           "previous": {
             "numerator": 5151870
-          }
+          },
+          "info": "Total of the APCs OA.Report knows about, so the real figure may be higher."
         }
       ],
       "source": "Counted on 4 Nov 2026. From 2025 the policy also covers preprints, so 2024 compliance was measured under the old policy."
@@ -366,7 +375,8 @@
         "previous": {
           "numerator": 3515,
           "denominator": 4186
-        }
+        },
+        "info": "Publications with a CC BY, CC0 or public domain licence from the publisher, a repository or the preprint. From 2025, the policy also covers preprints."
       },
       "figures": [
         {
@@ -378,7 +388,8 @@
           },
           "previous": {
             "numerator": 1108
-          }
+          },
+          "info": "Preprints by grantees or foundation authors, by publication date."
         },
         {
           "metric": "has_apc",
@@ -391,7 +402,8 @@
           },
           "previous": {
             "numerator": 5151870
-          }
+          },
+          "info": "Total of the APCs OA.Report knows about, so the real figure may be higher."
         },
         {
           "metric": "is_unique_publication AND authorships.institutions.country_code:(LMIC list)",
@@ -402,7 +414,8 @@
           },
           "previous": {
             "numerator": 2755
-          }
+          },
+          "info": "Publications with at least one author at an institution in a low- or middle-income country, as classed by the World Bank for 2025–26."
         },
         {
           "metric": "sum(journal published_date − earliest preprint published_date)",
@@ -411,7 +424,8 @@
           "label": "Preprint head start",
           "current": {
             "numerator": 365
-          }
+          },
+          "info": "Time between each article’s earliest preprint and the article, added up across the 435 articles preprinted first."
         }
       ],
       "source": "Alternative to the compliance Headline, from the meeting with Joe: compliance first, with research acceleration and low- and middle-income country rows. Research acceleration has no comparison because it lags (2024: 542 years). Low- and middle-income country counts from the live API on 4 Nov 2026 (World Bank FY2026 list, incl. China)."
@@ -438,7 +452,8 @@
         "previous": {
           "numerator": 1958,
           "denominator": 3515
-        }
+        },
+        "info": "Compliant publications with no article processing charge (APC) on record."
       },
       "figures": [
         {
@@ -450,7 +465,8 @@
           },
           "previous": {
             "numerator": 4584
-          }
+          },
+          "info": "Journal articles, plus preprints without a journal article, so each piece of research counts once."
         },
         {
           "metric": "is_preprint",
@@ -461,7 +477,8 @@
           },
           "previous": {
             "numerator": 1108
-          }
+          },
+          "info": "Preprints by grantees or foundation authors, by publication date."
         },
         {
           "metric": "has_apc",
@@ -474,7 +491,8 @@
           },
           "previous": {
             "numerator": 5151870
-          }
+          },
+          "info": "Total of the APCs OA.Report knows about, so the real figure may be higher."
         }
       ]
     },
@@ -610,7 +628,8 @@
         },
         "previous": {
           "numerator": 5151870
-        }
+        },
+        "info": "Total of the APCs OA.Report knows about, so the real figure may be higher."
       },
       "figures": [
         {
@@ -622,7 +641,8 @@
           },
           "previous": {
             "numerator": 1108
-          }
+          },
+          "info": "Preprints by grantees or foundation authors, by publication date."
         },
         {
           "metric": "has_apc",
@@ -635,7 +655,8 @@
           },
           "previous": {
             "numerator": 2870
-          }
+          },
+          "info": "The middle value of the APCs OA.Report knows about."
         }
       ]
     },
@@ -987,7 +1008,8 @@
           "previous": {
             "numerator": 1108,
             "denominator": 5294
-          }
+          },
+          "info": "Preprints as a share of all journal articles and preprints."
         },
         {
           "format": "percent",
@@ -1000,7 +1022,8 @@
           "previous": {
             "numerator": 1592,
             "denominator": 5294
-          }
+          },
+          "info": "Journal articles with an APC on record, as a share of all journal articles and preprints."
         }
       ]
     }

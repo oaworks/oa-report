@@ -43,19 +43,19 @@
         {% endif %}
       </svg>
       <dl>
-        {{ component("embed/change-figure", { figure: share, comparedWith: comparedWith }) }}
+        {{ component("embed/change-figure", { figure: share, comparedWith: comparedWith, id: params.id ~ "_share" }) }}
       </dl>
     </div>
   {% else %}
     {# No share to chart: the hero figure stands alone #}
     <dl class="mt-5">
-      {{ component("embed/change-figure", { figure: headline.hero, comparedWith: comparedWith }) }}
+      {{ component("embed/change-figure", { figure: headline.hero, comparedWith: comparedWith, id: params.id ~ "_hero" }) }}
     </dl>
   {% endif %}
 
   <dl class="mt-5 space-y-2">
     {% for f in headline.figures %}
-      {{ component("embed/change-figure", { figure: f, comparedWith: comparedWith, compact: true, swatch: f.swatch }) }}
+      {{ component("embed/change-figure", { figure: f, comparedWith: comparedWith, compact: true, swatch: f.swatch, id: params.id ~ "_" ~ loop.index0 }) }}
     {% endfor %}
   </dl>
 

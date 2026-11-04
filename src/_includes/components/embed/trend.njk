@@ -53,20 +53,20 @@
 
   {% if trend.hero %}
     <dl class="mt-5">
-      {{ component("embed/change-figure", { figure: trend.hero, comparedWith: comparedWith }) }}
+      {{ component("embed/change-figure", { figure: trend.hero, comparedWith: comparedWith, id: params.id ~ "_hero" }) }}
     </dl>
   {% endif %}
   {% if trend.figures %}
     <dl class="mt-5 grid grid-cols-2 gap-6">
       {% for f in trend.figures %}
-        {{ component("embed/change-figure", { figure: f, comparedWith: comparedWith }) }}
+        {{ component("embed/change-figure", { figure: f, comparedWith: comparedWith, id: params.id ~ "_" ~ loop.index0 }) }}
       {% endfor %}
     </dl>
   {% endif %}
   {% if trend.rows %}
     <dl class="mt-5 space-y-2">
       {% for f in trend.rows %}
-        {{ component("embed/change-figure", { figure: f, comparedWith: comparedWith, compact: true }) }}
+        {{ component("embed/change-figure", { figure: f, comparedWith: comparedWith, compact: true, id: params.id ~ "_row_" ~ loop.index0 }) }}
       {% endfor %}
     </dl>
   {% endif %}

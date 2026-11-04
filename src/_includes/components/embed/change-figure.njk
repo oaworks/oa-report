@@ -4,11 +4,15 @@
             current: { numerator, denominator }, previous: { numerator, denominator } },
   comparedWith: "vs same period in 2025",
   compact: false,
-  swatch: "accent", "muted" or "light" (optional dot before the label)
+  swatch: "accent", "muted" or "light" (optional dot before the label),
+  id: "comparison_preprints" (needed when the figure has an `info` method)
 }) }}
 #}
+{%- from "system/component.njk" import component -%}
 
 {% set f = params.figure %}
+{# How the figure is worked out, shown behind an info button after the label #}
+{% set info %}{% if f.info %}{{ component("embed/info", { id: "embed_detail_" ~ params.id, label: f.label, text: f.info }) }}{% endif %}{% endset %}
 {% set hasChange = f.previous is defined %}
 {% if f.format == "percent" %}
   {% set cur = ((f.current.numerator / f.current.denominator) * 100) | round %}
@@ -57,14 +61,16 @@
 {% if params.compact %}
   {# One quiet row: label on the left, figure and change on the right #}
   <div class="flex items-center justify-between gap-3 text-sm">
-    <dt class="flex items-center gap-1.5 text-neutral-700">{% if params.swatch %}<span class="size-2 shrink-0 rounded-full {{ swatches[params.swatch] }}" aria-hidden="true"></span>{% endif %}{{ f.label }}</dt>
+    <dt class="flex items-center gap-1.5 text-neutral-700">{% if params.swatch %}<span class="size-2 shrink-0 rounded-full {{ swatches[params.swatch] }}" aria-hidden="true"></span>{% endif %}{{ f.label }}{{ info | safe }}</dt>
     <dd class="flex items-center gap-1.5"><span class="font-semibold tabular-nums">{{ curDisplay }}</span>{{ pill | safe }}</dd>
   </div>
 {% else %}
   {# Label comes first for screen readers; column-reverse shows the figure above it.
      justify-end keeps the figure at the top when a neighbour’s label is longer #}
   <div class="flex flex-col-reverse justify-end">
-    <dt class="mt-1 text-sm font-semibold leading-snug">{{ f.label }}</dt>
+    {# Last word stays on the same line as the info button #}
+    {% set words = f.label.split(" ") %}
+    <dt class="mt-1 text-sm font-semibold leading-snug">{% if f.info %}{{ words.slice(0, -1).join(" ") }} <span class="whitespace-nowrap">{{ words | last }} {{ info | safe }}</span>{% else %}{{ f.label }}{% endif %}</dt>
     {# Change sits top-right of the figure, like a superscript, without <sup> semantics #}
     <dd class="flex flex-wrap items-start gap-x-1.5">
       <span class="font-serif text-4xl font-bold leading-none tabular-nums text-(--embed-accent)">{{ curDisplay }}</span>

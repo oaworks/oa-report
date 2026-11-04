@@ -23,7 +23,7 @@
 
   <dl class="mt-5 grid gap-6 {{ "grid-cols-2" if comparison.figures.length > 1 else "grid-cols-1" }}">
     {% for f in comparison.figures %}
-      {{ component("embed/change-figure", { figure: f, comparedWith: comparedWith }) }}
+      {{ component("embed/change-figure", { figure: f, comparedWith: comparedWith, id: params.id ~ "_" ~ loop.index0 }) }}
     {% endfor %}
   </dl>
 
