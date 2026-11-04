@@ -13,7 +13,7 @@ eleventyExcludeFromCollections: true
 
   <section aria-labelledby="tile_heading" class="mb-16">
     <h2 id="tile_heading" class="text-lg md:text-2xl font-serif mb-1">1. Tile</h2>
-    <p class="mb-6 max-w-prose text-sm text-neutral-700">Highlights one headline figure for one completed period, such as total preprints in 2025. Answers “what’s the number?”</p>
+    <p class="mb-6 max-w-prose text-sm text-neutral-700">Highlights one key figure for one completed period, such as total preprints in 2025. Answers “what’s the number?”</p>
     <div class="flex flex-col items-center gap-16 rounded-sm bg-neutral-100 px-6 pt-16 pb-12">
       {% for key in ["compliance_2025", "preprints_lmic_2025", "head_start_median_2025"] %}
         {{ component("embed/tile", {
@@ -44,14 +44,14 @@ eleventyExcludeFromCollections: true
     </div>
   </section>
 
-  <section aria-labelledby="story_heading" class="mb-16">
-    <h2 id="story_heading" class="text-lg md:text-2xl font-serif mb-1">3. Story</h2>
+  <section aria-labelledby="headline_heading" class="mb-16">
+    <h2 id="headline_heading" class="text-lg md:text-2xl font-serif mb-1">3. Headline</h2>
     <p class="mb-6 max-w-prose text-sm text-neutral-700">Shows how well a policy is working: a headline share or figure, with supporting figures, for a period since a policy change, each compared with a period before it. Answers “is the policy working?”</p>
     <div class="flex flex-col items-center gap-16 rounded-sm bg-neutral-100 px-6 pt-16 pb-12">
       {% for key in ["compliant_without_apcs", "apc_spend"] %}
-        {{ component("embed/story", {
+        {{ component("embed/headline", {
           id: key,
-          story: embed_figures.stories[key],
+          headline: embed_figures.headlines[key],
           org: embed_figures.org,
           asOf: embed_figures.source.retrieved,
           headingLevel: 3

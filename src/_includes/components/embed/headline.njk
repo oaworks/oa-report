@@ -1,7 +1,7 @@
-{# Story embed: how well a policy is working, as a share (or hero figure) plus supporting figures
-{{ component("embed/story", {
+{# Headline embed: how well a policy is working, as a share (or hero figure) plus supporting figures
+{{ component("embed/headline", {
   id: "policy_first_year",
-  story: embed_figures.stories.policy_first_year,
+  headline: embed_figures.headlines.policy_first_year,
   org: embed_figures.org,
   asOf: embed_figures.source.retrieved,
   headingLevel: 2
@@ -9,19 +9,19 @@
 #}
 {%- from "system/component.njk" import component -%}
 
-{% set story = params.story %}
+{% set headline = params.headline %}
 {% set accent = params.accent or params.org.accent %}
-{% set comparedWith = story.period | comparedWith(story.comparison_period) %}
+{% set comparedWith = headline.period | comparedWith(headline.comparison_period) %}
 {% set titleId = "embed_title_" ~ params.id %}
-{% set periodLabel = story.period | dateRange %}
-{% set share = story.share %}
+{% set periodLabel = headline.period | dateRange %}
+{% set share = headline.share %}
 {% if share %}{% set sharePct = (share.current.numerator / share.current.denominator) * 100 %}{% endif %}
 
 <article
   aria-labelledby="{{ titleId }}"
   class="embed-root flex w-full max-w-sm flex-col rounded-sm border border-t-4 border-neutral-200 border-t-(--embed-accent) bg-white p-4 font-sans text-base leading-normal tracking-normal text-neutral-900"
   {% if accent %}style="--embed-accent: {{ accent }};"{% endif %}>
-  {% set note = comparedWith ~ ((", " ~ story.comparison_note) if story.comparison_note else "") %}
+  {% set note = comparedWith ~ ((", " ~ headline.comparison_note) if headline.comparison_note else "") %}
   {{ component("embed/header", { id: titleId, org: params.org.name, period: periodLabel, note: note, level: params.headingLevel }) }}
 
   {% if share %}
@@ -49,12 +49,12 @@
   {% else %}
     {# No share to chart: the hero figure stands alone #}
     <dl class="mt-5">
-      {{ component("embed/change-figure", { figure: story.hero, comparedWith: comparedWith }) }}
+      {{ component("embed/change-figure", { figure: headline.hero, comparedWith: comparedWith }) }}
     </dl>
   {% endif %}
 
   <dl class="mt-5 space-y-2">
-    {% for f in story.figures %}
+    {% for f in headline.figures %}
       {{ component("embed/change-figure", { figure: f, comparedWith: comparedWith, compact: true, swatch: f.swatch }) }}
     {% endfor %}
   </dl>
