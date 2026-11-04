@@ -50,6 +50,18 @@
       "detail": "reviewed journal articles",
       "definition": "The percentage of journal articles we’ve analysed that have a data availability statement."
     },
+    "top_cited_2025": {
+      "metric": "is_paper AND openalx.citation_normalized_percentile.is_in_top_10_percent:true",
+      "denominator_metric": "is_paper AND openalx.citation_normalized_percentile.value:*",
+      "period": "2025",
+      "format": "percent",
+      "numerator": 1623,
+      "denominator": 3902,
+      "label": "Articles in the top 10% most cited",
+      "info": "1,623 of 3,902 articles, ranked by citations against others in the same field and year (OpenAlex).",
+      "context": "Over four times the 10% you’d expect.",
+      "source": "Counted from the live API on 4 Nov 2026 using OpenAlex’s citation_normalized_percentile. cited_by_percentile_year was not used: it puts any article with one citation in the top 10%."
+    },
     "research_acceleration_2025": {
       "metric": "sum(journal published_date − preprint published_date) for 2025 journal articles with a preprint",
       "period": "2025",
