@@ -39,6 +39,17 @@
       "label": "Preprints",
       "definition": "Preprints published by grantees or authors at the foundation."
     },
+    "preprints_lmic_2025": {
+      "metric": "is_preprint AND authorships.institutions.country_code:(LMIC list)",
+      "denominator_metric": "is_preprint AND authorships.institutions.country_code:*",
+      "period": "2025",
+      "format": "percent",
+      "numerator": 1143,
+      "denominator": 1824,
+      "label": "Preprints with authors in low- and middle-income countries",
+      "info": "1,143 of 1,824 preprints where author locations are known. Countries as classed by the World Bank for 2025–26.",
+      "source": "Counted from the live API on 4 Nov 2026: preprints with at least one author institution in a low, lower-middle or upper-middle income country (World Bank FY2026, 130 countries incl. China). 175 preprints with no country data are left out."
+    },
     "das_2025": {
       "metric": "has_data_availability_statement",
       "denominator_metric": "has_checked_data_availability_statement",
@@ -229,6 +240,44 @@
         }
       ],
       "source": "Yearly is_preprint counts from the live API, as in the preprint Trends. Only completed years are used."
+    },
+    "lmic_authors": {
+      "period": {
+        "start": "2025-01-01",
+        "end": "2026-11-03"
+      },
+      "comparison_period": {
+        "start": "2023-03-01",
+        "end": "2024-12-31"
+      },
+      "figures": [
+        {
+          "metric": "is_unique_publication AND authorships.institutions.country_code:(LMIC list)",
+          "format": "count",
+          "label": "Publications with authors in low- and middle-income countries",
+          "current": {
+            "numerator": 5542
+          },
+          "previous": {
+            "numerator": 4969
+          }
+        },
+        {
+          "metric": "is_unique_publication AND authorships.institutions.country_code:(LMIC list)",
+          "denominator_metric": "is_unique_publication AND authorships.institutions.country_code:*",
+          "format": "percent",
+          "label": "Share of all publications",
+          "current": {
+            "numerator": 5542,
+            "denominator": 8432
+          },
+          "previous": {
+            "numerator": 4969,
+            "denominator": 7962
+          }
+        }
+      ],
+      "source": "Counted from the live API on 4 Nov 2026. Since the policy (1 Jan 2025 – 3 Nov 2026) vs the same length of time before it. Unique publications with at least one author institution in a World Bank FY2026 low or middle income country (130 countries incl. China); publications without country data (4% and 2%) are left out of the share."
     }
   },
   "stories": {
