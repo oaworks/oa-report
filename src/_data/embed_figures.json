@@ -49,6 +49,16 @@
       "label": "Data availability statements",
       "detail": "reviewed journal articles",
       "definition": "The percentage of journal articles we’ve analysed that have a data availability statement."
+    },
+    "research_acceleration_2025": {
+      "metric": "sum(journal published_date − preprint published_date) for 2025 journal articles with a preprint",
+      "period": "2025",
+      "format": "count",
+      "numerator": 516,
+      "label": "Years of research acceleration",
+      "info": "The total time 2025 journal articles were available early as preprints: for each article, the gap between its earliest preprint and its journal publication, added up. Only preprints posted before the article count. For example, a preprint posted on 1 Jan 2024 and published in a journal on 1 Jan 2025 adds one year.",
+      "source": "Calculated from the live API on 3 Nov 2026: 553 of 1,148 2025 journal articles with a linked preprint (supplements.is_preprint_of) had it posted first; gaps summed and divided by 365.25.",
+      "method": "Paged GETs of is_preprint AND supplements.is_preprint_of:* and of 2025 is_paper; matched by DOI at build time"
     }
   },
   "sets": {
@@ -378,7 +388,7 @@
         "metric": "is_compliant_publication AND is_preprint",
         "denominator_metric": "is_compliant_publication",
         "format": "percent",
-        "label": "Met the policy through a preprint alone",
+        "label": "Met the policy through preprint alone",
         "current": {
           "numerator": 655,
           "denominator": 3761
@@ -435,6 +445,95 @@
   },
   "trends": {
     "preprint_share": {
+      "period": {
+        "start": "2020-01-01",
+        "end": "2026-11-03"
+      },
+      "format": "percent",
+      "categories": [
+        "2020",
+        "2021",
+        "2022",
+        "2023",
+        "2024",
+        "2025",
+        "2026"
+      ],
+      "policy_start": "2025",
+      "lines": [
+        {
+          "label": "Preprint share",
+          "style": "accent",
+          "points": [
+            {
+              "numerator": 1170,
+              "denominator": 5315
+            },
+            {
+              "numerator": 1289,
+              "denominator": 6082
+            },
+            {
+              "numerator": 1142,
+              "denominator": 5566
+            },
+            {
+              "numerator": 1218,
+              "denominator": 5329
+            },
+            {
+              "numerator": 1108,
+              "denominator": 5294
+            },
+            {
+              "numerator": 1999,
+              "denominator": 5913
+            },
+            {
+              "numerator": 1935,
+              "denominator": 4573,
+              "partial": true
+            }
+          ],
+          "end_label": "Actual"
+        },
+        {
+          "label": "Pre-policy trend",
+          "style": "expected",
+          "method": "Least-squares fit of 2020–2024, extended to 2025",
+          "missing_text": "Not projected",
+          "points": [
+            null,
+            null,
+            null,
+            null,
+            {
+              "value": 21.4
+            },
+            {
+              "value": 21.35
+            }
+          ],
+          "end_label": "Expected"
+        }
+      ],
+      "compared_with": "vs 2024",
+      "hero": {
+        "format": "one_in",
+        "label": "publications was a preprint in 2025",
+        "current": {
+          "numerator": 1999,
+          "denominator": 5913
+        },
+        "previous": {
+          "numerator": 1108,
+          "denominator": 5294
+        }
+      },
+      "caption": "Preprint share by year",
+      "note": "Expected: where the 2020–2024 trend was heading"
+    },
+    "preprint_share_percent": {
       "period": {
         "start": "2020-01-01",
         "end": "2026-11-03"

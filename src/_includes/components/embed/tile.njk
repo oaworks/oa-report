@@ -1,5 +1,6 @@
 {# Compact Tile embed: one figure for one period
 {{ component("embed/tile", {
+  id: "unique_publications_2025",
   figure: embed_figures.figures.unique_publications_2025,
   org: embed_figures.org,
   asOf: embed_figures.source.retrieved,
@@ -10,10 +11,14 @@
 
 {% set figure = params.figure %}
 {% set accent = params.accent or params.org.accent %}
-{% set detailId = "embed_detail_" ~ figure.metric ~ "_" ~ figure.period %}
-{% set titleId = "embed_title_" ~ figure.metric ~ "_" ~ figure.period %}
+{% set key = params.id or (figure.metric ~ "_" ~ figure.period) %}
+{% set detailId = "embed_detail_" ~ key %}
+{% set titleId = "embed_title_" ~ key %}
 {% if figure.format == "percent" %}
   {% set display = ((figure.numerator / figure.denominator) * 100) | round ~ "%" %}
+{% elif figure.format == "one_in" %}
+  {# Plain-language ratio for public audiences, e.g. 1,999 of 5,913 → “1 in 3” #}
+  {% set display = "1 in " ~ ((figure.denominator / figure.numerator) | round) %}
 {% else %}
   {% set display = figure.numerator | number %}
 {% endif %}
@@ -30,7 +35,8 @@
   <dt class="mt-1 text-sm font-semibold">
     {{ words.slice(0, -1).join(" ") }}
     <span class="whitespace-nowrap">{{ words | last }}
-    {% if figure.format == "percent" %}
+    {# Popover explains the figure: its own `info` text, or the count behind a percentage #}
+    {% if figure.info or figure.format == "percent" or figure.format == "one_in" %}
       {# Native popover: opens on click, tap or keyboard, closes on Esc or outside click #}
       <button
         type="button"
@@ -46,9 +52,9 @@
       <span
         id="{{ detailId }}"
         popover
-        class="max-w-52 whitespace-normal rounded-xs border-0 bg-neutral-900 px-2 py-1.5 text-xs font-normal leading-snug text-white shadow-md supports-[position-area:bottom]:inset-auto supports-[position-area:bottom]:m-0 supports-[position-area:bottom]:mt-1 supports-[position-area:bottom]:[position-area:bottom_span-right] supports-[position-area:bottom]:[position-try-fallbacks:flip-block,flip-inline]"
+        class="max-w-60 whitespace-normal rounded-xs border-0 bg-neutral-900 px-2 py-1.5 text-xs font-normal leading-snug text-white shadow-md supports-[position-area:bottom]:inset-auto supports-[position-area:bottom]:m-0 supports-[position-area:bottom]:mt-1 supports-[position-area:bottom]:[position-area:bottom_span-right] supports-[position-area:bottom]:[position-try-fallbacks:flip-block,flip-inline]"
         style="position-anchor: --{{ detailId }};">
-        {{ figure.numerator | number }} of {{ figure.denominator | number }} {{ figure.detail }}
+        {% if figure.info %}{{ figure.info }}{% else %}{{ figure.numerator | number }} of {{ figure.denominator | number }} {{ figure.detail }}{% endif %}
       </span>
     {% endif %}
     </span>

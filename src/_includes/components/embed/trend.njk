@@ -132,12 +132,13 @@
     </div>
     {# Axis labels sit under their own points: first year, the policy change and the last year #}
     {% set lastPt = trend.lines[0].points[trend.lines[0].points.length - 1] %}
-    <div class="relative mt-1 h-8 text-xs leading-tight text-neutral-700">
+    <div class="relative mt-1 h-4 text-xs leading-tight text-neutral-700">
       {% for c in trend.categories %}
         {% if loop.first or loop.last or c == trend.policy_start %}
           {% set x = ((padL + loop.index0 * step) / W * 100) | round(2) %}
-          {% set align = "" if loop.first else ("-translate-x-full text-right" if x > 90 else "-translate-x-1/2 text-center") %}
-          <span class="absolute top-0 {{ align }}" style="left: {{ x }}%;">{{ c }}{% if loop.last and lastPt.partial %}<span class="block">so far</span>{% endif %}</span>
+          {# “2026 so far” starts just left of its point, so it stays on one line clear of the policy year #}
+          {% set align = "" if loop.first else ("-translate-x-full" if x > 90 else ("-translate-x-2" if loop.last and lastPt.partial else "-translate-x-1/2")) %}
+          <span class="absolute top-0 whitespace-nowrap {{ align }}" style="left: {{ x }}%;">{{ c }}{% if loop.last and lastPt.partial %} so far{% endif %}</span>
         {% endif %}
       {% endfor %}
     </div>

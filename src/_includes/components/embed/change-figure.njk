@@ -1,6 +1,6 @@
 {# Embed figure with its change since an earlier period, as a <dt>/<dd> pair inside a <dl> (Set, Story)
 {{ component("embed/change-figure", {
-  figure: { format: "count", "percent" or "currency", label: "", better: "up" or "down",
+  figure: { format: "count", "percent", "one_in" or "currency", label: "", better: "up" or "down",
             current: { numerator, denominator }, previous: { numerator, denominator } },
   comparedWith: "vs same period in 2025",
   compact: false,
@@ -16,6 +16,11 @@
   {% set curDisplay = cur ~ "%" %}
   {% set delta = cur - prev %}
   {% set deltaDisplay = (delta | abs) ~ " pts" %}
+{% elif f.format == "one_in" %}
+  {# Plain-language ratio, e.g. “1 in 3”; the change names the earlier ratio, e.g. “from 1 in 5” #}
+  {% set curDisplay = "1 in " ~ ((f.current.denominator / f.current.numerator) | round) %}
+  {% set delta = ((f.current.numerator / f.current.denominator) - (f.previous.numerator / f.previous.denominator)) if hasChange %}
+  {% set deltaDisplay = "from 1 in " ~ ((f.previous.denominator / f.previous.numerator) | round) if hasChange %}
 {% elif f.format == "currency" %}
   {# Millions shown compactly, e.g. US$2.4M, smaller amounts in full, e.g. US$3,275 #}
   {% set curDisplay = ("US$" ~ ((f.current.numerator / 1000000) | round(1)) ~ "M") if f.current.numerator >= 1000000 else ("US$" ~ (f.current.numerator | number)) %}
