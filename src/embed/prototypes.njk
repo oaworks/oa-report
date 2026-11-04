@@ -27,15 +27,15 @@ eleventyExcludeFromCollections: true
     </div>
   </section>
 
-  <section aria-labelledby="set_heading" class="mb-16">
-    <h2 id="set_heading" class="text-lg md:text-2xl font-serif mb-1">2. Set</h2>
+  <section aria-labelledby="comparison_heading" class="mb-16">
+    <h2 id="comparison_heading" class="text-lg md:text-2xl font-serif mb-1">2. Comparison</h2>
     <p class="mb-6 max-w-prose text-sm text-neutral-700">Shows one or two figures for a chosen period, each compared with an earlier period of the same length, such as this year so far against the same dates last year, or one full year against another. Answers “how does this period compare with the last?”</p>
 
     <div class="flex flex-col items-center gap-16 rounded-sm bg-neutral-100 px-6 pt-16 pb-12">
       {% for key in ["preprints_and_cc_by", "preprints_and_cc_by_share", "das"] %}
-        {{ component("embed/set", {
+        {{ component("embed/comparison", {
           id: key,
-          set: embed_figures.sets[key],
+          comparison: embed_figures.comparisons[key],
           org: embed_figures.org,
           asOf: embed_figures.source.retrieved,
           headingLevel: 3

@@ -61,7 +61,7 @@
       "method": "Paged GETs of is_preprint AND supplements.is_preprint_of:* and of 2025 is_paper; matched by DOI at build time"
     }
   },
-  "sets": {
+  "comparisons": {
     "preprints_and_cc_by": {
       "period": {
         "start": "2026-01-01",

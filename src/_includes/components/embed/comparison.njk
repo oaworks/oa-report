@@ -1,7 +1,7 @@
-{# Set embed: a few figures for one period, each compared with an earlier period
-{{ component("embed/set", {
+{# Comparison embed: a few figures for one period, each compared with an earlier period
+{{ component("embed/comparison", {
   id: "preprints_and_cc_by",
-  set: embed_figures.sets.preprints_and_cc_by,
+  comparison: embed_figures.comparisons.preprints_and_cc_by,
   org: embed_figures.org,
   asOf: embed_figures.source.retrieved,
   headingLevel: 2
@@ -9,11 +9,11 @@
 #}
 {%- from "system/component.njk" import component -%}
 
-{% set set = params.set %}
+{% set comparison = params.comparison %}
 {% set accent = params.accent or params.org.accent %}
-{% set comparedWith = set.period | comparedWith(set.comparison_period) %}
+{% set comparedWith = comparison.period | comparedWith(comparison.comparison_period) %}
 {% set titleId = "embed_title_" ~ params.id %}
-{% set periodLabel = set.period | dateRange %}
+{% set periodLabel = comparison.period | dateRange %}
 
 <article
   aria-labelledby="{{ titleId }}"
@@ -21,8 +21,8 @@
   {% if accent %}style="--embed-accent: {{ accent }};"{% endif %}>
   {{ component("embed/header", { id: titleId, org: params.org.name, period: periodLabel, note: comparedWith, level: params.headingLevel }) }}
 
-  <dl class="mt-5 grid gap-6 {{ "grid-cols-2" if set.figures.length > 1 else "grid-cols-1" }}">
-    {% for f in set.figures %}
+  <dl class="mt-5 grid gap-6 {{ "grid-cols-2" if comparison.figures.length > 1 else "grid-cols-1" }}">
+    {% for f in comparison.figures %}
       {{ component("embed/change-figure", { figure: f, comparedWith: comparedWith }) }}
     {% endfor %}
   </dl>
