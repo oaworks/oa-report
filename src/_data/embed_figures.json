@@ -50,6 +50,18 @@
       "detail": "reviewed journal articles",
       "definition": "The percentage of journal articles we’ve analysed that have a data availability statement."
     },
+    "grant_linked_2025": {
+      "metric": "is_unique_publication AND supplements.grantid__bmgf:*",
+      "denominator_metric": "is_unique_publication",
+      "period": "2025",
+      "format": "percent",
+      "numerator": 3313,
+      "denominator": 4801,
+      "label": "Publications linked to a grant",
+      "detail": "publications matched to a specific Gates grant",
+      "definition": "The percentage of unique publications with at least one Gates grant ID.",
+      "source": "Counted from the live API on 4 Nov 2026. Steady at 68–73% each year since 2020."
+    },
     "top_cited_2025": {
       "metric": "is_paper AND openalx.citation_normalized_percentile.is_in_top_10_percent:true",
       "denominator_metric": "is_paper AND openalx.citation_normalized_percentile.value:*",
