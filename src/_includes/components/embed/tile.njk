@@ -16,6 +16,9 @@
 {% set titleId = "embed_title_" ~ key %}
 {% if figure.format == "percent" %}
   {% set display = ((figure.numerator / figure.denominator) * 100) | round ~ "%" %}
+{% elif figure.format == "measure" %}
+  {# A value with its unit, e.g. “7.6 months” #}
+  {% set display = (figure.numerator | number) ~ " " ~ figure.unit %}
 {% elif figure.format == "one_in" %}
   {# Plain-language ratio for public audiences, e.g. 1,999 of 5,913 → “1 in 3” #}
   {% set display = "1 in " ~ ((figure.denominator / figure.numerator) | round) %}
@@ -61,6 +64,8 @@
   </dt>
   <dd class="font-serif text-4xl font-bold leading-none tabular-nums text-(--embed-accent)">{{ display }}</dd>
   </dl>
+  {# Benchmark that gives the figure meaning, e.g. how long journals took #}
+  {% if figure.context %}<p class="mt-1 text-xs text-neutral-700">{{ figure.context }}</p>{% endif %}
   {# Spacer keeps the footer at the bottom when tiles share a row height #}
   <div class="grow" aria-hidden="true"></div>
   {{ component("embed/attribution", { url: params.org.report_url, asOf: params.asOf }) }}

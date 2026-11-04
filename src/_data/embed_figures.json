@@ -58,7 +58,29 @@
       "label": "Years of research acceleration",
       "info": "The total time 2025 journal articles were available early as preprints: for each article, the gap between its earliest preprint and its journal publication, added up. Only preprints posted before the article count. For example, a preprint posted on 1 Jan 2024 and published in a journal on 1 Jan 2025 adds one year.",
       "source": "Calculated from the live API on 3 Nov 2026: 553 of 1,148 2025 journal articles with a linked preprint (supplements.is_preprint_of) had it posted first; gaps summed and divided by 365.25.",
-      "method": "Paged GETs of is_preprint AND supplements.is_preprint_of:* and of 2025 is_paper; matched by DOI at build time"
+      "method": "Paged GETs of is_preprint AND supplements.is_preprint_of:* and of 2025 is_paper; matched by DOI at build time",
+      "status_note": "Superseded by head_start_* figures (1 Jan dates excluded)"
+    },
+    "head_start_median_2025": {
+      "metric": "median(journal published_date − earliest preprint published_date)",
+      "period": "2025",
+      "format": "measure",
+      "numerator": 7.6,
+      "unit": "months",
+      "label": "Median head start from preprinting",
+      "info": "Median time between a preprint and its journal article, for the 435 articles published in 2025 that were preprinted first. Submission to publication uses the 382 of these with a submission date.",
+      "source": "Calculated from the live API on 4 Nov 2026: 2025 journal articles matched to their earliest linked preprint (supplements.is_preprint_of); 435 were preprinted first. Preprints dated exactly 1 January (likely year-only dates) are left out.",
+      "context": "Longer than the 6.5 months from submission to journal publication."
+    },
+    "head_start_total_2025": {
+      "metric": "sum(journal published_date − earliest preprint published_date)",
+      "period": "2025",
+      "format": "measure",
+      "numerator": 365,
+      "unit": "years",
+      "label": "Combined head start from preprinting",
+      "info": "The head starts of the 435 articles published in 2025 that were preprinted first, added up.",
+      "source": "Calculated from the live API on 4 Nov 2026: 2025 journal articles matched to their earliest linked preprint (supplements.is_preprint_of); 435 were preprinted first. Preprints dated exactly 1 January (likely year-only dates) are left out."
     }
   },
   "comparisons": {
