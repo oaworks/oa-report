@@ -73,7 +73,7 @@
 
   {# Decorative: the visually hidden table below carries the same data #}
   <div class="mt-4 rounded-xs bg-neutral-50 px-2 pb-1.5 pt-2" aria-hidden="true">
-    {% if trend.note %}<p class="mb-1 text-xs text-neutral-700">{{ trend.note }}</p>{% endif %}
+    {% if trend.note %}<p class="mb-3 text-xs text-neutral-700">{{ trend.note }}</p>{% endif %}
     <div class="relative">
       {% for c in trend.categories %}
         {% if c == trend.policy_start %}
