@@ -500,7 +500,7 @@
         {
           "label": "Pre-policy trend",
           "style": "expected",
-          "method": "Least-squares fit of 2020–2024, extended to 2025",
+          "method": "Ordinary least squares (OLS) fit of 2020–2024, extended to 2025",
           "missing_text": "Not projected",
           "points": [
             null,
@@ -514,7 +514,8 @@
               "value": 21.35
             }
           ],
-          "end_label": "Expected"
+          "end_label": "Expected",
+          "info": "21% if the 2020–2024 trend had continued (ordinary least squares fit)."
         }
       ],
       "compared_with": "vs 2024",
@@ -589,7 +590,7 @@
         {
           "label": "Pre-policy trend",
           "style": "expected",
-          "method": "Least-squares fit of 2020–2024, extended to 2025",
+          "method": "Ordinary least squares (OLS) fit of 2020–2024, extended to 2025",
           "missing_text": "Not projected",
           "points": [
             null,
@@ -603,7 +604,8 @@
               "value": 21.35
             }
           ],
-          "end_label": "Expected"
+          "end_label": "Expected",
+          "info": "21% if the 2020–2024 trend had continued (ordinary least squares fit)."
         }
       ],
       "compared_with": "vs 2024",

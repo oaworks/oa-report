@@ -71,16 +71,16 @@
     </dl>
   {% endif %}
 
-  {# Decorative: the visually hidden table below carries the same data #}
-  <div class="mt-4 rounded-xs bg-neutral-50 px-2 pb-1.5 pt-2" aria-hidden="true">
-    {% if trend.note %}<p class="mb-3 text-xs text-neutral-700">{{ trend.note }}</p>{% endif %}
+  {# Chart parts are decorative (the visually hidden table carries the data); only the info buttons are exposed #}
+  <div class="mt-4 rounded-xs bg-neutral-50 px-2 pb-1.5 pt-2">
+    {% if trend.note %}<p class="mb-3 text-xs text-neutral-700" aria-hidden="true">{{ trend.note }}</p>{% endif %}
     <div class="relative">
       {% for c in trend.categories %}
         {% if c == trend.policy_start %}
-          <span class="absolute top-0 -translate-x-1/2 text-xs text-neutral-700" style="left: {{ ((padL + loop.index0 * step) / W * 100) | round(2) }}%;">{{ trend.policy_label or "Policy change" }}</span>
+          <span class="absolute top-0 -translate-x-1/2 text-xs text-neutral-700" aria-hidden="true" style="left: {{ ((padL + loop.index0 * step) / W * 100) | round(2) }}%;">{{ trend.policy_label or "Policy change" }}</span>
         {% endif %}
       {% endfor %}
-      <svg viewBox="0 0 {{ W }} {{ H }}" class="block h-auto w-full" focusable="false">
+      <svg viewBox="0 0 {{ W }} {{ H }}" class="block h-auto w-full" aria-hidden="true" focusable="false">
         {% for c in trend.categories %}
           {% if c == trend.policy_start %}
             {% set px = (padL + loop.index0 * step) | round(1) %}
@@ -107,7 +107,7 @@
             {% endif %}
           {% endfor %}
           {% set lastPt = pts[pts.length - 1] %}
-          {% set ends = (ends.push({ label: l.line.end_label or l.line.label, x: lastPt.x, y: lastPt.y, i: l.vals.length - 1, li: loop.index0 }), ends) %}
+          {% set ends = (ends.push({ label: l.line.end_label or l.line.label, x: lastPt.x, y: lastPt.y, i: l.vals.length - 1, li: loop.index0, info: l.line.info, name: l.line.label }), ends) %}
           {% set allPts = (allPts.push(pts), allPts) %}
         {% endfor %}
       </svg>
@@ -126,13 +126,31 @@
           {% else %}
             {% set placement = "-translate-x-1/2 -translate-y-full pb-1" %}
           {% endif %}
-          <span class="absolute whitespace-nowrap text-xs font-semibold text-neutral-800 {{ placement }}" style="left: {{ (e.x / W * 100) | round(2) }}%; top: {{ (e.y / H * 100) | round(2) }}%;">{{ e.label }}</span>
+          {% if e.info %}
+            {# The line’s label opens its explanation: native popover, click, tap or keyboard; closes on Esc #}
+            {% set infoId = "embed_point_" ~ params.id ~ "_" ~ e.li %}
+            <button
+              type="button"
+              popovertarget="{{ infoId }}"
+              aria-label="{{ e.label }}: how it’s calculated"
+              class="absolute whitespace-nowrap text-xs font-semibold text-neutral-800 underline decoration-neutral-500 decoration-dotted underline-offset-2 hover:decoration-solid focus-visible:outline-2 focus-visible:outline-(--embed-accent) {{ placement }}"
+              style="left: {{ (e.x / W * 100) | round(2) }}%; top: {{ (e.y / H * 100) | round(2) }}%; anchor-name: --{{ infoId }};">{{ e.label }}</button>
+            <span
+              id="{{ infoId }}"
+              popover
+              class="max-w-60 whitespace-normal rounded-xs border-0 bg-neutral-900 px-2 py-1.5 text-xs font-normal leading-snug text-white shadow-md supports-[position-area:bottom]:inset-auto supports-[position-area:bottom]:m-0 supports-[position-area:bottom]:mt-1 supports-[position-area:bottom]:[position-area:bottom_span-right] supports-[position-area:bottom]:[position-try-fallbacks:flip-block,flip-inline]"
+              style="position-anchor: --{{ infoId }};">
+              {{ e.info }}
+            </span>
+          {% else %}
+            <span class="absolute whitespace-nowrap text-xs font-semibold text-neutral-800 {{ placement }}" aria-hidden="true" style="left: {{ (e.x / W * 100) | round(2) }}%; top: {{ (e.y / H * 100) | round(2) }}%;">{{ e.label }}</span>
+          {% endif %}
         {% endfor %}
       {% endif %}
     </div>
     {# Axis labels sit under their own points: first year, the policy change and the last year #}
     {% set lastPt = trend.lines[0].points[trend.lines[0].points.length - 1] %}
-    <div class="relative mt-1 h-4 text-xs leading-tight text-neutral-700">
+    <div class="relative mt-1 h-4 text-xs leading-tight text-neutral-700" aria-hidden="true">
       {% for c in trend.categories %}
         {% if loop.first or loop.last or c == trend.policy_start %}
           {% set x = ((padL + loop.index0 * step) / W * 100) | round(2) %}
