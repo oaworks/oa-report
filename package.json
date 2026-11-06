@@ -14,7 +14,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@11ty/eleventy": "^3.1.7",
+    "@11ty/eleventy": "^3.1.8",
     "@floating-ui/dom": "^1.8.0",
     "@phosphor-icons/web": "^2.1.1",
     "@tailwindcss/cli": "^4.3.3",
