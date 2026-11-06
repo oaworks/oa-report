@@ -17,7 +17,7 @@
     "@11ty/eleventy": "^3.1.7",
     "@floating-ui/dom": "^1.8.0",
     "@phosphor-icons/web": "^2.1.1",
-    "@tailwindcss/cli": "^4.3.3",
+    "@tailwindcss/cli": "^4.3.4",
     "@tryghost/content-api": "^1.12.13",
     "concurrently": "^10.0.6",
     "dompurify": "3.4.17",
