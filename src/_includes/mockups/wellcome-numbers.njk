@@ -1,9 +1,6 @@
-{# Wellcome mockup: compliance and free-to-read Tiles at the end of the Overview section #}
+{# Wellcome mockup: compliance Headline at the end of the Overview section #}
 {%- from "system/component.njk" import component -%}
 <div class="mockup-slot my-8 rounded-sm bg-neutral-100 p-6 font-sans">
-  <p class="mb-8 max-w-prose">{{ embed_stories_wellcome.tile.in_numbers }}</p>
-  <div class="flex flex-wrap items-stretch gap-6">
-    {{ component("embed/tile", { id: "mockup_free_to_read", figure: embed_figures_wellcome.figures.free_to_read_2025, org: embed_figures_wellcome.org, asOf: embed_figures_wellcome.source.retrieved, headingLevel: 3 }) }}
-    {{ component("embed/tile", { id: "mockup_compliance", figure: embed_figures_wellcome.figures.compliance_2025, org: embed_figures_wellcome.org, asOf: embed_figures_wellcome.source.retrieved, headingLevel: 3 }) }}
-  </div>
+  <p class="mb-8 max-w-prose">{{ embed_stories_wellcome.headline.compliance }}</p>
+  {{ component("embed/headline", { id: "mockup_compliance", headline: embed_figures_wellcome.headlines.compliance, org: embed_figures_wellcome.org, asOf: embed_figures_wellcome.source.retrieved, headingLevel: 3 }) }}
 </div>

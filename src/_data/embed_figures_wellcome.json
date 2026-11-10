@@ -2,7 +2,7 @@
   "source": {
     "api": "https://api.oa.works/report/works/count",
     "retrieved": "2026-11-10",
-    "note": "Hard-coded counts from the live API, by published_year. Same shape as embed_figures.json."
+    "note": "Hard-coded counts from the live API. Same shape as embed_figures.json."
   },
   "org": {
     "id": "wellcome",
@@ -10,37 +10,16 @@
     "report_url": "https://oa.report/wellcome",
     "accent": null
   },
-  "figures": {
-    "compliance_2025": {
-      "metric": "is_compliant",
-      "denominator_metric": "is_covered_by_policy",
-      "period": "2025",
-      "format": "percent",
-      "numerator": 4852,
-      "denominator": 6778,
-      "label": "Policy compliance",
-      "info": "4,852 of 6,778 original research articles covered by the policy. Compliant means the full text is in Europe PMC under a CC BY, CC0 or public domain licence, or an approved CC BY-ND licence. Preprints with a CC BY licence also count."
-    },
-    "free_to_read_2025": {
-      "metric": "is_free_to_read",
-      "denominator_metric": "is_paper",
-      "period": "2025",
-      "format": "percent",
-      "numerator": 9463,
-      "denominator": 9917,
-      "label": "Journal articles free to read",
-      "info": "9,463 of 9,917 journal articles that anyone can read for free, from the publisher, a repository or as a preprint."
-    }
-  },
+  "figures": {},
   "comparisons": {
     "preprint_growth": {
       "period": {
-        "start": "2025-01-01",
-        "end": "2025-12-31"
+        "start": "2026-01-01",
+        "end": "2026-11-10"
       },
       "comparison_period": {
-        "start": "2024-01-01",
-        "end": "2024-12-31"
+        "start": "2025-01-01",
+        "end": "2025-11-10"
       },
       "figures": [
         {
@@ -48,18 +27,145 @@
           "format": "count",
           "label": "Preprints",
           "current": {
-            "numerator": 4694
+            "numerator": 4815
           },
           "previous": {
-            "numerator": 2658
+            "numerator": 4028
           },
           "info": "Preprints by Wellcome-funded researchers or Wellcome authors, by publication date."
         }
       ],
-      "source": "Yearly is_preprint counts from the live API on 10 Nov 2026. Only completed years are used. 2023 had 3,982, so 2024 was a low year."
+      "source": "is_preprint counts from the live API on 10 Nov 2026 by published_date, 1 Jan to 10 Nov of each year."
     }
   },
-  "headlines": {},
+  "headlines": {
+    "compliance": {
+      "period": {
+        "start": "2026-01-01",
+        "end": "2026-11-10"
+      },
+      "comparison_period": {
+        "start": "2025-01-01",
+        "end": "2025-11-10"
+      },
+      "share": {
+        "metric": "is_compliant",
+        "denominator_metric": "is_covered_by_policy",
+        "format": "percent",
+        "label": "Policy compliance",
+        "current": {
+          "numerator": 3652,
+          "denominator": 5362
+        },
+        "previous": {
+          "numerator": 4050,
+          "denominator": 5757
+        },
+        "info": "Original research articles covered by the policy with their full text in Europe PMC under a CC BY, CC0 or public domain license, or an approved CC BY-ND license. Preprints with a CC BY license also count."
+      },
+      "figures": [
+        {
+          "metric": "is_paper",
+          "format": "count",
+          "label": "Journal articles",
+          "current": {
+            "numerator": 7448
+          },
+          "previous": {
+            "numerator": 8541
+          },
+          "info": "Journal articles funded by Wellcome or written by Wellcome authors, by publication date."
+        },
+        {
+          "metric": "is_free_to_read",
+          "denominator_metric": "is_paper",
+          "format": "percent",
+          "label": "Free to read",
+          "current": {
+            "numerator": 7122,
+            "denominator": 7448
+          },
+          "previous": {
+            "numerator": 8155,
+            "denominator": 8541
+          },
+          "info": "Journal articles that anyone can read for free, from the publisher, a repository or as a preprint."
+        },
+        {
+          "metric": "is_oa",
+          "denominator_metric": "is_paper",
+          "format": "percent",
+          "label": "Open access",
+          "current": {
+            "numerator": 6261,
+            "denominator": 7448
+          },
+          "previous": {
+            "numerator": 6773,
+            "denominator": 8541
+          },
+          "info": "Journal articles with a CC BY, CC0 or public domain license from the publisher, a repository or the preprint."
+        }
+      ],
+      "source": "Counted from the live API on 10 Nov 2026 by published_date, 1 Jan to 10 Nov of each year. Compliant and not compliant add up to covered in both periods."
+    },
+    "preprints_public_health": {
+      "period": {
+        "start": "2026-01-01",
+        "end": "2026-11-10"
+      },
+      "share": {
+        "format": "percent",
+        "label": "Virology articles with a preprint",
+        "current": {
+          "numerator": 183,
+          "denominator": 472
+        },
+        "info": "Virology articles covered by the policy that also have a preprint. Subjects come from OpenAlex.",
+        "metric": "is_covered_by_policy AND concepts.display_name:Virology AND supplements.has_preprint_copy:true",
+        "denominator_metric": "is_covered_by_policy AND concepts.display_name:Virology"
+      },
+      "figures": [
+        {
+          "format": "percent",
+          "label": "Outbreak research",
+          "current": {
+            "numerator": 41,
+            "denominator": 114
+          },
+          "info": "Articles on outbreaks covered by the policy that also have a preprint."
+        },
+        {
+          "format": "percent",
+          "label": "Tuberculosis research",
+          "current": {
+            "numerator": 41,
+            "denominator": 101
+          },
+          "info": "Tuberculosis articles covered by the policy that also have a preprint."
+        },
+        {
+          "format": "percent",
+          "label": "Malaria research",
+          "current": {
+            "numerator": 69,
+            "denominator": 168
+          },
+          "info": "Malaria articles covered by the policy that also have a preprint."
+        },
+        {
+          "format": "percent",
+          "label": "All subjects",
+          "current": {
+            "numerator": 1751,
+            "denominator": 5362
+          },
+          "info": "All articles covered by the policy that also have a preprint."
+        }
+      ],
+      "source": "Counted from the live API on 10 Nov 2026 by published_date, 1 Jan to 10 Nov 2026. “With preprint” is supplements.has_preprint_copy, as in the subject breakdown on oa.report/wellcome. No comparison: no subject rises steadily year on year."
+    }
+  },
   "trends": {
     "das_share": {
       "period": {

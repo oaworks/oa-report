@@ -1,9 +1,10 @@
 {
-  "tile": {
-    "in_numbers": "Wellcome-funded research is open to everyone. In 2025, 95% of Wellcome-funded journal articles were free to read, and 72% of the research covered by the policy was in Europe PMC under an open license, as the policy requires."
+  "headline": {
+    "compliance": "Most Wellcome-funded research meets the policy, and nearly all of it is free to read. So far in 2026, 68% of the research covered by the policy complies, 96% of journal articles are free to read and 84% are open access, up from 79% at this point in 2025.",
+    "preprints_public_health": "Where sharing findings widely and rapidly benefits public health, Wellcome-funded researchers preprint more. So far in 2026, 39% of virology articles covered by the policy were also shared as a preprint, against 33% across all subjects."
   },
   "comparison": {
-    "preprint_growth": "Wellcome-funded researchers are sharing their findings sooner. They posted 4,694 preprints in 2025, 77% more than in 2024."
+    "preprint_growth": "Wellcome-funded researchers are sharing their findings sooner. They have posted 4,815 preprints so far in 2026, 20% more than at this point in 2025."
   },
   "trend": {
     "das_share": "More Wellcome-funded researchers are saying where their data can be found. In 2025, 82% of journal articles included a data availability statement, up from half in 2020."

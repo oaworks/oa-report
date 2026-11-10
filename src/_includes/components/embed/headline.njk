@@ -11,7 +11,8 @@
 
 {% set headline = params.headline %}
 {% set accent = params.accent or params.org.accent %}
-{% set comparedWith = headline.period | comparedWith(headline.comparison_period) %}
+{# The comparison is optional: without one, figures show no change #}
+{% set comparedWith = (headline.period | comparedWith(headline.comparison_period)) if headline.comparison_period else "" %}
 {% set titleId = "embed_title_" ~ params.id %}
 {% set periodLabel = headline.period | dateRange %}
 {% set share = headline.share %}
