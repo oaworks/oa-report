@@ -1,0 +1,129 @@
+{
+  "source": {
+    "api": "https://api.oa.works/report/works/count",
+    "retrieved": "2026-11-10",
+    "note": "Hard-coded counts from the live API, by published_year. Same shape as embed_figures.json."
+  },
+  "org": {
+    "id": "wellcome",
+    "name": "Wellcome",
+    "report_url": "https://oa.report/wellcome",
+    "accent": null
+  },
+  "figures": {
+    "compliance_2025": {
+      "metric": "is_compliant",
+      "denominator_metric": "is_covered_by_policy",
+      "period": "2025",
+      "format": "percent",
+      "numerator": 4852,
+      "denominator": 6778,
+      "label": "Policy compliance",
+      "info": "4,852 of 6,778 original research articles covered by the policy. Compliant means the full text is in Europe PMC under a CC BY, CC0 or public domain licence, or an approved CC BY-ND licence. Preprints with a CC BY licence also count."
+    },
+    "free_to_read_2025": {
+      "metric": "is_free_to_read",
+      "denominator_metric": "is_paper",
+      "period": "2025",
+      "format": "percent",
+      "numerator": 9463,
+      "denominator": 9917,
+      "label": "Journal articles free to read",
+      "info": "9,463 of 9,917 journal articles that anyone can read for free, from the publisher, a repository or as a preprint."
+    }
+  },
+  "comparisons": {
+    "preprint_growth": {
+      "period": {
+        "start": "2025-01-01",
+        "end": "2025-12-31"
+      },
+      "comparison_period": {
+        "start": "2024-01-01",
+        "end": "2024-12-31"
+      },
+      "figures": [
+        {
+          "metric": "is_preprint",
+          "format": "count",
+          "label": "Preprints",
+          "current": {
+            "numerator": 4694
+          },
+          "previous": {
+            "numerator": 2658
+          },
+          "info": "Preprints by Wellcome-funded researchers or Wellcome authors, by publication date."
+        }
+      ],
+      "source": "Yearly is_preprint counts from the live API on 10 Nov 2026. Only completed years are used. 2023 had 3,982, so 2024 was a low year."
+    }
+  },
+  "headlines": {},
+  "trends": {
+    "das_share": {
+      "period": {
+        "start": "2020-01-01",
+        "end": "2025-12-31"
+      },
+      "format": "percent",
+      "categories": [
+        "2020",
+        "2021",
+        "2022",
+        "2023",
+        "2024",
+        "2025"
+      ],
+      "note": "Share of reviewed journal articles",
+      "lines": [
+        {
+          "label": "Data availability statements",
+          "style": "accent",
+          "points": [
+            {
+              "numerator": 5146,
+              "denominator": 10153
+            },
+            {
+              "numerator": 7111,
+              "denominator": 12180
+            },
+            {
+              "numerator": 7107,
+              "denominator": 10680
+            },
+            {
+              "numerator": 6944,
+              "denominator": 9689
+            },
+            {
+              "numerator": 6810,
+              "denominator": 9120
+            },
+            {
+              "numerator": 6396,
+              "denominator": 7842
+            }
+          ]
+        }
+      ],
+      "compared_with": "vs 2024",
+      "hero": {
+        "format": "percent",
+        "label": "Data availability statements in 2025",
+        "current": {
+          "numerator": 6396,
+          "denominator": 7842
+        },
+        "previous": {
+          "numerator": 6810,
+          "denominator": 9120
+        },
+        "info": "Journal articles with a data availability statement, as a share of the journal articles we’ve reviewed for one."
+      },
+      "caption": "Share of reviewed journal articles with a data availability statement, by year",
+      "source": "has_data_availability_statement over has_checked_data_availability_statement, from the live API on 10 Nov 2026. 2026 is left out because articles are still being reviewed."
+    }
+  }
+}

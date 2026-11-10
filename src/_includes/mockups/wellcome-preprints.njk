@@ -1,0 +1,6 @@
+{# Wellcome mockup: preprint growth Comparison at the end of the Preprints section #}
+{%- from "system/component.njk" import component -%}
+<div class="mockup-slot my-8 rounded-sm bg-neutral-100 p-6 font-sans">
+  <p class="mb-8 max-w-prose">{{ embed_stories_wellcome.comparison.preprint_growth }}</p>
+  {{ component("embed/comparison", { id: "mockup_preprint_growth", comparison: embed_figures_wellcome.comparisons.preprint_growth, org: embed_figures_wellcome.org, asOf: embed_figures_wellcome.source.retrieved, headingLevel: 3 }) }}
+</div>

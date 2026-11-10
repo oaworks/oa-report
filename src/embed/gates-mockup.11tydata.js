@@ -1,4 +1,7 @@
-// The Gates mockup copies a third-party page, so it’s built locally only, never in production
+// Mockups copy third-party pages, so they’re built on localhost and dev only, never on the live site
+const url = (process.env.ELEVENTY_BASE_URL || '').toLowerCase();
+const isDev = ['dev.oa.report', 'localhost', '127.0.0.1'].some((host) => url.includes(host));
+
 module.exports = {
-  permalink: process.env.ELEVENTY_PRODUCTION === 'true' ? false : 'embed/gates-mockup/'
+  permalink: isDev ? 'embed/gates-mockup/' : false
 };
