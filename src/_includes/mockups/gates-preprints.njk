@@ -1,0 +1,6 @@
+{# Gates mockup: preprint growth Comparison inside policy item 1 (preprints) #}
+{%- from "system/component.njk" import component -%}
+<div class="mockup-slot my-8 grid grid-cols-1 items-start gap-6 rounded-sm bg-neutral-100 p-6 font-sans md:grid-cols-2 md:gap-10 md:p-10">
+  {{ component("embed/comparison", { id: "mockup_preprint_growth", comparison: embed_figures.comparisons.preprint_growth, org: embed_figures.org, asOf: embed_figures.source.retrieved, headingLevel: 3 }) }}
+  <p>{{ embed_stories.comparison.preprint_growth }}</p>
+</div>

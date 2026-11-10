@@ -1,0 +1,10 @@
+{# Gates mockup: compliance Headline and head start Tile after the Purpose section #}
+{%- from "system/component.njk" import component -%}
+<section aria-labelledby="mockup_in_numbers" class="mockup-slot my-10 rounded-sm bg-neutral-100 p-6 font-sans md:p-10">
+  <h2 id="mockup_in_numbers" class="wp-block-heading">The policy in numbers</h2>
+  <p class="mb-8 max-w-prose">{{ embed_stories.headline.compliance.text }}</p>
+  <div class="flex flex-wrap items-start gap-6">
+    {{ component("embed/headline", { id: "mockup_compliance", headline: embed_figures.headlines.compliance, org: embed_figures.org, asOf: embed_figures.source.retrieved, headingLevel: 3 }) }}
+    {{ component("embed/tile", { id: "mockup_head_start", figure: embed_figures.figures.head_start_median_2025, org: embed_figures.org, asOf: embed_figures.source.retrieved, headingLevel: 3 }) }}
+  </div>
+</section>

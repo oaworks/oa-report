@@ -1,0 +1,6 @@
+{# Gates mockup: APC-funded vs preprints Trend inside policy item 5 (no APCs) #}
+{%- from "system/component.njk" import component -%}
+<div class="mockup-slot my-8 grid grid-cols-1 items-start gap-6 rounded-sm bg-neutral-100 p-6 font-sans md:grid-cols-2 md:gap-10 md:p-10">
+  {{ component("embed/trend", { id: "mockup_free_vs_paid", trend: embed_figures.trends.free_vs_paid, org: embed_figures.org, asOf: embed_figures.source.retrieved, headingLevel: 3 }) }}
+  <p>{{ embed_stories.trend.free_vs_paid }}</p>
+</div>
