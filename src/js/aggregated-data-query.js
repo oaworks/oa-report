@@ -528,3 +528,52 @@ export function getAggregatedDataQuery(
     },
   };
 }
+
+/**
+ * Builds a lean query that ranks a terms query's buckets by one percentage
+ * column, as ES can't order a terms agg by a percentage itself.
+ *
+ * @param {Object} fullQuery - Query from getAggregatedDataQuery(), sized to cover every bucket to rank.
+ * @param {string} percentageKey - Filter-type metric key to sort by (e.g. "open_access").
+ * @param {number} size - Number of top buckets to return.
+ * @param {string} [sortDirection="desc"] - Sort direction for the percentage.
+ * @param {{ field: string, direction: string }} [tieBreak] - Second sort (`_count`, `_key`, or a
+ * metric key), used to order buckets that tie on the percentage.
+ * @returns {Object} POST body suitable for `/_search`.
+ */
+export function getPercentageSortQuery(fullQuery, percentageKey, size, sortDirection = "desc", tieBreak) {
+  const { terms, aggs: bucketAggs } = fullQuery.aggs.values;
+  const rankAggs = {};
+  const sort = [];
+
+  [{ field: percentageKey, direction: sortDirection }, tieBreak].filter(Boolean).forEach(({ field, direction }) => {
+    const definition = bucketAggs[field]; // _count and _key have none
+    if (definition) rankAggs[field] = definition;
+
+    if (definition && "filter" in definition) {
+      rankAggs[`${field}_pct`] = {
+        bucket_script: {
+          buckets_path: { matched: `${field}>_count`, total: "_count" },
+          script: "params.matched / params.total",
+        },
+      };
+      sort.push({ [`${field}_pct`]: { order: direction } });
+    } else {
+      sort.push({ [field]: { order: direction } });
+    }
+  });
+
+  return {
+    query: fullQuery.query,
+    size: 0,
+    aggs: {
+      values: {
+        terms,
+        aggs: {
+          ...rankAggs,
+          ranked: { bucket_sort: { sort, size } },
+        },
+      },
+    },
+  };
+}
