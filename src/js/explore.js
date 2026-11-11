@@ -837,7 +837,8 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 
     if (records.length > 0) {
       // Populate table with data
-      const isSortableSet = type === 'terms' && totalCount <= SORTABLE_TERMS_THRESHOLD;
+      // Count mode sorts these columns in ES, so the size limit only applies in Percent mode.
+      const isSortableSet = type === 'terms' && (!pretty || totalCount <= SORTABLE_TERMS_THRESHOLD);
       populateTableHeader(records[0], 'export_table_head', type, isSortableSet);
       populateTableBody(records, 'export_table_body', id, type);
     
@@ -957,9 +958,11 @@ export async function fetchTermBasedData(suffix, query, term, sort, size, active
   // Percentage sorts fetch ordered by count, then get re-sorted by their
   // actual percentage client-side below — ES can't order by a sibling
   // pipeline aggregation.
+  // Count mode has ES order by the column's own count instead.
   const percentageKey = sort.endsWith('_sort') ? sort.slice(0, -"_sort".length) : null;
-  const backendSort = percentageKey ? '_count' : sort;
-  const backendSortDirection = percentageKey ? 'desc' : sortDirection;
+  const sortsInBrowser = percentageKey && isPercentMode;
+  const backendSort = sortsInBrowser ? '_count' : (percentageKey ?? sort);
+  const backendSortDirection = sortsInBrowser ? 'desc' : sortDirection;
 
   const fetchBuckets = (fetchSize) => fetchPostData(
     getAggregatedDataQuery(suffix, query, term, startYear, endYear, fetchSize, backendSort, activeFilterQuery, includeValuesOverride, backendSortDirection)
@@ -977,7 +980,7 @@ export async function fetchTermBasedData(suffix, query, term, sort, size, active
   // A percentage sort only re-sorts whatever was fetched; if the display size
   // didn't already cover the true total, re-fetch up to it (capped at
   // SORTABLE_TERMS_THRESHOLD) so the full set can be sorted correctly.
-  if (percentageKey && totalUniqueTerms > size && totalUniqueTerms <= SORTABLE_TERMS_THRESHOLD) {
+  if (sortsInBrowser && totalUniqueTerms > size && totalUniqueTerms <= SORTABLE_TERMS_THRESHOLD) {
     response = await fetchBuckets(totalUniqueTerms);
   }
 
@@ -995,12 +998,9 @@ export async function fetchTermBasedData(suffix, query, term, sort, size, active
 
   // Filter out buckets with doc_count of 0
   buckets = buckets.filter(bucket => bucket.doc_count > 0);
-  if (percentageKey) {
-    // Match whichever value the table is currently showing (percent or raw count).
+  if (sortsInBrowser) {
     const multiplier = sortDirection === "asc" ? 1 : -1;
-    const valueOf = isPercentMode
-      ? (bucket) => bucket.doc_count > 0 ? (bucket[percentageKey] || 0) / bucket.doc_count : 0
-      : (bucket) => bucket[percentageKey] || 0;
+    const valueOf = (bucket) => bucket.doc_count > 0 ? (bucket[percentageKey] || 0) / bucket.doc_count : 0;
     buckets.sort((a, b) => (valueOf(a) - valueOf(b)) * multiplier);
   } else if (sort === '_count') {
     // Keep count-based ordering stable even when the API response comes back
@@ -1131,7 +1131,7 @@ function resolveExploreHeaderColumns(records, dataType) {
  * @param {Object[]} records - An array of data objects used to derive the header columns. Assumes all objects have the same structure.
  * @param {string} tableHeaderId - The ID of the table header element where the headers should be appended.
  * @param {string} [dataType] - 'terms' or 'articles'; determines label lookup and sortability rules.
- * @param {boolean} [isSortableSet] - Whether this breakdown's true total is within SORTABLE_TERMS_THRESHOLD; gates percentage-column sorting.
+ * @param {boolean} [isSortableSet] - Whether percentage columns can be sorted: always in Count mode, or within SORTABLE_TERMS_THRESHOLD in Percent mode.
  */
 function populateTableHeader(records, tableHeaderId, dataType = 'terms', isSortableSet = false) {
   const tableHeader = document.getElementById(tableHeaderId);
@@ -1157,7 +1157,7 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms', isSorta
   tableHeader.appendChild(headerRow);
 }
 
-/** Percentage-metric terms columns (e.g. "compliant") — sorted client-side, see fetchTermBasedData(). */
+/** Percentage-metric terms columns (e.g. "compliant") — sorted client-side in Percent mode, see fetchTermBasedData(). */
 const TERMS_SORTABLE_PERCENTAGE_FIELDS = new Set(getPercentageMetricAggKeys());
 
 /** Maps a terms display field to its ES order field (doc_count to _count); others pass through. */
@@ -1394,7 +1394,7 @@ function generateTooltipContent(labelData, helpTextByKey = null) {
  * @param {string} dataType - Indicates the type of data ('terms' or 'articles'), which determines the labels configuration to use.
  * @param {string|null} [labelOverride] - Plain-text label (e.g. for aria) to use instead of rawKey's own; sort key and tooltip info still come from rawKey.
  * @param {string|null} [labelHTML] - Rich HTML to show visually instead of labelOverride/rawKey's own label (e.g. stacked lines matching a body cell).
- * @param {boolean} [isSortableSet] - Whether this breakdown's true total is within SORTABLE_TERMS_THRESHOLD; gates percentage-column sorting.
+ * @param {boolean} [isSortableSet] - Whether percentage columns can be sorted: always in Count mode, or within SORTABLE_TERMS_THRESHOLD in Percent mode.
  */
 function setupHeaderTooltip(element, rawKey, dataType, labelOverride = null, labelHTML = null, isSortableSet = false) {
   const key = normaliseFieldId(rawKey);
@@ -1409,8 +1409,8 @@ function setupHeaderTooltip(element, rawKey, dataType, labelOverride = null, lab
   const sortIndicator = getExploreSortIndicator(dataType);
   const isSortedColumn = sortIndicator?.key === key;
   // doc_count/total_/mean_ search the whole dataset regardless of records
-  // shown; percentage metrics can only be fully fetched and sorted when the
-  // breakdown's true total is within SORTABLE_TERMS_THRESHOLD.
+  // shown; percentage metrics do too in Count mode, but in Percent mode only
+  // when the breakdown's true total is within SORTABLE_TERMS_THRESHOLD.
   const isTermsSortable = key === 'doc_count' || key.startsWith('total_') || key.startsWith('mean_') || (isSortableSet && TERMS_SORTABLE_PERCENTAGE_FIELDS.has(key));
   // Percentage columns rely solely on isTermsSortable (gated by isSortableSet);
   // excluded from the isSortedColumn bypass so a stale active sort can't show

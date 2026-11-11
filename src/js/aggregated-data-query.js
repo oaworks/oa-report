@@ -378,7 +378,7 @@ function createAggregationTemplate(suffix) {
   };
 }
 
-/** Filter-type metric keys (e.g. "open_access") — shown as _pct columns; sorted client-side since ES can't order by a sibling pipeline agg. */
+/** Filter-type metric keys (e.g. "open_access") — shown as _pct columns; sorted client-side in Percent mode since ES can't order by a sibling pipeline agg. */
 export function getPercentageMetricAggKeys() {
   return Object.entries(createAggregationTemplate("")).filter(([, def]) => def && typeof def === "object" && "filter" in def).map(([key]) => key);
 }
