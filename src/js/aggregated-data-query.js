@@ -378,7 +378,7 @@ function createAggregationTemplate(suffix) {
   };
 }
 
-/** Filter-type metric keys (e.g. "open_access") — shown as _pct columns; sorted client-side in Percent mode since ES can't order by a sibling pipeline agg. */
+/** Filter-type metric keys (e.g. "open_access") — shown as _pct columns; ranked by getPercentageSortQuery() in Percent mode since ES can't order by a sibling pipeline agg. */
 export function getPercentageMetricAggKeys() {
   return Object.entries(createAggregationTemplate("")).filter(([, def]) => def && typeof def === "object" && "filter" in def).map(([key]) => key);
 }
@@ -530,7 +530,7 @@ export function getAggregatedDataQuery(
 }
 
 /**
- * Builds a lean query that ranks a terms query's buckets by one percentage
+ * Builds a ranking query that orders a terms query's buckets by one percentage
  * column, as ES can't order a terms agg by a percentage itself.
  *
  * @param {Object} fullQuery - Query from getAggregatedDataQuery(), sized to cover every bucket to rank.

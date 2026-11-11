@@ -15,7 +15,7 @@ import { startLoading, stopLoading } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
 import { renderActiveFiltersBanner } from './report-filter-manager.js';
 import { orgDataPromise, initInsightsAndActions } from './insights-and-actions.js';
-import { AUTHOR_BREAKDOWN_TERM, getAggregatedDataQuery, formatAggregationBucket, getFieldFilterValues, toTermField, getPercentageMetricAggKeys } from './aggregated-data-query.js';
+import { AUTHOR_BREAKDOWN_TERM, getAggregatedDataQuery, getPercentageSortQuery, formatAggregationBucket, getFieldFilterValues, toTermField, getPercentageMetricAggKeys } from './aggregated-data-query.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { createTooltip, createPopover } from './tooltip-manager.js';
 import { buildFieldDefinitionTooltipContent, injectOrgFields } from './tooltip-content.js';
@@ -961,8 +961,7 @@ async function loadExploreRecords(itemData, query, size, pretty) {
  * @param {string} query - The query string for fetching data.
  * @param {string} term - The term (i.e. type of data breakdown) associated with the explore item.
  * @param {string} sort - The sorting field.
- * @param {number} size - The number of records to display; a percentage sort may fetch more
- * than this internally (up to SORTABLE_TERMS_THRESHOLD) to sort the full set correctly.
+ * @param {number} size - The number of records to display.
  * @param {string} [activeFilterQuery=query] - Just the user's active filter, excluding any base
  * org query, so exact-match restriction never picks up unrelated baseline query clauses.
  * @param {string[]} [includeValuesOverride] - Exact values to restrict buckets to, bypassing
@@ -972,27 +971,33 @@ async function loadExploreRecords(itemData, query, size, pretty) {
  * @returns {Promise<Object>} A promise that resolves to term-based records and total count.
  */
 export async function fetchTermBasedData(suffix, query, term, sort, size, activeFilterQuery = query, includeValuesOverride, sortDirection = "desc", isPercentMode = true, tieBreak) {
-  // Percentage sorts fetch ordered by count, then get re-sorted by their
-  // actual percentage client-side below — ES can't order by a sibling
-  // pipeline aggregation.
+  // ES can't order a terms agg by a percentage, so Percent mode ranks the rows
+  // in a ranking query first, then fetches only the ranked rows in full.
   // Count mode has ES order by the column's own count instead.
   const percentageKey = sort.endsWith('_sort') ? sort.slice(0, -"_sort".length) : null;
-  const sortsInBrowser = percentageKey && isPercentMode;
-  const backendSort = sortsInBrowser ? '_count' : (percentageKey ?? sort);
-  const backendSortDirection = sortsInBrowser ? 'desc' : sortDirection;
+  const ranksByPercentage = percentageKey && isPercentMode;
+  const backendSort = ranksByPercentage ? '_count' : (percentageKey ?? sort);
+  const backendSortDirection = ranksByPercentage ? 'desc' : sortDirection;
 
-  // A percentage column can only break ties in Count mode, where ES can
-  // order by its count; a browser-side sort takes no tie-break at all.
+  // Outside the ranking query, a percentage column can only break ties in Count
+  // mode, where ES can order by its count.
   const tieBreakPercentageKey = tieBreak?.field.endsWith('_sort') ? tieBreak.field.slice(0, -"_sort".length) : null;
-  const backendTieBreak = !tieBreak || sortsInBrowser || (tieBreakPercentageKey && isPercentMode)
-    ? undefined
-    : { field: tieBreakPercentageKey ?? tieBreak.field, direction: tieBreak.direction };
+  const resolvedTieBreak = tieBreak && { field: tieBreakPercentageKey ?? tieBreak.field, direction: tieBreak.direction };
+  const backendTieBreak = ranksByPercentage || (tieBreakPercentageKey && isPercentMode) ? undefined : resolvedTieBreak;
 
-  const fetchBuckets = (fetchSize) => fetchPostData(
-    getAggregatedDataQuery(suffix, query, term, startYear, endYear, fetchSize, backendSort, activeFilterQuery, includeValuesOverride, backendSortDirection, backendTieBreak)
+  const buildQuery = (fetchSize, includeValues = includeValuesOverride) => getAggregatedDataQuery(
+    suffix, query, term, startYear, endYear, fetchSize, backendSort, activeFilterQuery, includeValues, backendSortDirection, backendTieBreak
   );
 
-  let response = await fetchBuckets(size);
+  let rankedKeys = [];
+  if (ranksByPercentage) {
+    const ranked = await fetchPostData(
+      getPercentageSortQuery(buildQuery(SORTABLE_TERMS_THRESHOLD), percentageKey, size, sortDirection, resolvedTieBreak)
+    );
+    rankedKeys = (ranked?.aggregations?.values?.buckets ?? []).map(bucket => String(bucket.key));
+  }
+
+  const response = await fetchPostData(buildQuery(size, rankedKeys.length ? rankedKeys : includeValuesOverride));
 
   let buckets = [];
   // Once restricted to exact filter value(s), "of Y" should mean "how many you
@@ -1001,15 +1006,14 @@ export async function fetchTermBasedData(suffix, query, term, sort, size, active
   const includeValues = includeValuesOverride ?? getFieldFilterValues(activeFilterQuery, toTermField(term));
   const totalUniqueTerms = includeValues.length || (response?.aggregations?.values_total?.value ?? 0);
 
-  // A percentage sort only re-sorts whatever was fetched; if the display size
-  // didn't already cover the true total, re-fetch up to it (capped at
-  // SORTABLE_TERMS_THRESHOLD) so the full set can be sorted correctly.
-  if (sortsInBrowser && totalUniqueTerms > size && totalUniqueTerms <= SORTABLE_TERMS_THRESHOLD) {
-    response = await fetchBuckets(totalUniqueTerms);
-  }
-
   if (response && response.aggregations && response.aggregations.values && response.aggregations.values.buckets) {
     buckets = response.aggregations.values.buckets.map(bucket => formatAggregationBucket(bucket, term));
+  }
+
+  // The full query returns the ranked rows in count order; restore the ranking.
+  if (rankedKeys.length) {
+    const rank = new Map(rankedKeys.map((key, index) => [key, index]));
+    buckets.sort((a, b) => rank.get(String(a.key)) - rank.get(String(b.key)));
   }
 
   // Process 'all_values' and 'no_values' similarly using the helper function
@@ -1022,11 +1026,7 @@ export async function fetchTermBasedData(suffix, query, term, sort, size, active
 
   // Filter out buckets with doc_count of 0
   buckets = buckets.filter(bucket => bucket.doc_count > 0);
-  if (sortsInBrowser) {
-    const multiplier = sortDirection === "asc" ? 1 : -1;
-    const valueOf = (bucket) => bucket.doc_count > 0 ? (bucket[percentageKey] || 0) / bucket.doc_count : 0;
-    buckets.sort((a, b) => (valueOf(a) - valueOf(b)) * multiplier);
-  } else if (sort === '_count') {
+  if (sort === '_count') {
     // Keep count-based ordering stable even when the API response comes back
     // unordered or partially ordered.
     const multiplier = sortDirection === "asc" ? 1 : -1;
@@ -1181,7 +1181,7 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms', isSorta
   tableHeader.appendChild(headerRow);
 }
 
-/** Percentage-metric terms columns (e.g. "compliant") — sorted client-side in Percent mode, see fetchTermBasedData(). */
+/** Percentage-metric terms columns (e.g. "compliant") — sorted by a ranking query in Percent mode, see fetchTermBasedData(). */
 const TERMS_SORTABLE_PERCENTAGE_FIELDS = new Set(getPercentageMetricAggKeys());
 
 /** Maps a terms display field to its ES order field (doc_count to _count); others pass through. */
