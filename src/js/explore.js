@@ -110,6 +110,14 @@ let currentActiveExploreSortField = null;
 let currentActiveExploreSortDirection = null;
 
 /**
+ * The sort that was active before the current one, used to order rows that
+ * tie on the current sort. Null until a different column is sorted.
+ *
+ * @type {{ field: string, direction: "asc"|"desc" }|null}
+ */
+let previousActiveExploreSort = null;
+
+/**
  * Map of explore button id -> its data object, used to render without synthesising a click.
  * @type {Map<string, Object>}
  */
@@ -912,7 +920,8 @@ async function loadExploreRecords(itemData, query, size, pretty) {
       activeFilterQuery,
       includeValuesOverride.length ? includeValuesOverride : undefined,
       sortDirection,
-      pretty
+      pretty,
+      previousActiveExploreSort
     );
 
     return {
@@ -952,9 +961,10 @@ async function loadExploreRecords(itemData, query, size, pretty) {
  * @param {string[]} [includeValuesOverride] - Exact values to restrict buckets to, bypassing
  * the automatic field-match detection (e.g. author ORCIDs resolved from a name filter).
  * @param {string} [sortDirection="desc"] - Sort direction for the selected field.
+ * @param {{ field: string, direction: string }} [tieBreak] - Previous sort, used to order rows that tie on the selected field.
  * @returns {Promise<Object>} A promise that resolves to term-based records and total count.
  */
-export async function fetchTermBasedData(suffix, query, term, sort, size, activeFilterQuery = query, includeValuesOverride, sortDirection = "desc", isPercentMode = true) {
+export async function fetchTermBasedData(suffix, query, term, sort, size, activeFilterQuery = query, includeValuesOverride, sortDirection = "desc", isPercentMode = true, tieBreak) {
   // Percentage sorts fetch ordered by count, then get re-sorted by their
   // actual percentage client-side below — ES can't order by a sibling
   // pipeline aggregation.
@@ -964,8 +974,15 @@ export async function fetchTermBasedData(suffix, query, term, sort, size, active
   const backendSort = sortsInBrowser ? '_count' : (percentageKey ?? sort);
   const backendSortDirection = sortsInBrowser ? 'desc' : sortDirection;
 
+  // A percentage column can only break ties in Count mode, where ES can
+  // order by its count; a browser-side sort takes no tie-break at all.
+  const tieBreakPercentageKey = tieBreak?.field.endsWith('_sort') ? tieBreak.field.slice(0, -"_sort".length) : null;
+  const backendTieBreak = !tieBreak || sortsInBrowser || (tieBreakPercentageKey && isPercentMode)
+    ? undefined
+    : { field: tieBreakPercentageKey ?? tieBreak.field, direction: tieBreak.direction };
+
   const fetchBuckets = (fetchSize) => fetchPostData(
-    getAggregatedDataQuery(suffix, query, term, startYear, endYear, fetchSize, backendSort, activeFilterQuery, includeValuesOverride, backendSortDirection)
+    getAggregatedDataQuery(suffix, query, term, startYear, endYear, fetchSize, backendSort, activeFilterQuery, includeValuesOverride, backendSortDirection, backendTieBreak)
   );
 
   let response = await fetchBuckets(size);
@@ -1209,6 +1226,7 @@ function getActiveExploreSortState(itemData = currentActiveExploreItemData, opti
     const { field, direction } = resolveExploreSortState(itemData);
     currentActiveExploreSortField = field;
     currentActiveExploreSortDirection = direction;
+    previousActiveExploreSort = null;
   }
 
   return {
@@ -1299,6 +1317,11 @@ async function handleExploreSortToggle(sortKey, labelText) {
   // currentActiveExploreSortField always holds the query-facing value (ES's
   // _count for terms tables), matching resolveExploreSortState().
   const queryField = currentActiveExploreItemData.type === 'terms' ? toEsSortField(sortKey) : sortKey;
+
+  // Moving to a different column keeps the outgoing sort as the tie-break.
+  if (queryField !== currentActiveExploreSortField) {
+    previousActiveExploreSort = { field: currentActiveExploreSortField, direction: currentActiveExploreSortDirection };
+  }
 
   currentActiveExploreSortDirection = queryField === currentActiveExploreSortField
     ? (currentActiveExploreSortDirection === "asc" ? "desc" : "asc")

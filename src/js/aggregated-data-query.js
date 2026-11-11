@@ -461,6 +461,8 @@ export function getInsightsAggregationQuery(suffix, query, startYear, endYear) {
  * @param {string[]} [includeValuesOverride] - Exact values to restrict buckets to, bypassing
  * the automatic field-match detection (e.g. author ORCIDs resolved from a name filter).
  * @param {string}   [sortDirection="desc"] - Sort direction for the selected sort field.
+ * @param {{ field: string, direction: string }} [tieBreak] - Second sort, used to order
+ * buckets that tie on the selected sort field.
  * @returns {Object} POST body suitable for `/_search`.
  */
 export function getAggregatedDataQuery(
@@ -474,6 +476,7 @@ export function getAggregatedDataQuery(
   activeFilterQuery = query,
   includeValuesOverride,
   sortDirection = "desc",
+  tieBreak,
 ) {
   const termField = toTermField(term);
 
@@ -512,7 +515,9 @@ export function getAggregatedDataQuery(
         terms: {
           field: termField,
           size: bucketSize,
-          order: { [sort]: sortDirection },
+          order: tieBreak
+            ? [{ [sort]: sortDirection }, { [tieBreak.field]: tieBreak.direction }]
+            : { [sort]: sortDirection },
           ...(includeValues.length ? { include: includeValues } : {}),
         },
         aggs: {
