@@ -913,7 +913,7 @@
     "free_vs_paid": {
       "period": {
         "start": "2020-01-01",
-        "end": "2026-11-03"
+        "end": "2026-11-11"
       },
       "format": "percent",
       "categories": [
@@ -926,106 +926,110 @@
         "2026"
       ],
       "policy_start": "2025",
-      "note": "Share of all journal articles and preprints",
+      "note": "Share of journal articles",
       "lines": [
         {
-          "label": "Preprints",
+          "label": "With a preprint",
+          "end_label": "Preprint",
           "style": "accent",
           "points": [
             {
-              "numerator": 1170,
-              "denominator": 5315
+              "numerator": 541,
+              "denominator": 4148
             },
             {
-              "numerator": 1289,
-              "denominator": 6082
+              "numerator": 879,
+              "denominator": 4794
             },
             {
-              "numerator": 1142,
-              "denominator": 5566
+              "numerator": 969,
+              "denominator": 4425
             },
             {
-              "numerator": 1218,
-              "denominator": 5329
+              "numerator": 852,
+              "denominator": 4119
             },
             {
-              "numerator": 1108,
-              "denominator": 5294
+              "numerator": 1022,
+              "denominator": 4190
             },
             {
-              "numerator": 1999,
-              "denominator": 5913
+              "numerator": 1171,
+              "denominator": 3934
             },
             {
-              "numerator": 1935,
-              "denominator": 4573,
+              "numerator": 923,
+              "denominator": 2728,
               "partial": true
             }
           ]
         },
         {
-          "label": "APC-funded",
+          "label": "With APC spend",
+          "end_label": "APC spend",
           "style": "muted",
           "points": [
             {
-              "numerator": 2019,
-              "denominator": 5315
+              "numerator": 2020,
+              "denominator": 4148
             },
             {
               "numerator": 1958,
-              "denominator": 6082
+              "denominator": 4794
             },
             {
-              "numerator": 1864,
-              "denominator": 5566
+              "numerator": 1865,
+              "denominator": 4425
             },
             {
-              "numerator": 1712,
-              "denominator": 5329
+              "numerator": 1714,
+              "denominator": 4119
             },
             {
-              "numerator": 1592,
-              "denominator": 5294
+              "numerator": 1595,
+              "denominator": 4190
             },
             {
-              "numerator": 657,
-              "denominator": 5913
+              "numerator": 652,
+              "denominator": 3934
             }
           ],
           "note": "2026 not yet available: APC invoices arrive after publication"
         }
       ],
       "compared_with": "vs 2024",
-      "caption": "Share of all journal articles and preprints, by year",
+      "caption": "Share of journal articles with a preprint and with APC spend, by year",
       "figures": [
         {
           "format": "percent",
-          "label": "Preprints in 2025",
+          "label": "With a preprint in 2025",
           "current": {
-            "numerator": 1999,
-            "denominator": 5913
+            "numerator": 1171,
+            "denominator": 3934
           },
           "previous": {
-            "numerator": 1108,
-            "denominator": 5294
+            "numerator": 1022,
+            "denominator": 4190
           },
-          "info": "Preprints as a share of all journal articles and preprints."
+          "info": "Journal articles with a preprint, as a share of all journal articles."
         },
         {
           "format": "percent",
-          "label": "APC-funded in 2025",
+          "label": "With APC spend in 2025",
           "better": "down",
           "current": {
-            "numerator": 657,
-            "denominator": 5913
+            "numerator": 652,
+            "denominator": 3934
           },
           "previous": {
-            "numerator": 1592,
-            "denominator": 5294
+            "numerator": 1595,
+            "denominator": 4190
           },
-          "info": "Journal articles with an APC on record, as a share of all journal articles and preprints."
+          "info": "Journal articles with an APC on record, as a share of all journal articles."
         }
-      ]
+      ],
+      "retrieved": "2026-11-11",
+      "source": "Counted from the live API on 11 Nov 2026: is_paper by published_date, with supplements.has_preprint_copy:true (the report’s “With preprint” column) and supplements.apc_cost > 0. Total APC spend by year, in US$: 5,517,868 / 5,490,599 / 5,459,026 / 5,291,307 / 5,158,220 / 2,358,157."
     }
   }
 }
