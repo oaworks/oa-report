@@ -177,7 +177,8 @@
       {% for c in trend.categories %}
         {% set i = loop.index0 %}
         <tr>
-          <th scope="row">{{ c }}{% if c == trend.policy_start %} ({{ (trend.policy_label or "Policy change") | lower }}){% endif %}</th>
+          {# `policy_table_label` words the marker for the table, where its place on the chart cannot be seen #}
+          <th scope="row">{{ c }}{% if c == trend.policy_start %} ({{ trend.policy_table_label or ((trend.policy_label or "Policy change") | lower) }}){% endif %}</th>
           {% for l in lines %}
             {% set p = l.line.points[i] %}
             <td>
