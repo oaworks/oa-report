@@ -801,7 +801,14 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       return;
     }
 
-    const { records, total: totalRecords } = await loadExploreRecords(itemData, query, size, pretty);
+    let { records, total: totalRecords } = await loadExploreRecords(itemData, query, size, pretty);
+
+    // Percent mode can't sort a percentage column on a breakdown over the limit
+    // (e.g. one sorted in Count mode first), so fall back to the default sort.
+    if (type === "terms" && pretty && currentActiveExploreSortField.endsWith("_sort") && totalRecords > SORTABLE_TERMS_THRESHOLD) {
+      getActiveExploreSortState(itemData, { reset: true });
+      ({ records, total: totalRecords } = await loadExploreRecords(itemData, query, size, pretty));
+    }
 
     setExploreModeUI(type);
 
