@@ -21,6 +21,7 @@ export const CONTROL_SELECT_CLASSES = "appearance-none cursor-pointer rounded-xs
 export const SORT_TRIGGER_CLASSES = `group cursor-pointer rounded-xs ${CONTROL_FOCUS_RING_CLASSES}`;
 export const SORT_CARET_CHIP_CLASSES = "shrink-0 text-[16px] leading-none text-neutral-100 transition-colors duration-200 group-hover:text-carnation-200 group-focus-visible:text-carnation-200";
 export const SORT_CARET_CHIP_ACTIVE_CLASSES = "shrink-0 text-[16px] leading-none text-carnation-300 transition-colors duration-200 group-hover:text-carnation-200 group-focus-visible:text-carnation-200";
+export const SORT_CARET_CHIP_DISABLED_CLASSES = "shrink-0 text-[16px] leading-none text-neutral-600";
 export const TAB_COUNT_BADGE_CLASSES = "ml-3 rounded-full bg-neutral-200 px-2.5 py-0.5 text-xs font-medium text-neutral-900 transition-colors group-hover:bg-neutral-100 md:inline-block";
 export const EXPLORE_SUMMARY_ROW_CLASSES = {
   total: "border-t border-neutral-500 !bg-neutral-700 font-semibold text-white",

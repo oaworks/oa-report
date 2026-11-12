@@ -9,7 +9,7 @@
 
 import DOMPurify from "dompurify";
 import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader, updateInfoPopoverButton, getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, escapeQueryValue, normaliseFieldId, makeNumberReadable, makeTabCountReadable, announce, orcidDisplayNames, resolveLicenseDisplay } from "./utils.js";
-import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, SEGMENTED_PILL_CLASSES, VIEW_TAB_CLASSES, CONTROL_FIELD_SHELL_CLASSES, CONTROL_FOCUS_RING_CLASSES, CONTROL_SELECT_CLASSES, SORT_TRIGGER_CLASSES, SORT_CARET_CHIP_CLASSES, SORT_CARET_CHIP_ACTIVE_CLASSES, TAB_COUNT_BADGE_CLASSES, EXPLORE_SUMMARY_ROW_CLASSES, INFO_TRIGGER_ICON_CLASSES, INFO_TRIGGER_ICON_HTML, resolveFieldDefinition } from "./constants.js";
+import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, SEGMENTED_PILL_CLASSES, VIEW_TAB_CLASSES, CONTROL_FIELD_SHELL_CLASSES, CONTROL_FOCUS_RING_CLASSES, CONTROL_SELECT_CLASSES, SORT_TRIGGER_CLASSES, SORT_CARET_CHIP_CLASSES, SORT_CARET_CHIP_ACTIVE_CLASSES, SORT_CARET_CHIP_DISABLED_CLASSES, TAB_COUNT_BADGE_CLASSES, EXPLORE_SUMMARY_ROW_CLASSES, INFO_TRIGGER_ICON_CLASSES, INFO_TRIGGER_ICON_HTML, resolveFieldDefinition } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { startLoading, stopLoading } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
@@ -811,6 +811,7 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
     if (type === "terms" && pretty && currentActiveExploreSortField.endsWith("_sort") && totalRecords > SORTABLE_TERMS_THRESHOLD) {
       getActiveExploreSortState(itemData, { reset: true });
       ({ records, total: totalRecords } = await loadExploreRecords(itemData, query, size, pretty));
+      announce("Sort reset to default. This table is too large to sort by percentage.");
     }
 
     setExploreModeUI(type);
@@ -1530,6 +1531,24 @@ function setupHeaderTooltip(element, rawKey, dataType, labelOverride = null, lab
     element.appendChild(sortToggle);
     if (isSortedColumn) element.setAttribute("aria-sort", sortIndicator.direction);
     else element.removeAttribute("aria-sort");
+  } else if (isPercentageColumn && !isSortableSet) {
+    // Too large to sort by percentage: a muted caret explains why instead.
+    const sortNoteAriaLabel = `Why ${labelText} can’t be sorted`;
+    const sortNote = document.createElement("button");
+    sortNote.type = "button";
+    sortNote.className = `absolute bottom-1 right-1 inline-flex items-center ${SORT_TRIGGER_CLASSES}`;
+    sortNote.setAttribute("aria-label", sortNoteAriaLabel);
+    sortNote.innerHTML = `<i class="ph ph-caret-up-down ${SORT_CARET_CHIP_DISABLED_CLASSES}" aria-hidden="true"></i>`;
+    element.appendChild(sortNote);
+
+    const sortNotePopover = createPopover(sortNote, generateTooltipContent({
+      info: "This table is too large to sort by percentage. Switch to the Count view to sort these columns."
+    }), {
+      placement: 'bottom',
+      theme: 'tooltip-light'
+    });
+    sortNotePopover.popper.querySelector(".tooltip-box")?.setAttribute("aria-label", sortNoteAriaLabel);
+    element.removeAttribute("aria-sort");
   } else {
     element.removeAttribute("aria-sort");
   }
