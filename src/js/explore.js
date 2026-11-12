@@ -8,7 +8,7 @@
 // =================================================
 
 import DOMPurify from "dompurify";
-import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader, updateInfoPopoverButton, getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, escapeQueryValue, normaliseFieldId, makeNumberReadable, makeTabCountReadable, announce, orcidDisplayNames, resolveLicenseDisplay } from "./utils.js";
+import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, displayErrorHeader, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader, updateInfoPopoverButton, getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, escapeQueryValue, normaliseFieldId, makeNumberReadable, makeTabCountReadable, announce, orcidDisplayNames, resolveLicenseDisplay } from "./utils.js";
 import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, SEGMENTED_PILL_CLASSES, VIEW_TAB_CLASSES, CONTROL_FIELD_SHELL_CLASSES, CONTROL_FOCUS_RING_CLASSES, CONTROL_SELECT_CLASSES, SORT_TRIGGER_CLASSES, SORT_CARET_CHIP_CLASSES, SORT_CARET_CHIP_ACTIVE_CLASSES, SORT_CARET_CHIP_DISABLED_CLASSES, TAB_COUNT_BADGE_CLASSES, EXPLORE_SUMMARY_ROW_CLASSES, INFO_TRIGGER_ICON_CLASSES, INFO_TRIGGER_ICON_HTML, resolveFieldDefinition } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { startLoading, stopLoading } from "./components.js";
@@ -804,14 +804,23 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       return;
     }
 
-    let { records, total: totalRecords } = await loadExploreRecords(itemData, query, size, pretty);
+    let { records, total: totalRecords, rankingFailed } = await loadExploreRecords(itemData, query, size, pretty);
 
     // Percent mode can't sort a percentage column on a breakdown over the limit
     // (e.g. one sorted in Count mode first), so fall back to the default sort.
-    if (type === "terms" && pretty && currentActiveExploreSortField.endsWith("_sort") && totalRecords > SORTABLE_TERMS_THRESHOLD) {
+    // The same goes for a percentage sort whose ranking request failed.
+    const isOverSortLimit = type === "terms" && pretty && currentActiveExploreSortField.endsWith("_sort") && totalRecords > SORTABLE_TERMS_THRESHOLD;
+    if (isOverSortLimit || rankingFailed) {
       getActiveExploreSortState(itemData, { reset: true });
       ({ records, total: totalRecords } = await loadExploreRecords(itemData, query, size, pretty));
-      announce("Sort reset to default. This table is too large to sort by percentage.");
+
+      if (rankingFailed) {
+        const message = "We couldn’t sort this table by percentage. Please try again, or switch to the Count view to sort it.";
+        displayErrorHeader(message);
+        announce(message);
+      } else {
+        announce("Sort reset to default. This table is too large to sort by percentage.");
+      }
     }
 
     setExploreModeUI(type);
@@ -922,7 +931,7 @@ async function loadExploreRecords(itemData, query, size, pretty) {
     const includeValuesOverride = itemData?.id === "author"
       ? await resolveAuthorNameToOrcids(suffix, decodedQuery, activeFilterQuery)
       : [];
-    const { records: termRecords, total } = await fetchTermBasedData(
+    const { records: termRecords, total, rankingFailed } = await fetchTermBasedData(
       suffix,
       decodedQuery,
       term,
@@ -937,7 +946,8 @@ async function loadExploreRecords(itemData, query, size, pretty) {
 
     return {
       records: prettifyRecords(reorderTermRecords(termRecords, includes), pretty),
-      total
+      total,
+      rankingFailed
     };
   }
 
@@ -998,8 +1008,9 @@ export async function fetchTermBasedData(suffix, query, term, sort, size, active
     const ranked = await fetchPostData(
       getPercentageSortQuery(buildQuery(RANKED_TERMS_LIMIT), percentageKey, size, sortDirection, resolvedTieBreak)
     );
-    // Without a ranking the rows can't be shown as sorted, so fail the whole load.
-    if (!ranked?.aggregations?.values) return { records: [], total: 0 };
+    // Without a ranking the rows can't be shown as sorted, so the caller falls
+    // back to the default sort.
+    if (!ranked?.aggregations?.values) return { records: [], total: 0, rankingFailed: true };
     rankedKeys = ranked.aggregations.values.buckets.map(bucket => String(bucket.key));
   }
 
@@ -1343,8 +1354,11 @@ async function handleExploreSortToggle(sortKey, labelText) {
       currentActiveExploreItemQuery,
       currentActiveExploreItemSize
     );
-    const directionText = currentActiveExploreSortDirection === "asc" ? "ascending" : "descending";
-    announce(`Sorted by ${labelText}, ${directionText}.`);
+    // Skipped when the sort fell back to the default (e.g. its ranking failed).
+    if (currentActiveExploreSortField === queryField) {
+      const directionText = currentActiveExploreSortDirection === "asc" ? "ascending" : "descending";
+      announce(`Sorted by ${labelText}, ${directionText}.`);
+    }
   } catch (error) {
     console.error("Error updating Explore sort:", error);
   } finally {
