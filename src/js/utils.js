@@ -1099,7 +1099,7 @@ export function removeURLParams(keys) {
  */
 export function displayErrorHeader(message) {
   const alertMsg = document.getElementById("js-alert");
-  alertMsg.textContent = message ? message : "An error occurred.";
+  document.getElementById("js-alert-message").textContent = message ? message : "An error occurred.";
   alertMsg.style.display = "block";
 }
 

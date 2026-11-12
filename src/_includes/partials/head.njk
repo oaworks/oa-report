@@ -56,10 +56,16 @@
         if (!alertMsg) {
           return;
         }
-        alertMsg.textContent = "An error has occurred. Please try again later.";
+        document.getElementById("js-alert-message").textContent = "An error has occurred. Please try again later.";
         alertMsg.style.display = 'block';
       }
     }, true);
+
+    document.addEventListener('click', function (event) {
+      if (event.target.closest?.('#js-alert-dismiss')) {
+        document.getElementById("js-alert").style.display = 'none';
+      }
+    });
   </script>
   {% endif %}
 
