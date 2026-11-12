@@ -1032,12 +1032,6 @@ export async function fetchTermBasedData(suffix, query, term, sort, size, active
 
   // Filter out buckets with doc_count of 0
   buckets = buckets.filter(bucket => bucket.doc_count > 0);
-  if (sort === '_count') {
-    // Keep count-based ordering stable even when the API response comes back
-    // unordered or partially ordered.
-    const multiplier = sortDirection === "asc" ? 1 : -1;
-    buckets.sort((a, b) => (a.doc_count - b.doc_count) * multiplier);
-  }
 
   return { records: buckets, total: totalUniqueTerms };
 }
