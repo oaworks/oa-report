@@ -33,11 +33,14 @@ const RECORDS_SHOWN_TIERS = [10, 20, 50, 100, 500];
 const RECORDS_SHOWN_DEFAULT = 10;
 const RECORDS_SHOWN_NO_SELECT_MAX = 20;
 const RECORDS_SHOWN_ALL_THRESHOLD = 1000;
-// Largest true total a terms breakdown can have and still be fetched and
-// sorted in full for a percentage-column sort. Independent of
+// Largest true total a terms breakdown can have and still be ranked in full
+// for a percentage-column sort. Independent of
 // RECORDS_SHOWN_ALL_THRESHOLD (the "All" records-shown option still caps at
 // that lower value even when sorting is available further out).
-const SORTABLE_TERMS_THRESHOLD = 2000;
+const SORTABLE_TERMS_THRESHOLD = 40000;
+// Most buckets ES will rank in one request. Above the threshold, so a total
+// that ES underestimates still gets ranked in full.
+const RANKED_TERMS_LIMIT = 65535;
 const exploreFilterTotalCache = new Map();
 const EXPLORE_SELECTED_ROW_CLASSES = ['!bg-neutral-800', 'text-neutral-100'];
 
@@ -992,7 +995,7 @@ export async function fetchTermBasedData(suffix, query, term, sort, size, active
   let rankedKeys = [];
   if (ranksByPercentage) {
     const ranked = await fetchPostData(
-      getPercentageSortQuery(buildQuery(SORTABLE_TERMS_THRESHOLD), percentageKey, size, sortDirection, resolvedTieBreak)
+      getPercentageSortQuery(buildQuery(RANKED_TERMS_LIMIT), percentageKey, size, sortDirection, resolvedTieBreak)
     );
     rankedKeys = (ranked?.aggregations?.values?.buckets ?? []).map(bucket => String(bucket.key));
   }
