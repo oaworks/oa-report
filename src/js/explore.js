@@ -998,7 +998,9 @@ export async function fetchTermBasedData(suffix, query, term, sort, size, active
     const ranked = await fetchPostData(
       getPercentageSortQuery(buildQuery(RANKED_TERMS_LIMIT), percentageKey, size, sortDirection, resolvedTieBreak)
     );
-    rankedKeys = (ranked?.aggregations?.values?.buckets ?? []).map(bucket => String(bucket.key));
+    // Without a ranking the rows can't be shown as sorted, so fail the whole load.
+    if (!ranked?.aggregations?.values) return { records: [], total: 0 };
+    rankedKeys = ranked.aggregations.values.buckets.map(bucket => String(bucket.key));
   }
 
   const response = await fetchPostData(buildQuery(size, rankedKeys.length ? rankedKeys : includeValuesOverride));
