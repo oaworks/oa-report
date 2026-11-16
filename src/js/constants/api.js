@@ -18,28 +18,34 @@ export const API_HOST_ORGS = bodyDataset.apiHostOrgs;
 export const API_HOST_WORKS = bodyDataset.apiHostWorks;
 
 /**
+ * Optional base URL for a single API that serves both api and bg requests, e.g. a local instance.
+ * @type {string}
+ */
+const API_BASE_URL = bodyDataset.apiBaseUrl;
+
+/**
  * Base URL for org index requests.
  * @type {string}
  */
-export const ORGS_REPORT_API_BASE_URL = `https://${API_HOST_ORGS}.oa.works/report/`;
+export const ORGS_REPORT_API_BASE_URL = API_BASE_URL ? `${API_BASE_URL}/report/` : `https://${API_HOST_ORGS}.oa.works/report/`;
 
 /**
  * Base URL for org index bg requests.
  * @type {string}
  */
-export const ORGS_REPORT_BG_API_BASE_URL = `https://bg.${API_HOST_ORGS}.oa.works/report/`;
+export const ORGS_REPORT_BG_API_BASE_URL = API_BASE_URL ? `${API_BASE_URL}/report/` : `https://bg.${API_HOST_ORGS}.oa.works/report/`;
 
 /**
  * Base URL for works requests.
  * @type {string}
  */
-export const WORKS_REPORT_API_BASE_URL = `https://${API_HOST_WORKS}.oa.works/report/`;
+export const WORKS_REPORT_API_BASE_URL = API_BASE_URL ? `${API_BASE_URL}/report/` : `https://${API_HOST_WORKS}.oa.works/report/`;
 
 /**
  * Base URL for works bg requests.
  * @type {string}
  */
-export const WORKS_REPORT_BG_API_BASE_URL = `https://bg.${API_HOST_WORKS}.oa.works/report/`;
+export const WORKS_REPORT_BG_API_BASE_URL = API_BASE_URL ? `${API_BASE_URL}/report/` : `https://bg.${API_HOST_WORKS}.oa.works/report/`;
 
 /**
  * Endpoint for querying works with a default size of 100.
