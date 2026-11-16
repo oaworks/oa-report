@@ -17,9 +17,11 @@ function envLabel(baseUrl) {
  * Label for the API host(s) the site is currently querying.
  * @param {string} orgsHost
  * @param {string} worksHost
+ * @param {string} baseUrl - optional single API base URL, which replaces both hosts
  * @returns {string}
  */
-function apiLabel(orgsHost, worksHost) {
+function apiLabel(orgsHost, worksHost, baseUrl) {
+  if (baseUrl) return '<code>local</code> endpoint';
   if (!orgsHost && !worksHost) return '';
   if (orgsHost === worksHost) return `<code>${orgsHost}</code> endpoint`;
   return `orgs <code>${orgsHost || '?'}</code> endpoint &middot; works <code>${worksHost || '?'}</code> endpoint`;
@@ -27,5 +29,5 @@ function apiLabel(orgsHost, worksHost) {
 
 module.exports = {
   label: envLabel(process.env.ELEVENTY_BASE_URL),
-  api: apiLabel(process.env.ELEVENTY_API_HOST_ORGS, process.env.ELEVENTY_API_HOST_WORKS),
+  api: apiLabel(process.env.ELEVENTY_API_HOST_ORGS, process.env.ELEVENTY_API_HOST_WORKS, process.env.ELEVENTY_API_BASE_URL),
 };

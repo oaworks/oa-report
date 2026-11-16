@@ -4,7 +4,8 @@
   <body
     class="flex flex-col min-h-screen justify-between antialiased text-neutral-900 tracking-wide leading-relaxed md:leading-5 lg:leading-7 text-xs md:text-sm lg:text-lg"
     data-api-host-orgs="{{ env.ELEVENTY_API_HOST_ORGS }}"
-    data-api-host-works="{{ env.ELEVENTY_API_HOST_WORKS }}">
+    data-api-host-works="{{ env.ELEVENTY_API_HOST_WORKS }}"
+    data-api-base-url="{{ env.ELEVENTY_API_BASE_URL }}">
     {# Loading spinner #}
     {% if org and org._source and org._source.name %}
       {# Start opaque to prevent report content flashing before JavaScript initialises. #}
