@@ -40,7 +40,19 @@
     </section>
     {% endif %}
     {% if page.url != '/' %}
-    <p id="js-alert" class="sticky top-0 z-[60] hidden p-4 bg-carnation-700 text-white font-medium text-center text-xs"></p>
+    <div id="js-alert" class="sticky top-0 z-[60] hidden p-4 bg-carnation-700 text-white font-medium text-center text-xs">
+      <div class="flex items-center justify-center gap-3">
+        <p id="js-alert-message"></p>
+        <button
+          type="button"
+          id="js-alert-dismiss"
+          class="inline-flex shrink-0 text-white transition-opacity hover:opacity-80 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-white"
+          aria-label="Dismiss alert"
+        >
+          {% icon_small "x" %}
+        </button>
+      </div>
+    </div>
     {% endif %}
     {# Badge indicating current env #}
     {% if env_badge.label %}
