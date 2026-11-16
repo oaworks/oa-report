@@ -1,0 +1,12 @@
+/* Styles for the embed cards only: Tailwind scans just the embed components */
+@import 'tailwindcss' source(none);
+
+@config './tailwind.config.js';
+
+@source '../src/_includes/components/embed';
+@source '../src/_includes/svg/logo.svg';
+
+/* Embed root: default accent is carnation; an inline --embed-accent overrides it */
+@utility embed-root {
+  --embed-accent: theme(colors.carnation.500);
+}

@@ -8,7 +8,8 @@
     "clean": "rm -rf dist",
     "build": "ELEVENTY_PRODUCTION=true eleventy && NODE_ENV=production npm run minify-css && npm run minify-js",
     "minify-js": "mkdir -p dist/js && esbuild src/js/main.js --bundle --minify --format=esm --target=es2018 --outfile=dist/js/main.min.js",
-    "minify-css": "npx @tailwindcss/cli -i styles/input.css -o dist/tailwind.css --minify"
+    "minify-css": "npx @tailwindcss/cli -i styles/input.css -o dist/tailwind.css --minify",
+    "embed-css": "npx @tailwindcss/cli -i styles/embed.css -o dist/embed.css --minify && node scripts/embed-css.js dist/embed.css"
   },
   "keywords": [],
   "author": "",
