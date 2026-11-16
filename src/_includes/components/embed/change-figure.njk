@@ -1,0 +1,80 @@
+{# Embed figure with its change since an earlier period, as a <dt>/<dd> pair inside a <dl> (Comparison, Headline)
+{{ component("embed/change-figure", {
+  figure: { format: "count", "percent", "one_in", "measure" or "currency", label: "", better: "up" or "down",
+            current: { numerator, denominator }, previous: { numerator, denominator } },
+  comparedWith: "vs same period in 2025",
+  compact: false,
+  swatch: "accent", "muted" or "light" (optional dot before the label),
+  id: "comparison_preprints" (needed when the figure has an `info` method)
+}) }}
+#}
+{%- from "system/component.njk" import component -%}
+
+{% set f = params.figure %}
+{# How the figure is worked out, shown behind an info button after the label #}
+{% set info %}{% if f.info %}{{ component("embed/info", { id: "embed_detail_" ~ params.id, label: f.label, text: f.info }) }}{% endif %}{% endset %}
+{% set hasChange = f.previous is defined %}
+{% if f.format == "percent" %}
+  {% set cur = ((f.current.numerator / f.current.denominator) * 100) | round %}
+  {% set prev = ((f.previous.numerator / f.previous.denominator) * 100) | round if hasChange %}
+  {% set curDisplay = cur ~ "%" %}
+  {% set delta = cur - prev %}
+  {% set deltaDisplay = (delta | abs) ~ " pts" %}
+{% elif f.format == "one_in" %}
+  {# Plain-language ratio, e.g. “1 in 3”; the change names the earlier ratio, e.g. “from 1 in 5” #}
+  {% set curDisplay = "1 in " ~ ((f.current.denominator / f.current.numerator) | round) %}
+  {% set delta = ((f.current.numerator / f.current.denominator) - (f.previous.numerator / f.previous.denominator)) if hasChange %}
+  {% set deltaDisplay = "from 1 in " ~ ((f.previous.denominator / f.previous.numerator) | round) if hasChange %}
+{% elif f.format == "measure" %}
+  {# A value with its unit, e.g. “365 years” #}
+  {% set curDisplay = (f.current.numerator | number) ~ " " ~ f.unit %}
+  {% set delta = (((f.current.numerator - f.previous.numerator) / f.previous.numerator) * 100) | round if hasChange %}
+  {% set deltaDisplay = (delta | abs) ~ "%" %}
+{% elif f.format == "currency" %}
+  {# Millions shown compactly, e.g. US$2.4M, smaller amounts in full, e.g. US$3,275 #}
+  {% set curDisplay = ("US$" ~ ((f.current.numerator / 1000000) | round(1)) ~ "M") if f.current.numerator >= 1000000 else ("US$" ~ (f.current.numerator | number)) %}
+  {% set delta = (((f.current.numerator - f.previous.numerator) / f.previous.numerator) * 100) | round %}
+  {% set deltaDisplay = (delta | abs) ~ "%" %}
+{% else %}
+  {% set curDisplay = f.current.numerator | number %}
+  {% set delta = (((f.current.numerator - f.previous.numerator) / f.previous.numerator) * 100) | round %}
+  {% set deltaDisplay = (delta | abs) ~ "%" %}
+{% endif %}
+{# Green marks an improvement; `better: "down"` flips this for figures like APCs #}
+{% set improved = (delta > 0 and f.better != "down") or (delta < 0 and f.better == "down") %}
+
+{# Arrow plus words, so the change never relies on colour alone #}
+{% set swatches = { accent: "bg-(--embed-accent)", muted: "bg-neutral-500", light: "bg-neutral-300" } %}
+{% set pill %}{% if hasChange %}
+<span class="whitespace-nowrap rounded-xs px-1 py-0.5 text-xs font-semibold leading-none tabular-nums {{ 'bg-green/15 text-green-dark' if improved else 'bg-neutral-100 text-neutral-800' }}">
+  {% if delta > 0 %}
+    <span aria-hidden="true">↑</span><span class="sr-only">Up</span> {{ deltaDisplay }}
+  {% elif delta < 0 %}
+    <span aria-hidden="true">↓</span><span class="sr-only">Down</span> {{ deltaDisplay }}
+  {% else %}
+    No change
+  {% endif %}
+  <span class="sr-only">{{ params.comparedWith }}{% if improved %}, an improvement{% endif %}</span>
+</span>
+{% endif %}{% endset %}
+
+{% if params.compact %}
+  {# One quiet row: label on the left, figure and change on the right #}
+  <div class="flex items-center justify-between gap-3 text-sm">
+    <dt class="flex items-center gap-1.5 text-neutral-700">{% if params.swatch %}<span class="size-2 shrink-0 rounded-full {{ swatches[params.swatch] }}" aria-hidden="true"></span>{% endif %}{{ f.label }}{{ info | safe }}</dt>
+    <dd class="flex items-center gap-1.5"><span class="font-semibold tabular-nums">{{ curDisplay }}</span>{{ pill | safe }}</dd>
+  </div>
+{% else %}
+  {# Label comes first for screen readers; column-reverse shows the figure above it.
+     justify-end keeps the figure at the top when a neighbour’s label is longer #}
+  <div class="flex flex-col-reverse justify-end">
+    {# Last word stays on the same line as the info button #}
+    {% set words = f.label.split(" ") %}
+    <dt class="mt-1 text-sm font-semibold leading-snug">{% if f.info %}{{ words.slice(0, -1).join(" ") }} <span class="whitespace-nowrap">{{ words | last }} {{ info | safe }}</span>{% else %}{{ f.label }}{% endif %}</dt>
+    {# Change sits top-right of the figure, like a superscript, without <sup> semantics #}
+    <dd class="flex flex-wrap items-start gap-x-1.5">
+      <span class="font-serif text-4xl font-bold leading-none tabular-nums text-(--embed-accent)">{{ curDisplay }}</span>
+      {{ pill | safe }}
+    </dd>
+  </div>
+{% endif %}
