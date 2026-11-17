@@ -1,0 +1,22 @@
+---
+eleventyExcludeFromCollections: true
+---
+{#- The literal snippet a client pastes, twice (GH#4005): a real ID, and a
+    wrong one to check it fails silently. No doctype hacks, no server-rendered
+    card — if this page works, the real pipeline works. -#}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Embed snippet test</title>
+</head>
+<body>
+  <h1>Valid ID</h1>
+  <div data-oareport-embed="gates-unique-pubs-2025"></div>
+
+  <h1>Wrong ID (should show nothing; check the console for why)</h1>
+  <div data-oareport-embed="does-not-exist"></div>
+
+  <script src="/embed.js"></script>
+</body>
+</html>
