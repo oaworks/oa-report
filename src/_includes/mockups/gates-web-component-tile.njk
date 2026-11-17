@@ -10,7 +10,7 @@
   <p class="mb-8 max-w-prose">The Tile below is rendered inside &lt;oa-report-embed&gt;, in its own shadow root, styled only by the embed’s own stylesheet — not by the <code>revert-layer</code> rule above. Its loader script is loaded from a different origin (127.0.0.1, standing in for an oa.works subdomain) to test Gates’ Content Security Policy for real.</p>
   <oa-report-embed data-css-url="/embed.css" data-font-css-url="/embed-font.css">
     <template>
-      {{ component("embed/tile", { id: "mockup_unique_publications", figure: embed_figures.figures.unique_publications_2025, org: embed_figures.org, asOf: embed_figures.source.retrieved, headingLevel: 3 }) }}
+      {{ component("embed/tile", { id: "mockup_unique_publications", figure: embed_figures.figures.is_unique_publication_2025, org: embed_figures.org, asOf: embed_figures.source.retrieved, headingLevel: 3 }) }}
     </template>
   </oa-report-embed>
 

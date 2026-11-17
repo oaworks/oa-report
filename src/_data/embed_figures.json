@@ -12,7 +12,7 @@
     "accent": null
   },
   "figures": {
-    "unique_publications_2025": {
+    "is_unique_publication_2025": {
       "metric": "is_unique_publication",
       "period": "2025",
       "format": "count",
@@ -31,7 +31,7 @@
       "detail": "publications covered by the policy",
       "definition": "The percentage of publications covered by the foundation’s Open Access policy that are compliant with it."
     },
-    "preprints_2025": {
+    "is_preprint_2025": {
       "metric": "is_preprint",
       "period": "2025",
       "format": "count",
@@ -50,7 +50,7 @@
       "info": "1,143 of 1,824 preprints where author locations are known. Countries as classed by the World Bank for 2025–26.",
       "source": "Counted from the live API on 4 Nov 2026: preprints with at least one author institution in a low, lower-middle or upper-middle income country (World Bank FY2026, 130 countries incl. China). 175 preprints with no country data are left out."
     },
-    "das_2025": {
+    "has_data_availability_statement_2025": {
       "metric": "has_data_availability_statement",
       "denominator_metric": "has_checked_data_availability_statement",
       "period": "2025",
@@ -61,7 +61,7 @@
       "detail": "reviewed journal articles",
       "definition": "The percentage of journal articles we’ve analysed that have a data availability statement."
     },
-    "grant_linked_2025": {
+    "with_grant_id_2025": {
       "metric": "is_unique_publication AND supplements.grantid__bmgf:*",
       "denominator_metric": "is_unique_publication",
       "period": "2025",

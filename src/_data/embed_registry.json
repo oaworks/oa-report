@@ -2,6 +2,6 @@
   {
     "id": "gates-unique-pubs-2025",
     "type": "tile",
-    "figure": "unique_publications_2025"
+    "figure": "is_unique_publication_2025"
   }
 ]
