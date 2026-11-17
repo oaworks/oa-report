@@ -13,5 +13,10 @@
     "id": "gates-compliance-headline",
     "type": "headline",
     "key": "compliance"
+  },
+  {
+    "id": "gates-preprint-share-trend",
+    "type": "trend",
+    "key": "preprint_share_percent"
   }
 ]
