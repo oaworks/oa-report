@@ -8,5 +8,10 @@
     "id": "gates-preprint-growth-2025",
     "type": "comparison",
     "key": "preprint_growth"
+  },
+  {
+    "id": "gates-compliance-headline",
+    "type": "headline",
+    "key": "compliance"
   }
 ]

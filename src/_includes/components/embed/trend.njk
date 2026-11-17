@@ -136,7 +136,7 @@
               type="button"
               popovertarget="{{ infoId }}"
               aria-label="{{ e.label }}: how it’s calculated"
-              class="absolute whitespace-nowrap text-xs font-semibold text-neutral-800 underline decoration-neutral-500 decoration-dotted underline-offset-2 hover:decoration-solid focus-visible:outline-2 focus-visible:outline-(--embed-accent) {{ placement }}"
+              class="absolute cursor-pointer whitespace-nowrap text-xs font-semibold text-neutral-800 underline decoration-neutral-500 decoration-dotted underline-offset-2 hover:decoration-solid focus-visible:outline-2 focus-visible:outline-(--embed-accent) {{ placement }}"
               style="left: {{ (e.x / W * 100) | round(2) }}%; top: {{ (e.y / H * 100) | round(2) }}%; anchor-name: --{{ infoId }};">{{ e.label }}</button>
             <span
               id="{{ infoId }}"

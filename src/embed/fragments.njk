@@ -18,4 +18,6 @@ permalink: "embed/f/{{ entry.id }}/"
 {{ component("embed/tile", { id: entry.id, figure: embed_figures.figures[entry.key], org: org, asOf: asOf, headingLevel: 2 }) }}
 {%- elif entry.type == "comparison" -%}
 {{ component("embed/comparison", { id: entry.id, comparison: embed_figures.comparisons[entry.key], org: org, asOf: asOf, headingLevel: 2 }) }}
+{%- elif entry.type == "headline" -%}
+{{ component("embed/headline", { id: entry.id, headline: embed_figures.headlines[entry.key], org: org, asOf: asOf, headingLevel: 2 }) }}
 {%- endif -%}
