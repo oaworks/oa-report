@@ -8,6 +8,11 @@ eleventyExcludeFromCollections: true
 {% raw %}<!doctype html>
 <html lang="en-US">
 <head>{% endraw %}
+{#- Gates’ own Content Security Policy header, copied verbatim on 17 Nov 2026 from
+    openaccess.gatesfoundation.org/open-access-policy (curl -sI, content-security-policy).
+    It can change on their end; re-check it with the same command before relying on this again.
+    Does our embed survive this policy? (GH#4005) -#}
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' http: https://*.f1gf.dev https://*.f1gf.live https://*.gatesfoundation.org https://*.youtube.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' http: https://fonts.googleapis.com https://ajax.googleapis.com https://jnn-pa.googleapis.com https://*.googletagmanager.com https://*.youtube.com https://*.ytimg.com https://cdnjs.cloudflare.com https://cookie-cdn.cookiepro.com https://privacyportal.onetrust.com https://geolocation.onetrust.com https://cdn.cookielaw.org https://googletagmanager.com https://tagmanager.google.com https://www.googleadservices.com https://www.google.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net; style-src 'self' 'unsafe-inline' http: https://fonts.googleapis.com https://ajax.googleapis.com https://jnn-pa.googleapis.com https://*.youtube.com https://cookie-cdn.cookiepro.com https://privacyportal.onetrust.com https://geolocation.onetrust.com https://cdn.cookielaw.org https://googletagmanager.com https://tagmanager.google.com; img-src 'self' http: data: https://*.gatesfoundation.org https://*.ytimg.com https://*.ggpht.com https://*.google-analytics.com https://*.googletagmanager.com https://googletagmanager.com https://www.googletagmanager.com https://ssl.gstatic.com https://www.gstatic.com https://*.g.doubleclick.net https://googleads.g.doubleclick.net https://pagead2.googlesyndication.com https://www.googleadservices.com https://google.com https://www.google.com https://ad.doubleclick.net https://ade.googlesyndication.com; connect-src 'self' https://*.google-analytics.com https://*.bookingbug.com https://*.zdassets.com https://*.zendesk.com https://api.journalcheckertool.org https://*.api.cottagelabs.com https://*.openaccessbutton.org https://*.oa.works https://cookie-cdn.cookiepro.com https://privacyportal.onetrust.com https://geolocation.onetrust.com https://cdn.cookielaw.org https://fonts.googleapis.com https://ajax.googleapis.com https://jnn-pa.googleapis.com https://*.analytics.google.com https://*.googletagmanager.com https://*.g.doubleclick.net https://pagead2.googlesyndication.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://google.com https://www.google.com wss://*.zendesk.com; font-src 'self' data: fonts.gstatic.com use.typekit.net use.fontawesome.com bespoke.bookingbug.com; media-src 'self' *.youtube.com *.vimeo.com *.akamaized.net; report-uri 'self'; child-src 'self'; form-action 'self' go.communications.gatesfoundation.org; frame-ancestors 'self'; object-src 'self'; frame-src 'self' *.youtube.com *.youtube-nocookie.com go.communications.gatesfoundation.org *.doubleclick.net *.soundcloud.com *.facebook.com *.vimeo.com www.googletagmanager.com challenges.cloudflare.com; worker-src 'self' *.zdassets.com *.zendesk.com; manifest-src 'self'; navigate-to 'self'; prefetch-src 'self'; base-uri 'self'; upgrade-insecure-requests">
 <link rel="stylesheet" href="/tailwind.css">
 {#- Their unlayered CSS beats our layered Tailwind, so inside embeds every property rolls back to our layers; inline-positioned chart labels are skipped #}
 <style>.embed-root, .embed-root *:not([style]), .embed-root *::before, .embed-root *::after { all: revert-layer !important; }</style>
@@ -406,7 +411,9 @@ ol,ul{box-sizing:border-box}:root :where(.wp-block-list.has-background){padding:
 	</div>
 </footer>
 
-
+{% endraw %}
+{% include "mockups/gates-web-component-tile.njk" %}
+{% raw %}
 
 
 

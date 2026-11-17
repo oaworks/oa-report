@@ -1,5 +1,6 @@
-// Makes the built embed stylesheet safe to use inside a shadow root on someone else’s page,
-// and writes embed-font.css next to it. Usage: node scripts/embed-css.js dist/embed.css
+// Finishes the Tailwind-built embed stylesheet so it’s safe to use inside a shadow
+// root on someone else’s page, and writes embed-font.css next to it.
+// Usage: node scripts/finalize-embed-css.js dist/embed.css
 
 const fs = require('fs');
 const path = require('path');
@@ -11,7 +12,7 @@ const FONT_FILE = path.join(__dirname, '../src/fonts/redaction/Redaction-Bold-em
 
 const file = process.argv[2];
 if (!file) {
-  console.error('Usage: node scripts/embed-css.js <built css file>');
+  console.error('Usage: node scripts/finalize-embed-css.js <built css file>');
   process.exit(1);
 }
 
