@@ -7,11 +7,15 @@ pagination:
 permalink: "embed/f/{{ entry.id }}/"
 ---
 {#- One bare card per entry in embed_registry.json (GH#4005): an opaque ID
-    mapped to a card type and a figure, so we control what an ID shows without
-    Gates changing anything on their page. The loader fetches this fragment and
-    drops it straight into the custom element’s shadow root — no doctype, head,
-    or body, just the card. -#}
+    mapped to a card type and a data key, so we control what an ID shows
+    without Gates changing anything on their page. The loader fetches this
+    fragment and drops it straight into the custom element’s shadow root —
+    no doctype, head, or body, just the card. -#}
 {%- from "system/component.njk" import component -%}
+{%- set org = embed_figures.org -%}
+{%- set asOf = embed_figures.source.retrieved -%}
 {%- if entry.type == "tile" -%}
-{{ component("embed/tile", { id: entry.id, figure: embed_figures.figures[entry.figure], org: embed_figures.org, asOf: embed_figures.source.retrieved, headingLevel: 2 }) }}
+{{ component("embed/tile", { id: entry.id, figure: embed_figures.figures[entry.key], org: org, asOf: asOf, headingLevel: 2 }) }}
+{%- elif entry.type == "comparison" -%}
+{{ component("embed/comparison", { id: entry.id, comparison: embed_figures.comparisons[entry.key], org: org, asOf: asOf, headingLevel: 2 }) }}
 {%- endif -%}

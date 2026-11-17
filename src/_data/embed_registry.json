@@ -2,6 +2,11 @@
   {
     "id": "gates-unique-pubs-2025",
     "type": "tile",
-    "figure": "is_unique_publication_2025"
+    "key": "is_unique_publication_2025"
+  },
+  {
+    "id": "gates-preprint-growth-2025",
+    "type": "comparison",
+    "key": "preprint_growth"
   }
 ]
