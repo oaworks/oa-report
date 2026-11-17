@@ -197,5 +197,5 @@
   {# Spacer keeps the footer at the bottom when cards share a row height #}
   <div class="grow" aria-hidden="true"></div>
   {# A trend whose figures were fetched later than the rest carries its own date #}
-  {{ component("embed/attribution", { url: params.org.report_url, asOf: trend.retrieved or params.asOf }) }}
+  {{ component("embed/attribution", { url: params.attributionUrl or params.org.report_url, altUrl: params.attributionAltUrl, asOf: trend.retrieved or params.asOf }) }}
 </article>

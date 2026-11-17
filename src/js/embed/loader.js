@@ -1,17 +1,28 @@
 // Embed loader (GH#4005). The real snippet is one placeholder div plus this
 // script:
-//   <div data-oareport-embed="ID"></div>
+//   <div data-oareport-embed="ID" data-link="report"></div>
 //   <script src=".../embed.js"></script>
 // A plain div, not a custom tag, because an unrecognised tag is more likely to
-// be stripped by a CMS than a div. On load, this script turns each one into an
-// <oa-report-embed>, which fetches that ID’s fragment and renders it. A failed
-// fetch renders nothing — site visitors see no card, never a broken one — and
-// logs why to the console, for whoever pasted the snippet to diagnose.
+// be stripped by a CMS than a div. Settings (like data-link) live on the
+// snippet and are applied client-side, so they never need a new build.
+// On load, this script turns each div into an <oa-report-embed>, which
+// fetches that ID’s fragment and renders it. A failed fetch renders nothing —
+// site visitors see no card, never a broken one — and logs why to the
+// console, for whoever pasted the snippet to diagnose.
 
 // Captured once, synchronously, while this is the running script — not safe to
 // read later. Every other URL here is resolved against it, so the embed works
 // from whichever host it’s served from.
 const SCRIPT_BASE = new URL('.', (document.currentScript && document.currentScript.src) || location.href);
+
+// Applies snippet settings to a rendered fragment. Each setting only touches
+// elements that opt in, so adding one here never affects embeds that don’t use it.
+function applySettings(root, dataset) {
+  if (dataset.link === 'report') {
+    const a = root.querySelector('[data-report-url]');
+    if (a) a.href = a.dataset.reportUrl;
+  }
+}
 
 class OAReportEmbed extends HTMLElement {
   connectedCallback() {
@@ -31,10 +42,11 @@ class OAReportEmbed extends HTMLElement {
     const template = this.querySelector('template');
     if (template) {
       root.appendChild(template.content.cloneNode(true));
+      applySettings(root, this.dataset);
       return;
     }
 
-    const id = this.dataset.embedId;
+    const id = this.dataset.oareportEmbed;
     if (!id) return;
     fetch(new URL('embed/f/' + encodeURIComponent(id) + '/', SCRIPT_BASE).href)
       .then((response) => {
@@ -52,6 +64,7 @@ class OAReportEmbed extends HTMLElement {
         const parsed = document.createElement('template');
         parsed.innerHTML = html;
         root.appendChild(parsed.content);
+        applySettings(root, this.dataset);
       })
       .catch((err) => {
         // Nothing shown to site visitors; this is only for whoever pasted the
@@ -71,9 +84,10 @@ if (!customElements.get('oa-report-embed')) {
   customElements.define('oa-report-embed', OAReportEmbed);
 }
 
-// Upgrade every placeholder div on the page into an <oa-report-embed>.
+// Upgrade every placeholder div on the page into an <oa-report-embed>,
+// carrying over its ID and settings as-is.
 document.querySelectorAll('[data-oareport-embed]').forEach((div) => {
   const embed = document.createElement('oa-report-embed');
-  embed.dataset.embedId = div.dataset.oareportEmbed;
+  Object.assign(embed.dataset, div.dataset);
   div.replaceWith(embed);
 });
