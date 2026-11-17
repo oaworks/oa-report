@@ -19,7 +19,8 @@ permalink: "embed/f/{{ entry.org }}/{{ entry.type }}/{{ entry.metric }}/"
 {%- set entryId = entry.org ~ "_" ~ entry.type ~ "_" ~ entry.metric -%}
 {#- Every card’s attribution link defaults to the OA.Report landing page and
     carries the org’s own report as a swappable alternative; the snippet’s
-    placeholder div sets data-link="report" to ask the loader to swap to it.
+    placeholder div sets data-oareport-link="report" to ask the loader to
+    swap to it.
     This is a setting on the snippet, not the registry, so it applies to any
     entry without changing what’s built here. -#}
 {%- set attributionUrl = "https://oa.report" -%}

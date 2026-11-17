@@ -1,11 +1,11 @@
 // Embed loader (GH#4005). The real snippet is one placeholder div plus this
 // script:
 //   <div data-oareport-org="ORG" data-oareport-type="TYPE"
-//        data-oareport-metric="METRIC" data-link="report"></div>
+//        data-oareport-metric="METRIC" data-oareport-link="report"></div>
 //   <script src=".../embed.js"></script>
 // A plain div, not a custom tag, because an unrecognised tag is more likely to
-// be stripped by a CMS than a div. Settings (like data-link) live on the
-// snippet and are applied client-side, so they never need a new build.
+// be stripped by a CMS than a div. Settings (like data-oareport-link) live on
+// the snippet and are applied client-side, so they never need a new build.
 // On load, this script turns each div into an <oa-report-embed>, which
 // fetches that org/type/metric’s fragment and renders it. A failed fetch
 // renders nothing — site visitors see no card, never a broken one — and logs
@@ -19,9 +19,15 @@ const SCRIPT_BASE = new URL('.', (document.currentScript && document.currentScri
 // Applies snippet settings to a rendered fragment. Each setting only touches
 // elements that opt in, so adding one here never affects embeds that don’t use it.
 function applySettings(root, dataset) {
-  if (dataset.link === 'report') {
+  if (dataset.oareportLink === 'report') {
     const a = root.querySelector('[data-report-url]');
     if (a) a.href = a.dataset.reportUrl;
+  }
+  // The card’s own class sets --embed-accent to the default colour; an inline
+  // style on that same element outranks it, so no fragment change is needed.
+  if (dataset.oareportAccent) {
+    const card = root.querySelector('.embed-root');
+    if (card) card.style.setProperty('--embed-accent', dataset.oareportAccent);
   }
 }
 
