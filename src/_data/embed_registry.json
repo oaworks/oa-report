@@ -1,21 +1,21 @@
 [
   {
-    "id": "gates-unique-pubs-2025",
+    "id": "gates-foundation-unique-pubs-2025",
     "type": "tile",
     "key": "is_unique_publication_2025"
   },
   {
-    "id": "gates-preprint-growth-2025",
+    "id": "gates-foundation-preprint-growth-2025",
     "type": "comparison",
     "key": "preprint_growth"
   },
   {
-    "id": "gates-compliance-headline",
+    "id": "gates-foundation-compliance-headline",
     "type": "headline",
     "key": "compliance"
   },
   {
-    "id": "gates-preprint-share-trend",
+    "id": "gates-foundation-preprint-share-trend",
     "type": "trend",
     "key": "preprint_share_percent"
   }
