@@ -10,3 +10,9 @@
 @utility embed-root {
   --embed-accent: theme(colors.carnation.500);
 }
+
+/* Cards can’t load web fonts from our host on other sites: system sans, plus Redaction sent as data */
+@theme {
+  --font-sans: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-serif: 'OAReport Redaction', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+}
