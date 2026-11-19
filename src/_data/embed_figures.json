@@ -16,7 +16,7 @@
       "metric": "is_unique_publication",
       "period": "2025",
       "format": "count",
-      "numerator": 4,686,
+      "numerator": 4686,
       "label": "Unique publications",
       "definition": "Journal articles and preprints without an associated journal article, published by grantees or authors at the foundation."
     },
