@@ -18,7 +18,8 @@
       "format": "count",
       "numerator": 4686,
       "label": "Unique publications",
-      "definition": "Journal articles and preprints without an associated journal article, published by grantees or authors at the foundation."
+      "definition": "Journal articles and preprints without an associated journal article, published by grantees or authors at the foundation.",
+      "retrieved": "2026-11-19"
     },
     "compliance_2025": {
       "metric": "is_compliant_publication",
