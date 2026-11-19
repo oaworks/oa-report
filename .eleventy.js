@@ -132,6 +132,7 @@ module.exports = async function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy("./src/*.xml");
   eleventyConfig.addPassthroughCopy("./src/*.txt");
   eleventyConfig.addPassthroughCopy("./_redirects");
+  eleventyConfig.addPassthroughCopy("./_headers");
 
   /* ─── WebP helper shortcode ────────────────────────────── */
   eleventyConfig.addShortcode("webpImg", function (filename, altText, width, height, classes = '', loading = false, fetchPriority = false) {
