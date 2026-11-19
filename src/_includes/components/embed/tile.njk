@@ -6,6 +6,7 @@
   asOf: embed_figures.source.retrieved,
   headingLevel: 2
 }) }}
+asOf is the default data date; a "retrieved" date on the figure itself overrides it.
 #}
 {%- from "system/component.njk" import component -%}
 
@@ -68,5 +69,5 @@
   {% if figure.context %}<p class="mt-1 text-xs text-neutral-700">{{ figure.context }}</p>{% endif %}
   {# Spacer keeps the footer at the bottom when tiles share a row height #}
   <div class="grow" aria-hidden="true"></div>
-  {{ component("embed/attribution", { url: params.attributionUrl or params.org.report_url, altUrl: params.attributionAltUrl, asOf: params.asOf }) }}
+  {{ component("embed/attribution", { url: params.attributionUrl or params.org.report_url, altUrl: params.attributionAltUrl, asOf: figure.retrieved or params.asOf }) }}
 </article>
