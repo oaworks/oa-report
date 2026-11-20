@@ -1,9 +1,14 @@
 {# Gates mockup: compliance Headline after the Purpose section #}
-{%- from "system/component.njk" import component -%}
 <section aria-labelledby="mockup_in_numbers" class="mockup-slot my-10 rounded-sm bg-neutral-100 p-6 font-sans md:p-10">
   <h2 id="mockup_in_numbers" class="wp-block-heading">The policy in numbers</h2>
   <p class="mb-8 max-w-prose">{{ embed_stories.headline.compliance.text }}</p>
   <div class="flex flex-wrap items-start gap-6">
-    {{ component("embed/headline", { id: "mockup_compliance", headline: embed_figures["gates-foundation"].headlines.compliance, org: embed_figures["gates-foundation"].org, asOf: embed_figures["gates-foundation"].source.retrieved, headingLevel: 3 }) }}
+    <div
+      data-oareport-org="gates-foundation"
+      data-oareport-type="headline"
+      data-oareport-metric="compliance"
+      data-css-url="/embed.css"
+      data-font-css-url="/embed-font.css"
+    ></div>
   </div>
 </section>

@@ -18,5 +18,30 @@
     "org": "gates-foundation",
     "type": "trend",
     "metric": "preprint_share_percent"
+  },
+  {
+    "org": "gates-foundation",
+    "type": "trend",
+    "metric": "free_vs_paid"
+  },
+  {
+    "org": "wellcome",
+    "type": "comparison",
+    "metric": "preprint_growth"
+  },
+  {
+    "org": "wellcome",
+    "type": "headline",
+    "metric": "compliance"
+  },
+  {
+    "org": "wellcome",
+    "type": "headline",
+    "metric": "preprints_public_health"
+  },
+  {
+    "org": "wellcome",
+    "type": "trend",
+    "metric": "das_share"
   }
 ]

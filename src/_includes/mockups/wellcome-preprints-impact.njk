@@ -1,6 +1,9 @@
 {# Wellcome mockup: virology preprint Headline at the end of the Preprints section #}
-{%- from "system/component.njk" import component -%}
 <div class="mockup-slot my-8 rounded-sm bg-neutral-100 p-6 font-sans">
   <p class="mb-8 max-w-prose">{{ embed_stories_wellcome.headline.preprints_public_health }}</p>
-  {{ component("embed/headline", { id: "mockup_preprints_public_health", headline: embed_figures.wellcome.headlines.preprints_public_health, org: embed_figures.wellcome.org, asOf: embed_figures.wellcome.source.retrieved, headingLevel: 3 }) }}
+  <div
+    data-oareport-org="wellcome"
+    data-oareport-type="headline"
+    data-oareport-metric="preprints_public_health"
+  ></div>
 </div>

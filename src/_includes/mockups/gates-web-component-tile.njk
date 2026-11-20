@@ -1,9 +1,4 @@
-{# Gates mockup (GH#4005): does the Tile survive Gates’ real Content Security Policy,
-   rendered in a shadow root instead of the embed-root/revert-layer hack above?
-   The card’s markup is rendered server-side as usual; what’s new is
-   <oa-report-embed>, which moves it into an isolated shadow root and loads the
-   embed’s own stylesheet and font there. Real embeds will fetch that content by
-   ID instead; here it’s inline so this check doesn’t depend on that yet. #}
+{# Gates mockup: Tile in a shadow root; inline <template>, not a fetch, so this card only tests script-src — connect-src is tested separately below #}
 {%- from "system/component.njk" import component -%}
 <section aria-labelledby="mockup_web_component_tile" class="mockup-slot my-10 rounded-sm bg-neutral-100 p-6 font-sans md:p-10">
   <h2 id="mockup_web_component_tile" class="wp-block-heading">Tile via web component</h2>
