@@ -29,8 +29,16 @@ asOf is the default data date; a "retrieved" date on the headline itself overrid
   {% if share %}
     <div class="mt-5 flex items-center gap-4">
       {# Decorative: the figure and label beside it carry the same information #}
+      {% set trackPatternId = "ring_track_" ~ params.id %}
       <svg viewBox="-1 -1 38 38" class="size-20 shrink-0 -rotate-90" aria-hidden="true" focusable="false">
-        <circle cx="18" cy="18" r="15.9155" fill="none" stroke-width="5" class="stroke-neutral-200"/>
+        <defs>
+          {# Diagonal pinstripes #}
+          <pattern id="{{ trackPatternId }}" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <rect width="4" height="4" class="fill-white"/>
+            <line x1="0" y1="0" x2="0" y2="4" stroke-width="1.5" class="stroke-carnation-500"/>
+          </pattern>
+        </defs>
+        <circle cx="18" cy="18" r="15.9155" fill="none" stroke-width="5" stroke="url(#{{ trackPatternId }})"/>
         {% if share.parts %}
           {# One arc per part; the circle’s length is 100, so each arc’s length is its percentage #}
           {% set total = share.current.denominator %}{% set offset = 0 %}
