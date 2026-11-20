@@ -22,7 +22,7 @@ eleventyExcludeFromCollections: true
 <main class="px-4 py-6 md:px-8 md:py-10 max-w-5xl mx-auto">
   <h1 class="text-xl md:text-3xl font-serif mb-2">Embed prototypes</h1>
   <p class="mb-10 max-w-prose text-sm text-neutral-700">
-    Static designs for embedding OA.Report figures on external sites. Figures for {{ embed_figures.org.name }}, obtained from the live API on {{ embed_figures.source.retrieved | date("d LLL yyyy") }}.
+    Static designs for embedding OA.Report figures on external sites. Figures for {{ embed_figures["gates-foundation"].org.name }}, obtained from the live API on {{ embed_figures["gates-foundation"].source.retrieved | date("d LLL yyyy") }}.
   </p>
 
   <section aria-labelledby="tile_heading" class="mb-16">
@@ -33,9 +33,9 @@ eleventyExcludeFromCollections: true
         {% set card %}
           {{ component("embed/tile", {
             id: key,
-            figure: embed_figures.figures[key],
-            org: embed_figures.org,
-            asOf: embed_figures.source.retrieved,
+            figure: embed_figures["gates-foundation"].figures[key],
+            org: embed_figures["gates-foundation"].org,
+            asOf: embed_figures["gates-foundation"].source.retrieved,
             headingLevel: 3
           }) }}
         {% endset %}
@@ -53,9 +53,9 @@ eleventyExcludeFromCollections: true
         {% set card %}
           {{ component("embed/comparison", {
             id: key,
-            comparison: embed_figures.comparisons[key],
-            org: embed_figures.org,
-            asOf: embed_figures.source.retrieved,
+            comparison: embed_figures["gates-foundation"].comparisons[key],
+            org: embed_figures["gates-foundation"].org,
+            asOf: embed_figures["gates-foundation"].source.retrieved,
             headingLevel: 3
           }) }}
         {% endset %}
@@ -72,9 +72,9 @@ eleventyExcludeFromCollections: true
         {% set card %}
           {{ component("embed/headline", {
             id: key,
-            headline: embed_figures.headlines[key],
-            org: embed_figures.org,
-            asOf: embed_figures.source.retrieved,
+            headline: embed_figures["gates-foundation"].headlines[key],
+            org: embed_figures["gates-foundation"].org,
+            asOf: embed_figures["gates-foundation"].source.retrieved,
             headingLevel: 3
           }) }}
         {% endset %}
@@ -91,9 +91,9 @@ eleventyExcludeFromCollections: true
         {% set card %}
           {{ component("embed/trend", {
             id: key,
-            trend: embed_figures.trends[key],
-            org: embed_figures.org,
-            asOf: embed_figures.source.retrieved,
+            trend: embed_figures["gates-foundation"].trends[key],
+            org: embed_figures["gates-foundation"].org,
+            asOf: embed_figures["gates-foundation"].source.retrieved,
             headingLevel: 3
           }) }}
         {% endset %}

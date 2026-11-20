@@ -1,9 +1,9 @@
 {# Trend embed: one or more lines year by year, with an optional policy marker
 {{ component("embed/trend", {
   id: "preprint_share",
-  trend: embed_figures.trends.preprint_share,
-  org: embed_figures.org,
-  asOf: embed_figures.source.retrieved,
+  trend: embed_figures["gates-foundation"].trends.preprint_share,
+  org: embed_figures["gates-foundation"].org,
+  asOf: embed_figures["gates-foundation"].source.retrieved,
   headingLevel: 2
 }) }}
 asOf is the default data date; a "retrieved" date on the trend itself overrides it.

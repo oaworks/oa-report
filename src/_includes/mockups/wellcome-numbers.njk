@@ -2,5 +2,5 @@
 {%- from "system/component.njk" import component -%}
 <div class="mockup-slot my-8 rounded-sm bg-neutral-100 p-6 font-sans">
   <p class="mb-8 max-w-prose">{{ embed_stories_wellcome.headline.compliance }}</p>
-  {{ component("embed/headline", { id: "mockup_compliance", headline: embed_figures_wellcome.headlines.compliance, org: embed_figures_wellcome.org, asOf: embed_figures_wellcome.source.retrieved, headingLevel: 3 }) }}
+  {{ component("embed/headline", { id: "mockup_compliance", headline: embed_figures.wellcome.headlines.compliance, org: embed_figures.wellcome.org, asOf: embed_figures.wellcome.source.retrieved, headingLevel: 3 }) }}
 </div>

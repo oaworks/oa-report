@@ -1,9 +1,9 @@
 {# Comparison embed: a few figures for one period, each compared with an earlier period
 {{ component("embed/comparison", {
   id: "preprints_and_cc_by",
-  comparison: embed_figures.comparisons.preprints_and_cc_by,
-  org: embed_figures.org,
-  asOf: embed_figures.source.retrieved,
+  comparison: embed_figures["gates-foundation"].comparisons.preprints_and_cc_by,
+  org: embed_figures["gates-foundation"].org,
+  asOf: embed_figures["gates-foundation"].source.retrieved,
   headingLevel: 2
 }) }}
 asOf is the default data date; a "retrieved" date on the comparison itself overrides it.
