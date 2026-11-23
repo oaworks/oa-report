@@ -14,52 +14,28 @@ eleventyExcludeFromCollections: true
 </head>
 <body>
   <h1>Tile</h1>
-  <div 
-    data-oareport-org="gates-foundation" 
-    data-oareport-type="tile" 
-    data-oareport-metric="is_unique_publication_2025">
-  </div>
+  <script src="/embed.js" data-oareport-org="gates-foundation" data-oareport-type="tile" data-oareport-metric="is_unique_publication_2025" async></script>
 
   <h1>Comparison</h1>
-  <div 
-    data-oareport-org="gates-foundation" 
-    data-oareport-type="comparison" 
-    data-oareport-metric="preprint_growth">
-  </div>
+  <script src="/embed.js" data-oareport-org="gates-foundation" data-oareport-type="comparison" data-oareport-metric="preprint_growth" async></script>
 
   <h1>Headline</h1>
-  <div 
-    data-oareport-org="gates-foundation" 
-    data-oareport-type="headline" 
-    data-oareport-metric="compliance">
-  </div>
+  <script src="/embed.js" data-oareport-org="gates-foundation" data-oareport-type="headline" data-oareport-metric="compliance" async></script>
 
   <h1>Trend</h1>
-  <div 
-    data-oareport-org="gates-foundation" 
-    data-oareport-type="trend" 
-    data-oareport-metric="preprint_share_percent">
-  </div>
+  <script src="/embed.js" data-oareport-org="gates-foundation" data-oareport-type="trend" data-oareport-metric="preprint_share_percent" async></script>
 
   <h1>Tile, linked to the org’s report instead of the landing page</h1>
-  <div 
-    data-oareport-org="gates-foundation" 
-    data-oareport-type="tile" 
-    data-oareport-metric="is_unique_publication_2025"
-    data-oareport-link="report">
-  </div>
+  <script src="/embed.js" data-oareport-org="gates-foundation" data-oareport-type="tile" data-oareport-metric="is_unique_publication_2025" data-oareport-link="report" async></script>
 
   <h1>Tile, with Gates’ brand colour as the accent</h1>
-  <div
-    data-oareport-org="gates-foundation"
-    data-oareport-type="tile"
-    data-oareport-metric="is_unique_publication_2025"
-    data-oareport-accent="#313A44">
-  </div>
+  <script src="/embed.js" data-oareport-org="gates-foundation" data-oareport-type="tile" data-oareport-metric="is_unique_publication_2025" data-oareport-accent="#313A44" async></script>
 
   <h1>Wrong metric (should show nothing; check the console for why)</h1>
-  <div data-oareport-org="gates-foundation" data-oareport-type="tile" data-oareport-metric="does-not-exist"></div>
+  <script src="/embed.js" data-oareport-org="gates-foundation" data-oareport-type="tile" data-oareport-metric="does-not-exist" async></script>
 
+  <h1>Tile, long form (placeholder div plus a separate script tag)</h1>
+  <div data-oareport-org="gates-foundation" data-oareport-type="tile" data-oareport-metric="is_unique_publication_2025"></div>
   <script src="/embed.js"></script>
 </body>
 </html>

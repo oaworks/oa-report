@@ -1,20 +1,19 @@
-// Embed loader (GH#4005). The real snippet is one placeholder div plus this
-// script:
-//   <div data-oareport-org="ORG" data-oareport-type="TYPE"
-//        data-oareport-metric="METRIC" data-oareport-link="report"></div>
+// Embed loader (GH#4005). The real snippet is one script tag:
+//   <script src=".../embed.js" data-oareport-org="ORG" data-oareport-type="TYPE"
+//           data-oareport-metric="METRIC" data-oareport-link="report" async></script>
+// A longer form also works — a placeholder div plus a separate script tag —
+// for whoever prefers it:
+//   <div data-oareport-org="ORG" data-oareport-type="TYPE" data-oareport-metric="METRIC"></div>
 //   <script src=".../embed.js"></script>
-// A plain div, not a custom tag, because an unrecognised tag is more likely to
-// be stripped by a CMS than a div. Settings (like data-oareport-link) live on
-// the snippet and are applied client-side, so they never need a new build.
-// On load, this script turns each div into an <oa-report-embed>, which
-// fetches that org/type/metric’s fragment and renders it. A failed fetch
-// renders nothing — site visitors see no card, never a broken one — and logs
-// why to the console, for whoever pasted the snippet to diagnose.
+// Either way, it reads the attributes and renders the card, fetched from that
+// org/type/metric’s fragment. A failed fetch renders nothing — site visitors
+// see no card, never a broken one — and logs why to the console, for whoever
+// pasted the snippet to diagnose.
 
 // Captured once, synchronously, while this is the running script — not safe to
-// read later. Every other URL here is resolved against it, so the embed works
-// from whichever host it’s served from.
-const SCRIPT_BASE = new URL('.', (document.currentScript && document.currentScript.src) || location.href);
+// read later. Also where its own data-* attributes live.
+const SCRIPT = document.currentScript;
+const SCRIPT_BASE = new URL('.', (SCRIPT && SCRIPT.src) || location.href);
 
 // Applies snippet settings to a rendered fragment. Each setting only touches
 // elements that opt in, so adding one here never affects embeds that don’t use it.
@@ -92,9 +91,18 @@ if (!customElements.get('oa-report-embed')) {
   customElements.define('oa-report-embed', OAReportEmbed);
 }
 
-// Upgrade every placeholder div on the page into an <oa-report-embed>,
-// carrying over its org/type/metric and settings as-is.
-document.querySelectorAll('[data-oareport-org][data-oareport-type][data-oareport-metric]').forEach((div) => {
+// Short form: replace this script tag with the embed, if it carries the
+// data-* attributes itself. Each script only ever touches itself, so this is
+// safe with async, regardless of load order relative to other embeds.
+if (SCRIPT && SCRIPT.dataset.oareportOrg) {
+  const embed = document.createElement('oa-report-embed');
+  Object.assign(embed.dataset, SCRIPT.dataset);
+  SCRIPT.replaceWith(embed);
+}
+
+// Long form: upgrade every placeholder div already on the page, carrying
+// over its own data-* attributes as-is.
+document.querySelectorAll('div[data-oareport-org][data-oareport-type][data-oareport-metric]').forEach((div) => {
   const embed = document.createElement('oa-report-embed');
   Object.assign(embed.dataset, div.dataset);
   div.replaceWith(embed);
