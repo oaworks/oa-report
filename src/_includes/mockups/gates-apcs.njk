@@ -1,5 +1,8 @@
 {# Gates mockup: APC-funded vs preprints Trend inside policy item 5 (no APCs) #}
 <div class="mockup-slot my-8 grid grid-cols-1 items-start gap-6 rounded-sm bg-neutral-100 p-6 font-sans md:grid-cols-2 md:gap-10 md:p-10">
-  <script src="/embed.js" data-oareport-org="gates-foundation" data-oareport-type="trend" data-oareport-metric="free_vs_paid" async></script>
+  <div data-oareport-org="gates-foundation" data-oareport-type="trend" data-oareport-metric="free_vs_paid"></div>
   <p>{{ embed_stories.trend.free_vs_paid }}</p>
 </div>
+
+{#- Long form for these three cards; only the Tile below needs the cross-origin 127.0.0.1 stand-in, to test that specifically. #}
+<script src="/embed.js"></script>
