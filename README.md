@@ -15,6 +15,7 @@ Prerequisites:
    - Set `ELEVENTY_API_HOST_WORKS` to either `"api"` (live API endpoint) or `"beta"` (dev)
    - Set `ELEVENTY_BASE_URL` to your localhost
    - Set `ELEVENTY_NUMBER_REPORTS` to the number of reports you’d like to generate 
+   - Optional: set `ELEVENTY_API_BASE_URL` to use a local API instead of the hosted ones, e.g. `"http://localhost:4080"` (no trailing slash). Leave it unset otherwise
    - Don’t forget to restart your local server whenever you make a change to this file
 6. You can now run the server by entering `npm run start`
 7. Direct your web browser to `http://localhost:8080/`

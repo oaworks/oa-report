@@ -8,14 +8,14 @@
 // =================================================
 
 import DOMPurify from "dompurify";
-import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader, updateInfoPopoverButton, getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, escapeQueryValue, normaliseFieldId, makeNumberReadable, makeTabCountReadable, announce, orcidDisplayNames, resolveLicenseDisplay } from "./utils.js";
-import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, SEGMENTED_PILL_CLASSES, VIEW_TAB_CLASSES, CONTROL_FIELD_SHELL_CLASSES, CONTROL_FOCUS_RING_CLASSES, CONTROL_SELECT_CLASSES, SORT_TRIGGER_CLASSES, SORT_CARET_CHIP_CLASSES, SORT_CARET_CHIP_ACTIVE_CLASSES, TAB_COUNT_BADGE_CLASSES, EXPLORE_SUMMARY_ROW_CLASSES, INFO_TRIGGER_ICON_CLASSES, INFO_TRIGGER_ICON_HTML, resolveFieldDefinition } from "./constants.js";
+import { displayNone, makeDateReadable, fetchJson, fetchPostData, fetchText, debounce, reorderTermRecords, reorderArticleRecords, prettifyRecords, formatObjectValuesAsList, pluraliseNoun, startYear, endYear, dateRange, replaceText, decodeAndReplaceUrlEncodedChars, convertTextToLinks, removeDisplayStyle, showNoResultsRow, parseCommaSeparatedQueries, copyToClipboard, getAllURLParams, updateURLParams, displayErrorHeader, removeURLParams, removeArrayDuplicates, updateExploreFilterHeader, updateInfoPopoverButton, getDecodedUrlQuery, andQueryStrings, buildEncodedQueryWithUrlFilter, escapeQueryValue, normaliseFieldId, makeNumberReadable, makeTabCountReadable, announce, orcidDisplayNames, resolveLicenseDisplay } from "./utils.js";
+import { API_HOST_WORKS, WORKS_REPORT_API_BASE_URL, CSV_EXPORT_BASE, EXPLORE_ITEMS_LABELS, EXPLORE_FILTERS_LABELS, EXPLORE_HEADER_ARTICLES_LABELS, DATA_TABLE_HEADER_CLASSES, DATA_TABLE_BODY_CLASSES, DATA_TABLE_FOOT_CLASSES, COUNTRY_CODES, LANGUAGE_CODES, LICENSE_CODES, DATE_SELECTION_BUTTON_CLASSES, SEGMENTED_PILL_CLASSES, VIEW_TAB_CLASSES, CONTROL_FIELD_SHELL_CLASSES, CONTROL_FOCUS_RING_CLASSES, CONTROL_SELECT_CLASSES, SORT_TRIGGER_CLASSES, SORT_CARET_CHIP_CLASSES, SORT_CARET_CHIP_ACTIVE_CLASSES, SORT_CARET_CHIP_DISABLED_CLASSES, TAB_COUNT_BADGE_CLASSES, EXPLORE_SUMMARY_ROW_CLASSES, INFO_TRIGGER_ICON_CLASSES, INFO_TRIGGER_ICON_HTML, resolveFieldDefinition } from "./constants.js";
 import { iconForFilterId } from "./constants/filter-fields.js";
 import { startLoading, stopLoading } from "./components.js";
 import { awaitDateRange } from './report-date-manager.js';
 import { renderActiveFiltersBanner } from './report-filter-manager.js';
 import { orgDataPromise, initInsightsAndActions } from './insights-and-actions.js';
-import { AUTHOR_BREAKDOWN_TERM, getAggregatedDataQuery, formatAggregationBucket, getFieldFilterValues, toTermField, getPercentageMetricAggKeys } from './aggregated-data-query.js';
+import { AUTHOR_BREAKDOWN_TERM, getAggregatedDataQuery, getPercentageSortQuery, formatAggregationBucket, getFieldFilterValues, toTermField, getPercentageMetricAggKeys } from './aggregated-data-query.js';
 import { initAuth, onAuthChange, applyAuthVisibility } from './auth.js';
 import { createTooltip, createPopover } from './tooltip-manager.js';
 import { buildFieldDefinitionTooltipContent, injectOrgFields } from './tooltip-content.js';
@@ -33,11 +33,14 @@ const RECORDS_SHOWN_TIERS = [10, 20, 50, 100, 500];
 const RECORDS_SHOWN_DEFAULT = 10;
 const RECORDS_SHOWN_NO_SELECT_MAX = 20;
 const RECORDS_SHOWN_ALL_THRESHOLD = 1000;
-// Largest true total a terms breakdown can have and still be fetched and
-// sorted in full for a percentage-column sort. Independent of
+// Largest true total a terms breakdown can have and still be ranked in full
+// for a percentage-column sort. Independent of
 // RECORDS_SHOWN_ALL_THRESHOLD (the "All" records-shown option still caps at
 // that lower value even when sorting is available further out).
-const SORTABLE_TERMS_THRESHOLD = 2000;
+const SORTABLE_TERMS_THRESHOLD = 40000;
+// Most buckets ES will rank in one request. Above the threshold, so a total
+// that ES underestimates still gets ranked in full.
+const RANKED_TERMS_LIMIT = 65535;
 const exploreFilterTotalCache = new Map();
 const EXPLORE_SELECTED_ROW_CLASSES = ['!bg-neutral-800', 'text-neutral-100'];
 
@@ -108,6 +111,14 @@ export let currentActiveDataDisplayToggle = true;
  */
 let currentActiveExploreSortField = null;
 let currentActiveExploreSortDirection = null;
+
+/**
+ * The sort that was active before the current one, used to order rows that
+ * tie on the current sort. Null until a different column is sorted.
+ *
+ * @type {{ field: string, direction: "asc"|"desc" }|null}
+ */
+let previousActiveExploreSort = null;
 
 /**
  * Map of explore button id -> its data object, used to render without synthesising a click.
@@ -793,7 +804,24 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
       return;
     }
 
-    const { records, total: totalRecords } = await loadExploreRecords(itemData, query, size, pretty);
+    let { records, total: totalRecords, rankingFailed } = await loadExploreRecords(itemData, query, size, pretty);
+
+    // Percent mode can't sort a percentage column on a breakdown over the limit
+    // (e.g. one sorted in Count mode first), so fall back to the default sort.
+    // The same goes for a percentage sort whose ranking request failed.
+    const isOverSortLimit = type === "terms" && pretty && currentActiveExploreSortField.endsWith("_sort") && totalRecords > SORTABLE_TERMS_THRESHOLD;
+    if (isOverSortLimit || rankingFailed) {
+      getActiveExploreSortState(itemData, { reset: true });
+      ({ records, total: totalRecords } = await loadExploreRecords(itemData, query, size, pretty));
+
+      if (rankingFailed) {
+        const message = "We couldn’t sort this table by percentage. Please try again, or switch to the Count view to sort it.";
+        displayErrorHeader(message);
+        announce(message);
+      } else {
+        announce("Sort reset to default. This table is too large to sort by percentage.");
+      }
+    }
 
     setExploreModeUI(type);
 
@@ -837,7 +865,8 @@ async function fetchAndDisplayExploreData(itemData, filter = "is_paper", size = 
 
     if (records.length > 0) {
       // Populate table with data
-      const isSortableSet = type === 'terms' && totalCount <= SORTABLE_TERMS_THRESHOLD;
+      // Count mode sorts these columns in ES, so the size limit only applies in Percent mode.
+      const isSortableSet = type === 'terms' && (!pretty || totalCount <= SORTABLE_TERMS_THRESHOLD);
       populateTableHeader(records[0], 'export_table_head', type, isSortableSet);
       populateTableBody(records, 'export_table_body', id, type);
     
@@ -902,7 +931,7 @@ async function loadExploreRecords(itemData, query, size, pretty) {
     const includeValuesOverride = itemData?.id === "author"
       ? await resolveAuthorNameToOrcids(suffix, decodedQuery, activeFilterQuery)
       : [];
-    const { records: termRecords, total } = await fetchTermBasedData(
+    const { records: termRecords, total, rankingFailed } = await fetchTermBasedData(
       suffix,
       decodedQuery,
       term,
@@ -911,12 +940,14 @@ async function loadExploreRecords(itemData, query, size, pretty) {
       activeFilterQuery,
       includeValuesOverride.length ? includeValuesOverride : undefined,
       sortDirection,
-      pretty
+      pretty,
+      previousActiveExploreSort
     );
 
     return {
       records: prettifyRecords(reorderTermRecords(termRecords, includes), pretty),
-      total
+      total,
+      rankingFailed
     };
   }
 
@@ -944,28 +975,46 @@ async function loadExploreRecords(itemData, query, size, pretty) {
  * @param {string} query - The query string for fetching data.
  * @param {string} term - The term (i.e. type of data breakdown) associated with the explore item.
  * @param {string} sort - The sorting field.
- * @param {number} size - The number of records to display; a percentage sort may fetch more
- * than this internally (up to SORTABLE_TERMS_THRESHOLD) to sort the full set correctly.
+ * @param {number} size - The number of records to display.
  * @param {string} [activeFilterQuery=query] - Just the user's active filter, excluding any base
  * org query, so exact-match restriction never picks up unrelated baseline query clauses.
  * @param {string[]} [includeValuesOverride] - Exact values to restrict buckets to, bypassing
  * the automatic field-match detection (e.g. author ORCIDs resolved from a name filter).
  * @param {string} [sortDirection="desc"] - Sort direction for the selected field.
+ * @param {{ field: string, direction: string }} [tieBreak] - Previous sort, used to order rows that tie on the selected field.
  * @returns {Promise<Object>} A promise that resolves to term-based records and total count.
  */
-export async function fetchTermBasedData(suffix, query, term, sort, size, activeFilterQuery = query, includeValuesOverride, sortDirection = "desc", isPercentMode = true) {
-  // Percentage sorts fetch ordered by count, then get re-sorted by their
-  // actual percentage client-side below — ES can't order by a sibling
-  // pipeline aggregation.
+export async function fetchTermBasedData(suffix, query, term, sort, size, activeFilterQuery = query, includeValuesOverride, sortDirection = "desc", isPercentMode = true, tieBreak) {
+  // ES can't order a terms agg by a percentage, so Percent mode ranks the rows
+  // in a ranking query first, then fetches only the ranked rows in full.
+  // Count mode has ES order by the column's own count instead.
   const percentageKey = sort.endsWith('_sort') ? sort.slice(0, -"_sort".length) : null;
-  const backendSort = percentageKey ? '_count' : sort;
-  const backendSortDirection = percentageKey ? 'desc' : sortDirection;
+  const ranksByPercentage = percentageKey && isPercentMode;
+  const backendSort = ranksByPercentage ? '_count' : (percentageKey ?? sort);
+  const backendSortDirection = ranksByPercentage ? 'desc' : sortDirection;
 
-  const fetchBuckets = (fetchSize) => fetchPostData(
-    getAggregatedDataQuery(suffix, query, term, startYear, endYear, fetchSize, backendSort, activeFilterQuery, includeValuesOverride, backendSortDirection)
+  // Outside the ranking query, a percentage column can only break ties in Count
+  // mode, where ES can order by its count.
+  const tieBreakPercentageKey = tieBreak?.field.endsWith('_sort') ? tieBreak.field.slice(0, -"_sort".length) : null;
+  const resolvedTieBreak = tieBreak && { field: tieBreakPercentageKey ?? tieBreak.field, direction: tieBreak.direction };
+  const backendTieBreak = ranksByPercentage || (tieBreakPercentageKey && isPercentMode) ? undefined : resolvedTieBreak;
+
+  const buildQuery = (fetchSize, includeValues = includeValuesOverride) => getAggregatedDataQuery(
+    suffix, query, term, startYear, endYear, fetchSize, backendSort, activeFilterQuery, includeValues, backendSortDirection, backendTieBreak
   );
 
-  let response = await fetchBuckets(size);
+  let rankedKeys = [];
+  if (ranksByPercentage) {
+    const ranked = await fetchPostData(
+      getPercentageSortQuery(buildQuery(RANKED_TERMS_LIMIT), percentageKey, size, sortDirection, resolvedTieBreak)
+    );
+    // Without a ranking the rows can't be shown as sorted, so the caller falls
+    // back to the default sort.
+    if (!ranked?.aggregations?.values) return { records: [], total: 0, rankingFailed: true };
+    rankedKeys = ranked.aggregations.values.buckets.map(bucket => String(bucket.key));
+  }
+
+  const response = await fetchPostData(buildQuery(size, rankedKeys.length ? rankedKeys : includeValuesOverride));
 
   let buckets = [];
   // Once restricted to exact filter value(s), "of Y" should mean "how many you
@@ -974,15 +1023,14 @@ export async function fetchTermBasedData(suffix, query, term, sort, size, active
   const includeValues = includeValuesOverride ?? getFieldFilterValues(activeFilterQuery, toTermField(term));
   const totalUniqueTerms = includeValues.length || (response?.aggregations?.values_total?.value ?? 0);
 
-  // A percentage sort only re-sorts whatever was fetched; if the display size
-  // didn't already cover the true total, re-fetch up to it (capped at
-  // SORTABLE_TERMS_THRESHOLD) so the full set can be sorted correctly.
-  if (percentageKey && totalUniqueTerms > size && totalUniqueTerms <= SORTABLE_TERMS_THRESHOLD) {
-    response = await fetchBuckets(totalUniqueTerms);
-  }
-
   if (response && response.aggregations && response.aggregations.values && response.aggregations.values.buckets) {
     buckets = response.aggregations.values.buckets.map(bucket => formatAggregationBucket(bucket, term));
+  }
+
+  // The full query returns the ranked rows in count order; restore the ranking.
+  if (rankedKeys.length) {
+    const rank = new Map(rankedKeys.map((key, index) => [key, index]));
+    buckets.sort((a, b) => rank.get(String(a.key)) - rank.get(String(b.key)));
   }
 
   // Process 'all_values' and 'no_values' similarly using the helper function
@@ -995,19 +1043,6 @@ export async function fetchTermBasedData(suffix, query, term, sort, size, active
 
   // Filter out buckets with doc_count of 0
   buckets = buckets.filter(bucket => bucket.doc_count > 0);
-  if (percentageKey) {
-    // Match whichever value the table is currently showing (percent or raw count).
-    const multiplier = sortDirection === "asc" ? 1 : -1;
-    const valueOf = isPercentMode
-      ? (bucket) => bucket.doc_count > 0 ? (bucket[percentageKey] || 0) / bucket.doc_count : 0
-      : (bucket) => bucket[percentageKey] || 0;
-    buckets.sort((a, b) => (valueOf(a) - valueOf(b)) * multiplier);
-  } else if (sort === '_count') {
-    // Keep count-based ordering stable even when the API response comes back
-    // unordered or partially ordered.
-    const multiplier = sortDirection === "asc" ? 1 : -1;
-    buckets.sort((a, b) => (a.doc_count - b.doc_count) * multiplier);
-  }
 
   return { records: buckets, total: totalUniqueTerms };
 }
@@ -1131,7 +1166,7 @@ function resolveExploreHeaderColumns(records, dataType) {
  * @param {Object[]} records - An array of data objects used to derive the header columns. Assumes all objects have the same structure.
  * @param {string} tableHeaderId - The ID of the table header element where the headers should be appended.
  * @param {string} [dataType] - 'terms' or 'articles'; determines label lookup and sortability rules.
- * @param {boolean} [isSortableSet] - Whether this breakdown's true total is within SORTABLE_TERMS_THRESHOLD; gates percentage-column sorting.
+ * @param {boolean} [isSortableSet] - Whether percentage columns can be sorted: always in Count mode, or within SORTABLE_TERMS_THRESHOLD in Percent mode.
  */
 function populateTableHeader(records, tableHeaderId, dataType = 'terms', isSortableSet = false) {
   const tableHeader = document.getElementById(tableHeaderId);
@@ -1157,7 +1192,7 @@ function populateTableHeader(records, tableHeaderId, dataType = 'terms', isSorta
   tableHeader.appendChild(headerRow);
 }
 
-/** Percentage-metric terms columns (e.g. "compliant") — sorted client-side, see fetchTermBasedData(). */
+/** Percentage-metric terms columns (e.g. "compliant") — sorted by a ranking query in Percent mode, see fetchTermBasedData(). */
 const TERMS_SORTABLE_PERCENTAGE_FIELDS = new Set(getPercentageMetricAggKeys());
 
 /** Maps a terms display field to its ES order field (doc_count to _count); others pass through. */
@@ -1209,6 +1244,7 @@ function getActiveExploreSortState(itemData = currentActiveExploreItemData, opti
     const { field, direction } = resolveExploreSortState(itemData);
     currentActiveExploreSortField = field;
     currentActiveExploreSortDirection = direction;
+    previousActiveExploreSort = null;
   }
 
   return {
@@ -1300,6 +1336,11 @@ async function handleExploreSortToggle(sortKey, labelText) {
   // _count for terms tables), matching resolveExploreSortState().
   const queryField = currentActiveExploreItemData.type === 'terms' ? toEsSortField(sortKey) : sortKey;
 
+  // Moving to a different column keeps the outgoing sort as the tie-break.
+  if (queryField !== currentActiveExploreSortField) {
+    previousActiveExploreSort = { field: currentActiveExploreSortField, direction: currentActiveExploreSortDirection };
+  }
+
   currentActiveExploreSortDirection = queryField === currentActiveExploreSortField
     ? (currentActiveExploreSortDirection === "asc" ? "desc" : "asc")
     : "asc";
@@ -1313,8 +1354,11 @@ async function handleExploreSortToggle(sortKey, labelText) {
       currentActiveExploreItemQuery,
       currentActiveExploreItemSize
     );
-    const directionText = currentActiveExploreSortDirection === "asc" ? "ascending" : "descending";
-    announce(`Sorted by ${labelText}, ${directionText}.`);
+    // Skipped when the sort fell back to the default (e.g. its ranking failed).
+    if (currentActiveExploreSortField === queryField) {
+      const directionText = currentActiveExploreSortDirection === "asc" ? "ascending" : "descending";
+      announce(`Sorted by ${labelText}, ${directionText}.`);
+    }
   } catch (error) {
     console.error("Error updating Explore sort:", error);
   } finally {
@@ -1394,7 +1438,7 @@ function generateTooltipContent(labelData, helpTextByKey = null) {
  * @param {string} dataType - Indicates the type of data ('terms' or 'articles'), which determines the labels configuration to use.
  * @param {string|null} [labelOverride] - Plain-text label (e.g. for aria) to use instead of rawKey's own; sort key and tooltip info still come from rawKey.
  * @param {string|null} [labelHTML] - Rich HTML to show visually instead of labelOverride/rawKey's own label (e.g. stacked lines matching a body cell).
- * @param {boolean} [isSortableSet] - Whether this breakdown's true total is within SORTABLE_TERMS_THRESHOLD; gates percentage-column sorting.
+ * @param {boolean} [isSortableSet] - Whether percentage columns can be sorted: always in Count mode, or within SORTABLE_TERMS_THRESHOLD in Percent mode.
  */
 function setupHeaderTooltip(element, rawKey, dataType, labelOverride = null, labelHTML = null, isSortableSet = false) {
   const key = normaliseFieldId(rawKey);
@@ -1409,8 +1453,8 @@ function setupHeaderTooltip(element, rawKey, dataType, labelOverride = null, lab
   const sortIndicator = getExploreSortIndicator(dataType);
   const isSortedColumn = sortIndicator?.key === key;
   // doc_count/total_/mean_ search the whole dataset regardless of records
-  // shown; percentage metrics can only be fully fetched and sorted when the
-  // breakdown's true total is within SORTABLE_TERMS_THRESHOLD.
+  // shown; percentage metrics do too in Count mode, but in Percent mode only
+  // when the breakdown's true total is within SORTABLE_TERMS_THRESHOLD.
   const isTermsSortable = key === 'doc_count' || key.startsWith('total_') || key.startsWith('mean_') || (isSortableSet && TERMS_SORTABLE_PERCENTAGE_FIELDS.has(key));
   // Percentage columns rely solely on isTermsSortable (gated by isSortableSet);
   // excluded from the isSortedColumn bypass so a stale active sort can't show
@@ -1497,6 +1541,24 @@ function setupHeaderTooltip(element, rawKey, dataType, labelOverride = null, lab
     element.appendChild(sortToggle);
     if (isSortedColumn) element.setAttribute("aria-sort", sortIndicator.direction);
     else element.removeAttribute("aria-sort");
+  } else if (isPercentageColumn && !isSortableSet) {
+    // Too large to sort by percentage: a muted caret explains why instead.
+    const sortNoteAriaLabel = `Why ${labelText} can’t be sorted`;
+    const sortNote = document.createElement("button");
+    sortNote.type = "button";
+    sortNote.className = `absolute bottom-1 right-1 inline-flex items-center ${SORT_TRIGGER_CLASSES}`;
+    sortNote.setAttribute("aria-label", sortNoteAriaLabel);
+    sortNote.innerHTML = `<i class="ph ph-caret-up-down ${SORT_CARET_CHIP_DISABLED_CLASSES}" aria-hidden="true"></i>`;
+    element.appendChild(sortNote);
+
+    const sortNotePopover = createPopover(sortNote, generateTooltipContent({
+      info: "This table is too large to sort by percentage. Switch to the Count view to sort these columns."
+    }), {
+      placement: 'bottom',
+      theme: 'tooltip-light'
+    });
+    sortNotePopover.popper.querySelector(".tooltip-box")?.setAttribute("aria-label", sortNoteAriaLabel);
+    element.removeAttribute("aria-sort");
   } else {
     element.removeAttribute("aria-sort");
   }

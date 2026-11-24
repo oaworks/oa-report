@@ -1,0 +1,22 @@
+[
+  {
+    "org": "gates-foundation",
+    "type": "tile",
+    "metric": "is_unique_publication_2025"
+  },
+  {
+    "org": "gates-foundation",
+    "type": "comparison",
+    "metric": "preprint_growth"
+  },
+  {
+    "org": "gates-foundation",
+    "type": "headline",
+    "metric": "compliance"
+  },
+  {
+    "org": "gates-foundation",
+    "type": "trend",
+    "metric": "preprint_share_percent"
+  }
+]

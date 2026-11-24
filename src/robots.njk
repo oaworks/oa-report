@@ -7,5 +7,8 @@ eleventyExcludeFromCollections: true
 # Disallow crawling of everything (report pages) except for landing/homepage 
 User-agent: *
 Allow: /$
+# Embeds must never be crawled, even if the rule below is ever loosened
+Disallow: /embed/
+Disallow: /embed.js
 Disallow: /
 Sitemap: {{ site.base_url }}/sitemap.xml

@@ -1,0 +1,202 @@
+{# Trend embed: one or more lines year by year, with an optional policy marker
+{{ component("embed/trend", {
+  id: "preprint_share",
+  trend: embed_figures.trends.preprint_share,
+  org: embed_figures.org,
+  asOf: embed_figures.source.retrieved,
+  headingLevel: 2
+}) }}
+asOf is the default data date; a "retrieved" date on the trend itself overrides it.
+#}
+{%- from "system/component.njk" import component -%}
+
+{% set trend = params.trend %}
+{% set accent = params.accent or params.org.accent %}
+{% set titleId = "embed_title_" ~ params.id %}
+{% set periodLabel = trend.period | dateRange %}
+{% set comparedWith = (trend.period | comparedWith(trend.comparison_period)) if trend.comparison_period else trend.compared_with %}
+{% set styles = {
+  accent: { stroke: "stroke-(--embed-accent)", fill: "fill-(--embed-accent)" },
+  muted:  { stroke: "stroke-neutral-500", fill: "fill-neutral-500" },
+  expected: { stroke: "stroke-neutral-400", dash: "2 3", noDots: true }
+} %}
+
+{# Chart geometry in viewBox units; the y-axis starts at 0 so changes aren’t exaggerated #}
+{% set multi = trend.lines.length > 1 %}
+{% set W = 352 %}{% set H = 96 %}{% set padL = 6 %}{% set padR = 72 if multi else 6 %}{% set padTop = 20 %}{% set padBottom = 6 %}
+{% set top = 0 %}
+{% set lines = [] %}
+{% set ends = [] %}
+{% set allPts = [] %}
+{% for line in trend.lines %}
+  {% set vals = [] %}
+  {% for p in line.points %}
+    {# Projected lines give a ready-made `value`; others are worked out from counts #}
+    {% if p %}
+      {% set v = p.value if p.value is defined else (((p.numerator / p.denominator) * 100) if trend.format == "percent" else p.numerator) %}
+      {% if v > top %}{% set top = v %}{% endif %}
+    {% else %}
+      {% set v = null %}
+    {% endif %}
+    {% set vals = (vals.push(v), vals) %}
+  {% endfor %}
+  {% set lines = (lines.push({ line: line, vals: vals }), lines) %}
+{% endfor %}
+{% set magnitude = 10 if trend.format == "percent" else 500 %}
+{% set yMax = (top / magnitude) | round(0, "ceil") * magnitude %}
+{% set step = (W - padL - padR) / (trend.categories.length - 1) %}
+
+<article
+  aria-labelledby="{{ titleId }}"
+  class="embed-root flex w-full max-w-sm flex-col rounded-sm border border-t-4 border-neutral-200 border-t-(--embed-accent) bg-white p-4 font-sans text-base leading-normal tracking-normal text-neutral-900"
+  {% if accent %}style="--embed-accent: {{ accent }};"{% endif %}>
+  {{ component("embed/header", { id: titleId, org: params.org.name, period: periodLabel, note: comparedWith if trend.comparison_period, level: params.headingLevel }) }}
+
+  {% if trend.hero %}
+    <dl class="mt-5">
+      {{ component("embed/change-figure", { figure: trend.hero, comparedWith: comparedWith, id: params.id ~ "_hero" }) }}
+    </dl>
+  {% endif %}
+  {% if trend.figures %}
+    <dl class="mt-5 grid grid-cols-2 gap-6">
+      {% for f in trend.figures %}
+        {{ component("embed/change-figure", { figure: f, comparedWith: comparedWith, id: params.id ~ "_" ~ loop.index0 }) }}
+      {% endfor %}
+    </dl>
+  {% endif %}
+  {% if trend.rows %}
+    <dl class="mt-5 space-y-2">
+      {% for f in trend.rows %}
+        {{ component("embed/change-figure", { figure: f, comparedWith: comparedWith, compact: true, id: params.id ~ "_row_" ~ loop.index0 }) }}
+      {% endfor %}
+    </dl>
+  {% endif %}
+
+  {# Chart parts are decorative (the visually hidden table carries the data); only the info buttons are exposed #}
+  <div class="mt-4 rounded-xs bg-neutral-50 px-2 pb-1.5 pt-2">
+    {% if trend.note %}<p class="mb-3 text-xs text-neutral-700" aria-hidden="true">{{ trend.note }}</p>{% endif %}
+    <div class="relative">
+      {% for c in trend.categories %}
+        {% if c == trend.policy_start %}
+          <span class="absolute top-0 -translate-x-1/2 text-xs text-neutral-700" aria-hidden="true" style="left: {{ ((padL + loop.index0 * step) / W * 100) | round(2) }}%;">{{ trend.policy_label or "Policy change" }}</span>
+        {% endif %}
+      {% endfor %}
+      <svg viewBox="0 0 {{ W }} {{ H }}" class="block h-auto w-full" aria-hidden="true" focusable="false">
+        {% for c in trend.categories %}
+          {% if c == trend.policy_start %}
+            {% set px = (padL + loop.index0 * step) | round(1) %}
+            <line x1="{{ px }}" y1="{{ padTop - 2 }}" x2="{{ px }}" y2="{{ H - padBottom }}" class="stroke-neutral-300" stroke-width="1" stroke-dasharray="3 3"/>
+          {% endif %}
+        {% endfor %}
+        {% for l in lines %}
+          {% set s = styles[l.line.style] or styles.accent %}
+          {% set pts = [] %}
+          {# Gaps (null points) are skipped, e.g. a projection that only starts in 2024 #}
+          {% for v in l.vals %}{% if v !== null %}
+            {% set pts = (pts.push({ x: (padL + loop.index0 * step) | round(1), y: (padTop + (1 - v / yMax) * (H - padTop - padBottom)) | round(1), partial: l.line.points[loop.index0].partial }), pts) %}
+          {% endif %}{% endfor %}
+          {% set solid = [] %}
+          {% for pt in pts %}{% if not pt.partial %}{% set solid = (solid.push(pt.x ~ "," ~ pt.y), solid) %}{% endif %}{% endfor %}
+          <polyline points="{{ solid | join(' ') }}" fill="none" class="{{ s.stroke }}" stroke-width="{{ 1.5 if s.dash else 2 }}" {% if s.dash %}stroke-dasharray="{{ s.dash }}"{% endif %} stroke-linejoin="round" stroke-linecap="round"/>
+          {% for pt in pts %}
+            {% if pt.partial %}
+              {% set prevPt = pts[loop.index0 - 1] %}
+              <line x1="{{ prevPt.x }}" y1="{{ prevPt.y }}" x2="{{ pt.x }}" y2="{{ pt.y }}" class="{{ s.stroke }}" stroke-width="2" stroke-dasharray="4 3" stroke-linecap="round"/>
+              <circle cx="{{ pt.x }}" cy="{{ pt.y }}" r="3" class="fill-white {{ s.stroke }}" stroke-width="2"/>
+            {% elif not s.noDots %}
+              <circle cx="{{ pt.x }}" cy="{{ pt.y }}" r="3" class="{{ s.fill }}"/>
+            {% endif %}
+          {% endfor %}
+          {% set lastPt = pts[pts.length - 1] %}
+          {# A partial last point (e.g. 2026 so far) shows its value under the line’s name; the axis already says “so far” #}
+          {% set lastVal = l.vals[l.vals.length - 1] %}
+          {% set soFar = (((lastVal | round) ~ "%") if trend.format == "percent" else (lastVal | number)) if lastPt.partial %}
+          {% set ends = (ends.push({ label: l.line.end_label or l.line.label, x: lastPt.x, y: lastPt.y, i: l.vals.length - 1, li: loop.index0, info: l.line.info, name: l.line.label, soFar: soFar }), ends) %}
+          {% set allPts = (allPts.push(pts), allPts) %}
+        {% endfor %}
+      </svg>
+      {# Lines are named at their ends, so colour is never the only way to tell them apart #}
+      {% if multi %}
+        {% set lastX = 0 %}
+        {% for e in ends %}{% if e.x > lastX %}{% set lastX = e.x %}{% endif %}{% endfor %}
+        {% for e in ends %}
+          {# A line that stops early is labelled on the side away from the longer line, so they don’t overlap #}
+          {% set otherLine = lines[1 - e.li] if lines.length == 2 %}
+          {% set otherY = (padTop + (1 - otherLine.vals[e.i] / yMax) * (H - padTop - padBottom)) if otherLine and otherLine.vals[e.i] !== null and otherLine.vals[e.i] is defined %}
+          {% if e.x >= lastX %}
+            {% set placement = "-translate-y-1/2 pl-1.5" %}
+          {% elif otherY and otherY < e.y %}
+            {% set placement = "pl-1.5 pt-0.5" %}
+          {% else %}
+            {% set placement = "-translate-x-1/2 -translate-y-full pb-1" %}
+          {% endif %}
+          {% if e.info %}
+            {# The line’s label opens its explanation: native popover, click, tap or keyboard; closes on Esc #}
+            {% set infoId = "embed_point_" ~ params.id ~ "_" ~ e.li %}
+            <button
+              type="button"
+              popovertarget="{{ infoId }}"
+              aria-label="{{ e.label }}: how it’s calculated"
+              class="absolute cursor-pointer whitespace-nowrap text-xs font-semibold text-neutral-800 underline decoration-neutral-500 decoration-dotted underline-offset-2 hover:decoration-solid focus-visible:outline-2 focus-visible:outline-(--embed-accent) {{ placement }}"
+              style="left: {{ (e.x / W * 100) | round(2) }}%; top: {{ (e.y / H * 100) | round(2) }}%; anchor-name: --{{ infoId }};">{{ e.label }}</button>
+            <span
+              id="{{ infoId }}"
+              popover
+              class="max-w-60 whitespace-normal rounded-xs border-0 bg-neutral-900 px-2 py-1.5 text-xs font-normal leading-snug text-white shadow-md supports-[position-area:bottom]:inset-auto supports-[position-area:bottom]:m-0 supports-[position-area:bottom]:mt-1 supports-[position-area:bottom]:[position-area:bottom_span-right] supports-[position-area:bottom]:[position-try-fallbacks:flip-block,flip-inline]"
+              style="position-anchor: --{{ infoId }};">
+              {{ e.info }}
+            </span>
+          {% else %}
+            <span class="absolute whitespace-nowrap text-xs font-semibold text-neutral-800 {{ placement }}" aria-hidden="true" style="left: {{ (e.x / W * 100) | round(2) }}%; top: {{ (e.y / H * 100) | round(2) }}%;">{{ e.label }}{% if e.soFar %}<span class="block font-normal text-neutral-700">{{ e.soFar }}</span>{% endif %}</span>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    </div>
+    {# Axis labels sit under their own points: first year, the policy change and the last year #}
+    {% set lastPt = trend.lines[0].points[trend.lines[0].points.length - 1] %}
+    <div class="relative mt-1 h-4 text-xs leading-tight text-neutral-700" aria-hidden="true">
+      {% for c in trend.categories %}
+        {% if loop.first or loop.last or c == trend.policy_start %}
+          {% set x = ((padL + loop.index0 * step) / W * 100) | round(2) %}
+          {# “2026 so far” starts just left of its point, so it stays on one line clear of the policy year #}
+          {% set align = "" if loop.first else ("-translate-x-full" if x > 90 else ("-translate-x-2" if loop.last and lastPt.partial else "-translate-x-1/2")) %}
+          <span class="absolute top-0 whitespace-nowrap {{ align }}" style="left: {{ x }}%;">{{ c }}{% if loop.last and lastPt.partial %} so far{% endif %}</span>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+
+  <table class="sr-only">
+    <caption>{{ trend.caption }}</caption>
+    <thead>
+      <tr>
+        <th scope="col">Year</th>
+        {% for l in trend.lines %}<th scope="col">{{ l.label }}</th>{% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in trend.categories %}
+        {% set i = loop.index0 %}
+        <tr>
+          {# `policy_table_label` words the marker for the table, where its place on the chart cannot be seen #}
+          <th scope="row">{{ c }}{% if c == trend.policy_start %} ({{ trend.policy_table_label or ((trend.policy_label or "Policy change") | lower) }}){% endif %}</th>
+          {% for l in lines %}
+            {% set p = l.line.points[i] %}
+            <td>
+              {% if p and l.vals[i] !== null %}
+                {{ (l.vals[i] | round ~ "%") if trend.format == "percent" else (l.vals[i] | number) }}{% if p.partial %} (so far){% endif %}
+              {% else %}
+                {{ l.line.missing_text or "Not available yet" }}
+              {% endif %}
+            </td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {# Spacer keeps the footer at the bottom when cards share a row height #}
+  <div class="grow" aria-hidden="true"></div>
+  {# A trend whose figures were fetched later than the rest carries its own date #}
+  {{ component("embed/attribution", { url: params.attributionUrl or params.org.report_url, altUrl: params.attributionAltUrl, asOf: trend.retrieved or params.asOf }) }}
+</article>

@@ -1,0 +1,75 @@
+{# Gates mockup (GH#4005): does the Tile survive Gates’ real Content Security Policy,
+   rendered in a shadow root instead of the embed-root/revert-layer hack above?
+   The card’s markup is rendered server-side as usual; what’s new is
+   <oa-report-embed>, which moves it into an isolated shadow root and loads the
+   embed’s own stylesheet and font there. Real embeds will fetch that content by
+   ID instead; here it’s inline so this check doesn’t depend on that yet. #}
+{%- from "system/component.njk" import component -%}
+<section aria-labelledby="mockup_web_component_tile" class="mockup-slot my-10 rounded-sm bg-neutral-100 p-6 font-sans md:p-10">
+  <h2 id="mockup_web_component_tile" class="wp-block-heading">Tile via web component</h2>
+  <p class="mb-8 max-w-prose">The Tile below is rendered inside &lt;oa-report-embed&gt;, in its own shadow root, styled only by the embed’s own stylesheet — not by the <code>revert-layer</code> rule above. Its loader script is loaded from a different origin (127.0.0.1, standing in for an oa.works subdomain) to test Gates’ Content Security Policy for real.</p>
+  <oa-report-embed data-css-url="/embed.css" data-font-css-url="/embed-font.css">
+    <template>
+      {{ component("embed/tile", { id: "mockup_unique_publications", figure: embed_figures.figures.is_unique_publication_2025, org: embed_figures.org, asOf: embed_figures.source.retrieved, headingLevel: 3 }) }}
+    </template>
+  </oa-report-embed>
+
+  {#- Visible, on-page results for the other three Content Security Policy checks,
+      so they don’t only show up as console warnings. #}
+  <div id="csp_checks" class="mt-6 max-w-prose rounded-xs border border-neutral-200 bg-white p-4 text-sm">
+    <p class="mb-2 font-semibold">Content Security Policy checks</p>
+    <ul class="space-y-1">
+      <li>Loader script (cross-origin, 127.0.0.1): <span data-check="script">checking…</span></li>
+      <li>Test iframe to our own origin (should be blocked): <span data-check="iframe">checking…</span></li>
+      <li>Fetch to api.oa.works (should be allowed): <span data-check="fetch-allowed">checking…</span></li>
+      <li>Fetch to an unlisted host (should be blocked): <span data-check="fetch-blocked">checking…</span></li>
+    </ul>
+  </div>
+  <iframe id="csp_test_iframe" src="http://127.0.0.1:8080/embed/gates-mockup/" width="1" height="1" style="position: absolute; opacity: 0; pointer-events: none;" aria-hidden="true" title="Content Security Policy test: this should be blocked"></iframe>
+</section>
+
+{#- Loaded from a different origin than this page (localhost vs 127.0.0.1) to
+    genuinely test the script-src cross-origin case, not just load it from ourselves. #}
+<script src="http://127.0.0.1:8080/embed.js"></script>
+<script>
+(function () {
+  var mark = function (key, ok, detail) {
+    var el = document.querySelector('[data-check="' + key + '"]');
+    if (!el) return;
+    el.textContent = (ok ? '✓ as expected' : '✗ unexpected') + (detail ? ' (' + detail + ')' : '');
+  };
+
+  // Script: did the cross-origin loader run and upgrade the element?
+  customElements.whenDefined('oa-report-embed').then(function () {
+    mark('script', true);
+  });
+  setTimeout(function () {
+    if (!customElements.get('oa-report-embed')) mark('script', false, 'blocked or failed to load');
+  }, 3000);
+
+  // A blocked fetch and a CORS-rejected fetch throw the same way, so the
+  // violation event — not the catch — is what actually proves CSP did it.
+  document.addEventListener('securitypolicyviolation', function (e) {
+    if (e.violatedDirective && e.violatedDirective.indexOf('frame-src') === 0) {
+      mark('iframe', true, e.violatedDirective);
+    }
+    if (e.violatedDirective && e.violatedDirective.indexOf('connect-src') === 0) {
+      mark('fetch-blocked', true, e.violatedDirective);
+    }
+  });
+  setTimeout(function () {
+    ['iframe', 'fetch-blocked'].forEach(function (key) {
+      var el = document.querySelector('[data-check="' + key + '"]');
+      if (el && el.textContent === 'checking…') mark(key, false, 'not blocked');
+    });
+  }, 3000);
+
+  // Fetch: one host the policy allows (confirmed by resolving), one it doesn’t
+  // (confirmed above, by the violation event, not by this catch).
+  fetch('https://api.oa.works/report/works/count?org=gates-foundation', { mode: 'cors' })
+    .then(function () { mark('fetch-allowed', true); })
+    .catch(function (e) { mark('fetch-allowed', false, e.message); });
+
+  fetch('https://example.com/').catch(function () {});
+})();
+</script>

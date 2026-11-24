@@ -74,6 +74,13 @@ export const INSIGHTS_CARDS = [
     info: resolveFieldDefinition("open_access", "insights", { subject: "journal articles" }).info
   },
   {
+    numerator: "is_preprint_oa",
+    denominator: "is_preprint",
+    denominatorText: "preprints",
+    definition_key: "open_access",
+    info: resolveFieldDefinition("open_access", "insights", { subject: "preprints" }).info
+  },
+  {
     numerator: "has_data_availability_statement",
     denominator: "has_checked_data_availability_statement",
     denominatorText: "reviewed journal articles",
@@ -170,6 +177,12 @@ export const INSIGHT_EXPLORE_MAPPINGS = {
   is_free_to_read_preprint: {
     exploreFilter: "is_preprint",
     numeratorMetric: "free_to_read",
+    denominatorMetric: "doc_count",
+    totalMetric: "doc_count"
+  },
+  is_preprint_oa: {
+    exploreFilter: "is_preprint",
+    numeratorMetric: "open_access",
     denominatorMetric: "doc_count",
     totalMetric: "doc_count"
   },

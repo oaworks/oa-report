@@ -1,0 +1,35 @@
+---
+eleventyExcludeFromCollections: true
+pagination:
+  data: embed_registry
+  size: 1
+  alias: entry
+permalink: "embed/f/{{ entry.org }}/{{ entry.type }}/{{ entry.metric }}/"
+---
+{#- One bare card per entry in embed_registry.json (GH#4005): org, type and
+    metric together pick a card type and a data key, so we control what that
+    combination shows without Gates changing anything on their page. The
+    loader fetches this fragment and drops it straight into the custom
+    element’s shadow root — no doctype, head, or body, just the card. -#}
+{%- from "system/component.njk" import component -%}
+{%- set org = embed_figures.org -%}
+{%- set asOf = embed_figures.source.retrieved -%}
+{#- A stable per-entry string for this card’s internal element IDs (popover
+    targets, headings) — not shown anywhere, just needs to be unique. -#}
+{%- set entryId = entry.org ~ "_" ~ entry.type ~ "_" ~ entry.metric -%}
+{#- Every card’s attribution link defaults to the OA.Report landing page and
+    carries the org’s own report as a swappable alternative; the snippet’s
+    placeholder div sets data-oareport-link="report" to ask the loader to
+    swap to it.
+    This is a setting on the snippet, not the registry, so it applies to any
+    entry without changing what’s built here. -#}
+{%- set attributionUrl = "https://oa.report" -%}
+{%- if entry.type == "tile" -%}
+{{ component("embed/tile", { id: entryId, figure: embed_figures.figures[entry.metric], org: org, asOf: asOf, attributionUrl: attributionUrl, attributionAltUrl: org.report_url, headingLevel: 2 }) }}
+{%- elif entry.type == "comparison" -%}
+{{ component("embed/comparison", { id: entryId, comparison: embed_figures.comparisons[entry.metric], org: org, asOf: asOf, attributionUrl: attributionUrl, attributionAltUrl: org.report_url, headingLevel: 2 }) }}
+{%- elif entry.type == "headline" -%}
+{{ component("embed/headline", { id: entryId, headline: embed_figures.headlines[entry.metric], org: org, asOf: asOf, attributionUrl: attributionUrl, attributionAltUrl: org.report_url, headingLevel: 2 }) }}
+{%- elif entry.type == "trend" -%}
+{{ component("embed/trend", { id: entryId, trend: embed_figures.trends[entry.metric], org: org, asOf: asOf, attributionUrl: attributionUrl, attributionAltUrl: org.report_url, headingLevel: 2 }) }}
+{%- endif -%}

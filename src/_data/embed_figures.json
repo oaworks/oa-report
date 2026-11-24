@@ -1,0 +1,1037 @@
+{
+  "source": {
+    "api": "https://api.oa.works/report/works/count",
+    "retrieved": "2026-11-03",
+    "note": "Hard-coded counts from the live API. Replace this file (same shape) to plug in live data.",
+    "aggregations": "https://bg.api.oa.works/report/works (POST, e.g. APC spend)"
+  },
+  "org": {
+    "id": "gates-foundation",
+    "name": "Gates Foundation",
+    "report_url": "https://oa.report/gates-foundation",
+    "accent": null
+  },
+  "figures": {
+    "is_unique_publication_2025": {
+      "metric": "is_unique_publication",
+      "period": "2025",
+      "format": "count",
+      "numerator": 4686,
+      "label": "Unique publications",
+      "definition": "Journal articles and preprints without an associated journal article, published by grantees or authors at the foundation.",
+      "retrieved": "2026-11-19"
+    },
+    "compliance_2025": {
+      "metric": "is_compliant_publication",
+      "denominator_metric": "is_covered_by_policy",
+      "period": "2025",
+      "format": "percent",
+      "numerator": 3761,
+      "denominator": 4802,
+      "label": "Policy compliance",
+      "detail": "publications covered by the policy",
+      "definition": "The percentage of publications covered by the foundation’s Open Access policy that are compliant with it."
+    },
+    "is_preprint_2025": {
+      "metric": "is_preprint",
+      "period": "2025",
+      "format": "count",
+      "numerator": 1999,
+      "label": "Preprints",
+      "definition": "Preprints published by grantees or authors at the foundation."
+    },
+    "preprints_lmic_2025": {
+      "metric": "is_preprint AND authorships.institutions.country_code:(LMIC list)",
+      "denominator_metric": "is_preprint AND authorships.institutions.country_code:*",
+      "period": "2025",
+      "format": "percent",
+      "numerator": 1143,
+      "denominator": 1824,
+      "label": "Preprints with authors in low- and middle-income countries",
+      "info": "1,143 of 1,824 preprints where author locations are known. Countries as classed by the World Bank for 2025–26.",
+      "source": "Counted from the live API on 4 Nov 2026: preprints with at least one author institution in a low, lower-middle or upper-middle income country (World Bank FY2026, 130 countries incl. China). 175 preprints with no country data are left out."
+    },
+    "has_data_availability_statement_2025": {
+      "metric": "has_data_availability_statement",
+      "denominator_metric": "has_checked_data_availability_statement",
+      "period": "2025",
+      "format": "percent",
+      "numerator": 2972,
+      "denominator": 3911,
+      "label": "Data availability statements",
+      "detail": "reviewed journal articles",
+      "definition": "The percentage of journal articles we’ve analysed that have a data availability statement."
+    },
+    "with_grant_id_2025": {
+      "metric": "is_unique_publication AND supplements.grantid__bmgf:*",
+      "denominator_metric": "is_unique_publication",
+      "period": "2025",
+      "format": "percent",
+      "numerator": 3313,
+      "denominator": 4801,
+      "label": "Publications linked to a grant",
+      "detail": "publications matched to a specific Gates grant",
+      "definition": "The percentage of unique publications with at least one Gates grant ID.",
+      "source": "Counted from the live API on 4 Nov 2026. Steady at 68–73% each year since 2020."
+    },
+    "top_cited_2025": {
+      "metric": "is_paper AND openalx.citation_normalized_percentile.is_in_top_10_percent:true",
+      "denominator_metric": "is_paper AND openalx.citation_normalized_percentile.value:*",
+      "period": "2025",
+      "format": "percent",
+      "numerator": 1623,
+      "denominator": 3902,
+      "label": "Articles in the top 10% most cited",
+      "info": "1,623 of 3,902 articles, ranked by citations against others in the same field and year (OpenAlex).",
+      "context": "Over four times the 10% you’d expect.",
+      "source": "Counted from the live API on 4 Nov 2026 using OpenAlex’s citation_normalized_percentile. cited_by_percentile_year was not used: it puts any article with one citation in the top 10%."
+    },
+    "research_acceleration_2025": {
+      "metric": "sum(journal published_date − preprint published_date) for 2025 journal articles with a preprint",
+      "period": "2025",
+      "format": "count",
+      "numerator": 516,
+      "label": "Years of research acceleration",
+      "info": "The total time 2025 journal articles were available early as preprints: for each article, the gap between its earliest preprint and its journal publication, added up. Only preprints posted before the article count. For example, a preprint posted on 1 Jan 2024 and published in a journal on 1 Jan 2025 adds one year.",
+      "source": "Calculated from the live API on 3 Nov 2026: 553 of 1,148 2025 journal articles with a linked preprint (supplements.is_preprint_of) had it posted first; gaps summed and divided by 365.25.",
+      "method": "Paged GETs of is_preprint AND supplements.is_preprint_of:* and of 2025 is_paper; matched by DOI at build time",
+      "status_note": "Superseded by head_start_* figures (1 Jan dates excluded)"
+    },
+    "head_start_median_2025": {
+      "metric": "median(journal published_date − earliest preprint published_date)",
+      "period": "2025",
+      "format": "measure",
+      "numerator": 7.6,
+      "unit": "months",
+      "label": "Median head start from preprinting",
+      "info": "Median time between a preprint and its journal article, for the 435 articles published in 2025 that were preprinted first. Submission to publication uses the 382 of these with a submission date.",
+      "source": "Calculated from the live API on 4 Nov 2026: 2025 journal articles matched to their earliest linked preprint (supplements.is_preprint_of); 435 were preprinted first. Preprints dated exactly 1 January (likely year-only dates) are left out.",
+      "context": "Longer than the 6.5 months from submission to journal publication."
+    },
+    "head_start_total_2025": {
+      "metric": "sum(journal published_date − earliest preprint published_date)",
+      "period": "2025",
+      "format": "measure",
+      "numerator": 365,
+      "unit": "years",
+      "label": "Combined head start from preprinting",
+      "info": "The head starts of the 435 articles published in 2025 that were preprinted first, added up.",
+      "source": "Calculated from the live API on 4 Nov 2026: 2025 journal articles matched to their earliest linked preprint (supplements.is_preprint_of); 435 were preprinted first. Preprints dated exactly 1 January (likely year-only dates) are left out."
+    }
+  },
+  "comparisons": {
+    "preprints_and_cc_by": {
+      "period": {
+        "start": "2026-01-01",
+        "end": "2026-11-03"
+      },
+      "comparison_period": {
+        "start": "2025-01-01",
+        "end": "2025-11-03"
+      },
+      "figures": [
+        {
+          "metric": "is_preprint",
+          "format": "count",
+          "label": "Preprints",
+          "current": {
+            "numerator": 1935
+          },
+          "previous": {
+            "numerator": 1691
+          }
+        },
+        {
+          "metric": "is_compliant_preprint",
+          "format": "count",
+          "label": "Compliant preprints",
+          "current": {
+            "numerator": 1509
+          },
+          "previous": {
+            "numerator": 1099
+          }
+        }
+      ]
+    },
+    "preprints_and_cc_by_share": {
+      "period": {
+        "start": "2026-01-01",
+        "end": "2026-11-03"
+      },
+      "comparison_period": {
+        "start": "2025-01-01",
+        "end": "2025-11-03"
+      },
+      "figures": [
+        {
+          "metric": "is_preprint",
+          "format": "count",
+          "label": "Preprints",
+          "current": {
+            "numerator": 1935
+          },
+          "previous": {
+            "numerator": 1691
+          },
+          "info": "Preprints by grantees or foundation authors, by publication date."
+        },
+        {
+          "metric": "is_compliant_preprint",
+          "denominator_metric": "is_preprint",
+          "format": "percent",
+          "label": "Preprint compliance",
+          "current": {
+            "numerator": 1509,
+            "denominator": 1935
+          },
+          "previous": {
+            "numerator": 1099,
+            "denominator": 1691
+          },
+          "info": "Preprints with a CC BY, CC0 or public domain licence, as the policy requires."
+        }
+      ]
+    },
+    "das": {
+      "period": {
+        "start": "2026-01-01",
+        "end": "2026-05-03"
+      },
+      "comparison_period": {
+        "start": "2025-01-01",
+        "end": "2025-05-03"
+      },
+      "review_lag_months": 6,
+      "figures": [
+        {
+          "metric": "has_data_availability_statement",
+          "denominator_metric": "has_checked_data_availability_statement",
+          "format": "percent",
+          "label": "Data availability statements",
+          "current": {
+            "numerator": 967,
+            "denominator": 1238
+          },
+          "previous": {
+            "numerator": 1089,
+            "denominator": 1433
+          }
+        }
+      ]
+    },
+    "preprint_growth": {
+      "period": {
+        "start": "2025-01-01",
+        "end": "2025-12-31"
+      },
+      "comparison_period": {
+        "start": "2024-01-01",
+        "end": "2024-12-31"
+      },
+      "figures": [
+        {
+          "metric": "is_preprint",
+          "format": "count",
+          "label": "Preprints",
+          "current": {
+            "numerator": 1999
+          },
+          "previous": {
+            "numerator": 1108
+          },
+          "info": "Preprints by grantees or foundation authors, by publication date."
+        }
+      ],
+      "source": "Yearly is_preprint counts from the live API, as in the preprint Trends. Only completed years are used."
+    },
+    "lmic_authors": {
+      "period": {
+        "start": "2025-01-01",
+        "end": "2026-11-03"
+      },
+      "comparison_period": {
+        "start": "2023-03-01",
+        "end": "2024-12-31"
+      },
+      "figures": [
+        {
+          "metric": "is_unique_publication AND authorships.institutions.country_code:(LMIC list)",
+          "format": "count",
+          "label": "Publications with authors in low- and middle-income countries",
+          "current": {
+            "numerator": 5542
+          },
+          "previous": {
+            "numerator": 4969
+          },
+          "info": "Publications with at least one author at an institution in a low- or middle-income country, as classed by the World Bank for 2025–26."
+        },
+        {
+          "metric": "is_unique_publication AND authorships.institutions.country_code:(LMIC list)",
+          "denominator_metric": "is_unique_publication AND authorships.institutions.country_code:*",
+          "format": "percent",
+          "label": "Share of all publications",
+          "current": {
+            "numerator": 5542,
+            "denominator": 8432
+          },
+          "previous": {
+            "numerator": 4969,
+            "denominator": 7962
+          },
+          "info": "Of the publications where author locations are known."
+        }
+      ],
+      "source": "Counted from the live API on 4 Nov 2026. Since the policy (1 Jan 2025 – 3 Nov 2026) vs the same length of time before it. Unique publications with at least one author institution in a World Bank FY2026 low or middle income country (130 countries incl. China); publications without country data (4% and 2%) are left out of the share."
+    }
+  },
+  "headlines": {
+    "compliance": {
+      "period": {
+        "start": "2025-01-01",
+        "end": "2025-12-31"
+      },
+      "comparison_period": {
+        "start": "2024-01-01",
+        "end": "2024-12-31"
+      },
+      "comparison_note": "before the policy change",
+      "share": {
+        "metric": "is_compliant_publication",
+        "denominator_metric": "is_covered_by_policy",
+        "format": "percent",
+        "label": "Policy compliance",
+        "current": {
+          "numerator": 3761,
+          "denominator": 4802
+        },
+        "previous": {
+          "numerator": 3515,
+          "denominator": 4186
+        },
+        "info": "Publications with a CC BY, CC0 or public domain licence from the publisher, a repository or the preprint. From 2025, the policy also covers preprints."
+      },
+      "figures": [
+        {
+          "metric": "is_unique_publication",
+          "format": "count",
+          "label": "Unique publications",
+          "current": {
+            "numerator": 4801
+          },
+          "previous": {
+            "numerator": 4584
+          },
+          "info": "Journal articles, plus preprints without a journal article, so each piece of research counts once."
+        },
+        {
+          "metric": "is_preprint",
+          "format": "count",
+          "label": "Preprints",
+          "current": {
+            "numerator": 1999
+          },
+          "previous": {
+            "numerator": 1108
+          },
+          "info": "Preprints by grantees or foundation authors, by publication date."
+        },
+        {
+          "metric": "has_apc",
+          "aggregate": "sum:supplements.apc_cost",
+          "format": "currency",
+          "label": "Spent on APCs",
+          "better": "down",
+          "current": {
+            "numerator": 2368107
+          },
+          "previous": {
+            "numerator": 5151870
+          },
+          "info": "Total of the APCs OA.Report knows about, so the real figure may be higher."
+        }
+      ],
+      "source": "Counted on 4 Nov 2026. From 2025 the policy also covers preprints, so 2024 compliance was measured under the old policy."
+    },
+    "compliance_impact": {
+      "period": {
+        "start": "2025-01-01",
+        "end": "2025-12-31"
+      },
+      "comparison_period": {
+        "start": "2024-01-01",
+        "end": "2024-12-31"
+      },
+      "comparison_note": "before the policy change",
+      "share": {
+        "metric": "is_compliant_publication",
+        "denominator_metric": "is_covered_by_policy",
+        "format": "percent",
+        "label": "Policy compliance",
+        "current": {
+          "numerator": 3761,
+          "denominator": 4802
+        },
+        "previous": {
+          "numerator": 3515,
+          "denominator": 4186
+        },
+        "info": "Publications with a CC BY, CC0 or public domain licence from the publisher, a repository or the preprint. From 2025, the policy also covers preprints."
+      },
+      "figures": [
+        {
+          "metric": "is_preprint",
+          "format": "count",
+          "label": "Preprints",
+          "current": {
+            "numerator": 1999
+          },
+          "previous": {
+            "numerator": 1108
+          },
+          "info": "Preprints by grantees or foundation authors, by publication date."
+        },
+        {
+          "metric": "has_apc",
+          "aggregate": "sum:supplements.apc_cost",
+          "format": "currency",
+          "label": "Spent on APCs",
+          "better": "down",
+          "current": {
+            "numerator": 2368107
+          },
+          "previous": {
+            "numerator": 5151870
+          },
+          "info": "Total of the APCs OA.Report knows about, so the real figure may be higher."
+        },
+        {
+          "metric": "is_unique_publication AND authorships.institutions.country_code:(LMIC list)",
+          "format": "count",
+          "label": "Low- and middle-income authors",
+          "current": {
+            "numerator": 3013
+          },
+          "previous": {
+            "numerator": 2755
+          },
+          "info": "Publications with at least one author at an institution in a low- or middle-income country, as classed by the World Bank for 2025–26."
+        },
+        {
+          "metric": "sum(journal published_date − earliest preprint published_date)",
+          "format": "measure",
+          "unit": "years",
+          "label": "Preprint head start",
+          "current": {
+            "numerator": 365
+          },
+          "info": "Time between each article’s earliest preprint and the article, added up across the 435 articles preprinted first."
+        }
+      ],
+      "source": "Alternative to the compliance Headline, from the meeting with Joe: compliance first, with research acceleration and low- and middle-income country rows. Research acceleration has no comparison because it lags (2024: 542 years). Low- and middle-income country counts from the live API on 4 Nov 2026 (World Bank FY2026 list, incl. China)."
+    },
+    "compliant_without_apcs": {
+      "period": {
+        "start": "2025-01-01",
+        "end": "2025-12-31"
+      },
+      "comparison_period": {
+        "start": "2024-01-01",
+        "end": "2024-12-31"
+      },
+      "comparison_note": "before the policy change",
+      "share": {
+        "metric": "is_compliant_publication AND NOT has_apc",
+        "denominator_metric": "is_compliant_publication",
+        "format": "percent",
+        "label": "Compliant without an APC",
+        "current": {
+          "numerator": 3129,
+          "denominator": 3761
+        },
+        "previous": {
+          "numerator": 1958,
+          "denominator": 3515
+        },
+        "info": "Compliant publications with no article processing charge (APC) on record."
+      },
+      "figures": [
+        {
+          "metric": "is_unique_publication",
+          "format": "count",
+          "label": "Unique publications",
+          "current": {
+            "numerator": 4801
+          },
+          "previous": {
+            "numerator": 4584
+          },
+          "info": "Journal articles, plus preprints without a journal article, so each piece of research counts once."
+        },
+        {
+          "metric": "is_preprint",
+          "format": "count",
+          "label": "Preprints",
+          "current": {
+            "numerator": 1999
+          },
+          "previous": {
+            "numerator": 1108
+          },
+          "info": "Preprints by grantees or foundation authors, by publication date."
+        },
+        {
+          "metric": "has_apc",
+          "aggregate": "sum:supplements.apc_cost",
+          "format": "currency",
+          "label": "Spent on APCs",
+          "better": "down",
+          "current": {
+            "numerator": 2368107
+          },
+          "previous": {
+            "numerator": 5151870
+          },
+          "info": "Total of the APCs OA.Report knows about, so the real figure may be higher."
+        }
+      ]
+    },
+    "policy_first_year": {
+      "period": {
+        "start": "2025-01-01",
+        "end": "2025-12-31"
+      },
+      "comparison_period": {
+        "start": "2024-01-01",
+        "end": "2024-12-31"
+      },
+      "comparison_note": "before the policy change",
+      "share": {
+        "metric": "is_preprint",
+        "denominator_metrics": [
+          "is_preprint",
+          "is_paper"
+        ],
+        "format": "percent",
+        "label": "Preprint share",
+        "part_label": "Preprints",
+        "rest_label": "Journal articles",
+        "current": {
+          "numerator": 1999,
+          "denominator": 5913
+        },
+        "previous": {
+          "numerator": 1108,
+          "denominator": 5294
+        }
+      },
+      "figures": [
+        {
+          "metric": "is_preprint",
+          "format": "count",
+          "label": "Preprints",
+          "current": {
+            "numerator": 1999
+          },
+          "previous": {
+            "numerator": 1108
+          }
+        },
+        {
+          "metric": "has_apc",
+          "format": "count",
+          "label": "APC-funded articles",
+          "better": "down",
+          "current": {
+            "numerator": 657
+          },
+          "previous": {
+            "numerator": 1592
+          }
+        }
+      ]
+    },
+    "apcs_and_preprinting": {
+      "period": {
+        "start": "2025-01-01",
+        "end": "2025-12-31"
+      },
+      "comparison_period": {
+        "start": "2024-01-01",
+        "end": "2024-12-31"
+      },
+      "comparison_note": "before the policy change",
+      "share": {
+        "metric": "has_apc",
+        "denominator_metric": "is_paper",
+        "format": "percent",
+        "better": "down",
+        "label": "APC-funded share",
+        "part_label": "APC-funded",
+        "rest_label": "Other journal articles",
+        "current": {
+          "numerator": 657,
+          "denominator": 3914
+        },
+        "previous": {
+          "numerator": 1592,
+          "denominator": 4186
+        }
+      },
+      "figures": [
+        {
+          "metric": "has_apc",
+          "format": "count",
+          "label": "APC-funded articles",
+          "better": "down",
+          "current": {
+            "numerator": 657
+          },
+          "previous": {
+            "numerator": 1592
+          }
+        },
+        {
+          "metric": "is_paper AND supplements.has_preprint_copy:true",
+          "denominator_metric": "is_paper",
+          "format": "percent",
+          "label": "Articles with a preprint",
+          "current": {
+            "numerator": 1168,
+            "denominator": 3914
+          },
+          "previous": {
+            "numerator": 1027,
+            "denominator": 4186
+          }
+        }
+      ]
+    },
+    "apc_spend": {
+      "period": {
+        "start": "2025-01-01",
+        "end": "2025-12-31"
+      },
+      "comparison_period": {
+        "start": "2024-01-01",
+        "end": "2024-12-31"
+      },
+      "comparison_note": "before the policy change",
+      "hero": {
+        "metric": "has_apc",
+        "aggregate": "sum:supplements.apc_cost",
+        "format": "currency",
+        "label": "Spent on APCs",
+        "better": "down",
+        "current": {
+          "numerator": 2368107
+        },
+        "previous": {
+          "numerator": 5151870
+        },
+        "info": "Total of the APCs OA.Report knows about, so the real figure may be higher."
+      },
+      "figures": [
+        {
+          "metric": "is_preprint",
+          "format": "count",
+          "label": "Preprints",
+          "current": {
+            "numerator": 1999
+          },
+          "previous": {
+            "numerator": 1108
+          },
+          "info": "Preprints by grantees or foundation authors, by publication date."
+        },
+        {
+          "metric": "has_apc",
+          "aggregate": "median:supplements.apc_cost",
+          "format": "currency",
+          "label": "Median APC",
+          "better": "down",
+          "current": {
+            "numerator": 3275
+          },
+          "previous": {
+            "numerator": 2870
+          },
+          "info": "The middle value of the APCs OA.Report knows about."
+        }
+      ]
+    },
+    "policy_routes": {
+      "period": {
+        "start": "2025-01-01",
+        "end": "2025-12-31"
+      },
+      "comparison_period": {
+        "start": "2024-01-01",
+        "end": "2024-12-31"
+      },
+      "comparison_note": "before the policy change",
+      "share": {
+        "metric": "is_compliant_publication AND is_preprint",
+        "denominator_metric": "is_compliant_publication",
+        "format": "percent",
+        "label": "Met the policy through preprint alone",
+        "current": {
+          "numerator": 655,
+          "denominator": 3761
+        },
+        "previous": {
+          "numerator": 0,
+          "denominator": 3515
+        },
+        "parts": [
+          {
+            "numerator": 655,
+            "swatch": "accent"
+          },
+          {
+            "numerator": 2830,
+            "swatch": "muted"
+          },
+          {
+            "numerator": 276,
+            "swatch": "light"
+          }
+        ]
+      },
+      "figures": [
+        {
+          "metric": "is_compliant_publication AND is_preprint",
+          "format": "count",
+          "label": "Preprint only",
+          "swatch": "accent",
+          "current": {
+            "numerator": 655
+          }
+        },
+        {
+          "metric": "is_compliant_publication AND is_paper AND publisher licence CC BY or equivalent",
+          "format": "count",
+          "label": "Open Access in the journal",
+          "swatch": "muted",
+          "current": {
+            "numerator": 2830
+          }
+        },
+        {
+          "metric": "is_compliant_publication AND is_paper AND NOT publisher licence (repository, preprint licence or OA.Support)",
+          "format": "count",
+          "label": "Open copy in a repository",
+          "swatch": "light",
+          "current": {
+            "numerator": 276
+          }
+        }
+      ]
+    }
+  },
+  "trends": {
+    "preprint_share": {
+      "period": {
+        "start": "2020-01-01",
+        "end": "2026-11-03"
+      },
+      "format": "percent",
+      "categories": [
+        "2020",
+        "2021",
+        "2022",
+        "2023",
+        "2024",
+        "2025",
+        "2026"
+      ],
+      "policy_start": "2025",
+      "lines": [
+        {
+          "label": "Preprint share",
+          "style": "accent",
+          "points": [
+            {
+              "numerator": 1170,
+              "denominator": 5315
+            },
+            {
+              "numerator": 1289,
+              "denominator": 6082
+            },
+            {
+              "numerator": 1142,
+              "denominator": 5566
+            },
+            {
+              "numerator": 1218,
+              "denominator": 5329
+            },
+            {
+              "numerator": 1108,
+              "denominator": 5294
+            },
+            {
+              "numerator": 1999,
+              "denominator": 5913
+            },
+            {
+              "numerator": 1935,
+              "denominator": 4573,
+              "partial": true
+            }
+          ],
+          "end_label": "Actual"
+        },
+        {
+          "label": "Pre-policy trend",
+          "style": "expected",
+          "method": "Ordinary least squares (OLS) fit of 2020–2024, extended to 2025",
+          "missing_text": "Not projected",
+          "points": [
+            null,
+            null,
+            null,
+            null,
+            {
+              "value": 21.4
+            },
+            {
+              "value": 21.35
+            }
+          ],
+          "end_label": "Expected",
+          "info": "21% if the 2020–2024 trend had continued (ordinary least squares fit)."
+        }
+      ],
+      "compared_with": "vs 2024",
+      "hero": {
+        "format": "one_in",
+        "label": "publications was a preprint in 2025",
+        "current": {
+          "numerator": 1999,
+          "denominator": 5913
+        },
+        "previous": {
+          "numerator": 1108,
+          "denominator": 5294
+        }
+      },
+      "caption": "Preprint share by year",
+      "note": "Expected: where the 2020–2024 trend was heading"
+    },
+    "preprint_share_percent": {
+      "period": {
+        "start": "2020-01-01",
+        "end": "2026-11-03"
+      },
+      "format": "percent",
+      "categories": [
+        "2020",
+        "2021",
+        "2022",
+        "2023",
+        "2024",
+        "2025",
+        "2026"
+      ],
+      "policy_start": "2025",
+      "lines": [
+        {
+          "label": "Preprint share",
+          "style": "accent",
+          "points": [
+            {
+              "numerator": 1170,
+              "denominator": 5315
+            },
+            {
+              "numerator": 1289,
+              "denominator": 6082
+            },
+            {
+              "numerator": 1142,
+              "denominator": 5566
+            },
+            {
+              "numerator": 1218,
+              "denominator": 5329
+            },
+            {
+              "numerator": 1108,
+              "denominator": 5294
+            },
+            {
+              "numerator": 1999,
+              "denominator": 5913
+            },
+            {
+              "numerator": 1935,
+              "denominator": 4573,
+              "partial": true
+            }
+          ],
+          "end_label": "Actual"
+        },
+        {
+          "label": "Pre-policy trend",
+          "style": "expected",
+          "method": "Ordinary least squares (OLS) fit of 2020–2024, extended to 2025",
+          "missing_text": "Not projected",
+          "points": [
+            null,
+            null,
+            null,
+            null,
+            {
+              "value": 21.4
+            },
+            {
+              "value": 21.35
+            }
+          ],
+          "end_label": "Expected",
+          "info": "21% if the 2020–2024 trend had continued (ordinary least squares fit)."
+        }
+      ],
+      "compared_with": "vs 2024",
+      "hero": {
+        "format": "percent",
+        "label": "Preprint share in 2025",
+        "current": {
+          "numerator": 1999,
+          "denominator": 5913
+        },
+        "previous": {
+          "numerator": 1108,
+          "denominator": 5294
+        }
+      },
+      "caption": "Preprint share by year",
+      "note": "Expected: where the 2020–2024 trend was heading"
+    },
+    "free_vs_paid": {
+      "period": {
+        "start": "2020-01-01",
+        "end": "2026-11-11"
+      },
+      "format": "percent",
+      "categories": [
+        "2020",
+        "2021",
+        "2022",
+        "2023",
+        "2024",
+        "2025",
+        "2026"
+      ],
+      "policy_start": "2024",
+      "policy_table_label": "last year before the policy change",
+      "note": "Share of journal articles",
+      "lines": [
+        {
+          "label": "With a preprint",
+          "end_label": "Preprint",
+          "style": "accent",
+          "points": [
+            {
+              "numerator": 541,
+              "denominator": 4148
+            },
+            {
+              "numerator": 879,
+              "denominator": 4794
+            },
+            {
+              "numerator": 969,
+              "denominator": 4425
+            },
+            {
+              "numerator": 852,
+              "denominator": 4119
+            },
+            {
+              "numerator": 1022,
+              "denominator": 4190
+            },
+            {
+              "numerator": 1171,
+              "denominator": 3934
+            },
+            {
+              "numerator": 923,
+              "denominator": 2728,
+              "partial": true
+            }
+          ]
+        },
+        {
+          "label": "With APC spend",
+          "end_label": "APC spend",
+          "style": "muted",
+          "points": [
+            {
+              "numerator": 2020,
+              "denominator": 4148
+            },
+            {
+              "numerator": 1958,
+              "denominator": 4794
+            },
+            {
+              "numerator": 1865,
+              "denominator": 4425
+            },
+            {
+              "numerator": 1714,
+              "denominator": 4119
+            },
+            {
+              "numerator": 1595,
+              "denominator": 4190
+            },
+            {
+              "numerator": 652,
+              "denominator": 3934
+            }
+          ],
+          "note": "2026 not yet available: APC invoices arrive after publication"
+        }
+      ],
+      "compared_with": "vs 2024",
+      "caption": "Share of journal articles with a preprint and with APC spend, by year",
+      "figures": [
+        {
+          "format": "percent",
+          "label": "With a preprint in 2025",
+          "current": {
+            "numerator": 1171,
+            "denominator": 3934
+          },
+          "previous": {
+            "numerator": 1022,
+            "denominator": 4190
+          },
+          "info": "Journal articles with a preprint, as a share of all journal articles."
+        },
+        {
+          "format": "percent",
+          "label": "With APC spend in 2025",
+          "better": "down",
+          "current": {
+            "numerator": 652,
+            "denominator": 3934
+          },
+          "previous": {
+            "numerator": 1595,
+            "denominator": 4190
+          },
+          "info": "Journal articles with an APC on record, as a share of all journal articles."
+        }
+      ],
+      "retrieved": "2026-11-11",
+      "source": "Counted from the live API on 11 Nov 2026: is_paper by published_date, with supplements.has_preprint_copy:true (the report’s “With preprint” column) and supplements.apc_cost > 0. Total APC spend by year, in US$: 5,517,868 / 5,490,599 / 5,459,026 / 5,291,307 / 5,158,220 / 2,358,157."
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "tile": {
+    "compliance_2025": "In the first year of its new policy, nearly four in five Gates-funded publications complied, most without the foundation paying a publishing fee.",
+    "preprints_lmic_2025": "Almost two in three Gates-funded preprints in 2025 had an author based in a low- or middle-income country, up from just over half in 2024 and in line with the foundation’s focus on global health research funding.",
+    "head_start_median_2025": "By promoting preprints, the foundation helps findings reach others sooner: in 2025, preprinted research was public a median of 7.6 months before its journal article.",
+    "head_start_total_2025": "Preprinting is accelerating research. Across the 435 Gates-funded articles preprinted first in 2025, findings were made public a combined 365 years sooner than waiting for their journal articles."
+  },
+  "comparison": {
+    "preprints_and_cc_by_share": "Grantees are preprinting more, and getting it right. In the policy’s second year, 78% of preprints met the policy so far in 2026, up from 65% at this point in 2025.",
+    "preprint_growth": "Grantees are turning to preprints to share their findings sooner. Preprints rose by 80% in the first year of the new policy.",
+    "lmic_authors": "More Gates-funded research includes authors in low- and middle-income countries, in line with the foundation’s focus on global health research funding. Since the new policy began, 12% more publications have included them, now two in three of the total."
+  },
+  "headline": {
+    "compliance": {
+      "text": "The foundation is getting more research out for less. Now that the policy covers preprints too, 78% of Gates-funded publications complied in 2025. Preprints rose by 80%, and spending on publishing fees (APCs) more than halved.",
+      "audience": "For external audiences, such as grantees and other funders visiting the foundation’s Open Access policy page."
+    },
+    "compliance_impact": {
+      "text": "The policy is doing more than opening up research. 78% of Gates-funded publications complied in 2025, while preprinting gave findings a combined 365-year head start and more publications included authors in low- and middle-income countries.",
+      "audience": "For external audiences, such as grantees and other funders visiting the foundation’s Open Access policy page."
+    },
+    "compliant_without_apcs": {
+      "text": "Open research is costing the foundation less. In 2025, 83% of compliant publications met the policy without a publishing fee (APC), up from 56% in 2024. Preprints rose by 80%, and spending on publishing fees (APCs) more than halved.",
+      "audience": "For external audiences, such as grantees and other funders visiting the foundation’s Open Access policy page."
+    },
+    "apc_spend": {
+      "text": "The new policy is saving the foundation money. It spent US$2.8M less on publishing fees (APCs) in 2025 than in 2024, even though the typical fee rose by 14%.",
+      "audience": "For internal reporting, such as newsletters sent to staff or annual reports."
+    }
+  },
+  "trend": {
+    "free_vs_paid": "The new policy has flipped how Gates-funded research is shared. In its first year, preprints overtook publishing fees: the share of journal articles with a fee (APC) on record more than halved, while the share with a preprint kept rising.",
+    "preprint_share_percent": "Preprinting is the way forward, and Gates grantees are leading it. Since the policy began, they have preprinted far more than the trend predicted: a third of all articles and preprints in 2025, against the 21% expected."
+  }
+}

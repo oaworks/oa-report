@@ -1,0 +1,7 @@
+# Keep every embed page, fragment and the embed loader out of search indexes
+# See https://github.com/oaworks/discussion/issues/4005
+/embed/*
+  X-Robots-Tag: noindex, nofollow
+
+/embed.js
+  X-Robots-Tag: noindex, nofollow

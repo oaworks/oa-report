@@ -1,0 +1,34 @@
+{# Comparison embed: a few figures for one period, each compared with an earlier period
+{{ component("embed/comparison", {
+  id: "preprints_and_cc_by",
+  comparison: embed_figures.comparisons.preprints_and_cc_by,
+  org: embed_figures.org,
+  asOf: embed_figures.source.retrieved,
+  headingLevel: 2
+}) }}
+asOf is the default data date; a "retrieved" date on the comparison itself overrides it.
+#}
+{%- from "system/component.njk" import component -%}
+
+{% set comparison = params.comparison %}
+{% set accent = params.accent or params.org.accent %}
+{% set comparedWith = comparison.period | comparedWith(comparison.comparison_period) %}
+{% set titleId = "embed_title_" ~ params.id %}
+{% set periodLabel = comparison.period | dateRange %}
+
+<article
+  aria-labelledby="{{ titleId }}"
+  class="embed-root flex w-full max-w-sm flex-col rounded-sm border border-t-4 border-neutral-200 border-t-(--embed-accent) bg-white p-4 font-sans text-base leading-normal tracking-normal text-neutral-900"
+  {% if accent %}style="--embed-accent: {{ accent }};"{% endif %}>
+  {{ component("embed/header", { id: titleId, org: params.org.name, period: periodLabel, note: comparedWith, level: params.headingLevel }) }}
+
+  <dl class="mt-5 grid gap-6 {{ "grid-cols-2" if comparison.figures.length > 1 else "grid-cols-1" }}">
+    {% for f in comparison.figures %}
+      {{ component("embed/change-figure", { figure: f, comparedWith: comparedWith, id: params.id ~ "_" ~ loop.index0 }) }}
+    {% endfor %}
+  </dl>
+
+  {# Spacer keeps the footer at the bottom when cards share a row height #}
+  <div class="grow" aria-hidden="true"></div>
+  {{ component("embed/attribution", { url: params.attributionUrl or params.org.report_url, altUrl: params.attributionAltUrl, asOf: comparison.retrieved or params.asOf }) }}
+</article>
