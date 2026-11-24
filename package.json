@@ -23,7 +23,7 @@
     "@tryghost/content-api": "^1.12.15",
     "concurrently": "^10.0.7",
     "dompurify": "3.4.17",
-    "dotenv": "^18.0.9",
+    "dotenv": "^18.0.10",
     "esbuild": "^0.28.2",
     "html-minifier-terser": "^7.2.0",
     "luxon": "^3.7.2",
