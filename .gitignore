@@ -12,3 +12,6 @@ Thumbs.db
 # Node modules and output
 node_modules
 dist
+
+# Vitest
+coverage/
