@@ -7,6 +7,7 @@
     "start": "npm run clean && npm run embed-css && npm run embed-js && concurrently \"eleventy --serve --port=8080\" \"npm run minify-css -- --watch\" \"npm run minify-js -- --watch\"",
     "clean": "rm -rf dist",
     "build": "ELEVENTY_PRODUCTION=true eleventy && NODE_ENV=production npm run minify-css && npm run minify-js && npm run embed-css && npm run embed-js",
+    "test": "vitest",
     "minify-js": "mkdir -p dist/js && esbuild src/js/main.js --bundle --minify --format=esm --target=es2018 --outfile=dist/js/main.min.js",
     "minify-css": "npx @tailwindcss/cli -i styles/input.css -o dist/tailwind.css --minify",
     "embed-css": "npx @tailwindcss/cli -i styles/embed.css -o dist/embed.css --minify && node scripts/finalize-embed-css.js dist/embed.css",
@@ -30,6 +31,7 @@
     "markdown-it": "^15.0.3",
     "markdown-it-attrs": "^5.0.1",
     "sal.js": "^0.8.5",
-    "tailwindcss": "^4.3.3"
+    "tailwindcss": "^4.3.3",
+    "vitest": "^5.1.2"
   }
 }
